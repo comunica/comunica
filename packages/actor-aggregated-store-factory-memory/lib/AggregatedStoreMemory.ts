@@ -1,25 +1,36 @@
 // eslint-disable-next-line import/no-nodejs-modules
 import type { EventEmitter } from 'node:events';
-import type { MetadataQuads, IAggregatedStore, MetadataBindings } from '@comunica/types';
+import type {
+  MetadataQuads,
+  IAggregatedStore,
+  MetadataBindings,
+  IQuerySource,
+  ComunicaDataFactory,
+  IActionContext,
+} from '@comunica/types';
 import { ClosableTransformIterator } from '@comunica/utils-iterator';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { StreamingStore } from 'rdf-streaming-store';
+import { Factory } from 'sparqlalgebrajs';
 
 /**
- * A StreamingStore that returns an AsyncIterator with a valid MetadataQuads property.
+ * An aggregated store that returns AsyncIterators with a valid MetadataQuads property.
  */
-export class StreamingStoreMetadata extends StreamingStore implements IAggregatedStore {
+export class AggregatedStoreMemory extends StreamingStore implements IAggregatedStore {
   public started = false;
   public containedSources = new Set<string>();
   public readonly runningIterators: Set<AsyncIterator<RDF.Quad>> = new Set<AsyncIterator<RDF.Quad>>();
   protected readonly iteratorCreatedListeners: Set<() => void> = new Set();
+  protected readonly allIteratorsClosedListeners: Set<() => void> = new Set();
   protected readonly metadataAccumulator:
   (accumulatedMetadata: MetadataBindings, appendingMetadata: MetadataBindings) => Promise<MetadataBindings>;
 
+  protected readonly dataFactory: ComunicaDataFactory;
+
   /**
-   * Whether the StreamingStoreMetadata should emit updated partial cardinalities
+   * Whether the AggregatedStoreMemory should emit updated partial cardinalities
    * for each matching quad. Enabling this option may impact performance due to
    * frequent {@link MetadataValidationState} invalidations and updates
    */
@@ -36,10 +47,29 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
     metadataAccumulator:
     (accumulatedMetadata: MetadataBindings, appendingMetadata: MetadataBindings) => Promise<MetadataBindings>,
     emitPartialCardinalities: boolean,
+    dataFactory: ComunicaDataFactory,
   ) {
     super(store);
     this.metadataAccumulator = metadataAccumulator;
     this.emitPartialCardinalities = emitPartialCardinalities;
+    this.dataFactory = dataFactory;
+  }
+
+  public async importSource(url: string, source: IQuerySource, context: IActionContext): Promise<void> {
+    if (!this.ended) {
+      const AF = new Factory();
+      this.containedSources.add(url);
+      const eventEmitter = this.import(source.queryQuads(AF.createPattern(
+        this.dataFactory.variable('s'),
+        this.dataFactory.variable('p'),
+        this.dataFactory.variable('o'),
+        this.dataFactory.variable('g'),
+      ), context));
+      await new Promise((resolve, reject) => {
+        eventEmitter.on('end', resolve);
+        eventEmitter.on('error', reject);
+      });
+    }
   }
 
   public override import(stream: RDF.Stream): EventEmitter {
@@ -68,6 +98,13 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
         onClose: () => {
           // Running iterators are deleted once closed or destroyed
           this.runningIterators.delete(iterator);
+
+          // Invoke listeners when all iterators have been closed
+          if (!this.hasRunningIterators()) {
+            for (const listener of this.allIteratorsClosedListeners) {
+              listener();
+            }
+          }
         },
       },
     );
@@ -146,5 +183,13 @@ export class StreamingStoreMetadata extends StreamingStore implements IAggregate
 
   public removeIteratorCreatedListener(listener: () => void): void {
     this.iteratorCreatedListeners.delete(listener);
+  }
+
+  public addAllIteratorsClosedListener(listener: () => void): void {
+    this.allIteratorsClosedListeners.add(listener);
+  }
+
+  public removeAllIteratorsClosedListener(listener: () => void): void {
+    this.allIteratorsClosedListeners.delete(listener);
   }
 }

@@ -11,6 +11,7 @@ import { RdfStore } from 'rdf-stores';
 import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceRdfJs } from '../lib';
 import '@comunica/utils-jest';
+import 'jest-rdf';
 
 const DF = new DataFactory();
 const AF = new Factory();
@@ -833,8 +834,20 @@ describe('QuerySourceRdfJs', () => {
   });
 
   describe('queryQuads', () => {
-    it('should throw', () => {
-      expect(() => source.queryQuads(<any> undefined, ctx))
+    it('should forward patterns to match calls', async() => {
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o1')));
+      await expect(source.queryQuads(AF.createPattern(
+        DF.variable('s'),
+        DF.namedNode('p1'),
+        DF.variable('p'),
+      ), ctx).toArray()).resolves.toEqualRdfQuadArray([
+        DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+      ]);
+    });
+
+    it('should throw on random operations', () => {
+      expect(() => source.queryQuads(AF.createNop(), ctx))
         .toThrow(`queryQuads is not implemented in QuerySourceRdfJs`);
     });
   });

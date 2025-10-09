@@ -18,12 +18,12 @@ describe('ActorRdfResolveHypermediaLinksQueueFifo', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ firstUrl: 'A', context: new ActionContext() }))
+      await expect(actor.test({ context: new ActionContext() }))
         .resolves.toPassTestVoid();
     });
 
     it('should run', async() => {
-      await expect(actor.run({ firstUrl: 'A', context: new ActionContext() }))
+      await expect(actor.run({ context: new ActionContext() }))
         .resolves.toEqual({ linkQueue: new LinkQueueFifo() });
     });
   });

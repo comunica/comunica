@@ -1,3 +1,4 @@
+import { AggregatedStoreMemory } from '@comunica/actor-aggregated-store-factory-memory/lib/AggregatedStoreMemory';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
@@ -12,7 +13,6 @@ import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 import type { ISourceState, SourceStateGetter } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
-import { StreamingStoreMetadata } from '../lib/StreamingStoreMetadata';
 
 const DF = new DataFactory();
 const AF = new Factory();
@@ -276,7 +276,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       it('should make canStartNewIterator return false when no running iterators exists on store', async() => {
         // When there are no running .match calls and destroy is called, no new iterators should be
         // started.
-        const aggregatedStore = new StreamingStoreMetadata(
+        const aggregatedStore = new AggregatedStoreMemory(
           undefined,
           jest.fn(),
           false,
@@ -308,7 +308,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         // This tests whether a premature destroy call will not stop traversal.
         // This happens when subqueries (like with bind join) end but the main query has not
         // yet finished.
-        const aggregatedStore = new StreamingStoreMetadata(
+        const aggregatedStore = new AggregatedStoreMemory(
           undefined,
           jest.fn(),
           false,

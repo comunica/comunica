@@ -37,6 +37,10 @@ export class QuerySourceSkolemized implements IQuerySource {
     return this.innerSource.getSelectorShape(context);
   }
 
+  public getFilterFactor(context: IActionContext): Promise<number> {
+    return this.innerSource.getFilterFactor(context);
+  }
+
   public queryBindings(
     operation: Algebra.Operation,
     context: IActionContext,

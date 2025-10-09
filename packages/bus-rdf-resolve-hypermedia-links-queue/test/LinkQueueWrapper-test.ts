@@ -1,4 +1,4 @@
-import type { ILinkQueue } from '..';
+import type { ILinkQueue } from '@comunica/types';
 import { LinkQueueWrapper } from '..';
 
 describe('LinkQueueWrapper', () => {

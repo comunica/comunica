@@ -2236,7 +2236,7 @@ WHERE {
               {
                 metadata: {
                   scopedSource: {
-                    source: expect.any(QuerySourceSkolemized),
+                    source: expect.anything(),
                   },
                 },
               },

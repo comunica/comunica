@@ -3,6 +3,7 @@ import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
+import type { ILink } from './ILink';
 import type { MetadataBindings } from './IMetadata';
 
 export interface IQuerySourceSerialized extends IQuerySourceUnidentifiedExpanded {
@@ -24,9 +25,15 @@ export interface IQuerySourceUnidentifiedExpandedRawContext {
   context?: Record<string, any>;
 }
 
+export interface IQuerySourceTraverse {
+  type: 'traverse';
+  value: ILink[];
+  context?: IActionContext | Record<string, any>;
+}
+
 export type QuerySourceUnidentifiedExpanded = IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized;
 export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | RDF.DatasetCore |
-QuerySourceUnidentifiedExpanded | IQuerySourceUnidentifiedExpandedRawContext;
+QuerySourceUnidentifiedExpanded | IQuerySourceUnidentifiedExpandedRawContext | IQuerySourceTraverse;
 
 /**
  * Attaches a context to a query target.
@@ -46,6 +53,16 @@ export interface IQuerySource {
    * The URL of RDF source of this source.
    */
   referenceValue: QuerySourceReference;
+
+  /**
+   * @return A value from 0 to 1 indicating to what respect a source type is
+   * able to pre-filter the source based on the pattern.
+   * 1 indicates that the source can apply the whole pattern,
+   * and 0 indicates that the source can not apply the pattern at all (and local filtering must happen).
+   * Plain RDF documents for example have a filter factor of 0,
+   * while SPARQL endpoints have a filter factor of 1.
+   */
+  getFilterFactor: (context: IActionContext) => Promise<number>;
 
   /**
    * Get the selector type that is supported by this source.

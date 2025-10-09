@@ -1,9 +1,6 @@
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
-import type {
-  ILinkQueue,
-  MediatorRdfResolveHypermediaLinksQueue,
-} from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { KeysQueryOperation, KeysStatistics } from '@comunica/context-entries';
 import type {
   ComunicaDataFactory,
@@ -14,6 +11,7 @@ import type {
   ILink,
   IStatisticBase,
   IDiscoverEventData,
+  ILinkQueue,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
@@ -148,7 +146,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   public getLinkQueue(): Promise<ILinkQueue> {
     if (!this.linkQueue) {
       this.linkQueue = this.mediatorRdfResolveHypermediaLinksQueue
-        .mediate({ firstUrl: this.firstUrl, context: this.context })
+        .mediate({ context: this.context })
         .then(result => result.linkQueue);
     }
     return this.linkQueue;

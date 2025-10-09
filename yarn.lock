@@ -3591,10 +3591,12 @@ async@^3.2.3:
   resolved "https://registry.npmjs.org/async/-/async-3.2.5.tgz"
   integrity sha512-baNZyqaaLhyLVKm/DlvdW051MSgO6b8eVfIezl9E5PqWxFgzLm/wQntEW4zOytVburDEr0JlALEpdOFwvErLsg==
 
-asynciterator@^3.8.0, asynciterator@^3.8.1, asynciterator@^3.9.0:
-  version "3.9.0"
-  resolved "https://registry.npmjs.org/asynciterator/-/asynciterator-3.9.0.tgz"
-  integrity sha512-bwLLTAnoE6Ap6XdjK/j8vDk2Vi9p3ojk0PFwM0SwktAG1k8pfRJF9ng+mmkaRFKdZCQQlOxcWnvOmX2NQ1HV0g==
+asynciterator@^3.10.0, asynciterator@^3.8.0, asynciterator@^3.8.1, asynciterator@^3.9.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-3.10.0.tgz#b9baade3792078235dbb6b35f6d28e88db76c5ce"
+  integrity sha512-eDOBoUf2m+4ht0ETVn2SCfuBIZZ6UWyyQbP++LRPKoK7PmrCQq37pJ6vRvyef4o1Pn+CwWnzMlkXxGdh/krVIw==
+  dependencies:
+    tiny-set-immediate "^1.0.2"
 
 asyncjoin@^1.2.4:
   version "1.2.4"
@@ -3607,6 +3609,13 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
+
+asyncreiterable@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/asyncreiterable/-/asyncreiterable-3.0.0.tgz#031539211a36818188dd5d606918289cb0891d87"
+  integrity sha512-PVLbuMWZSGzQNXKE+37Be2wcQPneHLMldTqAauuJEm/h8R7LMecIAph7SZQjtXg/33FOlGZgI4hjuCiSt6zfug==
+  dependencies:
+    asynciterator "^3.10.0"
 
 at-least-node@^1.0.0:
   version "1.0.0"
@@ -13139,6 +13148,11 @@ timers-browserify@^2.0.12:
   integrity sha512-9phl76Cqm6FhSX9Xe1ZUAMLtm1BLkKj2Qd5ApyWkXzsMRaA7dgr81kf4wJmQf/hAvg8EEyJxDo3du/0KlhPiKQ==
   dependencies:
     setimmediate "^1.0.4"
+
+tiny-set-immediate@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/tiny-set-immediate/-/tiny-set-immediate-1.0.2.tgz#4abcc1cd597e9cdcd6515c3c0a18c8ef4d98f292"
+  integrity sha512-EVbaM4zXFWS4CIqVoPzY7XIioQ5LU1p49AHizwPO1KyFyp/gxy5SA8mDmfDVl/2WLQiHgUL+esO6Ig+KhpUxUw==
 
 tmp@^0.0.33:
   version "0.0.33"

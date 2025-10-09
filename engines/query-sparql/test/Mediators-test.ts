@@ -1,4 +1,8 @@
 import type {
+  IActionAggregatedStoreFactory,
+  IActorAggregatedStoreFactoryOutput,
+} from '@comunica/bus-aggregated-store-factory';
+import type {
   IActionBindingsAggregatorFactory,
   IActorBindingsAggregatorFactoryOutput,
 } from '@comunica/bus-bindings-aggregator-factory';
@@ -26,6 +30,10 @@ import type {
   IActorTestQueryResultSerializeHandle,
 } from '@comunica/bus-query-result-serialize';
 
+import type {
+  IActionQuerySourceHypermediaResolve,
+  IActorQuerySourceHypermediaResolveOutput,
+} from '@comunica/bus-query-source-hypermedia-resolve';
 import type { IActionQuerySourceIdentify, IActorQuerySourceIdentifyOutput } from '@comunica/bus-query-source-identify';
 import type {
   IActionQuerySourceIdentifyHypermedia,
@@ -85,6 +93,13 @@ describe('System test: mediators', () => {
   });
   const context: IActionContext = new ActionContext();
 
+  addTest<IActionAggregatedStoreFactory, IActorAggregatedStoreFactoryOutput>(
+    'aggregated-store-factory',
+    ':optimize-query-operation/actors#initialize-link-traversal-manager',
+    'mediatorAggregatedStoreFactory',
+    {},
+    `Aggregated store creation failed: none of the configured actors were able to create an aggregated store`,
+  );
   addTest<IActionBindingsAggregatorFactory, IActorBindingsAggregatorFactoryOutput>(
     'bindings-aggregator-factory',
     ':query-operation/actors#group',
@@ -104,7 +119,7 @@ describe('System test: mediators', () => {
   );
   addTest<IActionContextPreprocess, IActorContextPreprocessOutput>(
     'context-preprocess',
-    ':context-preprocess/actors#query-source-identify',
+    ':optimize-query-operation/actors#query-source-identify',
     'mediatorContextPreprocess',
     {},
     `Context preprocessing failed`,
@@ -118,7 +133,7 @@ describe('System test: mediators', () => {
   );
   addTest<IActionDereferenceRdf, IActorDereferenceRdfOutput>(
     'dereference-rdf',
-    ':query-source-identify/actors#hypermedia',
+    ':query-source-hypermedia-resolve/actors#dereference',
     'mediatorDereferenceRdf',
     <any> { handle: <any> { data: <any> undefined, context, mediaType: 'text/css', url: 'http://example.org/' }},
     `RDF dereferencing failed: none of the configured parsers were able to handle the media type text/css for http://example.org/`,
@@ -194,6 +209,13 @@ IActorTestQueryResultSerializeHandle
   { handle: { type: 'abc', context }},
     `Query result serialization failed: none of the configured actors were able to serialize for type abc`,
 );
+  addTest<IActionQuerySourceHypermediaResolve, IActorQuerySourceHypermediaResolveOutput>(
+    'query-source-hypermedia-resolve',
+    ':query-source-identify/actors#hypermedia',
+    'mediatorQuerySourceHypermediaResolve',
+    { url: 'abc' },
+    `Query source hypermedia resolution failed: none of the configured actors were able to resolve abc`,
+  );
   addTest<IActionQuerySourceIdentify, IActorQuerySourceIdentifyOutput>(
     'query-source-identify',
     ':query-operation/actors#service',
@@ -207,7 +229,7 @@ IActorQuerySourceIdentifyHypermediaOutput,
 IActorQuerySourceIdentifyHypermediaTest
 >(
   'query-source-identify-hypermedia',
-  ':query-source-identify/actors#hypermedia',
+  ':query-source-hypermedia-resolve/actors#dereference',
   'mediatorQuerySourceIdentifyHypermedia',
   { url: 'http://example.org/', metadata: {}, quads: <any> undefined },
     `Query source hypermedia identification failed: none of the configured actors were able to identify http://example.org/`,
@@ -272,7 +294,7 @@ IMediatorTypeJoinCoefficients
     ':query-source-identify/actors#hypermedia',
     'mediatorRdfResolveHypermediaLinksQueue',
     { firstUrl: 'http://example.org/' },
-    `Link queue creation failed: none of the configured actors were able to create a link queue starting from http://example.org/`,
+    `Link queue creation failed: none of the configured actors were able to create a link queue`,
   );
   addTest<IActionRdfSerializeHandle, IActorOutputRdfSerializeHandle, IActorTestRdfSerializeHandle>(
     'rdf-serialize',

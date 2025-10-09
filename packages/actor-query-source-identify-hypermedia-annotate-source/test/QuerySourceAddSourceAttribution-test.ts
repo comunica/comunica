@@ -21,6 +21,7 @@ describe('QuerySourcAddSourceAttribution', () => {
 
   beforeEach(() => {
     sourceInner = {
+      getFilterFactor: async() => 1,
       getSelectorShape: <any> jest.fn(() => 'SHAPE'),
       queryBindings: <any> jest.fn(() => {
         const it = new ArrayIterator([

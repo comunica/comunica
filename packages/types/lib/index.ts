@@ -17,5 +17,7 @@ export * from './statistics/IStatisticBase';
 export * from './statistics/IDiscoverEventData';
 export * from './statistics/IPartialResult';
 export * from './ILink';
+export * from './ILinkQueue';
+export * from './ILinkTraversalManager';
 export * from './Logger';
 export * from './ExpressionEvaluator';
