@@ -15,6 +15,11 @@
  * For instance, this context can contain a list of datasources over which operators should query.
  */
 export interface IActionContext {
+  /**
+   * @param key The key to set in the new copy
+   * @param value The value that should be assigned to the key in the new copy
+   * @return A copy of the original context with relating the key to the new value.
+   */
   set: <V>(key: IActionContextKey<V>, value: V) => IActionContext;
   /**
    * Will only set the value if the key is not already set.
