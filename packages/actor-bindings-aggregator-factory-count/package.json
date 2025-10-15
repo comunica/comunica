@@ -42,6 +42,6 @@
     "@comunica/types": "^4.4.0",
     "@comunica/utils-expression-evaluator": "^4.4.1",
     "@rdfjs/types": "*",
-    "sparqlalgebrajs": "^4.2.0"
+    "sparqlalgebrajs": "^5.0.2"
   }
 }

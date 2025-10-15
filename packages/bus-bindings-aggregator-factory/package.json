@@ -43,6 +43,6 @@
     "@comunica/utils-expression-evaluator": "^4.4.1",
     "@rdfjs/types": "*",
     "rdf-string": "^1.6.3",
-    "sparqlalgebrajs": "^4.2.0"
+    "sparqlalgebrajs": "^5.0.2"
   }
 }

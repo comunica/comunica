@@ -7,6 +7,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { IActionContext, IQueryOperationResult, IJoinEntry } from '@comunica/types';
 import { getSafeBindings } from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -27,6 +28,10 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
     operationOriginal: Algebra.Minus,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
+    // Propagate information about GRAPH ?g existing outside the MINUS scope to the join actor.
+    const graphVariableFromParentScope: RDF.Variable | undefined = <any> operationOriginal
+      .metadata?.graphVariableFromParentScope;
+
     const entries: IJoinEntry[] = (await Promise.all(operationOriginal.input
       .map(async subOperation => ({
         output: await this.mediatorQueryOperation.mediate({ operation: subOperation, context }),
@@ -37,7 +42,7 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
         operation,
       }));
 
-    return this.mediatorJoin.mediate({ type: 'minus', entries, context });
+    return this.mediatorJoin.mediate({ type: 'minus', entries, context, graphVariableFromParentScope });
   }
 }
 
