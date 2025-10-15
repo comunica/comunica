@@ -1,5 +1,5 @@
-import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { ActorHttpInvalidateListenable } from '@comunica/bus-http-invalidate';
+import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { IActionQuerySourceIdentify, MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery, KeysQueryOperation, KeysStatistics }
   from '@comunica/context-entries';
@@ -8,13 +8,15 @@ import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
 import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
 import type { IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { RdfStore } from 'rdf-stores';
-import { ActorContextPreprocessQuerySourceIdentify } from '../lib/ActorContextPreprocessQuerySourceIdentify';
+import type { Algebra } from 'sparqlalgebrajs';
+import { ActorOptimizeQueryOperationQuerySourceIdentify } from '../lib/ActorOptimizeQueryOperationQuerySourceIdentify';
 import '@comunica/utils-jest';
 
-describe('ActorContextPreprocessQuerySourceIdentify', () => {
+describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
   let bus: any;
-  let mediatorContextPreprocess: MediatorContextPreprocess;
+  let mediatorContextPreprocess: MediatorOptimizeQueryOperation;
   let contextIn: IActionContext;
+  let operation: Algebra.Operation;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -23,10 +25,11 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
         return { context: action.context.set(new ActionContextKey('processed'), true) };
       },
     };
+    operation = <any> {};
   });
 
-  describe('An ActorContextPreprocessQuerySourceIdentify instance', () => {
-    let actor: ActorContextPreprocessQuerySourceIdentify;
+  describe('An ActorOptimizeQueryOperationQuerySourceIdentify instance', () => {
+    let actor: ActorOptimizeQueryOperationQuerySourceIdentify;
     let mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
     let httpInvalidator: ActorHttpInvalidateListenable;
     let listener: any = null;
@@ -40,7 +43,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
       httpInvalidator = <any>{
         addInvalidateListener: (l: any) => listener = l,
       };
-      actor = new ActorContextPreprocessQuerySourceIdentify({
+      actor = new ActorOptimizeQueryOperationQuerySourceIdentify({
         name: 'actor',
         bus,
         cacheSize: 10,
@@ -51,7 +54,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
     });
 
     it('should test', async() => {
-      await expect(actor.test({ context: new ActionContext() })).resolves.toPassTestVoid();
+      await expect(actor.test({ context: new ActionContext(), operation })).resolves.toPassTestVoid();
     });
 
     describe('run', () => {
@@ -59,13 +62,13 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
         contextIn = new ActionContext({});
       });
       it('with an empty context', async() => {
-        const { context: contextOut } = await actor.run({ context: contextIn });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
         expect(contextOut).toBe(contextIn);
       });
 
       it('with zero unidentified sources', async() => {
         contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, []);
-        const { context: contextOut } = await actor.run({ context: contextIn });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
         expect(contextOut).not.toBe(contextIn);
         expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([]);
       });
@@ -77,7 +80,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
           { value: 'source2' },
           source3,
         ]);
-        const { context: contextOut } = await actor.run({ context: contextIn });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
         expect(contextOut).not.toBe(contextIn);
         expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
           { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
@@ -92,7 +95,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
           source1,
           source1,
         ]);
-        const { context: contextOut } = await actor.run({ context: contextIn });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
         expect(contextOut).not.toBe(contextIn);
         expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
           { ofUnidentified: { value: 'source1' }},
@@ -108,8 +111,8 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
           .set(KeysInitQuery.querySourcesUnidentified, [
             source1,
           ]);
-        const { context: contextOut1 } = await actor.run({ context: contextIn });
-        const { context: contextOut2 } = await actor.run({ context: contextIn });
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
         expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
           .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
       });
@@ -123,7 +126,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
             source2,
           ]);
 
-        const { context: contextOut1 } = await actor.run({ context: contextIn });
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
         expect(contextOut1.get(KeysQueryOperation.querySources)).toEqual([
           { ofUnidentified: { value: 'source1' }},
           { ofUnidentified: { value: 'source2' }},
@@ -131,7 +134,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
 
         listener({ url: 'source1' });
 
-        const { context: contextOut2 } = await actor.run({ context: contextIn });
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
         expect(contextOut2.get(KeysQueryOperation.querySources)).toEqual([
           { ofUnidentified: { value: 'source1' }},
           { ofUnidentified: { value: 'source2' }},
@@ -152,7 +155,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
             source2,
           ]);
 
-        const { context: contextOut1 } = await actor.run({ context: contextIn });
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
         expect(contextOut1.get(KeysQueryOperation.querySources)).toEqual([
           { ofUnidentified: { value: 'source1' }},
           { ofUnidentified: { value: 'source2' }},
@@ -160,7 +163,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
 
         listener({});
 
-        const { context: contextOut2 } = await actor.run({ context: contextIn });
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
         expect(contextOut2.get(KeysQueryOperation.querySources)).toEqual([
           { ofUnidentified: { value: 'source1' }},
           { ofUnidentified: { value: 'source2' }},
@@ -178,7 +181,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
           .set(KeysInitQuery.querySourcesUnidentified, [
             { value: 'source2', context: contextSource },
           ]);
-        const { context: contextOut } = await actor.run({ context: contextIn });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
         expect(contextOut).not.toBe(contextIn);
         expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
           {
@@ -196,7 +199,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
           .set(KeysInitQuery.querySourcesUnidentified, [
             { value: 'source2', context: contextSource },
           ]);
-        const { context: contextOut } = await actor.run({ context: contextIn });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
         expect(contextOut).not.toBe(contextIn);
         expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
           {
@@ -221,7 +224,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
             };
           },
         };
-        actor = new ActorContextPreprocessQuerySourceIdentify({
+        actor = new ActorOptimizeQueryOperationQuerySourceIdentify({
           name: 'actor',
           bus,
           cacheSize: 0,
@@ -241,7 +244,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
             { value: 'source2', context: contextSource },
           ]);
 
-        const { context: contextOut } = await actor.run({ context: contextIn });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
         expect(contextOut).not.toBe(contextIn);
 
         expect(cb).toHaveBeenCalledWith(
@@ -263,8 +266,8 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
     });
   });
 
-  describe('An ActorContextPreprocessQuerySourceIdentify instance without cache', () => {
-    let actor: ActorContextPreprocessQuerySourceIdentify;
+  describe('An ActorOptimizeQueryOperationQuerySourceIdentify instance without cache', () => {
+    let actor: ActorOptimizeQueryOperationQuerySourceIdentify;
     let mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
     let httpInvalidator: ActorHttpInvalidateListenable;
 
@@ -277,7 +280,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
       httpInvalidator = <any>{
         addInvalidateListener: jest.fn(),
       };
-      actor = new ActorContextPreprocessQuerySourceIdentify({
+      actor = new ActorOptimizeQueryOperationQuerySourceIdentify({
         name: 'actor',
         bus,
         cacheSize: 0,
@@ -294,7 +297,7 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
           source1,
           source1,
         ]);
-      const { context: contextOut } = await actor.run({ context: contextIn });
+      const { context: contextOut } = await actor.run({ context: contextIn, operation });
       expect(contextOut).not.toBe(contextIn);
       expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
         { ofUnidentified: { value: 'source1' }},
@@ -310,8 +313,8 @@ describe('ActorContextPreprocessQuerySourceIdentify', () => {
         .set(KeysInitQuery.querySourcesUnidentified, [
           source1,
         ]);
-      const { context: contextOut1 } = await actor.run({ context: contextIn });
-      const { context: contextOut2 } = await actor.run({ context: contextIn });
+      const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
+      const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
       expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
         .not.toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
     });

@@ -1,25 +1,29 @@
-import type { IActorContextPreprocessOutput, IActorContextPreprocessArgs } from '@comunica/bus-context-preprocess';
-import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
+import type {
+  IActionOptimizeQueryOperation,
+  IActorOptimizeQueryOperationOutput,
+  IActorOptimizeQueryOperationArgs,
+} from '@comunica/bus-optimize-query-operation';
+import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
-import type { IActorTest, IAction, TestResult } from '@comunica/core';
+import type { TestResult, IActorTest } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { IQuerySourceWrapper, QuerySourceReference } from '@comunica/types';
 import { QuerySourceSkolemized } from './QuerySourceSkolemized';
 import { getSourceId } from './utils';
 
 /**
- * A comunica Query Source Skolemize Context Preprocess Actor.
+ * A comunica Query Source Skolemize Optimize Query Operation Actor.
  */
-export class ActorContextPreprocessQuerySourceSkolemize extends ActorContextPreprocess {
-  public constructor(args: IActorContextPreprocessArgs) {
+export class ActorOptimizeQueryOperationQuerySourceSkolemize extends ActorOptimizeQueryOperation {
+  public constructor(args: IActorOptimizeQueryOperationArgs) {
     super(args);
   }
 
-  public async test(_action: IAction): Promise<TestResult<IActorTest>> {
+  public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 
-  public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
+  public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     let context = action.context;
 
     // Wrap sources in skolemized sources
@@ -38,6 +42,6 @@ export class ActorContextPreprocessQuerySourceSkolemize extends ActorContextPrep
       context = context.set(KeysQueryOperation.querySources, sources);
     }
 
-    return { context };
+    return { context, operation: action.operation };
   }
 }

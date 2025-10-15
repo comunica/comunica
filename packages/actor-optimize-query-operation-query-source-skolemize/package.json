@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/actor-context-preprocess-query-source-skolemize",
+  "name": "@comunica/actor-optimize-query-operation-query-source-skolemize",
   "version": "4.4.1",
-  "description": "A query-source-skolemize context-preprocess actor",
+  "description": "A query-source-skolemize optimize-query-operation actor",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-context-preprocess-query-source-skolemize"
+    "directory": "packages/actor-optimize-query-operation-query-source-skolemize"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -20,7 +20,7 @@
   "keywords": [
     "comunica",
     "actor",
-    "context-preprocess",
+    "optimize-query-operation",
     "query-source-skolemize"
   ],
   "sideEffects": false,
@@ -41,7 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-context-preprocess": "^4.4.0",
+    "@comunica/bus-optimize-query-operation": "^4.4.0",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
