@@ -110,41 +110,5 @@ describe('ActorQueryOperationMinus', () => {
         BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
       ]);
     });
-
-    describe('scopedGraphVariable', () => {
-      it('detects nothing', () => {
-        expect(actor.scopedGraphVariable(AF.createMinus(
-          AF.createPattern(DF.variable('s'), DF.variable('s'), DF.variable('s')),
-          AF.createPattern(DF.variable('s'), DF.variable('s'), DF.variable('s')),
-        ))).toBeUndefined();
-      });
-
-      it('detects graph', () => {
-        expect(actor.scopedGraphVariable(AF.createMinus(
-          AF.createPattern(DF.variable('s'), DF.variable('s'), DF.variable('s'), DF.variable('s')),
-          AF.createPattern(DF.variable('s'), DF.variable('s'), DF.variable('s'), DF.variable('s')),
-        ))).toEqual(DF.variable('s'));
-      });
-
-      it('detects graph only parent graphs', () => {
-        expect(actor.scopedGraphVariable(AF.createMinus(
-          AF.createGraph(
-            AF.createPattern(DF.variable('s'), DF.variable('s'), DF.variable('s'), DF.variable('s')),
-            DF.variable('s'),
-          ),
-          AF.createPattern(DF.variable('s'), DF.variable('s'), DF.variable('s')),
-        ))).toBeUndefined();
-      });
-
-      it('detects graph only parent graphs even on right side', () => {
-        expect(actor.scopedGraphVariable(AF.createMinus(
-          AF.createGraph(
-            AF.createPattern(DF.variable('s'), DF.variable('s'), DF.variable('s'), DF.variable('s')),
-            DF.variable('s'),
-          ),
-          AF.createPattern(DF.variable('s'), DF.variable('s'), DF.variable('s'), DF.variable('s')),
-        ))).toEqual(DF.variable('s'));
-      });
-    });
   });
 });

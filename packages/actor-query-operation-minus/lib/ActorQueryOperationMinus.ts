@@ -6,9 +6,8 @@ import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { IActionContext, IQueryOperationResult, IJoinEntry } from '@comunica/types';
-import { Algebra, algebraUtils } from '@comunica/utils-algebra';
+import { Algebra } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica Minus Query Operation Actor.
@@ -24,29 +23,12 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
     return passTestVoid();
   }
 
-  public scopedGraphVariable(op: Algebra.Minus): RDF.Variable | undefined {
-    let res: RDF.Variable | undefined;
-    // A pattern with a graph variable that is not contained within its own graph operation,
-    // got its graph from a graph operation that is an ancestor of this minus.
-    algebraUtils.visitOperation(op.input, {
-      [Algebra.Types.GRAPH]: { preVisitor: () => ({ continue: false }) },
-      [Algebra.Types.PATTERN]: { preVisitor: (patternOp) => {
-        if (patternOp.graph.termType === 'Variable') {
-          res = patternOp.graph;
-          return { shortcut: true };
-        }
-        return {};
-      } },
-    });
-    return res;
-  }
-
   public async runOperation(
     operationOriginal: Algebra.Minus,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
     // Propagate information about GRAPH ?g existing outside the MINUS scope to the join actor.
-    const graphVariableFromParentScope = this.scopedGraphVariable(operationOriginal);
+    const graphVariableFromParentScope = operationOriginal.graphScopeVar;
 
     const entries: IJoinEntry[] = (await Promise.all(operationOriginal.input
       .map(async subOperation => ({
