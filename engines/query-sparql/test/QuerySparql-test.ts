@@ -1,6 +1,5 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
-import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import type { Bindings } from '@comunica/utils-bindings-factory';
@@ -2236,7 +2235,7 @@ WHERE {
               {
                 metadata: {
                   scopedSource: {
-                    source: expect.any(QuerySourceSkolemized),
+                    source: expect.anything(),
                   },
                 },
               },

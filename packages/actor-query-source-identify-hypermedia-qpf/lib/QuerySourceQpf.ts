@@ -137,6 +137,10 @@ export class QuerySourceQpf implements IQuerySource {
         };
   }
 
+  public async getFilterFactor(): Promise<number> {
+    return 1;
+  }
+
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
     return this.selectorShape;
   }

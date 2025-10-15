@@ -32,6 +32,8 @@
     "ccqs:config/query-process/mediators.json",
     "ccqs:config/query-result-serialize/actors.json",
     "ccqs:config/query-result-serialize/mediators.json",
+
+    "ccqs:config/query-source-hypermedia-resolve/mediators.json",
     "ccqs:config/query-source-identify/actors-rdfjs.json",
     "ccqs:config/query-source-identify/mediators.json",
     "ccqs:config/query-source-identify-hypermedia/actors-sparql.json",

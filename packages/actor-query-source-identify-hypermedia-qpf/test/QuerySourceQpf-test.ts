@@ -176,6 +176,12 @@ describe('QuerySourceQpf', () => {
       });
     });
 
+    describe('getFilterFactor', () => {
+      it('should return 1', async() => {
+        await expect(source.getFilterFactor()).resolves.toBe(1);
+      });
+    });
+
     describe('getSelectorShape', () => {
       it('should return a tpf shape', async() => {
         await expect(source.getSelectorShape()).resolves.toEqual({

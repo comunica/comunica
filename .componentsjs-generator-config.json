@@ -11,6 +11,7 @@
     "packages/packager",
     "packages/runner-cli",
     "packages/statistic-base",
+    "packages/statistic-intermediate-results",
     "packages/statistic-link-dereference",
     "packages/statistic-link-discovery",
     "packages/utils-expression-evaluator",

@@ -1,6 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { ILinkQueue } from './ILinkQueue';
+import type { ILinkQueue } from '@comunica/types';
 
 /**
  * A comunica actor for rdf-resolve-hypermedia-links-queue events.
@@ -19,7 +19,7 @@ export abstract class ActorRdfResolveHypermediaLinksQueue<TS = undefined> extend
   /**
    * @param args -
    *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-   *   \ @defaultNested {Link queue creation failed: none of the configured actors were able to create a link queue starting from ${action.firstUrl}} busFailMessage
+   *   \ @defaultNested {Link queue creation failed: none of the configured actors were able to create a link queue} busFailMessage
    */
   /* eslint-enable max-len */
   public constructor(args: IActorRdfResolveHypermediaLinksQueueArgs<TS>) {
@@ -28,7 +28,7 @@ export abstract class ActorRdfResolveHypermediaLinksQueue<TS = undefined> extend
 }
 
 export interface IActionRdfResolveHypermediaLinksQueue extends IAction {
-  firstUrl: string;
+
 }
 
 export interface IActorRdfResolveHypermediaLinksQueueOutput extends IActorOutput {

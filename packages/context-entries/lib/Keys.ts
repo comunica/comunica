@@ -4,7 +4,6 @@ import type {
   Bindings,
   FunctionArgumentsCache,
   IActionContext,
-  IAggregatedStore,
   ICliArgsHandler,
   IDataDestination,
   IPhysicalQueryPlanLogger,
@@ -313,12 +312,6 @@ export const KeysQuerySourceIdentify = {
    */
   sourceIds: new ActionContextKey<Map<QuerySourceReference, string>>(
     '@comunica/bus-query-source-identify:sourceIds',
-  ),
-  /**
-   * Hypermedia sources mapping to their aggregated store.
-   */
-  hypermediaSourcesAggregatedStores: new ActionContextKey<Map<string, IAggregatedStore>>(
-    '@comunica/bus-query-source-identify:hypermediaSourcesAggregatedStores',
   ),
   /**
    * If links may be traversed from this source.

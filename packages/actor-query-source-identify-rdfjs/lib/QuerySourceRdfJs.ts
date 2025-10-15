@@ -13,8 +13,7 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
 import { someTermsNested, filterTermsNested, someTerms, uniqTerms } from 'rdf-terms';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
+import { Algebra, Factory } from 'sparqlalgebrajs';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
 export class QuerySourceRdfJs implements IQuerySource {
@@ -70,6 +69,10 @@ export class QuerySourceRdfJs implements IQuerySource {
     return this.selectorShape;
   }
 
+  public async getFilterFactor(): Promise<number> {
+    return 0;
+  }
+
   public queryBindings(operation: Algebra.Operation, context: IActionContext): BindingsStream {
     if (operation.type !== 'pattern') {
       throw new Error(`Attempted to pass non-pattern operation '${operation.type}' to QuerySourceRdfJs`);
@@ -113,9 +116,11 @@ export class QuerySourceRdfJs implements IQuerySource {
       }
 
       // Determine metadata
-      const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
-      this.setMetadata(it, operation, context, forceEstimateCardinality, { variables })
-        .catch(error => it.destroy(error));
+      if (!it.getProperty('metadata')) {
+        const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
+        this.setMetadata(it, operation, context, forceEstimateCardinality, { variables })
+          .catch(error => it.destroy(error));
+      }
 
       return it;
     }
@@ -226,9 +231,15 @@ export class QuerySourceRdfJs implements IQuerySource {
   }
 
   public queryQuads(
-    _operation: Algebra.Operation,
+    operation: Algebra.Operation,
     _context: IActionContext,
   ): AsyncIterator<RDF.Quad> {
+    if (operation.type === Algebra.types.PATTERN) {
+      return wrapAsyncIterator<RDF.Quad>(
+        this.source.match(operation.subject, operation.predicate, operation.object, operation.graph),
+        { autoStart: false },
+      );
+    }
     throw new Error('queryQuads is not implemented in QuerySourceRdfJs');
   }
 

@@ -41,27 +41,20 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-query-source-identify-rdfjs": "^4.4.1",
-    "@comunica/bus-dereference-rdf": "^4.4.1",
     "@comunica/bus-merge-bindings-context": "^4.4.0",
+    "@comunica/bus-query-source-hypermedia-resolve": "^4.0.0",
     "@comunica/bus-query-source-identify": "^4.4.0",
-    "@comunica/bus-query-source-identify-hypermedia": "^4.4.0",
-    "@comunica/bus-rdf-metadata": "^4.4.0",
     "@comunica/bus-rdf-metadata-accumulate": "^4.4.0",
-    "@comunica/bus-rdf-metadata-extract": "^4.4.0",
     "@comunica/bus-rdf-resolve-hypermedia-links": "^4.4.0",
     "@comunica/bus-rdf-resolve-hypermedia-links-queue": "^4.4.0",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
     "@comunica/utils-bindings-factory": "^4.4.0",
-    "@comunica/utils-iterator": "^4.0.1",
     "@comunica/utils-metadata": "^4.4.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "lru-cache": "^10.0.0",
-    "rdf-streaming-store": "^2.1.1",
-    "readable-stream": "^4.5.2",
     "sparqlalgebrajs": "^4.3.8"
   }
 }
