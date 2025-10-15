@@ -13,8 +13,8 @@ import type {
   MetadataBindings,
   ComunicaDataFactory,
 } from '@comunica/types';
-import {AlgebraFactory, isKnownOperation} from '@comunica/utils-algebra';
-import { Algebra } from '@comunica/utils-algebra';
+import type { AlgebraFactory } from '@comunica/utils-algebra';
+import { isKnownOperation, Algebra } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';

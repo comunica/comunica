@@ -12,7 +12,8 @@ import {
   AlgebraFactory,
   Algebra,
   algebraUtils,
-  isKnownOperation, isKnownSubType,
+  isKnownOperation,
+  isKnownSubType,
 } from '@comunica/utils-algebra';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -537,8 +538,8 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
    * @param expression An expression.
    */
   public isExpressionFalse(expression: Algebra.Expression): boolean {
-    return isKnownSubType(expression, Algebra.ExpressionTypes.TERM) &&
-      expression.term.termType === 'Literal' && expression.term.value === 'false';
+    const casted = <Extract<Algebra.KnownExpression, { term?: unknown }>> expression;
+    return (casted.term && casted.term.termType === 'Literal' && casted.term.value === 'false');
   }
 
   /**

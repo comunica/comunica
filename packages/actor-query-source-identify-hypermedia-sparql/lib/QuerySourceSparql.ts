@@ -358,7 +358,7 @@ export class QuerySourceSparql implements IQuerySource {
       } },
       [Algebra.Types.UNION]: { preVisitor: (union) => {
         // Determine variables in scope of the union branches that are not occurring in every branch
-        const scopedVariables = union.input.map(algebraUtils.inScopeVariables);
+        const scopedVariables = union.input.map(op => algebraUtils.inScopeVariables(op));
         for (const variable of uniqTerms(scopedVariables.flat())) {
           if (!scopedVariables.every(input => input.some(inputVar => inputVar.equals(variable)))) {
             variables.push(variable);

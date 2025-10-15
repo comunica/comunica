@@ -8,7 +8,7 @@ import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entrie
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
-import {Algebra, AlgebraFactory, algebraUtils, isKnownOperation} from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 
 /**

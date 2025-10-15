@@ -1,5 +1,5 @@
 import type { IPhysicalQueryPlanLogger, IPlanNode } from '@comunica/types';
-import {Algebra, isKnownOperation} from '@comunica/utils-algebra';
+import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 

@@ -41,7 +41,6 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/utils-algebra": "^4.0.2",
     "@comunica/bus-merge-bindings-context": "^4.0.2",
     "@comunica/bus-query-operation": "^4.0.2",
     "@comunica/bus-rdf-join": "^4.0.2",
@@ -50,6 +49,7 @@
     "@comunica/core": "^4.0.2",
     "@comunica/mediatortype-join-coefficients": "^4.0.2",
     "@comunica/types": "^4.0.2",
+    "@comunica/utils-algebra": "^4.0.2",
     "@comunica/utils-bindings-factory": "^4.0.2",
     "@comunica/utils-query-operation": "^4.0.2",
     "asynciterator": "^3.9.0"

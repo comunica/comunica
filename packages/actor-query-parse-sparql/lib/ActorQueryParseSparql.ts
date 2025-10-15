@@ -18,7 +18,9 @@ export class ActorQueryParseSparql extends ActorQueryParse {
   public constructor(args: IActorQueryParseSparqlArgs) {
     super(args);
     this.prefixes = Object.freeze(this.prefixes);
-    this.parser = new SparqlParser();
+    this.parser = new SparqlParser({ lexerConfig: {
+      positionTracking: 'onlyOffset',
+    }});
   }
 
   public async test(action: IActionQueryParse): Promise<TestResult<IActorTest>> {

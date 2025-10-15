@@ -1,11 +1,10 @@
 import type { Algebra as TraqulaAlgebra } from '@traqula/algebra-transformations-1-2';
-import { algebraUtils } from '@traqula/algebra-transformations-1-2';
-import { TransformerSubType } from '@traqula/core';
+import { algebraUtils, Types } from '@traqula/algebra-transformations-1-2';
+import { TransformerSubTyped } from '@traqula/core';
 import type { KnownOperation, Operation } from './Algebra';
 
 export const resolveIRI = algebraUtils.resolveIRI;
 export const objectify = algebraUtils.objectify;
-export const inScopeVariables = algebraUtils.inScopeVariables;
 
 /**
  * Type guard that checks if an operation is of a certain type and subType known by Comunica.
@@ -46,15 +45,37 @@ export function isKnownSubType<
 // ----------------------- manipulators --------------------
 
 type _NeedRefForReusabilityWithoutExplicitTypeDefinition = TraqulaAlgebra.Operation;
-const transformer = new TransformerSubType<KnownOperation>({
+const transformer = new TransformerSubTyped<KnownOperation>({
   /**
    * Metadata often contains references to actors,
    * the transformer should not copy these actors, nor should it traverse the actors when visitingOperations.
    * (since there can be cycles involved).
    * It should however still make a shallowCopy from the metadata object, but not map over it.
    */
-  shallowKeys: [ 'metadata' ],
-  ignoreKeys: [ 'metadata' ],
+  shallowKeys: new Set([ 'metadata' ]),
+  ignoreKeys: new Set([ 'metadata' ]),
+}, {
+  // Optimization that causes search tree pruning
+  [Types.PATTERN]: { ignoreKeys: new Set([ 'subject', 'predicate', 'object', 'graph', 'metadata' ]) },
+  [Types.EXPRESSION]: { ignoreKeys: new Set([ 'name', 'term', 'wildcard', 'variable', 'metadata' ]) },
+  [Types.DESCRIBE]: { ignoreKeys: new Set([ 'terms', 'metadata' ]) },
+  [Types.EXTEND]: { ignoreKeys: new Set([ 'variable', 'metadata' ]) },
+  [Types.FROM]: { ignoreKeys: new Set([ 'default', 'named', 'metadata' ]) },
+  [Types.GRAPH]: { ignoreKeys: new Set([ 'name', 'metadata' ]) },
+  [Types.GROUP]: { ignoreKeys: new Set([ 'variables', 'metadata' ]) },
+  [Types.LINK]: { ignoreKeys: new Set([ 'iri', 'metadata' ]) },
+  [Types.NPS]: { ignoreKeys: new Set([ 'iris', 'metadata' ]) },
+  [Types.PATH]: { ignoreKeys: new Set([ 'subject', 'object', 'graph', 'metadata' ]) },
+  [Types.PROJECT]: { ignoreKeys: new Set([ 'variables', 'metadata' ]) },
+  [Types.SERVICE]: { ignoreKeys: new Set([ 'name', 'metadata' ]) },
+  [Types.VALUES]: { ignoreKeys: new Set([ 'variables', 'bindings', 'metadata' ]) },
+  [Types.LOAD]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
+  [Types.CLEAR]: { ignoreKeys: new Set([ 'source', 'metadata' ]) },
+  [Types.CREATE]: { ignoreKeys: new Set([ 'source', 'metadata' ]) },
+  [Types.DROP]: { ignoreKeys: new Set([ 'source', 'metadata' ]) },
+  [Types.ADD]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
+  [Types.MOVE]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
+  [Types.COPY]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
 });
 
 export const mapOperation: (typeof transformer.transformNode<'unsafe', Operation>) = <any>
@@ -68,3 +89,7 @@ export const mapOperationSubStrict = transformer.transformNodeSpecific.bind(tran
 
 export const visitOperation = transformer.visitNode.bind(transformer);
 export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);
+
+export const inScopeVariables: typeof algebraUtils.inScopeVariables =
+  (op, visitor = <typeof algebraUtils.visitOperation> visitOperation) =>
+    algebraUtils.inScopeVariables(op, visitor);

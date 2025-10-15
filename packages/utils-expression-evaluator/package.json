@@ -38,9 +38,9 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/utils-algebra": "^4.0.2",
     "@comunica/context-entries": "^4.0.2",
     "@comunica/types": "^4.0.2",
+    "@comunica/utils-algebra": "^4.0.2",
     "@rdfjs/types": "*",
     "lru-cache": "^10.0.0",
     "rdf-data-factory": "^2.0.0",
