@@ -95,6 +95,14 @@ describe('ActorAbstractPath', () => {
         ]);
       });
 
+      it('throws on unknown type', () => {
+        const noLink = AF.createLink(DF.namedNode('a'));
+        noLink.type = <any> 'unknown type';
+        expect(() => actor.getPathSources(
+          assignOperationSource(noLink, source1),
+        )).toThrow(`Can not extract path sources from operation of type`);
+      });
+
       it('throws on link without source', () => {
         expect(() => actor.getPathSources(
           AF.createLink(DF.namedNode('a')),

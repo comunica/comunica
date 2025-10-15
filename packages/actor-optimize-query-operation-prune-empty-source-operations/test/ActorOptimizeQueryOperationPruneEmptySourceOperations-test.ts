@@ -541,6 +541,27 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           expect(opOut).toEqual(AF.createUnion([]));
         });
 
+        it('should not prune if the projection does not have missing variables in alt', async() => {
+          const opIn = AF.createProject(
+            AF.createAlt([
+              assignOperationSource(AF.createLink(DF.namedNode('nonempty')), source1),
+              AF.createAlt([
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              ]),
+              assignOperationSource(AF.createLink(DF.namedNode('nonempty')), source1),
+            ]),
+            [
+              DF.variable('o'),
+            ],
+          );
+          const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+          expect(opOut).toEqual(AF.createProject(AF.createAlt([
+            assignOperationSource(AF.createLink(DF.namedNode('nonempty')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('nonempty')), source1),
+          ]), [ DF.variable('o') ]));
+        });
+
         it('should not prune if the projection has no missing variables', async() => {
           const opIn = AF.createProject(
             AF.createUnion([

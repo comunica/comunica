@@ -406,6 +406,30 @@ describe('materializeOperation', () => {
     )).toThrow(new Error('Tried to bind variable ?a in a GROUP BY operator.'));
   });
 
+  it('should not touch a group operation with ' +
+    'all binding variables non-equal to the target variable for strictTargetVariables', () => {
+    expect(materializeOperation(AF.createGroup(
+      AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+      [ termVariableD ],
+      [ AF.createBoundAggregate(
+        termVariableB,
+        'SUM',
+        AF.createTermExpression(termVariableA),
+        true,
+      ) ],
+    ), bindingsA, AF, BF, { strictTargetVariables: true }))
+      .toEqual(AF.createGroup(
+        AF.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+        [ termVariableD ],
+        [ AF.createBoundAggregate(
+          termVariableB,
+          'SUM',
+          AF.createTermExpression(valueA),
+          true,
+        ) ],
+      ));
+  });
+
   it('should modify a group operation with a binding variable equal to the target variable', () => {
     expect(materializeOperation(
       AF.createGroup(

@@ -61,9 +61,9 @@ export function materializeOperation(
   } = {},
 ): Algebra.Operation {
   options = {
-    strictTargetVariables: 'strictTargetVariables' in options ? options.strictTargetVariables : false,
-    bindFilter: 'bindFilter' in options ? options.bindFilter : true,
-    originalBindings: 'originalBindings' in options ? options.originalBindings : bindings,
+    strictTargetVariables: options.strictTargetVariables ?? false,
+    bindFilter: options.bindFilter ?? true,
+    originalBindings: options.originalBindings ?? bindings,
   };
 
   return algebraUtils.mapOperation(operation, {
@@ -104,9 +104,9 @@ export function materializeOperation(
       return extendOp;
     } },
     [Algebra.Types.GROUP]: { transform: (groupOp) => {
-    // Materialize a group operation.
-    // If strictTargetVariables is true, we throw if the group target variable is attempted to be bound.
-    // Otherwise, we just filter out the bound variables.
+      // Materialize a group operation.
+      // If strictTargetVariables is true, we throw if the group target variable is attempted to be bound.
+      // Otherwise, we just filter out the bound variables.
       if (options.strictTargetVariables) {
         for (const variable of groupOp.variables) {
           if (bindings.has(variable)) {

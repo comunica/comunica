@@ -24,24 +24,29 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
     return passTestVoid();
   }
 
-  public async runOperation(
-    operationOriginal: Algebra.Minus,
-    context: IActionContext,
-  ): Promise<IQueryOperationResult> {
-    // Propagate information about GRAPH ?g existing outside the MINUS scope to the join actor.
-    let graphVariableFromParentScope: RDF.Variable | undefined;
+  public scopedGraphVariable(op: Algebra.Minus): RDF.Variable | undefined {
+    let res: RDF.Variable | undefined;
     // A pattern with a graph variable that is not contained within its own graph operation,
     // got its graph from a graph operation that is an ancestor of this minus.
-    algebraUtils.visitOperation(operationOriginal.input, {
+    algebraUtils.visitOperation(op.input, {
       [Algebra.Types.GRAPH]: { preVisitor: () => ({ continue: false }) },
       [Algebra.Types.PATTERN]: { preVisitor: (patternOp) => {
         if (patternOp.graph.termType === 'Variable') {
-          graphVariableFromParentScope = patternOp.graph;
+          res = patternOp.graph;
           return { shortcut: true };
         }
         return {};
       } },
     });
+    return res;
+  }
+
+  public async runOperation(
+    operationOriginal: Algebra.Minus,
+    context: IActionContext,
+  ): Promise<IQueryOperationResult> {
+    // Propagate information about GRAPH ?g existing outside the MINUS scope to the join actor.
+    const graphVariableFromParentScope = this.scopedGraphVariable(operationOriginal);
 
     const entries: IJoinEntry[] = (await Promise.all(operationOriginal.input
       .map(async subOperation => ({

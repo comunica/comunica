@@ -116,4 +116,11 @@ describe('AlgebraTransformer', () => {
       AF.createWildcardExpression(),
     )).resolves.toEqual(new Eval.NamedNode('*'));
   });
+
+  it('throws on unknown expression type', async() => {
+    const notWildcard = AF.createWildcardExpression();
+    notWildcard.subType = <any> 'unknown type';
+    await expect(async() => await algebraTransformer.transformAlgebra(notWildcard))
+      .rejects.toThrow('unknown type cannot be converted into internal representation of expression.');
+  });
 });
