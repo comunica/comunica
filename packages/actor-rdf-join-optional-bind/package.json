@@ -51,6 +51,6 @@
     "@comunica/types": "^4.0.2",
     "@comunica/utils-bindings-factory": "^4.0.2",
     "@comunica/utils-query-operation": "^4.0.2",
-    "sparqlalgebrajs": "^5.0.1"
+    "sparqlalgebrajs": "^5.0.2"
   }
 }

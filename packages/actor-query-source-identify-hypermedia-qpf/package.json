@@ -58,6 +58,6 @@
     "rdf-string": "^2.0.1",
     "rdf-string-ttl": "^2.0.1",
     "rdf-terms": "^2.0.0",
-    "sparqlalgebrajs": "^5.0.1"
+    "sparqlalgebrajs": "^5.0.2"
   }
 }

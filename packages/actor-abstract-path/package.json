@@ -50,6 +50,6 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "rdf-string": "^2.0.1",
-    "sparqlalgebrajs": "^5.0.1"
+    "sparqlalgebrajs": "^5.0.2"
   }
 }

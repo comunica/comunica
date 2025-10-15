@@ -42,6 +42,6 @@
   "dependencies": {
     "@comunica/core": "^4.0.2",
     "@rdfjs/types": "*",
-    "sparqlalgebrajs": "^5.0.1"
+    "sparqlalgebrajs": "^5.0.2"
   }
 }

@@ -49,6 +49,6 @@
     "@comunica/utils-bindings-factory": "^4.0.2",
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
-    "sparqlalgebrajs": "^5.0.1"
+    "sparqlalgebrajs": "^5.0.2"
   }
 }

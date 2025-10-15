@@ -49,6 +49,6 @@
     "@comunica/types": "^4.0.2",
     "@comunica/utils-query-operation": "^4.0.2",
     "asynciterator": "^3.9.0",
-    "sparqlalgebrajs": "^5.0.1"
+    "sparqlalgebrajs": "^5.0.2"
   }
 }

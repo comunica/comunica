@@ -812,7 +812,7 @@ describe('materializeOperation', () => {
           ]),
         ]),
         AF.createOperatorExpression('contains', [
-          AF.createTermExpression(DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean'))),
+          AF.createTermExpression(AF.dataFactory.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean'))),
           AF.createTermExpression(termVariableB),
         ]),
       ));

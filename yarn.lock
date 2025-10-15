@@ -12222,10 +12222,10 @@ sparqlalgebrajs@^5.0.0:
     rdf-terms "^2.0.0"
     sparqljs "^3.7.1"
 
-sparqlalgebrajs@^5.0.1:
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-5.0.1.tgz#8d6903fd270f9e87c35f48f6238fc89aa80ddfc4"
-  integrity sha512-eb6Eiq5d/UUPatyTrtIZnT1c3aKfKJpp027cv7w7fxuzCHHYqhdNgOgLa9QbSGXl4X+uxTsTwZZhAPzw5X1odQ==
+sparqlalgebrajs@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-5.0.2.tgz#ec61c85bdfc053095815c5b375703cb78849b424"
+  integrity sha512-Xz7byRqWqCMkbM+3ogGmKO/wsezQKQQNleoggP03sCTTFfCh/ZlN5CGt+HkrOenDSktZ93jpKFbbaIRjLOYtWw==
   dependencies:
     "@types/sparqljs" "^3.1.3"
     fast-deep-equal "^3.1.3"
