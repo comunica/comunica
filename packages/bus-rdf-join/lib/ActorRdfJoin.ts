@@ -554,6 +554,10 @@ export interface IActionRdfJoin extends IAction {
    * The array of streams to join.
    */
   entries: IJoinEntry[];
+  /**
+   * If this join operation is within the scope of a GRAPH ?g.
+   */
+  graphVariableFromParentScope?: RDF.Variable;
 }
 
 export interface IActorRdfJoinOutputInner {

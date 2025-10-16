@@ -55,6 +55,6 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.9.0",
     "lru-cache": "^10.0.0",
-    "sparqlalgebrajs": "^4.3.8"
+    "sparqlalgebrajs": "^5.0.2"
   }
 }

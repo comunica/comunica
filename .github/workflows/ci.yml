@@ -27,7 +27,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
@@ -63,7 +63,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
@@ -100,7 +100,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
@@ -144,7 +144,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
@@ -190,7 +190,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
@@ -218,7 +218,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
@@ -262,7 +262,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION_HIGHEST }}
           cache: yarn
@@ -292,7 +292,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION_HIGHEST }}
       - uses: actions/download-artifact@v5
@@ -356,7 +356,7 @@ jobs:
       - name: Prepare comment on commit with link to performance results
         run: echo -e "Performance benchmarks succeeded! 🚀\n\n\[[Summarized results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-total/)\] \[[Detailed results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail/)\]" > ./commit-comment-body.txt
       - name: Comment on commit with link to performance results
-        uses: peter-evans/commit-comment@v3
+        uses: peter-evans/commit-comment@v4
         with:
           body-path: ./commit-comment-body.txt
 
@@ -369,7 +369,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn

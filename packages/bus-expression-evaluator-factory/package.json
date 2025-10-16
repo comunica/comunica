@@ -41,6 +41,6 @@
     "@comunica/bus-query-operation": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
-    "sparqlalgebrajs": "^4.2.0"
+    "sparqlalgebrajs": "^5.0.2"
   }
 }
