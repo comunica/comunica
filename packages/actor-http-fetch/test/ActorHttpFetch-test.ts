@@ -104,6 +104,48 @@ describe('ActorHttpFetch', () => {
       expect(globalThis.fetch).toHaveBeenNthCalledWith(1, input, 'requestInit');
     });
 
+    it('should accept an abort signal from the context', async() => {
+      const abortController = new AbortController();
+      // Mocks the fetch output to a promise that is never resolved, to mimick no reply from server,
+      // and makes sure the promise is rejected on abort signal to simulate the fetch functionality
+      jest.spyOn(globalThis, 'fetch').mockImplementationOnce((url, init) => {
+        abortController.abort(new Error('ActorHttpFetch aborted'));
+        return globalThis.fetch(url, init);
+      });
+      jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
+      const errorHandler = jest.fn();
+      const successHandler = jest.fn();
+      const promise = actor.run({ input, context: context.set(KeysHttp.httpAbortSignal, abortController.signal) });
+      promise.then(successHandler).catch(errorHandler);
+      await jest.runAllTimersAsync();
+      expect(successHandler).not.toHaveBeenCalled();
+      expect(errorHandler).toHaveBeenCalledTimes(1);
+      expect(errorHandler).toHaveBeenNthCalledWith(1, new Error('ActorHttpFetch aborted'));
+    });
+
+    it('should accept an abort signal from the context in combination with other signals', async() => {
+      const init = {
+        signal: new AbortController().signal,
+      };
+      const abortController = new AbortController();
+      // Mocks the fetch output to a promise that is never resolved, to mimick no reply from server,
+      // and makes sure the promise is rejected on abort signal to simulate the fetch functionality
+      jest.spyOn(globalThis, 'fetch').mockImplementationOnce((url, init) => {
+        abortController.abort(new Error('ActorHttpFetch aborted'));
+        return globalThis.fetch(url, init);
+      });
+      jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockImplementation(args => args);
+      const errorHandler = jest.fn();
+      const successHandler = jest.fn();
+      const promise = actor
+        .run({ input, init, context: context.set(KeysHttp.httpAbortSignal, abortController.signal) });
+      promise.then(successHandler).catch(errorHandler);
+      await jest.runAllTimersAsync();
+      expect(successHandler).not.toHaveBeenCalled();
+      expect(errorHandler).toHaveBeenCalledTimes(1);
+      expect(errorHandler).toHaveBeenNthCalledWith(1, new Error('ActorHttpFetch aborted'));
+    });
+
     it('should handle initial response timeout when it is reached', async() => {
       const timeoutMilliseconds = 10_000;
       const contextWithTimeout = context.set(KeysHttp.httpTimeout, timeoutMilliseconds);
@@ -119,6 +161,33 @@ describe('ActorHttpFetch', () => {
       const errorHandler = jest.fn();
       const successHandler = jest.fn();
       actor.run({ input, context: contextWithTimeout }).then(successHandler).catch(errorHandler);
+      await jest.runAllTimersAsync();
+      expect(successHandler).not.toHaveBeenCalled();
+      expect(errorHandler).toHaveBeenCalledTimes(1);
+      expect(errorHandler).toHaveBeenNthCalledWith(1, expectedError);
+      expect(globalThis.setTimeout).toHaveBeenCalledTimes(1);
+      expect(globalThis.setTimeout).toHaveBeenNthCalledWith(1, expect.any(Function), timeoutMilliseconds);
+      expect(globalThis.clearTimeout).not.toHaveBeenCalled();
+    });
+
+    it('should handle initial response timeout in combination with other signals', async() => {
+      const init = {
+        signal: new AbortController().signal,
+      };
+      const timeoutMilliseconds = 10_000;
+      const contextWithTimeout = context.set(KeysHttp.httpTimeout, timeoutMilliseconds);
+      const expectedError = new Error(`Fetch timed out for ${input} after ${timeoutMilliseconds} ms`);
+      // Mocks the fetch output to a promise that is never resolved, to mimick no reply from server,
+      // and makes sure the promise is rejected on abort signal to simulate the fetch functionality
+      jest.spyOn(globalThis, 'fetch').mockImplementation((_, init) => {
+        return new Promise((_, reject) => init!.signal!.addEventListener('abort', () => reject(init!.signal!.reason)));
+      });
+      jest.spyOn(globalThis, 'setTimeout');
+      jest.spyOn(globalThis, 'clearTimeout');
+      jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockImplementation(args => args);
+      const errorHandler = jest.fn();
+      const successHandler = jest.fn();
+      actor.run({ input, init, context: contextWithTimeout }).then(successHandler).catch(errorHandler);
       await jest.runAllTimersAsync();
       expect(successHandler).not.toHaveBeenCalled();
       expect(errorHandler).toHaveBeenCalledTimes(1);

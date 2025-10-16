@@ -26,7 +26,6 @@ describe('ActorAbstractDereferenceParse', () => {
           const ext = (<any>action.context).hasRaw('extension') ?
               (<any>action.context).getRaw('extension') :
             'index.html';
-
           return {
             data: emptyReadable(),
             url: `${action.url}${ext}`,
@@ -44,6 +43,14 @@ describe('ActorAbstractDereferenceParse', () => {
           if ((<any>action.context).hasRaw('emitParseError')) {
             data._read = () => {
               data.emit('error', new Error('Parse error'));
+            };
+            return { handle: { data, metadata: { triples: true }}};
+          }
+          if ((<any>action.context).hasRaw('emitAbortError')) {
+            data._read = () => {
+              const abortError = new Error('Aborted');
+              abortError.name = 'AbortError';
+              data.emit('error', abortError);
             };
             return { handle: { data, metadata: { triples: true }}};
           }
@@ -143,6 +150,15 @@ describe('ActorAbstractDereferenceParse', () => {
       actor: 'actor',
       url: 'https://www.google.com/',
     });
+  });
+
+  it('should run and not log on an abort error', async() => {
+    context = new ActionContext({ emitAbortError: true, [KeysInitQuery.lenient.name]: true });
+    const spy = jest.spyOn(actor, <any> 'logWarn');
+    const output = await actor.run({ url: 'https://www.google.com/', context });
+    expect(output.url).toBe('https://www.google.com/index.html');
+    await expect(arrayifyStream(output.data)).resolves.toEqual([]);
+    expect(spy).not.toHaveBeenCalledWith();
   });
 
   it('should run and ignore non-existing dereferenced urls', async() => {

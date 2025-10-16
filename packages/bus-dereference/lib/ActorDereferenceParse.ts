@@ -5,7 +5,7 @@ import { passTestVoid } from '@comunica/core';
 import type { Readable } from 'readable-stream';
 import { PassThrough } from 'readable-stream';
 import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from './ActorDereference';
-import { ActorDereferenceBase, isHardError, emptyReadable } from './ActorDereferenceBase';
+import { ActorDereferenceBase, isHardError, emptyReadable, shouldLogWarning } from './ActorDereferenceBase';
 
 /**
  * Get the media type based on the extension of the given path,
@@ -77,7 +77,9 @@ export abstract class ActorDereferenceParse<
     // If we don't emit hard errors, make parsing error events log instead, and silence them downstream.
     if (!isHardError(action.context)) {
       data.on('error', (error) => {
-        this.logWarn(action.context, error.message, () => ({ url: action.url }));
+        if (shouldLogWarning(error)) {
+          this.logWarn(action.context, error.message, () => ({ url: action.url }));
+        }
         // Make sure the errored stream is ended.
         data.push(null);
       });

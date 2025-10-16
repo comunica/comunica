@@ -69,6 +69,11 @@ describe('ActorDereferenceHttp', () => {
             url: action.input,
           };
         }
+        if (action.input.includes('aborted')) {
+          const abortError = new Error('Aborted');
+          abortError.name = 'AbortError';
+          return Promise.reject(abortError);
+        }
 
         const status: number = action.input.startsWith('https://www.google.com/') ? 200 : 400;
         const extension = action.input.lastIndexOf('.') > action.input.lastIndexOf('/');
@@ -230,6 +235,14 @@ describe('ActorDereferenceHttp', () => {
       const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', context });
       expect(output.url).toBe('https://www.nogoogle.com/notfound');
       expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should run and not log on an abort error', async() => {
+      context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
+      const spy = jest.spyOn(actor, <any> 'logWarn');
+      const output = await actor.run({ url: 'https://www.nogoogle.com/aborted', context });
+      expect(output.url).toBe('https://www.nogoogle.com/aborted');
+      expect(spy).not.toHaveBeenCalledWith();
     });
 
     it('should run with another method', async() => {
