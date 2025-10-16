@@ -28,21 +28,30 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
       // Forward errors
       action.metadata.on('error', reject);
 
+      // Filter the subject URIs to consider, to avoid picking up unrelated entries
+      const acceptSubjectUris = new Set<string>([ action.url ]);
+
       const metadata: Record<string, string | string[] | boolean> = {};
       const inputFormats = new Set<string>();
       const resultFormats = new Set<string>();
       const supportedLanguages = new Set<string>();
 
       action.metadata.on('data', (quad: RDF.Quad) => {
-        if (
+        if (quad.predicate.value === 'http://rdfs.org/ns/void#subset' && quad.object.value === action.url) {
+          // When the requested URI is a subset of another dataset, as indicated by this predicate, then also
+          // consider that other dataset for the extraction of the following predicate values.
+          // This works an issue with Quad Pattern Fragments that has the sd:defaultGraph predicate associated
+          // with a subject value that is neither the data source URI nor the sd:defaultDataset.
+          acceptSubjectUris.add(quad.subject.value);
+        } else if (
+          quad.subject.value === metadata.defaultDataset ||
           quad.subject.termType === 'BlankNode' ||
-          quad.subject.value === action.url ||
-          quad.subject.value === metadata.defaultDataset
+          acceptSubjectUris.has(quad.subject.value)
         ) {
           switch (quad.predicate.value) {
             case 'http://www.w3.org/ns/sparql-service-description#endpoint':
-              // The specification says the endpoint is an IRI, but does not specify whether or not it can be a literal.
-              // When the IRI is a literal, it can be relative, and needs to be resolved to absolute.
+              // The VoID specification defines this as IRI, but does not specify whether or not it can be a literal.
+              // When the IRI is a literal, it can be relative, and needs to be resolved to absolute value.
               metadata.sparqlService = quad.object.termType === 'Literal' ?
                 resolveIri(quad.object.value, action.url) :
                 quad.object.value;
@@ -79,15 +88,12 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
 
       // Only return the metadata if an endpoint IRI was discovered
       action.metadata.on('end', () => {
-        resolve({ metadata: metadata.sparqlService ?
-            {
-              ...metadata,
-              ...inputFormats.size > 0 ? { inputFormats: [ ...inputFormats.values() ]} : {},
-              ...resultFormats.size > 0 ? { resultFormats: [ ...resultFormats.values() ]} : {},
-              ...supportedLanguages.size > 0 ? { supportedLanguages: [ ...supportedLanguages.values() ]} : {},
-            } :
-            {},
-        });
+        resolve({ metadata: {
+          ...metadata,
+          ...inputFormats.size > 0 ? { inputFormats: [ ...inputFormats.values() ]} : {},
+          ...resultFormats.size > 0 ? { resultFormats: [ ...resultFormats.values() ]} : {},
+          ...supportedLanguages.size > 0 ? { supportedLanguages: [ ...supportedLanguages.values() ]} : {},
+        }});
       });
     });
   }
