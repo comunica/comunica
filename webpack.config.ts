@@ -28,8 +28,8 @@ function createConfig(packagePath: string): Configuration {
     performance: {
       hints: 'error',
       // Bundle size limited to ~1.7 MB
-      maxAssetSize: 3_000_000,
-      maxEntrypointSize: 3_000_000,
+      maxAssetSize: 2_500_000,
+      maxEntrypointSize: 2_500_000,
     },
   };
 }
