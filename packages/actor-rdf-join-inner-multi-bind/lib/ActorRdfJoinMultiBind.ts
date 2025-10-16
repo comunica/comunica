@@ -124,10 +124,10 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       }),
     );
 
-    // Close the non-smallest streams
+    // Destroy the non-smallest streams
     for (const [ i, element ] of entries.entries()) {
       if (i !== 0) {
-        element.output.bindingsStream.close();
+        element.output.bindingsStream.destroy();
       }
     }
 
