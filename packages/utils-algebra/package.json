@@ -36,7 +36,7 @@
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@traqula/algebra-transformations-1-2": "^0.0.23",
-    "@traqula/core": "^0.0.23"
+    "@traqula/algebra-transformations-1-2": "^0.0.24",
+    "@traqula/core": "^0.0.24"
   }
 }
