@@ -1,12 +1,12 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';
 import '@comunica/utils-jest';
 
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const DF = new DataFactory();
 
 describe('ActorOptimizeQueryOperationFilterPushdown', () => {
@@ -113,12 +113,12 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         });
         expect(operationOut).toEqual(AF.createJoin([
           AF.createFilter(
-            AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
-            AF.createTermExpression(DF.variable('s1')),
-          ),
-          AF.createFilter(
             AF.createPattern(DF.variable('s2'), DF.namedNode('p'), DF.namedNode('o')),
             AF.createTermExpression(DF.variable('s2')),
+          ),
+          AF.createFilter(
+            AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')),
+            AF.createTermExpression(DF.variable('s1')),
           ),
         ]));
       });
@@ -173,11 +173,11 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         expect(operationOut).toEqual(AF.createFilter(
           AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
           AF.createOperatorExpression('&&', [
+            AF.createTermExpression(DF.variable('s3')),
             AF.createOperatorExpression('&&', [
               AF.createTermExpression(DF.variable('s2')),
               AF.createTermExpression(DF.variable('s1')),
             ]),
-            AF.createTermExpression(DF.variable('s3')),
           ]),
         ));
       });
@@ -212,11 +212,11 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           AF.createFilter(
             AF.createFilter(
               AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
-              AF.createTermExpression(DF.variable('s3')),
+              AF.createTermExpression(DF.variable('s1')),
             ),
-            AF.createTermExpression(DF.variable('s1')),
+            AF.createTermExpression(DF.variable('s2')),
           ),
-          AF.createTermExpression(DF.variable('s2')),
+          AF.createTermExpression(DF.variable('s3')),
         ));
       });
     });
@@ -293,7 +293,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           type: 'operation',
           operation: {
             operationType: 'type',
-            type: Algebra.types.NOP,
+            type: Algebra.Types.NOP,
           },
         });
         shapes.set(src2, {
@@ -303,21 +303,21 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.FILTER,
+                type: Algebra.Types.FILTER,
               },
             },
             {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.JOIN,
+                type: Algebra.Types.JOIN,
               },
             },
             {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.PATTERN,
+                type: Algebra.Types.PATTERN,
               },
             },
           ],
@@ -346,14 +346,14 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           type: 'operation',
           operation: {
             operationType: 'type',
-            type: Algebra.types.NOP,
+            type: Algebra.Types.NOP,
           },
         });
         shapes.set(src2, {
           type: 'operation',
           operation: {
             operationType: 'type',
-            type: Algebra.types.NOP,
+            type: Algebra.Types.NOP,
           },
         });
         expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes)).toBeFalsy();
@@ -379,7 +379,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           type: 'operation',
           operation: {
             operationType: 'type',
-            type: Algebra.types.PATTERN,
+            type: Algebra.Types.PATTERN,
           },
         });
         expect(actor.shouldAttemptPushDown(op, [], shapes)).toBeFalsy();
@@ -982,7 +982,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1000,7 +1000,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
                 .createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')), src1),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1024,7 +1024,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               ),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1040,7 +1040,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1056,7 +1056,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.blankNode('s'), DF.variable('p'), DF.namedNode('o1')),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': <any> DF.blankNode('s') }],
+                [{ s: <any> DF.blankNode('s') }],
               ),
             ]) ]);
           });
@@ -1072,7 +1072,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')),
               AF.createValues(
                 [ DF.variable('o') ],
-                [{ '?o': DF.literal('o') }],
+                [{ o: DF.literal('o') }],
               ),
             ]) ]);
           });
@@ -1088,7 +1088,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPattern(DF.variable('s'), DF.variable('p'), DF.literal('o')),
               AF.createValues(
                 [ DF.variable('o') ],
-                [{ '?o': DF.literal('o') }],
+                [{ o: DF.literal('o') }],
               ),
             ]) ]);
           });
@@ -1215,7 +1215,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1231,7 +1231,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPath(DF.namedNode('s'), AF.createNps([]), DF.namedNode('o1')),
               AF.createValues(
                 [ DF.variable('s') ],
-                [{ '?s': DF.namedNode('s') }],
+                [{ s: DF.namedNode('s') }],
               ),
             ]) ]);
           });
@@ -1247,7 +1247,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')),
               AF.createValues(
                 [ DF.variable('o') ],
-                [{ '?o': DF.literal('o') }],
+                [{ o: DF.literal('o') }],
               ),
             ]) ]);
           });
@@ -1263,7 +1263,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
               AF.createPath(DF.variable('s'), AF.createNps([]), DF.literal('o')),
               AF.createValues(
                 [ DF.variable('o') ],
-                [{ '?o': DF.literal('o') }],
+                [{ o: DF.literal('o') }],
               ),
             ]) ]);
           });

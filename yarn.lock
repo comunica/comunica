@@ -670,6 +670,11 @@
     enabled "2.0.x"
     kuler "^2.0.0"
 
+"@discoveryjs/json-ext@0.5.7":
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
+  integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
+
 "@discoveryjs/json-ext@^0.6.1":
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.6.3.tgz#f13c7c205915eb91ae54c557f5e92bddd8be0e83"
@@ -1651,6 +1656,11 @@
   dependencies:
     playwright "1.47.2"
 
+"@polka/url@^1.0.0-next.24":
+  version "1.0.0-next.29"
+  resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.29.tgz#5a40109a1ab5f84d6fd8fc928b19f367cbe7e7b1"
+  integrity sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==
+
 "@pollyjs/adapter-node-http@^6.0.5":
   version "6.0.6"
   resolved "https://registry.npmjs.org/@pollyjs/adapter-node-http/-/adapter-node-http-6.0.6.tgz"
@@ -1968,48 +1978,112 @@
   resolved "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz"
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
-"@traqula/core@^0.0.1-alpha.148+1455821":
-  version "0.0.1-alpha.148"
-  resolved "https://registry.yarnpkg.com/@traqula/core/-/core-0.0.1-alpha.148.tgz#ec2db3fa33b7359f90d48ce3a42252dc30a5acb0"
-  integrity sha512-0h/lBSlL6facVOlc4cL0Hq6bilkjfxc8mm4o6IribmIPoZuUDyUm6QRb0TMpaFBBGWqJ8oBWnUKQ/wS87RP4+Q==
+"@traqula/algebra-sparql-1-1@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/algebra-sparql-1-1/-/algebra-sparql-1-1-0.0.24.tgz#157565495457c2373ea94261d61cb7e13c8bed1c"
+  integrity sha512-eXg2dSXssLdap4q9x8nOXToRhjusQgh/35+9tXCDdDN+zxHGrX78j6mV0GUVsiejutFbyV9wTYg+VUUzykfxWQ==
+  dependencies:
+    "@traqula/algebra-transformations-1-1" "^0.0.24"
+    "@traqula/core" "^0.0.24"
+    "@traqula/rules-sparql-1-1" "^0.0.24"
+
+"@traqula/algebra-sparql-1-2@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/algebra-sparql-1-2/-/algebra-sparql-1-2-0.0.24.tgz#f5a11379e40b016f7567aa5048bbdca0493c8077"
+  integrity sha512-hgzZhg902gITCm0OKP8x43L+4WqfPHKSxbQbxYan/3L1ODL1lhEL6ZCC1EUiBmcfXtwQ+AvMDDNQOmmhkx0iNQ==
+  dependencies:
+    "@traqula/algebra-sparql-1-1" "^0.0.24"
+    "@traqula/algebra-transformations-1-1" "^0.0.24"
+    "@traqula/algebra-transformations-1-2" "^0.0.24"
+    "@traqula/core" "^0.0.24"
+
+"@traqula/algebra-transformations-1-1@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/algebra-transformations-1-1/-/algebra-transformations-1-1-0.0.24.tgz#2bc339fcd9678cd70b86c6c6710653d987f52548"
+  integrity sha512-polVdmAlhsuzAIfzXEjTJ8yLR22gHWAm600TotV2tJWwKFxszlaAtTHDahKd85WUqR9Wpw8GyIa0x4V/1KfDfA==
+  dependencies:
+    "@traqula/core" "^0.0.24"
+    "@traqula/rules-sparql-1-1" "^0.0.24"
+    fast-deep-equal "^3.1.3"
+    rdf-data-factory "^2.0.1"
+    rdf-isomorphic "^2.0.0"
+    rdf-string "^2.0.0"
+
+"@traqula/algebra-transformations-1-2@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/algebra-transformations-1-2/-/algebra-transformations-1-2-0.0.24.tgz#b6cf7e9ffa821821e818bb8635787fac8474d218"
+  integrity sha512-z9y+90XCzwHbtog4Vz1bR7wdlqvoCadquC9U5/NwepIMfytd+PnqEWTgTrIHXzHVILFXP9w0Z9mOIObSWw7+2g==
+  dependencies:
+    "@traqula/algebra-transformations-1-1" "^0.0.24"
+    "@traqula/rules-sparql-1-2" "^0.0.24"
+    rdf-string "^2.0.0"
+
+"@traqula/chevrotain@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/chevrotain/-/chevrotain-0.0.24.tgz#22a51f09af38daf93af36df831757036aa3d0c0c"
+  integrity sha512-JJuGZiccR1xGlwg4MFM70qMjPniJrNhiuY+Xm7oNSyy6mi25pyOiFJ1zVO4AhA0tfbNxMJMvKNVBx9ftoi+ebg==
   dependencies:
     chevrotain "^11.0.3"
 
-"@traqula/engine-sparql-1-1@^0.0.1-alpha.148+1455821":
-  version "0.0.1-alpha.148"
-  resolved "https://registry.yarnpkg.com/@traqula/engine-sparql-1-1/-/engine-sparql-1-1-0.0.1-alpha.148.tgz#0aa07d4e1ec67e2109b026b42e733a5fa58ed941"
-  integrity sha512-LOKhTWty2eVJ7QFN3JPc0iEZlBbE9i56e7hRtOHUz9Myjkj/7ODE4i39PBmhS8R6YKMlQrjVG/1t8xAgnjn0rA==
+"@traqula/core@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/core/-/core-0.0.24.tgz#5cd7aeb94d812a23d398eadcf3cc4a45074dc00d"
+  integrity sha512-JTnQ/n56tQnaNug17Cb67oM9Xj8gHFMqtyF2dnOOFQeqB4kMN3bMN1973QlEf45TExF+tN2uFiZKCfgH0LGkng==
   dependencies:
-    "@traqula/core" "^0.0.1-alpha.148+1455821"
-    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.148+1455821"
+    "@traqula/chevrotain" "^0.0.24"
 
-"@traqula/engine-sparql-1-2@^0.0.1-alpha.148":
-  version "0.0.1-alpha.148"
-  resolved "https://registry.yarnpkg.com/@traqula/engine-sparql-1-2/-/engine-sparql-1-2-0.0.1-alpha.148.tgz#36589b81fc3688be7e853ae74af4a7644720efd8"
-  integrity sha512-i4qyNtpCGtQWjIySZHHRhHrAhb5o79Vy/T+BVTWL59mSizDxemOsRTG85DdU1VLRQW09jKpFWE06B//irHrzvg==
+"@traqula/generator-sparql-1-1@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/generator-sparql-1-1/-/generator-sparql-1-1-0.0.24.tgz#da25d4726cee38a16ce72c85640b624910cf89e6"
+  integrity sha512-tQtrGAlzQTIvHjAA5+mqigRLHFu4hkAZLGq9pd0ZKJNyVXcVDqWRDPuAPcsNujWO7Jo9AzD+PYy2yOe23cZjzg==
   dependencies:
-    "@traqula/core" "^0.0.1-alpha.148+1455821"
-    "@traqula/engine-sparql-1-1" "^0.0.1-alpha.148+1455821"
-    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.148+1455821"
-    "@traqula/rules-sparql-1-2" "^0.0.1-alpha.148+1455821"
+    "@traqula/core" "^0.0.24"
+    "@traqula/rules-sparql-1-1" "^0.0.24"
+
+"@traqula/generator-sparql-1-2@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/generator-sparql-1-2/-/generator-sparql-1-2-0.0.24.tgz#92deeb910594e970f1c46f791b7426e30ad8e8b3"
+  integrity sha512-2+xjTOgP+vaRnJJCNxuWwuXhQ0wGLl25UvFH+2RW+uz8P6FFkD9tGNeN9H2UfQTKK+otnTRe/q2HIfcLK8ItJQ==
+  dependencies:
+    "@traqula/core" "^0.0.24"
+    "@traqula/generator-sparql-1-1" "^0.0.24"
+    "@traqula/rules-sparql-1-1" "^0.0.24"
+    "@traqula/rules-sparql-1-2" "^0.0.24"
+
+"@traqula/parser-sparql-1-1@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/parser-sparql-1-1/-/parser-sparql-1-1-0.0.24.tgz#a9a00abd0963e9419b2c1ae47d5c935cd6132115"
+  integrity sha512-thffmJEvj+lTq1yF9Xq287acAxMAbyklH15AC4zaB4b2xxRGhg1eSfa7TSSUUWXqrjX2yLPZQ54/ZaH68kbTlg==
+  dependencies:
+    "@traqula/core" "^0.0.24"
+    "@traqula/rules-sparql-1-1" "^0.0.24"
+
+"@traqula/parser-sparql-1-2@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/parser-sparql-1-2/-/parser-sparql-1-2-0.0.24.tgz#4135d5405003f309c5a9f1f0e709f3636d311c63"
+  integrity sha512-3DrzEouLLOEElE370fu6xrlXa/0zEp6p47Kgk/kOV8+EDUZBuWxv84GmRuHvgRYfn9OAVP6H3w8wVoFvqqIiNg==
+  dependencies:
+    "@traqula/core" "^0.0.24"
+    "@traqula/parser-sparql-1-1" "^0.0.24"
+    "@traqula/rules-sparql-1-1" "^0.0.24"
+    "@traqula/rules-sparql-1-2" "^0.0.24"
     rdf-data-factory "^2.0.1"
 
-"@traqula/rules-sparql-1-1@^0.0.1-alpha.148+1455821":
-  version "0.0.1-alpha.148"
-  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-1/-/rules-sparql-1-1-0.0.1-alpha.148.tgz#fb662bd5614f19ce9e9487687fc0d2ab1fa45cab"
-  integrity sha512-/Y9RUhM+XgbFW2U6JHGwGPQc6mvbzn+KHZBOAiY/oslsJU3+jXnCfMjfZJiWSPg2VZbxC4edNHoRZXVw/BSNew==
+"@traqula/rules-sparql-1-1@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-1/-/rules-sparql-1-1-0.0.24.tgz#2c398097df3a61973db5b5de52e5bbd3386fb5eb"
+  integrity sha512-z6B9TaaHrxQkvJiIUbx0e+pXF1wqPeAydP2AWy8K8ljuAW3ff3DLsHzO3SoZ5T1TME5fqkzkQ6xoiPMcbkJhqg==
   dependencies:
-    "@traqula/core" "^0.0.1-alpha.148+1455821"
-    chevrotain "^11.0.3"
-    rdf-data-factory "^2.0.1"
+    "@traqula/chevrotain" "^0.0.24"
+    "@traqula/core" "^0.0.24"
 
-"@traqula/rules-sparql-1-2@^0.0.1-alpha.148+1455821":
-  version "0.0.1-alpha.148"
-  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-2/-/rules-sparql-1-2-0.0.1-alpha.148.tgz#26f2cf6d8c6b8ede2ef59c9c2b2b690943c47a5a"
-  integrity sha512-WkBI5GuomsRDjIBYWVRWwy7Mq666caIs/l51QQ+l25yB4ImTv2YbpBayk6LYFUHlRYHR6wP+zAduVFQWdRtwug==
+"@traqula/rules-sparql-1-2@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-2/-/rules-sparql-1-2-0.0.24.tgz#101c4f51bd6038cc8b04dbcc3456dff63c93f198"
+  integrity sha512-+NfFrgYiPLid2Jx/Pr5vDqEAjAbvabIx+tYIXkJ80T2NazEjWUZAQf8X4MZHn7eWzPzfyWArYkZ/wHGncD09Fw==
   dependencies:
-    "@traqula/core" "^0.0.1-alpha.148+1455821"
-    "@traqula/rules-sparql-1-1" "^0.0.1-alpha.148+1455821"
+    "@traqula/core" "^0.0.24"
+    "@traqula/rules-sparql-1-1" "^0.0.24"
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.11"
@@ -2915,12 +2989,17 @@ acorn-jsx@^5.3.2:
   resolved "https://registry.npmjs.org/acorn-jsx/-/acorn-jsx-5.3.2.tgz"
   integrity sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==
 
-acorn-walk@^8.1.1:
+acorn-walk@^8.0.0, acorn-walk@^8.1.1:
   version "8.3.4"
   resolved "https://registry.yarnpkg.com/acorn-walk/-/acorn-walk-8.3.4.tgz#794dd169c3977edf4ba4ea47583587c5866236b7"
   integrity sha512-ueEepnujpqee2o5aIYnvHU6C0A42MNdsIDeqy5BydrkuC5R1ZuUFnm27EeFJGoEHJQgn3uleRvmTXaJgfXbt4g==
   dependencies:
     acorn "^8.11.0"
+
+acorn@^8.0.4:
+  version "8.15.0"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.15.0.tgz#a360898bc415edaac46c8241f6383975b930b816"
+  integrity sha512-NZyJarBfL7nWwIq+FDL6Zp/yHEhePMNnnJ0y3qfieCrmNvYct8uvtiV41UvlSe6apAfk0fY1FbWx+NwfmpvtTg==
 
 acorn@^8.11.0, acorn@^8.4.1:
   version "8.12.1"
@@ -4179,6 +4258,11 @@ commander@^2.20.0:
   resolved "https://registry.npmjs.org/commander/-/commander-2.20.3.tgz"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
 
+commander@^7.2.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
+  integrity sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==
+
 comment-parser@1.4.1:
   version "1.4.1"
   resolved "https://registry.npmjs.org/comment-parser/-/comment-parser-1.4.1.tgz"
@@ -4653,6 +4737,11 @@ dateformat@^3.0.3:
   resolved "https://registry.npmjs.org/dateformat/-/dateformat-3.0.3.tgz"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
 
+debounce@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/debounce/-/debounce-1.2.1.tgz#38881d8f4166a5c5848020c11827b834bcb3e0a5"
+  integrity sha512-XRRe6Glud4rd/ZGQfiV1ruXSfbvfJedlV9Y6zOlP+2K04vBYiJEte6stfFkCP03aMnY5tsipamumUjL14fofug==
+
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3:
   version "2.6.9"
   resolved "https://registry.npmjs.org/debug/-/debug-2.6.9.tgz"
@@ -5014,7 +5103,7 @@ dtrace-provider@~0.8:
   dependencies:
     nan "^2.14.0"
 
-duplexer@^0.1.1:
+duplexer@^0.1.1, duplexer@^0.1.2:
   version "0.1.2"
   resolved "https://registry.npmjs.org/duplexer/-/duplexer-0.1.2.tgz"
   integrity sha512-jtD6YG370ZCIi/9GTaJKQxWTZD045+4R4hTk/x1UyoqadyJ9x9CgSi1RlVDQF8U2sxLLSnFkCaMihqljHIWgMg==
@@ -6750,6 +6839,13 @@ graphql@^15.5.2:
   resolved "https://registry.npmjs.org/graphql/-/graphql-15.8.0.tgz"
   integrity sha512-5gghUc24tP9HRznNpV2+FIoq3xKkj5dTQqf4v0CpdPbFVwFkWoxOM+o+2OC9ZSvjEMTjfmG9QT+gcvggTwW1zw==
 
+gzip-size@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/gzip-size/-/gzip-size-6.0.0.tgz#065367fd50c239c0671cbcbad5be3e2eeb10e462"
+  integrity sha512-ax7ZYomf6jqPTQ4+XCpUGyXKHk5WweS+e05MBO4/y3WJ5RkmPXNKvX+bx1behVILVwr6JSQvZAku021CHPXG3Q==
+  dependencies:
+    duplexer "^0.1.2"
+
 handlebars@^4.7.7:
   version "4.7.8"
   resolved "https://registry.npmjs.org/handlebars/-/handlebars-4.7.8.tgz"
@@ -6936,7 +7032,7 @@ hosted-git-info@^7.0.0:
   dependencies:
     lru-cache "^10.0.1"
 
-html-escaper@^2.0.0:
+html-escaper@^2.0.0, html-escaper@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npmjs.org/html-escaper/-/html-escaper-2.0.2.tgz"
   integrity sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==
@@ -9472,6 +9568,11 @@ morgan@^1.10.0:
     on-finished "~2.3.0"
     on-headers "~1.0.2"
 
+mrmime@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/mrmime/-/mrmime-2.0.1.tgz#bc3e87f7987853a54c9850eeb1f1078cd44adddc"
+  integrity sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
@@ -9527,7 +9628,7 @@ mv@~2:
     ncp "~2.0.0"
     rimraf "~2.4.0"
 
-n3@2.0.0-beta.1, n3@^1.0.0, n3@^1.11.1, n3@^1.16.3, n3@^1.17.0, n3@^1.22.3, n3@^1.6.3:
+n3@*, n3@2.0.0-beta.1, n3@^1.0.0, n3@^1.11.1, n3@^1.16.3, n3@^1.17.0, n3@^1.22.3, n3@^1.6.3:
   version "2.0.0-beta.1"
   resolved "https://registry.yarnpkg.com/n3/-/n3-2.0.0-beta.1.tgz#e966ccd02548cdd58a429c9c8b1e3dbae5982613"
   integrity sha512-mOAlmgDP6XFKSxIL9OEX/wrmoiMyawl40PgXWYtjH6zUtnUKyppqen3JkEZBsmUV68CZp5OaLN+ii5t6A6Zrew==
@@ -10162,6 +10263,11 @@ open@^8.4.0:
     define-lazy-prop "^2.0.0"
     is-docker "^2.1.1"
     is-wsl "^2.2.0"
+
+opener@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/opener/-/opener-1.5.2.tgz#5d37e1f35077b9dcac4301372271afdeb2a13598"
+  integrity sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==
 
 optionator@^0.9.3:
   version "0.9.3"
@@ -12010,6 +12116,15 @@ simple-update-notifier@^2.0.0:
   dependencies:
     semver "^7.5.3"
 
+sirv@^2.0.3:
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/sirv/-/sirv-2.0.4.tgz#5dd9a725c578e34e449f332703eb2a74e46a29b0"
+  integrity sha512-94Bdh3cC2PKrbgSOUqTiGPWVZeSiXfKOVZNJniWoqrWrRkB1CJzBU3NEbiTsPcYy1lDsANA/THzS+9WBiy5nfQ==
+  dependencies:
+    "@polka/url" "^1.0.0-next.24"
+    mrmime "^2.0.0"
+    totalist "^3.0.0"
+
 sisteransi@^1.0.5:
   version "1.0.5"
   resolved "https://registry.npmjs.org/sisteransi/-/sisteransi-1.0.5.tgz"
@@ -12212,20 +12327,6 @@ sparqlalgebrajs@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-5.0.0.tgz#4e591693dbb56831735ce4e824dcab7aaef53d3c"
   integrity sha512-IMooP5j1brRjzB2oNoQcqCrvEJXVXIrzECau3VFYpO95xly7thb2Q6FP9MI6cdrmdx5upo37tjP7Ui1iFOpABQ==
-  dependencies:
-    "@types/sparqljs" "^3.1.3"
-    fast-deep-equal "^3.1.3"
-    minimist "^1.2.6"
-    rdf-data-factory "^2.0.1"
-    rdf-isomorphic "^2.0.0"
-    rdf-string "^2.0.0"
-    rdf-terms "^2.0.0"
-    sparqljs "^3.7.1"
-
-sparqlalgebrajs@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-5.0.2.tgz#ec61c85bdfc053095815c5b375703cb78849b424"
-  integrity sha512-Xz7byRqWqCMkbM+3ogGmKO/wsezQKQQNleoggP03sCTTFfCh/ZlN5CGt+HkrOenDSktZ93jpKFbbaIRjLOYtWw==
   dependencies:
     "@types/sparqljs" "^3.1.3"
     fast-deep-equal "^3.1.3"
@@ -12892,6 +12993,11 @@ toml-eslint-parser@^0.9.0, toml-eslint-parser@^0.9.3:
   dependencies:
     eslint-visitor-keys "^3.0.0"
 
+totalist@^3.0.0:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/totalist/-/totalist-3.0.1.tgz#ba3a3d600c915b1a97872348f79c127475f6acf8"
+  integrity sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ==
+
 touch@^3.1.0:
   version "3.1.0"
   resolved "https://registry.npmjs.org/touch/-/touch-3.1.0.tgz"
@@ -13507,6 +13613,24 @@ webidl-conversions@^3.0.0:
   resolved "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-3.0.1.tgz"
   integrity sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==
 
+webpack-bundle-analyzer@^4.10.2:
+  version "4.10.2"
+  resolved "https://registry.yarnpkg.com/webpack-bundle-analyzer/-/webpack-bundle-analyzer-4.10.2.tgz#633af2862c213730be3dbdf40456db171b60d5bd"
+  integrity sha512-vJptkMm9pk5si4Bv922ZbKLV8UTT4zib4FPgXMhgzUny0bfDDkLXAVQs3ly3fS4/TN9ROFtb0NFrm04UXFE/Vw==
+  dependencies:
+    "@discoveryjs/json-ext" "0.5.7"
+    acorn "^8.0.4"
+    acorn-walk "^8.0.0"
+    commander "^7.2.0"
+    debounce "^1.2.1"
+    escape-string-regexp "^4.0.0"
+    gzip-size "^6.0.0"
+    html-escaper "^2.0.2"
+    opener "^1.5.2"
+    picocolors "^1.0.0"
+    sirv "^2.0.3"
+    ws "^7.3.1"
+
 webpack-cli@^6.0.0:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-6.0.1.tgz#a1ce25da5ba077151afd73adfa12e208e5089207"
@@ -13816,6 +13940,11 @@ write-pkg@^3.1.0:
   dependencies:
     sort-keys "^2.0.0"
     write-json-file "^2.2.0"
+
+ws@^7.3.1:
+  version "7.5.10"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.10.tgz#58b5c20dc281633f6c19113f39b349bd8bd558d9"
+  integrity sha512-+dbF1tHwZpXcbOJdVOkzLDxZP1ailvSxM6ZweXTegylPny803bFhA+vqBYw4s31NSAk4S2Qz+AKXK9a4wkdjcQ==
 
 ws@~8.11.0:
   version "8.11.0"

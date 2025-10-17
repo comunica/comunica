@@ -7,6 +7,8 @@ import type { IActionQuerySourceIdentifyHypermedia } from '@comunica/bus-query-s
 import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, MetadataQuads } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
@@ -16,8 +18,6 @@ import 'jest-rdf';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { QuerySourceHypermedia } from '../lib/QuerySourceHypermedia';
@@ -25,7 +25,7 @@ import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');

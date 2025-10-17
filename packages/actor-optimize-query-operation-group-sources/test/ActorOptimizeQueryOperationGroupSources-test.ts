@@ -1,13 +1,13 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource, getOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationGroupSources } from '../lib/ActorOptimizeQueryOperationGroupSources';
 import '@comunica/utils-jest';
 
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const DF = new DataFactory();
 
 describe('ActorOptimizeQueryOperationGroupSources', () => {
@@ -42,7 +42,7 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
         type: 'operation',
         operation: {
           operationType: 'type',
-          type: Algebra.types.PATTERN,
+          type: Algebra.Types.PATTERN,
         },
       }),
     },

@@ -44,6 +44,6 @@
     "@comunica/bus-rdf-join-selectivity": "^4.0.2",
     "@comunica/core": "^4.0.2",
     "@comunica/mediatortype-accuracy": "^4.0.2",
-    "sparqlalgebrajs": "^5.0.2"
+    "@comunica/utils-algebra": "^4.0.2"
   }
 }

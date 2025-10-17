@@ -1,5 +1,5 @@
 import type { FragmentSelectorShape } from '@comunica/types';
-import type { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from '@comunica/utils-algebra';
 
 /**
  * Check if the given shape accepts the given query operation.
@@ -70,13 +70,14 @@ function doesShapeAcceptOperationRecurseOperation(
   options?: FragmentSelectorShapeTestFlags,
 ): boolean {
   // Recurse into the operation, and restart from the top-level shape
-  if (operation.input) {
-    const inputs: Algebra.Operation[] = Array.isArray(operation.input) ? operation.input : [ operation.input ];
+  const casted = <Algebra.Operation & { input?: unknown; patterns?: any[] }> operation;
+  if (casted.input) {
+    const inputs: Algebra.Operation[] = Array.isArray(casted.input) ? casted.input : [ casted.input ];
     if (!inputs.every(input => doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options))) {
       return false;
     }
   }
-  if (operation.patterns && !operation.patterns
+  if (casted.patterns && !casted.patterns
     .every((input: Algebra.Pattern) => doesShapeAcceptOperationRecurseShape(shapeTop, shapeTop, input, options))) {
     return false;
   }

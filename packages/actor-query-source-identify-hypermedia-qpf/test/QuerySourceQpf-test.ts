@@ -4,6 +4,7 @@ import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
@@ -11,7 +12,6 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { PassThrough } from 'readable-stream';
-import { Factory } from 'sparqlalgebrajs';
 import { QuerySourceQpf } from '../lib/QuerySourceQpf';
 import '@comunica/utils-jest';
 
@@ -19,7 +19,7 @@ const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 const v1 = DF.variable('v1');
 const v2 = DF.variable('v2');

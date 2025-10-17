@@ -13,6 +13,7 @@
     "packages/statistic-base",
     "packages/statistic-link-dereference",
     "packages/statistic-link-discovery",
+    "packages/utils-algebra",
     "packages/utils-expression-evaluator",
     "packages/utils-bindings-factory",
     "packages/utils-bindings-index",

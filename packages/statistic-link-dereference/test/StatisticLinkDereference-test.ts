@@ -7,9 +7,9 @@ import type {
   IQuerySource,
   QuerySourceReference,
 } from '@comunica/types';
+import type { Algebra as Alg } from '@comunica/utils-algebra';
 import type { Quad } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { Operation, Ask, Update } from 'sparqlalgebrajs/lib/algebra';
 import { StatisticLinkDereference } from '../lib/StatisticLinkDereference';
 
 class MockQuerySource implements IQuerySource {
@@ -20,12 +20,12 @@ class MockQuerySource implements IQuerySource {
   }
 
   public getSelectorShape: (context: IActionContext) => Promise<FragmentSelectorShape>;
-  public queryBindings: (operation: Operation, context: IActionContext, options?: IQueryBindingsOptions | undefined)
+  public queryBindings: (operation: Alg.Operation, context: IActionContext, options?: IQueryBindingsOptions | undefined)
   => BindingsStream;
 
-  public queryQuads: (operation: Operation, context: IActionContext) => AsyncIterator<Quad>;
-  public queryBoolean: (operation: Ask, context: IActionContext) => Promise<boolean>;
-  public queryVoid: (operation: Update, context: IActionContext) => Promise<void>;
+  public queryQuads: (operation: Alg.Operation, context: IActionContext) => AsyncIterator<Quad>;
+  public queryBoolean: (operation: Alg.Ask, context: IActionContext) => Promise<boolean>;
+  public queryVoid: (operation: Alg.Operation, context: IActionContext) => Promise<void>;
   public toString: () => string;
 }
 

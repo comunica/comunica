@@ -9,12 +9,12 @@ import type {
   ComunicaDataFactory,
   MetadataVariable,
 } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path ZeroOrMore Query Operation Actor.
@@ -23,12 +23,12 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorQueryOperationPathZeroOrMoreArgs) {
-    super(args, Algebra.types.ZERO_OR_MORE_PATH);
+    super(args, Algebra.Types.ZERO_OR_MORE_PATH);
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
 
     const distinct = await this.isPathArbitraryLengthDistinct(algebraFactory, context, operation);

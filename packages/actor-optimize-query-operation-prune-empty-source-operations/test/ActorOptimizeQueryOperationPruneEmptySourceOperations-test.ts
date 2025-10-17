@@ -1,17 +1,17 @@
 import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import {
   ActorOptimizeQueryOperationPruneEmptySourceOperations,
 } from '../lib/ActorOptimizeQueryOperationPruneEmptySourceOperations';
 import '@comunica/utils-jest';
 
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const DF = new DataFactory();
 
 describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
@@ -33,21 +33,21 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.NOP,
+                type: Algebra.Types.NOP,
               },
             },
             {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.PATTERN,
+                type: Algebra.Types.PATTERN,
               },
             },
             {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.LINK,
+                type: Algebra.Types.LINK,
               },
             },
           ],
@@ -56,13 +56,13 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           const bindingsStream = new ArrayIterator([], { autoStart: false });
           let card = 0;
           switch (op.type) {
-            case Algebra.types.NOP:
+            case Algebra.Types.NOP:
               card = 10;
               break;
-            case Algebra.types.PATTERN:
+            case Algebra.Types.PATTERN:
               card = op.predicate.value === 'empty' ? 0 : 10;
               break;
-            case Algebra.types.LINK:
+            case Algebra.Types.LINK:
               card = op.value === 'empty' ? 0 : 10;
               break;
           }
@@ -81,14 +81,14 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.ASK,
+                type: Algebra.Types.ASK,
               },
             },
             {
               type: 'operation',
               operation: {
                 operationType: 'type',
-                type: Algebra.types.NOP,
+                type: Algebra.Types.NOP,
               },
             },
           ],
@@ -539,6 +539,27 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           );
           const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
           expect(opOut).toEqual(AF.createUnion([]));
+        });
+
+        it('should not prune if the projection does not have missing variables in alt', async() => {
+          const opIn = AF.createProject(
+            AF.createAlt([
+              assignOperationSource(AF.createLink(DF.namedNode('nonempty')), source1),
+              AF.createAlt([
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              ]),
+              assignOperationSource(AF.createLink(DF.namedNode('nonempty')), source1),
+            ]),
+            [
+              DF.variable('o'),
+            ],
+          );
+          const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+          expect(opOut).toEqual(AF.createProject(AF.createAlt([
+            assignOperationSource(AF.createLink(DF.namedNode('nonempty')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('nonempty')), source1),
+          ]), [ DF.variable('o') ]));
         });
 
         it('should not prune if the projection has no missing variables', async() => {

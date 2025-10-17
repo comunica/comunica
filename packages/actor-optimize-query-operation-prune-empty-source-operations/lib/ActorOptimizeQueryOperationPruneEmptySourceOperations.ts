@@ -8,8 +8,8 @@ import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entrie
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
+import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Prune Empty Source Operations Optimize Query Operation Actor.
@@ -30,33 +30,29 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     let operation = action.operation;
 
     // Collect all operations with source types
     // Only consider unions of patterns or alts of links, since these are created during exhaustive source assignment.
     const collectedOperations: (Algebra.Pattern | Algebra.Link)[] = [];
-    // eslint-disable-next-line ts/no-this-alias
-    const self = this;
-    Util.recurseOperation(operation, {
-      [Algebra.types.UNION](subOperation) {
-        self.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.types.PATTERN);
-        return true;
-      },
-      [Algebra.types.ALT](subOperation) {
-        self.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.types.LINK);
-        return false;
-      },
-      [Algebra.types.SERVICE]() {
-        return false;
-      },
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.UNION]: { preVisitor: (subOperation) => {
+        this.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.PATTERN);
+        return {};
+      } },
+      [Algebra.Types.ALT]: { preVisitor: (subOperation) => {
+        this.collectMultiOperationInputs(subOperation.input, collectedOperations, Algebra.Types.LINK);
+        return { continue: false };
+      } },
+      [Algebra.Types.SERVICE]: { preVisitor: () => ({ continue: false }) },
     });
 
     // Determine in an async manner whether or not these sources return non-empty results
     const emptyOperations: Set<Algebra.Operation> = new Set();
     await Promise.all(collectedOperations.map(async(collectedOperation) => {
-      const checkOperation = collectedOperation.type === 'link' ?
+      const checkOperation = collectedOperation.type === Algebra.Types.LINK ?
         algebraFactory.createPattern(dataFactory.variable('?s'), collectedOperation.iri, dataFactory.variable('?o')) :
         collectedOperation;
       if (!await this.hasSourceResults(
@@ -73,44 +69,32 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     if (emptyOperations.size > 0) {
       this.logDebug(action.context, `Pruning ${emptyOperations.size} source-specific operations`);
       // Rewrite operations by removing the empty children
-      operation = Util.mapOperation(operation, {
-        [Algebra.types.UNION](subOperation, factory) {
-          return self.mapMultiOperation(subOperation, emptyOperations, children => factory.createUnion(children));
-        },
-        [Algebra.types.ALT](subOperation, factory) {
-          return self.mapMultiOperation(subOperation, emptyOperations, children => factory.createAlt(children));
-        },
-      }, algebraFactory);
+      operation = algebraUtils.mapOperation(operation, {
+        [Algebra.Types.UNION]: { transform: (subOperation, origOp) =>
+          this.mapMultiOperation(subOperation, origOp, emptyOperations, children =>
+            algebraFactory.createUnion(children)) },
+        [Algebra.Types.ALT]: { transform: (subOperation, origOp) =>
+          this.mapMultiOperation(subOperation, origOp, emptyOperations, children =>
+            algebraFactory.createAlt(children)) },
 
-      // Identify and remove operations that have become empty now due to missing variables
-      operation = Util.mapOperation(operation, {
-        [Algebra.types.PROJECT](subOperation, factory) {
-          // Remove projections that have become empty now due to missing variables
-          if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation)) {
-            return {
-              recurse: false,
-              result: factory.createUnion([]),
-            };
-          }
-          return {
-            recurse: true,
-            result: subOperation,
-          };
+        // Remove operations that have become empty now due to missing variables
+        [Algebra.Types.PROJECT]: {
+          transform: (subOperation) => {
+            // Remove projections that have become empty now due to missing variables
+            if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation)) {
+              return algebraFactory.createUnion([]);
+            }
+            return subOperation;
+          },
         },
-        [Algebra.types.LEFT_JOIN](subOperation) {
+        [Algebra.Types.LEFT_JOIN]: { transform: (subOperation) => {
           // Remove left joins with empty right operation
           if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation.input[1])) {
-            return {
-              recurse: true,
-              result: subOperation.input[0],
-            };
+            return subOperation.input[0];
           }
-          return {
-            recurse: true,
-            result: subOperation,
-          };
-        },
-      }, algebraFactory);
+          return subOperation;
+        } },
+      });
     }
 
     return { operation, context: action.context };
@@ -121,27 +105,30 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     // But if we find a union with multiple children,
     // *all* of the children must be empty before the full operation is considered empty.
     let emptyOperation = false;
-    Util.recurseOperation(operation, {
-      [Algebra.types.UNION](subOperation) {
-        if (subOperation.input.every(subSubOperation => ActorOptimizeQueryOperationPruneEmptySourceOperations
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.UNION]: { preVisitor: (unionOp) => {
+        if (unionOp.input.every(subSubOperation => ActorOptimizeQueryOperationPruneEmptySourceOperations
           .hasEmptyOperation(subSubOperation))) {
           emptyOperation = true;
+          return { shortcut: true };
         }
-        return false;
-      },
-      [Algebra.types.ALT](subOperation) {
-        if (subOperation.input.length === 0) {
-          emptyOperation = true;
-        }
-        return false;
-      },
-      [Algebra.types.LEFT_JOIN](subOperation) {
+        return { continue: false };
+      } },
+      [Algebra.Types.LEFT_JOIN]: { preVisitor: (leftJoinOp) => {
         // Only recurse into left part of left-join
-        if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(subOperation.input[0])) {
+        if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(leftJoinOp.input[0])) {
           emptyOperation = true;
+          return { shortcut: true };
         }
-        return false;
-      },
+        return { continue: false };
+      } },
+      [Algebra.Types.ALT]: { preVisitor: (altOp) => {
+        if (altOp.input.length === 0) {
+          emptyOperation = true;
+          return { shortcut: true };
+        }
+        return { continue: false };
+      } },
     });
     return emptyOperation;
   }
@@ -152,34 +139,37 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     inputType: (Algebra.Pattern | Algebra.Link)['type'],
   ): void {
     for (const input of inputs) {
-      if (getOperationSource(input) && input.type === inputType) {
+      if (getOperationSource(input) && isKnownOperation(input, inputType)) {
         collectedOperations.push(input);
       }
     }
   }
 
   protected mapMultiOperation<O extends Algebra.Union | Algebra.Alt>(
-    operation: O,
+    operationCopy: O,
+    origOp: O,
     emptyOperations: Set<Algebra.Operation>,
     multiOperationFactory: (input: O['input']) => Algebra.Operation,
-  ): {
-      result: Algebra.Operation;
-      recurse: boolean;
-    } {
+  ): Algebra.Operation {
     // Determine which operations return non-empty results
-    const nonEmptyInputs = operation.input.filter(input => !emptyOperations.has(input));
+    const nonEmptyInputs: Algebra.Operation[] = [];
+    for (const [ idx, input ] of operationCopy.input.entries()) {
+      if (!emptyOperations.has(origOp.input[idx])) {
+        nonEmptyInputs.push(input);
+      }
+    }
 
     // Remove empty operations
-    if (nonEmptyInputs.length === operation.input.length) {
-      return { result: operation, recurse: true };
+    if (nonEmptyInputs.length === operationCopy.input.length) {
+      return operationCopy;
     }
     if (nonEmptyInputs.length === 0) {
-      return { result: multiOperationFactory([]), recurse: false };
+      return multiOperationFactory([]);
     }
     if (nonEmptyInputs.length === 1) {
-      return { result: nonEmptyInputs[0], recurse: true };
+      return nonEmptyInputs[0];
     }
-    return { result: multiOperationFactory(nonEmptyInputs), recurse: true };
+    return multiOperationFactory(nonEmptyInputs);
   }
 
   /**
@@ -190,7 +180,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
    * @param context The query context.
    */
   public async hasSourceResults(
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
     source: IQuerySourceWrapper,
     input: Algebra.Operation,
     context: IActionContext,

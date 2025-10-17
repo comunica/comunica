@@ -30,6 +30,10 @@ export class ActorQueryParseGraphql extends ActorQueryParse {
       singularizeVariables: <any> action.context.get(KeysInitQuery.graphqlSingularizeVariables),
     };
     // TODO: pass data factory
-    return { operation: await this.graphqlToSparql.graphqlToSparqlAlgebra(action.query, context, options) };
+    return {
+      // TODO: this any cast is mandatory graphqlToSparql is updated to use traqula algebra.
+      operation:
+        <any> await this.graphqlToSparql.graphqlToSparqlAlgebra(action.query, context, options),
+    };
   }
 }

@@ -5,10 +5,10 @@ import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { Bindings, IActionContext, IJoinEntry, IQueryOperationResult } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica LeftJoin Query Operation Actor.
@@ -18,7 +18,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
   private readonly mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 
   public constructor(args: IActorQueryOperationLeftJoinArgs) {
-    super(args, 'leftjoin');
+    super(args, Algebra.Types.LEFT_JOIN);
     this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
   }
 

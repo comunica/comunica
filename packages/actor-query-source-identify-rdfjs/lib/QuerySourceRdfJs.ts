@@ -7,13 +7,12 @@ import type {
   FragmentSelectorShape,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { Algebra, AlgebraFactory, isKnownOperation } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
 import { someTermsNested, filterTermsNested, someTerms, uniqTerms } from 'rdf-terms';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
 export class QuerySourceRdfJs implements IQuerySource {
@@ -28,7 +27,7 @@ export class QuerySourceRdfJs implements IQuerySource {
     this.referenceValue = source;
     this.dataFactory = dataFactory;
     this.bindingsFactory = bindingsFactory;
-    const AF = new Factory(<RDF.DataFactory> this.dataFactory);
+    const AF = new AlgebraFactory(<RDF.DataFactory> this.dataFactory);
     this.selectorShape = {
       type: 'operation',
       operation: {
@@ -64,7 +63,7 @@ export class QuerySourceRdfJs implements IQuerySource {
   }
 
   public queryBindings(operation: Algebra.Operation, context: IActionContext): BindingsStream {
-    if (operation.type !== 'pattern') {
+    if (!isKnownOperation(operation, Algebra.Types.PATTERN)) {
       throw new Error(`Attempted to pass non-pattern operation '${operation.type}' to QuerySourceRdfJs`);
     }
 
@@ -162,7 +161,7 @@ export class QuerySourceRdfJs implements IQuerySource {
   }
 
   public queryVoid(
-    _operation: Algebra.Update,
+    _operation: Algebra.Operation,
     _context: IActionContext,
   ): Promise<void> {
     throw new Error('queryVoid is not implemented in QuerySourceRdfJs');

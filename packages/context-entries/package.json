@@ -40,8 +40,8 @@
   "dependencies": {
     "@comunica/core": "^4.0.2",
     "@comunica/types": "^4.0.2",
+    "@comunica/utils-algebra": "^4.0.2",
     "@rdfjs/types": "*",
-    "jsonld-context-parser": "^2.2.2",
-    "sparqlalgebrajs": "^5.0.2"
+    "jsonld-context-parser": "^2.2.2"
   }
 }

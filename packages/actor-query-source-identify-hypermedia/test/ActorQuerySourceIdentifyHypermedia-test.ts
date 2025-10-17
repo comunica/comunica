@@ -8,18 +8,18 @@ import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-r
 import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, QuerySourceUnidentifiedExpanded } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorQuerySourceIdentifyHypermedia } from '../lib/ActorQuerySourceIdentifyHypermedia';
 import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
 import 'jest-rdf';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 
 const mediatorMergeBindingsContext: any = {

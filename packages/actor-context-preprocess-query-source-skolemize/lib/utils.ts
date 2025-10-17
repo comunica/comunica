@@ -6,11 +6,11 @@ import type {
   MetadataQuads,
   QuerySourceReference,
 } from '@comunica/types';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { mapTermsNested } from 'rdf-terms';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
 export const SKOLEM_PREFIX = 'urn:comunica_skolem:source_';
 
@@ -213,32 +213,28 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
   operation: O,
   sourceId: string,
 ): O | undefined {
-  const algebraFactory = new Factory();
+  const factory = new AlgebraFactory();
   try {
-    return <O> Util.mapOperation(operation, {
-      [Algebra.types.PATTERN](op, factory) {
-        return {
-          result: Object.assign(factory.createPattern(
-            deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),
-            deskolemizeTermNestedThrowing(dataFactory, op.predicate, sourceId),
-            deskolemizeTermNestedThrowing(dataFactory, op.object, sourceId),
-            deskolemizeTermNestedThrowing(dataFactory, op.graph, sourceId),
-          ), { metadata: op.metadata }),
-          recurse: false,
-        };
+    return <O> algebraUtils.mapOperation(operation, {
+      [Algebra.Types.PATTERN]: {
+        preVisitor: () => ({ continue: false }),
+        transform: op => Object.assign(factory.createPattern(
+          deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),
+          deskolemizeTermNestedThrowing(dataFactory, op.predicate, sourceId),
+          deskolemizeTermNestedThrowing(dataFactory, op.object, sourceId),
+          deskolemizeTermNestedThrowing(dataFactory, op.graph, sourceId),
+        ), { metadata: op.metadata }),
       },
-      [Algebra.types.PATH](op, factory) {
-        return {
-          result: Object.assign(factory.createPath(
-            deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),
-            op.predicate,
-            deskolemizeTermNestedThrowing(dataFactory, op.object, sourceId),
-            deskolemizeTermNestedThrowing(dataFactory, op.graph, sourceId),
-          ), { metadata: op.metadata }),
-          recurse: false,
-        };
+      [Algebra.Types.PATH]: {
+        preVisitor: () => ({ continue: false }),
+        transform: op => Object.assign(factory.createPath(
+          deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),
+          op.predicate,
+          deskolemizeTermNestedThrowing(dataFactory, op.object, sourceId),
+          deskolemizeTermNestedThrowing(dataFactory, op.graph, sourceId),
+        ), { metadata: op.metadata }),
       },
-    }, algebraFactory);
+    });
   } catch {
     // Return undefined for skolemized terms not in scope for this source
   }

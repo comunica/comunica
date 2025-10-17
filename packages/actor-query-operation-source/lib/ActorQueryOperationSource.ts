@@ -8,9 +8,9 @@ import type {
   IQueryOperationResult,
   IQuerySourceWrapper,
 } from '@comunica/types';
+import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
 import { getOperationSource } from '@comunica/utils-query-operation';
-import { Algebra, Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Source Query Operation Actor.
@@ -49,11 +49,11 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     // Check if the operation is a CONSTRUCT query
     // We recurse because it may be wrapped in other operations such as SLICE and FROM
     let construct = false;
-    Util.recurseOperation(action.operation, {
-      construct(): boolean {
+    algebraUtils.visitOperation(action.operation, {
+      [Algebra.Types.CONSTRUCT]: { preVisitor: () => {
         construct = true;
-        return false;
-      },
+        return { shortcut: true };
+      } },
     });
     // If so, delegate to queryQuads
     if (construct) {
@@ -66,25 +66,24 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
       };
     }
 
-    // eslint-disable-next-line ts/switch-exhaustiveness-check
     switch (action.operation.type) {
-      case Algebra.types.ASK:
+      case Algebra.Types.ASK:
         return {
           type: 'boolean',
           execute: () => sourceWrapper.source.queryBoolean(<Algebra.Ask>action.operation, mergedContext),
         };
-      case Algebra.types.COMPOSITE_UPDATE:
-      case Algebra.types.DELETE_INSERT:
-      case Algebra.types.LOAD:
-      case Algebra.types.CLEAR:
-      case Algebra.types.CREATE:
-      case Algebra.types.DROP:
-      case Algebra.types.ADD:
-      case Algebra.types.MOVE:
-      case Algebra.types.COPY:
+      case Algebra.Types.COMPOSITE_UPDATE:
+      case Algebra.Types.DELETE_INSERT:
+      case Algebra.Types.LOAD:
+      case Algebra.Types.CLEAR:
+      case Algebra.Types.CREATE:
+      case Algebra.Types.DROP:
+      case Algebra.Types.ADD:
+      case Algebra.Types.MOVE:
+      case Algebra.Types.COPY:
         return {
           type: 'void',
-          execute: () => sourceWrapper.source.queryVoid(<Algebra.Update>action.operation, mergedContext),
+          execute: () => sourceWrapper.source.queryVoid(action.operation, mergedContext),
         };
     }
 

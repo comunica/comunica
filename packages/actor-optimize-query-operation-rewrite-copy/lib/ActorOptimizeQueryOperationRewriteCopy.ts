@@ -8,7 +8,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 
 /**
  * A comunica Rewrite Copy Optimize Query Operation Actor.
@@ -24,31 +24,27 @@ export class ActorOptimizeQueryOperationRewriteCopy extends ActorOptimizeQueryOp
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const factory = new AlgebraFactory(dataFactory);
 
-    const operation = Util.mapOperation(action.operation, {
-      [Algebra.types.COPY](operationOriginal, factory) {
+    const operation = algebraUtils.mapOperation(action.operation, {
+      [Algebra.Types.COPY]: {
+        preVisitor: () => ({ continue: false }),
+        transform: (operationOriginal) => {
         // No-op if source === destination
-        let result: Algebra.CompositeUpdate;
-        if ((typeof operationOriginal.destination === 'string' && typeof operationOriginal.source === 'string' &&
-            operationOriginal.destination === operationOriginal.source) ||
-          (typeof operationOriginal.destination !== 'string' && typeof operationOriginal.source !== 'string' &&
-            operationOriginal.destination.equals(operationOriginal.source))) {
-          result = factory.createCompositeUpdate([]);
-        } else {
+          if ((typeof operationOriginal.destination === 'string' && typeof operationOriginal.source === 'string' &&
+          operationOriginal.destination === operationOriginal.source) ||
+        (typeof operationOriginal.destination !== 'string' && typeof operationOriginal.source !== 'string' &&
+          operationOriginal.destination.equals(operationOriginal.source))) {
+            return factory.createCompositeUpdate([]);
+          }
           // COPY is equivalent to drop destination, and add
-          result = factory.createCompositeUpdate([
+          return factory.createCompositeUpdate([
             factory.createDrop(operationOriginal.destination, true),
             factory.createAdd(operationOriginal.source, operationOriginal.destination, operationOriginal.silent),
           ]);
-        }
-
-        return {
-          result,
-          recurse: false,
-        };
+        },
       },
-    }, algebraFactory);
+    });
 
     return { operation, context: action.context };
   }
