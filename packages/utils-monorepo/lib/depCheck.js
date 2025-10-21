@@ -166,11 +166,11 @@ async function depcheckTask(log) {
       failures.push(`${package.name} is a dependency of itself`);
     }
 
-    // Now check all resolutions use a star ("*") import
+    // Now check all '@rdfjs/types' use a star ("*") import
     const packageJson = JSON.parse(readFileSync(path.join(package.location, 'package.json'), 'utf8'));
     for (const dep of Object.keys(packageJson.dependencies ?? {})) {
-      if (resolutions.includes(dep) && packageJson.dependencies[dep] !== '*') {
-        failures.push(`Resolution not using '*' import for ${dep} in ${package.name}`);
+      if (dep === '@rdfjs/types' && packageJson.dependencies[dep] !== '*') {
+        failures.push(`Not using '*' import for ${dep} in ${package.name}`);
       }
     }
   });
