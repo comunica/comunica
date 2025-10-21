@@ -18,14 +18,14 @@ import type {
   MetadataBindings,
   ILink,
 } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
 import { LRUCache } from 'lru-cache';
 import { Readable } from 'readable-stream';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { StreamingStoreMetadata } from './StreamingStoreMetadata';
@@ -99,7 +99,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     }
 
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
     const it: MediatedLinkedRdfSourcesAsyncRdfIterator = new MediatedLinkedRdfSourcesAsyncRdfIterator(
       this.cacheSize,
       operation,
@@ -141,7 +141,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     return await source.source.queryBoolean(operation, context);
   }
 
-  public async queryVoid(operation: Algebra.Update, context: IActionContext): Promise<void> {
+  public async queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
     const source = await this.getSourceCached({ url: this.firstUrl }, {}, context, this.getAggregateStore(context));
     return await source.source.queryVoid(operation, context);
   }

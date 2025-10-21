@@ -12,11 +12,11 @@ import type {
   MetadataQuads,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { getTermsNested, getVariables, uniqTerms } from 'rdf-terms';
-import { Algebra } from 'sparqlalgebrajs';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
 
 /**
@@ -24,7 +24,7 @@ import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
  */
 export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediated<Algebra.Construct> {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, 'construct');
+    super(args, Algebra.Types.CONSTRUCT);
   }
 
   /**
@@ -44,10 +44,11 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
   public async runOperation(operationOriginal: Algebra.Construct, context: IActionContext):
   Promise<IQueryOperationResult> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Apply a projection on our CONSTRUCT variables first, as the query may contain other variables as well.
     const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(operationOriginal.template);
-    const operation: Algebra.Operation = { type: Algebra.types.PROJECT, input: operationOriginal.input, variables };
+    const operation = algebraFactory.createProject(operationOriginal.input, variables);
 
     // Evaluate the input query
     const output: IQueryOperationResultBindings = getSafeBindings(

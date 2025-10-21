@@ -1,11 +1,13 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationDrop } from '../lib/ActorQueryOperationDrop';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
+const AF = new AlgebraFactory(DF);
 
 describe('ActorQueryOperationDrop', () => {
   let bus: any;
@@ -47,11 +49,8 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should run for default graph', async() => {
-      const op: any = {
-        operation: {
-          type: 'drop',
-          source: 'DEFAULT',
-        },
+      const op = {
+        operation: AF.createDrop('DEFAULT'),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -65,12 +64,8 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should run for default graph in silent mode', async() => {
-      const op: any = {
-        operation: {
-          type: 'drop',
-          source: 'DEFAULT',
-          silent: true,
-        },
+      const op = {
+        operation: AF.createDrop('DEFAULT', true),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -84,11 +79,8 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should run for all graphs', async() => {
-      const op: any = {
-        operation: {
-          type: 'drop',
-          source: 'ALL',
-        },
+      const op = {
+        operation: AF.createDrop('ALL'),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -102,11 +94,8 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should run for all named graphs', async() => {
-      const op: any = {
-        operation: {
-          type: 'drop',
-          source: 'NAMED',
-        },
+      const op = {
+        operation: AF.createDrop('NAMED'),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -120,11 +109,8 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should run for a named graph', async() => {
-      const op: any = {
-        operation: {
-          type: 'drop',
-          source: DF.namedNode('g1'),
-        },
+      const op = {
+        operation: AF.createDrop(DF.namedNode('g1')),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);

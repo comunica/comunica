@@ -15,11 +15,11 @@ import type {
   IQueryOperationResultQuads,
   MetadataVariable,
 } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { UnionIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Union Query Operation Actor.
@@ -28,7 +28,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
   public readonly mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
 
   public constructor(args: IActorQueryOperationUnionArgs) {
-    super(args, 'union');
+    super(args, Algebra.Types.UNION);
   }
 
   /**

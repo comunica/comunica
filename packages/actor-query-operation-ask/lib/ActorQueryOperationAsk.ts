@@ -7,15 +7,15 @@ import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
 } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Ask Query Operation Actor.
  */
 export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Algebra.Ask> {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, 'ask');
+    super(args, Algebra.Types.ASK);
   }
 
   public async testOperation(_operation: Algebra.Ask, _context: IActionContext): Promise<TestResult<IActorTest>> {

@@ -8,13 +8,13 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import { Algebra, AlgebraFactory, isKnownOperation } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
   doesShapeAcceptOperation,
   getOperationSource,
   removeOperationSource,
 } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Group Sources Optimize Query Operation Actor.
@@ -44,7 +44,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
    */
   public async groupOperation(operation: Algebra.Operation, context: IActionContext): Promise<Algebra.Operation> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Return operation as-is if the operation already has a single source, or if the operation has no children.
     if (getOperationSource(operation) ?? !('input' in operation)) {
@@ -53,7 +53,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
 
     // If operation has a single input, move source annotation upwards if the source can handle it.
     if (!Array.isArray(operation.input)) {
-      const groupedInput = await this.groupOperation(operation.input, context);
+      const groupedInput = await this.groupOperation(<Algebra.Operation> operation.input, context);
       if (groupedInput.metadata?.scopedSource) {
         const source: IQuerySourceWrapper = <IQuerySourceWrapper> getOperationSource(groupedInput);
         if (doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
@@ -82,32 +82,28 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
 
     // If the number of clusters is equal to the number of original inputs, do nothing.
     if (clusters.length === inputs.length) {
-      return <Algebra.Operation> { ...operation, input: inputs };
+      const result: Algebra.Multi = { ...operation, input: inputs };
+      return result;
     }
 
     // If we have multiple clusters, created nested multi-operations
     let multiFactoryMethod: (children: Algebra.Operation[], flatten: boolean) => Algebra.Operation;
-    switch (operation.type) {
-      case Algebra.types.JOIN:
-        multiFactoryMethod = algebraFactory.createJoin.bind(algebraFactory);
-        break;
-      case Algebra.types.UNION:
-        multiFactoryMethod = algebraFactory.createUnion.bind(algebraFactory);
-        break;
-      case Algebra.types.ALT:
-        multiFactoryMethod = <any> algebraFactory.createAlt.bind(algebraFactory);
-        break;
-      case Algebra.types.SEQ:
-        multiFactoryMethod = <any> algebraFactory.createSeq.bind(algebraFactory);
-        break;
-      default:
-        // While LeftJoin and Minus are also multi-operations,
-        // these can never occur because they only have 2 inputs,
-        // so these cases will always be captured by one of the 2 if-cases above
-        // (clusters.length === 1 or clusters.length === input.length)
+    if (isKnownOperation(operation, Algebra.Types.JOIN)) {
+      multiFactoryMethod = algebraFactory.createJoin.bind(algebraFactory);
+    } else if (isKnownOperation(operation, Algebra.Types.UNION)) {
+      multiFactoryMethod = algebraFactory.createUnion.bind(algebraFactory);
+    } else if (isKnownOperation(operation, Algebra.Types.ALT)) {
+      multiFactoryMethod = <any> algebraFactory.createAlt.bind(algebraFactory);
+    } else if (isKnownOperation(operation, Algebra.Types.SEQ)) {
+      multiFactoryMethod = <any> algebraFactory.createSeq.bind(algebraFactory);
+    } else {
+      // While LeftJoin and Minus are also multi-operations,
+      // these can never occur because they only have 2 inputs,
+      // so these cases will always be captured by one of the 2 if-cases above
+      // (clusters.length === 1 or clusters.length === input.length)
 
-        // In all other cases, error
-        throw new Error(`Unsupported operation '${operation.type}' detected while grouping sources`);
+      // In all other cases, error
+      throw new Error(`Unsupported operation '${operation.type}' detected while grouping sources`);
     }
     return await this.groupOperationMulti(clusters, multiFactoryMethod, context);
   }

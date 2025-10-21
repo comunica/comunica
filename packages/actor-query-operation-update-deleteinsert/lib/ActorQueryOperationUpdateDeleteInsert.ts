@@ -8,12 +8,12 @@ import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { IQueryOperationResult, BindingsStream, IActionContext, ComunicaDataFactory } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, testReadOnly } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Update DeleteInsert Query Operation Actor.
@@ -25,7 +25,7 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
   protected blankNodeCounter = 0;
 
   public constructor(args: IActorQueryOperationUpdateDeleteInsertArgs) {
-    super(args, 'deleteinsert');
+    super(args, Algebra.Types.DELETE_INSERT);
   }
 
   public async testOperation(

@@ -1,17 +1,17 @@
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActionContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
-import type { Algebra } from 'sparqlalgebrajs';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
 
 describe('should be able to handle EXIST filters', () => {
-  let factory: Factory;
+  let factory: AlgebraFactory;
   let evaluatorFactory: ActorExpressionEvaluatorFactory;
   let context: IActionContext;
   let mediatorQueryOperation: any;
@@ -30,7 +30,7 @@ describe('should be able to handle EXIST filters', () => {
       }),
     };
 
-    factory = new Factory();
+    factory = new AlgebraFactory();
     evaluatorFactory = getMockEEFactory({ mediatorQueryOperation });
     context = getMockEEActionContext();
   });

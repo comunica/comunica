@@ -1,4 +1,5 @@
 import type { BindingsStream, ComunicaDataFactory, MetadataBindings, MetadataQuads, TermsOrder } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { ClosableIterator } from '@comunica/utils-iterator';
 import { validateMetadataQuads } from '@comunica/utils-metadata';
@@ -15,7 +16,6 @@ import {
   uniqTerms,
 } from 'rdf-terms';
 import { matchPatternMappings } from 'rdf-terms/lib/QuadTermUtil';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * Convert an iterator of quads to an iterator of bindings.

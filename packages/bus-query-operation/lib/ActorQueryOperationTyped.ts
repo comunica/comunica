@@ -7,9 +7,9 @@ import type {
   IActionContext,
   IMetadata,
 } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import { cachifyMetadata } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 import type { IActionQueryOperation, IActorQueryOperationArgs } from './ActorQueryOperation';
 import { ActorQueryOperation } from './ActorQueryOperation';
 

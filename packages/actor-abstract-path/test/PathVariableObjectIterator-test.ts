@@ -1,16 +1,16 @@
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
 import type { BindingsStream } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { PathVariableObjectIterator } from '../lib';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 
 describe('PathVariableObjectIterator', () => {

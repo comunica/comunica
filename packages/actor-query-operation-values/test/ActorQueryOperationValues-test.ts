@@ -1,6 +1,7 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
@@ -64,7 +65,7 @@ describe('ActorQueryOperationValues', () => {
 
     it('should run on a 1 variable and 1 value', async() => {
       const variables = [ DF.variable('v') ];
-      const bindings = [{ '?v': DF.namedNode('v1') }];
+      const bindings: Algebra.Values['bindings'] = [{ v: DF.namedNode('v1') }];
       const op: any = {
         operation: { type: 'values', variables, bindings },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
@@ -86,7 +87,7 @@ describe('ActorQueryOperationValues', () => {
 
     it('should run on a 1 variable and 2 values', async() => {
       const variables = [ DF.variable('v') ];
-      const bindings = [{ '?v': DF.namedNode('v1') }, { '?v': DF.namedNode('v2') }];
+      const bindings: Algebra.Values['bindings'] = [{ v: DF.namedNode('v1') }, { v: DF.namedNode('v2') }];
       const op: any = {
         operation: { type: 'values', variables, bindings },
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
@@ -111,9 +112,9 @@ describe('ActorQueryOperationValues', () => {
 
     it('should run on a 2 variables and 2 values', async() => {
       const variables = [ DF.variable('v'), DF.variable('w') ];
-      const bindings = [
-        { '?v': DF.namedNode('v1'), '?w': DF.namedNode('w1') },
-        { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
+      const bindings: Algebra.Values['bindings'] = [
+        { v: DF.namedNode('v1'), w: DF.namedNode('w1') },
+        { v: DF.namedNode('v2'), w: DF.namedNode('w2') },
       ];
       const op: any = {
         operation: { type: 'values', variables, bindings },
@@ -142,9 +143,9 @@ describe('ActorQueryOperationValues', () => {
 
     it('should run on a 2 variables and 2 values, one undefined', async() => {
       const variables = [ DF.variable('v'), DF.variable('w') ];
-      const bindings = [
-        { '?v': DF.namedNode('v1') },
-        { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
+      const bindings: Algebra.Values['bindings'] = [
+        { v: DF.namedNode('v1') },
+        { v: DF.namedNode('v2'), w: DF.namedNode('w2') },
       ];
       const op: any = {
         operation: { type: 'values', variables, bindings },

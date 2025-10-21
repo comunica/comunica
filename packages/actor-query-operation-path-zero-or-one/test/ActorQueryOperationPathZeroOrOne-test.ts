@@ -2,6 +2,7 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -10,13 +11,12 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathZeroOrOne } from '../lib/ActorQueryOperationPathZeroOrOne';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('ActorQueryOperationPathZeroOrOne', () => {
   let bus: any;
@@ -24,7 +24,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
   let mediatorMergeBindingsContext: any;
   let source1: IQuerySourceWrapper;
   let source2: IQuerySourceWrapper;
-  const factory: Factory = new Factory();
+  const factory: AlgebraFactory = new AlgebraFactory();
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -125,7 +125,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     it('should test on ZeroOrOne paths', async() => {
       const op: any = {
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-        operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_ONE_PATH }},
+        operation: { type: Algebra.Types.PATH, predicate: { type: Algebra.Types.ZERO_OR_ONE_PATH }},
       };
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
@@ -133,7 +133,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     it('should test on different paths', async() => {
       const op: any = {
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-        operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }},
+        operation: { type: Algebra.Types.PATH, predicate: { type: 'dummy' }},
       };
       await expect(actor.test(op)).resolves.toFailTest(`This Actor only supports ZeroOrOnePath Path operations.`);
     });

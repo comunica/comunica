@@ -13,15 +13,15 @@ import type {
   IMetadata,
   IActionContext,
 } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import type { AsyncIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Slice Query Operation Actor.
  */
 export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<Algebra.Slice> {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
-    super(args, 'slice');
+    super(args, Algebra.Types.SLICE);
   }
 
   public async testOperation(_operation: Algebra.Slice, _context: IActionContext): Promise<TestResult<IActorTest>> {

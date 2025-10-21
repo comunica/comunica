@@ -6,6 +6,8 @@ import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as sparqlee from '@comunica/utils-expression-evaluator';
 import {
@@ -16,12 +18,12 @@ import { getSafeBindings } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationOrderBy } from '../lib/ActorQueryOperationOrderBy';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const AF = new AlgebraFactory(DF);
 const mediatorFunctionFactory = createFuncMediator([
   args => new ActorFunctionFactoryTermStrLen(args),
 ], {});
@@ -81,13 +83,8 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
         mediatorExpressionEvaluatorFactory,
         mediatorTermComparatorFactory,
       });
-      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
-      descOrderA = {
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'desc',
-        args: [ orderA ],
-      };
+      orderA = AF.createTermExpression(DF.variable('a'));
+      descOrderA = AF.createOperatorExpression('desc', [ orderA ]);
     });
 
     it('should sort as an ascending undefined < blank node < named node < literal', async() => {
@@ -119,7 +116,7 @@ describe('ActorQueryOperationOrderBy with mixed term types', () => {
 
     it('should sort as an descending undefined < blank node < named node < literal', async() => {
       const op: any = {
-        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+        operation: AF.createOrderBy(AF.createNop(), [ descOrderA ]),
         context,
       };
       const output = await actor.run(op, undefined);
@@ -216,20 +213,10 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         mediatorExpressionEvaluatorFactory,
         mediatorTermComparatorFactory,
       });
-      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
-      orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
-      descOrderA = {
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'desc',
-        args: [ orderA ],
-      };
-      orderA1 = {
-        args: [ orderA ],
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'strlen',
-        type: Algebra.types.EXPRESSION,
-      };
+      orderA = AF.createTermExpression(DF.variable('a'));
+      orderB = AF.createTermExpression(DF.variable('b'));
+      descOrderA = AF.createOperatorExpression('desc', [ orderA ]);
+      orderA1 = AF.createOperatorExpression('strlen', [ orderA ]);
     });
 
     it('should test on orderby', async() => {
@@ -256,12 +243,8 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should test but not run on unsupported operators', async() => {
-      const op: any = {
-        operation: { type: 'orderby', expressions: [{
-          args: [],
-          expressionType: 'operator',
-          operator: 'DUMMY',
-        }]},
+      const op = {
+        operation: AF.createOrderBy(AF.createBgp([]), [ AF.createOperatorExpression('DUMMY', []) ]),
         context,
       };
       await expect(actor.test(op)).resolves.toPassTestVoid();
@@ -430,32 +413,12 @@ describe('ActorQueryOperationOrderBy with multiple comparators', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
-      orderB = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('b') };
-      descOrderA = {
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'desc',
-        args: [ orderA ],
-      };
-      descOrderB = {
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'desc',
-        args: [ orderB ],
-      };
-      orderA1 = {
-        args: [ orderA ],
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'strlen',
-        type: Algebra.types.EXPRESSION,
-      };
-      orderB1 = {
-        args: [ orderB ],
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'strlen',
-        type: Algebra.types.EXPRESSION,
-      };
+      orderA = AF.createTermExpression(DF.variable('a'));
+      orderB = AF.createTermExpression(DF.variable('b'));
+      descOrderA = AF.createOperatorExpression('desc', [ orderA ]);
+      descOrderB = AF.createOperatorExpression('desc', [ orderB ]);
+      orderA1 = AF.createOperatorExpression('strlen', [ orderA ]);
+      orderB1 = AF.createOperatorExpression('strlen', [ orderB ]);
     });
 
     it('should order A', async() => {
@@ -648,18 +611,13 @@ describe('ActorQueryOperationOrderBy with integer type', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
-      descOrderA = {
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'desc',
-        args: [ orderA ],
-      };
+      orderA = AF.createTermExpression(DF.variable('a'));
+      descOrderA = AF.createOperatorExpression('desc', [ orderA ]);
     });
 
     it('should sort as an ascending integer', async() => {
-      const op: any = {
-        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+      const op = {
+        operation: AF.createOrderBy(AF.createNop(), [ orderA ]),
         context,
       };
       const output = await actor.run(op, undefined);
@@ -748,18 +706,13 @@ describe('ActorQueryOperationOrderBy with double type', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
-      descOrderA = {
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'desc',
-        args: [ orderA ],
-      };
+      orderA = AF.createTermExpression(DF.variable('a'));
+      descOrderA = AF.createOperatorExpression('desc', [ orderA ]);
     });
 
     it('should sort as an ascending double', async() => {
-      const op: any = {
-        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+      const op = {
+        operation: AF.createOrderBy(AF.createNop(), [ orderA ]),
         context,
       };
       const output = await actor.run(op, undefined);
@@ -778,8 +731,8 @@ describe('ActorQueryOperationOrderBy with double type', () => {
     });
 
     it('should sort as an descending double', async() => {
-      const op: any = {
-        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+      const op = {
+        operation: AF.createOrderBy(AF.createNop(), [ descOrderA ]),
         context,
       };
       const output = await actor.run(op, undefined);
@@ -848,13 +801,8 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
-      descOrderA = {
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'desc',
-        args: [ orderA ],
-      };
+      orderA = AF.createTermExpression(DF.variable('a'));
+      descOrderA = AF.createOperatorExpression('desc', [ orderA ]);
     });
 
     it('should sort as an ascending decimal', async() => {
@@ -878,8 +826,8 @@ describe('ActorQueryOperationOrderBy with decimal type', () => {
     });
 
     it('should sort as an descending decimal', async() => {
-      const op: any = {
-        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+      const op = {
+        operation: AF.createOrderBy(AF.createNop(), [ descOrderA ]),
         context,
       };
       const output = await actor.run(op, undefined);
@@ -947,18 +895,13 @@ describe('ActorQueryOperationOrderBy with float type', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
-      descOrderA = {
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'desc',
-        args: [ orderA ],
-      };
+      orderA = AF.createTermExpression(DF.variable('a'));
+      descOrderA = AF.createOperatorExpression('desc', [ orderA ]);
     });
 
     it('should sort as an ascending float', async() => {
-      const op: any = {
-        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+      const op = {
+        operation: AF.createOrderBy(AF.createNop(), [ orderA ]),
         context,
       };
       const output = await actor.run(op, undefined);
@@ -977,8 +920,8 @@ describe('ActorQueryOperationOrderBy with float type', () => {
     });
 
     it('should sort as an descending float', async() => {
-      const op: any = {
-        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+      const op = {
+        operation: AF.createOrderBy(AF.createNop(), [ descOrderA ]),
         context,
       };
       const output = await actor.run(op, undefined);
@@ -1046,18 +989,13 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
-      descOrderA = {
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.OPERATOR,
-        operator: 'desc',
-        args: [ orderA ],
-      };
+      orderA = AF.createTermExpression(DF.variable('a'));
+      descOrderA = AF.createOperatorExpression('desc', [ orderA ]);
     });
 
     it('should sort as an ascending integer', async() => {
-      const op: any = {
-        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+      const op = {
+        operation: AF.createOrderBy(AF.createNop(), [ orderA ]),
         context,
       };
       const output = await actor.run(op, undefined);
@@ -1076,8 +1014,8 @@ describe('ActorQueryOperationOrderBy with mixed literal types', () => {
     });
 
     it('should sort as an descending integer', async() => {
-      const op: any = {
-        operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]},
+      const op = {
+        operation: AF.createOrderBy(AF.createNop(), [ descOrderA ]),
         context,
       };
       const output = await actor.run(op, undefined);
@@ -1145,13 +1083,13 @@ describe('Another ActorQueryOperationOrderBy with mixed types', () => {
         mediatorTermComparatorFactory,
         mediatorExpressionEvaluatorFactory,
       });
-      orderA = { type: Algebra.types.EXPRESSION, expressionType: Algebra.expressionTypes.TERM, term: DF.variable('a') };
+      orderA = AF.createTermExpression(DF.variable('a'));
     });
 
     it('should not sort since its not a literal ascending', async() => {
       try {
-        const op: any = {
-          operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        const op = {
+          operation: AF.createOrderBy(AF.createNop(), [ orderA ]),
           context,
         };
         const output = await actor.run(op, undefined);

@@ -3,6 +3,7 @@
 import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
@@ -13,13 +14,12 @@ import 'jest-rdf';
 import '@comunica/utils-jest';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { QueryEngine } from '../lib/QueryEngine';
 import { fetch as cachedFetch } from './util';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const factory = new Factory();
+const factory = new AlgebraFactory();
 
 globalThis.fetch = cachedFetch;
 
@@ -894,6 +894,64 @@ SELECT ?obsId {
         expect(bindings2).toMatchObject(expectedResult);
       });
     });
+  });
+
+  it('recursive triple term creation', async() => {
+    const turtleValue = `
+PREFIX : <http://example/>
+:s :p :o1 .
+GRAPH :g {
+     <<:s :p :o1 >> :q1 :z1 .
+}
+GRAPH :g1 { << _:b :r :o3 >> :pb :z3 . }
+`;
+    const expectedResult: RDF.Quad[] = [
+      DF.quad(
+        DF.namedNode('http://example/g'),
+        DF.namedNode('http://example/graphContains'),
+        DF.quad(
+          DF.blankNode(),
+          DF.namedNode('http://example/q1'),
+          DF.quad(
+            DF.namedNode('http://example/z1'),
+            DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#reifies'),
+            DF.quad(DF.namedNode('http://example/s'), DF.namedNode('http://example/p'), DF.namedNode('http://example/o1')),
+          ),
+        ),
+      ),
+      DF.quad(
+        DF.namedNode('http://example/g1'),
+        DF.namedNode('http://example/graphContains'),
+        DF.quad(
+          DF.blankNode(),
+          DF.namedNode('http://example/pb'),
+          DF.quad(
+            DF.namedNode('http://example/z3'),
+            DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#reifies'),
+            DF.quad(DF.blankNode(), DF.namedNode('http://example/r'), DF.namedNode('http://example/o3')),
+          ),
+        ),
+      ),
+    ];
+
+    const context: QueryStringContext = { sources: [
+      { type: 'serialized', value: turtleValue, mediaType: 'application/trig', baseIRI: 'http://example.org/' },
+    ]};
+    const query = `
+PREFIX : <http://example/>
+CONSTRUCT {
+  ?g :graphContains ?t .
+} WHERE {
+  GRAPH ?g {
+    ?s ?p1 ?o1 ;
+       ?p2 ?o2 .
+    FILTER (!isTriple(?o1) && !(?p1 = ?p2 && ?o1 = ?o2)) .
+    BIND(<<( ?s ?p1  <<( ?o1 ?p2 ?o2 )>> )>> AS ?t) .
+  }
+}`;
+
+    await expect(arrayifyStream(await engine.queryQuads(query, context))).resolves
+      .toBeRdfIsomorphic(expectedResult);
   });
 
   // We skip these tests in browsers due to CORS issues

@@ -4,22 +4,23 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import type * as RDF from '@rdfjs/types';
-import { Parser as SparqlParser } from '@traqula/engine-sparql-1-2';
-import type { DataFactory } from 'rdf-data-factory';
-import { translate } from 'sparqlalgebrajs';
+import { toAlgebra } from '@traqula/algebra-sparql-1-2';
+import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
+import { AstFactory } from '@traqula/rules-sparql-1-2';
 
 /**
  * A comunica Algebra SPARQL Parse Actor.
  */
 export class ActorQueryParseSparql extends ActorQueryParse {
   public readonly prefixes: Record<string, string>;
-  private readonly parser;
+  private readonly parser: SparqlParser;
 
   public constructor(args: IActorQueryParseSparqlArgs) {
     super(args);
     this.prefixes = Object.freeze(this.prefixes);
-    this.parser = new SparqlParser();
+    this.parser = new SparqlParser({ lexerConfig: {
+      positionTracking: 'onlyOffset',
+    }});
   }
 
   public async test(action: IActionQueryParse): Promise<TestResult<IActorTest>> {
@@ -31,16 +32,23 @@ export class ActorQueryParseSparql extends ActorQueryParse {
 
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const astFactory = new AstFactory();
     const parsedSyntax = this.parser.parse(action.query, {
       prefixes: this.prefixes,
       baseIRI: action.baseIRI,
-      dataFactory: <DataFactory<RDF.BaseQuad>> dataFactory,
+      astFactory,
     });
-    const baseIRI = ('type' in parsedSyntax && parsedSyntax.type === 'query') ? parsedSyntax.base : undefined;
+    let baseIRI: string | undefined;
+    if (astFactory.isQuery(parsedSyntax)) {
+      for (const context of parsedSyntax.context) {
+        if (astFactory.isContextDefinitionBase(context)) {
+          baseIRI = context.value.value;
+        }
+      }
+    }
     return {
       baseIRI,
-      // TODO: This any cast is required until sparqlAlgebra is incorporated within traqula
-      operation: translate(<any> parsedSyntax, {
+      operation: toAlgebra(parsedSyntax, {
         quads: true,
         prefixes: this.prefixes,
         blankToVariable: true,

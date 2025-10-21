@@ -17,8 +17,8 @@ import type {
   IJoinEntryWithMetadata,
   ComunicaDataFactory,
 } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
-import { Factory } from 'sparqlalgebrajs';
 
 /**
  * A Multi Smallest RDF Join Actor.
@@ -57,7 +57,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
     sideData: IActorRdfJoinMultiSmallestTestSideData,
   ): Promise<IActorRdfJoinOutputInner> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Determine the two smallest streams by sorting (e.g. via cardinality)
     const entries: IJoinEntry[] = sideData.sortedEntries;

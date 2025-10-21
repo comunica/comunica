@@ -1,11 +1,13 @@
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationCreate } from '../lib/ActorQueryOperationCreate';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
+const AF = new AlgebraFactory(DF);
 
 describe('ActorQueryOperationCreate', () => {
   let bus: any;
@@ -29,13 +31,13 @@ describe('ActorQueryOperationCreate', () => {
     });
 
     it('should test on create', async() => {
-      const op: any = { operation: { type: 'create' }, context: new ActionContext() };
+      const op: any = { operation: { type: Algebra.Types.CREATE }, context: new ActionContext() };
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
     it('should not test on readOnly', async() => {
       const op: any = {
-        operation: { type: 'create' },
+        operation: { type: Algebra.Types.CREATE },
         context: new ActionContext({ [KeysQueryOperation.readOnly.name]: true }),
       };
       await expect(actor.test(op)).resolves.toFailTest(`Attempted a write operation in read-only mode`);
@@ -47,12 +49,8 @@ describe('ActorQueryOperationCreate', () => {
     });
 
     it('should run in normal mode', async() => {
-      const op: any = {
-        operation: {
-          type: 'create',
-          source: DF.namedNode('g1'),
-          silent: false,
-        },
+      const op = {
+        operation: AF.createCreate(DF.namedNode('g1'), false),
         context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
@@ -65,12 +63,8 @@ describe('ActorQueryOperationCreate', () => {
     });
 
     it('should run in silent mode', async() => {
-      const op: any = {
-        operation: {
-          type: 'create',
-          source: DF.namedNode('g1'),
-          silent: true,
-        },
+      const op = {
+        operation: AF.createCreate(DF.namedNode('g1'), true),
         context: new ActionContext(),
       };
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);

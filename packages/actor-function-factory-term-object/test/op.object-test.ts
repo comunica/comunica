@@ -1,3 +1,4 @@
+import { ActorFunctionFactoryTermTriple } from '@comunica/actor-function-factory-term-triple';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
 import { ActorFunctionFactoryTermObject } from '../lib';
@@ -7,6 +8,7 @@ describe('evaluation of \'OBJECT\'', () => {
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermObject(args),
+      args => new ActorFunctionFactoryTermTriple(args),
     ],
     arity: 1,
     notation: Notation.Function,

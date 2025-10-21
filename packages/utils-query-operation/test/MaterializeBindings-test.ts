@@ -1,11 +1,11 @@
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { materializeOperation, materializeTerm } from '../lib/MaterializeBindings';
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 
 const termNamedNode = DF.namedNode('a');
@@ -37,9 +37,9 @@ const bindingsAB = BF.bindings([
 ]);
 
 const valuesBindingsA: Record<string, RDF.Literal | RDF.NamedNode> = {};
-valuesBindingsA[`?${termVariableA.value}`] = <RDF.Literal> bindingsA.get(termVariableA);
+valuesBindingsA[termVariableA.value] = <RDF.Literal> bindingsA.get(termVariableA);
 const valuesBindingsB: Record<string, RDF.Literal | RDF.NamedNode> = {};
-valuesBindingsB[`?${termVariableB.value}`] = <RDF.Literal> bindingsAB.get(termVariableB);
+valuesBindingsB[termVariableB.value] = <RDF.Literal> bindingsAB.get(termVariableB);
 
 describe('materializeTerm', () => {
   it('should not materialize a named node with empty bindings', () => {
@@ -406,6 +406,30 @@ describe('materializeOperation', () => {
     )).toThrow(new Error('Tried to bind variable ?a in a GROUP BY operator.'));
   });
 
+  it('should not touch a group operation with ' +
+    'all binding variables non-equal to the target variable for strictTargetVariables', () => {
+    expect(materializeOperation(AF.createGroup(
+      AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+      [ termVariableD ],
+      [ AF.createBoundAggregate(
+        termVariableB,
+        'SUM',
+        AF.createTermExpression(termVariableA),
+        true,
+      ) ],
+    ), bindingsA, AF, BF, { strictTargetVariables: true }))
+      .toEqual(AF.createGroup(
+        AF.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+        [ termVariableD ],
+        [ AF.createBoundAggregate(
+          termVariableB,
+          'SUM',
+          AF.createTermExpression(valueA),
+          true,
+        ) ],
+      ));
+  });
+
   it('should modify a group operation with a binding variable equal to the target variable', () => {
     expect(materializeOperation(
       AF.createGroup(
@@ -618,7 +642,7 @@ describe('materializeOperation', () => {
     expect(materializeOperation(
       AF.createValues(
         [ termVariableB, termVariableD ],
-        [{ '?b': valueC }],
+        [{ b: valueC }],
       ),
       bindingsA,
       AF,
@@ -626,7 +650,7 @@ describe('materializeOperation', () => {
     ))
       .toEqual(AF.createValues(
         [ termVariableB, termVariableD ],
-        [{ '?b': valueC }],
+        [{ b: valueC }],
       ));
   });
 
@@ -634,7 +658,7 @@ describe('materializeOperation', () => {
     expect(materializeOperation(
       AF.createValues(
         [ termVariableB, termVariableD ],
-        [{ '?b': valueC }],
+        [{ b: valueC }],
       ),
       bindingsA,
       AF,
@@ -643,7 +667,7 @@ describe('materializeOperation', () => {
     ))
       .toEqual(AF.createValues(
         [ termVariableB, termVariableD ],
-        [{ '?b': valueC }],
+        [{ b: valueC }],
       ));
   });
 
@@ -652,7 +676,7 @@ describe('materializeOperation', () => {
     expect(() => materializeOperation(
       AF.createValues(
         [ termVariableA, termVariableD ],
-        [{ '?a': valueC, '?d': valueC }],
+        [{ a: valueC, d: valueC }],
       ),
       bindingsA,
       AF,
@@ -665,7 +689,7 @@ describe('materializeOperation', () => {
     expect(materializeOperation(
       AF.createValues(
         [ termVariableA, termVariableD ],
-        [{ '?a': valueA, '?d': valueC }],
+        [{ a: valueA, d: valueC }],
       ),
       bindingsA,
       AF,
@@ -673,7 +697,7 @@ describe('materializeOperation', () => {
     ))
       .toEqual(AF.createValues(
         [ termVariableD ],
-        [{ '?d': valueC }],
+        [{ d: valueC }],
       ));
   });
 
@@ -683,8 +707,8 @@ describe('materializeOperation', () => {
       AF.createValues(
         [ termVariableA, termVariableD ],
         [
-          { '?a': valueA, '?d': valueC },
-          { '?a': valueC, '?d': valueC },
+          { a: valueA, d: valueC },
+          { a: valueC, d: valueC },
         ],
       ),
       bindingsA,
@@ -693,7 +717,7 @@ describe('materializeOperation', () => {
     ))
       .toEqual(AF.createValues(
         [ termVariableD ],
-        [{ '?d': valueC }],
+        [{ d: valueC }],
       ));
   });
 

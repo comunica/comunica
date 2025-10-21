@@ -15,8 +15,8 @@ import type {
   IStatisticBase,
   IDiscoverEventData,
 } from '@comunica/types';
+import type { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra, Factory } from 'sparqlalgebrajs';
 import type { SourceStateGetter, ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
 
@@ -34,7 +34,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly handledUrls: Record<string, boolean>;
   private readonly aggregatedStore: IAggregatedStore | undefined;
   private readonly dataFactory: ComunicaDataFactory;
-  private readonly algebraFactory: Factory;
+  private readonly algebraFactory: AlgebraFactory;
   private linkQueue: Promise<ILinkQueue> | undefined;
   private wasForcefullyClosed = false;
 
@@ -52,7 +52,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks,
     mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue,
     dataFactory: ComunicaDataFactory,
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
   ) {
     super(
       cacheSize,
