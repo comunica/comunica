@@ -25,8 +25,8 @@ export class ActorRdfUpdateHypermediaSparql extends ActorRdfUpdateHypermedia {
 
   public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {
     if (!action.forceDestinationType && !action.metadata.sparqlService &&
-      !(this.checkUrlSuffixSparql && action.url.endsWith('/sparql')) &&
-      !(this.checkUrlSuffixUpdate && action.url.endsWith('/update'))) {
+      !(this.checkUrlSuffixSparql && (action.url.endsWith('/sparql') || action.url.endsWith('/sparql/'))) &&
+      !(this.checkUrlSuffixUpdate && (action.url.endsWith('/update') || action.url.endsWith('/update/')))) {
       return failTest(`Actor ${this.name} could not detect a SPARQL service description or URL ending on /sparql or /update.`);
     }
     return passTestVoid();

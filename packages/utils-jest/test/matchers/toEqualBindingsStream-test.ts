@@ -33,6 +33,28 @@ describe('toEqualBindingsStream', () => {
     ]);
   });
 
+  it('should succeed for equal non-empty bindings in a different order', async() => {
+    await expect(new ArrayIterator([
+      BF.bindings([
+        [ DF.variable('b'), DF.namedNode('b1') ],
+        [ DF.variable('c'), DF.namedNode('c1') ],
+      ]),
+      BF.bindings([
+        [ DF.variable('a'), DF.namedNode('a1') ],
+        [ DF.variable('b'), DF.namedNode('b1') ],
+      ]),
+    ], { autoStart: false })).toEqualBindingsStream([
+      BF.bindings([
+        [ DF.variable('a'), DF.namedNode('a1') ],
+        [ DF.variable('b'), DF.namedNode('b1') ],
+      ]),
+      BF.bindings([
+        [ DF.variable('b'), DF.namedNode('b1') ],
+        [ DF.variable('c'), DF.namedNode('c1') ],
+      ]),
+    ], true);
+  });
+
   it('should not succeed for non-equal bindings', async() => {
     await expect(new ArrayIterator([
       BF.bindings([

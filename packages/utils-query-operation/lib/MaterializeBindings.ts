@@ -90,6 +90,19 @@ export function materializeOperation(
           materializeTerm(patternOp.graph, bindings),
         ), { metadata: patternOp.metadata }),
     },
+    [Algebra.Types.JOIN]: {
+      preVisitor: () => ({ continue: false }),
+      transform: op =>
+      // Materialize join operation, and ensure metadata is taken into account.
+      // Join entries with metadata should not be flattened.
+        Object.assign(algebraFactory.createJoin(op.input.map(input => materializeOperation(
+          input,
+          bindings,
+          algebraFactory,
+          bindingsFactory,
+          options,
+        )), op.input.every(input => !input.metadata)), { metadata: op.metadata }),
+    },
     [Algebra.Types.EXTEND]: { transform: (extendOp) => {
       // Materialize an extend operation.
       // If strictTargetVariables is true, we throw if the extension target variable is attempted to be bound.
@@ -159,30 +172,9 @@ export function materializeOperation(
       },
     },
     [Algebra.Types.PROJECT]: {
-      // Materialize a project operation.
-      // If strictTargetVariables is true, we throw if the project target variable is attempted to be bound.
-      // Otherwise, we make a values clause out of the target variable and its value in InitialBindings.
-      preVisitor: () => ({ continue: options.strictTargetVariables }),
+      preVisitor: () => ({ continue: false }),
       transform: (projectOp) => {
-        if (options.strictTargetVariables) {
-          for (const variable of projectOp.variables) {
-            if (bindings.has(variable)) {
-              throw new Error(`Tried to bind variable ${termToString(variable)} in a SELECT operator.`);
-            }
-          }
-          return projectOp;
-        }
-
-        // Only include non-projected variables in the bindings that will be passed down recursively.
-        // This will result in non-projected variables being replaced with their InitialBindings values.
-        for (const bindingKey of bindings.keys()) {
-          for (const curVariable of projectOp.variables) {
-            if (curVariable.equals(bindingKey)) {
-              bindings = bindings.delete(bindingKey);
-              break;
-            }
-          }
-        }
+      // Materialize a project operation.
 
         // Find projected variables which are present in the originalBindings.
         // This will result in projected variables being handled via a values clause.

@@ -97,12 +97,12 @@ export class Bindings implements RDF.Bindings {
   }
 
   public filter(fn: (value: RDF.Term, key: RDF.Variable) => boolean): Bindings {
-    return new Bindings(this.dataFactory, Map(<any> this.entries
+    return new Bindings(this.dataFactory, Map<string, RDF.Term>(<any> this.entries
       .filter((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
   }
 
   public map(fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term): Bindings {
-    return new Bindings(this.dataFactory, Map(<any> this.entries
+    return new Bindings(this.dataFactory, Map<string, RDF.Term>(<any> this.entries
       .map((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
   }
 
@@ -238,14 +238,7 @@ export class Bindings implements RDF.Bindings {
 
       // If key doesn't occur in own context, it must be in other context
       // (if we get to this point, the key doesn't occur in both)
-      if (!context.get(key)) {
-        newContextData[key.name] = otherContext.get(key);
-        continue;
-      }
-      // This could likely be else statement, but don't want to risk it
-      if (!otherContext.get(key)) {
-        newContextData[key.name] = context.get(key);
-      }
+      newContextData[key.name] = context.get(key) || otherContext.get(key);
     }
     return new ActionContext(newContextData);
   }

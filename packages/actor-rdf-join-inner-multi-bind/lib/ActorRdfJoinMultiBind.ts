@@ -115,7 +115,12 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     this.logDebug(
       action.context,
       'First entry for Bind Join: ',
-      () => ({ entry: entries[0].operation, metadata: entries[0].metadata }),
+      () => ({
+        entry: entries[0].operation,
+        cardinality: entries[0].metadata.cardinality,
+        order: entries[0].metadata.order,
+        availableOrders: entries[0].metadata.availableOrders,
+      }),
     );
 
     // Close the non-smallest streams
@@ -142,7 +147,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         // Send the materialized patterns to the mediator for recursive join evaluation.
         const operation = operations.length === 1 ?
           operations[0] :
-          algebraFactory.createJoin(operations);
+          // Flattening should only take place if none of the input operations have associated metadata
+          algebraFactory.createJoin(operations, operations.every(op => !op.metadata));
         const output = getSafeBindings(await this.mediatorQueryOperation.mediate(
           { operation, context: subContext?.set(KeysQueryOperation.joinBindings, operationBindings) },
         ));

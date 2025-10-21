@@ -68,6 +68,33 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
         .resolves.toPassTestVoid();
     });
 
+    it('should test on invalid metadata when URL ends with /sparql/', async() => {
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
+      const url = 'abc/sparql/';
+      const metadata = { somethingElse: true };
+      const exists = true;
+      await expect(actor.test({ context, url, metadata, exists }))
+        .resolves.toPassTestVoid();
+    });
+
+    it('should test on invalid metadata when URL ends with /update', async() => {
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
+      const url = 'abc/update';
+      const metadata = { somethingElse: true };
+      const exists = true;
+      await expect(actor.test({ context, url, metadata, exists }))
+        .resolves.toPassTestVoid();
+    });
+
+    it('should test on invalid metadata when URL ends with /update/', async() => {
+      const context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
+      const url = 'abc/update/';
+      const metadata = { somethingElse: true };
+      const exists = true;
+      await expect(actor.test({ context, url, metadata, exists }))
+        .resolves.toPassTestVoid();
+    });
+
     it('should not test on invalid metadata when URL ends with /sparql when checkUrlSuffix is false', async() => {
       actor = new ActorRdfUpdateHypermediaSparql({
         name: 'actor',

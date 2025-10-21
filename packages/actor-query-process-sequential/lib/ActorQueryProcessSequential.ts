@@ -91,6 +91,7 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
         context.get(KeysInitQuery.initialBindings)!,
         algebraFactory,
         bindingsFactory,
+        { strictTargetVariables: true },
       );
 
       // Delete the query string from the context, since our initial query might have changed

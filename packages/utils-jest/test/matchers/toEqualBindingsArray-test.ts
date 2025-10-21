@@ -32,6 +32,28 @@ describe('toEqualBindingsArray', () => {
     ]);
   });
 
+  it('should succeed for equal non-empty bindings in a different order', () => {
+    expect([
+      BF.bindings([
+        [ DF.variable('c'), DF.namedNode('c1') ],
+        [ DF.variable('b'), DF.namedNode('b1') ],
+      ]),
+      BF.bindings([
+        [ DF.variable('a'), DF.namedNode('a1') ],
+        [ DF.variable('b'), DF.namedNode('b1') ],
+      ]),
+    ]).toEqualBindingsArray([
+      BF.bindings([
+        [ DF.variable('a'), DF.namedNode('a1') ],
+        [ DF.variable('b'), DF.namedNode('b1') ],
+      ]),
+      BF.bindings([
+        [ DF.variable('b'), DF.namedNode('b1') ],
+        [ DF.variable('c'), DF.namedNode('c1') ],
+      ]),
+    ], true);
+  });
+
   it('should not succeed for non-equal bindings', () => {
     expect([
       BF.bindings([

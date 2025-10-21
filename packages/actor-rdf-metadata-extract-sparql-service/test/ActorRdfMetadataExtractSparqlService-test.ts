@@ -1,9 +1,8 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
+import { streamifyArray } from 'streamify-array';
 import { ActorRdfMetadataExtractSparqlService } from '../lib/ActorRdfMetadataExtractSparqlService';
-
-const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
 
@@ -36,20 +35,25 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     const endpointService = DF.namedNode('http://localhost/endpoint');
     const endpointDefaultDataset = DF.namedNode('http://localhost/dataset');
     const endpointDefaultGraph = DF.namedNode('http://localhost/graph');
+    const endpointExtensionFunction = DF.namedNode('http://localhost/function');
 
     const sparqlResultsJson = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_JSON');
     const sparqlResultsXml = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_XML');
-    const sparql11Query = DF.namedNode('http://www.w3.org/ns/sparql-service-description#SPARQL11Query');
+    const sparql11Query = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}SPARQL11Query`);
 
-    const serviceDescriptionFeature = DF.namedNode('http://www.w3.org/ns/sparql-service-description#feature');
-    const serviceDescriptionEndpoint = DF.namedNode('http://www.w3.org/ns/sparql-service-description#endpoint');
-    const serviceDescriptionInputFormat = DF.namedNode('http://www.w3.org/ns/sparql-service-description#inputFormat');
-    const serviceDescriptionResultFormat = DF.namedNode('http://www.w3.org/ns/sparql-service-description#resultFormat');
-    const serviceDescriptionSupportedLanguage = DF.namedNode('http://www.w3.org/ns/sparql-service-description#supportedLanguage');
-    const serviceDescriptionDefaultDataset = DF.namedNode('http://www.w3.org/ns/sparql-service-description#defaultDataset');
-    const serviceDescriptionDefaultGraph = DF.namedNode('http://www.w3.org/ns/sparql-service-description#defaultGraph');
-    const serviceDescriptionBasicFederatedQuery = DF.namedNode('http://www.w3.org/ns/sparql-service-description#BasicFederatedQuery');
-    const serviceDescriptionUnionDefaultGraph = DF.namedNode('http://www.w3.org/ns/sparql-service-description#UnionDefaultGraph');
+    const propertyFeature = DF.namedNode('ex:propertyFeatureExample');
+
+    const serviceDescriptionFeature = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}feature`);
+    const serviceDescriptionEndpoint = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}endpoint`);
+    const serviceDescriptionInputFormat = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}inputFormat`);
+    const serviceDescriptionResultFormat = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}resultFormat`);
+    const serviceDescriptionPropertyFeature = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}propertyFeature`);
+    const serviceDescriptionSupportedLanguage = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}supportedLanguage`);
+    const serviceDescriptionDefaultDataset = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}defaultDataset`);
+    const serviceDescriptionDefaultGraph = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}defaultGraph`);
+    const serviceDescriptionBasicFederatedQuery = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}BasicFederatedQuery`);
+    const serviceDescriptionUnionDefaultGraph = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}UnionDefaultGraph`);
+    const serviceDescriptionExtensionFunction = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}extensionFunction`);
 
     beforeEach(() => {
       actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus, inferHttpsEndpoint: false });
@@ -63,11 +67,14 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
         DF.quad(serviceDescriptionIri, serviceDescriptionEndpoint, endpointService),
         DF.quad(serviceDescriptionIri, serviceDescriptionFeature, serviceDescriptionBasicFederatedQuery),
         DF.quad(serviceDescriptionIri, serviceDescriptionFeature, serviceDescriptionUnionDefaultGraph),
+        DF.quad(serviceDescriptionIri, serviceDescriptionFeature, DF.namedNode('unknown')),
         DF.quad(serviceDescriptionIri, serviceDescriptionSupportedLanguage, sparql11Query),
+        DF.quad(serviceDescriptionIri, serviceDescriptionPropertyFeature, propertyFeature),
         DF.quad(serviceDescriptionIri, serviceDescriptionInputFormat, sparqlResultsJson),
         DF.quad(serviceDescriptionIri, serviceDescriptionResultFormat, sparqlResultsXml),
         DF.quad(serviceDescriptionIri, serviceDescriptionDefaultDataset, endpointDefaultDataset),
         DF.quad(endpointDefaultDataset, serviceDescriptionDefaultGraph, endpointDefaultGraph),
+        DF.quad(endpointDefaultDataset, serviceDescriptionExtensionFunction, endpointExtensionFunction),
       ]);
       await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
         metadata: {
@@ -79,6 +86,8 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
           inputFormats: [ sparqlResultsJson.value ],
           resultFormats: [ sparqlResultsXml.value ],
           supportedLanguages: [ sparql11Query.value ],
+          extensionFunctions: [ endpointExtensionFunction.value ],
+          propertyFeatures: [ propertyFeature.value ],
         },
       });
     });

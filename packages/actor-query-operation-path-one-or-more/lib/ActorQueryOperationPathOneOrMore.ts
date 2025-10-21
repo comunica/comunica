@@ -100,17 +100,14 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                   algebraFactory,
                   bindingsFactory,
                 );
-                return it.transform<Bindings>({
-                  transform(item, next, push) {
-                    if (operation.graph.termType === 'Variable') {
-                      item = item.set(operation.graph, graph!);
-                    }
-                    push(item);
-                    next();
-                  },
+                return it.map<Bindings>((item) => {
+                  if (operation.graph.termType === 'Variable') {
+                    item = item.set(operation.graph, graph!);
+                  }
+                  return item;
                 });
               },
-              { maxBufferSize: 128 },
+              { autoStart: false, maxBufferSize: 128 },
             );
           },
           autoStart: false,
@@ -143,15 +140,13 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       context,
       operation: algebraFactory.createPath(operation.subject, predicate, variable, operation.graph),
     }));
-    const bindingsStream = results.bindingsStream.transform<Bindings>({
-      filter: item => operation.object.equals(item.get(variable)),
-      transform(item, next, push) {
-        const binding = operation.graph.termType === 'Variable' ?
+    const bindingsStream = results.bindingsStream.map<Bindings>((item) => {
+      if (operation.object.equals(item.get(variable))) {
+        return operation.graph.termType === 'Variable' ?
           bindingsFactory.bindings([[ operation.graph, item.get(operation.graph)! ]]) :
           bindingsFactory.bindings();
-        push(binding);
-        next();
-      },
+      }
+      return null;
     });
     return {
       type: 'bindings',

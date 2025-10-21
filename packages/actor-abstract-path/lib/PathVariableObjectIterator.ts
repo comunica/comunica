@@ -15,6 +15,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
   private readonly termHashes: Map<string, RDF.Term> = new Map();
   private readonly runningOperations: AsyncIterator<RDF.Term>[] = [];
   private readonly pendingOperations: { variable: RDF.Variable; operation: Algebra.Path }[] = [];
+  private started = false;
 
   public constructor(
     private readonly algebraFactory: AlgebraFactory,
@@ -26,11 +27,19 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     emitFirstSubject: boolean,
     private readonly maxRunningOperations = 16,
   ) {
-    // The autoStart flag must be true to kickstart metadata collection
-    super({ autoStart: true });
+    super({ autoStart: false });
 
     // Push the subject as starting point
     this._push(this.subject, emitFirstSubject);
+  }
+
+  public override getProperty<P>(propertyName: string, callback?: (value: P) => void): P | undefined {
+    // Kickstart iterator when metadata is requested
+    if (!this.started && propertyName === 'metadata') {
+      this.startNextOperation(false)
+        .catch(error => this.emit('error', error));
+    }
+    return super.getProperty(propertyName, callback);
   }
 
   protected override _end(destroy?: boolean): void {
@@ -42,13 +51,13 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     super._end(destroy);
   }
 
-  protected override _push(item: RDF.Term, pushAsResult = true): void {
+  protected override _push(item: RDF.Term, pushAsResult = true): boolean {
     let termString;
     if (pushAsResult) {
       // Don't push if this subject was already found
       termString = termToString(item);
       if (this.termHashes.has(termString)) {
-        return;
+        return false;
       }
     }
 
@@ -64,6 +73,39 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
       this.termHashes.set(termString, item);
       super._push(item);
     }
+    return true;
+  }
+
+  protected async startNextOperation(fillBuffer: boolean): Promise<void> {
+    this.started = true;
+
+    const pendingOperation = this.pendingOperations.pop()!;
+    const results = getSafeBindings(
+      await this.mediatorQueryOperation.mediate({ operation: pendingOperation.operation, context: this.context }),
+    );
+    const runningOperation = results.bindingsStream.map<RDF.Term>(
+      bindings => <RDF.Term> bindings.get(pendingOperation.variable),
+    );
+
+    this.runningOperations.push(runningOperation);
+    runningOperation.on('error', error => this.destroy(error));
+    runningOperation.on('readable', () => {
+      if (fillBuffer) {
+        this._fillBufferAsync();
+      }
+      this.readable = true;
+    });
+    runningOperation.on('end', () => {
+      this.runningOperations.splice(this.runningOperations.indexOf(runningOperation), 1);
+      if (fillBuffer) {
+        this._fillBufferAsync();
+      }
+      this.readable = true;
+    });
+
+    if (!this.getProperty('metadata')) {
+      this.setProperty('metadata', results.metadata);
+    }
   }
 
   protected override _read(count: number, done: () => void): void {
@@ -75,57 +117,39 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
         if (self.pendingOperations.length === 0) {
           break;
         }
-
-        const pendingOperation = self.pendingOperations.pop()!;
-        const results = getSafeBindings(
-          await self.mediatorQueryOperation.mediate({ operation: pendingOperation.operation, context: self.context }),
-        );
-        const runningOperation = results.bindingsStream.transform<RDF.Term>({
-          autoStart: false,
-          transform(bindings, next, push) {
-            const newTerm: RDF.Term = <RDF.Term> bindings.get(pendingOperation.variable);
-            push(newTerm);
-            next();
-          },
-        });
-        if (!runningOperation.done) {
-          self.runningOperations.push(runningOperation);
-          runningOperation.on('error', error => self.destroy(error));
-          runningOperation.on('readable', () => {
-            self.readable = true;
-            self._fillBufferAsync();
-          });
-          runningOperation.on('end', () => {
-            self.runningOperations.splice(self.runningOperations.indexOf(runningOperation), 1);
-            self.readable = true;
-            self._fillBufferAsync();
-          });
-        }
-
-        self.setProperty('metadata', results.metadata);
+        await self.startNextOperation(true);
       }
 
       // Try to read `count` items (based on UnionIterator)
       let lastCount = 0;
       let item: RDF.Term | null;
+      let pushSucceeded = true;
       // eslint-disable-next-line no-cond-assign
-      while (lastCount !== (lastCount = count)) {
+      while (!pushSucceeded || lastCount !== (lastCount = count)) {
+        pushSucceeded = true;
         // Prioritize the operations that have been added first
         for (let i = 0; i < self.runningOperations.length && count > 0; i++) {
           // eslint-disable-next-line no-cond-assign
           if ((item = self.runningOperations[i].read()) !== null) {
-            count--;
-            self._push(item);
+            if (self._push(item)) {
+              count--;
+            } else {
+              pushSucceeded = false;
+            }
           }
         }
       }
 
       // Close if everything has been read
-      if (self.runningOperations.length === 0 && self.pendingOperations.length === 0) {
-        self.close();
-      }
+      self.closeIfNeeded();
     })().then(() => {
       done();
     }, error => this.destroy(error));
+  }
+
+  protected closeIfNeeded(): void {
+    if (this.runningOperations.length === 0 && this.pendingOperations.length === 0) {
+      this.close();
+    }
   }
 }

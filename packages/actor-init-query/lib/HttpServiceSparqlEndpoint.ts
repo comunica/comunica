@@ -6,9 +6,10 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import * as querystring from 'node:querystring';
 import type { Writable } from 'node:stream';
 import * as url from 'node:url';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 
@@ -20,6 +21,7 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
+import { VoidMetadataEmitter } from './VoidMetadataEmitter';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
 const clusterUntyped = require('node:cluster');
@@ -45,6 +47,9 @@ export class HttpServiceSparqlEndpoint {
 
   public readonly freshWorkerPerQuery: boolean;
   public readonly contextOverride: boolean;
+  public readonly emitVoid: boolean;
+
+  public readonly voidMetadataEmitter: VoidMetadataEmitter;
 
   public lastQueryId = 0;
 
@@ -55,6 +60,8 @@ export class HttpServiceSparqlEndpoint {
     this.workers = args.workers ?? 1;
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
     this.contextOverride = Boolean(args.contextOverride);
+    this.emitVoid = Boolean(args.emitVoid);
+    this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
 
     this.engine = new QueryEngineFactoryBase(
       args.moduleRootPath,
@@ -151,6 +158,7 @@ export class HttpServiceSparqlEndpoint {
 
     const freshWorkerPerQuery: boolean = args.freshWorker;
     const contextOverride: boolean = args.contextOverride;
+    const emitVoid: boolean = args.emitVoid;
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
@@ -164,6 +172,7 @@ export class HttpServiceSparqlEndpoint {
       context,
       freshWorkerPerQuery,
       contextOverride,
+      emitVoid,
       moduleRootPath,
       mainModulePath: moduleRootPath,
       port,
@@ -338,7 +347,7 @@ export class HttpServiceSparqlEndpoint {
     // eslint-disable-next-line node/no-deprecated-api
     const requestUrl = url.parse(request.url ?? '', true);
     if (requestUrl.pathname === '/' || request.url === '/') {
-      stdout.write('[301] Permanently moved. Redirected to /sparql.');
+      stdout.write('[301] Permanently moved. Redirected to /sparql.\n');
       response.writeHead(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*', Location: `http://localhost:${this.port}/sparql${requestUrl.search ?? ''}` });
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
@@ -465,6 +474,17 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
+    // If the query was an update query, invalidate the void metadata emitter cache
+    if (this.emitVoid &&
+      // Try to check parsed operation
+      ((result.context && result.context.has(KeysQueryOperation.operation) &&
+          // eslint-disable-next-line ts/prefer-nullish-coalescing
+          result.context.getSafe(KeysQueryOperation.operation).type === Algebra.Types.DELETE_INSERT) ||
+        // Fallback to query string
+        /(INSERT|DELETE)/iu.test(queryBody.value))) {
+      this.voidMetadataEmitter.invalidateCache();
+    }
+
     // Default to SPARQL JSON for bindings and boolean
     if (!mediaType) {
       switch (result.resultType) {
@@ -553,17 +573,31 @@ export class HttpServiceSparqlEndpoint {
 
     let eventEmitter: EventEmitter;
     try {
+      const actionContext = ActionContext.ensureActionContext(this.context);
+
       // Append result formats
-      const formats = await engine.getResultMediaTypeFormats(new ActionContext(this.context));
+      const formats = await engine.getResultMediaTypeFormats(actionContext);
       for (const format in formats) {
         quads.push(quad(s, `${sd}resultFormat`, formats[format]));
       }
 
+      // Append extension functions
+      const functions = actionContext.get(KeysInitQuery.extensionFunctions);
+      for (const value in functions) {
+        quads.push(quad(s, `${sd}extensionFunction`, value));
+      }
+
+      if (this.emitVoid) {
+        for (const quad of await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response)) {
+          quads.push(quad);
+        }
+      }
+
       // Flush results
-      const { data } = await engine.resultToString(<QueryQuads> {
+      const { data } = await engine.resultToString(<QueryQuads>{
         resultType: 'quads',
         execute: async() => new ArrayIterator(quads),
-        metadata: <any> undefined,
+        metadata: <any>undefined,
       }, mediaType);
       data.on('error', (error: Error) => {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
@@ -682,6 +716,7 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   workers?: number;
   freshWorkerPerQuery?: boolean;
   contextOverride?: boolean;
+  emitVoid?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
 }

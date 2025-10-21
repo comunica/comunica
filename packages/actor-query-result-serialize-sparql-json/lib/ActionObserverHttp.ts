@@ -8,6 +8,7 @@ import { ActionObserver } from '@comunica/core';
  */
 export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOutput> {
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
+  public readonly observedActors: string[];
   public requests = 0;
 
   /* eslint-disable max-len */
@@ -24,11 +25,13 @@ export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOu
   /* eslint-enable max-len */
 
   public onRun(
-    _actor: Actor<IActionHttp, IActorTest, IActorHttpOutput, undefined>,
+    actor: Actor<IActionHttp, IActorTest, IActorHttpOutput, undefined>,
     _action: IActionHttp,
     _output: Promise<IActorHttpOutput>,
   ): void {
-    this.requests++;
+    if (this.observedActors.includes(actor.name)) {
+      this.requests++;
+    }
   }
 }
 
@@ -40,4 +43,9 @@ export interface IActionObserverHttpArgs extends IActionObserverArgs<IActionHttp
    */
   httpInvalidator: ActorHttpInvalidateListenable;
   /* eslint-enable max-len */
+  /**
+   * The URIs of the observed actors.
+   * @default {urn:comunica:default:http/actors#fetch}
+   */
+  observedActors: string[];
 }

@@ -6,7 +6,7 @@ import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-a
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type {
   BindingsStream,
   ComunicaDataFactory,
@@ -48,16 +48,20 @@ export class QuerySourceHypermedia implements IQuerySource {
   private readonly cacheSize: number;
   private readonly maxIterators: number;
 
+  private readonly emitPartialCardinalities: boolean;
+
   public constructor(
     cacheSize: number,
     firstUrl: string,
     forceSourceType: string | undefined,
     maxIterators: number,
     aggregateStore: boolean,
+    emitPartialCardinalities: boolean,
     mediators: IMediatorArgs,
     logWarning: (warningMessage: string) => void,
     dataFactory: ComunicaDataFactory,
     bindingsFactory: BindingsFactory,
+
   ) {
     this.referenceValue = firstUrl;
     this.cacheSize = cacheSize;
@@ -66,6 +70,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     this.maxIterators = maxIterators;
     this.mediators = mediators;
     this.aggregateStore = aggregateStore;
+    this.emitPartialCardinalities = emitPartialCardinalities;
     this.logWarning = logWarning;
     this.dataFactory = dataFactory;
     this.bindingsFactory = bindingsFactory;
@@ -168,50 +173,57 @@ export class QuerySourceHypermedia implements IQuerySource {
     let url = link.url;
     let quads: RDF.Stream;
     let metadata: Record<string, any>;
-    try {
-      const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediators.mediatorDereferenceRdf
-        .mediate({ context, url });
-      url = dereferenceRdfOutput.url;
-
-      // Determine the metadata
-      const rdfMetadataOutput: IActorRdfMetadataOutput = await this.mediators.mediatorMetadata.mediate(
-        { context, url, quads: dereferenceRdfOutput.data, triples: dereferenceRdfOutput.metadata?.triples },
-      );
-
-      rdfMetadataOutput.data.on('error', () => {
-        // Silence errors in the data stream,
-        // as they will be emitted again in the metadata stream,
-        // and will result in a promise rejection anyways.
-        // If we don't do this, we end up with an unhandled error message
-      });
-
-      metadata = (await this.mediators.mediatorMetadataExtract.mediate({
-        context,
-        url,
-        // The problem appears to be conflicting metadata keys here
-        metadata: rdfMetadataOutput.metadata,
-        headers: dereferenceRdfOutput.headers,
-        requestTime: dereferenceRdfOutput.requestTime,
-      })).metadata;
-      quads = rdfMetadataOutput.data;
-
-      // Optionally filter the resulting data
-      if (link.transform) {
-        quads = await link.transform(quads);
-      }
-    } catch (error: unknown) {
-      // Make sure that dereference errors are only emitted once an actor really needs the read quads
-      // This for example allows SPARQL endpoints that error on service description fetching to still be source-forcible
+    if (this.forceSourceType === 'sparql' && context.get(KeysQueryOperation.querySources)?.length === 1) {
+      // Skip metadata extraction if we're querying over just a single SPARQL endpoint.
       quads = new Readable();
-      quads.read = () => {
-        setTimeout(() => quads.emit('error', error));
-        return null;
-      };
+      quads.read = () => null;
       ({ metadata } = await this.mediators.mediatorMetadataAccumulate.mediate({ context, mode: 'initialize' }));
+    } else {
+      try {
+        const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediators.mediatorDereferenceRdf
+          .mediate({ context, url });
+        url = dereferenceRdfOutput.url;
 
-      // Log as warning, because the quads above may not always be consumed (e.g. for SPARQL endpoints),
-      // so the user would not be notified of something going wrong otherwise.
-      this.logWarning(`Metadata extraction for ${url} failed: ${(<Error> error).message}`);
+        // Determine the metadata
+        const rdfMetadataOutput: IActorRdfMetadataOutput = await this.mediators.mediatorMetadata.mediate(
+          { context, url, quads: dereferenceRdfOutput.data, triples: dereferenceRdfOutput.metadata?.triples },
+        );
+
+        rdfMetadataOutput.data.on('error', () => {
+          // Silence errors in the data stream,
+          // as they will be emitted again in the metadata stream,
+          // and will result in a promise rejection anyways.
+          // If we don't do this, we end up with an unhandled error message
+        });
+
+        metadata = (await this.mediators.mediatorMetadataExtract.mediate({
+          context,
+          url,
+          // The problem appears to be conflicting metadata keys here
+          metadata: rdfMetadataOutput.metadata,
+          headers: dereferenceRdfOutput.headers,
+          requestTime: dereferenceRdfOutput.requestTime,
+        })).metadata;
+        quads = rdfMetadataOutput.data;
+
+        // Optionally filter the resulting data
+        if (link.transform) {
+          quads = await link.transform(quads);
+        }
+      } catch (error: unknown) {
+        // Make sure that dereference errors are only emitted once an actor really needs the read quads
+        // This allows SPARQL endpoints that error on service description fetching to still be source-forcible
+        quads = new Readable();
+        quads.read = () => {
+          setTimeout(() => quads.emit('error', error));
+          return null;
+        };
+        ({ metadata } = await this.mediators.mediatorMetadataAccumulate.mediate({ context, mode: 'initialize' }));
+
+        // Log as warning, because the quads above may not always be consumed (e.g. for SPARQL endpoints),
+        // so the user would not be notified of something going wrong otherwise.
+        this.logWarning(`Metadata extraction for ${url} failed: ${(<Error>error).message}`);
+      }
     }
 
     // Aggregate all discovered quads into a store.
@@ -281,6 +293,7 @@ export class QuerySourceHypermedia implements IQuerySource {
                 appendingMetadata,
                 context,
               })).metadata,
+            this.emitPartialCardinalities,
           );
           aggregatedStores.set(this.firstUrl, aggregatedStore);
         }

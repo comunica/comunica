@@ -9,7 +9,7 @@ import type {
 import {
   ActorQuerySourceIdentifyHypermedia,
 } from '@comunica/bus-query-source-identify-hypermedia';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
@@ -26,8 +26,12 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly checkUrlSuffix: boolean;
   public readonly forceHttpGet: boolean;
   public readonly cacheSize: number;
+  public readonly forceSourceType: boolean;
   public readonly bindMethod: BindMethod;
   public readonly countTimeout: number;
+  public readonly cardinalityCountQueries: boolean;
+  public readonly cardinalityEstimateConstruction: boolean;
+  public readonly forceGetIfUrlLengthBelow: number;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -36,8 +40,8 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public async testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
-    if (!action.forceSourceType && !action.metadata.sparqlService &&
-      !(this.checkUrlSuffix && action.url.endsWith('/sparql'))) {
+    if (!action.forceSourceType && !this.forceSourceType && !action.metadata.sparqlService &&
+      !(this.checkUrlSuffix && (action.url.endsWith('/sparql') || action.url.endsWith('/sparql/')))) {
       return failTest(`Actor ${this.name} could not detect a SPARQL service description or URL ending on /sparql.`);
     }
     return passTest({ filterFactor: 1 });
@@ -48,8 +52,9 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
 
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
+    const isSingularSource = action.context.get(KeysQueryOperation.querySources)?.length === 1;
     const source = new QuerySourceSparql(
-      action.forceSourceType ? action.url : action.metadata.sparqlService || action.url,
+      (action.forceSourceType ?? this.forceSourceType) ? action.url : action.metadata.sparqlService || action.url,
       action.context,
       this.mediatorHttp,
       this.bindMethod,
@@ -59,6 +64,11 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.forceHttpGet,
       this.cacheSize,
       this.countTimeout,
+      // Cardinalities can be infinity when we're querying just a single source.
+      this.cardinalityCountQueries && !isSingularSource,
+      this.cardinalityEstimateConstruction,
+      this.forceGetIfUrlLengthBelow,
+      action.metadata,
     );
     return { source };
   }
@@ -90,6 +100,11 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    */
   cacheSize?: number;
   /**
+   * If provided, forces the source type of a source.
+   * @default {false}
+   */
+  forceSourceType?: boolean;
+  /**
    * The query operation for communicating bindings.
    * @default {values}
    */
@@ -100,6 +115,24 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * @default {3000}
    */
   countTimeout: number;
+  /**
+   * If count queries should be sent to obtain the cardinality of (sub)queries.
+   * If set to false, resulting cardinalities will always be considered infinity.
+   * @default {true}
+   */
+  cardinalityCountQueries: boolean;
+  /**
+   * If estimates for queries should be constructed locally from sub-query cardinalities.
+   * If set to false, count queries will used for cardinality estimation at all levels.
+   * @default {false}
+   */
+  cardinalityEstimateConstruction: boolean;
+  /**
+   * Force an HTTP GET instead of default POST (when forceHttpGet is false)
+   * when the url length (including encoded query) is below this number.
+   * @default {600}
+   */
+  forceGetIfUrlLengthBelow?: number;
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';

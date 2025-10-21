@@ -53,7 +53,12 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     this.logDebug(
       action.context,
       'First entry for Bind Join Source: ',
-      () => ({ entry: entries[0].operation, metadata: entries[0].metadata }),
+      () => ({
+        entry: entries[0].operation,
+        cardinality: entries[0].metadata.cardinality,
+        order: entries[0].metadata.order,
+        availableOrders: entries[0].metadata.availableOrders,
+      }),
     );
 
     // Close the non-smallest streams
@@ -166,7 +171,11 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     const sourceWrapper: IQuerySourceWrapper = <IQuerySourceWrapper> sources[0];
     const testingOperation = this.createOperationFromEntries(algebraFactory, remainingEntries);
     const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
-    if (!doesShapeAcceptOperation(selectorShape, testingOperation, { joinBindings: true })) {
+    const wildcardAcceptAllExtensionFunctions = action.context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
+    if (!doesShapeAcceptOperation(selectorShape, testingOperation, {
+      joinBindings: true,
+      wildcardAcceptAllExtensionFunctions,
+    })) {
       return failTest(`Actor ${this.name} detected a source that can not handle passing down join bindings`);
     }
 

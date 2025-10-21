@@ -562,6 +562,30 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           ]), [ DF.variable('o') ]));
         });
 
+        it('should not prune if the projection now has partial missing variables in alt', async() => {
+          const opIn = AF.createProject(
+            AF.createAlt([
+              assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            ]),
+            [
+              DF.variable('o'),
+            ],
+          );
+          const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+          expect(opOut).toEqual(AF.createProject(
+            AF.createAlt([
+              assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+              assignOperationSource(AF.createLink(DF.namedNode('p2')), source1),
+            ]),
+            [
+              DF.variable('o'),
+            ],
+          ));
+        });
+
         it('should not prune if the projection has no missing variables', async() => {
           const opIn = AF.createProject(
             AF.createUnion([
@@ -790,10 +814,46 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         it('should be false for cardinality === 0', async() => {
           source1.source.queryBindings = () => {
             const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
-            bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
+            bindingsStream.setProperty('metadata', { cardinality: { type: 'exact', value: 0 }});
             return bindingsStream;
           };
           await expect(actor.hasSourceResults(AF, source1, AF.createNop(), ctx)).resolves.toBeFalsy();
+        });
+
+        it('should verify cardinality estimates via ASK', async() => {
+          sourceAsk.source.queryBindings = () => {
+            const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+            bindingsStream.setProperty('metadata', { cardinality: { type: 'estimate', value: 1 }});
+            return bindingsStream;
+          };
+          jest.spyOn(sourceAsk.source, 'queryBoolean').mockResolvedValueOnce(false);
+          expect(sourceAsk.source.queryBoolean).not.toHaveBeenCalled();
+          await expect(actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx)).resolves.toBeFalsy();
+          expect(sourceAsk.source.queryBoolean).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not verify cardinality estimates via ASK if source does not support it', async() => {
+          sourceAsk.source.queryBindings = () => {
+            const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+            bindingsStream.setProperty('metadata', { cardinality: { type: 'estimate', value: 1 }});
+            return bindingsStream;
+          };
+          sourceAsk.source.getSelectorShape = async() => ({
+            type: 'operation',
+            operation: {
+              operationType: 'pattern',
+              pattern: AF.createPattern(
+                DF.variable('s'),
+                DF.variable('p'),
+                DF.variable('o'),
+                DF.variable('g'),
+              ),
+            },
+          });
+          jest.spyOn(sourceAsk.source, 'queryBoolean').mockResolvedValueOnce(false);
+          expect(sourceAsk.source.queryBoolean).not.toHaveBeenCalled();
+          await expect(actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx)).resolves.toBeTruthy();
+          expect(sourceAsk.source.queryBoolean).not.toHaveBeenCalled();
         });
 
         it('should reject for an erroring query', async() => {
@@ -811,14 +871,34 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           expect(source1.source.queryBindings).toHaveBeenCalledWith(AF.createNop(), ctx);
         });
 
-        it('should be true for cardinality = 0 on a traversal source', async() => {
+        it('should merge action and source contexts', async() => {
+          const sourceContext = new ActionContext({ 'urn:sckey': true });
+          const actionContext = new ActionContext({ 'urn:ackey': false });
+          const mergedContext = sourceContext.merge(actionContext);
+          const op = AF.createNop();
+          await actor.hasSourceResults(AF, { ...source1, context: sourceContext }, op, actionContext);
+          expect(source1.source.queryBindings).toHaveBeenCalledWith(op, mergedContext);
+        });
+
+        it('should be true for 0 cardinality on source with traversal enabled', async() => {
           source1.context = new ActionContext().set(KeysQuerySourceIdentify.traverse, true);
           source1.source.queryBindings = () => {
             const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
-            bindingsStream.setProperty('metadata', { cardinality: { value: 0 }});
+            bindingsStream.setProperty('metadata', { cardinality: { type: 'exact', value: 0 }});
             return bindingsStream;
           };
           await expect(actor.hasSourceResults(AF, source1, AF.createNop(), ctx)).resolves.toBeTruthy();
+        });
+
+        it('should be true for 0 cardinality on source with traversal enabled via action context', async() => {
+          const actionContext = new ActionContext({ [KeysQuerySourceIdentify.traverse.name]: true });
+          source1.context = new ActionContext();
+          source1.source.queryBindings = () => {
+            const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+            bindingsStream.setProperty('metadata', { cardinality: { type: 'exact', value: 0 }});
+            return bindingsStream;
+          };
+          await expect(actor.hasSourceResults(AF, source1, AF.createNop(), actionContext)).resolves.toBeTruthy();
         });
       });
 

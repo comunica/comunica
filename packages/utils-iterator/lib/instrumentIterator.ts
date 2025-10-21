@@ -55,19 +55,17 @@ function instrumentIteratorInner(
     }
 
     // Patch read
-    if ('read' in iterator) {
-      // eslint-disable-next-line ts/unbound-method
-      const readOld: any = iterator.read;
-      iterator.read = () => {
-        const startTime = performance.now();
-        const ret = readOld.call(iterator);
-        if (top && ret) {
-          counter.count++;
-        }
-        counter.timeSelf += performance.now() - startTime;
-        return ret;
-      };
-    }
+    // eslint-disable-next-line ts/unbound-method
+    const readOld: any = iterator.read;
+    iterator.read = () => {
+      const startTime = performance.now();
+      const ret = readOld.call(iterator);
+      if (top && ret) {
+        counter.count++;
+      }
+      counter.timeSelf += performance.now() - startTime;
+      return ret;
+    };
 
     // Measure total time
     if (top) {

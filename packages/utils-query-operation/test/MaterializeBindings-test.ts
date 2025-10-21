@@ -202,6 +202,107 @@ describe('materializeOperation', () => {
       .toEqual(Object.assign(AF.createPattern(valueA, termNamedNode, termVariableC, termNamedNode), { metadata }));
   });
 
+  it('should materialize a join with empty bindings', () => {
+    expect(materializeOperation(
+      AF.createJoin([
+        AF.createJoin([
+          AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+          AF.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
+        ]),
+        AF.createJoin([
+          AF.createPattern(termVariableA, termNamedNode, termVariableD, termNamedNode),
+          AF.createPattern(termVariableD, termNamedNode, termVariableC, termNamedNode),
+        ]),
+      ], false),
+      bindingsEmpty,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createJoin([
+        AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+        AF.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
+        AF.createPattern(termVariableA, termNamedNode, termVariableD, termNamedNode),
+        AF.createPattern(termVariableD, termNamedNode, termVariableC, termNamedNode),
+      ]));
+  });
+
+  it('should materialize a join with non-empty bindings', () => {
+    expect(materializeOperation(
+      AF.createJoin([
+        AF.createJoin([
+          AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+          AF.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
+        ]),
+        AF.createJoin([
+          AF.createPattern(termVariableA, termNamedNode, termVariableD, termNamedNode),
+          AF.createPattern(termVariableD, termNamedNode, termVariableC, termNamedNode),
+        ]),
+      ], false),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createJoin([
+        Object.assign(
+          AF.createPattern(valueA, termNamedNode, termVariableB, termNamedNode),
+          { metadata: undefined },
+        ),
+        Object.assign(
+          AF.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
+          { metadata: undefined },
+        ),
+        Object.assign(
+          AF.createPattern(valueA, termNamedNode, termVariableD, termNamedNode),
+          { metadata: undefined },
+        ),
+        Object.assign(
+          AF.createPattern(termVariableD, termNamedNode, termVariableC, termNamedNode),
+          { metadata: undefined },
+        ),
+      ]));
+  });
+
+  it('should materialize a join with non-empty bindings and keep metadata', () => {
+    const metadata = { a: 'b' };
+    expect(materializeOperation(
+      AF.createJoin([
+        Object.assign(AF.createJoin([
+          AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+          AF.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
+        ]), { metadata }),
+        AF.createJoin([
+          AF.createPattern(termVariableA, termNamedNode, termVariableD, termNamedNode),
+          AF.createPattern(termVariableD, termNamedNode, termVariableC, termNamedNode),
+        ]),
+      ], false),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createJoin([
+        Object.assign(AF.createJoin([
+          Object.assign(
+            AF.createPattern(valueA, termNamedNode, termVariableB, termNamedNode),
+            { metadata: undefined },
+          ),
+          Object.assign(
+            AF.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
+            { metadata: undefined },
+          ),
+        ]), { metadata }),
+        AF.createJoin([
+          Object.assign(
+            AF.createPattern(valueA, termNamedNode, termVariableD, termNamedNode),
+            { metadata: undefined },
+          ),
+          Object.assign(
+            AF.createPattern(termVariableD, termNamedNode, termVariableC, termNamedNode),
+            { metadata: undefined },
+          ),
+        ]),
+      ], false));
+  });
+
   it('should materialize a BGP with non-empty bindings', () => {
     expect(materializeOperation(
       AF.createBgp([
@@ -535,7 +636,7 @@ describe('materializeOperation', () => {
       .toEqual(AF.createProject(
         AF.createJoin([
           AF.createValues([ termVariableA ], [ valuesBindingsA ]),
-          AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+          AF.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
         ]),
         [ termVariableA, termVariableB, termVariableD ],
       ));
@@ -558,9 +659,9 @@ describe('materializeOperation', () => {
       ));
   });
 
-  it('should error on a project operation with ' +
+  it('should modify a project operation with ' +
     'a binding variable equal to the target variable for strictTargetVariables', () => {
-    expect(() => materializeOperation(
+    expect(materializeOperation(
       AF.createProject(
         AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         [ termVariableA, termVariableD ],
@@ -569,7 +670,21 @@ describe('materializeOperation', () => {
       AF,
       BF,
       { strictTargetVariables: true },
-    )).toThrow(new Error('Tried to bind variable ?a in a SELECT operator.'));
+    ))
+      .toEqual(AF.createProject(
+        AF.createJoin([
+          AF.createValues(
+            [ termVariableA ],
+            [
+              {
+                a: valueA,
+              },
+            ],
+          ),
+          AF.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+        ]),
+        [ termVariableA, termVariableD ],
+      ));
   });
 
   it('should modify a project operation with a binding variable equal to the target variable', () => {
@@ -585,13 +700,13 @@ describe('materializeOperation', () => {
       .toEqual(AF.createProject(
         AF.createJoin([
           AF.createValues([ termVariableA ], [ valuesBindingsA ]),
-          AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+          AF.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
         ]),
         [ termVariableA, termVariableD ],
       ));
   });
 
-  it('should only modify variables in the project operation that are present in the projection range', () => {
+  it('should not only modify variables in the project operation that are present in the projection range', () => {
     expect(materializeOperation(
       AF.createProject(
         AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
@@ -604,7 +719,7 @@ describe('materializeOperation', () => {
       .toEqual(AF.createProject(
         AF.createJoin([
           AF.createValues([ termVariableB ], [ valuesBindingsB ]),
-          AF.createPattern(valueA, termNamedNode, termVariableB, termNamedNode),
+          AF.createPattern(valueA, termNamedNode, valueB, termNamedNode),
         ]),
         [ termVariableD, termVariableB ],
       ));
@@ -629,7 +744,7 @@ describe('materializeOperation', () => {
           AF.createProject(
             AF.createJoin([
               AF.createValues([ termVariableB ], [ valuesBindingsB ]),
-              AF.createPattern(valueA, termNamedNode, termVariableB, termNamedNode),
+              AF.createPattern(valueA, termNamedNode, valueB, termNamedNode),
             ]),
             [ termVariableD, termVariableB ],
           ),
@@ -995,5 +1110,25 @@ describe('materializeOperation', () => {
           AF.createTermExpression(termVariableB),
         ]),
       ));
+  });
+
+  it('should throw when the variable was already bound', () => {
+    expect(() => materializeOperation(
+      AF.createProject(
+        AF.createExtend(
+          AF.createJoin([]),
+          DF.variable('a'),
+          AF.createTermExpression(DF.literal('abc')),
+        ),
+        [ DF.variable('a') ],
+      ),
+      BF.bindings([
+        [ DF.variable('a'), DF.namedNode('b') ],
+      ]),
+      AF,
+      BF,
+      { strictTargetVariables: true },
+    ))
+      .toThrow('Tried to bind variable ?a in a BIND operator.');
   });
 });

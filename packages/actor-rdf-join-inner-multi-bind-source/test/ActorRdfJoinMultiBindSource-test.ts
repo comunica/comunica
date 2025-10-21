@@ -232,14 +232,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join Source: ', expect.any(Function));
         expect(logSpy.mock.calls[0][2]()).toEqual({
           entry: action.entries[1].operation,
-          metadata: {
-            state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 3 },
-
-            variables: [
-              { variable: DF.variable('a'), canBeUndef: false },
-            ],
-          },
+          cardinality: { type: 'estimate', value: 3 },
         });
         expect(source1.source.queryBindings).toHaveBeenCalledTimes(2);
         expect(source1.source.queryBindings).toHaveBeenNthCalledWith(
@@ -356,14 +349,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join Source: ', expect.any(Function));
         expect(logSpy.mock.calls[0][2]()).toEqual({
           entry: action.entries[1].operation,
-          metadata: {
-            state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 3 },
-
-            variables: [
-              { variable: DF.variable('a'), canBeUndef: false },
-            ],
-          },
+          cardinality: { type: 'estimate', value: 3 },
         });
         expect(source4Context.source.queryBindings).toHaveBeenCalledTimes(2);
         expect(source4Context.source.queryBindings).toHaveBeenNthCalledWith(

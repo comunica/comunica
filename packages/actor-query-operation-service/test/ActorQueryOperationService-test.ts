@@ -1,9 +1,11 @@
+import type { IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
+import type { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationService } from '../lib/ActorQueryOperationService';
 import '@comunica/utils-jest';
@@ -16,8 +18,10 @@ const mediatorMergeBindingsContext: any = {
 
 describe('ActorQueryOperationService', () => {
   let bus: any;
+  let httpInvalidator: any;
   let mediatorQueryOperation: any;
   let mediatorQuerySourceIdentify: any;
+  let invalidateListeners: ((event: IActionHttpInvalidate) => void)[];
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -47,6 +51,10 @@ describe('ActorQueryOperationService', () => {
           type: arg.querySourceUnidentified.type,
         },
       })),
+    };
+    invalidateListeners = [];
+    httpInvalidator = {
+      addInvalidateListener: jest.fn(listener => invalidateListeners.push(listener)),
     };
   });
 
@@ -81,6 +89,8 @@ describe('ActorQueryOperationService', () => {
         forceSparqlEndpoint,
         mediatorMergeBindingsContext,
         mediatorQuerySourceIdentify,
+        httpInvalidator,
+        cacheSize: 16,
       });
     });
 
@@ -197,6 +207,36 @@ describe('ActorQueryOperationService', () => {
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]);
+    });
+
+    it('should store identified sources for later use', async() => {
+      const operation: any = { name: { value: 'ex:source' }};
+      const sourceResult: any = { querySource: 'source' };
+      const context: any = 'context';
+      const resultBindings = { type: 'bindings' };
+      jest.spyOn(mediatorQuerySourceIdentify, 'mediate').mockResolvedValue(sourceResult);
+      jest.spyOn(mediatorQueryOperation, 'mediate').mockResolvedValue(resultBindings);
+      expect(mediatorQuerySourceIdentify.mediate).not.toHaveBeenCalled();
+      expect(mediatorQueryOperation.mediate).not.toHaveBeenCalled();
+      await expect(actor.runOperation(operation, context)).resolves.toBe(resultBindings);
+      await expect(actor.runOperation(operation, context)).resolves.toBe(resultBindings);
+      expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(1);
+      expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
+    });
+
+    it('should clear the cache upon HTTP invalidation event', () => {
+      const cache = <LRUCache<string, any>>(<any>actor).cache;
+      cache.set('s1', {});
+      cache.set('s2', {});
+      expect(cache.size).toBe(2);
+      for (const listener of invalidateListeners) {
+        listener({ context: <any>{}, url: 's2' });
+      }
+      expect(cache.size).toBe(1);
+      for (const listener of invalidateListeners) {
+        listener({ context: <any>{}});
+      }
+      expect(cache.size).toBe(0);
     });
   });
 });

@@ -303,7 +303,7 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('should not test on 2 streams', async() => {
-      await expect(actor.test({ type: 'inner', entries: [ <any> null, <any> null ], context })).resolves
+      await expect(actor.test({ type: 'inner', entries: [ <any> {}, <any> {} ], context })).resolves
         .toFailTest('actor requires 3 join entries at least. The input contained 2.');
     });
 

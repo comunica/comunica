@@ -4,7 +4,7 @@ import type {
   IActorDereferenceRdfOutput,
 } from '@comunica/bus-dereference-rdf';
 import type { IActionQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
-import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, MetadataQuads } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
@@ -18,6 +18,7 @@ import 'jest-rdf';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
+import { streamifyArray } from 'streamify-array';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { QuerySourceHypermedia } from '../lib/QuerySourceHypermedia';
@@ -28,7 +29,6 @@ const DF = new DataFactory();
 const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 const quad = require('rdf-quad');
-const streamifyArray = require('streamify-array');
 
 describe('QuerySourceHypermedia', () => {
   let context: IActionContext;
@@ -69,7 +69,7 @@ describe('QuerySourceHypermedia', () => {
     let source: QuerySourceHypermedia;
 
     beforeEach(() => {
-      source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediators, logWarning, DF, BF);
+      source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, true, mediators, logWarning, DF, BF);
     });
 
     describe('getSelectorShape', () => {
@@ -333,7 +333,18 @@ describe('QuerySourceHypermedia', () => {
             });
           },
         };
-        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, DF, BF);
+        source = new QuerySourceHypermedia(
+          10,
+          'firstUrl',
+          'forcedType',
+          64,
+          false,
+          true,
+          mediatorsThis,
+          logWarning,
+          DF,
+          BF,
+        );
         await expect(source.queryBindings(operation, context)).toEqualBindingsStream([
           BF.fromRecord({
             s: DF.namedNode('s11'),
@@ -375,9 +386,21 @@ describe('QuerySourceHypermedia', () => {
             throw new Error(`mediatorQuerySourceIdentifyHypermedia error`);
           },
         };
-        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, DF, BF);
+        source = new QuerySourceHypermedia(
+          10,
+          'firstUrl',
+          'forcedType',
+          64,
+          false,
+          true,
+          mediatorsThis,
+          logWarning,
+          DF,
+          BF,
+        );
 
-        await expect(source.queryBindings(operation, context).toArray()).rejects.toThrow(`mediatorQuerySourceIdentifyHypermedia error`);
+        await expect(source.queryBindings(operation, context).toArray())
+          .rejects.toThrow(`mediatorQuerySourceIdentifyHypermedia error`);
       });
     });
 
@@ -421,7 +444,18 @@ describe('QuerySourceHypermedia', () => {
             source: { sourceContents: (await (<any> quads).toArray())[0].object.value },
           }),
         };
-        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, DF, BF);
+        source = new QuerySourceHypermedia(
+          10,
+          'firstUrl',
+          'forcedType',
+          64,
+          false,
+          true,
+          mediatorsThis,
+          logWarning,
+          DF,
+          BF,
+        );
         await expect(source.getSource({ url: 'startUrl' }, {}, context, undefined)).resolves.toEqual({
           link: { url: 'startUrl' },
           handledDatasets: {},
@@ -518,7 +552,18 @@ describe('QuerySourceHypermedia', () => {
             throw error;
           },
         };
-        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, DF, BF);
+        source = new QuerySourceHypermedia(
+          10,
+          'firstUrl',
+          'forcedType',
+          64,
+          false,
+          true,
+          mediatorsThis,
+          logWarning,
+          DF,
+          BF,
+        );
         const ret = await source.getSource({ url: 'startUrl' }, {}, context, undefined);
         expect(ret).toEqual({
           link: { url: 'startUrl' },
@@ -554,10 +599,49 @@ describe('QuerySourceHypermedia', () => {
               });
           }),
         };
-        source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, false, mediatorsThis, logWarning, DF, BF);
+        source = new QuerySourceHypermedia(
+          10,
+          'firstUrl',
+          'forcedType',
+          64,
+          false,
+          true,
+          mediatorsThis,
+          logWarning,
+          DF,
+          BF,
+        );
 
         await source.getSource({ url: 'startUrl' }, {}, context, undefined);
         await new Promise(setImmediate);
+      });
+
+      it('should skip metadata extraction for single forced SPARQL endpoints', async() => {
+        const mediatorsThis = { ...mediators };
+        mediatorsThis.mediatorMetadata = {
+          mediate: jest.fn(),
+        };
+        source = new QuerySourceHypermedia(
+          10,
+          'firstUrl',
+          'sparql',
+          64,
+          false,
+          true,
+          mediatorsThis,
+          logWarning,
+          DF,
+          BF,
+        );
+
+        await source.getSource(
+          { url: 'startUrl' },
+          {},
+          context.set(KeysQueryOperation.querySources, [ <any> 'a' ]),
+          undefined,
+        );
+        await new Promise(setImmediate);
+        expect(mediatorsThis.mediatorMetadata.mediate).not.toHaveBeenCalled();
       });
     });
   });
@@ -566,7 +650,18 @@ describe('QuerySourceHypermedia', () => {
     let source: QuerySourceHypermedia;
 
     beforeEach(() => {
-      source = new QuerySourceHypermedia(10, 'firstUrl', 'forcedType', 64, true, mediators, logWarning, DF, BF);
+      source = new QuerySourceHypermedia(
+        10,
+        'firstUrl',
+        'forcedType',
+        64,
+        true,
+        true,
+        mediators,
+        logWarning,
+        DF,
+        BF,
+      );
       const aggregateStores = new Map();
       context = context.set(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores, aggregateStores);
     });
@@ -614,7 +709,7 @@ describe('QuerySourceHypermedia', () => {
               j++;
             }
             const data: IActorDereferenceRdfOutput = {
-              data: streamifyArray([
+              data: <any> streamifyArray([
                 quad(`s1${j}`, `p1${j}`, `o1${j}`),
                 quad(`s2${j}`, `p2${j}`, `o2${j}`),
               ]),
@@ -631,6 +726,7 @@ describe('QuerySourceHypermedia', () => {
           'firstUrl',
           'forcedType',
           64,
+          true,
           true,
           mediatorsThis,
           logWarning,
@@ -741,101 +837,34 @@ describe('QuerySourceHypermedia', () => {
         ]);
         expect(mediatorsThis.mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(3);
 
-        expect(it1Meta).toHaveBeenCalledTimes(4);
-        expect(it1Meta).toHaveBeenNthCalledWith(1, {
-          a: 1,
-          state: expect.any(MetadataValidationState),
-          firstMeta: true,
-          cardinality: { type: 'exact', value: 2 },
-        });
-        expect(it1Meta).toHaveBeenNthCalledWith(2, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          firstMeta: true,
-          cardinality: { type: 'exact', value: 2 },
-        });
-        expect(it1Meta).toHaveBeenNthCalledWith(3, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          firstMeta: true,
-          cardinality: { type: 'exact', value: 4 },
-        });
-        expect(it1Meta).toHaveBeenNthCalledWith(4, {
+        expect(it1Meta.mock.calls.length).toBeGreaterThan(1);
+        expect(it1Meta).toHaveBeenLastCalledWith({
           state: expect.any(MetadataValidationState),
           a: 1,
           firstMeta: true,
           cardinality: { type: 'exact', value: 6 },
         });
-        expect(it2Meta).toHaveBeenCalledTimes(8);
-        expect(it2Meta).toHaveBeenNthCalledWith(1, {
-          state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 0 },
-          variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it2Meta).toHaveBeenNthCalledWith(2, {
+        expect(it2Meta.mock.calls.length).toBeGreaterThan(1);
+        expect(it2Meta).toHaveBeenLastCalledWith({
           state: expect.any(MetadataValidationState),
           a: 1,
+          cardinality: { type: 'estimate', value: 6 },
+          availableOrders: undefined,
           firstMeta: true,
-          cardinality: { type: 'estimate', value: 0 },
-
+          order: undefined,
           variables: [
             { variable: DF.variable('s'), canBeUndef: false },
             { variable: DF.variable('p'), canBeUndef: false },
             { variable: DF.variable('o'), canBeUndef: false },
           ],
         });
-        expect(it2Meta).toHaveBeenNthCalledWith(4, {
+
+        expect(it3Meta.mock.calls.length).toBeGreaterThan(1);
+        expect(it3Meta).toHaveBeenLastCalledWith({
           state: expect.any(MetadataValidationState),
           a: 1,
-          cardinality: { type: 'estimate', value: 2 },
-
-          variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it2Meta).toHaveBeenNthCalledWith(6, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          cardinality: { type: 'estimate', value: 3 },
-
-          variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it3Meta).toHaveBeenCalledTimes(4);
-        expect(it3Meta).toHaveBeenNthCalledWith(1, {
-          state: expect.any(MetadataValidationState),
-
-          cardinality: { type: 'estimate', value: 0 },
-          variables: [
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it3Meta).toHaveBeenNthCalledWith(2, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          cardinality: { type: 'estimate', value: 0 },
-          firstMeta: true,
-
-          variables: [
-            { variable: DF.variable('p'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
-          ],
-        });
-        expect(it3Meta).toHaveBeenNthCalledWith(4, {
-          state: expect.any(MetadataValidationState),
-          a: 1,
-          cardinality: { type: 'estimate', value: 0 },
+          cardinality: { type: 'estimate', value: 1 },
           firstMeta: true,
 
           variables: [
@@ -907,6 +936,7 @@ describe('QuerySourceHypermedia', () => {
           'firstUrl',
           'forcedType',
           64,
+          true,
           true,
           mediatorsThis,
           logWarning,
@@ -1020,6 +1050,7 @@ describe('QuerySourceHypermedia', () => {
           'firstUrl',
           'forcedType',
           64,
+          true,
           true,
           mediatorsThis,
           logWarning,

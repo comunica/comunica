@@ -7,8 +7,8 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, AlgebraFactory, isKnownOperation } from '@comunica/utils-algebra';
+import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import { Algebra, AlgebraFactory, isKnownOperation, isKnownSubType } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
   doesShapeAcceptOperation,
@@ -56,11 +56,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
       const groupedInput = await this.groupOperation(<Algebra.Operation> operation.input, context);
       if (groupedInput.metadata?.scopedSource) {
         const source: IQuerySourceWrapper = <IQuerySourceWrapper> getOperationSource(groupedInput);
-        if (doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
-          this.logDebug(context, `Hoist 1 source-specific operation into a single ${operation.type} operation for ${source.source.toString()}`);
-          removeOperationSource(groupedInput);
-          operation = assignOperationSource(operation, source);
-        }
+        operation = await this.moveSourceAnnotationUpwardsIfPossible(operation, [ groupedInput ], source, context);
       }
       return <Algebra.Operation> { ...operation, input: groupedInput };
     }
@@ -175,7 +171,11 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     source: IQuerySourceWrapper | undefined,
     context: IActionContext,
   ): Promise<O> {
-    if (source && doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
+    if (source && this.isPossibleToMoveSourceAnnotationUpwards(
+      operation,
+      await source.source.getSelectorShape(context),
+      context,
+    )) {
       this.logDebug(context, `Hoist ${inputs.length} source-specific operations into a single ${operation.type} operation for ${source.source.toString()}`);
       operation = assignOperationSource(operation, source);
       for (const input of inputs) {
@@ -183,5 +183,32 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
       }
     }
     return operation;
+  }
+
+  /**
+   * Checks if it's possible to move the source annotation upwards using the following rules:
+   * - If the shape doesn't accept the operation, then it's not possible.
+   * - If it does and the operation does not contain extension functions or
+   *   comunica doesn't support them, then it's possible.
+   * - If comunica does support them, then it's possible only if the shape accepts the extension function expressions.
+   * @param operation A grouped operation consisting of all given input operations.
+   * @param shape The common source's shape.
+   * @param context The action context.
+   */
+  public isPossibleToMoveSourceAnnotationUpwards<O extends Algebra.Operation>(
+    operation: O,
+    shape: FragmentSelectorShape,
+    context: IActionContext,
+  ): boolean {
+    const wildcardAcceptAllExtensionFunctions = context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
+    if (doesShapeAcceptOperation(shape, operation, { wildcardAcceptAllExtensionFunctions })) {
+      const extensionFunctions = context.get(KeysInitQuery.extensionFunctions);
+      const expression: Algebra.Expression | undefined = (<any> operation).expression;
+      return !extensionFunctions ||
+        !(expression && isKnownSubType(expression, Algebra.ExpressionTypes.NAMED)) ||
+        !(expression?.name.value in extensionFunctions) ||
+        doesShapeAcceptOperation(shape, expression, { wildcardAcceptAllExtensionFunctions });
+    }
+    return false;
   }
 }

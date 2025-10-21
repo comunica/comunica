@@ -17,10 +17,10 @@ ARG NPM_REGISTRY=https://registry.npmjs.org/
 RUN npm config set @comunica:registry $NPM_REGISTRY
 
 # Install the node module
-#RUN npm install --omit=dev
+RUN npm install --omit=dev
 
 # Run base binary (generated from package.json!bin)
-#ENTRYPOINT ["node", "./bin/query.js"]
+ENTRYPOINT ["node", "./bin/query.js"]
 
 # Default command
-#CMD ["--help"]
+CMD ["--help"]

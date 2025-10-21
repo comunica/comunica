@@ -1,11 +1,10 @@
-import { resolve } from 'node:path';
-import { ProgressPlugin } from 'webpack';
-import type { Configuration } from 'webpack';
+const path = require('node:path');
+const webpack = require('webpack');
 
-function createConfig(packagePath: string): Configuration {
+module.exports = function createConfig(packagePath) {
   return {
     devtool: 'source-map',
-    entry: resolve(packagePath, 'lib', 'index-browser.ts'),
+    entry: path.resolve(packagePath, 'lib', 'index-browser.ts'),
     mode: 'development',
     module: {
       rules: [
@@ -22,16 +21,14 @@ function createConfig(packagePath: string): Configuration {
       libraryTarget: 'var',
       library: 'Comunica',
     },
-    plugins: [
-      new ProgressPlugin(),
-    ],
     performance: {
       hints: 'error',
       // Bundle size limited to ~2.2 MB
       maxAssetSize: 2_250_000,
       maxEntrypointSize: 2_250_000,
     },
+    plugins: [
+      new webpack.ProgressPlugin(),
+    ],
   };
-}
-
-export { createConfig };
+};

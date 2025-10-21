@@ -554,6 +554,23 @@ LIMIT 100
         });
       });
 
+      it('handles the fileBaseIRI option', async() => {
+        const fileBaseIRI = 'http://example.org';
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--fileBaseIRI', fileBaseIRI ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
+          [KeysInitQuery.fileBaseIRI.name]: fileBaseIRI,
+        });
+      });
+
       it('handles the proxy -p option', async() => {
         const proxy = 'http://proxy.org/';
         const stdout = await stringifyStream(<any> (await actor.run({
@@ -745,6 +762,22 @@ LIMIT 100
           sources: [{ value: sourceHypermedia }],
           log: expect.any(LoggerPretty),
           [KeysInitQuery.distinctConstruct.name]: true,
+        });
+      });
+
+      it('handles the --extensionFunctionsAlwaysPushdown flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--extensionFunctionsAlwaysPushdown' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
+          [KeysInitQuery.extensionFunctionsAlwaysPushdown.name]: true,
         });
       });
 

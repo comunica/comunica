@@ -16,6 +16,7 @@ import type {
   IJoinEntryWithMetadata,
   ComunicaDataFactory,
   MetadataVariable,
+  LogicalJoinType,
 } from '@comunica/types';
 import { instrumentIterator } from '@comunica/utils-iterator';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/utils-metadata';
@@ -70,6 +71,11 @@ TS
    * If this join operator must only be used for join entries with (at least partially) common variables.
    */
   protected readonly requiresVariableOverlap?: boolean;
+  /**
+   * If this join operator can handle join entries with `operationModified` set to true.
+   * This will typically only be true for bind-join-like operators.
+   */
+  protected readonly canHandleOperationRequired?: boolean;
 
   /* eslint-disable max-len */
   /**
@@ -88,6 +94,7 @@ TS
     this.canHandleUndefs = options.canHandleUndefs ?? false;
     this.isLeaf = options.isLeaf ?? true;
     this.requiresVariableOverlap = options.requiresVariableOverlap ?? false;
+    this.canHandleOperationRequired = options.canHandleOperationRequired ?? false;
   }
 
   /**
@@ -184,7 +191,7 @@ TS
   }
 
   /**
-   * Obtain the join entries witt metadata from all given join entries.
+   * Obtain the join entries with metadata from all given join entries.
    * @param entries Join entries.
    */
   public static async getEntriesWithMetadatas(entries: IJoinEntry[]): Promise<IJoinEntryWithMetadata[]> {
@@ -243,15 +250,25 @@ TS
     if (partialMetadata.cardinality) {
       cardinalityJoined = partialMetadata.cardinality;
     } else {
+      let hasZeroCardinality = false;
       cardinalityJoined = metadatas
         .reduce((acc: RDF.QueryResultCardinality, metadata) => {
           const cardinalityThis = ActorRdfJoin.getCardinality(metadata);
+          if (cardinalityThis.value === 0) {
+            hasZeroCardinality = true;
+          }
           return {
             type: cardinalityThis.type === 'estimate' ? 'estimate' : acc.type,
             value: acc.value * (optional ? Math.max(1, cardinalityThis.value) : cardinalityThis.value),
           };
         }, { type: 'exact', value: 1 });
-      cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
+      // The cardinality should only be zero if one of the entries has zero cardinality, not due to float overflow
+      if (!hasZeroCardinality || optional) {
+        cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
+        if (cardinalityJoined.value === 0) {
+          cardinalityJoined.value = Number.MIN_VALUE;
+        }
+      }
     }
 
     return {
@@ -331,6 +348,12 @@ TS
       return failTest(`${this.name} requires at least two join entries.`);
     }
 
+    // Check if operationRequired is supported.
+    const someOperationRequired = action.entries.some(entry => entry.operationRequired);
+    if (!this.canHandleOperationRequired && someOperationRequired) {
+      return failTest(`${this.name} does not work with operationRequired.`);
+    }
+
     // Check if this actor can handle the given number of streams
     if (this.limitEntriesMin ? action.entries.length < this.limitEntries : action.entries.length > this.limitEntries) {
       return failTest(`${this.name} requires ${this.limitEntries
@@ -359,7 +382,8 @@ TS
 
     // This actor only works with common variables
     if (this.requiresVariableOverlap &&
-      (overlappingVariables ?? ActorRdfJoin.overlappingVariables(metadatas)).length === 0) {
+      (overlappingVariables ?? ActorRdfJoin.overlappingVariables(metadatas)).length === 0 &&
+      !someOperationRequired) {
       return failTest(`Actor ${this.name} can only join entries with at least one common variable`);
     }
 
@@ -514,12 +538,12 @@ export interface IActorRdfJoinInternalOptions {
    * If this join operator must only be used for join entries with (at least partially) common variables.
    */
   requiresVariableOverlap?: boolean;
+  /**
+   * If this join operator can handle join entries with `operationModified` set to true.
+   * This will typically only be true for bind-join-like operators.
+   */
+  canHandleOperationRequired?: boolean;
 }
-
-/**
- * Represents a logical join type.
- */
-export type LogicalJoinType = 'inner' | 'optional' | 'minus';
 
 export interface IActionRdfJoin extends IAction {
   /**
@@ -552,3 +576,6 @@ export interface IActorRdfJoinTestSideData {
 }
 
 export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;
+
+// TODO remove this in next major version
+export { LogicalJoinType } from '@comunica/types';

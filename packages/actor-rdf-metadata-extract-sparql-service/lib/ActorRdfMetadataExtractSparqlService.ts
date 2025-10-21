@@ -13,6 +13,8 @@ import { resolve as resolveIri } from 'relative-to-absolute-iri';
  * Comunica RDF metadata extract actor for SPARQL Service Descriptions.
  */
 export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtract {
+  public static SD = 'http://www.w3.org/ns/sparql-service-description#';
+
   private readonly inferHttpsEndpoint: boolean;
 
   public constructor(args: IActorRdfMetadataExtractSparqlServiceArgs) {
@@ -35,6 +37,8 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
       const inputFormats = new Set<string>();
       const resultFormats = new Set<string>();
       const supportedLanguages = new Set<string>();
+      const extensionFunctions = new Set<string>();
+      const propertyFeatures = new Set<string>();
 
       action.metadata.on('data', (quad: RDF.Quad) => {
         if (quad.predicate.value === 'http://rdfs.org/ns/void#subset' && quad.object.value === action.url) {
@@ -49,7 +53,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
           acceptSubjectUris.has(quad.subject.value)
         ) {
           switch (quad.predicate.value) {
-            case 'http://www.w3.org/ns/sparql-service-description#endpoint':
+            case `${ActorRdfMetadataExtractSparqlService.SD}endpoint`:
               // The VoID specification defines this as IRI, but does not specify whether or not it can be a literal.
               // When the IRI is a literal, it can be relative, and needs to be resolved to absolute value.
               metadata.sparqlService = quad.object.termType === 'Literal' ?
@@ -60,27 +64,33 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
                 metadata.sparqlService = metadata.sparqlService.replace(/^http:/u, 'https:');
               }
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#defaultDataset':
+            case `${ActorRdfMetadataExtractSparqlService.SD}defaultDataset`:
               metadata.defaultDataset = quad.object.value;
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#defaultGraph':
+            case `${ActorRdfMetadataExtractSparqlService.SD}defaultGraph`:
               metadata.defaultGraph = quad.object.value;
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#inputFormat':
+            case `${ActorRdfMetadataExtractSparqlService.SD}inputFormat`:
               inputFormats.add(quad.object.value);
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#resultFormat':
+            case `${ActorRdfMetadataExtractSparqlService.SD}resultFormat`:
               resultFormats.add(quad.object.value);
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#supportedLanguage':
+            case `${ActorRdfMetadataExtractSparqlService.SD}supportedLanguage`:
               supportedLanguages.add(quad.object.value);
               break;
-            case 'http://www.w3.org/ns/sparql-service-description#feature':
-              if (quad.object.value === 'http://www.w3.org/ns/sparql-service-description#UnionDefaultGraph') {
+            case `${ActorRdfMetadataExtractSparqlService.SD}propertyFeature`:
+              propertyFeatures.add(quad.object.value);
+              break;
+            case `${ActorRdfMetadataExtractSparqlService.SD}feature`:
+              if (quad.object.value === `${ActorRdfMetadataExtractSparqlService.SD}UnionDefaultGraph`) {
                 metadata.unionDefaultGraph = true;
-              } else if (quad.object.value === 'http://www.w3.org/ns/sparql-service-description#BasicFederatedQuery') {
+              } else if (quad.object.value === `${ActorRdfMetadataExtractSparqlService.SD}BasicFederatedQuery`) {
                 metadata.basicFederatedQuery = true;
               }
+              break;
+            case `${ActorRdfMetadataExtractSparqlService.SD}extensionFunction`:
+              extensionFunctions.add(quad.object.value);
               break;
           }
         }
@@ -93,6 +103,8 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
           ...inputFormats.size > 0 ? { inputFormats: [ ...inputFormats.values() ]} : {},
           ...resultFormats.size > 0 ? { resultFormats: [ ...resultFormats.values() ]} : {},
           ...supportedLanguages.size > 0 ? { supportedLanguages: [ ...supportedLanguages.values() ]} : {},
+          ...extensionFunctions.size > 0 ? { extensionFunctions: [ ...extensionFunctions.values() ]} : {},
+          ...propertyFeatures.size > 0 ? { propertyFeatures: [ ...propertyFeatures.values() ]} : {},
         }});
       });
     });

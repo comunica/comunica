@@ -31,7 +31,7 @@ describe('ActorAbstractDereferenceParse', () => {
             data: emptyReadable(),
             url: `${action.url}${ext}`,
             requestTime: 0,
-            exists: true,
+            exists: !(<any>action.context).hasRaw('doesNotExist'),
             mediaType: (<any> action).mediaType,
           };
         }),
@@ -76,7 +76,7 @@ describe('ActorAbstractDereferenceParse', () => {
     expect(actor.mediatorParse.mediate).toHaveBeenCalledWith({
       context,
       handle: expect.anything(),
-      handleMediaType: undefined,
+      handleMediaType: '',
     });
   });
 
@@ -145,6 +145,13 @@ describe('ActorAbstractDereferenceParse', () => {
     });
   });
 
+  it('should run and ignore non-existing dereferenced urls', async() => {
+    context = new ActionContext({ doesNotExist: true });
+    const output = await actor.run({ url: 'https://www.google.com/', context });
+    expect(output.url).toBe('https://www.google.com/index.html');
+    await expect(arrayifyStream(output.data)).resolves.toEqual([]);
+  });
+
   it('should not run on parse rejects', async() => {
     context = new ActionContext({ parseReject: true });
     await expect(actor.run({ url: 'https://www.google.com/', context }))
@@ -163,14 +170,16 @@ describe('ActorAbstractDereferenceParse', () => {
   it('should run and ignore parse rejects in lenient mode and log them', async() => {
     const logger = new LoggerVoid();
     const spy = jest.spyOn(logger, 'warn');
+    const url = 'https://www.google.com/';
     context = new ActionContext({
       parseReject: true,
       [KeysInitQuery.lenient.name]: true,
       [KeysCore.log.name]: logger,
     });
-    await actor.run({ url: 'https://www.google.com/', context });
+    await actor.run({ url, context });
     expect(spy).toHaveBeenCalledWith('Parse reject error', {
       actor: 'actor',
+      url,
     });
   });
 });

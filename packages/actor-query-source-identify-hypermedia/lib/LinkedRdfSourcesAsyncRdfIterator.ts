@@ -98,9 +98,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       }
       this.preflightMetadata
         .then(metadata => this.setProperty('metadata', metadata))
-        .catch(() => {
-          // Ignore errors
-        });
+        .catch(e => this.emit('error', e));
     }
     return super.getProperty(propertyName, callback);
   }

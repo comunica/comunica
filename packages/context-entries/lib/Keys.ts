@@ -19,6 +19,7 @@ import type {
   ComunicaDataFactory,
   IStatisticBase,
   IDiscoverEventData,
+  PartialResult,
   ILink,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
@@ -142,6 +143,10 @@ export const KeysInitQuery = {
    */
   baseIRI: new ActionContextKey<string>('@comunica/actor-init-query:baseIRI'),
   /**
+   * The file's base IRI.
+   */
+  fileBaseIRI: new ActionContextKey<string>('@comunica/actor-init-query:fileBaseIRI'),
+  /**
    * Object to cache function argument overload resolutions.
    * Defaults to an object that is reused across query executions.
    */
@@ -180,6 +185,13 @@ export const KeysInitQuery = {
   extensionFunctions: new ActionContextKey<
   Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>
     >('@comunica/actor-init-query:extensionFunctions'),
+  /**
+   * If extension functions must always be pushed down to sources that support expressions,
+   * even if those sources to not explicitly declare support for these extension functions.
+   */
+  extensionFunctionsAlwaysPushdown: new ActionContextKey<boolean>(
+    '@comunica/actor-init-query:extensionFunctionsAlwaysPushdown',
+  ),
   /**
    * Enables manipulation of the CLI arguments and their processing.
    */
@@ -341,12 +353,18 @@ export const KeysStatistics = {
    * All discovered links during query execution. Not all of them will necessarily be dereferenced.
    */
   discoveredLinks: new ActionContextKey<IStatisticBase<IDiscoverEventData>>(
-    '@comunica/bus-context-preprocess:discoveredLinks',
+    '@comunica/statistic:discoveredLinks',
   ),
   /**
    * Information about what links are dereferenced and when
    */
   dereferencedLinks: new ActionContextKey<IStatisticBase<ILink>>(
-    '@comunica/bus-context-preprocess:dereferencedLinks',
+    '@comunica/statistic:dereferencedLinks',
+  ),
+  /**
+   * Intermediate results produced during query execution
+   */
+  intermediateResults: new ActionContextKey<IStatisticBase<PartialResult>>(
+    '@comunica/statistic:intermediateResults',
   ),
 };

@@ -1,7 +1,9 @@
+import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hypermedia-sparql';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
-import { assignOperationSource } from '@comunica/utils-query-operation';
+import { assignOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';
 import '@comunica/utils-jest';
@@ -272,6 +274,103 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         expect(actor.shouldAttemptPushDown(op, [], new Map())).toBeTruthy();
       });
 
+      it('returns false if comunica supports the extensionFunction, but a source doesnt', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src = <any> {};
+        const shapes = new Map();
+        shapes.set(src, {
+          type: 'operation',
+          operation: { operationType: 'wildcard' },
+          joinBindings: true,
+        });
+        const extensionFunctions = {
+          'https://example.com/functions#mock': async(args: any) => args[0],
+        };
+        expect(actor.shouldAttemptPushDown(op, [ src ], shapes, extensionFunctions)).toBeFalsy();
+      });
+
+      it('returns true if both comunica and all sources support the extensionFunction', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src: IQuerySourceWrapper = {
+          source: new QuerySourceSparql(
+            'https://example.com/src',
+            new ActionContext(),
+            <any> {},
+            'values',
+            <any> {},
+            <any> {},
+            <any> {},
+            false,
+            64,
+            10,
+            true,
+            true,
+            0,
+            { extensionFunctions: [ 'https://example.com/functions#mock' ]},
+          ),
+        };
+        const extensionFunctions = {
+          'https://example.com/functions#mock': async(args: any) => args[0],
+        };
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, extensionFunctions);
+        const shapes = new Map();
+        shapes.set(src, await src.source.getSelectorShape(context));
+        expect(actor.shouldAttemptPushDown(op, [ src ], shapes, extensionFunctions)).toBeTruthy();
+      });
+
+      it('returns true if comunica and some sources support the extensionFunction, but not all sources', async() => {
+        const op = AF.createFilter(
+          AF.createNop(),
+          AF.createNamedExpression(DF.namedNode('https://example.com/functions#mock'), [
+            AF.createTermExpression(DF.variable('a')),
+            AF.createTermExpression(DF.variable('b')),
+          ]),
+        );
+        const src1: IQuerySourceWrapper = {
+          source: new QuerySourceSparql(
+            'https://example.com/src',
+            new ActionContext(),
+            <any> {},
+            'values',
+            <any> {},
+            <any> {},
+            <any> {},
+            false,
+            64,
+            10,
+            true,
+            true,
+            0,
+            { extensionFunctions: [ 'https://example.com/functions#mock' ]},
+          ),
+        };
+        const src2 = <any> {};
+        const extensionFunctions = {
+          'https://example.com/functions#mock': async(args: any) => args[0],
+        };
+        const context = new ActionContext().set(KeysInitQuery.extensionFunctions, extensionFunctions);
+        const shapes = new Map();
+        shapes.set(src1, await src1.source.getSelectorShape(context));
+        shapes.set(src2, {
+          type: 'operation',
+          operation: { operationType: 'wildcard' },
+          joinBindings: true,
+        });
+        expect(actor.shouldAttemptPushDown(op, [ src1, src2 ], shapes, extensionFunctions)).toBeTruthy();
+      });
+
       it('returns true if federated with filter support for one', () => {
         const src1 = <any> {};
         const src2 = <any> {};
@@ -388,19 +487,19 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
 
     describe('getExpressionVariables', () => {
       it('returns undefined for aggregates', async() => {
-        expect(() => actor.getExpressionVariables(
+        expect(() => getExpressionVariables(
           AF.createAggregateExpression('sum', AF.createTermExpression(DF.namedNode('s')), true),
         )).toThrow(`Getting expression variables is not supported for aggregate`);
       });
 
       it('returns undefined for wildcard', async() => {
-        expect(() => actor.getExpressionVariables(
+        expect(() => getExpressionVariables(
           AF.createWildcardExpression(),
         )).toThrow(`Getting expression variables is not supported for wildcard`);
       });
 
       it('returns undefined for existence', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createExistenceExpression(false, AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.variable('o'))),
         )).toEqual([
           DF.variable('p'),
@@ -409,25 +508,25 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns empty array for a named expression', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createNamedExpression(DF.namedNode('s'), []),
         )).toEqual([]);
       });
 
       it('returns a variable for a term expression with a variable', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createTermExpression(DF.variable('s')),
         )).toEqual([ DF.variable('s') ]);
       });
 
       it('returns an empty array for a term expression with a named node', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createTermExpression(DF.namedNode('s')),
         )).toEqual([]);
       });
 
       it('returns for an operator expression with variables', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.variable('a')),
             AF.createTermExpression(DF.variable('b')),
@@ -436,7 +535,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns for an operator expression with duplicate variables', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.variable('a')),
             AF.createTermExpression(DF.variable('a')),
@@ -445,7 +544,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns for a nested operator expression with variables', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.variable('a')),
             AF.createOperatorExpression('+', [
@@ -457,7 +556,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       it('returns for a nested operator expression with mixed terms', async() => {
-        expect(actor.getExpressionVariables(
+        expect(getExpressionVariables(
           AF.createOperatorExpression('+', [
             AF.createTermExpression(DF.blankNode('a')),
             AF.createOperatorExpression('+', [
@@ -476,7 +575,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       ) {
         return actor.filterPushdown(
           expression,
-          actor.getExpressionVariables(expression),
+          getExpressionVariables(expression),
           operation,
           AF,
           new ActionContext(),
@@ -1093,6 +1192,22 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             ]) ]);
           });
 
+          it('is not pushed down for ?sother=<sother>', async() => {
+            expect(filterPushdown(
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('sother')),
+                AF.createTermExpression(DF.namedNode('sother')),
+              ]),
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+            )).toEqual([ false, AF.createFilter(
+              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createOperatorExpression('=', [
+                AF.createTermExpression(DF.variable('sother')),
+                AF.createTermExpression(DF.namedNode('sother')),
+              ]),
+            ) ]);
+          });
+
           it('is not pushed down for ?o="01"^xsd:number', async() => {
             expect(filterPushdown(
               AF.createOperatorExpression('=', [
@@ -1299,15 +1414,15 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             });
           });
 
-          it('is pushed down for ?s=<s>', async() => {
+          it('is not pushed down for ?s=<s>', async() => {
             expect(filterPushdown(
               AF.createOperatorExpression('=', [
                 AF.createTermExpression(DF.variable('s')),
                 AF.createTermExpression(DF.namedNode('s')),
               ]),
-              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.namedNode('o1')),
             )).toEqual([ false, AF.createFilter(
-              AF.createPattern(DF.variable('s'), DF.variable('p'), DF.namedNode('o1')),
+              AF.createPath(DF.variable('s'), AF.createNps([]), DF.namedNode('o1')),
               AF.createOperatorExpression('=', [
                 AF.createTermExpression(DF.variable('s')),
                 AF.createTermExpression(DF.namedNode('s')),

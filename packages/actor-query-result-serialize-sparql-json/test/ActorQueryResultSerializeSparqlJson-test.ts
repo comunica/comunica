@@ -114,8 +114,10 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     let metadata: MetadataBindings;
     let httpInvalidator: ActorHttpInvalidateListenable;
     let lastListener: IInvalidateListener;
+    let observedActors: string[];
 
     beforeEach(() => {
+      observedActors = [ 'urn:comunica:default:http/actors#fetch' ];
       httpInvalidator = <any> {
         addInvalidateListener: jest.fn((listener: IInvalidateListener) => {
           lastListener = listener;
@@ -125,6 +127,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         name: 'observer',
         bus,
         httpInvalidator,
+        observedActors,
       });
       actor = new ActorQueryResultSerializeSparqlJson({
         bus,
@@ -250,8 +253,8 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       });
 
       it('should run on a bindings stream with http requests', async() => {
-        (<any> httpObserver).onRun(null, null, null);
-        (<any> httpObserver).onRun(null, null, null);
+        (<any> httpObserver).onRun({ name: 'urn:comunica:default:http/actors#fetch' }, null, null);
+        (<any> httpObserver).onRun({ name: 'urn:comunica:default:http/actors#fetch' }, null, null);
         await expect(stringifyStream((<any> (await actor.run(
           {
             context,
@@ -270,11 +273,11 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
       });
 
       it('should run on a bindings stream with http requests and cache invalidations', async() => {
-        (<any> httpObserver).onRun(null, null, null);
-        (<any> httpObserver).onRun(null, null, null);
+        (<any> httpObserver).onRun({ name: 'urn:comunica:default:http/actors#fetch' }, null, null);
+        (<any> httpObserver).onRun({ name: 'urn:comunica:default:http/actors#fetch' }, null, null);
         lastListener(<any> {});
-        (<any> httpObserver).onRun(null, null, null);
-        (<any> httpObserver).onRun(null, null, null);
+        (<any> httpObserver).onRun({ name: 'urn:comunica:default:http/actors#fetch' }, null, null);
+        (<any> httpObserver).onRun({ name: 'urn:comunica:default:http/actors#fetch' }, null, null);
         await expect(stringifyStream((<any> (await actor.run(
           {
             context,

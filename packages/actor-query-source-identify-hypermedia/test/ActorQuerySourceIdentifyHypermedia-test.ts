@@ -77,6 +77,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           cacheSize: 10,
           maxIterators: 64,
           aggregateTraversalStore: false,
+          emitPartialCardinalities: false,
           mediatorMetadata,
           mediatorMetadataExtract,
           mediatorMetadataAccumulate,
@@ -205,6 +206,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
             cacheSize: 10,
             maxIterators: 64,
             aggregateTraversalStore: false,
+            emitPartialCardinalities: false,
             mediatorMetadata,
             mediatorMetadataExtract: mediatorMetadataExtractThis,
             mediatorMetadataAccumulate,
@@ -244,6 +246,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
             cacheSize: 10,
             maxIterators: 64,
             aggregateTraversalStore: false,
+            emitPartialCardinalities: false,
             mediatorMetadata,
             mediatorMetadataExtract: mediatorMetadataExtractThis,
             mediatorMetadataAccumulate,
@@ -288,6 +291,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           cacheSize: 10,
           maxIterators: 64,
           aggregateTraversalStore: true,
+          emitPartialCardinalities: false,
           mediatorMetadata,
           mediatorMetadataExtract,
           mediatorMetadataAccumulate,
@@ -670,6 +674,75 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           ]);
 
           expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(2);
+        });
+      });
+    });
+
+    describe('An ActorQuerySourceIdentifyHypermedia instance with emitPartialCardinalities true', () => {
+      let actor: ActorQuerySourceIdentifyHypermedia;
+      let context: IActionContext;
+      let operation: Algebra.Operation;
+      let querySourceUnidentified: QuerySourceUnidentifiedExpanded;
+
+      beforeEach(() => {
+        actor = new ActorQuerySourceIdentifyHypermedia({
+          bus,
+          cacheSize: 10,
+          maxIterators: 64,
+          aggregateTraversalStore: false,
+          emitPartialCardinalities: true,
+          mediatorMetadata,
+          mediatorMetadataExtract,
+          mediatorMetadataAccumulate,
+          mediatorDereferenceRdf,
+          mediatorQuerySourceIdentifyHypermedia,
+          mediatorRdfResolveHypermediaLinks,
+          mediatorRdfResolveHypermediaLinksQueue,
+          mediatorMergeBindingsContext,
+          name: 'actor',
+        });
+        context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
+        operation = <any> {};
+        querySourceUnidentified = { value: 'firstUrl' };
+      });
+
+      describe('run', () => {
+        it('should return a source that can produce a bindings stream and metadata', async() => {
+          const { querySource } = await actor.run({ context, querySourceUnidentified });
+          const bindings = querySource.source.queryBindings(operation, context);
+          await expect(bindings).toEqualBindingsStream([
+            BF.fromRecord({
+              s: DF.namedNode('s1'),
+              p: DF.namedNode('p1'),
+              o: DF.namedNode('o1'),
+              g: DF.defaultGraph(),
+            }),
+            BF.fromRecord({
+              s: DF.namedNode('s2'),
+              p: DF.namedNode('p2'),
+              o: DF.namedNode('o2'),
+              g: DF.defaultGraph(),
+            }),
+            BF.fromRecord({
+              s: DF.namedNode('s3'),
+              p: DF.namedNode('p3'),
+              o: DF.namedNode('o3'),
+              g: DF.defaultGraph(),
+            }),
+            BF.fromRecord({
+              s: DF.namedNode('s4'),
+              p: DF.namedNode('p4'),
+              o: DF.namedNode('o4'),
+              g: DF.defaultGraph(),
+            }),
+          ]);
+          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
+            .toEqual({
+              state: expect.any(MetadataValidationState),
+              cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+              firstMeta: true,
+              a: 1,
+            });
         });
       });
     });

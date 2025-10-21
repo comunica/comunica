@@ -6,6 +6,7 @@ import type {
   IActionContext,
   IQueryBindingsOptions,
   IQuerySource,
+  QuerySourceReference,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -81,7 +82,7 @@ export class QuerySourceSkolemized implements IQuerySource {
     return this.innerSource.queryVoid(operation, context);
   }
 
-  public get referenceValue(): string | RDF.Source {
+  public get referenceValue(): QuerySourceReference {
     return this.innerSource.referenceValue;
   }
 

@@ -6,7 +6,7 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, IJoinEntryWithMetadata } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
@@ -59,6 +59,7 @@ IActorRdfJoinSelectivityOutput
     let actor: ActorRdfJoinMultiSmallest;
     let action3: () => IActionRdfJoin;
     let action4: () => IActionRdfJoin;
+    let action5: () => IActionRdfJoin;
     let invocationCounter: any;
 
     beforeEach(() => {
@@ -303,11 +304,163 @@ IActorRdfJoinSelectivityOutput
         ],
         context,
       });
+      action5 = () => ({
+        type: 'inner',
+        entries: [
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
+              ]),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 4 },
+                  pageSize: 100,
+                  requestTime: 10,
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any> {},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('c'), DF.literal('c1') ],
+                  [ DF.variable('d'), DF.literal('d1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('c'), DF.literal('c2') ],
+                  [ DF.variable('d'), DF.literal('d2') ],
+                ]),
+              ]),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 5 },
+                  pageSize: 100,
+                  requestTime: 20,
+
+                  variables: [
+                    { variable: DF.variable('c'), canBeUndef: false },
+                    { variable: DF.variable('d'), canBeUndef: false },
+                  ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any> {},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('b'), DF.literal('b1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('b'), DF.literal('b2') ],
+                ]),
+              ]),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 6 },
+                  pageSize: 100,
+                  requestTime: 30,
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any> {},
+          },
+          {
+            output: {
+              bindingsStream: new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a1') ],
+                  [ DF.variable('d'), DF.literal('d1') ],
+                ]),
+                BF.bindings([
+                  [ DF.variable('a'), DF.literal('a2') ],
+                  [ DF.variable('d'), DF.literal('d2') ],
+                ]),
+              ]),
+              metadata: () => Promise.resolve(
+                {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 7 },
+                  pageSize: 100,
+                  requestTime: 40,
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('d'), canBeUndef: false },
+                  ],
+                },
+              ),
+              type: 'bindings',
+            },
+            operation: <any> {},
+          },
+        ],
+        context,
+      });
     });
 
     async function getSideData(action: IActionRdfJoin): Promise<IActorRdfJoinMultiSmallestTestSideData> {
       return (await actor.test(action)).getSideData();
     }
+
+    it('should correctly identify the smallest streams with overlapping variables', () => {
+      const entries = [
+        createEntry([ 'a', 'b' ], 2),
+        createEntry([ 'a' ], 5),
+        createEntry([ 'b' ], 10),
+      ];
+      const joinIndexes = actor.getJoinIndexes(entries);
+      expect(joinIndexes).toEqual([ 0, 1 ]);
+    });
+
+    it('should correctly avoid cartesian join', () => {
+      const entries = [
+        createEntry([ 'a', 'b' ], 2),
+        createEntry([ 'c' ], 5),
+        createEntry([ 'b' ], 10),
+      ];
+      const joinIndexes = actor.getJoinIndexes(entries);
+      expect(joinIndexes).toEqual([ 0, 2 ]);
+    });
+
+    it('should correctly choose cartesian join when no variables overlap', () => {
+      const entries = [
+        createEntry([ 'a' ], 2),
+        createEntry([ 'b' ], 5),
+        createEntry([ 'c' ], 10),
+      ];
+      const joinIndexes = actor.getJoinIndexes(entries);
+      expect(joinIndexes).toEqual([ 0, 1 ]);
+    });
 
     it('should not test on 0 streams', async() => {
       await expect(actor.test({ type: 'inner', entries: [], context })).resolves
@@ -320,7 +473,7 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('should not test on 2 streams', async() => {
-      await expect(actor.test({ type: 'inner', entries: [ <any> null, <any> null ], context })).resolves
+      await expect(actor.test({ type: 'inner', entries: [ <any> {}, <any> {} ], context })).resolves
         .toFailTest('actor requires 3 join entries at least. The input contained 2.');
     });
 
@@ -350,6 +503,16 @@ IActorRdfJoinSelectivityOutput
       }
     });
 
+    it('should test 4 streams when vars disjoint in 2 smallest', async() => {
+      const action = action5();
+      await expect(actor.test(action)).resolves.toPassTest({
+        iterations: 840,
+        persistedItems: 0,
+        blockingItems: 0,
+        requestTime: 6,
+      });
+    });
+
     it('should run on 3 streams', async() => {
       const action = action3();
       const output = await actor.run(action, await getSideData(action));
@@ -364,6 +527,7 @@ IActorRdfJoinSelectivityOutput
           { variable: DF.variable('b'), canBeUndef: false },
         ],
       });
+
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('a'), DF.literal('a1') ],
@@ -421,3 +585,28 @@ IActorRdfJoinSelectivityOutput
     });
   });
 });
+
+// Helper to create an entry with specified variables and cardinality
+function createEntry(vars: string[], cardinality: number): IJoinEntryWithMetadata {
+  return {
+    output: {
+      bindingsStream: new ArrayIterator<RDF.Bindings>([]),
+      metadata: () => Promise.resolve({
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: cardinality },
+        pageSize: 100,
+        requestTime: 30,
+        variables: vars.map(v => ({ variable: DF.variable(v), canBeUndef: false })),
+      }),
+      type: 'bindings',
+    },
+    operation: <any>{},
+    metadata: {
+      state: new MetadataValidationState(),
+      cardinality: { type: 'estimate', value: cardinality },
+      pageSize: 100,
+      requestTime: 30,
+      variables: vars.map(v => ({ variable: DF.variable(v), canBeUndef: false })),
+    },
+  };
+}

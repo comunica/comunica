@@ -1098,14 +1098,7 @@ IQueryOperationResultBindings
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join: ', expect.any(Function));
         expect(logSpy.mock.calls[0][2]()).toEqual({
           entry: action.entries[1].operation,
-          metadata: {
-            state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 1 },
-
-            variables: [
-              { variable: DF.variable('a'), canBeUndef: false },
-            ],
-          },
+          cardinality: { type: 'estimate', value: 1 },
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {
@@ -1494,14 +1487,7 @@ IQueryOperationResultBindings
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join: ', expect.any(Function));
         expect(logSpy.mock.calls[0][2]()).toEqual({
           entry: action.entries[2].operation,
-          metadata: {
-            state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 1 },
-
-            variables: [
-              { variable: DF.variable('a'), canBeUndef: false },
-            ],
-          },
+          cardinality: { type: 'estimate', value: 1 },
         });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorQueryOperation.mediate).toHaveBeenNthCalledWith(1, {

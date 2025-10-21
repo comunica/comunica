@@ -11,6 +11,7 @@
     "packages/packager",
     "packages/runner-cli",
     "packages/statistic-base",
+    "packages/statistic-intermediate-results",
     "packages/statistic-link-dereference",
     "packages/statistic-link-discovery",
     "packages/utils-algebra",
@@ -53,6 +54,7 @@
     "Response",
     "RequestInfo",
     "RequestInit",
+    "AsyncIterator",
 
     "IStatistic",
     "ILink",
@@ -71,6 +73,7 @@
     "FragmentSelectorShape",
     "ChunkedIterator",
     "IQuerySource",
+    "LogicalJoinType",
 
     "RDF.Stream",
     "Omit",
@@ -84,7 +87,8 @@
     "ExpressionEvaluator",
     "AggregateEvaluator",
     "ExpressionFunctionBase",
-    "TermFunctionBase"
+    "TermFunctionBase",
+    "possibleOperationTypes"
   ],
   "modulePrefix": {
     "@comunica/actor-query-operation-service": "caqoser",

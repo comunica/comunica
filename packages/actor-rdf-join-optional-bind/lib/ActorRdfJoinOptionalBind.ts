@@ -35,6 +35,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       canHandleUndefs: true,
       isLeaf: false,
       requiresVariableOverlap: true,
+      canHandleOperationRequired: true,
     });
   }
 

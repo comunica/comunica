@@ -1,7 +1,6 @@
+import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-
-const md5 = require('md5');
 
 const fetchFn = globalThis.fetch;
 
@@ -30,8 +29,11 @@ export async function fetch(...args: Parameters<typeof fetchFn>): ReturnType<typ
       })
       .sort(([ a ], [ b ]) => a.localeCompare(b)),
   ]);
-  const pth = path.join(__dirname, 'networkCache', md5(json));
+  const jsonHash = createHash('md5', { encoding: 'utf-8' }).update(json).digest('hex');
+  const pth = path.join(__dirname, 'networkCache', jsonHash);
   if (!fs.existsSync(pth)) {
+    // eslint-disable-next-line no-console
+    console.warn(`Creating new test network cache entry for request: ${json} (${pth})}`);
     const res = await fetchFn(...args);
     fs.writeFileSync(pth, JSON.stringify({
       ...res,
