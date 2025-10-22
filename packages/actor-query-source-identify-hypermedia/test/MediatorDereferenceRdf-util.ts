@@ -1,9 +1,9 @@
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 
 import type {
-  IActionQuerySourceHypermediaResolve,
-  MediatorQuerySourceHypermediaResolve,
-} from '@comunica/bus-query-source-hypermedia-resolve';
+  IActionQuerySourceDereferenceLink,
+  MediatorQuerySourceDereferenceLink,
+} from '@comunica/bus-query-source-dereference-link';
 
 import type {
   IActionRdfMetadataAccumulate,
@@ -56,8 +56,8 @@ const mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate = {
   },
 };
 // @ts-expect-error
-const mediatorQuerySourceHypermediaResolve: MediatorQuerySourceHypermediaResolve = {
-  async mediate(action: IActionQuerySourceHypermediaResolve) {
+const mediatorQuerySourceDereferenceLink: MediatorQuerySourceDereferenceLink = {
+  async mediate(action: IActionQuerySourceDereferenceLink) {
     action.handledDatasets!.MYDATASET = true;
     return {
       dataset: 'MYDATASET',
@@ -84,7 +84,7 @@ const mediatorQuerySourceHypermediaResolve: MediatorQuerySourceHypermediaResolve
         queryBindings() {
           const it = new ArrayIterator([
             BF.fromRecord({
-              s: DF.namedNode(action.url),
+              s: DF.namedNode(action.link.url),
               p: DF.namedNode('p1'),
               o: DF.namedNode('o1'),
             }),
@@ -115,7 +115,7 @@ const mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQ
 };
 export const mediators = {
   mediatorMetadataAccumulate,
-  mediatorQuerySourceHypermediaResolve,
+  mediatorQuerySourceDereferenceLink,
   mediatorRdfResolveHypermediaLinks,
   mediatorRdfResolveHypermediaLinksQueue,
 };

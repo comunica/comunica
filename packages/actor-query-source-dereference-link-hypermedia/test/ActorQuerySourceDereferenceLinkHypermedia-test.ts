@@ -21,14 +21,14 @@ import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 import { streamifyArray } from 'streamify-array';
-import { ActorQuerySourceHypermediaResolveDereference } from '../lib/ActorQuerySourceHypermediaResolveDereference';
+import { ActorQuerySourceDereferenceLinkHypermedia } from '../lib/ActorQuerySourceDereferenceLinkHypermedia';
 import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
 
 const DF = new DataFactory();
 
-describe('ActorQuerySourceHypermediaResolveDereference', () => {
+describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
   let bus: any;
   let mediatorDereferenceRdf: MediatorDereferenceRdf;
   let mediatorMetadata: MediatorRdfMetadata;
@@ -104,11 +104,11 @@ describe('ActorQuerySourceHypermediaResolveDereference', () => {
     };
   });
 
-  describe('An ActorQuerySourceHypermediaResolveDereference instance', () => {
-    let actor: ActorQuerySourceHypermediaResolveDereference;
+  describe('An ActorQuerySourceDereferenceLinkHypermedia instance', () => {
+    let actor: ActorQuerySourceDereferenceLinkHypermedia;
 
     beforeEach(() => {
-      actor = new ActorQuerySourceHypermediaResolveDereference({
+      actor = new ActorQuerySourceDereferenceLinkHypermedia({
         name: 'actor',
         bus,
         mediatorDereferenceRdf,
@@ -121,7 +121,7 @@ describe('ActorQuerySourceHypermediaResolveDereference', () => {
 
     it('should test', async() => {
       await expect(actor.test({
-        url: 'URL',
+        link: { url: 'URL' },
         context: new ActionContext(),
       })).resolves.toPassTestVoid();
     });
@@ -129,7 +129,7 @@ describe('ActorQuerySourceHypermediaResolveDereference', () => {
     describe('run', () => {
       it('should resolve', async() => {
         const { source, metadata, dataset } = await actor.run({
-          url: 'startUrl',
+          link: { url: 'startUrl' },
           context: new ActionContext(),
         });
         expect(source).toBe('QUERYSOURCE');
@@ -140,7 +140,7 @@ describe('ActorQuerySourceHypermediaResolveDereference', () => {
       it('should resolve and mark the dataset in datasets', async() => {
         const handledDatasets = {};
         const { source, metadata, dataset } = await actor.run({
-          url: 'startUrl',
+          link: { url: 'startUrl' },
           context: new ActionContext(),
           handledDatasets,
         });
@@ -159,7 +159,7 @@ describe('ActorQuerySourceHypermediaResolveDereference', () => {
 
         const handledDatasets = {};
         const { source, metadata, dataset } = await actor.run({
-          url: 'startUrl',
+          link: { url: 'startUrl' },
           context: new ActionContext(),
           handledDatasets,
         });
@@ -173,14 +173,30 @@ describe('ActorQuerySourceHypermediaResolveDereference', () => {
         const transformQuads = jest.fn(inputQuads => inputQuads
           .map((q: RDF.Quad) => DF.quad(q.subject, q.predicate, DF.literal(`TRANSFORMED(${q.object.value})`))));
         const { source, metadata, dataset } = await actor.run({
-          url: 'startUrl',
-          transformQuads,
+          link: { url: 'startUrl', transform: transformQuads },
           context: new ActionContext(),
         });
         expect(source).toBe('QUERYSOURCE');
         expect(metadata).toEqual({ a: 1 });
         expect(dataset).toBe('MYDATASET');
-        expect(transformQuads).toHaveBeenCalledWith(expect.any(require('node:stream').Readable), metadata);
+        expect(transformQuads).toHaveBeenCalledWith(expect.any(require('node:stream').Readable));
+      });
+
+      it('should apply the link context', async() => {
+        jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
+        const { source, metadata, dataset } = await actor.run({
+          link: { url: 'startUrl', context: new ActionContext({ b: 2 }) },
+          context: new ActionContext({ a: 1 }),
+        });
+        expect(source).toBe('QUERYSOURCE');
+        expect(metadata).toEqual({ a: 1 });
+        expect(dataset).toBe('MYDATASET');
+        expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledWith({
+          metadata: { a: 1 },
+          quads: expect.anything(),
+          url: 'startUrl',
+          context: new ActionContext({ a: 1, b: 2 }),
+        });
       });
 
       it('should delegate dereference errors to the source', async() => {
@@ -196,7 +212,7 @@ describe('ActorQuerySourceHypermediaResolveDereference', () => {
         };
 
         const { source, metadata, dataset } = await actor.run({
-          url: 'startUrl',
+          link: { url: 'startUrl' },
           context: new ActionContext(),
         });
         expect(metadata).toEqual({ cardinality: { type: 'exact', value: 0 }});
@@ -227,7 +243,7 @@ describe('ActorQuerySourceHypermediaResolveDereference', () => {
         });
 
         const { source, metadata, dataset } = await actor.run({
-          url: 'startUrl',
+          link: { url: 'startUrl' },
           context: new ActionContext(),
         });
         expect(metadata).toEqual({ b: 1 });

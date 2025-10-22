@@ -1,4 +1,4 @@
-import type { MediatorQuerySourceHypermediaResolve } from '@comunica/bus-query-source-hypermedia-resolve';
+import type { MediatorQuerySourceDereferenceLink } from '@comunica/bus-query-source-dereference-link';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
@@ -117,16 +117,9 @@ export class QuerySourceHypermedia implements IQuerySource {
     handledDatasets: Record<string, boolean>,
     context: IActionContext,
   ): Promise<ISourceState> {
-    // Include context entries from link
-    if (link.context) {
-      context = context.merge(link.context);
-    }
-
-    const { source, metadata } = await this.mediators.mediatorQuerySourceHypermediaResolve.mediate({
-      url: link.url,
-      forceSourceType: link.forceSourceType,
+    const { source, metadata } = await this.mediators.mediatorQuerySourceDereferenceLink.mediate({
+      link,
       handledDatasets,
-      transformQuads: link.transform,
       context,
     });
 
@@ -161,7 +154,7 @@ export class QuerySourceHypermedia implements IQuerySource {
 
 export interface IMediatorArgs {
   mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
-  mediatorQuerySourceHypermediaResolve: MediatorQuerySourceHypermediaResolve;
+  mediatorQuerySourceDereferenceLink: MediatorQuerySourceDereferenceLink;
   mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
 }

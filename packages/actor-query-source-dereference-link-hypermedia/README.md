@@ -1,8 +1,8 @@
 # Comunica Dereference Query Source Hypermedia Resolve Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-source-hypermedia-resolve-dereference.svg)](https://www.npmjs.com/package/@comunica/actor-query-source-hypermedia-resolve-dereference)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-source-dereference-link-hypermedia.svg)](https://www.npmjs.com/package/@comunica/actor-query-source-dereference-link-hypermedia)
 
-A comunica Dereference Query Source Hypermedia Resolve Actor.
+A [Query Source Dereference Link](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-dereference-link) actor that resolves links as [hypermedia-based sources](https://comunica.dev/docs/modify/advanced/hypermedia/).
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-query-source-hypermedia-resolve-dereference
+$ yarn add @comunica/actor-query-source-dereference-link-hypermedia
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-hypermedia-resolve-dereference/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-dereference-link-hypermedia/^1.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
-      "@id": "urn:comunica:default:query-source-hypermedia-resolve/actors#dereference",
-      "@type": "ActorQuerySourceHypermediaResolveDereference",
+      "@id": "urn:comunica:default:query-source-dereference-link/actors#dereference",
+      "@type": "ActorQuerySourceDereferenceLinkHypermedia",
       "mediatorDereferenceRdf": { "@id": "urn:comunica:default:dereference-rdf/mediators#main" },
       "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
       "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" },

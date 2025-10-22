@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/actor-query-source-hypermedia-resolve-force-sparql",
+  "name": "@comunica/actor-query-source-dereference-link-hypermedia",
   "version": "4.0.0",
-  "description": "A force-sparql query-source-hypermedia-resolve actor",
+  "description": "A dereference query-source-dereference-link actor",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-query-source-hypermedia-resolve-force-sparql"
+    "directory": "packages/actor-query-source-dereference-link-hypermedia"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -20,8 +20,8 @@
   "keywords": [
     "comunica",
     "actor",
-    "query-source-hypermedia-resolve",
-    "force-sparql"
+    "query-source-dereference-link",
+    "dereference"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -41,9 +41,12 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-source-hypermedia-resolve": "^4.0.0",
+    "@comunica/bus-dereference-rdf": "^4.4.1",
+    "@comunica/bus-query-source-dereference-link": "^4.0.0",
     "@comunica/bus-query-source-identify-hypermedia": "^4.4.0",
+    "@comunica/bus-rdf-metadata": "^4.4.0",
     "@comunica/bus-rdf-metadata-accumulate": "^4.4.0",
+    "@comunica/bus-rdf-metadata-extract": "^4.4.0",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "readable-stream": "^4.5.2"

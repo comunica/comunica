@@ -256,7 +256,7 @@ describe('QuerySourceHypermedia', () => {
         mediatorsThis.mediatorRdfResolveHypermediaLinks = {
           mediate: () => Promise.resolve({ links: i < 3 ? [{ url: `next${i}` }] : []}),
         };
-        mediatorsThis.mediatorQuerySourceHypermediaResolve = {
+        mediatorsThis.mediatorQuerySourceDereferenceLink = {
           mediate() {
             if (i < 3) {
               i++;
@@ -326,11 +326,11 @@ describe('QuerySourceHypermedia', () => {
         ]);
       });
 
-      it('should emit an error when mediatorQuerySourceHypermediaResolve rejects', async() => {
+      it('should emit an error when mediatorQuerySourceDereferenceLink rejects', async() => {
         const mediatorsThis = { ...mediators };
-        mediatorsThis.mediatorQuerySourceHypermediaResolve = {
+        mediatorsThis.mediatorQuerySourceDereferenceLink = {
           async mediate() {
-            throw new Error(`mediatorQuerySourceHypermediaResolve error`);
+            throw new Error(`mediatorQuerySourceDereferenceLink error`);
           },
         };
         source = new QuerySourceHypermedia(
@@ -343,7 +343,7 @@ describe('QuerySourceHypermedia', () => {
         );
 
         await expect(source.queryBindings(operation, context).toArray())
-          .rejects.toThrow(`mediatorQuerySourceHypermediaResolve error`);
+          .rejects.toThrow(`mediatorQuerySourceDereferenceLink error`);
       });
     });
 
@@ -368,23 +368,23 @@ describe('QuerySourceHypermedia', () => {
     });
 
     describe('getSource', () => {
-      it('should get urls based on mediatorQuerySourceHypermediaResolve', async() => {
-        jest.spyOn(utilMediators.mediatorQuerySourceHypermediaResolve, 'mediate');
+      it('should get urls based on mediatorQuerySourceDereferenceLink', async() => {
+        jest.spyOn(utilMediators.mediatorQuerySourceDereferenceLink, 'mediate');
         await expect(source.getSource({ url: 'startUrl' }, {}, context)).resolves.toMatchObject({
           link: { url: 'startUrl' },
           handledDatasets: { MYDATASET: true },
           metadata: { a: 1 },
           source: expect.anything(),
         });
-        expect(utilMediators.mediatorQuerySourceHypermediaResolve.mediate).toHaveBeenCalledWith({
-          url: 'startUrl',
+        expect(utilMediators.mediatorQuerySourceDereferenceLink.mediate).toHaveBeenCalledWith({
+          link: { url: 'startUrl' },
           handledDatasets: { MYDATASET: true },
           context,
         });
       });
 
-      it('should merge the link context', async() => {
-        jest.spyOn(utilMediators.mediatorQuerySourceHypermediaResolve, 'mediate');
+      it('should not merge the link context yet', async() => {
+        jest.spyOn(utilMediators.mediatorQuerySourceDereferenceLink, 'mediate');
         const linkContext = new ActionContext({ link: 1 });
         await expect(source.getSource({ url: 'startUrl', context: linkContext }, {}, context)).resolves.toMatchObject({
           link: { url: 'startUrl' },
@@ -392,16 +392,16 @@ describe('QuerySourceHypermedia', () => {
           metadata: { a: 1 },
           source: expect.anything(),
         });
-        expect(utilMediators.mediatorQuerySourceHypermediaResolve.mediate).toHaveBeenCalledWith({
-          url: 'startUrl',
+        expect(utilMediators.mediatorQuerySourceDereferenceLink.mediate).toHaveBeenCalledWith({
+          link: { url: 'startUrl', context: linkContext },
           handledDatasets: { MYDATASET: true },
-          context: context.merge(linkContext),
+          context,
         });
       });
 
       it('should ignore data errors', async() => {
         const mediatorsThis = { ...mediators };
-        mediatorsThis.mediatorQuerySourceHypermediaResolve = {
+        mediatorsThis.mediatorQuerySourceDereferenceLink = {
           mediate: async({ quads }: IActionQuerySourceIdentifyHypermedia) => ({
             dataset: 'MYDATASET',
             source: { sourceContents: quads },

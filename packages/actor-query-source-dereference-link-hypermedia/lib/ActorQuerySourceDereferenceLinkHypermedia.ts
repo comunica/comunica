@@ -1,10 +1,10 @@
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type {
-  IActionQuerySourceHypermediaResolve,
-  IActorQuerySourceHypermediaResolveOutput,
-  IActorQuerySourceHypermediaResolveArgs,
-} from '@comunica/bus-query-source-hypermedia-resolve';
-import { ActorQuerySourceHypermediaResolve } from '@comunica/bus-query-source-hypermedia-resolve';
+  IActionQuerySourceDereferenceLink,
+  IActorQuerySourceDereferenceLinkOutput,
+  IActorQuerySourceDereferenceLinkArgs,
+} from '@comunica/bus-query-source-dereference-link';
+import { ActorQuerySourceDereferenceLink } from '@comunica/bus-query-source-dereference-link';
 import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
@@ -19,24 +19,24 @@ import { Readable } from 'readable-stream';
 /**
  * A comunica Dereference Query Source Hypermedia Resolve Actor.
  */
-export class ActorQuerySourceHypermediaResolveDereference extends ActorQuerySourceHypermediaResolve {
+export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceDereferenceLink {
   public readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
   public readonly mediatorMetadata: MediatorRdfMetadata;
   public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   public readonly mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   public readonly mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia;
 
-  public constructor(args: IActorQuerySourceHypermediaResolveDereferenceArgs) {
+  public constructor(args: IActorQuerySourceDereferenceLinkHypermediaArgs) {
     super(args);
   }
 
-  public async test(_action: IActionQuerySourceHypermediaResolve): Promise<TestResult<IActorTest>> {
+  public async test(_action: IActionQuerySourceDereferenceLink): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 
-  public async run(action: IActionQuerySourceHypermediaResolve): Promise<IActorQuerySourceHypermediaResolveOutput> {
-    const context = action.context;
-    let url = action.url;
+  public async run(action: IActionQuerySourceDereferenceLink): Promise<IActorQuerySourceDereferenceLinkOutput> {
+    const context = action.link.context ? action.context.merge(action.link.context) : action.context;
+    let url = action.link.url;
     let quads: RDF.Stream;
     let metadata: Record<string, any>;
     try {
@@ -67,8 +67,8 @@ export class ActorQuerySourceHypermediaResolveDereference extends ActorQuerySour
       quads = rdfMetadataOutput.data;
 
       // Transform quads if needed.
-      if (action.transformQuads) {
-        quads = await action.transformQuads(quads, <MetadataBindings> metadata);
+      if (action.link.transform) {
+        quads = await action.link.transform(quads);
       }
     } catch (error: unknown) {
       // Make sure that dereference errors are only emitted once an actor really needs the read quads
@@ -82,13 +82,13 @@ export class ActorQuerySourceHypermediaResolveDereference extends ActorQuerySour
 
       // Log as warning, because the quads above may not always be consumed (e.g. for SPARQL endpoints),
       // so the user would not be notified of something going wrong otherwise.
-      this.logWarn(context, `Metadata extraction for ${action.url} failed: ${(<Error>error).message}`);
+      this.logWarn(context, `Metadata extraction for ${action.link.url} failed: ${(<Error>error).message}`);
     }
 
     // Determine the source
     const { source, dataset } = await this.mediatorQuerySourceIdentifyHypermedia.mediate({
       context,
-      forceSourceType: action.forceSourceType,
+      forceSourceType: action.link.forceSourceType,
       handledDatasets: action.handledDatasets,
       metadata,
       quads,
@@ -103,13 +103,13 @@ export class ActorQuerySourceHypermediaResolveDereference extends ActorQuerySour
     }
 
     // Track dereference event
-    context.get(KeysStatistics.dereferencedLinks)?.updateStatistic({ url: action.url, metadata }, source);
+    context.get(KeysStatistics.dereferencedLinks)?.updateStatistic({ url: action.link.url, metadata }, source);
 
     return { source, metadata: <MetadataBindings> metadata, dataset };
   }
 }
 
-export interface IActorQuerySourceHypermediaResolveDereferenceArgs extends IActorQuerySourceHypermediaResolveArgs {
+export interface IActorQuerySourceDereferenceLinkHypermediaArgs extends IActorQuerySourceDereferenceLinkArgs {
   /**
    * The RDF dereference mediator
    */

@@ -1,5 +1,5 @@
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
-import type { MediatorQuerySourceHypermediaResolve } from '@comunica/bus-query-source-hypermedia-resolve';
+import type { MediatorQuerySourceDereferenceLink } from '@comunica/bus-query-source-dereference-link';
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import type {
   IActionQuerySourceIdentify,
@@ -21,7 +21,7 @@ import { QuerySourceHypermedia } from './QuerySourceHypermedia';
  */
 export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify {
   public readonly mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
-  public readonly mediatorQuerySourceHypermediaResolve: MediatorQuerySourceHypermediaResolve;
+  public readonly mediatorQuerySourceDereferenceLink: MediatorQuerySourceDereferenceLink;
   public readonly mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   public readonly mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
@@ -50,7 +50,7 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
           this.maxIterators,
           {
             mediatorMetadataAccumulate: this.mediatorMetadataAccumulate,
-            mediatorQuerySourceHypermediaResolve: this.mediatorQuerySourceHypermediaResolve,
+            mediatorQuerySourceDereferenceLink: this.mediatorQuerySourceDereferenceLink,
             mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
             mediatorRdfResolveHypermediaLinksQueue: this.mediatorRdfResolveHypermediaLinksQueue,
           },
@@ -82,7 +82,7 @@ export interface IActorQuerySourceIdentifyHypermediaArgs extends IActorQuerySour
   /**
    * The mediator for resolving hypermedia sources
    */
-  mediatorQuerySourceHypermediaResolve: MediatorQuerySourceHypermediaResolve;
+  mediatorQuerySourceDereferenceLink: MediatorQuerySourceDereferenceLink;
   /**
    * The hypermedia links resolve mediator
    */

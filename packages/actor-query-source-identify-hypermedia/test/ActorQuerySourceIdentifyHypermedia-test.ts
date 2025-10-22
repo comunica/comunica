@@ -1,4 +1,4 @@
-import type { MediatorQuerySourceHypermediaResolve } from '@comunica/bus-query-source-hypermedia-resolve';
+import type { MediatorQuerySourceDereferenceLink } from '@comunica/bus-query-source-dereference-link';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
@@ -24,14 +24,14 @@ const mediatorMergeBindingsContext: any = {
 describe('ActorQuerySourceIdentifyHypermedia', () => {
   let bus: any;
   let mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
-  let mediatorQuerySourceHypermediaResolve: MediatorQuerySourceHypermediaResolve;
+  let mediatorQuerySourceDereferenceLink: MediatorQuerySourceDereferenceLink;
   let mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   let mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorMetadataAccumulate = utilMediators.mediatorMetadataAccumulate;
-    mediatorQuerySourceHypermediaResolve = utilMediators.mediatorQuerySourceHypermediaResolve;
+    mediatorQuerySourceDereferenceLink = utilMediators.mediatorQuerySourceDereferenceLink;
     mediatorRdfResolveHypermediaLinks = utilMediators.mediatorRdfResolveHypermediaLinks;
     mediatorRdfResolveHypermediaLinksQueue = utilMediators.mediatorRdfResolveHypermediaLinksQueue;
     jest.clearAllMocks();
@@ -46,7 +46,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
       expect(new (<any> ActorQuerySourceIdentifyHypermedia)({
         bus,
         mediatorMetadataAccumulate,
-        mediatorQuerySourceHypermediaResolve,
+        mediatorQuerySourceDereferenceLink,
         mediatorRdfResolveHypermediaLinks,
       })).toBeInstanceOf(ActorQuerySourceIdentifyHypermedia);
     });
@@ -63,7 +63,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           cacheSize: 10,
           maxIterators: 64,
           mediatorMetadataAccumulate,
-          mediatorQuerySourceHypermediaResolve,
+          mediatorQuerySourceDereferenceLink,
           mediatorRdfResolveHypermediaLinks,
           mediatorRdfResolveHypermediaLinksQueue,
           mediatorMergeBindingsContext,

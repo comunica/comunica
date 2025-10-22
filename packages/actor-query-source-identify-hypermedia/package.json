@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@comunica/bus-merge-bindings-context": "^4.4.0",
-    "@comunica/bus-query-source-hypermedia-resolve": "^4.0.0",
+    "@comunica/bus-query-source-dereference-link": "^4.0.0",
     "@comunica/bus-query-source-identify": "^4.4.0",
     "@comunica/bus-rdf-metadata-accumulate": "^4.4.0",
     "@comunica/bus-rdf-resolve-hypermedia-links": "^4.4.0",

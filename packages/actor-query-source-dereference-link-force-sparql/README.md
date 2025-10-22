@@ -1,8 +1,8 @@
 # Comunica Force SPARQL Query Source Hypermedia Resolve Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-source-hypermedia-resolve-force-sparql.svg)](https://www.npmjs.com/package/@comunica/actor-query-source-hypermedia-resolve-force-sparql)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-source-dereference-link-force-sparql.svg)](https://www.npmjs.com/package/@comunica/actor-query-source-dereference-link-force-sparql)
 
-A comunica Force SPARQL Query Source Hypermedia Resolve Actor.
+A [Query Source Dereference Link](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-dereference-link) actor that avoids metadata fetching of forced SPARQL endpoints.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-query-source-hypermedia-resolve-force-sparql
+$ yarn add @comunica/actor-query-source-dereference-link-force-sparql
 ```
 
 ## Configure
@@ -22,13 +22,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-hypermedia-resolve-force-sparql/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-dereference-link-force-sparql/^1.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
-      "@id": "urn:comunica:default:query-source-hypermedia-resolve/actors#force-sparql",
-      "@type": "ActorQuerySourceHypermediaResolveForceSparql",
+      "@id": "urn:comunica:default:query-source-dereference-link/actors#force-sparql",
+      "@type": "ActorQuerySourceDereferenceLinkForceSparql",
       "mediatorMetadataAccumulate": { "@id": "urn:comunica:default:rdf-metadata-accumulate/mediators#main" },
       "mediatorQuerySourceIdentifyHypermedia": { "@id": "urn:comunica:default:query-source-identify-hypermedia/mediators#main" }
     }

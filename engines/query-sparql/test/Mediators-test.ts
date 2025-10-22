@@ -27,9 +27,9 @@ import type {
 } from '@comunica/bus-query-result-serialize';
 
 import type {
-  IActionQuerySourceHypermediaResolve,
-  IActorQuerySourceHypermediaResolveOutput,
-} from '@comunica/bus-query-source-hypermedia-resolve';
+  IActionQuerySourceDereferenceLink,
+  IActorQuerySourceDereferenceLinkOutput,
+} from '@comunica/bus-query-source-dereference-link';
 import type { IActionQuerySourceIdentify, IActorQuerySourceIdentifyOutput } from '@comunica/bus-query-source-identify';
 import type {
   IActionQuerySourceIdentifyHypermedia,
@@ -113,7 +113,7 @@ describe('System test: mediators', () => {
   );
   addTest<IActionDereferenceRdf, IActorDereferenceRdfOutput>(
     'dereference-rdf',
-    ':query-source-hypermedia-resolve/actors#dereference',
+    ':query-source-dereference-link/actors#dereference',
     'mediatorDereferenceRdf',
     <any> { handle: <any> { data: <any> undefined, context, mediaType: 'text/css', url: 'http://example.org/' }},
     `RDF dereferencing failed: none of the configured parsers were able to handle the media type text/css for http://example.org/`,
@@ -189,12 +189,12 @@ IActorTestQueryResultSerializeHandle
   { handle: { type: 'abc', context }},
     `Query result serialization failed: none of the configured actors were able to serialize for type abc`,
 );
-  addTest<IActionQuerySourceHypermediaResolve, IActorQuerySourceHypermediaResolveOutput>(
-    'query-source-hypermedia-resolve',
+  addTest<IActionQuerySourceDereferenceLink, IActorQuerySourceDereferenceLinkOutput>(
+    'query-source-dereference-link',
     ':query-source-identify/actors#hypermedia',
-    'mediatorQuerySourceHypermediaResolve',
-    { url: 'abc' },
-    `Query source hypermedia resolution failed: none of the configured actors were able to resolve abc`,
+    'mediatorQuerySourceDereferenceLink',
+    { link: { url: 'abc' }},
+    `Query source dereference link failed: none of the configured actors were able to resolve abc`,
   );
   addTest<IActionQuerySourceIdentify, IActorQuerySourceIdentifyOutput>(
     'query-source-identify',
@@ -209,7 +209,7 @@ IActorQuerySourceIdentifyHypermediaOutput,
 IActorQuerySourceIdentifyHypermediaTest
 >(
   'query-source-identify-hypermedia',
-  ':query-source-hypermedia-resolve/actors#dereference',
+  ':query-source-dereference-link/actors#dereference',
   'mediatorQuerySourceIdentifyHypermedia',
   { url: 'http://example.org/', metadata: {}, quads: <any> undefined },
     `Query source hypermedia identification failed: none of the configured actors were able to identify http://example.org/`,

@@ -1,9 +1,9 @@
 import type {
-  IActionQuerySourceHypermediaResolve,
-  IActorQuerySourceHypermediaResolveOutput,
-  IActorQuerySourceHypermediaResolveArgs,
-} from '@comunica/bus-query-source-hypermedia-resolve';
-import { ActorQuerySourceHypermediaResolve } from '@comunica/bus-query-source-hypermedia-resolve';
+  IActionQuerySourceDereferenceLink,
+  IActorQuerySourceDereferenceLinkOutput,
+  IActorQuerySourceDereferenceLinkArgs,
+} from '@comunica/bus-query-source-dereference-link';
+import { ActorQuerySourceDereferenceLink } from '@comunica/bus-query-source-dereference-link';
 import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import { KeysQueryOperation } from '@comunica/context-entries';
@@ -15,22 +15,24 @@ import { Readable } from 'readable-stream';
 /**
  * A comunica Force SPARQL Query Source Hypermedia Resolve Actor.
  */
-export class ActorQuerySourceHypermediaResolveForceSparql extends ActorQuerySourceHypermediaResolve {
+export class ActorQuerySourceDereferenceLinkForceSparql extends ActorQuerySourceDereferenceLink {
   public readonly mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   public readonly mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia;
 
-  public constructor(args: IActorQuerySourceHypermediaResolveForceSparqlArgs) {
+  public constructor(args: IActorQuerySourceDereferenceLinkForceSparqlArgs) {
     super(args);
   }
 
-  public async test(action: IActionQuerySourceHypermediaResolve): Promise<TestResult<IActorTest>> {
-    if (action.forceSourceType === 'sparql' && action.context.get(KeysQueryOperation.querySources)?.length === 1) {
+  public async test(action: IActionQuerySourceDereferenceLink): Promise<TestResult<IActorTest>> {
+    if (action.link.forceSourceType === 'sparql' && action.context.get(KeysQueryOperation.querySources)?.length === 1) {
       return passTestVoid();
     }
     return failTest(`${this.name} can only handle a single forced SPARQL source`);
   }
 
-  public async run(action: IActionQuerySourceHypermediaResolve): Promise<IActorQuerySourceHypermediaResolveOutput> {
+  public async run(action: IActionQuerySourceDereferenceLink): Promise<IActorQuerySourceDereferenceLinkOutput> {
+    const context = action.link.context ? action.context.merge(action.link.context) : action.context;
+
     // No need to do metadata extraction if we're querying over just a single SPARQL endpoint.
     const quads: Readable = new Readable();
     quads._read = () => {
@@ -42,19 +44,19 @@ export class ActorQuerySourceHypermediaResolveForceSparql extends ActorQuerySour
 
     // Determine the source
     const { source, dataset } = await this.mediatorQuerySourceIdentifyHypermedia.mediate({
-      context: action.context,
-      forceSourceType: action.forceSourceType,
+      context,
+      forceSourceType: action.link.forceSourceType,
       handledDatasets: action.handledDatasets,
       metadata,
       quads,
-      url: action.url,
+      url: action.link.url,
     });
 
     return { source, metadata: <MetadataBindings> metadata, dataset };
   }
 }
 
-export interface IActorQuerySourceHypermediaResolveForceSparqlArgs extends IActorQuerySourceHypermediaResolveArgs {
+export interface IActorQuerySourceDereferenceLinkForceSparqlArgs extends IActorQuerySourceDereferenceLinkArgs {
   /**
    * The metadata accumulate mediator
    */

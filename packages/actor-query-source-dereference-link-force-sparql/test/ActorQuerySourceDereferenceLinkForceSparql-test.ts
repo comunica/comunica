@@ -11,10 +11,10 @@ import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySource } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
-import { ActorQuerySourceHypermediaResolveForceSparql } from '../lib/ActorQuerySourceHypermediaResolveForceSparql';
+import { ActorQuerySourceDereferenceLinkForceSparql } from '../lib/ActorQuerySourceDereferenceLinkForceSparql';
 import '@comunica/utils-jest';
 
-describe('ActorQuerySourceHypermediaResolveForceSparql', () => {
+describe('ActorQuerySourceDereferenceLinkForceSparql', () => {
   let bus: any;
   let mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   let mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia;
@@ -44,11 +44,11 @@ describe('ActorQuerySourceHypermediaResolveForceSparql', () => {
     };
   });
 
-  describe('An ActorQuerySourceHypermediaResolveForceSparql instance', () => {
-    let actor: ActorQuerySourceHypermediaResolveForceSparql;
+  describe('An ActorQuerySourceDereferenceLinkForceSparql instance', () => {
+    let actor: ActorQuerySourceDereferenceLinkForceSparql;
 
     beforeEach(() => {
-      actor = new ActorQuerySourceHypermediaResolveForceSparql({
+      actor = new ActorQuerySourceDereferenceLinkForceSparql({
         name: 'actor',
         bus,
         mediatorMetadataAccumulate,
@@ -59,8 +59,7 @@ describe('ActorQuerySourceHypermediaResolveForceSparql', () => {
     describe('test', () => {
       it('should pass for a SPARQL endpoint', async() => {
         await expect(actor.test({
-          url: 'URL',
-          forceSourceType: 'sparql',
+          link: { url: 'URL', forceSourceType: 'sparql' },
           context: new ActionContext()
             .set(KeysQueryOperation.querySources, [ <any> 'abc' ]),
         })).resolves.toPassTestVoid();
@@ -68,8 +67,7 @@ describe('ActorQuerySourceHypermediaResolveForceSparql', () => {
 
       it('should not pass for multiple sources', async() => {
         await expect(actor.test({
-          url: 'URL',
-          forceSourceType: 'sparql',
+          link: { url: 'URL', forceSourceType: 'sparql' },
           context: new ActionContext()
             .set(KeysQueryOperation.querySources, [ <any> 'abc', 'def' ]),
         })).resolves.toFailTest('actor can only handle a single forced SPARQL source');
@@ -77,8 +75,7 @@ describe('ActorQuerySourceHypermediaResolveForceSparql', () => {
 
       it('should not pass for a file source', async() => {
         await expect(actor.test({
-          url: 'URL',
-          forceSourceType: 'file',
+          link: { url: 'URL', forceSourceType: 'file' },
           context: new ActionContext()
             .set(KeysQueryOperation.querySources, [ <any> 'abc' ]),
         })).resolves.toFailTest('actor can only handle a single forced SPARQL source');
@@ -88,7 +85,17 @@ describe('ActorQuerySourceHypermediaResolveForceSparql', () => {
     describe('run', () => {
       it('should resolve', async() => {
         const { source, metadata, dataset } = await actor.run({
-          url: 'startUrl',
+          link: { url: 'startUrl' },
+          context: new ActionContext(),
+        });
+        expect(source).toBe('QUERYSOURCE');
+        expect(metadata).toEqual({ cardinality: { type: 'exact', value: 0 }});
+        expect(dataset).toBe('MYDATASET');
+      });
+
+      it('should resolve with a link context', async() => {
+        const { source, metadata, dataset } = await actor.run({
+          link: { url: 'startUrl', context: new ActionContext() },
           context: new ActionContext(),
         });
         expect(source).toBe('QUERYSOURCE');
