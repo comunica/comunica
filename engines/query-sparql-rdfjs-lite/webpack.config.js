@@ -7,4 +7,4 @@ if (typeof liteConfig.performance === 'object') {
   liteConfig.performance.maxEntrypointSize = 1_190_000;
 }
 
-export default liteConfig;
+module.exports = liteConfig;
