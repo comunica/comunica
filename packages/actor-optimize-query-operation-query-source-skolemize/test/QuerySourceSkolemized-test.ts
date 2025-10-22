@@ -21,6 +21,7 @@ describe('QuerySourceSkolemized', () => {
 
   beforeEach(() => {
     sourceInner = {
+      getFilterFactor: <any> jest.fn(() => 1),
       getSelectorShape: <any> jest.fn(() => 'SHAPE'),
       queryBindings: <any> jest.fn(() => {
         const it = new ArrayIterator([
@@ -45,6 +46,12 @@ describe('QuerySourceSkolemized', () => {
       referenceValue: 'REF',
     };
     source = new QuerySourceSkolemized(sourceInner, '0');
+  });
+
+  it('should delegate getFilterFactor', async() => {
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
+    await expect(source.getFilterFactor(context)).resolves.toBe(1);
+    expect(sourceInner.getFilterFactor).toHaveBeenCalledWith(context);
   });
 
   it('should delegate getSelectorShape', async() => {

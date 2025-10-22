@@ -119,6 +119,12 @@ describe('QuerySourceSparql', () => {
     });
   });
 
+  describe('getFilterFactor', () => {
+    it('should return 1', async() => {
+      await expect(source.getFilterFactor()).resolves.toBe(1);
+    });
+  });
+
   describe('toString', () => {
     it('should return a string representation', async() => {
       expect(source.toString()).toBe(`QuerySourceSparql(${url})`);

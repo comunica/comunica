@@ -40,11 +40,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-context-preprocess-query-source-skolemize": "^4.4.1",
+    "@comunica/actor-optimize-query-operation-query-source-skolemize": "^4.4.1",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.9.0"
+    "asynciterator": "^3.10.0"
   }
 }

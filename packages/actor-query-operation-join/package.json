@@ -49,7 +49,7 @@
     "@comunica/utils-metadata": "^4.4.0",
     "@comunica/utils-query-operation": "^4.4.1",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.9.0",
+    "asynciterator": "^3.10.0",
     "rdf-data-factory": "^2.0.0"
   }
 }

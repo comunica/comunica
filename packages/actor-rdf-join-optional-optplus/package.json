@@ -44,6 +44,6 @@
     "@comunica/bus-rdf-join": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/mediatortype-join-coefficients": "^4.4.0",
-    "asynciterator": "^3.9.0"
+    "asynciterator": "^3.10.0"
   }
 }

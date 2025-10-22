@@ -1,4 +1,4 @@
-import type { ILink } from '@comunica/types';
+import type { ILink } from './ILink';
 
 /**
  * A datastructure that accepts links, and emits them in an implementation-defined order.
@@ -10,7 +10,7 @@ export interface ILinkQueue {
    * @param parent The parent in which the given link was discovered.
    * @returns If the link was added to the queue.
    */
-  push: (link: ILink, parent: ILink) => boolean;
+  push: (link: ILink, parent?: ILink) => boolean;
   /**
    * The number of links in the queue.
    */
@@ -28,6 +28,3 @@ export interface ILinkQueue {
    */
   peek: () => ILink | undefined;
 }
-
-// Re-export ILink interface for convenience
-export { ILink };

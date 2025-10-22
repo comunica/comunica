@@ -4,7 +4,6 @@ import type {
   Bindings,
   FunctionArgumentsCache,
   IActionContext,
-  IAggregatedStore,
   ICliArgsHandler,
   IDataDestination,
   IPhysicalQueryPlanLogger,
@@ -82,6 +81,10 @@ export const KeysHttp = {
    * This can be used to, for example, force retries on server-side errors in the 500 range.
    */
   httpRetryStatusCodes: new ActionContextKey<number[]>('@comunica/bus-http:http-retry-status-codes'),
+  /**
+   * An abort signal for aborting pending HTTP requests.
+   */
+  httpAbortSignal: new ActionContextKey<AbortSignal>('@comunica/bus-http:http-abort-controller'),
 };
 
 export const KeysHttpWayback = {
@@ -313,12 +316,6 @@ export const KeysQuerySourceIdentify = {
    */
   sourceIds: new ActionContextKey<Map<QuerySourceReference, string>>(
     '@comunica/bus-query-source-identify:sourceIds',
-  ),
-  /**
-   * Hypermedia sources mapping to their aggregated store.
-   */
-  hypermediaSourcesAggregatedStores: new ActionContextKey<Map<string, IAggregatedStore>>(
-    '@comunica/bus-query-source-identify:hypermediaSourcesAggregatedStores',
   ),
   /**
    * If links may be traversed from this source.

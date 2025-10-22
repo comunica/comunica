@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/actor-context-preprocess-query-source-skolemize",
+  "name": "@comunica/actor-optimize-query-operation-query-source-identify",
   "version": "4.4.1",
-  "description": "A query-source-skolemize context-preprocess actor",
+  "description": "A query-source-identify optimize-query-operation actor",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-context-preprocess-query-source-skolemize"
+    "directory": "packages/actor-optimize-query-operation-query-source-identify"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -20,8 +20,8 @@
   "keywords": [
     "comunica",
     "actor",
-    "context-preprocess",
-    "query-source-skolemize"
+    "optimize-query-operation",
+    "query-source-identify"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -42,14 +42,12 @@
   },
   "dependencies": {
     "@comunica/bus-context-preprocess": "^4.4.0",
+    "@comunica/bus-http-invalidate": "^4.4.0",
+    "@comunica/bus-optimize-query-operation": "^4.4.0",
+    "@comunica/bus-query-source-identify": "^4.4.0",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
-    "@comunica/utils-algebra": "^4.0.2",
-    "@comunica/utils-data-factory": "^4.0.1",
-    "@comunica/utils-metadata": "^4.4.0",
-    "@rdfjs/types": "*",
-    "asynciterator": "^3.9.0",
-    "rdf-terms": "^2.0.0"
+    "lru-cache": "^10.0.0"
   }
 }

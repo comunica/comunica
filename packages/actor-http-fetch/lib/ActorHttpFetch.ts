@@ -52,9 +52,18 @@ export class ActorHttpFetch extends ActorHttp {
     let timeoutCallback: () => void;
     let timeoutHandle: NodeJS.Timeout | undefined;
 
+    const abortSignal = action.context.get(KeysHttp.httpAbortSignal);
+    if (abortSignal) {
+      // TODO: remove any cast when updating typescript
+      requestInit.signal = (<any> AbortSignal)
+        .any([ ...requestInit.signal ? [ requestInit.signal ] : [], abortSignal ]);
+    }
+
     if (httpTimeout) {
       const abortController = new AbortController();
-      requestInit.signal = abortController.signal;
+      // TODO: remove any cast when updating typescript
+      requestInit.signal = (<any> AbortSignal)
+        .any([ ...requestInit.signal ? [ requestInit.signal ] : [], abortController.signal ]);
       timeoutCallback = () => abortController.abort(new Error(`Fetch timed out for ${ActorHttp.getInputUrl(action.input).href} after ${httpTimeout} ms`));
       timeoutHandle = setTimeout(() => timeoutCallback(), httpTimeout);
     }

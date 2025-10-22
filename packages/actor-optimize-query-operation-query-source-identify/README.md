@@ -1,8 +1,8 @@
-# Comunica Query Source Identify Context Preprocess Actor
+# Comunica Query Source Identify Optimize Query Operation Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-context-preprocess-query-source-identify.svg)](https://www.npmjs.com/package/@comunica/actor-context-preprocess-query-source-identify)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-optimize-query-operation-query-source-identify.svg)](https://www.npmjs.com/package/@comunica/actor-optimize-query-operation-query-source-identify)
 
-An [Context Preprocess](https://github.com/comunica/comunica/tree/master/packages/bus-context-preprocess) actor
+An [Optimize Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation) actor
 that identifies all query sources in the context using
 the [Query Source Identify bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-identify).
 
@@ -17,7 +17,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-context-preprocess-query-source-identify
+$ yarn add @comunica/actor-optimize-query-operation-query-source-identify
 ```
 
 ## Configure
@@ -27,13 +27,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-identify/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-query-source-identify/^1.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
-      "@id": "urn:comunica:default:context-preprocess/actors#query-source-identify",
-      "@type": "ActorContextPreprocessQuerySourceIdentify",
+      "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-identify",
+      "@type": "ActorOptimizeQueryOperationQuerySourceIdentify",
       "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" },
       "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" }
     }

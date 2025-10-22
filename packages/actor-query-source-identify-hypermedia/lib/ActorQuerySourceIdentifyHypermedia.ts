@@ -1,18 +1,15 @@
-import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
+import type { MediatorQuerySourceHypermediaResolve } from '@comunica/bus-query-source-hypermedia-resolve';
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import type {
   IActionQuerySourceIdentify,
   IActorQuerySourceIdentifyOutput,
   IActorQuerySourceIdentifyArgs,
 } from '@comunica/bus-query-source-identify';
-import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
-import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
-import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, failTest, passTestVoid } from '@comunica/core';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
@@ -23,18 +20,13 @@ import { QuerySourceHypermedia } from './QuerySourceHypermedia';
  * A comunica Hypermedia Query Source Identify Actor.
  */
 export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify {
-  public readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
-  public readonly mediatorMetadata: MediatorRdfMetadata;
-  public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   public readonly mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
-  public readonly mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia;
+  public readonly mediatorQuerySourceHypermediaResolve: MediatorQuerySourceHypermediaResolve;
   public readonly mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   public readonly mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   public readonly cacheSize: number;
   public readonly maxIterators: number;
-  public readonly aggregateTraversalStore: boolean;
-  public readonly emitPartialCardinalities: boolean;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaArgs) {
     super(args);
@@ -48,31 +40,24 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
   }
 
   public async run(action: IActionQuerySourceIdentify): Promise<IActorQuerySourceIdentifyOutput> {
+    const querySourceContext = action.querySourceUnidentified.context ?? new ActionContext();
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     return {
       querySource: {
         source: new QuerySourceHypermedia(
           this.cacheSize,
-          <string> action.querySourceUnidentified.value,
-          action.querySourceUnidentified.type,
+          { url: <string> action.querySourceUnidentified.value, forceSourceType: action.querySourceUnidentified.type },
           this.maxIterators,
-          this.aggregateTraversalStore &&
-          Boolean(action.querySourceUnidentified.context?.get(KeysQuerySourceIdentify.traverse)),
-          this.emitPartialCardinalities,
           {
-            mediatorMetadata: this.mediatorMetadata,
-            mediatorMetadataExtract: this.mediatorMetadataExtract,
             mediatorMetadataAccumulate: this.mediatorMetadataAccumulate,
-            mediatorDereferenceRdf: this.mediatorDereferenceRdf,
-            mediatorQuerySourceIdentifyHypermedia: this.mediatorQuerySourceIdentifyHypermedia,
+            mediatorQuerySourceHypermediaResolve: this.mediatorQuerySourceHypermediaResolve,
             mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
             mediatorRdfResolveHypermediaLinksQueue: this.mediatorRdfResolveHypermediaLinksQueue,
           },
-          warningMessage => this.logWarn(action.context, warningMessage),
           dataFactory,
           await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
         ),
-        context: action.querySourceUnidentified.context ?? new ActionContext(),
+        context: querySourceContext,
       },
     };
   }
@@ -91,41 +76,13 @@ export interface IActorQuerySourceIdentifyHypermediaArgs extends IActorQuerySour
    */
   maxIterators: number;
   /**
-   * If all discovered quads across all links from a traversal source should be indexed in an aggregated store,
-   * to speed up later calls.
-   * This only applies to sources annotated with KeysQuerySourceIdentify.traverse.
-   * @default {true}
-   */
-  aggregateTraversalStore: boolean;
-  /**
-   * Indicates whether the {@link StreamingStoreMetadata} should emit updated partial
-   * cardinalities for each matching quad.
-   *
-   * Note: Enabling this option may degrade performance due to frequent
-   * {@link MetadataValidationState} invalidations and updates.
-   * @default {false}
-   */
-  emitPartialCardinalities: boolean;
-  /**
-   * The RDF dereference mediator
-   */
-  mediatorDereferenceRdf: MediatorDereferenceRdf;
-  /**
-   * The metadata mediator
-   */
-  mediatorMetadata: MediatorRdfMetadata;
-  /**
-   * The metadata extract mediator
-   */
-  mediatorMetadataExtract: MediatorRdfMetadataExtract;
-  /**
    * The metadata accumulate mediator
    */
   mediatorMetadataAccumulate?: MediatorRdfMetadataAccumulate;
   /**
-   * The hypermedia resolve mediator
+   * The mediator for resolving hypermedia sources
    */
-  mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia;
+  mediatorQuerySourceHypermediaResolve: MediatorQuerySourceHypermediaResolve;
   /**
    * The hypermedia links resolve mediator
    */

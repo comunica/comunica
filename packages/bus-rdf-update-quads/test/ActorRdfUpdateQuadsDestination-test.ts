@@ -1,5 +1,5 @@
 import type { EventEmitter } from 'node:stream';
-import { skolemizeQuad } from '@comunica/actor-context-preprocess-query-source-skolemize';
+import { skolemizeQuad } from '@comunica/actor-optimize-query-operation-query-source-skolemize';
 import { KeysInitQuery, KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';

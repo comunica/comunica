@@ -40,7 +40,6 @@ describe('ActorContextPreprocessSetDefaults', () => {
           [KeysCore.log.name]: 'L',
           [KeysInitQuery.functionArgumentsCache.name]: {},
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores.name]: new Map(),
           [KeysInitQuery.extensionFunctionsAlwaysPushdown.name]: true,
         }));
       });
@@ -60,7 +59,6 @@ describe('ActorContextPreprocessSetDefaults', () => {
           [KeysInitQuery.functionArgumentsCache.name]: {},
           [KeysInitQuery.queryFormat.name]: { language: 'graphql', version: '1.1' },
           [KeysInitQuery.graphqlSingularizeVariables.name]: {},
-          [KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores.name]: new Map(),
           [KeysInitQuery.extensionFunctions.name]: {},
         }));
       });
@@ -79,7 +77,6 @@ describe('ActorContextPreprocessSetDefaults', () => {
           [KeysCore.log.name]: 'L',
           [KeysInitQuery.functionArgumentsCache.name]: {},
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          [KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores.name]: new Map(),
           [KeysInitQuery.extensionFunctions.name]: {},
         }));
       });

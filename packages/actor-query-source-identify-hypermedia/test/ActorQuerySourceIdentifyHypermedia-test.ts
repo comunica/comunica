@@ -1,14 +1,10 @@
-import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
-import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
-import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { MediatorQuerySourceHypermediaResolve } from '@comunica/bus-query-source-hypermedia-resolve';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
-import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, QuerySourceUnidentifiedExpanded } from '@comunica/types';
-import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -19,7 +15,6 @@ import 'jest-rdf';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 
 const mediatorMergeBindingsContext: any = {
@@ -28,21 +23,15 @@ const mediatorMergeBindingsContext: any = {
 
 describe('ActorQuerySourceIdentifyHypermedia', () => {
   let bus: any;
-  let mediatorDereferenceRdf: MediatorDereferenceRdf;
-  let mediatorMetadata: MediatorRdfMetadata;
-  let mediatorMetadataExtract: MediatorRdfMetadataExtract;
   let mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
-  let mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia;
+  let mediatorQuerySourceHypermediaResolve: MediatorQuerySourceHypermediaResolve;
   let mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   let mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    mediatorDereferenceRdf = utilMediators.mediatorDereferenceRdf;
-    mediatorMetadata = utilMediators.mediatorMetadata;
-    mediatorMetadataExtract = utilMediators.mediatorMetadataExtract;
     mediatorMetadataAccumulate = utilMediators.mediatorMetadataAccumulate;
-    mediatorQuerySourceIdentifyHypermedia = utilMediators.mediatorQuerySourceIdentifyHypermedia;
+    mediatorQuerySourceHypermediaResolve = utilMediators.mediatorQuerySourceHypermediaResolve;
     mediatorRdfResolveHypermediaLinks = utilMediators.mediatorRdfResolveHypermediaLinks;
     mediatorRdfResolveHypermediaLinksQueue = utilMediators.mediatorRdfResolveHypermediaLinksQueue;
     jest.clearAllMocks();
@@ -56,11 +45,8 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
     it('should be a ActorQuerySourceIdentifyHypermedia constructor', () => {
       expect(new (<any> ActorQuerySourceIdentifyHypermedia)({
         bus,
-        mediatorDereferenceRdf,
-        mediatorMetadata,
-        mediatorMetadataExtract,
         mediatorMetadataAccumulate,
-        mediatorQuerySourceIdentifyHypermedia,
+        mediatorQuerySourceHypermediaResolve,
         mediatorRdfResolveHypermediaLinks,
       })).toBeInstanceOf(ActorQuerySourceIdentifyHypermedia);
     });
@@ -76,13 +62,8 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           bus,
           cacheSize: 10,
           maxIterators: 64,
-          aggregateTraversalStore: false,
-          emitPartialCardinalities: false,
-          mediatorMetadata,
-          mediatorMetadataExtract,
           mediatorMetadataAccumulate,
-          mediatorDereferenceRdf,
-          mediatorQuerySourceIdentifyHypermedia,
+          mediatorQuerySourceHypermediaResolve,
           mediatorRdfResolveHypermediaLinks,
           mediatorRdfResolveHypermediaLinksQueue,
           mediatorMergeBindingsContext,
@@ -122,28 +103,14 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
           const bindings = querySource.source.queryBindings(operation, context);
           await expect(bindings).toEqualBindingsStream([
             BF.fromRecord({
-              s: DF.namedNode('s1'),
+              s: DF.namedNode('firstUrl'),
               p: DF.namedNode('p1'),
               o: DF.namedNode('o1'),
-              g: DF.defaultGraph(),
             }),
             BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-              g: DF.defaultGraph(),
+              s: DF.namedNode('next'),
+              p: DF.namedNode('p1'),
+              o: DF.namedNode('o1'),
             }),
           ]);
           await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
@@ -170,579 +137,16 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
             });
           await expect(bindings).toEqualBindingsStream([
             BF.fromRecord({
-              s: DF.namedNode('s1'),
-              p: DF.namedNode('p1'),
-              o: DF.namedNode('o1'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-              g: DF.defaultGraph(),
-            }),
-          ]);
-        });
-
-        it('should emit a warning on metadata extract failures when only metadata is read', async() => {
-          const mediatorMetadataExtractThis: any = {
-            mediate: () => Promise.reject(new Error('mediatorMetadataExtractThis error')),
-          };
-
-          actor = new ActorQuerySourceIdentifyHypermedia({
-            bus,
-            cacheSize: 10,
-            maxIterators: 64,
-            aggregateTraversalStore: false,
-            emitPartialCardinalities: false,
-            mediatorMetadata,
-            mediatorMetadataExtract: mediatorMetadataExtractThis,
-            mediatorMetadataAccumulate,
-            mediatorDereferenceRdf,
-            mediatorQuerySourceIdentifyHypermedia,
-            mediatorRdfResolveHypermediaLinks,
-            mediatorRdfResolveHypermediaLinksQueue,
-            mediatorMergeBindingsContext,
-            name: 'actor',
-          });
-          const spy = jest.spyOn(<any> actor, 'logWarn');
-
-          const { querySource } = await actor.run({ context, querySourceUnidentified });
-          const bindings = querySource.source.queryBindings(operation, context);
-          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
-            .toEqual({
-              cardinality: {
-                type: 'estimate',
-                value: Number.POSITIVE_INFINITY,
-              },
-              state: expect.any(MetadataValidationState),
-              firstMeta: true,
-            });
-
-          expect(spy).toHaveBeenCalledWith({
-            map: expect.anything(),
-          }, 'Metadata extraction for firstUrl failed: mediatorMetadataExtractThis error');
-        });
-
-        it('should emit a warning on metadata extract failures when stream is consumed', async() => {
-          const mediatorMetadataExtractThis: any = {
-            mediate: () => Promise.reject(new Error('mediatorMetadataExtractThis error')),
-          };
-
-          actor = new ActorQuerySourceIdentifyHypermedia({
-            bus,
-            cacheSize: 10,
-            maxIterators: 64,
-            aggregateTraversalStore: false,
-            emitPartialCardinalities: false,
-            mediatorMetadata,
-            mediatorMetadataExtract: mediatorMetadataExtractThis,
-            mediatorMetadataAccumulate,
-            mediatorDereferenceRdf,
-            mediatorQuerySourceIdentifyHypermedia,
-            mediatorRdfResolveHypermediaLinks,
-            mediatorRdfResolveHypermediaLinksQueue,
-            mediatorMergeBindingsContext,
-            name: 'actor',
-          });
-          const spy = jest.spyOn(<any> actor, 'logWarn');
-
-          const { querySource } = await actor.run({ context, querySourceUnidentified });
-          const bindings = querySource.source.queryBindings(operation, context);
-          await expect(bindings.toArray()).rejects.toThrow('mediatorMetadataExtractThis error');
-          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
-            .toEqual({
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-              firstMeta: true,
-            });
-
-          expect(spy).toHaveBeenCalledWith({
-            map: expect.anything(),
-          }, 'Metadata extraction for firstUrl failed: mediatorMetadataExtractThis error');
-          expect(spy).toHaveBeenCalledWith({
-            map: expect.anything(),
-          }, 'Metadata extraction for next failed: mediatorMetadataExtractThis error');
-        });
-      });
-    });
-
-    describe('An ActorQuerySourceIdentifyHypermedia instance with aggregateTraversalStore on a traverse source', () => {
-      let actor: ActorQuerySourceIdentifyHypermedia;
-      let context: IActionContext;
-      let operation: Algebra.Operation;
-      let querySourceUnidentified: QuerySourceUnidentifiedExpanded;
-
-      beforeEach(() => {
-        actor = new ActorQuerySourceIdentifyHypermedia({
-          bus,
-          cacheSize: 10,
-          maxIterators: 64,
-          aggregateTraversalStore: true,
-          emitPartialCardinalities: false,
-          mediatorMetadata,
-          mediatorMetadataExtract,
-          mediatorMetadataAccumulate,
-          mediatorDereferenceRdf,
-          mediatorQuerySourceIdentifyHypermedia,
-          mediatorRdfResolveHypermediaLinks,
-          mediatorRdfResolveHypermediaLinksQueue,
-          mediatorMergeBindingsContext,
-          name: 'actor',
-        });
-        operation = <any> {};
-        querySourceUnidentified = {
-          value: 'firstUrl',
-          context: new ActionContext().set(KeysQuerySourceIdentify.traverse, true),
-        };
-      });
-
-      describe('run without hypermediaSourcesAggregatedStores', () => {
-        beforeEach(() => {
-          context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
-        });
-
-        it('should return a source that can produce a bindings stream and metadata', async() => {
-          const { querySource } = await actor.run({ context, querySourceUnidentified });
-          const bindings = querySource.source.queryBindings(operation, context);
-          await expect(bindings).toEqualBindingsStream([
-            BF.fromRecord({
-              s: DF.namedNode('s1'),
-              p: DF.namedNode('p1'),
-              o: DF.namedNode('o1'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-              g: DF.defaultGraph(),
-            }),
-          ]);
-          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
-            .toEqual({
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-              firstMeta: true,
-              a: 1,
-            });
-        });
-
-        it('should return a source that can produce metadata and a bindings stream', async() => {
-          const { querySource } = await actor.run({ context, querySourceUnidentified });
-          const bindings = querySource.source.queryBindings(operation, context);
-          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
-            .toEqual({
-              a: 1,
-              cardinality: {
-                type: 'estimate',
-                value: Number.POSITIVE_INFINITY,
-              },
-              state: expect.any(MetadataValidationState),
-              firstMeta: true,
-            });
-          await expect(bindings).toEqualBindingsStream([
-            BF.fromRecord({
-              s: DF.namedNode('s1'),
-              p: DF.namedNode('p1'),
-              o: DF.namedNode('o1'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-              g: DF.defaultGraph(),
-            }),
-          ]);
-        });
-      });
-
-      describe('run with hypermediaSourcesAggregatedStores', () => {
-        beforeEach(() => {
-          context = new ActionContext({
-            [KeysInitQuery.dataFactory.name]: DF,
-            [KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores.name]: new Map(),
-          });
-        });
-
-        it('should return a source that can produce a bindings stream and metadata', async() => {
-          const { querySource } = await actor.run({ context, querySourceUnidentified });
-          const bindings = querySource.source.queryBindings(operation, context);
-          await expect(bindings).toEqualBindingsStream([
-            BF.fromRecord({
-              s: DF.namedNode('s1'),
-              p: DF.namedNode('p1'),
-              o: DF.namedNode('o1'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-              g: DF.defaultGraph(),
-            }),
-          ]);
-          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
-            .toEqual({
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-              firstMeta: true,
-              a: 1,
-            });
-        });
-
-        it('should return a source that can produce metadata and a bindings stream', async() => {
-          const { querySource } = await actor.run({ context, querySourceUnidentified });
-          const bindings = querySource.source.queryBindings(operation, context);
-          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
-            .toEqual({
-              a: 1,
-              cardinality: {
-                type: 'estimate',
-                value: Number.POSITIVE_INFINITY,
-              },
-              state: expect.any(MetadataValidationState),
-              firstMeta: true,
-            });
-          await expect(bindings).toEqualBindingsStream([
-            BF.fromRecord({
-              s: DF.namedNode('s1'),
-              p: DF.namedNode('p1'),
-              o: DF.namedNode('o1'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-              g: DF.defaultGraph(),
-            }),
-          ]);
-        });
-
-        it(`should return a source that can be queried multiple times without using the aggregate store when queried with a non-pattern`, async() => {
-          jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
-
-          const source = (await actor.run({ context, querySourceUnidentified })).querySource.source;
-
-          await expect(source.queryBindings(operation, context)).toEqualBindingsStream([
-            BF.fromRecord({
-              s: DF.namedNode('s1'),
-              p: DF.namedNode('p1'),
-              o: DF.namedNode('o1'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-              g: DF.defaultGraph(),
-            }),
-          ]);
-          expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(2);
-
-          await expect(source.queryBindings(operation, context)).toEqualBindingsStream([
-            BF.fromRecord({
-              s: DF.namedNode('s1'),
-              p: DF.namedNode('p1'),
-              o: DF.namedNode('o1'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-              g: DF.defaultGraph(),
-            }),
-          ]);
-          // An additional call is made because the 'next' link is followed, which is not part of the aggregate store.
-          expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(3);
-        });
-
-        it(`should return a source that can be queried multiple times with the same aggregate store with pattern`, async() => {
-          operation = AF.createPattern(
-            DF.variable('s'),
-            DF.variable('p'),
-            DF.variable('o'),
-          );
-
-          jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
-
-          const source = (await actor.run({ context, querySourceUnidentified })).querySource.source;
-
-          await expect(source.queryBindings(operation, context)).toEqualBindingsStream([
-            BF.fromRecord({
-              s: DF.namedNode('s1'),
-              p: DF.namedNode('p1'),
-              o: DF.namedNode('o1'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-              g: DF.defaultGraph(),
-            }),
-          ]);
-          expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(2);
-
-          await expect(source.queryBindings(operation, context)).toEqualBindingsStream([
-            BF.fromRecord({
-              s: DF.namedNode('s1'),
+              s: DF.namedNode('firstUrl'),
               p: DF.namedNode('p1'),
               o: DF.namedNode('o1'),
             }),
             BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-            }),
-          ]);
-
-          expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(2);
-        });
-
-        it(`should return a source that can be queried multiple times in parallel with the same aggregate store with pattern`, async() => {
-          operation = AF.createPattern(
-            DF.variable('s'),
-            DF.variable('p'),
-            DF.variable('o'),
-          );
-
-          jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
-
-          const source = (await actor.run({ context, querySourceUnidentified })).querySource.source;
-          const it1 = source.queryBindings(operation, context);
-          const it2 = source.queryBindings(operation, context);
-
-          await expect(it1).toEqualBindingsStream([
-            BF.fromRecord({
-              s: DF.namedNode('s1'),
-              p: DF.namedNode('p1'),
-              o: DF.namedNode('o1'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-              g: DF.defaultGraph(),
-            }),
-          ]);
-          expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(2);
-
-          await expect(it2.toArray()).resolves.toEqualBindingsArray([
-            BF.fromRecord({
-              s: DF.namedNode('s1'),
+              s: DF.namedNode('next'),
               p: DF.namedNode('p1'),
               o: DF.namedNode('o1'),
             }),
-            BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-            }),
           ]);
-
-          expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(2);
-        });
-      });
-    });
-
-    describe('An ActorQuerySourceIdentifyHypermedia instance with emitPartialCardinalities true', () => {
-      let actor: ActorQuerySourceIdentifyHypermedia;
-      let context: IActionContext;
-      let operation: Algebra.Operation;
-      let querySourceUnidentified: QuerySourceUnidentifiedExpanded;
-
-      beforeEach(() => {
-        actor = new ActorQuerySourceIdentifyHypermedia({
-          bus,
-          cacheSize: 10,
-          maxIterators: 64,
-          aggregateTraversalStore: false,
-          emitPartialCardinalities: true,
-          mediatorMetadata,
-          mediatorMetadataExtract,
-          mediatorMetadataAccumulate,
-          mediatorDereferenceRdf,
-          mediatorQuerySourceIdentifyHypermedia,
-          mediatorRdfResolveHypermediaLinks,
-          mediatorRdfResolveHypermediaLinksQueue,
-          mediatorMergeBindingsContext,
-          name: 'actor',
-        });
-        context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
-        operation = <any> {};
-        querySourceUnidentified = { value: 'firstUrl' };
-      });
-
-      describe('run', () => {
-        it('should return a source that can produce a bindings stream and metadata', async() => {
-          const { querySource } = await actor.run({ context, querySourceUnidentified });
-          const bindings = querySource.source.queryBindings(operation, context);
-          await expect(bindings).toEqualBindingsStream([
-            BF.fromRecord({
-              s: DF.namedNode('s1'),
-              p: DF.namedNode('p1'),
-              o: DF.namedNode('o1'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s2'),
-              p: DF.namedNode('p2'),
-              o: DF.namedNode('o2'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s3'),
-              p: DF.namedNode('p3'),
-              o: DF.namedNode('o3'),
-              g: DF.defaultGraph(),
-            }),
-            BF.fromRecord({
-              s: DF.namedNode('s4'),
-              p: DF.namedNode('p4'),
-              o: DF.namedNode('o4'),
-              g: DF.defaultGraph(),
-            }),
-          ]);
-          await expect(new Promise(resolve => bindings.getProperty('metadata', resolve))).resolves
-            .toEqual({
-              state: expect.any(MetadataValidationState),
-              cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
-              firstMeta: true,
-              a: 1,
-            });
         });
       });
     });

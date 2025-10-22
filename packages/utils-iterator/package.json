@@ -40,6 +40,6 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "asynciterator": "^3.9.0"
+    "asynciterator": "^3.10.0"
   }
 }

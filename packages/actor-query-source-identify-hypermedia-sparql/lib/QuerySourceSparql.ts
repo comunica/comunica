@@ -109,6 +109,10 @@ export class QuerySourceSparql implements IQuerySource {
     this.propertyFeatures = metadata.propertyFeatures ? new Set(metadata.propertyFeatures) : undefined;
   }
 
+  public async getFilterFactor(): Promise<number> {
+    return 1;
+  }
+
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
     const innerDisjunction: FragmentSelectorShape = {
       type: 'disjunction',

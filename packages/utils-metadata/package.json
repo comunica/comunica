@@ -44,6 +44,6 @@
   "dependencies": {
     "@comunica/types": "^4.4.0",
     "@rdfjs/types": "*",
-    "asynciterator": "^3.9.0"
+    "asynciterator": "^3.10.0"
   }
 }

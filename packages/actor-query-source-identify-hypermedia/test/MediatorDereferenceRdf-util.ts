@@ -1,64 +1,28 @@
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
+
 import type {
-  IActionDereferenceRdf,
-  IActorDereferenceRdfOutput,
-  MediatorDereferenceRdf,
-} from '@comunica/bus-dereference-rdf';
-import type {
-  IActionQuerySourceIdentifyHypermedia,
-  MediatorQuerySourceIdentifyHypermedia,
-} from '@comunica/bus-query-source-identify-hypermedia';
-import type { MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
+  IActionQuerySourceHypermediaResolve,
+  MediatorQuerySourceHypermediaResolve,
+} from '@comunica/bus-query-source-hypermedia-resolve';
+
 import type {
   IActionRdfMetadataAccumulate,
   IActorRdfMetadataAccumulateOutput,
   MediatorRdfMetadataAccumulate,
 } from '@comunica/bus-rdf-metadata-accumulate';
-import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import type { IQuerySource } from '@comunica/types';
+import type { IQuerySource, MetadataBindings } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { wrap } from 'asynciterator';
-import { DataFactory } from 'rdf-data-factory';
-import { streamifyArray } from 'streamify-array';
+import { ArrayIterator } from 'asynciterator';
 import 'jest-rdf';
-
-const quad = require('rdf-quad');
+import { DataFactory } from 'rdf-data-factory';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 const AF = new AlgebraFactory();
 
-// @ts-expect-error
-const mediatorDereferenceRdf: MediatorDereferenceRdf = {
-  async mediate({ url }: IActionDereferenceRdf): Promise<IActorDereferenceRdfOutput> {
-    return {
-      data: url === 'firstUrl' ?
-        <any> streamifyArray([
-          quad('s1', 'p1', 'o1'),
-          quad('s2', 'p2', 'o2'),
-        ]) :
-        <any> streamifyArray([
-          quad('s3', 'p3', 'o3'),
-          quad('s4', 'p4', 'o4'),
-        ]),
-      metadata: { triples: true },
-      exists: true,
-      requestTime: 0,
-      url,
-    };
-  },
-};
-// @ts-expect-error
-const mediatorMetadata: MediatorRdfMetadata = {
-  mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: <any> { a: 1 }}),
-};
-// @ts-expect-error
-const mediatorMetadataExtract: MediatorRdfMetadataExtract = {
-  mediate: ({ metadata }: any) => Promise.resolve({ metadata }),
-};
 // @ts-expect-error
 const mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate = {
   async mediate(action: IActionRdfMetadataAccumulate): Promise<IActorRdfMetadataAccumulateOutput> {
@@ -92,12 +56,16 @@ const mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate = {
   },
 };
 // @ts-expect-error
-const mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia = {
-  async mediate({ quads }: IActionQuerySourceIdentifyHypermedia) {
-    const quadsIterator = wrap(quads);
+const mediatorQuerySourceHypermediaResolve: MediatorQuerySourceHypermediaResolve = {
+  async mediate(action: IActionQuerySourceHypermediaResolve) {
+    action.handledDatasets!.MYDATASET = true;
     return {
       dataset: 'MYDATASET',
+      metadata: <MetadataBindings> <any> { a: 1 },
       source: <IQuerySource> <any> {
+        async getFilterFactor() {
+          return 1;
+        },
         async getSelectorShape() {
           return {
             type: 'operation',
@@ -114,25 +82,18 @@ const mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermed
           };
         },
         queryBindings() {
-          quads.on('error', () => {
-            setImmediate(() => {
-              it.close();
-            });
-          });
-          const it = quadsIterator.clone().transform({
-            map: q => BF.fromRecord({
-              s: q.subject,
-              p: q.predicate,
-              o: q.object,
-              g: q.graph,
+          const it = new ArrayIterator([
+            BF.fromRecord({
+              s: DF.namedNode(action.url),
+              p: DF.namedNode('p1'),
+              o: DF.namedNode('o1'),
             }),
-            autoStart: false,
-          });
+          ], { autoStart: false });
           it.setProperty('metadata', { firstMeta: true });
           return it;
         },
         queryQuads() {
-          return quadsIterator.clone();
+          return new ArrayIterator([], { autoStart: false });
         },
         queryBoolean() {
           return true;
@@ -153,11 +114,8 @@ const mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQ
   mediate: () => Promise.resolve({ linkQueue: new LinkQueueFifo() }),
 };
 export const mediators = {
-  mediatorMetadata,
-  mediatorMetadataExtract,
   mediatorMetadataAccumulate,
-  mediatorDereferenceRdf,
-  mediatorQuerySourceIdentifyHypermedia,
+  mediatorQuerySourceHypermediaResolve,
   mediatorRdfResolveHypermediaLinks,
   mediatorRdfResolveHypermediaLinksQueue,
 };

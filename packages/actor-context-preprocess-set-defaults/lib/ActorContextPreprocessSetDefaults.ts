@@ -38,7 +38,6 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
         .setDefault(KeysQuerySourceIdentify.sourceIds, new Map())
         .setDefault(KeysCore.log, this.logger)
         .setDefault(KeysInitQuery.functionArgumentsCache, this.defaultFunctionArgumentsCache)
-        .setDefault(KeysQuerySourceIdentify.hypermediaSourcesAggregatedStores, new Map())
         .setDefault(KeysInitQuery.dataFactory, new DataFactory());
 
       // Handle default query format

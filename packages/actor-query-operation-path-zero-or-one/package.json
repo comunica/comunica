@@ -50,6 +50,6 @@
     "@comunica/utils-bindings-factory": "^4.4.0",
     "@comunica/utils-metadata": "^4.4.0",
     "@comunica/utils-query-operation": "^4.4.1",
-    "asynciterator": "^3.9.0"
+    "asynciterator": "^3.10.0"
   }
 }

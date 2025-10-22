@@ -92,6 +92,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         return new UnionIterator(baseStream.transform({
           map: binder,
           optional,
+          autoStart: false,
         }), { autoStart: false });
       default:
         // eslint-disable-next-line ts/restrict-template-expressions
@@ -116,17 +117,17 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       action.context,
       'First entry for Bind Join: ',
       () => ({
-        entry: entries[0].operation,
+        entry: { ...entries[0].operation, metadata: undefined },
         cardinality: entries[0].metadata.cardinality,
         order: entries[0].metadata.order,
         availableOrders: entries[0].metadata.availableOrders,
       }),
     );
 
-    // Close the non-smallest streams
+    // Destroy the non-smallest streams
     for (const [ i, element ] of entries.entries()) {
       if (i !== 0) {
-        element.output.bindingsStream.close();
+        element.output.bindingsStream.destroy();
       }
     }
 

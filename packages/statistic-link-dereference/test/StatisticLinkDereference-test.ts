@@ -19,6 +19,8 @@ class MockQuerySource implements IQuerySource {
     this.referenceValue = referenceValue;
   }
 
+  public getFilterFactor: (context: IActionContext) => Promise<number>;
+
   public getSelectorShape: (context: IActionContext) => Promise<FragmentSelectorShape>;
   public queryBindings: (operation: Alg.Operation, context: IActionContext, options?: IQueryBindingsOptions | undefined)
   => BindingsStream;
