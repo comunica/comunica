@@ -43,7 +43,7 @@ export interface IActorHashBindingsOutput extends IActorOutput {
   hashFunction: HashFunction;
 }
 
-export type HashFunction = (bindings: Bindings, variables: RDF.Variable[]) => number;
+export type HashFunction = (bindings: Bindings, variables: Iterable<RDF.Variable>) => number;
 
 export type IActorHashBindingsArgs<TS = undefined> =
   IActorArgs<IActionHashBindings, IActorTest, IActorHashBindingsOutput, TS>;
