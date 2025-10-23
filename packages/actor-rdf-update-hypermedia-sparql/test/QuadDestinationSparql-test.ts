@@ -31,7 +31,7 @@ describe('QuadDestinationSparql', () => {
     };
     context = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'abc' });
     url = 'abc';
-    destination = new QuadDestinationSparql(url, context, mediatorHttp, DF);
+    destination = new QuadDestinationSparql(url, context, mediatorHttp, DF, false);
   });
 
   describe('insert', () => {

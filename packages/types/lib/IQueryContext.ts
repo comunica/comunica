@@ -36,6 +36,7 @@ export interface IQueryContextCommon {
   // Inherited from RDF.QueryStringContext: queryTimestamp?: Date;
   httpProxyHandler?: IProxyHandler;
   lenient?: boolean;
+  parseUnsupportedVersions?: boolean;
   httpIncludeCredentials?: boolean;
   httpAuth?: string;
   httpTimeout?: number;

@@ -318,6 +318,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             true,
             true,
             0,
+            false,
             { extensionFunctions: [ 'https://example.com/functions#mock' ]},
           ),
         };
@@ -353,6 +354,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             true,
             true,
             0,
+            false,
             { extensionFunctions: [ 'https://example.com/functions#mock' ]},
           ),
         };

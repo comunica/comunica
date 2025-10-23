@@ -68,6 +68,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.cardinalityCountQueries && !isSingularSource,
       this.cardinalityEstimateConstruction,
       this.forceGetIfUrlLengthBelow,
+      Boolean(action.context.get(KeysInitQuery.parseUnsupportedVersions)),
       action.metadata,
     );
     return { source };

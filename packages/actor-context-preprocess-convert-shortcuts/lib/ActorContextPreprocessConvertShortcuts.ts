@@ -53,6 +53,7 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "queryTimestampHighResolution": "@comunica/actor-init-query:queryTimestampHighResolution",
    *   "httpProxyHandler": "@comunica/actor-http-proxy:httpProxyHandler",
    *   "lenient": "@comunica/actor-init-query:lenient",
+   *   "parseUnsupportedVersions": "@comunica/actor-init-query:parseUnsupportedVersions",
    *   "httpIncludeCredentials": "@comunica/bus-http:include-credentials",
    *   "httpAuth": "@comunica/bus-http:auth",
    *   "httpTimeout": "@comunica/bus-http:http-timeout",

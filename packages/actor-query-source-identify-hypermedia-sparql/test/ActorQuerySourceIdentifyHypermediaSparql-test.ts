@@ -195,6 +195,20 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           .run({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null, context });
         expect(output.source).toBeInstanceOf(QuerySourceSparql);
         expect((<any> output.source).url).toBe('SERVICE');
+        expect((<any> output.source).endpointFetcher.sparqlJsonParser.parseUnsupportedVersions).toBe(false);
+        expect((<any> output.source).endpointFetcher.sparqlXmlParser.parseUnsupportedVersions).toBe(false);
+      });
+
+      it('should pass parseUnsupportedVersions to the parsers', async() => {
+        const output = await actor.run({
+          url: 'URL',
+          metadata: { sparqlService: 'SERVICE' },
+          quads: <any> null,
+          context: context.set(KeysInitQuery.parseUnsupportedVersions, true),
+        });
+        expect(output.source).toBeInstanceOf(QuerySourceSparql);
+        expect((<any> output.source).endpointFetcher.sparqlJsonParser.parseUnsupportedVersions).toBe(true);
+        expect((<any> output.source).endpointFetcher.sparqlXmlParser.parseUnsupportedVersions).toBe(true);
       });
 
       it('should return a source when no sparqlService was defined in metadata', async() => {

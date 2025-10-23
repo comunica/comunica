@@ -42,6 +42,7 @@ export class ActorRdfUpdateHypermediaSparql extends ActorRdfUpdateHypermedia {
         action.context,
         this.mediatorHttp,
         dataFactory,
+        Boolean(action.context.get(KeysInitQuery.parseUnsupportedVersions)),
       ),
     };
   }

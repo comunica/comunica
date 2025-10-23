@@ -76,6 +76,7 @@ export class QuerySourceSparql implements IQuerySource {
     cardinalityCountQueries: boolean,
     cardinalityEstimateConstruction: boolean,
     forceGetIfUrlLengthBelow: number,
+    parseUnsupportedVersions: boolean,
     metadata: Record<string, any>,
   ) {
     this.referenceValue = url;
@@ -95,6 +96,7 @@ export class QuerySourceSparql implements IQuerySource {
       dataFactory,
       forceGetIfUrlLengthBelow,
       directPost: metadata.postAccepted && !metadata.postAccepted.includes('application/x-www-form-urlencoded'),
+      parseUnsupportedVersions,
     });
     this.cache = cacheSize > 0 ?
       new LRUCache<string, QueryResultCardinality>({ max: cacheSize }) :

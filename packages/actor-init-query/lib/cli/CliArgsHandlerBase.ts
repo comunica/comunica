@@ -113,6 +113,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If failing requests and parsing errors should be logged instead of causing a hard crash',
         },
+        parseUnsupportedVersions: {
+          type: 'boolean',
+          describe: 'If no error should be emitted on unsupported versions',
+        },
         version: {
           alias: 'v',
           type: 'boolean',
@@ -234,6 +238,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define lenient-mode
     if (args.lenient) {
       context[KeysInitQuery.lenient.name] = true;
+    }
+
+    // Define parseUnsupportedVersions
+    if (args.parseUnsupportedVersions) {
+      context[KeysInitQuery.parseUnsupportedVersions.name] = true;
     }
 
     // Define HTTP timeout

@@ -134,6 +134,12 @@ export const KeysInitQuery = {
    */
   lenient: new ActionContextKey<boolean>('@comunica/actor-init-query:lenient'),
   /**
+   * By default, errors will be emitted if parsers encounter unsupported versions.
+   * Setting this flag to true will silence those checks.
+   * Errors may still be emitted if unsupported grammar is encountered.
+   */
+  parseUnsupportedVersions: new ActionContextKey<boolean>('@comunica/actor-init-query:parseUnsupportedVersions'),
+  /**
    * The original query string.
    */
   queryString: new ActionContextKey<string>('@comunica/actor-init-query:queryString'),
