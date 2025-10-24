@@ -6211,10 +6211,10 @@ fecha@^4.2.0:
   resolved "https://registry.npmjs.org/fecha/-/fecha-4.2.3.tgz"
   integrity sha512-OP2IUU6HeYKJi3i0z4A19kHMQoLVs4Hc+DPqqxI2h/DPZHTm/vjsfC6P0b4jCMy14XizLBqvndQ+UilD7707Jw==
 
-fetch-sparql-endpoint@7.0.0-beta.2:
-  version "7.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-7.0.0-beta.2.tgz#ebcb8bf175d6431fc95a062284274e3cfe475b51"
-  integrity sha512-UzglqSjyWRkIjmCPE+m3qVk9TZxYW3VpNTBJ8nL7RyrJKIA+DDV0L87uW8wZonpnd7Y1m3T17ymQvYgTFxigMg==
+fetch-sparql-endpoint@7.0.0-beta.3:
+  version "7.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-7.0.0-beta.3.tgz#401bd78ca9b54629a0b1cb02c0fa54162bdd65a7"
+  integrity sha512-2CdpelA0OA8fgu+YHespkPAfeWdVYdvSd9rWMQYUo54rSx/lWiKrD1pWy/j+EA2222TqVZ8a6LeBXCeUK2pBkQ==
   dependencies:
     "@traqula/parser-sparql-1-2" "^0.0.24"
     "@traqula/rules-sparql-1-2" "^0.0.24"
@@ -6224,8 +6224,8 @@ fetch-sparql-endpoint@7.0.0-beta.2:
     n3 "^1.0.0"
     rdf-string "^2.0.0"
     readable-from-web "^1.0.0"
-    sparqljson-parse "^3.2.0"
-    sparqlxml-parse "^3.2.0"
+    sparqljson-parse "^3.3.0"
+    sparqlxml-parse "^3.3.0"
     stream-to-string "^1.0.0"
     yargs "^17.0.0"
 
@@ -12483,10 +12483,10 @@ sparqljson-parse@^3.0.0:
     rdf-data-factory "^2.0.0"
     readable-stream "^4.0.0"
 
-sparqljson-parse@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/sparqljson-parse/-/sparqljson-parse-3.2.0.tgz#ba143a18c2006f2e453cad9313851b99f2e0a105"
-  integrity sha512-FCrakS22jA+FIC1smbTGLOGcv0Jn7cRqUaziGdhxPu4KuVXG4SkpkKfqkS5FKeJLR58x+N3DlusgTY5K4NLSdQ==
+sparqljson-parse@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/sparqljson-parse/-/sparqljson-parse-3.3.0.tgz#d6770a1f3fd4fd2e168c2cc7027eaaa72051a31c"
+  integrity sha512-XrmkCsrx4n69Ak63Ju7t91hVlWw7YhEPPdA+giW2GRTosQxPur0JWh7rQin/8aT0WjKZgBgGpsNnVBYyyWUq1w==
   dependencies:
     "@bergos/jsonparse" "^1.4.1"
     "@types/readable-stream" "^4.0.0"
@@ -12525,10 +12525,10 @@ sparqlxml-parse@^3.0.0:
     rdf-data-factory "^2.0.0"
     readable-stream "^4.5.2"
 
-sparqlxml-parse@^3.2.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/sparqlxml-parse/-/sparqlxml-parse-3.2.0.tgz#ec1f825a2ed664182d525faab92082ffcbf8045f"
-  integrity sha512-cPPO5ukySg4NCAAhMEz/NTD8Urtw3mDECb2aaVc5oIfROb3nAHWi5mKQNQA9cq7pIev/AB0mgDTdiJBDfYOxKg==
+sparqlxml-parse@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/sparqlxml-parse/-/sparqlxml-parse-3.3.0.tgz#829d01c2ca38e92180fe20957a192d6d0d797c81"
+  integrity sha512-FUVgcUr2YePDtDuu/UcMTF2ODiKBQdZdcfTSvaR3QhWVAcBmIGX4r4apsePK1zCc1kkRR53JBHXHJho/Pk538g==
   dependencies:
     "@rubensworks/saxes" "^6.0.1"
     "@types/readable-stream" "^4.0.0"

@@ -1409,6 +1409,212 @@ describe('QuerySourceSparql', () => {
         input: url,
       });
     });
+
+    it('should emit an for an unknown in-band version', async() => {
+      const thisMediator: any = {
+        mediate() {
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: Readable.from([ `{
+  "head": { "vars": [ "p" ], "version": "1.2-unknown"
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "p": { "type": "uri" , "value": "p1" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p2" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p3" }
+      }
+    ]
+  }
+}` ]),
+            ok: true,
+            status: 200,
+            statusText: 'Ok!',
+          };
+        },
+      };
+      source = new QuerySourceSparql(
+        url,
+        ctx,
+        thisMediator,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        true,
+        0,
+        false,
+        {},
+      );
+      await expect(source.queryBindings(
+        AF.createPattern(iriS, DF.variable('p'), iriO),
+        ctx,
+      ).toArray())
+        .rejects.toThrow(new Error(`Detected unsupported version: 1.2-unknown`));
+    });
+
+    it('should not emit an for an unknown in-band version when parseUnsupportedVersions is true', async() => {
+      const thisMediator: any = {
+        mediate() {
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: Readable.from([ `{
+  "head": { "vars": [ "p" ], "version": "1.2-unknown"
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "p": { "type": "uri" , "value": "p1" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p2" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p3" }
+      }
+    ]
+  }
+}` ]),
+            ok: true,
+            status: 200,
+            statusText: 'Ok!',
+          };
+        },
+      };
+      source = new QuerySourceSparql(
+        url,
+        ctx,
+        thisMediator,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        true,
+        0,
+        true,
+        {},
+      );
+      await expect(source.queryBindings(
+        AF.createPattern(iriS, DF.variable('p'), iriO),
+        ctx,
+      ).toArray()).resolves.toHaveLength(3);
+    });
+
+    it('should emit an for an unknown out-of-band version', async() => {
+      const thisMediator: any = {
+        mediate() {
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json; version=1.2-unknown' }),
+            body: Readable.from([ `{
+  "head": { "vars": [ "p" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "p": { "type": "uri" , "value": "p1" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p2" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p3" }
+      }
+    ]
+  }
+}` ]),
+            ok: true,
+            status: 200,
+            statusText: 'Ok!',
+          };
+        },
+      };
+      source = new QuerySourceSparql(
+        url,
+        ctx,
+        thisMediator,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        true,
+        0,
+        false,
+        {},
+      );
+      await expect(source.queryBindings(
+        AF.createPattern(iriS, DF.variable('p'), iriO),
+        ctx,
+      ).toArray())
+        .rejects.toThrow(new Error(`Detected unsupported version as media type parameter: 1.2-unknown`));
+    });
+
+    it('should not emit an for an unknown out-of-band version when parseUnsupportedVersions is true', async() => {
+      const thisMediator: any = {
+        mediate() {
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json; version=1.2-unknown' }),
+            body: Readable.from([ `{
+  "head": { "vars": [ "p" ]
+  } ,
+  "results": {
+    "bindings": [
+      {
+        "p": { "type": "uri" , "value": "p1" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p2" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p3" }
+      }
+    ]
+  }
+}` ]),
+            ok: true,
+            status: 200,
+            statusText: 'Ok!',
+          };
+        },
+      };
+      source = new QuerySourceSparql(
+        url,
+        ctx,
+        thisMediator,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        true,
+        0,
+        true,
+        {},
+      );
+      await expect(source.queryBindings(
+        AF.createPattern(iriS, DF.variable('p'), iriO),
+        ctx,
+      ).toArray()).resolves.toHaveLength(3);
+    });
   });
 
   describe('queryQuads', () => {
