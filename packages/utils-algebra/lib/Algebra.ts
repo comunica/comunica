@@ -55,9 +55,17 @@ export type KnownUpdate = DeleteInsert | Load | Clear | Create | Drop | Add | Mo
 
 export type TypedOperation<T extends Algebra.Types> = Extract<KnownOperation, { type: T }>;
 export type TypedExpression<T extends Algebra.ExpressionTypes> = Extract<KnownOperation, { subType: T }>;
-
+/**
+ * Algebra operation taking a single operation as input.
+ */
 export type Single = Opened<Algebra.Single>;
+/**
+ * Algebra operation taking multiple operations as input.
+ */
 export type Multi = Opened<Algebra.Multi>;
+/**
+ * Algebra operation taking exactly two input operations.
+ */
 export type Double = Opened<Algebra.Double>;
 export type AggregateExpression = Opened<Algebra.AggregateExpression>;
 export type GroupConcatExpression = Opened<Algebra.GroupConcatExpression>;
@@ -66,6 +74,10 @@ export type NamedExpression = Opened<Algebra.NamedExpression>;
 export type OperatorExpression = Opened<Algebra.OperatorExpression>;
 export type TermExpression = Opened<Algebra.TermExpression>;
 export type WildcardExpression = Opened<Algebra.WildcardExpression>;
+/**
+ * Algebra operation representing the [Property path](https://www.w3.org/TR/sparql11-query/#propertypaths) alternative (`|`).
+ * Property paths have a specific [SPARQL definition](https://www.w3.org/TR/sparql11-query/#sparqlPropertyPaths)
+ */
 export type Alt = Opened<Algebra.Alt>;
 export type Ask = Opened<Algebra.Ask>;
 export type Bgp = Opened<Algebra.Bgp>;
@@ -78,25 +90,70 @@ export type Filter = Opened<Algebra.Filter>;
 export type Graph = Opened<Algebra.Graph>;
 export type BoundAggregate = Opened<Algebra.BoundAggregate>;
 export type Group = Patch<Opened<Algebra.Group>, { aggregates: BoundAggregate[] }>;
+/**
+ * Algebra operation representing the [Property path](https://www.w3.org/TR/sparql11-query/#propertypaths) inverse (`^`).
+ * Having a specific [SPARQL definition](https://www.w3.org/TR/sparql11-query/#sparqlPropertyPaths)
+ * This operation, besides basic mode is the reason SPARQL can contain literals in the subject position.
+ */
 export type Inv = Opened<Algebra.Inv>;
 export type Join = Opened<Algebra.Join>;
 export type LeftJoin = Opened<Algebra.LeftJoin>;
+/**
+ * Algebra operation representing the property of a [Property path](https://www.w3.org/TR/sparql11-query/#propertypaths).
+ * Property paths have a specific [SPARQL definition](https://www.w3.org/TR/sparql11-query/#sparqlPropertyPaths)
+ * This operation, is just a way of saying to a Propery Path operation that nothing fancy is going on,
+ * and it should just match this property.
+ */
 export type Link = Opened<Algebra.Link>;
 export type Minus = Opened<Algebra.Minus>;
+/**
+ * An empty operation.
+ * For example used for the algebra representation of a query string that does not contain any operation.
+ */
 export type Nop = Opened<Algebra.Nop>;
+/**
+ * Algebra operation representing the [Property path](https://www.w3.org/TR/sparql11-query/#propertypaths) negated property set (`!`).
+ * Property paths have a specific [SPARQL definition](https://www.w3.org/TR/sparql11-query/#sparqlPropertyPaths)
+ */
 export type Nps = Opened<Algebra.Nps>;
+/**
+ * Algebra operation representing the [Property path](https://www.w3.org/TR/sparql11-query/#propertypaths) one or more (`+`).
+ * Property paths have a specific [SPARQL definition](https://www.w3.org/TR/sparql11-query/#sparqlPropertyPaths)
+ */
 export type OneOrMorePath = Opened<Algebra.OneOrMorePath>;
 export type OrderBy = Opened<Algebra.OrderBy>;
 export type Path = Opened<Algebra.Path>;
+/**
+ * Simple BGP entry (triple)
+ */
 export type Pattern = Algebra.Pattern & withMeta;
 export type Project = Opened<Algebra.Project>;
 export type Reduced = Opened<Algebra.Reduced>;
+/**
+ * Algebra operation representing the [Property path](https://www.w3.org/TR/sparql11-query/#propertypaths) sequence (`/`).
+ * Property paths have a specific [SPARQL definition](https://www.w3.org/TR/sparql11-query/#sparqlPropertyPaths)
+ */
 export type Seq = Opened<Algebra.Seq>;
 export type Service = Opened<Algebra.Service>;
 export type Slice = Opened<Algebra.Slice>;
 export type Union = Opened<Algebra.Union>;
+/**
+ * Algebra operation representing the [VALUES pattern](https://www.w3.org/TR/sparql11-query/#inline-data)
+ * Has a list of variables that will be assigned.
+ * The assignments are represented as a list of object containing bindings.
+ * Each binging links the variable value to the appropriate Term for this binding.
+ * Does not take any input.
+ */
 export type Values = Opened<Algebra.Values>;
+/**
+ * Algebra operation representing the [Property path](https://www.w3.org/TR/sparql11-query/#propertypaths) zero or more (`*`).
+ * The having specific [SPARQL definition](https://www.w3.org/TR/sparql11-query/#sparqlPropertyPaths)
+ */
 export type ZeroOrMorePath = Opened<Algebra.ZeroOrMorePath>;
+/**
+ * Algebra operation representing the [Property path](https://www.w3.org/TR/sparql11-query/#propertypaths) zero or one (`?`).
+ * The having specific [SPARQL definition](https://www.w3.org/TR/sparql11-query/#sparqlPropertyPaths)
+ */
 export type ZeroOrOnePath = Opened<Algebra.ZeroOrOnePath>;
 export type CompositeUpdate = Opened<Algebra.CompositeUpdate>;
 export type DeleteInsert = Opened<Algebra.DeleteInsert>;

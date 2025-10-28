@@ -1,3 +1,4 @@
+import type * as RDF from '@rdfjs/types';
 import type { Algebra as TraqulaAlgebra } from '@traqula/algebra-transformations-1-2';
 import { algebraUtils, Types } from '@traqula/algebra-transformations-1-2';
 import { TransformerSubTyped } from '@traqula/core';
@@ -78,18 +79,66 @@ const transformer = new TransformerSubTyped<KnownOperation>({
   [Types.COPY]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
 });
 
+/**
+ * Transform a single operation.
+ * The transformation calls the preVisitor starting from the startObject.
+ * The preVisitor can dictate whether transformation should be stopped.
+ * Note that stopping the transformation also prevets further copying.
+ * The transformer itself transforms operations starting with the deepest one that can be visited.
+ * The transformer callback is performed on a copy of the original.
+ * @param startObject
+ * @param nodeCallBacks
+ */
 export const mapOperation: (typeof transformer.transformNode<'unsafe', Operation>) = <any>
   transformer.transformNode.bind(transformer);
 
+/**
+ * Transform a single operation.
+ * The transformation calls the preVisitor starting from the startObject.
+ * The preVisitor can dictate whether transformation should be stopped.
+ * Note that stopping the transformation also prevets further copying.
+ * The transformer itself transforms operations starting with the deepest one that can be visited.
+ * The transformer callback is performed on a copy of the original.
+ * @param startObject
+ * @param nodeCallBacks
+ */
 export const mapOperationStrict = transformer.transformNode.bind(transformer);
 
+/**
+ * Shares the functionality and first two arguments with {@link mapOperation}.
+ * The third argument allows you to also transform based on the subType of operations.
+ * Note that when a callback for the subtype is provided, the callback for the general type is NOT executed.
+ */
 export const mapOperationSub: (typeof transformer.transformNodeSpecific<'unsafe', Operation>) = <any>
   transformer.transformNodeSpecific.bind(transformer);
+/**
+ * Shares the functionality and first two arguments with {@link mapOperation}.
+ * The third argument allows you to also transform based on the subType of operations.
+ * Note that when a callback for the subtype is provided, the callback for the general type is NOT executed.
+ */
 export const mapOperationSubStrict = transformer.transformNodeSpecific.bind(transformer);
 
+/**
+ * Similar to {@link mapOperation}, but without copying the startObject.
+ * The pre-visitor visits starting from the root, going deeper, while the actual visitor goes in reverse.
+ */
 export const visitOperation = transformer.visitNode.bind(transformer);
+/**
+ * Shares the functionality and first two arguments with {@link visitOperation}.
+ * The third argument allows you to also transform based on the subType of operations.
+ * Note that when a callback for the subtype is provided, the callback for the general type is NOT executed.
+ */
 export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);
 
+/**
+ * Detects all in-scope variables.
+ * In practice this means iterating through the entire algebra tree, finding all variables,
+ * and stopping when a project function is found.
+ * @param {Operation} op - Input algebra tree.
+ * @param visitor the visitor to be used to traverse the various nodes.
+ *        Allows you to provide a visitor with different default preVisitor cotexts.
+ * @returns {RDF.Variable[]} - List of unique in-scope variables.
+ */
 export const inScopeVariables: typeof algebraUtils.inScopeVariables =
-  (op, visitor = <typeof algebraUtils.visitOperation> visitOperation) =>
+  (op: Operation, visitor = <typeof algebraUtils.visitOperation>visitOperation): RDF.Variable[] =>
     algebraUtils.inScopeVariables(op, visitor);
