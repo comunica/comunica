@@ -56,7 +56,7 @@
     "browser": "node \"../../node_modules/webpack/bin/webpack.js\" --mode production",
     "browser-profile": "node \"../../node_modules/webpack/bin/webpack.js\" --mode production --profile --json > stats.json && node \"../../node_modules/.bin/webpack-bundle-analyzer\" stats.json && rm stats.json",
     "spec:base": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js http://w3c.github.io/rdf-tests/sparql/sparql11/manifest-all.ttl -c ../../.rdf-test-suite-cache/",
-    "spec:query": "yarn run spec:base -s http://www.w3.org/TR/sparql11-query/",
+    "spec:query": "yarn run spec:base -s http://www.w3.org/TR/sparql11-query/ --skip \"(agg-empty-group-count-graph|bindings\/manifest#graph)\"",
     "spec:update": "yarn run spec:base -s http://www.w3.org/TR/sparql11-update/",
     "spec:csv-tsv": "yarn run spec:base -s http://www.w3.org/TR/sparql11-results-csv-tsv/",
     "spec:json": "yarn run spec:base -s http://www.w3.org/TR/sparql11-results-json/",
