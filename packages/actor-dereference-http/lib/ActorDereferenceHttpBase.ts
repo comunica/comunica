@@ -8,6 +8,7 @@ import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
 
 const REGEX_MEDIATYPE = /^[^ ;]*/u;
+const REGEX_VERSION_HEADER = /version=([^ ;]*)/u;
 
 export function mediaTypesToAcceptString(mediaTypes: Record<string, number>, maxLength: number): string {
   const wildcard = '*/*;q=0.1';
@@ -98,7 +99,9 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
       }
     }
 
-    const mediaType = REGEX_MEDIATYPE.exec(httpResponse.headers.get('content-type') ?? '')?.[0];
+    const contentType = httpResponse.headers.get('content-type') ?? '';
+    const mediaType = REGEX_MEDIATYPE.exec(contentType)?.[0];
+    const version = REGEX_VERSION_HEADER.exec(contentType)?.[1];
 
     // Return the parsed quad stream and whether or not only triples are supported
     return {
@@ -108,6 +111,7 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
       requestTime,
       headers: httpResponse.headers,
       mediaType: mediaType === 'text/plain' ? undefined : mediaType,
+      version,
     };
   }
 

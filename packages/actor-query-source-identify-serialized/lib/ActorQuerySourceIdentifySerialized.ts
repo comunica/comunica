@@ -65,7 +65,7 @@ export class ActorQuerySourceIdentifySerialized extends ActorQuerySourceIdentify
     const parseAction: IActionRdfParseHandle = {
       context,
       handle: {
-        metadata: { baseIRI: source.baseIRI },
+        metadata: { baseIRI: source.baseIRI, version: source.version },
         data: textStream,
         context,
       },

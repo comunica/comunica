@@ -43,6 +43,6 @@
   "dependencies": {
     "@comunica/bus-rdf-parse": "^4.4.0",
     "@comunica/context-entries": "^4.4.1",
-    "rdfxml-streaming-parser": "^3.1.0"
+    "rdfxml-streaming-parser": "^3.2.0"
   }
 }

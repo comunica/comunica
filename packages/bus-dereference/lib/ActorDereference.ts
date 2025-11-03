@@ -107,6 +107,10 @@ export interface IActorDereferenceOutput extends IActorOutput {
    * The mediatype of the source
    */
   mediaType?: string;
+  /**
+   * The version that was defined as media type parameter.
+   */
+  version?: string;
 }
 
 export type IActorDereferenceArgs = IActorArgs<IActionDereference, IActorTest, IActorDereferenceOutput>;

@@ -11,6 +11,7 @@ export interface IQuerySourceSerialized extends IQuerySourceUnidentifiedExpanded
   value: string;
   mediaType: string;
   baseIRI?: string;
+  version?: string;
 }
 
 export interface IQuerySourceUnidentifiedExpanded {

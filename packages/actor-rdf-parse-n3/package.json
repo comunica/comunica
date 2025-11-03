@@ -38,6 +38,6 @@
     "@comunica/bus-rdf-parse": "^4.4.0",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/types": "^4.4.0",
-    "n3": "2.0.0-beta.1"
+    "n3": "2.0.0-beta.2"
   }
 }
