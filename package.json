@@ -77,7 +77,7 @@
     "manual-git-changelog": "^1.0.2",
     "node-polyfill-webpack-plugin": "^4.0.0",
     "nodemon": "^3.0.0",
-    "npm-check-updates": "^18.0.0",
+    "npm-check-updates": "^19.1.2",
     "rdf-data-factory": "^2.0.1",
     "rdf-quad": "^2.0.0",
     "rdf-stores": "^2.1.1",
