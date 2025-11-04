@@ -3,7 +3,6 @@ import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTab
 import { ActorFunctionFactoryTermUnaryMinus } from '../lib';
 
 describe('evaluation of \'- (unary)\' like', () => {
-  // '- "0"^^xsd:float       = "-0."^^xsd:float   ' // TODO: Document
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermUnaryMinus(args),

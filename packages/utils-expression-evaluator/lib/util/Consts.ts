@@ -91,7 +91,6 @@ export type GeneralOperator = KnownOperator | string;
 
 export type KnownOperator = SparqlOperator | NamedOperator;
 
-// TODO: Remove unneeded double typing
 export enum SparqlOperator {
   // Operator mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
