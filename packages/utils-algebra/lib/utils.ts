@@ -87,9 +87,17 @@ const transformer = new TransformerSubTyped<KnownOperation>({
 });
 
 /**
- * Transform a single operation, similar to {@link mapOperation}, but using stricter typings. e.g.:
- * `mapOperationStrict({type: 'distinct', input: {type: 'project' }}, { project: { transform: () => 5 } })`
- * returns `{type: distinct, input: 5}`
+ * Transform a single operation, similar to {@link mapOperation}, but using stricter typings.
+ * e.g. wrapping a distinct around the outermost project:
+ * ```ts
+ * mapOperationStrict<'unsafe', Operation>(
+ *   {type: 'slice', input: { type: 'project', input: { type: 'join', input: [{type: 'project'}, {type: 'bgp'}]}}},
+ *   {project: { preVisitor: () => ({continue: false}), transform: projection => AF.createDistinct(projection) } }
+ * )
+ * returns = {type: 'slice', input: { type: 'distinct',
+ *   input: { type: 'project', input: { type: 'join', input: [{type: 'project'}, {type: 'bgp'}]}}
+ * }}
+ * ```
  * @param startObject the object from which we will start the transformation,
  *   potentially visiting and transforming its descendants along the way.
  * @param nodeCallBacks a dictionary mapping the various operation types to objects optionally
@@ -104,9 +112,17 @@ const transformer = new TransformerSubTyped<KnownOperation>({
 export const mapOperationStrict = transformer.transformNode.bind(transformer);
 
 /**
- * Transform a single operation. e.g.:
- * `mapOperation({type: 'distinct', input: {type: 'project' }}, { project: { transform: () => 5 } })`
- * returns `{type: distinct, input: 5}`
+ * Transform a single operation.
+ * e.g. wrapping a distinct around the outermost project:
+ * ```ts
+ * mapOperation(
+ *   {type: 'slice', input: { type: 'project', input: { type: 'join', input: [{type: 'project'}, {type: 'bgp'}]}}},
+ *   {project: { preVisitor: () => ({continue: false}), transform: projection => AF.createDistinct(projection) } }
+ * )
+ * returns = {type: 'slice', input: { type: 'distinct',
+ *   input: { type: 'project', input: { type: 'join', input: [{type: 'project'}, {type: 'bgp'}]}}
+ * }}
+ * ```
  * @param startObject the object from which we will start the transformation,
  *   potentially visiting and transforming its descendants along the way.
  * @param nodeCallBacks a dictionary mapping the various operation types to objects optionally
@@ -121,11 +137,19 @@ export const mapOperationStrict = transformer.transformNode.bind(transformer);
 export const mapOperation: (typeof mapOperationStrict<'unsafe', Operation>) = <any> mapOperationStrict;
 
 /**
- * Transform a single operation, similar to {@link mapOperationSub}, but using stricter types. e.g.:
- * `mapOperationSubStrict(
- * {type: 'distinct', input: [{type: 'expression', subType: 'term' }. {type: 'expression', subType: 'aggregate']},
- * { expression: { transform: () => 1 } }, {expression: {'aggregate': {transform () => 5}}})`
- * returns `{type: distinct, input: [1, 5] }`
+ * Transform a single operation, similar to {@link mapOperationSub}, but using stricter typings.
+ * e.g. wrapping a distinct around the all project operations not contained in an aggregate expression
+ * (invalid algebra anyway):
+ * ```ts
+ * mapOperationSubStrict<'unsafe', Operation>(
+ *   {type: 'slice', input: { type: 'project', input: { type: 'join', input:
+ *     [{type: 'expression', subType: 'aggregate', input: {type: 'project'}}, {type: 'bgp'}]}}},
+ *   {project: { transform: projection => AF.createDistinct(projection) } },
+ *   { expression: {aggregate: {preVisitor: () => ({continue: false}) }}}
+ * )
+ * returns = {type: 'slice', input: { type: 'distinct', input: { type: 'project', input: { type: 'join', input:
+ *   [{type: 'expression', subType: 'aggregate', input: {type: 'project'}}, {type: 'bgp'}] }}}}
+ * ```
  * @param startObject the object from which we will start the transformation,
  *   potentially visiting and transforming its descendants along the way.
  * @param nodeCallBacks a dictionary mapping the various operation types to objects optionally
@@ -134,7 +158,7 @@ export const mapOperation: (typeof mapOperationStrict<'unsafe', Operation>) = <a
  *    altering how it will be transformed.
  *    The transformer allows you to manipulate the copy of the current object,
  *    and expects you to return the value that should take the current objects place.
- * @param nodeSpecificCallBacks: Same as nodeCallBacks but using an additional level of indirection to
+ * @param nodeSpecificCallBacks Same as nodeCallBacks but using an additional level of indirection to
  *     indicate the subType.
  * @return the result of transforming the requested descendant operations (based on the preVisitor)
  * using a transformer that works its way back up from the descendant to the startObject.
@@ -142,11 +166,19 @@ export const mapOperation: (typeof mapOperationStrict<'unsafe', Operation>) = <a
 export const mapOperationSubStrict = transformer.transformNodeSpecific.bind(transformer);
 
 /**
- * Transform a single operation, similar to {@link mapOperation}, but also allowing you to target subTypes. e.g.:
- * `mapOperationSub(
- * {type: 'distinct', input: [{type: 'expression', subType: 'term' }. {type: 'expression', subType: 'aggregate']},
- * { expression: { transform: () => 1 } }, {expression: {'aggregate': {transform () => 5}}})`
- * returns `{type: distinct, input: [1, 5] }`
+ * Transform a single operation, similar to {@link mapOperation}, but also allowing you to target subTypes.
+ * e.g. wrapping a distinct around the all project operations not contained in an aggregate expression
+ * (invalid algebra anyway):
+ * ```ts
+ * mapOperationSub(
+ *   {type: 'slice', input: { type: 'project', input: { type: 'join', input:
+ *     [{type: 'expression', subType: 'aggregate', input: {type: 'project'}}, {type: 'bgp'}]}}},
+ *   {project: { transform: projection => AF.createDistinct(projection) } },
+ *   { expression: {aggregate: {preVisitor: () => ({continue: false}) }}}
+ * )
+ * returns = {type: 'slice', input: { type: 'distinct', input: { type: 'project', input: { type: 'join', input:
+ *   [{type: 'expression', subType: 'aggregate', input: {type: 'project'}}, {type: 'bgp'}] }}}}
+ * ```
  * @param startObject the object from which we will start the transformation,
  *   potentially visiting and transforming its descendants along the way.
  * @param nodeCallBacks a dictionary mapping the various operation types to objects optionally
@@ -155,7 +187,7 @@ export const mapOperationSubStrict = transformer.transformNodeSpecific.bind(tran
  *    altering how it will be transformed.
  *    The transformer allows you to manipulate the copy of the current object,
  *    and expects you to return the value that should take the current objects place.
- * @param nodeSpecificCallBacks: Same as nodeCallBacks but using an additional level of indirection to
+ * @param nodeSpecificCallBacks Same as nodeCallBacks but using an additional level of indirection to
  *     indicate the subType.
  * @return the result of transforming the requested descendant operations (based on the preVisitor)
  * using a transformer that works its way back up from the descendant to the startObject.
@@ -165,9 +197,11 @@ export const mapOperationSub: (typeof mapOperationSubStrict<'unsafe', Operation>
 /**
  * Similar to {@link mapOperation}, but only visiting instead of copying and transforming explicitly.
  * e.g.:
- * `visitOperation({type: 'distinct', input: {type: 'project', input: {type: 'distinct' }}},
- * { distinct: { visitor: () => console.log('1') },
- *   project: { preVisitor: () => ({ continue: false }), visitor: () => console.log('2') }})`
+ * ```ts
+ * visitOperation({type: 'distinct', input: {type: 'project', input: {type: 'distinct' }}},
+ *   { distinct: { visitor: () => console.log('1') },
+ *     project: { preVisitor: () => ({ continue: false }), visitor: () => console.log('2') }})
+ * ```
  * Will first call the preVisitor on the project and notice it should not iterate on its descendants.
  * It then visits the project, and the outermost distinct, printing '21'.
  * The pre-visitor visits starting from the root, going deeper, while the actual visitor goes in reverse.
@@ -187,9 +221,11 @@ export const visitOperation = transformer.visitNode.bind(transformer);
  * Visits an object and it's descendants, similar to {@link visitOperation},
  * but also allowing you to target subTypes. e.g.:
  * e.g.:
- * `visitOperation({type: 'distinct', input: {type: 'distinct', subType: 'special'}},
- * { distinct: { visitor: () => console.log('1'), preVisitor: () => console.log('2') }},
- * { distinct: { special: { visitor: () => console.log('3') }}})`
+ * ```ts
+ * visitOperationSub({type: 'distinct', input: {type: 'distinct', subType: 'special'}},
+ *   { distinct: { visitor: () => console.log('1'), preVisitor: () => console.log('2') }},
+ *   { distinct: { special: { visitor: () => console.log('3') }}})
+ * ```
  * Will call the preVisitor on the outer distinct, then the visitor of the special distinct,
  * followed by the visiting the outer distinct, printing '231'.
  * The pre-visitor visits starting from the root, going deeper, while the actual visitor goes in reverse.
@@ -202,7 +238,7 @@ export const visitOperation = transformer.visitNode.bind(transformer);
  *    The visitor allows you to visit the object from deepest to the outermost object.
  *    This is useful if you for example want to manipulate the objects you visit during your visits,
  *    similar to {@link mapOperation}.
- * @param nodeSpecificCallBacks: Same as nodeCallBacks but using an additional level of indirection to
+ * @param nodeSpecificCallBacks Same as nodeCallBacks but using an additional level of indirection to
  *     indicate the subType.
  */
 export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);
@@ -211,10 +247,10 @@ export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer)
  * Detects all in-scope variables.
  * In practice this means iterating through the entire algebra tree, finding all variables,
  * and stopping when a project function is found.
- * @param {Operation} op - Input algebra tree.
+ * @param {Operation} op Input algebra tree.
  * @param visitor the visitor to be used to traverse the various nodes.
  *        Allows you to provide a visitor with different default preVisitor cotexts.
- * @returns {RDF.Variable[]} - List of unique in-scope variables.
+ * @returns {RDF.Variable[]} List of unique in-scope variables.
  */
 export const inScopeVariables: typeof algebraUtils.inScopeVariables =
   (op: Operation, visitor = <typeof algebraUtils.visitOperation>visitOperation): RDF.Variable[] =>
