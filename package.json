@@ -50,7 +50,7 @@
     "@rubensworks/process-sparql-benchmark-results": "^1.2.2",
     "@types/benchmark": "^2.0.0",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.0.0",
+    "@types/node": "^24.10.0",
     "@types/object-inspect": "^1.8.1",
     "@types/readable-stream": "^4.0.18",
     "@types/setup-polly-jest": "^0.5.2",
