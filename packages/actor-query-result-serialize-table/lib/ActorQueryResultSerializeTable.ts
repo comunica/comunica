@@ -34,6 +34,7 @@ export class ActorQueryResultSerializeTable extends ActorQueryResultSerializeFix
    */
   public constructor(args: IActorQueryResultSerializeTableArgs) {
     super(args);
+    this.columnWidth = args.columnWidth;
     this.padding = ActorQueryResultSerializeTable.repeat(' ', this.columnWidth);
   }
 

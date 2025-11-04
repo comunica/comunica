@@ -2,12 +2,9 @@ import type {
   ILink,
   BindingsStream,
   FragmentSelectorShape,
-  IActionContext,
-  IQueryBindingsOptions,
   IQuerySource,
   QuerySourceReference,
 } from '@comunica/types';
-import type { Algebra as Alg } from '@comunica/utils-algebra';
 import type { Quad } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { StatisticLinkDereference } from '../lib/StatisticLinkDereference';
@@ -19,16 +16,33 @@ class MockQuerySource implements IQuerySource {
     this.referenceValue = referenceValue;
   }
 
-  public getFilterFactor: (context: IActionContext) => Promise<number>;
+  public async getFilterFactor(): Promise<number> {
+    return 0;
+  }
 
-  public getSelectorShape: (context: IActionContext) => Promise<FragmentSelectorShape>;
-  public queryBindings: (operation: Alg.Operation, context: IActionContext, options?: IQueryBindingsOptions | undefined)
-  => BindingsStream;
+  public async getSelectorShape(): Promise<FragmentSelectorShape> {
+    return <any> undefined;
+  }
 
-  public queryQuads: (operation: Alg.Operation, context: IActionContext) => AsyncIterator<Quad>;
-  public queryBoolean: (operation: Alg.Ask, context: IActionContext) => Promise<boolean>;
-  public queryVoid: (operation: Alg.Operation, context: IActionContext) => Promise<void>;
-  public toString: () => string;
+  public queryBindings(): BindingsStream {
+    return <any> undefined;
+  }
+
+  public queryQuads(): AsyncIterator<Quad> {
+    return <any> undefined;
+  }
+
+  public queryBoolean(): Promise<boolean> {
+    return <any> undefined;
+  }
+
+  public queryVoid(): Promise<void> {
+    return <any> undefined;
+  }
+
+  public toString(): string {
+    return <any> undefined;
+  }
 }
 
 describe('StatisticLinkDereference', () => {

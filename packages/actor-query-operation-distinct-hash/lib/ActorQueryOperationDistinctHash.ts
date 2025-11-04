@@ -28,6 +28,8 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
 
   public constructor(args: IActorQueryOperationDistinctHashArgs) {
     super(args, Algebra.Types.DISTINCT);
+    this.mediatorHashBindings = args.mediatorHashBindings;
+    this.mediatorHashQuads = args.mediatorHashQuads;
   }
 
   public async testOperation(_operation: Algebra.Distinct, _context: IActionContext): Promise<TestResult<IActorTest>> {

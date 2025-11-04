@@ -30,6 +30,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
    */
   public constructor(args: IActorRdfParseJsonLdArgs) {
     super(args);
+    this.mediatorHttp = args.mediatorHttp;
   }
 
   public override async testHandle(action: IActionRdfParse, mediaType: string | undefined, context: IActionContext):

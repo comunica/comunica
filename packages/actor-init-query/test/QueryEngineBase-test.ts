@@ -87,6 +87,7 @@ describe('QueryEngineBase', () => {
     mediatorHttpInvalidate = {
       mediate: () => Promise.resolve(true),
     };
+    actorInitQuery = <any> {};
     context = new ActionContext();
   });
 

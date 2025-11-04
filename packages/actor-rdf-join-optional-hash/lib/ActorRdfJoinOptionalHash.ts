@@ -34,6 +34,7 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
       canHandleUndefs: args.canHandleUndefs,
       requiresVariableOverlap: true,
     });
+    this.blocking = args.blocking;
   }
 
   public static constructIndex<V>(undef: boolean, commonVariables: MetadataVariable[]): IBindingsIndex<V> {
@@ -77,7 +78,7 @@ export class ActorRdfJoinOptionalHash extends ActorRdfJoin {
           output.bindingsStream,
           {
             multiTransform: (bindings: RDF.Bindings): AsyncIterator<RDF.Bindings> => new ArrayIterator<RDF.Bindings>(
-              <RDF.Bindings[]>(index.get(bindings).flat())
+              index.get(bindings).flat()
                 .map(indexBindings => ActorRdfJoin.joinBindings(bindings, indexBindings))
                 .filter(b => b !== null),
               { autoStart: false },

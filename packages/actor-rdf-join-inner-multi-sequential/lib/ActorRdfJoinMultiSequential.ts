@@ -30,6 +30,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
       canHandleUndefs: true,
       isLeaf: false,
     });
+    this.mediatorJoin = args.mediatorJoin;
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

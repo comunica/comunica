@@ -21,6 +21,7 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
 
   public constructor(args: IActorQuerySourceIdentifyRdfJsArgs) {
     super(args);
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest>> {

@@ -28,6 +28,11 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
 
   public constructor(args: IActorQuerySourceDereferenceLinkHypermediaArgs) {
     super(args);
+    this.mediatorDereferenceRdf = args.mediatorDereferenceRdf;
+    this.mediatorMetadata = args.mediatorMetadata;
+    this.mediatorMetadataExtract = args.mediatorMetadataExtract;
+    this.mediatorMetadataAccumulate = args.mediatorMetadataAccumulate;
+    this.mediatorQuerySourceIdentifyHypermedia = args.mediatorQuerySourceIdentifyHypermedia;
   }
 
   public async test(_action: IActionQuerySourceDereferenceLink): Promise<TestResult<IActorTest>> {
@@ -125,7 +130,7 @@ export interface IActorQuerySourceDereferenceLinkHypermediaArgs extends IActorQu
   /**
    * The metadata accumulate mediator
    */
-  mediatorMetadataAccumulate?: MediatorRdfMetadataAccumulate;
+  mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   /**
    * The hypermedia resolve mediator
    */

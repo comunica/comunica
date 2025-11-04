@@ -40,7 +40,8 @@ TS = undefined,
    * @throws When required arguments are missing.
    */
   protected constructor(args: IMediatorArgs<A, I, T, O, TS>) {
-    Object.assign(this, args);
+    this.name = args.name;
+    this.bus = args.bus;
   }
 
   /**

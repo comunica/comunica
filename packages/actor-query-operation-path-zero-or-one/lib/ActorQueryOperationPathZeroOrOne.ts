@@ -28,6 +28,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
 
   public constructor(args: IActorQueryOperationPathZeroOrOneArgs) {
     super(args, Algebra.Types.ZERO_OR_ONE_PATH);
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   public async runOperation(

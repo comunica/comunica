@@ -31,6 +31,7 @@ export class ActorHttpWayback extends ActorHttp {
 
   public constructor(args: IActorHttpWaybackArgs) {
     super(args);
+    this.mediatorHttp = args.mediatorHttp;
   }
 
   public async test(_action: IActionHttp): Promise<TestResult<IActorTest>> {

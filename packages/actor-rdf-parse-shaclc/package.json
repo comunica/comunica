@@ -46,7 +46,7 @@
     "@jeswr/stream-to-string": "^2.0.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.10.0",
-    "readable-stream": "^4.5.2",
+    "readable-stream": "^4.7.0",
     "shaclc-parse": "^1.4.0"
   }
 }

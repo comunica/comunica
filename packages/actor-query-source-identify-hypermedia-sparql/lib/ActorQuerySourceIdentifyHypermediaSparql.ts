@@ -35,6 +35,17 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
+    this.mediatorHttp = args.mediatorHttp;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
+    this.checkUrlSuffix = args.checkUrlSuffix;
+    this.forceHttpGet = args.forceHttpGet;
+    this.cacheSize = args.cacheSize;
+    this.forceSourceType = Boolean(args.forceSourceType);
+    this.bindMethod = args.bindMethod;
+    this.countTimeout = args.countTimeout;
+    this.cardinalityCountQueries = args.cardinalityCountQueries;
+    this.cardinalityEstimateConstruction = args.cardinalityEstimateConstruction;
+    this.forceGetIfUrlLengthBelow = args.forceGetIfUrlLengthBelow;
   }
 
   public async testMetadata(
@@ -99,7 +110,7 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * @range {integer}
    * @default {1024}
    */
-  cacheSize?: number;
+  cacheSize: number;
   /**
    * If provided, forces the source type of a source.
    * @default {false}
@@ -133,7 +144,7 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * when the url length (including encoded query) is below this number.
    * @default {600}
    */
-  forceGetIfUrlLengthBelow?: number;
+  forceGetIfUrlLengthBelow: number;
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';

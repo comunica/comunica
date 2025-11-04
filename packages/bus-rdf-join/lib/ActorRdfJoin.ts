@@ -87,6 +87,7 @@ TS
   /* eslint-enable max-len */
   public constructor(args: IActorRdfJoinArgs<TS>, options: IActorRdfJoinInternalOptions) {
     super(args);
+    this.mediatorJoinSelectivity = args.mediatorJoinSelectivity;
     this.logicalType = options.logicalType;
     this.physicalName = options.physicalName;
     this.limitEntries = options.limitEntries ?? Number.POSITIVE_INFINITY;

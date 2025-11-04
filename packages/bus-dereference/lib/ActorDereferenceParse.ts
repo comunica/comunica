@@ -58,6 +58,10 @@ export abstract class ActorDereferenceParse<
 
   public constructor(args: IActorDereferenceParseArgs<S, K, M>) {
     super(args);
+    this.mediatorDereference = args.mediatorDereference;
+    this.mediatorParse = args.mediatorParse;
+    this.mediatorParseMediatypes = args.mediatorParseMediatypes;
+    this.mediaMappings = args.mediaMappings;
   }
 
   public async test(_action: IActionDereference): Promise<TestResult<IActorTest>> {

@@ -16,6 +16,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 
   public constructor(args: IActorQueryOperationPathSeq) {
     super(args, Algebra.Types.SEQ);
+    this.mediatorJoin = args.mediatorJoin;
   }
 
   public async runOperation(

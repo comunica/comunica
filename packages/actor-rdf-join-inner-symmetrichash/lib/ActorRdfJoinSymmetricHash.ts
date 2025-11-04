@@ -25,6 +25,7 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
       limitEntries: 2,
       requiresVariableOverlap: true,
     });
+    this.mediatorHashBindings = args.mediatorHashBindings;
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

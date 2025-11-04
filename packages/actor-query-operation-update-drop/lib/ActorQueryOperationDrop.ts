@@ -17,6 +17,7 @@ export class ActorQueryOperationDrop extends ActorQueryOperationTypedMediated<Al
 
   public constructor(args: IActorQueryOperationDropArgs) {
     super(args, Algebra.Types.DROP);
+    this.mediatorUpdateQuads = args.mediatorUpdateQuads;
   }
 
   public async testOperation(operation: Algebra.Drop, context: IActionContext): Promise<TestResult<IActorTest>> {

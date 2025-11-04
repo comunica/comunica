@@ -22,6 +22,7 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
 
   public constructor(args: IActorQueryOperationPathAltArgs) {
     super(args, Algebra.Types.ALT);
+    this.mediatorRdfMetadataAccumulate = args.mediatorRdfMetadataAccumulate;
   }
 
   public async runOperation(operation: Algebra.Path, context: IActionContext): Promise<IQueryOperationResult> {

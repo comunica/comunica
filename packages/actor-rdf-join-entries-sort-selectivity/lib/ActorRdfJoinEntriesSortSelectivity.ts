@@ -18,6 +18,7 @@ export class ActorRdfJoinEntriesSortSelectivity extends ActorRdfJoinEntriesSort 
 
   public constructor(args: IActorRdfJoinEntriesSortSelectivityArgs) {
     super(args);
+    this.mediatorJoinSelectivity = args.mediatorJoinSelectivity;
   }
 
   public async test(_action: IActionRdfJoinEntriesSort): Promise<TestResult<IActorRdfJoinEntriesSortTest>> {

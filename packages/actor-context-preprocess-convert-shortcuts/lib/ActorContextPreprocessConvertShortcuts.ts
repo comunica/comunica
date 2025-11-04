@@ -12,6 +12,7 @@ export class ActorContextPreprocessConvertShortcuts extends ActorContextPreproce
 
   public constructor(args: IActorContextPreprocessConvertShortcutsArgs) {
     super(args);
+    this.contextKeyShortcuts = args.contextKeyShortcuts;
   }
 
   public async test(_action: IAction): Promise<TestResult<IActorTest>> {

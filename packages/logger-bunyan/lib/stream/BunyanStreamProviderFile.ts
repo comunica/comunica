@@ -11,6 +11,7 @@ export class BunyanStreamProviderFile extends BunyanStreamProvider {
 
   public constructor(args: IBunyanStreamProviderFileArgs) {
     super(args);
+    this.path = args.path;
   }
 
   public createStream(): Stream {

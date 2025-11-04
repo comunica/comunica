@@ -49,6 +49,6 @@
     "@comunica/bus-rdf-metadata-extract": "^4.4.0",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
-    "readable-stream": "^4.5.2"
+    "readable-stream": "^4.7.0"
   }
 }

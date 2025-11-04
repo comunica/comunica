@@ -25,6 +25,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
 
   public constructor(args: IActorOptimizeQueryOperationPruneEmptySourceOperationsArgs) {
     super(args);
+    this.useAskIfSupported = args.useAskIfSupported;
   }
 
   public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {

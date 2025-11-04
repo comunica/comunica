@@ -33,6 +33,10 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
 
   public constructor(args: IActorOptimizeQueryOperationQuerySourceIdentifyArgs) {
     super(args);
+    this.cacheSize = args.cacheSize;
+    this.httpInvalidator = args.httpInvalidator;
+    this.mediatorQuerySourceIdentify = args.mediatorQuerySourceIdentify;
+    this.mediatorContextPreprocess = args.mediatorContextPreprocess;
     this.cache = this.cacheSize ? new LRUCache<string, any>({ max: this.cacheSize }) : undefined;
     const cache = this.cache;
     if (cache) {

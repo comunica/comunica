@@ -12,12 +12,12 @@ import { AstFactory } from '@traqula/rules-sparql-1-2';
  * A comunica Algebra SPARQL Parse Actor.
  */
 export class ActorQueryParseSparql extends ActorQueryParse {
-  public readonly prefixes: Record<string, string>;
+  public readonly prefixes: Record<string, string> | undefined;
   private readonly parser: SparqlParser;
 
   public constructor(args: IActorQueryParseSparqlArgs) {
     super(args);
-    this.prefixes = Object.freeze(this.prefixes);
+    this.prefixes = Object.freeze(args.prefixes);
     this.parser = new SparqlParser({ lexerConfig: {
       positionTracking: 'onlyOffset',
     }});

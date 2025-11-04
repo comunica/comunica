@@ -48,6 +48,6 @@
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
-    "lru-cache": "^10.0.0"
+    "lru-cache": "^11.2.2"
   }
 }

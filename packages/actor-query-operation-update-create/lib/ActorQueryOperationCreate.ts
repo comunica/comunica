@@ -15,6 +15,7 @@ export class ActorQueryOperationCreate extends ActorQueryOperationTypedMediated<
 
   public constructor(args: IActorQueryOperationCreateArgs) {
     super(args, Algebra.Types.CREATE);
+    this.mediatorUpdateQuads = args.mediatorUpdateQuads;
   }
 
   public async testOperation(operation: Algebra.Create, context: IActionContext): Promise<TestResult<IActorTest>> {

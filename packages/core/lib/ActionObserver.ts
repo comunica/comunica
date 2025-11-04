@@ -26,8 +26,9 @@ export abstract class ActionObserver<I extends IAction, O extends IActorOutput, 
    * @param {IActionObserverArgs<I extends IAction, O extends IActorOutput>} args Arguments object
    * @throws When required arguments are missing.
    */
-  protected constructor(args: IActionObserverArgs<I, O>) {
-    Object.assign(this, args);
+  protected constructor(args: IActionObserverArgs<I, O, TS>) {
+    this.name = args.name;
+    this.bus = args.bus;
   }
 
   /**

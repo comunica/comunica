@@ -20,6 +20,7 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
 
   public constructor(args: IActorQueryOperationNopArgs) {
     super(args, Algebra.Types.NOP);
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   public async testOperation(_operation: Algebra.Nop, _context: IActionContext): Promise<TestResult<IActorTest>> {

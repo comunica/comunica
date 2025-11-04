@@ -28,6 +28,7 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
       physicalName: 'none',
       limitEntries: 0,
     });
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   public override async test(

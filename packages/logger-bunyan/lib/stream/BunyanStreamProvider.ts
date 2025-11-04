@@ -4,11 +4,12 @@ import type { LogLevelString, Stream } from 'bunyan';
  * BunyanStreamProvider is able to create bunyan streams.
  */
 export abstract class BunyanStreamProvider {
-  public readonly name: string;
-  public readonly level: LogLevelString;
+  public readonly name: string | undefined;
+  public readonly level: LogLevelString | undefined;
 
   public constructor(args: IBunyanStreamProviderArgs) {
-    Object.assign(this, args);
+    this.name = args.name;
+    this.level = args.level;
   }
 
   public abstract createStream(): Stream;

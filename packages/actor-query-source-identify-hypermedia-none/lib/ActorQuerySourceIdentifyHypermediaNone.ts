@@ -22,6 +22,7 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaNoneArgs) {
     super(args, 'file');
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   public async testMetadata(

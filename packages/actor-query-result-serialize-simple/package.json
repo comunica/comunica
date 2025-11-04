@@ -47,6 +47,6 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.10.0",
     "rdf-string": "^2.0.1",
-    "readable-stream": "^4.5.2"
+    "readable-stream": "^4.7.0"
   }
 }

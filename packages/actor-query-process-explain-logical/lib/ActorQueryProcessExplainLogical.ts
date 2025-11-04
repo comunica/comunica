@@ -19,6 +19,7 @@ export class ActorQueryProcessExplainLogical extends ActorQueryProcess {
 
   public constructor(args: IActorQueryProcessExplainLogicalArgs) {
     super(args);
+    this.queryProcessor = args.queryProcessor;
   }
 
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {

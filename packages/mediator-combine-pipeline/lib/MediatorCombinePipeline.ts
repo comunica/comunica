@@ -19,6 +19,9 @@ TS = undefined,
 
   public constructor(args: IMediatorCombinePipelineArgs<A, H, T, H, TS>) {
     super(args);
+    this.filterFailures = args.filterFailures;
+    this.order = args.order;
+    this.field = args.field;
   }
 
   public override async mediate(action: H): Promise<H> {

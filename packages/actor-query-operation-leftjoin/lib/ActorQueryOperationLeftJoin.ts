@@ -16,6 +16,7 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
 
   public constructor(args: IActorQueryOperationLeftJoinArgs) {
     super(args, Algebra.Types.LEFT_JOIN);
+    this.mediatorJoin = args.mediatorJoin;
   }
 
   public async testOperation(_operation: Algebra.LeftJoin, _context: IActionContext): Promise<TestResult<IActorTest>> {

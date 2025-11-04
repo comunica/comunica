@@ -37,6 +37,8 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
       canHandleUndefs: true,
       isLeaf: false,
     });
+    this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
+    this.mediatorJoin = args.mediatorJoin;
   }
 
   /**

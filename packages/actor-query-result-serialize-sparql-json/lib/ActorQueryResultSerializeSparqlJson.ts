@@ -37,6 +37,8 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
    */
   public constructor(args: IActorQueryResultSerializeSparqlJsonArgs) {
     super(args);
+    this.emitMetadata = args.emitMetadata;
+    this.httpObserver = args.httpObserver;
   }
   /* eslint-enable max-len */
 

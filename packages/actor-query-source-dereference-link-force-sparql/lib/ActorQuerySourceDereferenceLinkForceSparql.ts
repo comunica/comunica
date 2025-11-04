@@ -21,6 +21,8 @@ export class ActorQuerySourceDereferenceLinkForceSparql extends ActorQuerySource
 
   public constructor(args: IActorQuerySourceDereferenceLinkForceSparqlArgs) {
     super(args);
+    this.mediatorMetadataAccumulate = args.mediatorMetadataAccumulate;
+    this.mediatorQuerySourceIdentifyHypermedia = args.mediatorQuerySourceIdentifyHypermedia;
   }
 
   public async test(action: IActionQuerySourceDereferenceLink): Promise<TestResult<IActorTest>> {
@@ -60,7 +62,7 @@ export interface IActorQuerySourceDereferenceLinkForceSparqlArgs extends IActorQ
   /**
    * The metadata accumulate mediator
    */
-  mediatorMetadataAccumulate?: MediatorRdfMetadataAccumulate;
+  mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   /**
    * The hypermedia resolve mediator
    */

@@ -30,6 +30,13 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaArgs) {
     super(args);
+    this.mediatorMetadataAccumulate = args.mediatorMetadataAccumulate;
+    this.mediatorQuerySourceDereferenceLink = args.mediatorQuerySourceDereferenceLink;
+    this.mediatorRdfResolveHypermediaLinks = args.mediatorRdfResolveHypermediaLinks;
+    this.mediatorRdfResolveHypermediaLinksQueue = args.mediatorRdfResolveHypermediaLinksQueue;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
+    this.cacheSize = args.cacheSize;
+    this.maxIterators = args.maxIterators;
   }
 
   public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest>> {
@@ -78,7 +85,7 @@ export interface IActorQuerySourceIdentifyHypermediaArgs extends IActorQuerySour
   /**
    * The metadata accumulate mediator
    */
-  mediatorMetadataAccumulate?: MediatorRdfMetadataAccumulate;
+  mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   /**
    * The mediator for resolving hypermedia sources
    */

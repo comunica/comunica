@@ -20,6 +20,9 @@ export class ActorRdfUpdateHypermediaPutLdp extends ActorRdfUpdateHypermedia {
 
   public constructor(args: IActorRdfUpdateHypermediaPostLdpArgs) {
     super(args, 'putLdp');
+    this.mediatorHttp = args.mediatorHttp;
+    this.mediatorRdfSerializeMediatypes = args.mediatorRdfSerializeMediatypes;
+    this.mediatorRdfSerialize = args.mediatorRdfSerialize;
   }
 
   public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {

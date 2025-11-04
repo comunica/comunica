@@ -49,6 +49,9 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
 
   public constructor(args: IActorDereferenceHttpArgs) {
     super(args);
+    this.mediatorHttp = args.mediatorHttp;
+    this.maxAcceptHeaderLength = args.maxAcceptHeaderLength;
+    this.maxAcceptHeaderLengthBrowser = args.maxAcceptHeaderLengthBrowser;
   }
 
   public async test({ url }: IActionDereference): Promise<TestResult<IActorTest>> {

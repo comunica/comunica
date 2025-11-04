@@ -38,6 +38,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
    */
   public constructor(args: IActorRdfParseHtmlArgs) {
     super(args);
+    this.busRdfParseHtml = args.busRdfParseHtml;
   }
 
   public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):

@@ -24,11 +24,17 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
   public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   public readonly mediatorRdfUpdateHypermedia: MediatorRdfUpdateHypermedia;
   public readonly cacheSize: number;
-  public readonly cache?: LRUCache<string, Promise<IQuadDestination>>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
+  public readonly cache?: LRUCache<string, Promise<IQuadDestination>>;
 
   public constructor(args: IActorRdfUpdateQuadsHypermediaArgs) {
     super(args);
+    this.mediatorDereferenceRdf = args.mediatorDereferenceRdf;
+    this.mediatorMetadata = args.mediatorMetadata;
+    this.mediatorMetadataExtract = args.mediatorMetadataExtract;
+    this.mediatorRdfUpdateHypermedia = args.mediatorRdfUpdateHypermedia;
+    this.cacheSize = args.cacheSize;
+    this.httpInvalidator = args.httpInvalidator;
     this.cache = this.cacheSize ? new LRUCache<string, any>({ max: this.cacheSize }) : undefined;
     const cache = this.cache;
     if (cache) {

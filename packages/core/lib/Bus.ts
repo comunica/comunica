@@ -41,7 +41,7 @@ implements IBusArgs {
    * @throws When required arguments are missing.
    */
   public constructor(args: IBusArgs) {
-    Object.assign(this, args);
+    this.name = args.name;
     this.failMessage = `All actors over bus ${this.name} failed to handle an action`;
   }
 

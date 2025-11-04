@@ -42,6 +42,12 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       canHandleUndefs: true,
       isLeaf: false,
     });
+    this.bindOrder = args.bindOrder;
+    this.selectivityModifier = args.selectivityModifier;
+    this.minMaxCardinalityRatio = args.minMaxCardinalityRatio;
+    this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
+    this.mediatorQueryOperation = args.mediatorQueryOperation;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   /**

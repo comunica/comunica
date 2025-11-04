@@ -25,6 +25,7 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
   public constructor(args: IActorQueryOperationUpdateDeleteInsertArgs) {
     super(args, Algebra.Types.VALUES);
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   public async testOperation(_operation: Algebra.Values, _context: IActionContext): Promise<TestResult<IActorTest>> {

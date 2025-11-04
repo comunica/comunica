@@ -23,6 +23,7 @@ export class ActorQueryProcessAnnotateSourceBinding extends ActorQueryProcess {
   public constructor(args: IActorQueryProcessAnnotateSourceBindingArgs) {
     super(args);
     this.dataFactory = new DataFactory();
+    this.mediatorQueryProcess = args.mediatorQueryProcess;
   }
 
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {

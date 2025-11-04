@@ -39,6 +39,8 @@ implements IActorArgs<I, T, O, TS> {
    */
   protected constructor(args: IActorArgs<I, T, O, TS>) {
     Object.assign(this, args);
+    this.name = args.name;
+    this.bus = args.bus;
     this.bus.subscribe(this);
     if (this.beforeActors.length > 0) {
       this.bus.addDependencies(this, this.beforeActors);

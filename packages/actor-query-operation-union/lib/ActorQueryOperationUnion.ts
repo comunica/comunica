@@ -29,6 +29,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
   public constructor(args: IActorQueryOperationUnionArgs) {
     super(args, Algebra.Types.UNION);
+    this.mediatorRdfMetadataAccumulate = args.mediatorRdfMetadataAccumulate;
   }
 
   /**

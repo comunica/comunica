@@ -17,6 +17,8 @@ export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOu
    */
   public constructor(args: IActionObserverHttpArgs) {
     super(args);
+    this.httpInvalidator = args.httpInvalidator;
+    this.observedActors = args.observedActors;
     this.bus.subscribeObserver(this);
     this.httpInvalidator.addInvalidateListener(() => {
       this.requests = 0;

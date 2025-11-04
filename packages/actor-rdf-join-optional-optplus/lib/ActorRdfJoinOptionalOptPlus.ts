@@ -26,6 +26,7 @@ export class ActorRdfJoinOptionalOptPlus extends ActorRdfJoin {
       limitEntries: 2,
       canHandleUndefs: true,
     });
+    this.mediatorJoin = args.mediatorJoin;
   }
 
   public async getOutput({ entries, context }: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

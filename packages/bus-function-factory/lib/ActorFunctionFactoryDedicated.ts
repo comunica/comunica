@@ -14,6 +14,8 @@ export abstract class ActorFunctionFactoryDedicated extends ActorFunctionFactory
 
   protected constructor(args: IActorFunctionFactoryDedicatedArgs) {
     super(args);
+    this.functionNames = args.functionNames;
+    this.termFunction = args.termFunction;
   }
 
   public async test(action: IActionFunctionFactory): Promise<TestResult<IActorTest>> {

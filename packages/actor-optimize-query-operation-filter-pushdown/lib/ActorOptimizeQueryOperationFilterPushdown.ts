@@ -32,6 +32,12 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
 
   public constructor(args: IActorOptimizeQueryOperationFilterPushdownArgs) {
     super(args);
+    this.aggressivePushdown = args.aggressivePushdown;
+    this.maxIterations = args.maxIterations;
+    this.splitConjunctive = args.splitConjunctive;
+    this.mergeConjunctive = args.mergeConjunctive;
+    this.pushIntoLeftJoins = args.pushIntoLeftJoins;
+    this.pushEqualityIntoPatterns = args.pushEqualityIntoPatterns;
   }
 
   public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {

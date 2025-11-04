@@ -33,8 +33,17 @@ export class ActorQuerySourceIdentifyHypermediaQpf extends ActorQuerySourceIdent
   public readonly predicateUri: string;
   public readonly objectUri: string;
   public readonly graphUri?: string;
+
   public constructor(args: IActorQuerySourceIdentifyHypermediaQpfArgs) {
     super(args, 'qpf');
+    this.mediatorMetadata = args.mediatorMetadata;
+    this.mediatorMetadataExtract = args.mediatorMetadataExtract;
+    this.mediatorDereferenceRdf = args.mediatorDereferenceRdf;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
+    this.subjectUri = args.subjectUri;
+    this.predicateUri = args.predicateUri;
+    this.objectUri = args.objectUri;
+    this.graphUri = args.graphUri;
   }
 
   public override async test(

@@ -17,6 +17,7 @@ export class ActorRdfUpdateHypermediaPatchSparqlUpdate extends ActorRdfUpdateHyp
 
   public constructor(args: IActorRdfUpdateHypermediaPatchSparqlUpdateArgs) {
     super(args, 'patchSparqlUpdate');
+    this.mediatorHttp = args.mediatorHttp;
   }
 
   public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {

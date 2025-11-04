@@ -15,6 +15,7 @@ export class ActorRdfMetadataExtractHydraPagesize extends ActorRdfMetadataExtrac
 
   public constructor(args: IActorRdfMetadataExtractHydraPagesizeArgs) {
     super(args);
+    this.predicates = args.predicates;
   }
 
   public async test(_action: IActionRdfMetadataExtract): Promise<TestResult<IActorTest>> {

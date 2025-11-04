@@ -14,6 +14,7 @@ export class ActorHttpProxy extends ActorHttp {
 
   public constructor(args: IActorHttpProxyArgs) {
     super(args);
+    this.mediatorHttp = args.mediatorHttp;
   }
 
   public async test(action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {

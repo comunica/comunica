@@ -33,6 +33,8 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
    */
   public constructor(args: IBusIndexedArgs) {
     super(args);
+    this.actorIdentifierFields = args.actorIdentifierFields;
+    this.actionIdentifierFields = args.actionIdentifierFields;
   }
 
   public override subscribe(actor: A): void {

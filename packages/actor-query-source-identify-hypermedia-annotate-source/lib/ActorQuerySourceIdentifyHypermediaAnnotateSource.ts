@@ -20,6 +20,8 @@ export class ActorQuerySourceIdentifyHypermediaAnnotateSource extends ActorQuery
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaAnnotateSourceArgs) {
     super(args, 'file');
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
+    this.mediatorQuerySourceIdentifyHypermedia = args.mediatorQuerySourceIdentifyHypermedia;
   }
 
   public async testMetadata(

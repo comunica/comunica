@@ -39,6 +39,9 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
       physicalName: 'bind-source',
       canHandleUndefs: true,
     });
+    this.selectivityModifier = args.selectivityModifier;
+    this.blockSize = args.blockSize;
+    this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
   }
 
   public async getOutput(

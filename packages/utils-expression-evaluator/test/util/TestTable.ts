@@ -197,6 +197,7 @@ export class ArrayTable extends Table<string[]> {
   public constructor(def: TestTableConfig) {
     super();
     this.def = def;
+    this.parser = <any> undefined;
   }
 
   public test(): void {

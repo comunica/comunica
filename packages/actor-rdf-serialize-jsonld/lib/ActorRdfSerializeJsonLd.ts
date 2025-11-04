@@ -29,6 +29,7 @@ export class ActorRdfSerializeJsonLd extends ActorRdfSerializeFixedMediaTypes {
    */
   public constructor(args: IActorRdfSerializeJsonLdArgs) {
     super(args);
+    this.jsonStringifyIndentSpaces = args.jsonStringifyIndentSpaces;
   }
 
   public async runHandle(action: IActionRdfSerialize, _mediaType: string, _context: IActionContext):

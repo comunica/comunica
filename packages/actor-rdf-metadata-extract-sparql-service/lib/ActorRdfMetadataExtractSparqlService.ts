@@ -19,6 +19,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
 
   public constructor(args: IActorRdfMetadataExtractSparqlServiceArgs) {
     super(args);
+    this.inferHttpsEndpoint = args.inferHttpsEndpoint;
   }
 
   public async test(_action: IActionRdfMetadataExtract): Promise<TestResult<IActorTest>> {

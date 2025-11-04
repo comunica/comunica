@@ -31,6 +31,7 @@ export class ActorQueryResultSerializeStats extends ActorQueryResultSerializeFix
    */
   public constructor(args: IActorQueryResultSerializeStatsArgs) {
     super(args);
+    this.httpObserver = args.httpObserver;
   }
   /* eslint-enable max-len */
 

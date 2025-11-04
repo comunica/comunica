@@ -21,6 +21,9 @@ export class ActorRdfUpdateHypermediaSparql extends ActorRdfUpdateHypermedia {
 
   public constructor(args: IActorRdfUpdateHypermediaSparqlArgs) {
     super(args, 'sparql');
+    this.mediatorHttp = args.mediatorHttp;
+    this.checkUrlSuffixSparql = args.checkUrlSuffixSparql;
+    this.checkUrlSuffixUpdate = args.checkUrlSuffixUpdate;
   }
 
   public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {

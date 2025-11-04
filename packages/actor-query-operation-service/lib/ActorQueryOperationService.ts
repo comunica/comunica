@@ -11,7 +11,6 @@ import type {
   IActionContext,
   IQueryOperationResult,
   IQueryOperationResultBindings,
-  IQuerySource,
   IQuerySourceWrapper,
 } from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
@@ -33,11 +32,15 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
 
   // TODO: Remove the cache as unneeded when service clauses are rewritten into source-annotated operations.
   // For further details, see https://github.com/comunica/comunica/issues/1537
-  private readonly cache?: LRUCache<string, IQuerySourceWrapper<IQuerySource>>;
-  public readonly httpInvalidator: ActorHttpInvalidateListenable;
+  private readonly cache?: LRUCache<string, IQuerySourceWrapper>;
+  public readonly httpInvalidator: ActorHttpInvalidateListenable | undefined;
 
   public constructor(args: IActorQueryOperationServiceArgs) {
     super(args, Algebra.Types.SERVICE);
+    this.forceSparqlEndpoint = args.forceSparqlEndpoint;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
+    this.mediatorQuerySourceIdentify = args.mediatorQuerySourceIdentify;
+    this.httpInvalidator = args.httpInvalidator;
     if (args.cacheSize && args.httpInvalidator && args.cacheSize > 0) {
       this.cache = new LRUCache({ max: args.cacheSize });
       args.httpInvalidator.addInvalidateListener((action: IActionHttpInvalidate) =>

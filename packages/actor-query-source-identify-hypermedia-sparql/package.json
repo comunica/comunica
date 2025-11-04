@@ -57,7 +57,7 @@
     "@traqula/generator-sparql-1-2": "^0.0.24",
     "asynciterator": "^3.10.0",
     "fetch-sparql-endpoint": "7.0.0-beta.3",
-    "lru-cache": "^10.0.0",
+    "lru-cache": "^11.2.2",
     "rdf-terms": "^2.0.0"
   }
 }

@@ -52,13 +52,13 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         };
       };
       sourceFactory = () => new MediatedLinkedRdfSourcesAsyncRdfIterator(
-        operation,
+        operation!,
         {},
         context,
         { url: 'first' },
         64,
         sourceStateGetter,
-        mediatorMetadataAccumulate,
+        mediatorMetadataAccumulate!,
         mediatorRdfResolveHypermediaLinks,
         mediatorRdfResolveHypermediaLinksQueue,
       );

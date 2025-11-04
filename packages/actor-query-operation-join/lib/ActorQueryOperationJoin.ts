@@ -22,6 +22,7 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
 
   public constructor(args: IActorQueryOperationJoinArgs) {
     super(args, Algebra.Types.JOIN);
+    this.mediatorJoin = args.mediatorJoin;
   }
 
   public async testOperation(_operation: Algebra.Join, _context: IActionContext): Promise<TestResult<IActorTest>> {
