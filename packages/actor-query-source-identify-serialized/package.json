@@ -47,6 +47,6 @@
     "@comunica/types": "^4.4.0",
     "@rdfjs/types": "*",
     "rdf-store-stream": "^3.0.0",
-    "readable-stream": "^4.2.0"
+    "readable-stream": "^4.7.0"
   }
 }

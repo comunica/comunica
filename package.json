@@ -91,6 +91,7 @@
     "typedoc": "^0.28.0",
     "typescript": "^5.9.3",
     "webpack": "^5.0.0",
+    "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^6.0.0"
   },
   "resolutions": {
