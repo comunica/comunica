@@ -171,6 +171,7 @@ describe('ActorQueryOperationService', () => {
         name: 'actor',
         mediatorMergeBindingsContext,
         mediatorQuerySourceIdentify,
+        httpInvalidator: <any> undefined,
       });
 
       const output = getSafeBindings(await actorThis.run(op, undefined));

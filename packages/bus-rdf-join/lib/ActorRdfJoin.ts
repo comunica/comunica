@@ -577,6 +577,3 @@ export interface IActorRdfJoinTestSideData {
 }
 
 export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;
-
-// TODO remove this in next major version
-export { LogicalJoinType } from '@comunica/types';
