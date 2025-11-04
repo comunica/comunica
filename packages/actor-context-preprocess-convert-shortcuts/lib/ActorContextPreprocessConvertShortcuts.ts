@@ -40,6 +40,8 @@ export class ActorContextPreprocessConvertShortcuts extends ActorContextPreproce
 export interface IActorContextPreprocessConvertShortcutsArgs extends IActorContextPreprocessArgs {
   /**
    * A record of context shortcuts to full context keys (as defined in @comunica/context-entries).
+   * These should be aligned with to IQueryContextCommon in @comunica/types,
+   * and possibly the CliArgsHandlers in @comunica/actor-init-query.
    * @range {json}
    * @default {{
    *   "sources": "@comunica/actor-init-query:querySourcesUnidentified",

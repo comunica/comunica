@@ -27,8 +27,9 @@ import type { IDocumentLoader } from 'jsonld-context-parser';
 
 /**
  * When adding entries to this file, also add a shortcut for them in the contextKeyShortcuts TSDoc comment in
- * ActorInitQueryBase in @comunica/actor-init-query if it makes sense to use this entry externally.
- * Also, add this shortcut to IQueryContextCommon in @comunica/types.
+ * ActorContextPreprocessConvertShortcuts in @comunica/actor-init-query if it makes sense to use this entry externally.
+ * Also, add this shortcut to IQueryContextCommon in @comunica/types,
+ * and possibly the CliArgsHandlers in @comunica/actor-init-query.
  */
 
 export const KeysCore = {
