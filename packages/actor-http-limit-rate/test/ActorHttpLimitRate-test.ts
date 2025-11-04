@@ -190,6 +190,21 @@ describe('ActorHttpLimitRate', () => {
       await expect(actor.run(action)).rejects.toThrow(errorMessage);
       expect(globalThis.setTimeout).not.toHaveBeenCalled();
     });
+
+    it('should not mark 404s as failed requests', async() => {
+      const response = { ok: false, status: 404 };
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any>callback());
+      const action = { context: new ActionContext({}), input: url };
+      expect(actorHostData.has(host)).toBeFalsy();
+      await expect(actor.run(action)).resolves.toEqual(response);
+      expect(globalThis.setTimeout).not.toHaveBeenCalled();
+      expect(actorHostData.get(host)).toEqual({
+        requestInterval: expect.anything(),
+        latestRequestTimestamp: expect.anything(),
+        rateLimited: false,
+      });
+    });
   });
 
   describe('handleHttpInvalidateEvent', () => {

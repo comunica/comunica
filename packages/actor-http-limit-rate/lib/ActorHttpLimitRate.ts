@@ -74,7 +74,7 @@ export class ActorHttpLimitRate extends ActorHttp {
       await new Promise(resolve => setTimeout(resolve, currentRequestDelay));
     }
 
-    const registerCompletedRequest = (success: boolean): void => {
+    const registerCompletedRequest = (success: boolean, status: number): void => {
       const requestDuration = (success ? 1 : this.failureMultiplier) *
         (Date.now() - currentTimestamp - currentRequestDelay);
       if (requestHostData.requestInterval < 0) {
@@ -84,7 +84,7 @@ export class ActorHttpLimitRate extends ActorHttp {
           requestDuration - requestHostData.requestInterval
         ));
       }
-      if (!success && !requestHostData.rateLimited) {
+      if (!success && status !== 404 && !requestHostData.rateLimited) {
         this.logDebug(action.context, 'Marking host as rate-limited', () => ({
           host: requestUrl.host,
         }));
@@ -97,10 +97,10 @@ export class ActorHttpLimitRate extends ActorHttp {
         ...action,
         context: action.context.set(ActorHttpLimitRate.keyWrapped, true),
       });
-      registerCompletedRequest(response.ok);
+      registerCompletedRequest(response.ok, response.status);
       return response;
     } catch (error: unknown) {
-      registerCompletedRequest(false);
+      registerCompletedRequest(false, -1);
       throw error;
     }
   }
