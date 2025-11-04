@@ -306,6 +306,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         const src: IQuerySourceWrapper = {
           source: new QuerySourceSparql(
             'https://example.com/src',
+            'https://example.com/src',
             new ActionContext(),
             <any> {},
             'values',
@@ -341,6 +342,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         );
         const src1: IQuerySourceWrapper = {
           source: new QuerySourceSparql(
+            'https://example.com/src',
             'https://example.com/src',
             new ActionContext(),
             <any> {},

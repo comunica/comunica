@@ -66,6 +66,8 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     const isSingularSource = action.context.get(KeysQueryOperation.querySources)?.length === 1;
     const source = new QuerySourceSparql(
       (action.forceSourceType ?? this.forceSourceType) ? action.url : action.metadata.sparqlService || action.url,
+      // Pass the original URL as backup, as some endpoints misconfigure their endpoint URL in the service description.
+      action.url,
       action.context,
       this.mediatorHttp,
       this.bindMethod,

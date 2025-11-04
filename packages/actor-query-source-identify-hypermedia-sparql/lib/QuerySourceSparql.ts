@@ -41,7 +41,8 @@ export class QuerySourceSparql implements IQuerySource {
   protected static readonly queryStringGenerator = new Generator({ [traqulaIndentation]: -1, indentInc: 0 });
 
   public readonly referenceValue: string;
-  private readonly url: string;
+  private url: string;
+  private readonly urlBackup: string;
   private readonly context: IActionContext;
   private readonly mediatorHttp: MediatorHttp;
   private readonly bindMethod: BindMethod;
@@ -64,6 +65,7 @@ export class QuerySourceSparql implements IQuerySource {
 
   public constructor(
     url: string,
+    urlBackup: string,
     context: IActionContext,
     mediatorHttp: MediatorHttp,
     bindMethod: BindMethod,
@@ -79,8 +81,9 @@ export class QuerySourceSparql implements IQuerySource {
     parseUnsupportedVersions: boolean,
     metadata: Record<string, any>,
   ) {
-    this.referenceValue = url;
+    this.referenceValue = urlBackup;
     this.url = url;
+    this.urlBackup = urlBackup;
     this.context = context;
     this.mediatorHttp = mediatorHttp;
     this.bindMethod = bindMethod;
@@ -89,9 +92,22 @@ export class QuerySourceSparql implements IQuerySource {
     this.bindingsFactory = bindingsFactory;
     this.endpointFetcher = new SparqlEndpointFetcher({
       method: forceHttpGet ? 'GET' : 'POST',
-      fetch: (input: Request | string, init?: RequestInit) => this.mediatorHttp.mediate(
-        { input, init, context: this.lastSourceContext! },
-      ),
+      fetch: async(input: Request | string, init?: RequestInit) => {
+        const response = await this.mediatorHttp.mediate(
+          { input, init, context: this.lastSourceContext! },
+        );
+        // If we encounter a 404, try our backup URL.
+        // After retrying the request with the new URL, we replace the URL for future requests.
+        if (response.status === 404 && this.url !== this.urlBackup) {
+          Actor.getContextLogger(this.context)?.warn(`Encountered a 404 when requesting ${this.url} according to the service description of ${this.urlBackup}. This is a server configuration issue. Retrying the current and modifying future requests to ${this.urlBackup} instead.`);
+          input = (<string> input).replace(this.url, this.urlBackup);
+          this.url = this.urlBackup;
+          return await this.mediatorHttp.mediate(
+            { input, init, context: this.lastSourceContext! },
+          );
+        }
+        return response;
+      },
       prefixVariableQuestionMark: true,
       dataFactory,
       forceGetIfUrlLengthBelow,
