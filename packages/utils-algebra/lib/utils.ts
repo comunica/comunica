@@ -91,12 +91,12 @@ const transformer = new TransformerSubTyped<KnownOperation>({
  * e.g. wrapping a distinct around the outermost project:
  * ```ts
  * mapOperationStrict<'unsafe', Operation>(
- *   {type: 'slice', input: { type: 'project', input: { type: 'join', input: [{type: 'project'}, {type: 'bgp'}]}}},
- *   {project: { preVisitor: () => ({continue: false}), transform: projection => AF.createDistinct(projection) } }
- * )
- * returns = {type: 'slice', input: { type: 'distinct',
- *   input: { type: 'project', input: { type: 'join', input: [{type: 'project'}, {type: 'bgp'}]}}
- * }}
+ *   { type: 'slice', input: { type: 'project', input: { type: 'join', input: [{ type: 'project' }, { type: 'bgp' }]}}},
+ *   { project: { preVisitor: () => ({ continue: false }), transform: projection =>
+ *     algebraFactory.createDistinct(projection) }},
+ * );
+ * const returns = { type: 'slice', input: { type: 'distinct', input: { type: 'project', input: { type: 'join', input:
+ *           [{ type: 'project' }, { type: 'bgp' }]}}}};
  * ```
  * @param startObject the object from which we will start the transformation,
  *   potentially visiting and transforming its descendants along the way.
@@ -116,12 +116,12 @@ export const mapOperationStrict = transformer.transformNode.bind(transformer);
  * e.g. wrapping a distinct around the outermost project:
  * ```ts
  * mapOperation(
- *   {type: 'slice', input: { type: 'project', input: { type: 'join', input: [{type: 'project'}, {type: 'bgp'}]}}},
- *   {project: { preVisitor: () => ({continue: false}), transform: projection => AF.createDistinct(projection) } }
- * )
- * returns = {type: 'slice', input: { type: 'distinct',
- *   input: { type: 'project', input: { type: 'join', input: [{type: 'project'}, {type: 'bgp'}]}}
- * }}
+ *   { type: 'slice', input: { type: 'project', input: { type: 'join', input: [{ type: 'project' }, { type: 'bgp' }]}}},
+ *   { project: { preVisitor: () => ({ continue: false }), transform: projection =>
+ *     algebraFactory.createDistinct(projection) }},
+ * );
+ * const returns = { type: 'slice', input: { type: 'distinct', input: { type: 'project', input: { type: 'join', input:
+ *           [{ type: 'project' }, { type: 'bgp' }]}}}};
  * ```
  * @param startObject the object from which we will start the transformation,
  *   potentially visiting and transforming its descendants along the way.
@@ -142,13 +142,13 @@ export const mapOperation: (typeof mapOperationStrict<'unsafe', Operation>) = <a
  * (invalid algebra anyway):
  * ```ts
  * mapOperationSubStrict<'unsafe', Operation>(
- *   {type: 'slice', input: { type: 'project', input: { type: 'join', input:
- *     [{type: 'expression', subType: 'aggregate', input: {type: 'project'}}, {type: 'bgp'}]}}},
- *   {project: { transform: projection => AF.createDistinct(projection) } },
- *   { expression: {aggregate: {preVisitor: () => ({continue: false}) }}}
- * )
- * returns = {type: 'slice', input: { type: 'distinct', input: { type: 'project', input: { type: 'join', input:
- *   [{type: 'expression', subType: 'aggregate', input: {type: 'project'}}, {type: 'bgp'}] }}}}
+ *   { type: 'slice', input: { type: 'project', input: { type: 'join', input:
+ *           [{ type: 'expression', subType: 'aggregate', input: { type: 'project' }}, { type: 'bgp' }]}}},
+ *   { project: { transform: projection => algebraFactory.createDistinct(projection) }},
+ *   { expression: { aggregate: { preVisitor: () => ({ continue: false }) }}},
+ * );
+ * const returns = { type: 'slice', input: { type: 'distinct', input: { type: 'project', input: { type: 'join', input:
+ *           [{ type: 'expression', subType: 'aggregate', input: { type: 'project' }}, { type: 'bgp' }]}}}};
  * ```
  * @param startObject the object from which we will start the transformation,
  *   potentially visiting and transforming its descendants along the way.
@@ -171,13 +171,13 @@ export const mapOperationSubStrict = transformer.transformNodeSpecific.bind(tran
  * (invalid algebra anyway):
  * ```ts
  * mapOperationSub(
- *   {type: 'slice', input: { type: 'project', input: { type: 'join', input:
- *     [{type: 'expression', subType: 'aggregate', input: {type: 'project'}}, {type: 'bgp'}]}}},
- *   {project: { transform: projection => AF.createDistinct(projection) } },
- *   { expression: {aggregate: {preVisitor: () => ({continue: false}) }}}
- * )
- * returns = {type: 'slice', input: { type: 'distinct', input: { type: 'project', input: { type: 'join', input:
- *   [{type: 'expression', subType: 'aggregate', input: {type: 'project'}}, {type: 'bgp'}] }}}}
+ *   { type: 'slice', input: { type: 'project', input: { type: 'join', input:
+ *           [{ type: 'expression', subType: 'aggregate', input: { type: 'project' }}, { type: 'bgp' }]}}},
+ *   { project: { transform: projection => algebraFactory.createDistinct(projection) }},
+ *   { expression: { aggregate: { preVisitor: () => ({ continue: false }) }}},
+ * );
+ * const returns = { type: 'slice', input: { type: 'distinct', input: { type: 'project', input: { type: 'join', input:
+ *           [{ type: 'expression', subType: 'aggregate', input: { type: 'project' }}, { type: 'bgp' }]}}}};
  * ```
  * @param startObject the object from which we will start the transformation,
  *   potentially visiting and transforming its descendants along the way.
@@ -198,9 +198,11 @@ export const mapOperationSub: (typeof mapOperationSubStrict<'unsafe', Operation>
  * Similar to {@link mapOperation}, but only visiting instead of copying and transforming explicitly.
  * e.g.:
  * ```ts
- * visitOperation({type: 'distinct', input: {type: 'project', input: {type: 'distinct' }}},
- *   { distinct: { visitor: () => console.log('1') },
- *     project: { preVisitor: () => ({ continue: false }), visitor: () => console.log('2') }})
+ * visitOperation(
+ *   { type: 'distinct', input: { type: 'project', input: { type: 'distinct' }}},
+ *   { distinct: { visitor: () => console.log('1') }, project: { preVisitor: () =>
+ *     ({ continue: false }), visitor: () => console.log('2') }},
+ * );
  * ```
  * Will first call the preVisitor on the project and notice it should not iterate on its descendants.
  * It then visits the project, and the outermost distinct, printing '21'.
@@ -222,9 +224,14 @@ export const visitOperation = transformer.visitNode.bind(transformer);
  * but also allowing you to target subTypes. e.g.:
  * e.g.:
  * ```ts
- * visitOperationSub({type: 'distinct', input: {type: 'distinct', subType: 'special'}},
- *   { distinct: { visitor: () => console.log('1'), preVisitor: () => console.log('2') }},
- *   { distinct: { special: { visitor: () => console.log('3') }}})
+ * visitOperationSub(
+ *   { type: 'distinct', input: { type: 'distinct', subType: 'special' }},
+ *   { distinct: { visitor: () => console.log('1'), preVisitor: () => {
+ *     console.log('2');
+ *     return {};
+ *   } }},
+ *   { distinct: { special: { visitor: () => console.log('3') }}},
+ * );
  * ```
  * Will call the preVisitor on the outer distinct, then the visitor of the special distinct,
  * followed by the visiting the outer distinct, printing '231'.
