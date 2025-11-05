@@ -68,7 +68,7 @@ export class QuadDestinationPutLdp implements IQuadDestination {
 
     // Send data in (LDP) PUT request
     const headers: Headers = new Headers({ 'content-type': mediaType });
-    const httpResponse = await this.mediatorHttp.mediate({
+    const httpResponse = (await this.mediatorHttp.mediate({
       context: this.context,
       init: {
         headers,
@@ -76,7 +76,7 @@ export class QuadDestinationPutLdp implements IQuadDestination {
         body: ActorHttp.toWebReadableStream(data),
       },
       input: this.url,
-    });
+    })).response;
 
     await validateAndCloseHttpResponse(this.url, httpResponse);
   }

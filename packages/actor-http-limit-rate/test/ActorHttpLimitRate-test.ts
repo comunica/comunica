@@ -58,7 +58,7 @@ describe('ActorHttpLimitRate', () => {
 
   describe('run', () => {
     it('should handle successful requests', async() => {
-      const response = { ok: true };
+      const response = { type: 'response', response: { ok: true }};
       const duration = 100;
       jest.spyOn(Date, 'now').mockReturnValueOnce(0).mockReturnValueOnce(duration);
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
@@ -75,7 +75,7 @@ describe('ActorHttpLimitRate', () => {
     });
 
     it('should delay requests when host is rate limited', async() => {
-      const response = { ok: true };
+      const response = { type: 'response', response: { ok: true }};
       const interval = 100;
       const responseTime = 200;
       jest.spyOn(Date, 'now').mockReturnValueOnce(0).mockReturnValueOnce(responseTime);
@@ -94,7 +94,7 @@ describe('ActorHttpLimitRate', () => {
     });
 
     it('should delay requests when host is rate limited and overlap is allowed', async() => {
-      const response = { ok: true };
+      const response = { type: 'response', response: { ok: true }};
       const interval = 100;
       const responseTime = 200;
       (<any>actor).allowOverlap = true;
@@ -120,7 +120,7 @@ describe('ActorHttpLimitRate', () => {
       const duration2 = 200;
       const interval1 = duration1 * correctionMultiplier;
       const interval2 = interval1 + correctionMultiplier * (duration2 - interval1 - interval1);
-      const response = { ok: true };
+      const response = { type: 'response', response: { ok: true }};
       (<any>actor).limitByDefault = true;
       jest.spyOn(Date, 'now')
         .mockReturnValueOnce(0).mockReturnValueOnce(duration1)
@@ -153,7 +153,7 @@ describe('ActorHttpLimitRate', () => {
       const duration2 = 600;
       const interval1 = duration1 * failureMultiplier * correctionMultiplier;
       const interval2 = interval1 + correctionMultiplier * (failureMultiplier * (duration2 - interval1) - interval1);
-      const response = { ok: false };
+      const response = { type: 'response', response: { ok: false }};
       jest.spyOn(Date, 'now')
         .mockReturnValueOnce(0).mockReturnValueOnce(duration1)
         .mockReturnValueOnce(0).mockReturnValueOnce(duration2);
@@ -192,7 +192,7 @@ describe('ActorHttpLimitRate', () => {
     });
 
     it('should not mark 404s as failed requests', async() => {
-      const response = { ok: false, status: 404 };
+      const response = { type: 'response', response: { ok: false, status: 404 }};
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
       jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any>callback());
       const action = { context: new ActionContext({}), input: url };

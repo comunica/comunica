@@ -1,4 +1,10 @@
-import type { IActionHttp, IActorHttpOutput, ActorHttp, MediatorHttp } from '@comunica/bus-http';
+import type {
+  ActionHttp,
+  ActorHttpOutput,
+  ActorHttp,
+  MediatorHttp,
+  IActorHttpOutputResponse,
+} from '@comunica/bus-http';
 import type { ActorHttpInvalidateListenable, IInvalidateListener } from '@comunica/bus-http-invalidate';
 import { KeysHttp } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
@@ -7,7 +13,7 @@ import { ActorHttpRetry } from '../lib/ActorHttpRetry';
 import '@comunica/utils-jest';
 
 describe('ActorHttpRetry', () => {
-  let bus: Bus<ActorHttp, IActionHttp, IActorTest, IActorHttpOutput>;
+  let bus: Bus<ActorHttp, ActionHttp, IActorTest, ActorHttpOutput>;
   let actor: ActorHttpRetry;
   let context: ActionContext;
   let mediatorHttp: MediatorHttp;
@@ -64,7 +70,7 @@ describe('ActorHttpRetry', () => {
     });
 
     it('should handle an immediately successful request', async() => {
-      const response: Response = <any> { ok: true };
+      const response: ActorHttpOutput = { type: 'response', response: <Response> { ok: true }};
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(mediatorHttp.mediate).not.toHaveBeenCalled();
@@ -74,10 +80,20 @@ describe('ActorHttpRetry', () => {
     });
 
     it('should handle request that succeeds after retries', async() => {
-      const mediatorResponseQueue: IActorHttpOutput[] = [
-        <any> { ok: false, status: 999, statusText: 'Dummy Failure', headers: new Map() },
-        <any> { ok: false, status: 504, statusText: 'Gateway Timeout', headers: new Map() },
-        <any> { ok: true },
+      const mediatorResponseQueue: IActorHttpOutputResponse[] = [
+        { type: 'response', response: <Response> <any> {
+          ok: false,
+          status: 999,
+          statusText: 'Dummy Failure',
+          headers: new Map(),
+        }},
+        { type: 'response', response: <Response> <any> {
+          ok: false,
+          status: 504,
+          statusText: 'Gateway Timeout',
+          headers: new Map(),
+        }},
+        { type: 'response', response: <Response> { ok: true }},
       ];
       // eslint-disable-next-line jest/prefer-mock-promise-shorthand
       jest.spyOn(mediatorHttp, 'mediate').mockImplementation(() => Promise.resolve(mediatorResponseQueue.shift()!));
@@ -87,14 +103,17 @@ describe('ActorHttpRetry', () => {
       await expect(actor.run({
         input,
         context: context.set(KeysHttp.httpRetryCount, 2),
-      })).resolves.toEqual({ ok: true });
+      })).resolves.toEqual({ type: 'response', response: { ok: true }});
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(3);
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
     });
 
     it('should handle error codes in the 400 range', async() => {
-      const response: Response = <any> { ok: false, status: 400, headers: new Map() };
+      const response: ActorHttpOutput = {
+        type: 'response',
+        response: <Response> <any> { ok: false, status: 400, headers: new Map() },
+      };
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
@@ -106,7 +125,10 @@ describe('ActorHttpRetry', () => {
     });
 
     it('should handle error codes in the 500 range', async() => {
-      const response: Response = <any> { ok: false, status: 500, headers: new Map() };
+      const response: ActorHttpOutput = {
+        type: 'response',
+        response: <Response> <any> { ok: false, status: 500, headers: new Map() },
+      };
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
@@ -118,7 +140,10 @@ describe('ActorHttpRetry', () => {
     });
 
     it('should handle error codes in force retry list', async() => {
-      const response: Response = <any> { ok: false, status: 500, headers: new Map() };
+      const response: ActorHttpOutput = {
+        type: 'response',
+        response: <Response> <any> { ok: false, status: 500, headers: new Map() },
+      };
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
@@ -138,10 +163,13 @@ describe('ActorHttpRetry', () => {
       503,
     ])('should handle server-side delay requests via Retry-After header with status code %d', async(status) => {
       const retryAfterDate = new Date(1_000);
-      const response: Response = <any> {
-        ok: false,
-        status,
-        headers: new Headers({ 'retry-after': retryAfterDate.getTime().toString(10) }),
+      const response: IActorHttpOutputResponse = {
+        type: 'response',
+        response: <Response> <any> {
+          ok: false,
+          status,
+          headers: new Headers({ 'retry-after': retryAfterDate.getTime().toString(10) }),
+        },
       };
       jest.spyOn(Date, 'now').mockReturnValue(0);
       jest.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(retryAfterDate);
@@ -154,17 +182,22 @@ describe('ActorHttpRetry', () => {
       expect(ActorHttpRetry.sleep).toHaveBeenCalledTimes(1);
       expect(ActorHttpRetry.sleep).toHaveBeenNthCalledWith(1, retryAfterDate.getTime());
       expect(ActorHttpRetry.parseRetryAfterHeader).toHaveBeenCalledTimes(2);
-      expect(ActorHttpRetry.parseRetryAfterHeader).toHaveBeenNthCalledWith(1, response.headers.get('retry-after'));
-      expect(ActorHttpRetry.parseRetryAfterHeader).toHaveBeenNthCalledWith(2, response.headers.get('retry-after'));
+      expect(ActorHttpRetry.parseRetryAfterHeader)
+        .toHaveBeenNthCalledWith(1, response.response.headers.get('retry-after'));
+      expect(ActorHttpRetry.parseRetryAfterHeader)
+        .toHaveBeenNthCalledWith(2, response.response.headers.get('retry-after'));
     });
 
     it('should handle server-side delay requests via Retry-After header above the limit', async() => {
       const retryAfterLimit = 1_000;
       const retryAfterDate = new Date(retryAfterLimit * 2);
-      const response: Response = <any> {
-        ok: false,
-        status: 429,
-        headers: new Headers({ 'retry-after': retryAfterDate.getTime().toString(10) }),
+      const response: IActorHttpOutputResponse = {
+        type: 'response',
+        response: <Response> <any> {
+          ok: false,
+          status: 429,
+          headers: new Headers({ 'retry-after': retryAfterDate.getTime().toString(10) }),
+        },
       };
       jest.spyOn(Date, 'now').mockReturnValue(0);
       jest.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(retryAfterDate);
@@ -177,14 +210,18 @@ describe('ActorHttpRetry', () => {
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).toHaveBeenCalledTimes(1);
-      expect(ActorHttpRetry.parseRetryAfterHeader).toHaveBeenNthCalledWith(1, response.headers.get('retry-after'));
+      expect(ActorHttpRetry.parseRetryAfterHeader)
+        .toHaveBeenNthCalledWith(1, response.response.headers.get('retry-after'));
     });
 
     it('should handle server-side unavailability with invalid Retry-After header', async() => {
-      const response: Response = <any> {
-        ok: false,
-        status: 429,
-        headers: new Headers({ 'retry-after': 'a b c' }),
+      const response: IActorHttpOutputResponse = {
+        type: 'response',
+        response: <Response> <any> {
+          ok: false,
+          status: 429,
+          headers: new Headers({ 'retry-after': 'a b c' }),
+        },
       };
       jest.spyOn(Date, 'now').mockReturnValue(0);
       jest.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(undefined);
@@ -196,16 +233,21 @@ describe('ActorHttpRetry', () => {
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).toHaveBeenCalledTimes(2);
-      expect(ActorHttpRetry.parseRetryAfterHeader).toHaveBeenNthCalledWith(1, response.headers.get('retry-after'));
-      expect(ActorHttpRetry.parseRetryAfterHeader).toHaveBeenNthCalledWith(2, response.headers.get('retry-after'));
+      expect(ActorHttpRetry.parseRetryAfterHeader)
+        .toHaveBeenNthCalledWith(1, response.response.headers.get('retry-after'));
+      expect(ActorHttpRetry.parseRetryAfterHeader)
+        .toHaveBeenNthCalledWith(2, response.response.headers.get('retry-after'));
     });
 
     it('should handle server-side unavailability without Retry-After header', async() => {
       const fallbackDelay = 100;
-      const response: Response = <any> {
-        ok: false,
-        status: 429,
-        headers: new Headers(),
+      const response: ActorHttpOutput = {
+        type: 'response',
+        response: <Response> <any> {
+          ok: false,
+          status: 429,
+          headers: new Headers(),
+        },
       };
       jest.spyOn(Date, 'now').mockReturnValue(0);
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);

@@ -1,4 +1,4 @@
-import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { ActionHttp, ActorHttpOutput } from '@comunica/bus-http';
 import type { ActorHttpInvalidateListenable } from '@comunica/bus-http-invalidate';
 import type { Actor, IActionObserverArgs, IActorTest } from '@comunica/core';
 import { ActionObserver } from '@comunica/core';
@@ -6,7 +6,7 @@ import { ActionObserver } from '@comunica/core';
 /**
  * Observes HTTP actions, and maintains a counter of the number of requests.
  */
-export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOutput> {
+export class ActionObserverHttp extends ActionObserver<ActionHttp, ActorHttpOutput> {
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
   public readonly observedActors: string[];
   public requests = 0;
@@ -27,9 +27,9 @@ export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOu
   /* eslint-enable max-len */
 
   public onRun(
-    actor: Actor<IActionHttp, IActorTest, IActorHttpOutput, undefined>,
-    _action: IActionHttp,
-    _output: Promise<IActorHttpOutput>,
+    actor: Actor<ActionHttp, IActorTest, ActorHttpOutput, undefined>,
+    _action: ActionHttp,
+    _output: Promise<ActorHttpOutput>,
   ): void {
     if (this.observedActors.includes(actor.name)) {
       this.requests++;
@@ -37,7 +37,7 @@ export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOu
   }
 }
 
-export interface IActionObserverHttpArgs extends IActionObserverArgs<IActionHttp, IActorHttpOutput> {
+export interface IActionObserverHttpArgs extends IActionObserverArgs<ActionHttp, ActorHttpOutput> {
   /* eslint-disable max-len */
   /**
    * An actor that listens to HTTP invalidation events

@@ -1,4 +1,4 @@
-import type { IActionHttp, IActorHttpArgs, IActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
+import type { ActionHttp, IActorHttpArgs, ActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpMemento } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
@@ -16,7 +16,7 @@ export class ActorHttpMemento extends ActorHttp {
     this.mediatorHttp = args.mediatorHttp;
   }
 
-  public async test(action: IActionHttp): Promise<TestResult<IActorTest>> {
+  public async test(action: ActionHttp): Promise<TestResult<IActorTest>> {
     if (!(action.context.has(KeysHttpMemento.datetime) &&
           action.context.get(KeysHttpMemento.datetime) instanceof Date)) {
       return failTest('This actor only handles request with a set valid datetime.');
@@ -27,7 +27,7 @@ export class ActorHttpMemento extends ActorHttp {
     return passTestVoid();
   }
 
-  public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+  public async run(action: ActionHttp): Promise<ActorHttpOutput> {
     // Duplicate the ActionHttp to append a datetime header to the request.
     const init: RequestInit = action.init ? { ...action.init } : {};
     const headers: Headers = init.headers = new Headers(init.headers ?? {});
@@ -37,25 +37,25 @@ export class ActorHttpMemento extends ActorHttp {
       headers.append('accept-datetime', dateTime.toUTCString());
     }
 
-    const httpAction: IActionHttp = { context: action.context, input: action.input, init };
+    const httpAction: ActionHttp = { context: action.context, input: action.input, init };
 
     // Execute the request and follow the timegate in the response (if any).
-    const result: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
+    const { response } = await this.mediatorHttp.mediate(httpAction);
 
     // Did we ask for a time-negotiated response, but haven't received one?
-    if (headers.has('accept-datetime') && result.headers && !result.headers.has('memento-datetime')) {
+    if (headers.has('accept-datetime') && response.headers && !response.headers.has('memento-datetime')) {
       // The links might have a timegate that can help us
-      const header = result.headers.get('link');
+      const header = response.headers.get('link');
       const timegate = header && parse(header)?.get('rel', 'timegate');
       if (timegate && timegate.length > 0) {
-        await result.body?.cancel();
+        await response.body?.cancel();
         // Respond with a time-negotiated response from the timegate instead
-        const followLink: IActionHttp = { context: action.context, input: timegate[0].uri, init };
+        const followLink: ActionHttp = { context: action.context, input: timegate[0].uri, init };
         return this.mediatorHttp.mediate(followLink);
       }
     }
 
-    return result;
+    return { type: 'response', response };
   }
 }
 

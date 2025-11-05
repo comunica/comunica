@@ -1,4 +1,4 @@
-import type { IActionHttp, IActorHttpOutput, MediatorHttp, IActorHttpArgs } from '@comunica/bus-http';
+import type { ActionHttp, ActorHttpOutput, MediatorHttp, IActorHttpArgs } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpProxy } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
@@ -17,7 +17,7 @@ export class ActorHttpProxy extends ActorHttp {
     this.mediatorHttp = args.mediatorHttp;
   }
 
-  public async test(action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
+  public async test(action: ActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     const proxyHandler: IProxyHandler | undefined = action.context.get(KeysHttpProxy.httpProxyHandler);
     if (!proxyHandler) {
       return failTest(`Actor ${this.name} could not find a proxy handler in the context.`);
@@ -28,24 +28,24 @@ export class ActorHttpProxy extends ActorHttp {
     return passTest({ time: Number.POSITIVE_INFINITY });
   }
 
-  public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+  public async run(action: ActionHttp): Promise<ActorHttpOutput> {
     const requestedUrl = typeof action.input === 'string' ? action.input : action.input.url;
     const proxyHandler: IProxyHandler = action.context.get(KeysHttpProxy.httpProxyHandler)!;
 
     // Send a request for the modified request
-    const output = await this.mediatorHttp.mediate({
+    const { response } = await this.mediatorHttp.mediate({
       ...await proxyHandler.getProxy(action),
       context: action.context.delete(KeysHttpProxy.httpProxyHandler),
     });
 
     // Modify the response URL
     // use defineProperty to allow modification of unmodifiable objects
-    Object.defineProperty(output, 'url', {
+    Object.defineProperty(response, 'url', {
       configurable: true,
       enumerable: true,
-      get: () => output.headers.get('x-final-url') ?? requestedUrl,
+      get: () => response.headers.get('x-final-url') ?? requestedUrl,
     });
-    return output;
+    return { type: 'response', response };
   }
 }
 

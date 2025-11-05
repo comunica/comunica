@@ -1,4 +1,4 @@
-import type { IActionHttp, IActorHttpOutput, IActorHttpArgs } from '@comunica/bus-http';
+import type { ActionHttp, ActorHttpOutput, IActorHttpArgs } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
@@ -23,11 +23,11 @@ export class ActorHttpNative extends ActorHttp {
     this.requester = new Requester(args.agentOptions);
   }
 
-  public async test(_action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
+  public async test(_action: ActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     return passTest({ time: Number.POSITIVE_INFINITY });
   }
 
-  public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+  public async run(action: ActionHttp): Promise<ActorHttpOutput> {
     const options: any = {};
     // Input can be a Request object or a string
     // if it is a Request object it can contain the same settings as the init object
@@ -72,7 +72,7 @@ export class ActorHttpNative extends ActorHttp {
 
     // Not all options are supported
 
-    return new Promise<IActorHttpOutput>((resolve, reject) => {
+    return new Promise<ActorHttpOutput>((resolve, reject) => {
       const req = this.requester.createRequest(options);
       req.on('error', reject);
       req.on('response', (httpResponse) => {
@@ -105,7 +105,7 @@ export class ActorHttpNative extends ActorHttp {
             // Missing several of the required fetch fields
             const headers = httpResponse.headers;
 
-            const result = <IActorHttpOutput> {
+            const response = <Response> {
               body: httpResponse,
               headers,
               ok: httpResponse.statusCode < 300,
@@ -114,7 +114,7 @@ export class ActorHttpNative extends ActorHttp {
               // When the content came from another resource because of conneg, let Content-Location deliver the url
               url: headers.has('content-location') ? headers.get('content-location') : httpResponse.responseUrl,
             };
-            resolve(result);
+            resolve({ type: 'response', response });
           }
         });
       });

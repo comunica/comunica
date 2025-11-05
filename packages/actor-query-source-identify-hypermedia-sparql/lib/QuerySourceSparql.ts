@@ -93,7 +93,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.endpointFetcher = new SparqlEndpointFetcher({
       method: forceHttpGet ? 'GET' : 'POST',
       fetch: async(input: Request | string, init?: RequestInit) => {
-        const response = await this.mediatorHttp.mediate(
+        const { response } = await this.mediatorHttp.mediate(
           { input, init, context: this.lastSourceContext! },
         );
         // If we encounter a 404, try our backup URL.
@@ -102,9 +102,9 @@ export class QuerySourceSparql implements IQuerySource {
           Actor.getContextLogger(this.context)?.warn(`Encountered a 404 when requesting ${this.url} according to the service description of ${this.urlBackup}. This is a server configuration issue. Retrying the current and modifying future requests to ${this.urlBackup} instead.`);
           input = (<string> input).replace(this.url, this.urlBackup);
           this.url = this.urlBackup;
-          return await this.mediatorHttp.mediate(
+          return (await this.mediatorHttp.mediate(
             { input, init, context: this.lastSourceContext! },
-          );
+          )).response;
         }
         return response;
       },

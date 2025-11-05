@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import type { MediatorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { MediatorHttp, ActionHttp, ActorHttpOutput, IActorHttpOutputResponse } from '@comunica/bus-http';
 import { KeysHttpWayback, KeysHttpProxy } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
@@ -20,9 +20,8 @@ describe('ActorHttpInterceptWayback', () => {
 
     describe('404 foaf, 200 wayback', () => {
       beforeEach(() => {
-        // @ts-expect-error
-        mediatorHttp = {
-          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+        mediatorHttp = <MediatorHttp> {
+          async mediate(action: ActionHttp): Promise<IActorHttpOutputResponse> {
             const { input, init } =
               await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
               action;
@@ -30,16 +29,22 @@ describe('ActorHttpInterceptWayback', () => {
             const request = new Request(input, init);
 
             if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 404,
-                url: request.url,
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 404,
+                  url: request.url,
+                },
               };
             }
 
             if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 200,
-                url: request.url,
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 200,
+                  url: request.url,
+                },
               };
             }
 
@@ -70,43 +75,42 @@ describe('ActorHttpInterceptWayback', () => {
       });
 
       it('should return 200 on foaf when wayback machine is already the url', async() => {
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context,
           input: 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(200);
-        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(200);
+        expect(response.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
 
       it('should return 200 on foaf', async() => {
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(200);
-        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(200);
+        expect(response.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
 
       it('should return 200 on foaf with existing proxy', async() => {
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
             return url;
           } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(200);
-        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(200);
+        expect(response.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
     describe('404 foaf with body, 200 wayback', () => {
       beforeEach(() => {
-        // @ts-expect-error
-        mediatorHttp = {
-          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+        mediatorHttp = <MediatorHttp> {
+          async mediate(action: ActionHttp): Promise<ActorHttpOutput> {
             const { input, init } =
               await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
               action;
@@ -114,17 +118,23 @@ describe('ActorHttpInterceptWayback', () => {
             const request = new Request(input, init);
 
             if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> <unknown> {
-                status: 404,
-                body: Readable.from([ 'page not found' ]),
-                url: request.url,
+              return {
+                type: 'response',
+                response: <Response> <unknown> {
+                  status: 404,
+                  body: Readable.from([ 'page not found' ]),
+                  url: request.url,
+                },
               };
             }
 
             if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 200,
-                url: request.url,
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 200,
+                  url: request.url,
+                },
               };
             }
 
@@ -155,43 +165,42 @@ describe('ActorHttpInterceptWayback', () => {
       });
 
       it('should return 200 on foaf when wayback machine is already the url', async() => {
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context,
           input: 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(200);
-        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(200);
+        expect(response.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
 
       it('should return 200 on foaf', async() => {
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context,
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(200);
-        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(200);
+        expect(response.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
 
       it('should return 200 on foaf with existing proxy', async() => {
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
             return url;
           } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(200);
-        expect(result.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(200);
+        expect(response.url).toBe('http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
     describe('200 foaf, 200 wayback', () => {
       beforeEach(() => {
-        // @ts-expect-error
-        mediatorHttp = {
-          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+        mediatorHttp = <MediatorHttp> {
+          async mediate(action: ActionHttp): Promise<IActorHttpOutputResponse> {
             const { input, init } =
               await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
               action;
@@ -199,16 +208,22 @@ describe('ActorHttpInterceptWayback', () => {
             const request = new Request(input, init);
 
             if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 200,
-                url: request.url,
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 200,
+                  url: request.url,
+                },
               };
             }
 
             if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 200,
-                url: request.url,
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 200,
+                  url: request.url,
+                },
               };
             }
 
@@ -239,23 +254,22 @@ describe('ActorHttpInterceptWayback', () => {
       });
 
       it('should return foaf url when foaf is 200', async() => {
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
             return url;
           } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(200);
-        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(200);
+        expect(response.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
     describe('200 foaf, 404 wayback', () => {
       beforeEach(() => {
-        // @ts-expect-error
-        mediatorHttp = {
-          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+        mediatorHttp = <MediatorHttp> {
+          async mediate(action: ActionHttp): Promise<IActorHttpOutputResponse> {
             const { input, init } =
               await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
               action;
@@ -263,16 +277,22 @@ describe('ActorHttpInterceptWayback', () => {
             const request = new Request(input, init);
 
             if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 200,
-                url: request.url,
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 200,
+                  url: request.url,
+                },
               };
             }
 
             if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 404,
-                url: request.url,
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 404,
+                  url: request.url,
+                },
               };
             }
 
@@ -303,23 +323,22 @@ describe('ActorHttpInterceptWayback', () => {
       });
 
       it('should return foaf url when foaf is 200', async() => {
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
             return url;
           } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(200);
-        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(200);
+        expect(response.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
     describe('404 foaf, 404 wayback', () => {
       beforeEach(() => {
-        // @ts-expect-error
-        mediatorHttp = {
-          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+        mediatorHttp = <MediatorHttp> {
+          async mediate(action: ActionHttp): Promise<IActorHttpOutputResponse> {
             const { input, init } =
               await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
               action;
@@ -327,16 +346,22 @@ describe('ActorHttpInterceptWayback', () => {
             const request = new Request(input, init);
 
             if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 404,
-                url: request.url,
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 404,
+                  url: request.url,
+                },
               };
             }
 
             if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 404,
-                url: request.url,
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 404,
+                  url: request.url,
+                },
               };
             }
 
@@ -367,23 +392,22 @@ describe('ActorHttpInterceptWayback', () => {
       });
 
       it('should return foaf url when wayback gives a 404', async() => {
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
             return url;
           } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(404);
-        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(404);
+        expect(response.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
     describe('404 foaf, 404 wayback with body to consume', () => {
       beforeEach(() => {
-        // @ts-expect-error
-        mediatorHttp = {
-          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+        mediatorHttp = <MediatorHttp> {
+          async mediate(action: ActionHttp): Promise<IActorHttpOutputResponse> {
             const { input, init } =
               await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
               action;
@@ -394,18 +418,24 @@ describe('ActorHttpInterceptWayback', () => {
             body._read = () => { /* Noop */ };
 
             if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 404,
-                url: request.url,
-                body,
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 404,
+                  url: request.url,
+                  body,
+                },
               };
             }
 
             if (request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> {
-                status: 404,
-                url: request.url,
-                body,
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 404,
+                  url: request.url,
+                  body,
+                },
               };
             }
 
@@ -419,15 +449,15 @@ describe('ActorHttpInterceptWayback', () => {
       });
 
       it('should return foaf url when wayback gives a 404', async() => {
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
             return url;
           } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(404);
-        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(404);
+        expect(response.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
 
@@ -435,10 +465,8 @@ describe('ActorHttpInterceptWayback', () => {
       let responseBody: () => ReadableStream<Uint8Array> | null;
       beforeEach(() => {
         responseBody = () => new Response('').body;
-
-        // @ts-expect-error
-        mediatorHttp = {
-          async mediate(action: IActionHttp): Promise<IActorHttpOutput> {
+        mediatorHttp = <MediatorHttp> {
+          async mediate(action: ActionHttp): Promise<IActorHttpOutputResponse> {
             const { input, init } =
               await action.context.get<IProxyHandler>(KeysHttpProxy.httpProxyHandler)?.getProxy(action) ??
               action;
@@ -446,7 +474,14 @@ describe('ActorHttpInterceptWayback', () => {
             const request = new Request(input, init);
 
             if (request.url === 'http://xmlns.com/foaf/spec/20140114.rdf' || request.url === 'http://wayback.archive-it.org/http://xmlns.com/foaf/spec/20140114.rdf') {
-              return <Response> { url: request.url, status: 404, body: responseBody() };
+              return {
+                type: 'response',
+                response: <Response> {
+                  status: 404,
+                  url: request.url,
+                  body: responseBody(),
+                },
+              };
             }
 
             throw new Error('Unexpected URL');
@@ -459,15 +494,15 @@ describe('ActorHttpInterceptWayback', () => {
       });
 
       it('should return foaf url when wayback gives a 404', async() => {
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
             return url;
           } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(404);
-        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(404);
+        expect(response.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
       });
 
       it('should return foaf url when wayback gives a 404 [no cancel on response body]', async() => {
@@ -476,15 +511,15 @@ describe('ActorHttpInterceptWayback', () => {
           destory: undefined,
         });
 
-        const result = await actor.run({
+        const { response } = <IActorHttpOutputResponse> await actor.run({
           context: context.set(KeysHttpProxy.httpProxyHandler, { async getProxy(url: IRequest) {
             return url;
           } }),
           input: 'http://xmlns.com/foaf/spec/20140114.rdf',
         });
 
-        expect(result.status).toBe(404);
-        expect(result.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
+        expect(response.status).toBe(404);
+        expect(response.url).toBe('http://xmlns.com/foaf/spec/20140114.rdf');
       });
     });
   });

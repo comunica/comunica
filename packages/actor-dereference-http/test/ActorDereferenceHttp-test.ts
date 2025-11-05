@@ -63,10 +63,13 @@ describe('ActorDereferenceHttp', () => {
             body.emit('error', new Error('Body stream error'));
           };
           return {
-            body,
-            headers: new Headers(),
-            status: 200,
-            url: action.input,
+            type: 'response',
+            response: {
+              body,
+              headers: new Headers(),
+              status: 200,
+              url: action.input,
+            },
           };
         }
         if (action.input.includes('aborted')) {
@@ -110,10 +113,13 @@ describe('ActorDereferenceHttp', () => {
           body = undefined;
         }
         return {
-          body,
-          headers,
-          status,
-          url,
+          type: 'response',
+          response: {
+            body,
+            headers,
+            status,
+            url,
+          },
         };
       };
       actor = new ActorDereferenceHttp({

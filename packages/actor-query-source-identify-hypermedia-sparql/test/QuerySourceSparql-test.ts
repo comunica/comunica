@@ -40,9 +40,11 @@ describe('QuerySourceSparql', () => {
       const query: string = action.init.method === 'GET' ? action.input : action.init.body.toString();
       lastQuery = query;
       return {
-        headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-        body: isCountQuery(query) ?
-          Readable.from([ `{
+        type: 'response',
+        response: {
+          headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+          body: isCountQuery(query) ?
+            Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": {
@@ -53,7 +55,7 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]) :
-          Readable.from([ `{
+            Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": {
@@ -70,7 +72,8 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]),
-        ok: true,
+          ok: true,
+        },
       };
     }),
   };
@@ -207,9 +210,11 @@ describe('QuerySourceSparql', () => {
         mediate: jest.fn((action: any) => {
           const query = action.init.body.toString();
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: isCountQuery(query) ?
-              Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: isCountQuery(query) ?
+                Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": {
@@ -220,7 +225,7 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]) :
-              Readable.from([ `{
+                Readable.from([ `{
   "head": { "vars": [ "s" ]
   } ,
   "results": {
@@ -237,7 +242,8 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]),
-            ok: true,
+              ok: true,
+            },
           };
         }),
       };
@@ -283,9 +289,11 @@ describe('QuerySourceSparql', () => {
         mediate: jest.fn((action: any) => {
           const query = action.init.body.toString();
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: isCountQuery(query) ?
-              Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: isCountQuery(query) ?
+                Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": {
@@ -296,7 +304,7 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]) :
-              Readable.from([ `{
+                Readable.from([ `{
   "head": { "vars": [ "s" ]
   } ,
   "results": {
@@ -313,7 +321,8 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]),
-            ok: true,
+              ok: true,
+            },
           };
         }),
       };
@@ -361,9 +370,11 @@ describe('QuerySourceSparql', () => {
         mediate(action: any) {
           const query = action.init.body.toString();
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: require('readable-stream-node-to-web')(isCountQuery(query) ?
-              Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: require('readable-stream-node-to-web')(isCountQuery(query) ?
+                Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": { 
@@ -374,7 +385,7 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]) :
-              Readable.from([ `{
+                Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": { 
@@ -391,7 +402,8 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ])),
-            ok: true,
+              ok: true,
+            },
           };
         },
       };
@@ -647,11 +659,14 @@ describe('QuerySourceSparql', () => {
       const thisMediator: any = {
         mediate() {
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: Readable.from([ `empty body` ]),
-            ok: false,
-            status: 500,
-            statusText: 'Error!',
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: Readable.from([ `empty body` ]),
+              ok: false,
+              status: 500,
+              statusText: 'Error!',
+            },
           };
         },
       };
@@ -687,17 +702,22 @@ describe('QuerySourceSparql', () => {
           const query = action.init.body.toString();
           if (!(<string> action.input).includes('backup')) {
             return {
-              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-              body: Readable.from([ `empty body` ]),
-              ok: false,
-              status: 404,
-              statusText: 'Error!',
+              type: 'response',
+              response: {
+                headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+                body: Readable.from([ `empty body` ]),
+                ok: false,
+                status: 404,
+                statusText: 'Error!',
+              },
             };
           }
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: isCountQuery(query) ?
-              Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: isCountQuery(query) ?
+                Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": { 
@@ -708,7 +728,7 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]) :
-              Readable.from([ `{
+                Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": { 
@@ -725,7 +745,8 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]),
-            ok: true,
+              ok: true,
+            },
           };
         },
       };
@@ -765,11 +786,14 @@ describe('QuerySourceSparql', () => {
       const thisMediator: any = {
         mediate() {
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: Readable.from([ `empty body` ]),
-            ok: false,
-            status: 404,
-            statusText: 'Error!',
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: Readable.from([ `empty body` ]),
+              ok: false,
+              status: 404,
+              statusText: 'Error!',
+            },
           };
         },
       };
@@ -806,9 +830,11 @@ describe('QuerySourceSparql', () => {
         mediate(action: any) {
           const query = action.init.body.toString();
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: isCountQuery(query) ?
-              Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: isCountQuery(query) ?
+                Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": { 
@@ -819,7 +845,7 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]) :
-              Readable.from([ `{
+                Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": { 
@@ -836,7 +862,8 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]),
-            ok: true,
+              ok: true,
+            },
           };
         },
       };
@@ -876,9 +903,11 @@ describe('QuerySourceSparql', () => {
         mediate(action: any) {
           const query = action.init.body.toString();
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: isCountQuery(query) ?
-              Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: isCountQuery(query) ?
+                Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": { 
@@ -889,7 +918,7 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]) :
-              Readable.from([ `{
+                Readable.from([ `{
   "head": { "vars": [ "p1" ]
   } ,
   "results": { 
@@ -907,7 +936,8 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]),
-            ok: true,
+              ok: true,
+            },
           };
         },
       };
@@ -962,9 +992,12 @@ describe('QuerySourceSparql', () => {
           const stream = new PassThrough();
           stream._read = () => setImmediate(() => stream.emit('error', new Error('Some stream error')));
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: stream,
-            ok: true,
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: stream,
+              ok: true,
+            },
           };
         },
       };
@@ -1158,9 +1191,11 @@ describe('QuerySourceSparql', () => {
         mediate(action: any) {
           const query = action.input;
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: isCountQuery(query) ?
-              Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: isCountQuery(query) ?
+                Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": { 
@@ -1171,7 +1206,7 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]) :
-              Readable.from([ `{
+                Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": { 
@@ -1188,7 +1223,8 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]),
-            ok: true,
+              ok: true,
+            },
           };
         },
       };
@@ -1566,8 +1602,10 @@ describe('QuerySourceSparql', () => {
       const thisMediator: any = {
         mediate() {
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: Readable.from([ `{
   "head": { "vars": [ "p" ], "version": "1.2-unknown"
   } ,
   "results": {
@@ -1584,9 +1622,10 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]),
-            ok: true,
-            status: 200,
-            statusText: 'Ok!',
+              ok: true,
+              status: 200,
+              statusText: 'Ok!',
+            },
           };
         },
       };
@@ -1620,8 +1659,10 @@ describe('QuerySourceSparql', () => {
       const thisMediator: any = {
         mediate() {
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-            body: Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: Readable.from([ `{
   "head": { "vars": [ "p" ], "version": "1.2-unknown"
   } ,
   "results": {
@@ -1638,9 +1679,10 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]),
-            ok: true,
-            status: 200,
-            statusText: 'Ok!',
+              ok: true,
+              status: 200,
+              statusText: 'Ok!',
+            },
           };
         },
       };
@@ -1673,8 +1715,10 @@ describe('QuerySourceSparql', () => {
       const thisMediator: any = {
         mediate() {
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json; version=1.2-unknown' }),
-            body: Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json; version=1.2-unknown' }),
+              body: Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": {
@@ -1691,9 +1735,10 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]),
-            ok: true,
-            status: 200,
-            statusText: 'Ok!',
+              ok: true,
+              status: 200,
+              statusText: 'Ok!',
+            },
           };
         },
       };
@@ -1727,8 +1772,10 @@ describe('QuerySourceSparql', () => {
       const thisMediator: any = {
         mediate() {
           return {
-            headers: new Headers({ 'Content-Type': 'application/sparql-results+json; version=1.2-unknown' }),
-            body: Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json; version=1.2-unknown' }),
+              body: Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "results": {
@@ -1745,9 +1792,10 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]),
-            ok: true,
-            status: 200,
-            statusText: 'Ok!',
+              ok: true,
+              status: 200,
+              statusText: 'Ok!',
+            },
           };
         },
       };
@@ -1781,9 +1829,12 @@ describe('QuerySourceSparql', () => {
     it('should return data', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
-          headers: new Headers({ 'Content-Type': 'text/turtle' }),
-          body: Readable.from([ `<s1> <p1> <o1>. <s2> <p2> <o2>.` ]),
-          ok: true,
+          type: 'response',
+          response: {
+            headers: new Headers({ 'Content-Type': 'text/turtle' }),
+            body: Readable.from([ `<s1> <p1> <o1>. <s2> <p2> <o2>.` ]),
+            ok: true,
+          },
         })),
       };
       source = new QuerySourceSparql(
@@ -1832,11 +1883,13 @@ describe('QuerySourceSparql', () => {
           const query = action.init.body.toString();
           lastQuery = query;
           return {
-            headers: new Headers({ 'Content-Type': isCountQuery(query) ?
-              'application/sparql-results+json' :
-              'text/turtle' }),
-            body: isCountQuery(query) ?
-              Readable.from([ `{
+            type: 'response',
+            response: {
+              headers: new Headers({ 'Content-Type': isCountQuery(query) ?
+                'application/sparql-results+json' :
+                'text/turtle' }),
+              body: isCountQuery(query) ?
+                Readable.from([ `{
   "head": { "vars": [ "count" ]
   } ,
   "results": {
@@ -1847,8 +1900,9 @@ describe('QuerySourceSparql', () => {
     ]
   }
 }` ]) :
-              Readable.from([ `<s1> <p1> <o1>. <s2> <p2> <o2>.` ]),
-            ok: true,
+                Readable.from([ `<s1> <p1> <o1>. <s2> <p2> <o2>.` ]),
+              ok: true,
+            },
           };
         }),
       };
@@ -1894,9 +1948,12 @@ describe('QuerySourceSparql', () => {
     it('should pass the original queryString if defined', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
-          headers: new Headers({ 'Content-Type': 'text/turtle' }),
-          body: Readable.from([ `<s1> <p1> <o1>. <s2> <p2> <o2>.` ]),
-          ok: true,
+          type: 'response',
+          response: {
+            headers: new Headers({ 'Content-Type': 'text/turtle' }),
+            body: Readable.from([ `<s1> <p1> <o1>. <s2> <p2> <o2>.` ]),
+            ok: true,
+          },
         })),
       };
       source = new QuerySourceSparql(
@@ -1944,13 +2001,16 @@ describe('QuerySourceSparql', () => {
     it('should return data', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
-          headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-          body: Readable.from([ `{
+          type: 'response',
+          response: {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "boolean": true
 }` ]),
-          ok: true,
+            ok: true,
+          },
         })),
       };
       source = new QuerySourceSparql(
@@ -1992,13 +2052,16 @@ describe('QuerySourceSparql', () => {
     it('should pass the original queryString if defined', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
-          headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-          body: Readable.from([ `{
+          type: 'response',
+          response: {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: Readable.from([ `{
   "head": { "vars": [ "p" ]
   } ,
   "boolean": true
 }` ]),
-          ok: true,
+            ok: true,
+          },
         })),
       };
       source = new QuerySourceSparql(
@@ -2049,9 +2112,12 @@ describe('QuerySourceSparql', () => {
     it('should return data', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
-          headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-          body: Readable.from([ `OK` ]),
-          ok: true,
+          type: 'response',
+          response: {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: Readable.from([ `OK` ]),
+            ok: true,
+          },
         })),
       };
       source = new QuerySourceSparql(
@@ -2096,9 +2162,12 @@ describe('QuerySourceSparql', () => {
     it('should pass the original queryString if defined', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
-          headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-          body: Readable.from([ `OK` ]),
-          ok: true,
+          type: 'response',
+          response: {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: Readable.from([ `OK` ]),
+            ok: true,
+          },
         })),
       };
       source = new QuerySourceSparql(

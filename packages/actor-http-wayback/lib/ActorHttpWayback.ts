@@ -1,4 +1,4 @@
-import type { IActionHttp, IActorHttpArgs, IActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
+import type { ActionHttp, IActorHttpArgs, ActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpWayback, KeysHttpProxy } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
@@ -34,15 +34,15 @@ export class ActorHttpWayback extends ActorHttp {
     this.mediatorHttp = args.mediatorHttp;
   }
 
-  public async test(_action: IActionHttp): Promise<TestResult<IActorTest>> {
+  public async test(_action: ActionHttp): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 
-  public async run(action: IActionHttp): Promise<IActorHttpOutput> {
-    let result = await this.mediatorHttp.mediate(action);
+  public async run(action: ActionHttp): Promise<ActorHttpOutput> {
+    let { response } = await this.mediatorHttp.mediate(action);
 
-    if (result.status === 404 && action.context.get(KeysHttpWayback.recoverBrokenLinks)) {
-      let fallbackResult = await this.mediatorHttp.mediate({
+    if (response.status === 404 && action.context.get(KeysHttpWayback.recoverBrokenLinks)) {
+      let { response: fallbackResult } = await this.mediatorHttp.mediate({
         ...action,
         context: action.context
           .set(KeysHttpWayback.recoverBrokenLinks, false)
@@ -51,7 +51,7 @@ export class ActorHttpWayback extends ActorHttp {
 
       // If the wayback machine returns a 200 status then use that result
       if (fallbackResult.status === 200) {
-        [ result, fallbackResult ] = [ fallbackResult, result ];
+        [ response, fallbackResult ] = [ fallbackResult, response ];
       }
 
       // Consume stream to avoid process
@@ -67,7 +67,7 @@ export class ActorHttpWayback extends ActorHttp {
       }
     }
 
-    return result;
+    return { type: 'response', response };
   }
 }
 

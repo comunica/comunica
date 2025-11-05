@@ -24,22 +24,28 @@ describe('ActorRdfParseJsonLd', () => {
         // Error
         if (args.input.includes('error')) {
           return Promise.resolve({
-            ok: false,
-            statusText: 'some error',
-            status: 500,
-            headers: new Headers({}),
+            type: 'response',
+            response: {
+              ok: false,
+              statusText: 'some error',
+              status: 500,
+              headers: new Headers({}),
+            },
           });
         }
 
         return Promise.resolve({
-          body: Readable.from([ `{
+          type: 'response',
+          response: {
+            body: Readable.from([ `{
           "@context": {
             "@vocab": "http://example.org/"
           }
         }` ]),
-          ok: true,
-          status: 200,
-          headers: new Headers({ 'Content-Type': 'application/ld+json' }),
+            ok: true,
+            status: 200,
+            headers: new Headers({ 'Content-Type': 'application/ld+json' }),
+          },
         });
       },
     };

@@ -1,7 +1,7 @@
-import type { IActionHttp, IActorHttpOutput, IActorHttpArgs } from '@comunica/bus-http';
+import type { ActionHttp, ActorHttpOutput, IActorHttpArgs } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
-import type { TestResult } from '@comunica/core';
+import {failTest, TestResult} from '@comunica/core';
 import { passTest } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 
@@ -21,11 +21,14 @@ export class ActorHttpFetch extends ActorHttp {
     this.fetchInitPreprocessor = new FetchInitPreprocessor(args.agentOptions);
   }
 
-  public async test(_action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
+  public async test(action: ActionHttp): Promise<TestResult<IMediatorTypeTime>> {
+    if (action.type !== 'request') {
+      return failTest(`${this.name} can not handle validation request`);
+    }
     return passTest({ time: Number.POSITIVE_INFINITY });
   }
 
-  public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+  public async run(action: ActionHttp): Promise<ActorHttpOutput> {
     const headers = this.prepareRequestHeaders(action);
 
     const init: RequestInit = { method: 'GET', ...action.init, headers };
@@ -72,7 +75,7 @@ export class ActorHttpFetch extends ActorHttp {
       clearTimeout(timeoutHandle);
     }
 
-    return response;
+    return { type: 'response', response };
   }
 
   /**
@@ -80,7 +83,7 @@ export class ActorHttpFetch extends ActorHttp {
    * @param {IActionHttp} action The HTTP action
    * @returns {Headers} Headers
    */
-  public prepareRequestHeaders(action: IActionHttp): Headers {
+  public prepareRequestHeaders(action: ActionHttp): Headers {
     const headers = new Headers(action.init?.headers);
 
     if (ActorHttp.isBrowser()) {

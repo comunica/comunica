@@ -1,6 +1,6 @@
 import type { IActionDereference, IActorDereferenceArgs, IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference, emptyReadable } from '@comunica/bus-dereference';
-import type { IActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
+import type { MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
@@ -73,46 +73,46 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
       mediaTypesToAcceptString(await action.mediaTypes?.() ?? {}, this.getMaxAcceptHeaderLength()),
     );
 
-    let httpResponse: IActorHttpOutput;
+    let response: Response;
     const requestTimeStart = Date.now();
     try {
-      httpResponse = await this.mediatorHttp.mediate({
+      response = (await this.mediatorHttp.mediate({
         context: action.context,
         init: { headers, method: action.method },
         input: action.url,
-      });
+      })).response;
     } catch (error: unknown) {
       return this.handleDereferenceErrors(action, error);
     }
     // The response URL can be relative to the given URL
-    const url = resolveRelative(httpResponse.url, action.url);
+    const url = resolveRelative(response.url, action.url);
     const requestTime = Date.now() - requestTimeStart;
 
     // Only parse if retrieval was successful
-    if (httpResponse.status !== 200) {
+    if (response.status !== 200) {
       exists = false;
       // Consume the body, to avoid process to hang
-      const bodyString = httpResponse.body ?
-        await stringifyStream(ActorHttp.toNodeReadable(httpResponse.body)) :
+      const bodyString = response.body ?
+        await stringifyStream(ActorHttp.toNodeReadable(response.body)) :
         'empty response';
 
       if (!action.acceptErrors) {
-        const error = new Error(`Could not retrieve ${action.url} (HTTP status ${httpResponse.status}):\n${bodyString}`);
-        return this.handleDereferenceErrors(action, error, httpResponse.headers, requestTime);
+        const error = new Error(`Could not retrieve ${action.url} (HTTP status ${response.status}):\n${bodyString}`);
+        return this.handleDereferenceErrors(action, error, response.headers, requestTime);
       }
     }
 
-    const contentType = httpResponse.headers.get('content-type') ?? '';
+    const contentType = response.headers.get('content-type') ?? '';
     const mediaType = REGEX_MEDIATYPE.exec(contentType)?.[0];
     const version = REGEX_VERSION_HEADER.exec(contentType)?.[1];
 
     // Return the parsed quad stream and whether or not only triples are supported
     return {
       url,
-      data: exists ? ActorHttp.toNodeReadable(httpResponse.body) : emptyReadable(),
+      data: exists ? ActorHttp.toNodeReadable(response.body) : emptyReadable(),
       exists,
       requestTime,
-      headers: httpResponse.headers,
+      headers: response.headers,
       mediaType: mediaType === 'text/plain' ? undefined : mediaType,
       version,
     };

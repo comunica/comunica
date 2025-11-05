@@ -1,4 +1,4 @@
-import type { IActionHttp, IActorHttpOutput, IActorHttpArgs, MediatorHttp } from '@comunica/bus-http';
+import type { ActionHttp, ActorHttpOutput, IActorHttpArgs, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import { KeysHttp } from '@comunica/context-entries';
@@ -29,7 +29,7 @@ export class ActorHttpRetry extends ActorHttp {
     this.mediatorHttp = args.mediatorHttp;
   }
 
-  public async test(action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
+  public async test(action: ActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     if (action.context.has(ActorHttpRetry.keyWrapped)) {
       return failTest(`${this.name} can only wrap a request once`);
     }
@@ -40,7 +40,7 @@ export class ActorHttpRetry extends ActorHttp {
     return passTest({ time: 0 });
   }
 
-  public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+  public async run(action: ActionHttp): Promise<ActorHttpOutput> {
     const url = ActorHttp.getInputUrl(action.input);
 
     // Attempt once + the number of retries specified by the user
@@ -72,13 +72,13 @@ export class ActorHttpRetry extends ActorHttp {
         await ActorHttpRetry.sleep(retryDelay);
       }
 
-      const response = await this.mediatorHttp.mediate({
+      const { response } = await this.mediatorHttp.mediate({
         ...action,
         context: action.context.set(ActorHttpRetry.keyWrapped, true),
       });
 
       if (response.ok) {
-        return response;
+        return { type: 'response', response };
       }
 
       if (retryStatusCodes && retryStatusCodes.includes(response.status)) {

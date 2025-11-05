@@ -1,5 +1,8 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
+
+// eslint-disable-next-line ts/no-require-imports
+import type CachePolicy = require('http-cache-semantics');
 import { readableFromWeb } from 'readable-from-web';
 
 const isStream = require('is-stream');
@@ -17,7 +20,7 @@ const toWebReadableStream = require('readable-stream-node-to-web');
  * @see IActorHttpTest
  * @see IActorHttpOutput
  */
-export abstract class ActorHttp<TS = undefined> extends Actor<IActionHttp, IActorTest, IActorHttpOutput, TS> {
+export abstract class ActorHttp<TS = undefined> extends Actor<ActionHttp, IActorTest, ActorHttpOutput, TS> {
   /* eslint-disable max-len */
   /**
    * @param args -
@@ -126,18 +129,81 @@ export abstract class ActorHttp<TS = undefined> extends Actor<IActionHttp, IActo
 /**
  * The HTTP input, which contains the HTTP request.
  */
-export interface IActionHttp extends IAction {
+export type ActionHttp = IActionHttpRequest | IActionHttpValidation;
+
+export interface IActionHttpRequest extends IAction {
+  type: 'request';
   input: RequestInfo;
   init?: RequestInit;
+}
+
+export interface IActionHttpValidation extends IAction {
+  type: 'validation';
+  input: RequestInfo;
+  init?: RequestInit;
+  validate: CachePolicy;
 }
 
 /**
  * The HTTP output, which contains the HTTP response.
  */
-export interface IActorHttpOutput extends IActorOutput, Response {
+export type ActorHttpOutput = IActorHttpOutputResponse | ActorHttpOutputValidation;
 
+/**
+ * A regular HTTP response.
+ */
+export interface IActorHttpOutputResponse extends IActorOutput {
+  type: 'response';
+  /**
+   * The fetch response.
+   */
+  response: Response;
 }
 
-export type IActorHttpArgs<TS = undefined> = IActorArgs<IActionHttp, IActorTest, IActorHttpOutput, TS>;
+/**
+ * A cache validation response.
+ */
+export type ActorHttpOutputValidation = IActorHttpOutputValidationTrue | IActorHttpOutputValidationFalse;
 
-export type MediatorHttp = Mediate<IActionHttp, IActorHttpOutput>;
+export interface IActorHttpOutputValidationTrue extends IActorOutput {
+  type: 'validation';
+  /**
+   * If the original input is still valid.
+   */
+  validated: true;
+  /**
+   * If an additional HTTP request was made to validate.
+   */
+  requested: boolean;
+}
+
+export interface IActorHttpOutputValidationFalse extends IActorOutput {
+  type: 'validation';
+  /**
+   * If the original input is still valid.
+   */
+  validated: false;
+  /**
+   * If an additional HTTP request was made to validate.
+   */
+  requested: boolean;
+  /**
+   * The response that replaces the invalidated response.
+   */
+  modifiedResponse: Response;
+}
+
+export type IActorHttpArgs<TS = undefined> = IActorArgs<ActionHttp, IActorTest, ActorHttpOutput, TS>;
+
+/**
+ * Default mediator that can either provide a response or validation output.
+ */
+export type MediatorHttpGeneric = Mediate<ActionHttp, ActorHttpOutput>;
+/**
+ * Mediator for which no validation is carried out.
+ */
+export type MediatorHttp = Mediate<IActionHttpRequest, IActorHttpOutputResponse>;
+/**
+ * Mediator for which validation is carried out.
+ */
+export type MediatorHttpValidation = Mediate<IActionHttpValidation, ActorHttpOutputValidation>;

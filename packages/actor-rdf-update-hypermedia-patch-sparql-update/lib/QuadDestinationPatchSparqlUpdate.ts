@@ -70,7 +70,7 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
 
     // Send data in PUT request
     const headers: Headers = new Headers({ 'content-type': 'application/sparql-update' });
-    const httpResponse = await this.mediatorHttp.mediate({
+    const httpResponse = (await this.mediatorHttp.mediate({
       context: this.context,
       init: {
         headers,
@@ -78,7 +78,7 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
         body: ActorHttp.toWebReadableStream(readable),
       },
       input: this.url,
-    });
+    })).response;
 
     await validateAndCloseHttpResponse(this.url, httpResponse);
   }

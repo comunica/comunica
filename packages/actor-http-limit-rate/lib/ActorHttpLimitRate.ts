@@ -1,4 +1,4 @@
-import type { IActionHttp, IActorHttpOutput, IActorHttpArgs, MediatorHttp } from '@comunica/bus-http';
+import type { ActionHttp, ActorHttpOutput, IActorHttpArgs, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { TestResult } from '@comunica/core';
@@ -29,14 +29,14 @@ export class ActorHttpLimitRate extends ActorHttp {
     this.hostData = new Map();
   }
 
-  public async test(action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
+  public async test(action: ActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     if (action.context.has(ActorHttpLimitRate.keyWrapped)) {
       return failTest(`${this.name} can only wrap a request once`);
     }
     return passTest({ time: 0 });
   }
 
-  public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+  public async run(action: ActionHttp): Promise<ActorHttpOutput> {
     const requestUrl = ActorHttp.getInputUrl(action.input);
     let requestHostData = this.hostData.get(requestUrl.host);
 
@@ -93,12 +93,12 @@ export class ActorHttpLimitRate extends ActorHttp {
     };
 
     try {
-      const response = await this.mediatorHttp.mediate({
+      const { response } = await this.mediatorHttp.mediate({
         ...action,
         context: action.context.set(ActorHttpLimitRate.keyWrapped, true),
       });
       registerCompletedRequest(response.ok, response.status);
-      return response;
+      return { type: 'response', response };
     } catch (error: unknown) {
       registerCompletedRequest(false, -1);
       throw error;

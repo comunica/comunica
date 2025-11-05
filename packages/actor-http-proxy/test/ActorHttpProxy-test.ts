@@ -15,7 +15,10 @@ describe('ActorHttpProxy', () => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext();
     mediatorHttp = {
-      mediate: jest.fn().mockReturnValue({ output: 'ABC', headers: new Headers({}) }),
+      mediate: jest.fn().mockReturnValue({
+        type: 'response',
+        response: { output: 'ABC', headers: new Headers({}) },
+      }),
     };
   });
 
@@ -69,7 +72,10 @@ describe('ActorHttpProxy', () => {
     it('should run when the proxy does not return an x-final-url header', async() => {
       const input = 'http://example.org/';
       await expect(actor.run({ input, context })).resolves
-        .toEqual({ url: 'http://example.org/', output: 'ABC', headers: new Headers({}) });
+        .toEqual({
+          type: 'response',
+          response: { url: 'http://example.org/', output: 'ABC', headers: new Headers({}) },
+        });
       expect(mediatorHttp.mediate).toHaveBeenCalledWith(
         { input: 'http://proxy.org/http://example.org/', context: new ActionContext({}) },
       );
@@ -78,9 +84,15 @@ describe('ActorHttpProxy', () => {
     it('should run when the proxy does return an x-final-url header', async() => {
       const input = 'http://example.org/';
       const headers = new Headers({ 'x-final-url': 'http://example.org/redirected/' });
-      jest.spyOn(mediatorHttp, 'mediate').mockImplementation(() => ({ output: 'ABC', headers }));
+      jest.spyOn(mediatorHttp, 'mediate').mockImplementation(() => ({
+        type: 'response',
+        response: { output: 'ABC', headers },
+      }));
       await expect(actor.run({ input, context })).resolves
-        .toEqual({ url: 'http://example.org/redirected/', output: 'ABC', headers });
+        .toEqual({
+          type: 'response',
+          response: { url: 'http://example.org/redirected/', output: 'ABC', headers },
+        });
       expect(mediatorHttp.mediate).toHaveBeenCalledWith(
         { input: 'http://proxy.org/http://example.org/', context: new ActionContext({}) },
       );
@@ -89,7 +101,10 @@ describe('ActorHttpProxy', () => {
     it('should run on a request input', async() => {
       const input = new Request('http://example.org/');
       await expect(actor.run({ input, context })).resolves
-        .toEqual({ url: 'http://example.org/', output: 'ABC', headers: new Headers({}) });
+        .toEqual({
+          type: 'response',
+          response: { url: 'http://example.org/', output: 'ABC', headers: new Headers({}) },
+        });
       expect(mediatorHttp.mediate).toHaveBeenCalledWith(
         {
           input: expect.objectContaining({

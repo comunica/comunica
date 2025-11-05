@@ -1,5 +1,6 @@
 import { Readable } from 'node:stream';
 import * as zlib from 'node:zlib';
+import type { IActorHttpOutputResponse } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysCore, KeysHttp } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -54,9 +55,9 @@ describe('ActorHttpNative', () => {
       const requestHeaders = new Headers();
       requestHeaders.append('Content-Type', 'application/json');
       requestHeaders.append('Accept-Language', 'en-US,en;q=0.5');
-      const result: any = await actor.run({ context, input: 'http://example.com', init: { headers: requestHeaders }});
+      const { response } = <any> await actor.run({ context, input: 'http://example.com', init: { headers: requestHeaders }});
       const res: string[] = [];
-      for (const element of result.body.input.headers) {
+      for (const element of response.body.input.headers) {
         res.push(element);
       }
       expect(res[0]).toStrictEqual([ 'accept-language', 'en-US,en;q=0.5' ]);
@@ -67,74 +68,74 @@ describe('ActorHttpNative', () => {
     it('should run', async() => {
       mockSetup({ statusCode: 404 });
       await expect(actor.run({ context, input: new Request('http://example.com') })).resolves
-        .toMatchObject({ status: 404 });
+        .toMatchObject({ type: 'response', response: { status: 404 }});
     });
 
     it('should run https', async() => {
       mockSetup({ statusCode: 404 });
       await expect(actor.run({ context, input: new Request('https://example.com') })).resolves
-        .toMatchObject({ status: 404 });
+        .toMatchObject({ type: 'response', response: { status: 404 }});
     });
 
     it('should run with agent options', async() => {
       actor = new ActorHttpNative({ name: 'actor', bus, agentOptions: { name: '007' }});
       mockSetup({ statusCode: 404 });
       await expect(actor.run({ context, input: new Request('http://example.com') })).resolves
-        .toMatchObject({ status: 404 });
+        .toMatchObject({ type: 'response', response: { status: 404 }});
     });
 
     it('can have headers', async() => {
       mockSetup({ statusCode: 200 });
-      const result: any = await actor.run(
+      const { response } = <any> await actor.run(
         { context, input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) }) },
       );
-      expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input.headers.get('a')).toBe('b');
-      expect(result.body.input.headers.get('user-agent')).toBeTruthy();
+      expect(response).toMatchObject({ status: 200 });
+      expect(response.body.input.headers.get('a')).toBe('b');
+      expect(response.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
     it('can have headers in the init object', async() => {
       mockSetup({ statusCode: 200 });
-      const result: any = await actor.run({
+      const { response } = <any> await actor.run({
         context,
         input: 'http://example.com',
         init: { headers: new Headers({ a: 'b' }) },
       });
-      expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input.headers.get('a')).toBe('b');
-      expect(result.body.input.headers.get('user-agent')).toBeTruthy();
+      expect(response).toMatchObject({ status: 200 });
+      expect(response.body.input.headers.get('a')).toBe('b');
+      expect(response.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
     it('uses Content-Location header as URL when set with init', async() => {
-      const result: any = await actor.run(
+      const { response } = <any> await actor.run(
         { context, input: 'http://example.com', init: { headers: new Headers({ 'content-location': 'http://example.com/contentlocation' }) }},
       );
-      expect(result).toMatchObject({ url: 'http://example.com/contentlocation' });
+      expect(response).toMatchObject({ url: 'http://example.com/contentlocation' });
     });
 
     it('uses Content-Location header as URL when set with input', async() => {
-      const result: any = await actor.run(
+      const { response } = <any> await actor.run(
         { context, input: new Request('http://example.com', { headers: new Headers({ 'content-location': 'http://example.com/contentlocation' }) }) },
       );
-      expect(result).toMatchObject({ url: 'http://example.com/contentlocation' });
+      expect(response).toMatchObject({ url: 'http://example.com/contentlocation' });
     });
 
     it('should set no user agent if one has been set', async() => {
       mockSetup({ statusCode: 200 });
-      const result: any = await actor.run(
+      const { response } = <any> await actor.run(
         { context, input: new Request('http://example.com', { headers: new Headers({ 'user-agent': 'b' }) }) },
       );
-      expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input.headers.get('user-agent')).toBe('b');
+      expect(response).toMatchObject({ status: 200 });
+      expect(response.body.input.headers.get('user-agent')).toBe('b');
     });
 
     it('should set a user agent if none has been set', async() => {
       mockSetup({ statusCode: 200 });
-      const result: any = await actor.run(
+      const { response } = <any> await actor.run(
         { context, input: new Request('http://example.com', { headers: new Headers({}) }) },
       );
-      expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input.headers.get('user-agent')).toBeTruthy();
+      expect(response).toMatchObject({ status: 200 });
+      expect(response.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
     it('can decode gzipped streams', async() => {
@@ -142,9 +143,9 @@ describe('ActorHttpNative', () => {
       body.push(zlib.gzipSync('apple'));
       body.push(null);
       mockSetup({ statusCode: 200, body, headers: { 'content-encoding': 'gzip' }});
-      const result: any = await actor.run({ context, input: 'http://example.com' });
-      expect(result).toMatchObject({ status: 200 });
-      const output = await arrayifyStream(result.body);
+      const { response } = <any> await actor.run({ context, input: 'http://example.com' });
+      expect(response).toMatchObject({ status: 200 });
+      const output = await arrayifyStream(response.body);
       expect(output).toContain('apple');
     });
 
@@ -160,13 +161,13 @@ describe('ActorHttpNative', () => {
     it('can have headers in the init object with HEAD', async() => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run({ context, init: { headers: new Headers({ a: 'b' }), method: 'HEAD' }, input: 'http://example.com' });
-      expect(result).toMatchObject({ status: 200 });
+      expect(result).toMatchObject({ type: 'response', response: { status: 200 }});
     });
 
     it('can cancel responses', async() => {
       mockSetup({ statusCode: 200 });
-      const result: any = await actor.run({ context, input: 'http://example.com' });
-      await expect(result.body.cancel()).resolves.toBeFalsy();
+      const { response } = <any> await actor.run({ context, input: 'http://example.com' });
+      await expect(response.body.cancel()).resolves.toBeFalsy();
     });
 
     it('rejects on request errors', async() => {
@@ -177,30 +178,30 @@ describe('ActorHttpNative', () => {
 
     it('should run without KeysHttp.includeCredentials', async() => {
       mockSetup({ statusCode: 404 });
-      const results: any = await actor.run({ context, input: new Request('http://example.com') });
-      expect(results.body).toMatchObject({ withCredentials: undefined });
+      const { response } = <any> await actor.run({ context, input: new Request('http://example.com') });
+      expect(response.body).toMatchObject({ withCredentials: undefined });
     });
 
     it('should run with KeysHttp.includeCredentials', async() => {
       mockSetup({ statusCode: 404 });
-      const results: any = await actor.run({
+      const { response } = <any> await actor.run({
         input: new Request('http://example.com'),
         context: new ActionContext({
           [KeysHttp.includeCredentials.name]: true,
         }),
       });
-      expect(results.body).toMatchObject({ withCredentials: true });
+      expect(response.body).toMatchObject({ withCredentials: true });
     });
 
     it('should run with authorization', async() => {
       mockSetup({ statusCode: 404 });
-      const results: any = await actor.run({
+      const { response } = <any> await actor.run({
         input: new Request('http://example.com'),
         context: new ActionContext({
           [KeysHttp.auth.name]: 'user:pass',
         }),
       });
-      expect(results.body.input.auth).toBe('user:pass');
+      expect(response.body.input.auth).toBe('user:pass');
     });
 
     it('should run with a logger', async() => {
@@ -227,26 +228,26 @@ describe('ActorHttpNative', () => {
 
     it('should send the given body via init', async() => {
       mockSetup({ statusCode: 200 });
-      const result: any = await actor.run(
+      const { response } = <any> await actor.run(
         { context, input: new Request('http://example.com'), init: { body: new ReadableStream(), method: 'POST' }},
       );
-      expect(result).toMatchObject({ status: 200 });
+      expect(response).toMatchObject({ status: 200 });
     });
 
     it('should send the given URLSearchParams body via init', async() => {
       mockSetup({ statusCode: 200 });
-      const result: any = await actor.run(
+      const { response } = <any> await actor.run(
         { context, input: new Request('http://example.com'), init: { body: new URLSearchParams(), method: 'POST' }},
       );
-      expect(result).toMatchObject({ status: 200 });
+      expect(response).toMatchObject({ status: 200 });
     });
 
     it('should send the given string body via init', async() => {
       mockSetup({ statusCode: 200 });
-      const result: any = await actor.run(
+      const { response } = <any> await actor.run(
         { context, input: new Request('http://example.com'), init: { body: 'my-body', method: 'POST' }},
       );
-      expect(result).toMatchObject({ status: 200 });
+      expect(response).toMatchObject({ status: 200 });
     });
 
     it('should handle an abort controller signal that does nothing', async() => {
@@ -256,14 +257,14 @@ describe('ActorHttpNative', () => {
         context,
         input: new Request('http://example.com'),
         init: { signal: <any> abortController.signal },
-      })).resolves.toMatchObject({ status: 200 });
+      })).resolves.toMatchObject({ type: 'response', response: { status: 200 }});
     });
 
     it('should handle an abort controller signal that is aborted immediately', async() => {
       mockSetup({ statusCode: 200 });
       const abortController = new AbortController();
       abortController.abort();
-      const response = await actor.run({
+      const { response } = <IActorHttpOutputResponse> await actor.run({
         context,
         input: new Request('http://example.com'),
         init: { signal: <any> abortController.signal },
@@ -275,7 +276,7 @@ describe('ActorHttpNative', () => {
     it('should handle an abort controller signal that is aborted later', async() => {
       mockSetup({ statusCode: 200 });
       const abortController = new AbortController();
-      const response = await actor.run({
+      const { response } = <IActorHttpOutputResponse> await actor.run({
         context,
         input: new Request('http://example.com'),
         init: { signal: <any> abortController.signal },

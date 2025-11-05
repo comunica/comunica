@@ -30,9 +30,9 @@ export class QuadDestinationSparql implements IQuadDestination {
     this.context = context;
     this.mediatorHttp = mediatorHttp;
     this.endpointFetcher = new SparqlEndpointFetcher({
-      fetch: (input: Request | string, init?: RequestInit) => this.mediatorHttp.mediate(
+      fetch: async(input: Request | string, init?: RequestInit) => (await this.mediatorHttp.mediate(
         { input, init, context: this.context },
-      ),
+      )).response,
       prefixVariableQuestionMark: true,
       dataFactory,
       parseUnsupportedVersions,
