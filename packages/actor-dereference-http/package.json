@@ -45,6 +45,7 @@
     "@comunica/bus-http": "^4.4.0",
     "@comunica/core": "^4.4.0",
     "@jeswr/stream-to-string": "^2.0.0",
+    "@types/http-cache-semantics": "^4.0.4",
     "relative-to-absolute-iri": "^1.0.7"
   },
   "browser": {

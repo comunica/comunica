@@ -5,6 +5,9 @@ import type { TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 
+// eslint-disable-next-line ts/no-require-imports
+import CachePolicy = require('http-cache-semantics');
+
 // eslint-disable-next-line import/extensions
 import { version as actorVersion } from '../package.json';
 
@@ -66,7 +69,21 @@ export class ActorHttpFetch extends ActorHttp {
       timeoutHandle = setTimeout(() => timeoutCallback(), httpTimeout);
     }
 
-    const response = await fetchFunction(action.input, requestInit);
+    const response: IActorHttpOutput = await fetchFunction(action.input, requestInit);
+
+    response.fromCache = response.headers.get('x-comunica-cache') === 'HIT';
+    if (response.fromCache) {
+      console.log('CACHE HIT'); // TODO
+      this.logInfo(action.context, `Cache hit for ${ActorHttp.getInputUrl(action.input).href}`);
+    }
+
+    response.cachePolicy = new CachePolicy(
+      new Request(action.input, requestInit),
+      {
+        status: response.status,
+        headers: ActorHttp.headersToHash(response.headers),
+      },
+    );
 
     if (httpTimeout && (!httpBodyTimeout || !response.body)) {
       clearTimeout(timeoutHandle);

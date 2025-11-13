@@ -4,7 +4,13 @@ import type { IActorArgs, IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { Readable } from 'readable-stream';
 import { PassThrough } from 'readable-stream';
-import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from './ActorDereference';
+import type {
+  IActionDereference,
+  IActorDereferenceOutput,
+  IDereferenceCachePolicy,
+  IDereferenceRevalidationPolicy,
+  MediatorDereference,
+} from './ActorDereference';
 import { ActorDereferenceBase, isHardError, emptyReadable, shouldLogWarning } from './ActorDereferenceBase';
 
 /**
@@ -96,10 +102,9 @@ export abstract class ActorDereferenceParse<
 
   public async run(action: IActionDereferenceParse<K>): Promise<IActorDereferenceParseOutput<S, M>> {
     const { context } = action;
-    const dereference = await this.mediatorDereference.mediate({
-      ...action,
-      mediaTypes: async() => (await this.mediatorParseMediatypes?.mediate({ context, mediaTypes: true }))?.mediaTypes,
-    });
+    const mediaTypes: () => Promise<Record<string, number> | undefined> =
+      async() => (await this.mediatorParseMediatypes?.mediate({ context, mediaTypes: true }))?.mediaTypes;
+    const dereference = await this.mediatorDereference.mediate({ ...action, mediaTypes });
 
     let result: IActorParseOutput<S, M>;
 
@@ -126,7 +131,50 @@ export abstract class ActorDereferenceParse<
     }
 
     // Return the parsed stream and any metadata
-    return { ...dereference, ...result };
+    return {
+      ...dereference,
+      ...result,
+      cachePolicy: dereference.cachePolicy ?
+        new DereferenceRdfCachePolicyDereferenceWrapper(dereference.cachePolicy, mediaTypes) :
+        undefined,
+    };
+  }
+}
+
+export class DereferenceRdfCachePolicyDereferenceWrapper implements IDereferenceCachePolicy { // TODO: test, name, move
+  public constructor(
+    private readonly cachePolicy: IDereferenceCachePolicy,
+    private readonly mediaTypes: () => Promise<Record<string, number> | undefined>,
+  ) {}
+
+  public storable(): boolean {
+    return this.cachePolicy.storable();
+  }
+
+  public async satisfiesWithoutRevalidation(action: IActionDereference): Promise<boolean> {
+    return this.cachePolicy.satisfiesWithoutRevalidation({ ...action, mediaTypes: this.mediaTypes });
+  }
+
+  public responseHeaders(): Headers {
+    return this.cachePolicy.responseHeaders();
+  }
+
+  public timeToLive(): number {
+    return this.cachePolicy.timeToLive();
+  }
+
+  public async revalidationHeaders(newAction: IActionDereference): Promise<Headers> {
+    return this.cachePolicy.revalidationHeaders({ ...newAction, mediaTypes: this.mediaTypes });
+  }
+
+  public async revalidatedPolicy(
+    revalidationAction: IActionDereference,
+    revalidationResponse: IActorDereferenceOutput,
+  ): Promise<IDereferenceRevalidationPolicy> {
+    return await this.cachePolicy.revalidatedPolicy(
+      { ...revalidationAction, mediaTypes: this.mediaTypes },
+      revalidationResponse,
+    );
   }
 }
 

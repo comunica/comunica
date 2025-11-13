@@ -117,13 +117,13 @@ export class QuerySourceHypermedia implements IQuerySource {
     handledDatasets: Record<string, boolean>,
     context: IActionContext,
   ): Promise<ISourceState> {
-    const { source, metadata } = await this.mediators.mediatorQuerySourceDereferenceLink.mediate({
+    const { source, metadata, cachePolicy } = await this.mediators.mediatorQuerySourceDereferenceLink.mediate({
       link,
       handledDatasets,
       context,
     });
 
-    return { link, source, metadata, handledDatasets };
+    return { link, source, metadata, handledDatasets, cachePolicy };
   }
 
   /**
@@ -140,8 +140,22 @@ export class QuerySourceHypermedia implements IQuerySource {
   ): Promise<ISourceState> {
     let source = this.sourcesState.get(link.url);
     if (source) {
-      return source;
+      return (async() => {
+        // Check if cache policy is still valid
+        const sourceMaterialized = await source;
+        if (!sourceMaterialized.cachePolicy ||
+          !await sourceMaterialized.cachePolicy?.satisfiesWithoutRevalidation({ link, context })) {
+          // If it's not valid, delete cache entry, and re-fetch immediately
+          // Limitation: we're not sending re-validation requests. So if the server sends a 304, we will perform a new
+          // request and re-index the source. If an HTTP-level cache is active, the actual HTTP request will not be
+          // sent, so only local re-indexing will happen, which is negligible in most cases.
+          this.sourcesState.delete(link.url);
+          return this.getSourceCached(link, handledDatasets, context);
+        }
+        return source;
+      })();
     }
+    console.log('GET NEW!'); // TODO
     source = this.getSource(link, handledDatasets, context);
     this.sourcesState.set(link.url, source);
     return source;

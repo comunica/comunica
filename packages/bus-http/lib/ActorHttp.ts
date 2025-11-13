@@ -1,5 +1,8 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
+
+// eslint-disable-next-line ts/no-require-imports
+import type CachePolicy = require('http-cache-semantics');
 import { readableFromWeb } from 'readable-from-web';
 
 const isStream = require('is-stream');
@@ -135,7 +138,14 @@ export interface IActionHttp extends IAction {
  * The HTTP output, which contains the HTTP response.
  */
 export interface IActorHttpOutput extends IActorOutput, Response {
-
+  /**
+   * The cache policy of the request's response.
+   */
+  cachePolicy?: CachePolicy;
+  /**
+   * If the response was produced from cache.
+   */
+  fromCache?: boolean;
 }
 
 export type IActorHttpArgs<TS = undefined> = IActorArgs<IActionHttp, IActorTest, IActorHttpOutput, TS>;

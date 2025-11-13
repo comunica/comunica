@@ -1,3 +1,4 @@
+import type { IQuerySourceCachePolicy } from '@comunica/bus-query-source-dereference-link';
 import { KeysStatistics } from '@comunica/context-entries';
 import type {
   ILink,
@@ -367,6 +368,10 @@ export interface ISourceState {
    * All dataset identifiers that have been passed for this source.
    */
   handledDatasets: Record<string, boolean>;
+  /**
+   * The cache policy of the request's response.
+   */
+  cachePolicy?: IQuerySourceCachePolicy;
 }
 
 export type SourceStateGetter = (link: ILink, handledDatasets: Record<string, boolean>) => Promise<ISourceState>;

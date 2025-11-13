@@ -45,6 +45,7 @@
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
+    "@types/http-cache-semantics": "^4.0.4",
     "readable-stream": "^4.7.0"
   }
 }

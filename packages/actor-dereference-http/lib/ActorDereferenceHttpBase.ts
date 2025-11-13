@@ -1,10 +1,20 @@
-import type { IActionDereference, IActorDereferenceArgs, IActorDereferenceOutput } from '@comunica/bus-dereference';
+import type {
+  IActionDereference,
+  IActorDereferenceArgs,
+  IActorDereferenceOutput,
+  IDereferenceCachePolicy,
+  IDereferenceRevalidationPolicy,
+} from '@comunica/bus-dereference';
 import { ActorDereference, emptyReadable } from '@comunica/bus-dereference';
 import type { IActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
+import type { ICacheResponseHead } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
+
+// eslint-disable-next-line ts/no-require-imports
+import type CachePolicy = require('http-cache-semantics');
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
 
 const REGEX_MEDIATYPE = /^[^ ;]*/u;
@@ -64,15 +74,8 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
   public async run(action: IActionDereference): Promise<IActorDereferenceOutput> {
     let exists = true;
 
-    // Append any custom passed headers
-    const headers = new Headers(action.headers);
-
-    // Resolve HTTP URL using appropriate accept header
-    headers.append(
-      'Accept',
-      mediaTypesToAcceptString(await action.mediaTypes?.() ?? {}, this.getMaxAcceptHeaderLength()),
-    );
-
+    const maxAcceptHeaderLength = this.getMaxAcceptHeaderLength();
+    const headers = await ActorDereferenceHttpBase.establishAcceptHeader(action, maxAcceptHeaderLength);
     let httpResponse: IActorHttpOutput;
     const requestTimeStart = Date.now();
     try {
@@ -112,13 +115,84 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
       data: exists ? ActorHttp.toNodeReadable(httpResponse.body) : emptyReadable(),
       exists,
       requestTime,
+      status: httpResponse.status,
       headers: httpResponse.headers,
       mediaType: mediaType === 'text/plain' ? undefined : mediaType,
       version,
+      cachePolicy: httpResponse.cachePolicy ?
+        new DereferenceCachePolicyHttpWrapper(httpResponse.cachePolicy, maxAcceptHeaderLength) :
+        undefined,
     };
   }
 
   protected abstract getMaxAcceptHeaderLength(): number;
+
+  public static async establishAcceptHeader(
+    action: IActionDereference,
+    maxAcceptHeaderLength: number,
+  ): Promise<Headers> {
+    // Append any custom passed headers
+    const headers = new Headers(action.headers);
+
+    // Resolve HTTP URL using appropriate accept header
+    headers.append(
+      'Accept',
+      mediaTypesToAcceptString(await action.mediaTypes?.() ?? {}, maxAcceptHeaderLength),
+    );
+
+    return headers;
+  }
+}
+
+export class DereferenceCachePolicyHttpWrapper implements IDereferenceCachePolicy { // TODO: test, name, move
+  public constructor(
+    private readonly cachePolicy: CachePolicy,
+    private readonly maxAcceptHeaderLength: number,
+  ) {}
+
+  public storable(): boolean {
+    return this.cachePolicy.storable();
+  }
+
+  public async satisfiesWithoutRevalidation(action: IActionDereference): Promise<boolean> {
+    return this.cachePolicy.satisfiesWithoutRevalidation(new Request(action.url, {
+      headers: await ActorDereferenceHttpBase.establishAcceptHeader(action, this.maxAcceptHeaderLength),
+      method: action.method,
+    }));
+  }
+
+  public responseHeaders(): Headers {
+    return this.cachePolicy.responseHeaders();
+  }
+
+  public timeToLive(): number {
+    return this.cachePolicy.timeToLive();
+  }
+
+  public async revalidationHeaders(newAction: IActionDereference): Promise<Headers> {
+    return this.cachePolicy.revalidationHeaders(new Request(newAction.url, {
+      headers: await ActorDereferenceHttpBase.establishAcceptHeader(newAction, this.maxAcceptHeaderLength),
+      method: newAction.method,
+    }));
+  }
+
+  public async revalidatedPolicy(
+    revalidationAction: IActionDereference,
+    revalidationResponse: ICacheResponseHead,
+  ): Promise<IDereferenceRevalidationPolicy> {
+    const revalidatedPolicy = this.cachePolicy.revalidatedPolicy(
+      new Request(revalidationAction.url, {
+        headers: await ActorDereferenceHttpBase.establishAcceptHeader(revalidationAction, this.maxAcceptHeaderLength),
+        method: revalidationAction.method,
+      }),
+      revalidationResponse,
+    );
+    return {
+      policy: new DereferenceCachePolicyHttpWrapper(revalidatedPolicy.policy, this.maxAcceptHeaderLength),
+      modified: revalidatedPolicy.modified,
+      matches: revalidatedPolicy.matches,
+    };
+  }
 }
 
 export interface IActorDereferenceHttpArgs extends IActorDereferenceArgs {

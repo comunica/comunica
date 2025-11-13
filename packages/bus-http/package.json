@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@comunica/core": "^4.4.0",
+    "@types/http-cache-semantics": "^4.0.4",
     "@jeswr/stream-to-string": "^2.0.0",
     "is-stream": "^2.0.1",
     "readable-from-web": "^1.0.0",

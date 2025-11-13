@@ -1,8 +1,8 @@
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
-import type {
+import {
   IActionQuerySourceDereferenceLink,
   IActorQuerySourceDereferenceLinkOutput,
-  IActorQuerySourceDereferenceLinkArgs,
+  IActorQuerySourceDereferenceLinkArgs, IQuerySourceCachePolicy, IQuerySourceRevalidationPolicy,
 } from '@comunica/bus-query-source-dereference-link';
 import { ActorQuerySourceDereferenceLink } from '@comunica/bus-query-source-dereference-link';
 import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
@@ -12,9 +12,16 @@ import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extr
 import { KeysStatistics } from '@comunica/context-entries';
 import type { TestResult, IActorTest } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { MetadataBindings } from '@comunica/types';
+import {ICacheResponseHead, MetadataBindings} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
+import type {
+  IActionDereference,
+  IActorDereferenceOutput,
+  IDereferenceCachePolicy,
+  IDereferenceRevalidationPolicy
+} from "@comunica/bus-dereference";
+import {ActorDereferenceHttpBase} from "@comunica/actor-dereference-http";
 
 /**
  * A comunica Dereference Query Source Hypermedia Resolve Actor.
@@ -44,10 +51,14 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     let url = action.link.url;
     let quads: RDF.Stream;
     let metadata: Record<string, any>;
+    let cachePolicy: IQuerySourceCachePolicy | undefined;
     try {
       const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediatorDereferenceRdf
         .mediate({ context, url });
       url = dereferenceRdfOutput.url;
+      if (dereferenceRdfOutput.cachePolicy) {
+        cachePolicy = new QuerySourceCachePolicyDereferenceWrapper(dereferenceRdfOutput.cachePolicy);
+      }
 
       // Determine the metadata
       const rdfMetadataOutput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
@@ -110,7 +121,48 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     // Track dereference event
     context.get(KeysStatistics.dereferencedLinks)?.updateStatistic({ url: action.link.url, metadata }, source);
 
-    return { source, metadata: <MetadataBindings> metadata, dataset };
+    return { source, metadata: <MetadataBindings> metadata, dataset, cachePolicy };
+  }
+}
+
+export class QuerySourceCachePolicyDereferenceWrapper implements IQuerySourceCachePolicy { // TODO: test, name, move
+  public constructor(
+    private readonly cachePolicy: IDereferenceCachePolicy,
+  ) {}
+
+  public storable(): boolean {
+    return this.cachePolicy.storable();
+  }
+
+  public async satisfiesWithoutRevalidation(action: IActionQuerySourceDereferenceLink): Promise<boolean> {
+    return this.cachePolicy.satisfiesWithoutRevalidation({ url: action.link.url, context: action.context });
+  }
+
+  public responseHeaders(): Headers {
+    return this.cachePolicy.responseHeaders();
+  }
+
+  public timeToLive(): number {
+    return this.cachePolicy.timeToLive();
+  }
+
+  public async revalidationHeaders(newAction: IActionQuerySourceDereferenceLink): Promise<Headers> {
+    return this.cachePolicy.revalidationHeaders({ url: newAction.link.url, context: newAction.context });
+  }
+
+  public async revalidatedPolicy(
+    revalidationAction: IActionQuerySourceDereferenceLink,
+    revalidationResponse: ICacheResponseHead,
+  ): Promise<IQuerySourceRevalidationPolicy> {
+    const revalidatedPolicy = await this.cachePolicy.revalidatedPolicy(
+      { url: revalidationAction.link.url, context: revalidationAction.context },
+      revalidationResponse,
+    );
+    return {
+      policy: new QuerySourceCachePolicyDereferenceWrapper(revalidatedPolicy.policy),
+      modified: revalidatedPolicy.modified,
+      matches: revalidatedPolicy.matches,
+    };
   }
 }
 
