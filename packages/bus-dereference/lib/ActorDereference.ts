@@ -1,4 +1,5 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
+import type { ICachePolicy } from '@comunica/types';
 import { ActorDereferenceBase } from './ActorDereferenceBase';
 
 /**
@@ -40,7 +41,11 @@ export abstract class ActorDereference extends
     headers?: Headers | undefined,
     requestTime = 0,
   ): Promise<IActorDereferenceOutput> {
-    return this.dereferenceErrorHandler(action, error, { url: action.url, exists: false, headers, requestTime });
+    return this.dereferenceErrorHandler(
+      action,
+      error,
+      { url: action.url, exists: false, status: 404, headers, requestTime },
+    );
   }
 }
 
@@ -100,6 +105,10 @@ export interface IActorDereferenceOutput extends IActorOutput {
    */
   requestTime: number;
   /**
+   * The HTTP status code.
+   */
+  status: number;
+  /**
    * The returned headers of the final URL.
    */
   headers?: Headers;
@@ -111,6 +120,10 @@ export interface IActorDereferenceOutput extends IActorOutput {
    * The version that was defined as media type parameter.
    */
   version?: string;
+  /**
+   * The cache policy of the request's response.
+   */
+  cachePolicy?: ICachePolicy<IActionDereference>;
 }
 
 export type IActorDereferenceArgs = IActorArgs<IActionDereference, IActorTest, IActorDereferenceOutput>;

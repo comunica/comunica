@@ -460,5 +460,65 @@ describe('QuerySourceHypermedia', () => {
         expect(mediatorsThis.mediatorMetadata.mediate).not.toHaveBeenCalled();
       });
     });
+
+    describe('getSourceCached', () => {
+      it('should return sources', async() => {
+        const src1 = await source.getSourceCached({ url: 'startUrl' }, {}, context);
+        expect(src1).toMatchObject({
+          link: { url: 'startUrl' },
+          handledDatasets: { MYDATASET: true },
+          metadata: { a: 1 },
+          source: expect.anything(),
+        });
+      });
+
+      it('should cache sources asynchronously', async() => {
+        const spy = jest.spyOn(utilMediators.mediatorQuerySourceDereferenceLink, 'mediate');
+        spy.mockClear();
+        const src1 = await source.getSourceCached({ url: 'startUrl' }, {}, context);
+        const src2 = await source.getSourceCached({ url: 'startUrl' }, {}, context);
+        expect(src1).toBe(src2);
+        expect(utilMediators.mediatorQuerySourceDereferenceLink.mediate).toHaveBeenCalledTimes(1);
+      });
+
+      it('should cache sources synchronously', async() => {
+        const spy = jest.spyOn(utilMediators.mediatorQuerySourceDereferenceLink, 'mediate');
+        spy.mockClear();
+        const src1 = source.getSourceCached({ url: 'startUrl' }, {}, context);
+        const src2 = source.getSourceCached({ url: 'startUrl' }, {}, context);
+        await expect(src1).resolves.toBe(await src2);
+        expect(utilMediators.mediatorQuerySourceDereferenceLink.mediate).toHaveBeenCalledTimes(1);
+      });
+
+      it('should cache indefinitely if source has no cache policy', async() => {
+        const src1 = await source.getSourceCached({ url: 'startUrl' }, {}, context);
+        const src2 = await source.getSourceCached({ url: 'startUrl' }, {}, context);
+        expect(src1).toBe(src2);
+      });
+
+      it('should cache asynchronously if source has a cache policy that remains valid', async() => {
+        const src1 = await source.getSourceCached({ url: 'cachepolicytrue' }, {}, context);
+        const src2 = await source.getSourceCached({ url: 'cachepolicytrue' }, {}, context);
+        expect(src1).toBe(src2);
+      });
+
+      it('should cache synchronously if source has a cache policy that remains valid', async() => {
+        const src1 = source.getSourceCached({ url: 'cachepolicytrue' }, {}, context);
+        const src2 = source.getSourceCached({ url: 'cachepolicytrue' }, {}, context);
+        await expect(src1).resolves.toBe(await src2);
+      });
+
+      it('should not cache asynchronously if source has a cache policy that does not remain valid', async() => {
+        const src1 = await source.getSourceCached({ url: 'cachepolicyfalse' }, {}, context);
+        const src2 = await source.getSourceCached({ url: 'cachepolicyfalse' }, {}, context);
+        expect(src1).not.toBe(src2);
+      });
+
+      it('should not cache synchronously if source has a cache policy that does not remain valid', async() => {
+        const src1 = source.getSourceCached({ url: 'cachepolicyfalse' }, {}, context);
+        const src2 = source.getSourceCached({ url: 'cachepolicyfalse' }, {}, context);
+        await expect(src1).resolves.not.toBe(await src2);
+      });
+    });
   });
 });

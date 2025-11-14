@@ -12,7 +12,7 @@ import type {
 } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import type { IQuerySource, MetadataBindings } from '@comunica/types';
+import type { ICachePolicy, IQuerySource, MetadataBindings } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { ArrayIterator } from 'asynciterator';
@@ -59,6 +59,21 @@ const mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate = {
 const mediatorQuerySourceDereferenceLink: MediatorQuerySourceDereferenceLink = {
   async mediate(action: IActionQuerySourceDereferenceLink) {
     action.handledDatasets!.MYDATASET = true;
+    let cachePolicy: ICachePolicy<IActionQuerySourceDereferenceLink> | undefined;
+    if (action.link.url.includes('cachepolicytrue')) {
+      cachePolicy = <any> {
+        async satisfiesWithoutRevalidation() {
+          return true;
+        },
+      };
+    }
+    if (action.link.url.includes('cachepolicyfalse')) {
+      cachePolicy = <any> {
+        async satisfiesWithoutRevalidation() {
+          return false;
+        },
+      };
+    }
     return {
       dataset: 'MYDATASET',
       metadata: <MetadataBindings> <any> { a: 1 },
@@ -102,6 +117,7 @@ const mediatorQuerySourceDereferenceLink: MediatorQuerySourceDereferenceLink = {
           // Do nothing
         },
       },
+      cachePolicy,
     };
   },
 };

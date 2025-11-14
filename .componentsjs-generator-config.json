@@ -74,6 +74,8 @@
     "ChunkedIterator",
     "IQuerySource",
     "LogicalJoinType",
+    "DereferenceCachePolicyHttpWrapper",
+    "CachePolicyHttpCacheSemanticsWrapper",
 
     "RDF.Stream",
     "Omit",

@@ -1,6 +1,7 @@
 export * from './Bindings';
 export * from './ComunicaDataFactory';
 export * from './IActionContext';
+export * from './ICachePolicy';
 export * from './ICliArgsHandler';
 export * from './IDataDestination';
 export * from './IDataset';

@@ -4,8 +4,9 @@ import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, ICachePolicy } from '@comunica/types';
 import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
+import { DereferenceCachePolicyHttpWrapper } from '../lib/DereferenceCachePolicyHttpWrapper';
 import '@comunica/utils-jest';
 
 describe('ActorDereferenceHttp', () => {
@@ -109,11 +110,16 @@ describe('ActorDereferenceHttp', () => {
         if (action.input.includes('nobody')) {
           body = undefined;
         }
+        let cachePolicy: ICachePolicy<Request> | undefined;
+        if (action.input.includes('cachepolicy')) {
+          cachePolicy = <any> 'http-cache-policy';
+        }
         return {
           body,
           headers,
           status,
           url,
+          cachePolicy,
         };
       };
       actor = new ActorDereferenceHttp({
@@ -300,6 +306,13 @@ describe('ActorDereferenceHttp', () => {
         actor: 'actor',
         url,
       });
+    });
+
+    it('should run and return and wrap a cache policy', async() => {
+      const output = await actor.run({ url: 'https://www.google.com/cachepolicy', context });
+      expect(output.cachePolicy).toBeInstanceOf(DereferenceCachePolicyHttpWrapper);
+      expect((<any> output.cachePolicy).cachePolicy).toBe('http-cache-policy');
+      expect((<any> output.cachePolicy).maxAcceptHeaderLength).toBe(127);
     });
   });
 });

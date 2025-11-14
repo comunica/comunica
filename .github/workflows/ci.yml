@@ -280,7 +280,6 @@ jobs:
     needs:
       - misc
       - test
-      - spectest
       - browsertest
       - performance
     runs-on: ubuntu-latest

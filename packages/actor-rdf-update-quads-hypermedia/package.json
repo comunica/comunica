@@ -41,6 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/bus-dereference": "^4.4.1",
     "@comunica/bus-dereference-rdf": "^4.4.1",
     "@comunica/bus-http-invalidate": "^4.4.0",
     "@comunica/bus-rdf-metadata": "^4.4.0",
