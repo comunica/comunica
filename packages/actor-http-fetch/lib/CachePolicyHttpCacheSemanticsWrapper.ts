@@ -3,6 +3,7 @@ import type { ICachePolicy, ICacheResponseHead, IRevalidationPolicy } from '@com
 
 // eslint-disable-next-line ts/no-require-imports
 import CachePolicy = require('http-cache-semantics');
+import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
 /**
  * Wrapper over the cache policy of http-cache-semantics to expose it as an ICachePolicy.
@@ -10,6 +11,7 @@ import CachePolicy = require('http-cache-semantics');
 export class CachePolicyHttpCacheSemanticsWrapper implements ICachePolicy<Request> {
   public constructor(
     private readonly cachePolicy: CachePolicy,
+    private readonly fetchInitPreprocessor: IFetchInitPreprocessor,
   ) {}
 
   public storable(): boolean {
@@ -18,7 +20,7 @@ export class CachePolicyHttpCacheSemanticsWrapper implements ICachePolicy<Reques
 
   public async satisfiesWithoutRevalidation(action: Request): Promise<boolean> {
     return this.cachePolicy
-      .satisfiesWithoutRevalidation(CachePolicyHttpCacheSemanticsWrapper.convertFromFetchRequest(action));
+      .satisfiesWithoutRevalidation(CachePolicyHttpCacheSemanticsWrapper.convertFromFetchRequest(new Request(action, await this.fetchInitPreprocessor.handle(action)))); // TODO: call this fetchInitPreprocessor in other places as well?
   }
 
   public responseHeaders(): Headers {

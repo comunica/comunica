@@ -78,7 +78,7 @@ export class ActorHttpFetch extends ActorHttp {
         status: response.status,
         headers: ActorHttp.headersToHash(response.headers),
       },
-    ));
+    ), this.fetchInitPreprocessor);
 
     if (httpTimeout && (!httpBodyTimeout || !response.body)) {
       clearTimeout(timeoutHandle);

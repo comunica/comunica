@@ -5,7 +5,9 @@ import { KeysInitQuery, KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comu
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
+import type { IJsonLdContext } from 'jsonld-context-parser';
 import { JsonLdParser } from 'jsonld-streaming-parser';
+import { LRUCache } from 'lru-cache';
 import type { Readable } from 'readable-stream';
 import { DocumentLoaderMediated } from './DocumentLoaderMediated';
 
@@ -16,6 +18,11 @@ import { DocumentLoaderMediated } from './DocumentLoaderMediated';
  */
 export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
   public readonly mediatorHttp: MediatorHttp;
+
+  private readonly cache: LRUCache<string, {
+    context: IJsonLdContext;
+    isStillValid: (() => Promise<boolean>) | undefined;
+  }>;
 
   /**
    * @param args -
@@ -31,6 +38,10 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
   public constructor(args: IActorRdfParseJsonLdArgs) {
     super(args);
     this.mediatorHttp = args.mediatorHttp;
+    this.cache = new LRUCache<string, {
+      context: IJsonLdContext;
+      isStillValid: (() => Promise<boolean>) | undefined;
+    }>({ max: 100 }); // TODO: param and invalidation
   }
 
   public override async testHandle(action: IActionRdfParse, mediaType: string | undefined, context: IActionContext):
@@ -50,7 +61,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
     const parser = JsonLdParser.fromHttpResponse(action.metadata?.baseIRI ?? '', mediaType, action.headers, {
       dataFactory,
       documentLoader: actionContext.get(KeysRdfParseJsonLd.documentLoader) ??
-        new DocumentLoaderMediated(this.mediatorHttp, actionContext),
+        new DocumentLoaderMediated(this.mediatorHttp, actionContext, this.cache),
       strictValues: actionContext.get(KeysRdfParseJsonLd.strictValues),
       ...actionContext.get(KeysRdfParseJsonLd.parserOptions),
     });
