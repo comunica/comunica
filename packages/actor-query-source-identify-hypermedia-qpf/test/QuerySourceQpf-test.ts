@@ -1001,6 +1001,7 @@ describe('QuerySourceQpf', () => {
           metadata: { triples: false },
           exists: true,
           requestTime: 0,
+          status: 200,
         }),
       };
       ctx = new ActionContext();

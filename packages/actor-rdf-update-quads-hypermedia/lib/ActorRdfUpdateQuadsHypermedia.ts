@@ -1,3 +1,4 @@
+import type { IActionDereference } from '@comunica/bus-dereference';
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
@@ -12,7 +13,7 @@ import {
 import type { IActionRdfUpdateQuads, IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import type { IActionContext, IDataDestination } from '@comunica/types';
+import type { IActionContext, ICachePolicy, IDataDestination } from '@comunica/types';
 import { LRUCache } from 'lru-cache';
 
 /**
@@ -25,7 +26,10 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
   public readonly mediatorRdfUpdateHypermedia: MediatorRdfUpdateHypermedia;
   public readonly cacheSize: number;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
-  public readonly cache?: LRUCache<string, Promise<IQuadDestination>>;
+  public readonly cache?: LRUCache<string, Promise<{
+    destination: IQuadDestination;
+    cachePolicy: ICachePolicy<IActionDereference> | undefined;
+  }>>;
 
   public constructor(args: IActorRdfUpdateQuadsHypermediaArgs) {
     super(args);
@@ -58,19 +62,36 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
 
     // Try to read from cache
     if (this.cache && this.cache.has(url)) {
-      return this.cache.get(url)!;
+      const ret = this.cache.get(url);
+      if (ret) {
+        return (async() => {
+          const retMaterialized = await ret;
+          if (retMaterialized.cachePolicy &&
+            !await retMaterialized.cachePolicy?.satisfiesWithoutRevalidation({ url, context })) {
+            // If it's not valid, delete cache entry, and re-fetch immediately
+            // LIMITATION: we're not sending re-validation requests. So if the server sends a 304, we will perform a new
+            // request and re-index the source. If an HTTP-level cache is active, the actual HTTP request will not be
+            // sent, so only local re-indexing will happen, which is negligible in most cases.
+            this.cache!.delete(url);
+            return this.getDestination(context);
+          }
+          return retMaterialized.destination;
+        })();
+      }
     }
 
     // Otherwise, call mediators
     const ret = (async() => {
       let metadata: Record<string, any>;
       let exists: boolean;
+      let cachePolicy: ICachePolicy<IActionDereference> | undefined;
       try {
         // Dereference destination URL
         const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediatorDereferenceRdf
           .mediate({ context, url, acceptErrors: true });
         exists = dereferenceRdfOutput.exists;
         url = dereferenceRdfOutput.url;
+        cachePolicy = dereferenceRdfOutput.cachePolicy;
 
         // Determine the metadata
         const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
@@ -96,12 +117,12 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
         exists,
         forceDestinationType: getDataDestinationType(dataDestination),
       });
-      return destination;
+      return { destination, cachePolicy };
     })();
     if (this.cache) {
       this.cache.set(url, ret);
     }
-    return ret;
+    return ret.then(({ destination }) => destination);
   }
 }
 

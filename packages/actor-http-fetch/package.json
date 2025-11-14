@@ -42,7 +42,10 @@
     "@comunica/bus-http": "^4.4.0",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
-    "@comunica/mediatortype-time": "^4.4.0"
+    "@comunica/mediatortype-time": "^4.4.0",
+    "@comunica/types": "^4.4.0",
+    "@types/http-cache-semantics": "^4.0.4",
+    "http-cache-semantics": "^4.2.0"
   },
   "browser": {
     "./lib/FetchInitPreprocessor.js": "./lib/FetchInitPreprocessor-browser.js"

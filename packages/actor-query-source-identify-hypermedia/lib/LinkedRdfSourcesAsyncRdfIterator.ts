@@ -1,3 +1,4 @@
+import type { IActionQuerySourceDereferenceLink } from '@comunica/bus-query-source-dereference-link';
 import { KeysStatistics } from '@comunica/context-entries';
 import type {
   ILink,
@@ -7,6 +8,7 @@ import type {
   IQueryBindingsOptions,
   IStatisticBase,
   ILinkQueue,
+  ICachePolicy,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -147,11 +149,9 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
         this.sourceStateGetter(this.firstLink, {})
           .then((sourceState) => {
             this.startIteratorsForNextUrls(sourceState.handledDatasets, false);
-            done();
           });
-      } else {
-        done();
       }
+      done();
     } else {
       // The first time this is called, prepare the first source
       this.started = true;
@@ -367,6 +367,10 @@ export interface ISourceState {
    * All dataset identifiers that have been passed for this source.
    */
   handledDatasets: Record<string, boolean>;
+  /**
+   * The cache policy of the request's response.
+   */
+  cachePolicy?: ICachePolicy<IActionQuerySourceDereferenceLink>;
 }
 
 export type SourceStateGetter = (link: ILink, handledDatasets: Record<string, boolean>) => Promise<ISourceState>;

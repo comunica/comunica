@@ -41,6 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
+    "@comunica/bus-dereference": "^4.4.1",
     "@comunica/bus-dereference-rdf": "^4.4.1",
     "@comunica/bus-query-source-dereference-link": "^4.0.0",
     "@comunica/bus-query-source-identify-hypermedia": "^4.4.0",
@@ -49,6 +50,7 @@
     "@comunica/bus-rdf-metadata-extract": "^4.4.0",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
+    "@comunica/types": "^4.4.0",
     "readable-stream": "^4.7.0"
   }
 }

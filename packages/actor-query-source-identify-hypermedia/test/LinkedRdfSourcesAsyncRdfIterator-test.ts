@@ -393,15 +393,15 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
           [ 'g', 'h', '3' ],
         ],
       ]).flat());
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(11);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(13);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { first: true }, false);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { P1: true }, true);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { first: true }, false);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(6, { P1: true }, true);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(7, { first: true }, false);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(8, { P2: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(6, { first: true }, false);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(7, { P1: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(8, { first: true }, false);
     });
 
     it('destroys currentIterators when closed', async() => {
@@ -543,12 +543,12 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetterThis);
       jest.spyOn(<any> it, 'startIteratorsForNextUrls');
       await expect(it).toEqualBindingsStream(data.flat());
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(5);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(6);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(2, { first: true }, true);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(3, { P1: true }, true);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(4, { first: true }, false);
-      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { P2: true }, true);
+      expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(5, { first: true }, false);
     });
 
     it('handles metadata event emitted before the end event', async() => {

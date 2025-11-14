@@ -1,3 +1,4 @@
+import type { IActionDereference } from '@comunica/bus-dereference';
 import type {
   IActionDereferenceRdf,
   IActorDereferenceRdfOutput,
@@ -15,13 +16,14 @@ import type {
 } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQuerySource } from '@comunica/types';
+import type { ICachePolicy, IQuerySource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 import { streamifyArray } from 'streamify-array';
 import { ActorQuerySourceDereferenceLinkHypermedia } from '../lib/ActorQuerySourceDereferenceLinkHypermedia';
+import { QuerySourceCachePolicyDereferenceWrapper } from '../lib/QuerySourceCachePolicyDereferenceWrapper';
 import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
@@ -40,6 +42,10 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
     bus = new Bus({ name: 'bus' });
     mediatorDereferenceRdf = <MediatorDereferenceRdf> {
       async mediate({ url }: IActionDereferenceRdf): Promise<IActorDereferenceRdfOutput> {
+        let cachePolicy: ICachePolicy<IActionDereference> | undefined;
+        if (url.includes('cachepolicy')) {
+          cachePolicy = <any> 'CACHEPOLICY';
+        }
         return {
           data: url === 'firstUrl' ?
             <any> streamifyArray([
@@ -53,7 +59,9 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
           metadata: { triples: true },
           exists: true,
           requestTime: 0,
+          status: 200,
           url,
+          cachePolicy,
         };
       },
     };
@@ -128,13 +136,14 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
 
     describe('run', () => {
       it('should resolve', async() => {
-        const { source, metadata, dataset } = await actor.run({
+        const { source, metadata, dataset, cachePolicy } = await actor.run({
           link: { url: 'startUrl' },
           context: new ActionContext(),
         });
         expect(source).toBe('QUERYSOURCE');
         expect(metadata).toEqual({ a: 1 });
         expect(dataset).toBe('MYDATASET');
+        expect(cachePolicy).toBeUndefined();
       });
 
       it('should resolve and mark the dataset in datasets', async() => {
@@ -250,6 +259,16 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
         expect(dataset).toBe('MYDATASET');
         expect(source).toBeDefined();
         await new Promise(setImmediate);
+      });
+
+      it('should wrap a cache policy', async() => {
+        const { source, cachePolicy } = await actor.run({
+          link: { url: 'cachepolicy' },
+          context: new ActionContext(),
+        });
+        expect(source).toBe('QUERYSOURCE');
+        expect(cachePolicy).toBeInstanceOf(QuerySourceCachePolicyDereferenceWrapper);
+        expect((<any> cachePolicy).cachePolicy).toBe('CACHEPOLICY');
       });
     });
   });

@@ -1,6 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type { ILink, IQuerySource, MetadataBindings } from '@comunica/types';
+import type { ICachePolicy, ILink, IQuerySource, MetadataBindings } from '@comunica/types';
 
 /**
  * A comunica actor for query-source-dereference-link events.
@@ -51,6 +51,10 @@ export interface IActorQuerySourceDereferenceLinkOutput extends IActorOutput {
    * The dataset that was handled.
    */
   dataset?: string;
+  /**
+   * The cache policy of the request's response.
+   */
+  cachePolicy?: ICachePolicy<IActionQuerySourceDereferenceLink>;
 }
 
 export type IActorQuerySourceDereferenceLinkArgs<TS = undefined> = IActorArgs<

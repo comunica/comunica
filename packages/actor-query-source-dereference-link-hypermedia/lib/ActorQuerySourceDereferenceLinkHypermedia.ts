@@ -1,10 +1,12 @@
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
+import {
+  ActorQuerySourceDereferenceLink,
+} from '@comunica/bus-query-source-dereference-link';
 import type {
   IActionQuerySourceDereferenceLink,
   IActorQuerySourceDereferenceLinkOutput,
   IActorQuerySourceDereferenceLinkArgs,
 } from '@comunica/bus-query-source-dereference-link';
-import { ActorQuerySourceDereferenceLink } from '@comunica/bus-query-source-dereference-link';
 import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
@@ -12,9 +14,10 @@ import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extr
 import { KeysStatistics } from '@comunica/context-entries';
 import type { TestResult, IActorTest } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { MetadataBindings } from '@comunica/types';
+import type { ICachePolicy, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
+import { QuerySourceCachePolicyDereferenceWrapper } from './QuerySourceCachePolicyDereferenceWrapper';
 
 /**
  * A comunica Dereference Query Source Hypermedia Resolve Actor.
@@ -44,10 +47,14 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     let url = action.link.url;
     let quads: RDF.Stream;
     let metadata: Record<string, any>;
+    let cachePolicy: ICachePolicy<IActionQuerySourceDereferenceLink> | undefined;
     try {
       const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediatorDereferenceRdf
         .mediate({ context, url });
       url = dereferenceRdfOutput.url;
+      if (dereferenceRdfOutput.cachePolicy) {
+        cachePolicy = new QuerySourceCachePolicyDereferenceWrapper(dereferenceRdfOutput.cachePolicy);
+      }
 
       // Determine the metadata
       const rdfMetadataOutput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
@@ -110,7 +117,7 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     // Track dereference event
     context.get(KeysStatistics.dereferencedLinks)?.updateStatistic({ url: action.link.url, metadata }, source);
 
-    return { source, metadata: <MetadataBindings> metadata, dataset };
+    return { source, metadata: <MetadataBindings> metadata, dataset, cachePolicy };
   }
 }
 

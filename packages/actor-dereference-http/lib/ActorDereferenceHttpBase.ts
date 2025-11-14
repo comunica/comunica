@@ -1,4 +1,8 @@
-import type { IActionDereference, IActorDereferenceArgs, IActorDereferenceOutput } from '@comunica/bus-dereference';
+import type {
+  IActionDereference,
+  IActorDereferenceArgs,
+  IActorDereferenceOutput,
+} from '@comunica/bus-dereference';
 import { ActorDereference, emptyReadable } from '@comunica/bus-dereference';
 import type { IActorHttpOutput, MediatorHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
@@ -6,6 +10,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
+import { DereferenceCachePolicyHttpWrapper } from './DereferenceCachePolicyHttpWrapper';
 
 const REGEX_MEDIATYPE = /^[^ ;]*/u;
 const REGEX_VERSION_HEADER = /version=([^ ;]*)/u;
@@ -64,15 +69,8 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
   public async run(action: IActionDereference): Promise<IActorDereferenceOutput> {
     let exists = true;
 
-    // Append any custom passed headers
-    const headers = new Headers(action.headers);
-
-    // Resolve HTTP URL using appropriate accept header
-    headers.append(
-      'Accept',
-      mediaTypesToAcceptString(await action.mediaTypes?.() ?? {}, this.getMaxAcceptHeaderLength()),
-    );
-
+    const maxAcceptHeaderLength = this.getMaxAcceptHeaderLength();
+    const headers = await ActorDereferenceHttpBase.establishAcceptHeader(action, maxAcceptHeaderLength);
     let httpResponse: IActorHttpOutput;
     const requestTimeStart = Date.now();
     try {
@@ -112,13 +110,33 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
       data: exists ? ActorHttp.toNodeReadable(httpResponse.body) : emptyReadable(),
       exists,
       requestTime,
+      status: httpResponse.status,
       headers: httpResponse.headers,
       mediaType: mediaType === 'text/plain' ? undefined : mediaType,
       version,
+      cachePolicy: httpResponse.cachePolicy ?
+        new DereferenceCachePolicyHttpWrapper(httpResponse.cachePolicy, maxAcceptHeaderLength) :
+        undefined,
     };
   }
 
   protected abstract getMaxAcceptHeaderLength(): number;
+
+  public static async establishAcceptHeader(
+    action: IActionDereference,
+    maxAcceptHeaderLength: number,
+  ): Promise<Headers> {
+    // Append any custom passed headers
+    const headers = new Headers(action.headers);
+
+    // Resolve HTTP URL using appropriate accept header
+    headers.append(
+      'Accept',
+      mediaTypesToAcceptString(await action.mediaTypes?.() ?? {}, maxAcceptHeaderLength),
+    );
+
+    return headers;
+  }
 }
 
 export interface IActorDereferenceHttpArgs extends IActorDereferenceArgs {
