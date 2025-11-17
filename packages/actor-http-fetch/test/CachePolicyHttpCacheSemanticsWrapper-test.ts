@@ -1,6 +1,7 @@
 import { ActionContext } from '@comunica/core';
 import CachePolicy = require('http-cache-semantics');
 import { CachePolicyHttpCacheSemanticsWrapper } from '../lib/CachePolicyHttpCacheSemanticsWrapper';
+import { FetchInitPreprocessor } from '../lib/FetchInitPreprocessor';
 
 describe('CachePolicyHttpCacheSemanticsWrapper', () => {
   let wrapper: CachePolicyHttpCacheSemanticsWrapper;
@@ -37,7 +38,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
         return 123;
       },
     };
-    wrapper = new CachePolicyHttpCacheSemanticsWrapper(cachePolicy, 123);
+    wrapper = new CachePolicyHttpCacheSemanticsWrapper(cachePolicy, 123, new FetchInitPreprocessor({}));
   });
 
   describe('storable', () => {
@@ -60,7 +61,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
       expect(cachePolicy.satisfiesWithoutRevalidation).toHaveBeenCalledWith({
         url: 'http://localhost:8080/',
         method: 'GET',
-        headers: { a: 'b' },
+        headers: { a: 'b', 'accept-encoding': 'br,gzip,deflate' },
       });
     });
 
@@ -74,7 +75,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
       expect(cachePolicy.satisfiesWithoutRevalidation).toHaveBeenCalledWith({
         url: 'http://localhost:8080/',
         method: 'GET',
-        headers: { a: 'b' },
+        headers: { a: 'b', 'accept-encoding': 'br,gzip,deflate' },
       });
     });
 
@@ -89,7 +90,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
       expect(cachePolicy.satisfiesWithoutRevalidation).toHaveBeenCalledWith({
         url: 'http://localhost:8080/',
         method: 'GET',
-        headers: { a: 'b' },
+        headers: { a: 'b', 'accept-encoding': 'br,gzip,deflate' },
       });
     });
   });
@@ -122,7 +123,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
       expect(cachePolicy.revalidationHeaders).toHaveBeenCalledWith({
         url: 'http://localhost:8080/',
         method: 'GET',
-        headers: { a: 'b' },
+        headers: { a: 'b', 'accept-encoding': 'br,gzip,deflate' },
       });
     });
   });
@@ -143,7 +144,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
       expect(cachePolicy.revalidatedPolicy).toHaveBeenCalledWith({
         url: 'http://localhost:8080/',
         method: 'GET',
-        headers: { a: 'b' },
+        headers: { a: 'b', 'accept-encoding': 'br,gzip,deflate' },
       }, { status: 200, headers: { x: 'y' }});
     });
 
@@ -162,7 +163,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
       expect(cachePolicy.revalidatedPolicy).toHaveBeenCalledWith({
         url: 'http://localhost:8080/',
         method: 'GET',
-        headers: { a: 'b' },
+        headers: { a: 'b', 'accept-encoding': 'br,gzip,deflate' },
       }, { status: 200, headers: {}});
     });
   });

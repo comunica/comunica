@@ -73,16 +73,17 @@ export class ActorHttpFetch extends ActorHttp {
     const response: IActorHttpOutput = await fetchFunction(action.input, requestInit);
 
     response.cachePolicy = new CachePolicyHttpCacheSemanticsWrapper(new CachePolicy(
-      CachePolicyHttpCacheSemanticsWrapper.convertFromFetchRequest({
-        input: action.input,
-        init: requestInit,
-        context: action.context,
-      }),
+      await CachePolicyHttpCacheSemanticsWrapper.convertFromFetchRequest(action, this.fetchInitPreprocessor),
       {
         status: response.status,
         headers: ActorHttp.headersToHash(response.headers),
       },
-    ), action.context.get(KeysInitQuery.queryTimestampHighResolution));
+      {
+        // Disabled "shared" ensures responses with set-cookie are also cached.
+        // For example, for https://www.w3.org/ns/activitystreams
+        shared: false,
+      },
+    ), action.context.get(KeysInitQuery.queryTimestampHighResolution), this.fetchInitPreprocessor);
 
     if (httpTimeout && (!httpBodyTimeout || !response.body)) {
       clearTimeout(timeoutHandle);

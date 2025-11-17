@@ -71,11 +71,13 @@ describe('ActorHttpFetch', () => {
           status: 200,
           headers: { headersToHash: 'true' },
         },
+        { shared: false },
       ));
       expect(actor.prepareRequestHeaders).toHaveBeenCalledTimes(1);
       expect(ActorHttp.headersToHash).toHaveBeenCalledTimes(2);
-      expect((<any>actor).fetchInitPreprocessor.handle).toHaveBeenCalledTimes(1);
+      expect((<any>actor).fetchInitPreprocessor.handle).toHaveBeenCalledTimes(2);
       expect((<any>actor).fetchInitPreprocessor.handle).toHaveBeenNthCalledWith(1, { method: 'GET', headers });
+      expect((<any>actor).fetchInitPreprocessor.handle).toHaveBeenNthCalledWith(2, {});
       expect(globalThis.fetch).toHaveBeenCalledTimes(1);
       expect(globalThis.fetch).toHaveBeenNthCalledWith(1, input, { requestInit: true });
     });
@@ -91,7 +93,7 @@ describe('ActorHttpFetch', () => {
       expect(ActorHttp.headersToHash).toHaveBeenCalledTimes(3);
       expect(ActorHttp.headersToHash).toHaveBeenNthCalledWith(1, headers);
       expect(ActorHttp.headersToHash).toHaveBeenNthCalledWith(2, headers);
-      expect((<any>actor).fetchInitPreprocessor.handle).toHaveBeenCalledTimes(1);
+      expect((<any>actor).fetchInitPreprocessor.handle).toHaveBeenCalledTimes(2);
       expect((<any>actor).fetchInitPreprocessor.handle).toHaveBeenNthCalledWith(1, {
         method: 'GET',
         headers: { headersToHash: 'true' },
@@ -108,7 +110,7 @@ describe('ActorHttpFetch', () => {
       await expect(actor.run({ input, context: contextWithFlag })).resolves.toBe(response);
       expect(actor.prepareRequestHeaders).toHaveBeenCalledTimes(1);
       expect(ActorHttp.headersToHash).toHaveBeenCalledTimes(2);
-      expect((<any>actor).fetchInitPreprocessor.handle).toHaveBeenCalledTimes(1);
+      expect((<any>actor).fetchInitPreprocessor.handle).toHaveBeenCalledTimes(2);
       expect((<any>actor).fetchInitPreprocessor.handle).toHaveBeenNthCalledWith(1, {
         method: 'GET',
         credentials: 'include',

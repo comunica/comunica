@@ -4,6 +4,7 @@ import type { ICachePolicy, ICacheResponseHead, IRevalidationPolicy } from '@com
 
 // eslint-disable-next-line ts/no-require-imports
 import CachePolicy = require('http-cache-semantics');
+import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
 /**
  * Wrapper over the cache policy of http-cache-semantics to expose it as an ICachePolicy.
@@ -12,6 +13,7 @@ export class CachePolicyHttpCacheSemanticsWrapper implements ICachePolicy<IActio
   public constructor(
     private readonly cachePolicy: CachePolicy,
     private readonly queryTimestamp: number | undefined,
+    private readonly fetchInitPreprocessor: IFetchInitPreprocessor,
   ) {}
 
   public storable(): boolean {
@@ -24,8 +26,8 @@ export class CachePolicyHttpCacheSemanticsWrapper implements ICachePolicy<IActio
       return true;
     }
     // Otherwise, determine through cache policy
-    return this.cachePolicy
-      .satisfiesWithoutRevalidation(CachePolicyHttpCacheSemanticsWrapper.convertFromFetchRequest(action));
+    return this.cachePolicy.satisfiesWithoutRevalidation(await CachePolicyHttpCacheSemanticsWrapper
+      .convertFromFetchRequest(action, this.fetchInitPreprocessor));
   }
 
   public responseHeaders(): Headers {
@@ -38,7 +40,8 @@ export class CachePolicyHttpCacheSemanticsWrapper implements ICachePolicy<IActio
 
   public async revalidationHeaders(newAction: IActionHttp): Promise<Headers> {
     return CachePolicyHttpCacheSemanticsWrapper.convertToFetchHeaders(this.cachePolicy
-      .revalidationHeaders(CachePolicyHttpCacheSemanticsWrapper.convertFromFetchRequest(newAction)));
+      .revalidationHeaders(await CachePolicyHttpCacheSemanticsWrapper
+        .convertFromFetchRequest(newAction, this.fetchInitPreprocessor)));
   }
 
   public async revalidatedPolicy(
@@ -46,21 +49,30 @@ export class CachePolicyHttpCacheSemanticsWrapper implements ICachePolicy<IActio
     revalidationResponse: ICacheResponseHead,
   ): Promise<IRevalidationPolicy<IActionHttp>> {
     const revalidatedPolicy = this.cachePolicy.revalidatedPolicy(
-      CachePolicyHttpCacheSemanticsWrapper.convertFromFetchRequest(revalidationAction),
+      await CachePolicyHttpCacheSemanticsWrapper
+        .convertFromFetchRequest(revalidationAction, this.fetchInitPreprocessor),
       {
         status: revalidationResponse.status,
         headers: revalidationResponse.headers ? ActorHttp.headersToHash(revalidationResponse.headers) : {},
       },
     );
     return {
-      policy: new CachePolicyHttpCacheSemanticsWrapper(revalidatedPolicy.policy, this.queryTimestamp),
+      policy: new CachePolicyHttpCacheSemanticsWrapper(
+        revalidatedPolicy.policy,
+        this.queryTimestamp,
+        this.fetchInitPreprocessor,
+      ),
       modified: revalidatedPolicy.modified,
       matches: revalidatedPolicy.matches,
     };
   }
 
-  public static convertFromFetchRequest(request: IActionHttp): CachePolicy.Request {
-    const headers = typeof request.input === 'string' ? request.init?.headers : request.input.headers;
+  public static async convertFromFetchRequest(
+    request: IActionHttp,
+    fetchInitPreprocessor: IFetchInitPreprocessor,
+  ): Promise<CachePolicy.Request> {
+    let headers = typeof request.input === 'string' ? request.init?.headers : request.input.headers;
+    headers = (await fetchInitPreprocessor.handle({ headers })).headers;
     return {
       url: typeof request.input === 'string' ? request.input : request.input.url,
       method: request.init?.method ?? 'GET',
