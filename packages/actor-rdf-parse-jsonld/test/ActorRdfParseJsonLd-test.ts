@@ -1,6 +1,7 @@
 import { Readable } from 'node:stream';
+import type { ActorHttpInvalidateListenable, IInvalidateListener } from '@comunica/bus-http-invalidate';
 import { KeysInitQuery, KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-entries';
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
 import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
@@ -16,11 +17,14 @@ describe('ActorRdfParseJsonLd', () => {
   let bus: any;
   let mediatorHttp: any;
   let context: IActionContext;
+  let httpInvalidator: ActorHttpInvalidateListenable;
+  let httpInvalidatorListener: IInvalidateListener;
+  let cacheSize: number;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = {
-      mediate(args: any) {
+      mediate: jest.fn((args: any) => {
         // Error
         if (args.input.includes('error')) {
           return Promise.resolve({
@@ -40,10 +44,21 @@ describe('ActorRdfParseJsonLd', () => {
           ok: true,
           status: 200,
           headers: new Headers({ 'Content-Type': 'application/ld+json' }),
+          cachePolicy: args.context.has(new ActionContextKey('disableCachePolicy')) ?
+            undefined :
+              {
+                satisfiesWithoutRevalidation() {
+                  return true;
+                },
+              },
         });
-      },
+      }),
     };
     context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
+    httpInvalidator = <any>{
+      addInvalidateListener: (listener: IInvalidateListener) => httpInvalidatorListener = listener,
+    };
+    cacheSize = 128;
   });
 
   describe('The ActorRdfParseJsonLd module', () => {
@@ -64,37 +79,51 @@ describe('ActorRdfParseJsonLd', () => {
 
     it('when constructed with optional mediaTypePriorities should set the mediaTypePriorities', () => {
       expect(new ActorRdfParseJsonLd(
-        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, mediatorHttp },
+        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, mediatorHttp, httpInvalidator, cacheSize },
       ).mediaTypePriorities).toEqual({});
     });
 
     it('should not throw an error when constructed with optional priorityScale', () => {
       expect(() => {
-        new ActorRdfParseJsonLd(
-          { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5, mediatorHttp },
-        );
+        new ActorRdfParseJsonLd({
+          name: 'actor',
+          bus,
+          mediaTypePriorities: {},
+          mediaTypeFormats: {},
+          priorityScale: 0.5,
+          mediatorHttp,
+          httpInvalidator,
+          cacheSize,
+        });
       })
         .toBeTruthy();
     });
 
     it('when constructed with optional priorityScale should set the priorityScale', () => {
-      expect(new ActorRdfParseJsonLd(
-        { name: 'actor', bus, mediaTypePriorities: {}, mediaTypeFormats: {}, priorityScale: 0.5, mediatorHttp },
-      ).priorityScale)
+      expect(new ActorRdfParseJsonLd({
+        name: 'actor',
+        bus,
+        mediaTypePriorities: {},
+        mediaTypeFormats: {},
+        priorityScale: 0.5,
+        mediatorHttp,
+        httpInvalidator,
+        cacheSize,
+      }).priorityScale)
         .toBe(0.5);
     });
 
     it('when constructed with optional priorityScale should scale the priorities', () => {
-      expect(new ActorRdfParseJsonLd(
-        {
-          name: 'actor',
-          bus,
-          mediaTypePriorities: { A: 2, B: 1, C: 0 },
-          mediaTypeFormats: {},
-          priorityScale: 0.5,
-          mediatorHttp,
-        },
-      )
+      expect(new ActorRdfParseJsonLd({
+        name: 'actor',
+        bus,
+        mediaTypePriorities: { A: 2, B: 1, C: 0 },
+        mediaTypeFormats: {},
+        priorityScale: 0.5,
+        mediatorHttp,
+        httpInvalidator,
+        cacheSize,
+      })
         .mediaTypePriorities).toEqual({
         A: 1,
         B: 0.5,
@@ -108,15 +137,24 @@ describe('ActorRdfParseJsonLd', () => {
     let input: Readable;
     let inputGraphs: Readable;
     let inputRemoteContext: Readable;
+    let inputRemoteContext2: Readable;
     let inputRemoteContextErr: Readable;
     let inputLinkHeader: Readable;
     let inputSkipped: Readable;
 
     beforeEach(() => {
-      actor = new ActorRdfParseJsonLd({ bus, mediaTypePriorities: {
-        'application/json': 1,
-        'application/ld+json': 1,
-      }, mediaTypeFormats: {}, mediatorHttp, name: 'actor' });
+      actor = new ActorRdfParseJsonLd({
+        bus,
+        mediaTypePriorities: {
+          'application/json': 1,
+          'application/ld+json': 1,
+        },
+        mediaTypeFormats: {},
+        mediatorHttp,
+        name: 'actor',
+        httpInvalidator,
+        cacheSize,
+      });
       input = Readable.from([ `{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
@@ -148,6 +186,12 @@ describe('ActorRdfParseJsonLd', () => {
           }
             ]` ]);
         inputRemoteContext = Readable.from([ `{
+            "@context": "http://schema.org/",
+            "@id": "http://example.org/a",
+            "b": "http://example.org/c",
+            "d": "http://example.org/e"
+          }` ]);
+        inputRemoteContext2 = Readable.from([ `{
             "@context": "http://schema.org/",
             "@id": "http://example.org/a",
             "b": "http://example.org/c",
@@ -293,6 +337,130 @@ describe('ActorRdfParseJsonLd', () => {
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
           ]));
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+        expect((<any> actor).cache.has('https://schema.org/')).toBeTruthy();
+      });
+
+      it('should run for a remote context and use cache', async() => {
+        await actor.run({
+          handle: { data: inputRemoteContext, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        await actor.run({
+          handle: { data: inputRemoteContext2, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+        expect((<any> actor).cache.has('https://schema.org/')).toBeTruthy();
+      });
+
+      it('should run for a remote context and not use cache without cache policy', async() => {
+        await actor.run({
+          handle: {
+            data: inputRemoteContext,
+            metadata: { baseIRI: '' },
+            context,
+          },
+          handleMediaType: 'application/ld+json',
+          context: context.set(new ActionContextKey('disableCachePolicy'), true),
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        await actor.run({
+          handle: { data: inputRemoteContext2, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/ld+json',
+          context: context.set(new ActionContextKey('disableCachePolicy'), true),
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+        expect((<any> actor).cache.has('https://schema.org/')).toBeTruthy();
+      });
+
+      it('should run for a remote context and not use cache after full invalidation', async() => {
+        await actor.run({
+          handle: { data: inputRemoteContext, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        httpInvalidatorListener({ context });
+        await actor.run({
+          handle: { data: inputRemoteContext2, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+        expect((<any> actor).cache.has('https://schema.org/')).toBeTruthy();
+      });
+
+      it('should run for a remote context and not use cache after partial invalidation', async() => {
+        await actor.run({
+          handle: { data: inputRemoteContext, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        httpInvalidatorListener({ context, url: 'https://schema.org/' });
+        await actor.run({
+          handle: { data: inputRemoteContext2, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+        expect((<any> actor).cache.has('https://schema.org/')).toBeTruthy();
+      });
+
+      it('should run for a remote context and use cache after non-matching invalidation', async() => {
+        await actor.run({
+          handle: { data: inputRemoteContext, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        httpInvalidatorListener({ context, url: 'https://otherschema.org/' });
+        await actor.run({
+          handle: { data: inputRemoteContext2, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+        expect((<any> actor).cache.has('https://schema.org/')).toBeTruthy();
       });
 
       it('should error for an invalid remote context', async() => {
@@ -431,10 +599,19 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should run with scaled priorities 0.5', async() => {
-        actor = new ActorRdfParseJsonLd({ bus, mediaTypePriorities: {
-          'application/json': 1,
-          'application/ld+json': 1,
-        }, mediaTypeFormats: {}, mediatorHttp, name: 'actor', priorityScale: 0.5 });
+        actor = new ActorRdfParseJsonLd({
+          bus,
+          mediaTypePriorities: {
+            'application/json': 1,
+            'application/ld+json': 1,
+          },
+          mediaTypeFormats: {},
+          mediatorHttp,
+          name: 'actor',
+          priorityScale: 0.5,
+          httpInvalidator,
+          cacheSize,
+        });
         await expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'application/json': 0.5,
           'application/ld+json': 0.5,
@@ -442,10 +619,19 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should run with scaled priorities 0', async() => {
-        actor = new ActorRdfParseJsonLd({ bus, mediaTypePriorities: {
-          'application/json': 1,
-          'application/ld+json': 1,
-        }, mediaTypeFormats: {}, mediatorHttp, name: 'actor', priorityScale: 0 });
+        actor = new ActorRdfParseJsonLd({
+          bus,
+          mediaTypePriorities: {
+            'application/json': 1,
+            'application/ld+json': 1,
+          },
+          mediaTypeFormats: {},
+          mediatorHttp,
+          name: 'actor',
+          priorityScale: 0,
+          httpInvalidator,
+          cacheSize,
+        });
         await expect(actor.run({ mediaTypes: true, context })).resolves.toEqual({ mediaTypes: {
           'application/json': 0,
           'application/ld+json': 0,

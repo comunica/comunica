@@ -40,12 +40,14 @@
   },
   "dependencies": {
     "@comunica/bus-http": "^4.4.0",
+    "@comunica/bus-http-invalidate": "^4.4.0",
     "@comunica/bus-rdf-parse": "^4.4.0",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",
     "@jeswr/stream-to-string": "^2.0.0",
     "jsonld-context-parser": "^2.2.2",
-    "jsonld-streaming-parser": "^5.0.0"
+    "jsonld-streaming-parser": "^5.0.0",
+    "lru-cache": "^11.2.2"
   }
 }

@@ -34,6 +34,8 @@ describe('ActorRdfParseHtml', () => {
         mediaTypeFormats: {},
         name: 'jsonldParser',
         mediatorHttp,
+        httpInvalidator: <any> { addInvalidateListener: jest.fn() },
+        cacheSize: 10,
       },
     );
   });
