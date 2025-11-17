@@ -141,6 +141,10 @@ export interface IActorHttpOutput extends IActorOutput, Response {
    * This can be used to check if the given response is still valid for another request later on.
    */
   cachePolicy?: ICachePolicy<IActionHttp>;
+  /**
+   * If the response was served from cache.
+   */
+  fromCache?: boolean;
 }
 
 export type IActorHttpArgs<TS = undefined> = IActorArgs<IActionHttp, IActorTest, IActorHttpOutput, TS>;

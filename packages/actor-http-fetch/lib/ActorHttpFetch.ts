@@ -1,5 +1,6 @@
 import type { IActionHttp, IActorHttpOutput, IActorHttpArgs } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
+import type { ActorHttpInvalidateListenable } from '@comunica/bus-http-invalidate';
 import { KeysHttp, KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
@@ -22,7 +23,7 @@ export class ActorHttpFetch extends ActorHttp {
 
   public constructor(args: IActorHttpFetchArgs) {
     super(args);
-    this.fetchInitPreprocessor = new FetchInitPreprocessor(args.agentOptions);
+    this.fetchInitPreprocessor = new FetchInitPreprocessor(args);
   }
 
   public async test(_action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
@@ -51,7 +52,7 @@ export class ActorHttpFetch extends ActorHttp {
     const httpTimeout = action.context.get(KeysHttp.httpTimeout);
     const httpBodyTimeout = action.context.get(KeysHttp.httpBodyTimeout);
     const fetchFunction = action.context.get(KeysHttp.fetch) ?? fetch;
-    const requestInit = await this.fetchInitPreprocessor.handle(init);
+    const requestInit = await this.fetchInitPreprocessor.handle(init, action.context);
 
     let timeoutCallback: () => void;
     let timeoutHandle: NodeJS.Timeout | undefined;
@@ -71,6 +72,11 @@ export class ActorHttpFetch extends ActorHttp {
     }
 
     const response: IActorHttpOutput = await fetchFunction(action.input, requestInit);
+
+    response.fromCache = response.headers.get('x-comunica-cache') === 'HIT';
+    if (response.fromCache) {
+      this.logInfo(action.context, `Cache hit for ${ActorHttp.getInputUrl(action.input).href}`);
+    }
 
     response.cachePolicy = new CachePolicyHttpCacheSemanticsWrapper(new CachePolicy(
       await CachePolicyHttpCacheSemanticsWrapper.convertFromFetchRequest(action, this.fetchInitPreprocessor),
@@ -131,6 +137,33 @@ export class ActorHttpFetch extends ActorHttp {
 }
 
 export interface IActorHttpFetchArgs extends IActorHttpArgs {
+  /**
+   * Maximum size of the cache (in bytes).
+   * Defaults to 100MB.
+   * @range {integer}
+   * @default {104857600}
+   */
+  cacheMaxSize: number;
+  /**
+   * Maximum number of documents to store in the cache.
+   * @range {integer}
+   * @default {1000}
+   */
+  cacheMaxCount: number;
+  /**
+   * Maximum size of an entry in the cache (in bytes).
+   * Defaults to 5MB.
+   * @range {integer}
+   * @default {5242880}
+   */
+  cacheMaxEntrySize: number;
+  /* eslint-disable max-len */
+  /**
+   * An actor that listens to HTTP invalidation events
+   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^4.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
+   */
+  httpInvalidator: ActorHttpInvalidateListenable;
+  /* eslint-enable max-len */
   /**
    * The agent options for the HTTP agent
    * @range {json}

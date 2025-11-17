@@ -66,6 +66,7 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "httpRetryDelayLimit": "@comunica/bus-http:http-retry-delay-limit",
    *   "httpRetryStatusCodes": "@comunica/bus-http:http-retry-status-codes",
    *   "httpAbortSignal": "@comunica/bus-http:http-abort-controller",
+   *   "httpCache": "@comunica/bus-http:httpCache",
    *   "fetch": "@comunica/bus-http:fetch",
    *   "recoverBrokenLinks": "@comunica/bus-http-wayback:recover-broken-links",
    *   "readOnly": "@comunica/bus-query-operation:readOnly",

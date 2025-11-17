@@ -72,7 +72,7 @@ export class CachePolicyHttpCacheSemanticsWrapper implements ICachePolicy<IActio
     fetchInitPreprocessor: IFetchInitPreprocessor,
   ): Promise<CachePolicy.Request> {
     let headers = typeof request.input === 'string' ? request.init?.headers : request.input.headers;
-    headers = (await fetchInitPreprocessor.handle({ headers })).headers;
+    headers = (await fetchInitPreprocessor.handle({ headers }, request.context)).headers;
     return {
       url: typeof request.input === 'string' ? request.input : request.input.url,
       method: request.init?.method ?? 'GET',

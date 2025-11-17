@@ -38,7 +38,17 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
         return 123;
       },
     };
-    wrapper = new CachePolicyHttpCacheSemanticsWrapper(cachePolicy, 123, new FetchInitPreprocessor({}));
+    wrapper = new CachePolicyHttpCacheSemanticsWrapper(cachePolicy, 123, new FetchInitPreprocessor({
+      name: 'abc',
+      bus: <any> undefined,
+      cacheMaxSize: 104857600,
+      cacheMaxCount: 1000,
+      cacheMaxEntrySize: 5242880,
+      agentOptions: {},
+      httpInvalidator: <any> {
+        addInvalidateListener: jest.fn(),
+      },
+    }));
   });
 
   describe('storable', () => {

@@ -86,6 +86,12 @@ export const KeysHttp = {
    * An abort signal for aborting pending HTTP requests.
    */
   httpAbortSignal: new ActionContextKey<AbortSignal>('@comunica/bus-http:http-abort-controller'),
+  /**
+   * If the HTTP-level cache must be enabled.
+   * When enabled, HTTP responses will be stored within the cache, and/or responses can be read from the cache.
+   * This only will only do something outside a browser environment, as browsers take care of caching internally.
+   */
+  httpCache: new ActionContextKey<boolean>('@comunica/bus-http:httpCache'),
 };
 
 export const KeysHttpWayback = {

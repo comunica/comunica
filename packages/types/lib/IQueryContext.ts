@@ -48,6 +48,7 @@ export interface IQueryContextCommon {
   httpRetryDelayLimit?: number;
   httpRetryStatusCodes?: number[];
   httpAbortSignal?: AbortSignal;
+  httpCache?: boolean;
   fetch?: typeof fetch;
   recoverBrokenLinks?: boolean;
   readOnly?: boolean;

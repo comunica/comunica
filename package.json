@@ -82,7 +82,7 @@
     "rdf-quad": "^2.0.0",
     "rdf-stores": "^2.1.1",
     "rdf-test-suite": "^2.1.3",
-    "rdf-test-suite-ldf": "^2.0.0",
+    "rdf-test-suite-ldf": "^1.5.0",
     "setup-polly-jest": "^0.11.0",
     "streamify-array": "^2.0.0",
     "ts-jest": "^29.0.5",

@@ -146,6 +146,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'number',
           describe: 'The upper limit in milliseconds for the delay between fetch retries',
         },
+        httpCache: {
+          type: 'boolean',
+          describe: 'Enables HTTP-level caching',
+        },
         unionDefaultGraph: {
           type: 'boolean',
           describe: 'If the default graph should also contain the union of all named graphs',
