@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-serialize-n3",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "description": "A n3 rdf-serialize actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-serialize": "^4.4.0",
+    "@comunica/bus-rdf-serialize": "^4.5.0",
     "n3": "^1.17.0"
   }
 }

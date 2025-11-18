@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-function-factory-term-subtraction",
-  "version": "4.4.1",
+  "version": "4.5.0",
   "description": "A term-subtraction function-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,9 +37,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^4.4.1",
-    "@comunica/context-entries": "^4.4.1",
-    "@comunica/utils-expression-evaluator": "^4.4.1",
+    "@comunica/bus-function-factory": "^4.5.0",
+    "@comunica/context-entries": "^4.5.0",
+    "@comunica/utils-expression-evaluator": "^4.5.0",
     "bignumber.js": "^9.1.2"
   }
 }

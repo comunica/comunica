@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-term-comparator-factory-expression-evaluator",
-  "version": "4.4.1",
+  "version": "4.5.0",
   "description": "A expression-evaluator term-comparator-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,13 +37,13 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-expression-evaluator-factory-default": "^4.4.1",
-    "@comunica/bus-function-factory": "^4.4.1",
-    "@comunica/bus-term-comparator-factory": "^4.4.1",
-    "@comunica/context-entries": "^4.4.1",
-    "@comunica/core": "^4.4.0",
-    "@comunica/utils-bindings-factory": "^4.4.0",
-    "@comunica/utils-expression-evaluator": "^4.4.1",
+    "@comunica/actor-expression-evaluator-factory-default": "^4.5.0",
+    "@comunica/bus-function-factory": "^4.5.0",
+    "@comunica/bus-term-comparator-factory": "^4.5.0",
+    "@comunica/context-entries": "^4.5.0",
+    "@comunica/core": "^4.5.0",
+    "@comunica/utils-bindings-factory": "^4.5.0",
+    "@comunica/utils-expression-evaluator": "^4.5.0",
     "@rdfjs/types": "*"
   }
 }
