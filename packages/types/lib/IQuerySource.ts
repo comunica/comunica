@@ -193,6 +193,7 @@ export type FragmentSelectorShape = {
   variablesOptional?: RDF.Variable[];
   /**
    * Children of this operation.
+   * If this field is not set, then all operations defined at the top level of the shape are allowed as children.
    */
   children?: FragmentSelectorShape[];
   /**

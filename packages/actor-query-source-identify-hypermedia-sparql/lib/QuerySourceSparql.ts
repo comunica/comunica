@@ -133,6 +133,13 @@ export class QuerySourceSparql implements IQuerySource {
               {
                 type: 'operation',
                 operation: { operationType: 'type', type: Algebra.types.CONSTRUCT },
+                children: [
+                  {
+                    type: 'operation',
+                    operation: { operationType: 'wildcard' },
+                    joinBindings: true,
+                  },
+                ],
               },
             ],
           },
