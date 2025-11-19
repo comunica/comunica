@@ -208,6 +208,7 @@
     "@comunica/actor-query-process-explain-logical": "^4.4.1",
     "@comunica/actor-query-process-explain-parsed": "^4.4.1",
     "@comunica/actor-query-process-explain-physical": "^4.4.1",
+    "@comunica/actor-query-process-explain-query": "^4.4.1",
     "@comunica/actor-query-process-sequential": "^4.4.1",
     "@comunica/actor-query-result-serialize-json": "^4.4.0",
     "@comunica/actor-query-result-serialize-rdf": "^4.4.0",

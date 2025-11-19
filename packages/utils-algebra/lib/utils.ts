@@ -53,7 +53,7 @@ export function isKnownSubType<
 // ----------------------- manipulators --------------------
 
 type _NeedRefForReusabilityWithoutExplicitTypeDefinition = TraqulaAlgebra.Operation;
-const transformer = new TransformerSubTyped<KnownOperation>({
+export const transformer = new TransformerSubTyped<KnownOperation>({
   /**
    * Metadata often contains references to actors,
    * the transformer should not copy these actors, nor should it traverse the actors when visitingOperations.
