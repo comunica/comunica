@@ -198,7 +198,7 @@ IActorTestQueryResultSerializeHandle
   );
   addTest<IActionQuerySourceIdentify, IActorQuerySourceIdentifyOutput>(
     'query-source-identify',
-    ':query-operation/actors#service',
+    ':optimize-query-operation/actors#query-source-identify',
     'mediatorQuerySourceIdentify',
     { querySourceUnidentified: { value: 'abc' }},
     `Query source identification failed: none of the configured actors were able to identify abc`,
@@ -340,6 +340,9 @@ IMediatorTypeJoinCoefficients
         });
 
         it('mediator rejects', async() => {
+          if (!mediator) {
+            throw new Error(`Could not find the mediator in '${mediatorAccessorActorName}' through '${mediatorAccessorActorMediatorField}'`);
+          }
           await expect(mediator.mediate(<I> { ...action, context })).rejects.toThrow(failMessage);
         });
       });

@@ -295,6 +295,12 @@ export const KeysQueryOperation = {
    * The sources to query over.
    */
   querySources: new ActionContextKey<IQuerySourceWrapper[]>('@comunica/bus-query-operation:querySources'),
+  /**
+   * A mapping of SERVICE targets to sources.
+   */
+  serviceSources: new ActionContextKey<Record<string, IQuerySourceWrapper>>(
+    '@comunica/bus-query-operation:serviceSources',
+  ),
 };
 
 export const KeysRdfParseJsonLd = {

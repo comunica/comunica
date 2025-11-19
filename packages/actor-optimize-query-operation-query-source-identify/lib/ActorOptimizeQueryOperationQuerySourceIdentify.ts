@@ -19,12 +19,15 @@ import type {
   QuerySourceUnidentified,
   QuerySourceUnidentifiedExpanded,
 } from '@comunica/types';
+import { Algebra, algebraUtils } from '@comunica/utils-algebra';
+import { passFullOperationToSource } from '@comunica/utils-query-operation';
 import { LRUCache } from 'lru-cache';
 
 /**
  * A comunica Query Source Identify Optimize Query Operation Actor.
  */
 export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimizeQueryOperation {
+  public readonly serviceForceSparqlEndpoint: boolean;
   public readonly cacheSize: number;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
@@ -33,6 +36,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
 
   public constructor(args: IActorOptimizeQueryOperationQuerySourceIdentifyArgs) {
     super(args);
+    this.serviceForceSparqlEndpoint = args.serviceForceSparqlEndpoint;
     this.cacheSize = args.cacheSize;
     this.httpInvalidator = args.httpInvalidator;
     this.mediatorQuerySourceIdentify = args.mediatorQuerySourceIdentify;
@@ -54,12 +58,13 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
     let context = action.context;
 
     // Rewrite sources
+    let querySources: IQuerySourceWrapper[] | undefined;
     if (context.has(KeysInitQuery.querySourcesUnidentified)) {
       const querySourcesUnidentified: QuerySourceUnidentified[] = action.context
         .get(KeysInitQuery.querySourcesUnidentified)!;
       const querySourcesUnidentifiedExpanded = await Promise.all(querySourcesUnidentified
         .map(querySource => this.expandSource(querySource)));
-      const querySources: IQuerySourceWrapper[] = await Promise.all(querySourcesUnidentifiedExpanded
+      querySources = await Promise.all(querySourcesUnidentifiedExpanded
         .map(async querySourceUnidentified => this.identifySource(querySourceUnidentified, action.context)));
 
       // When identifying sources in preprocess actor, we record this as a dereference seed document event
@@ -76,9 +81,32 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
         }
       }
 
-      context = action.context
+      context = context
         .delete(KeysInitQuery.querySourcesUnidentified)
         .set(KeysQueryOperation.querySources, querySources);
+    }
+
+    // Identify sources of SERVICE targets, unless the whole query is passed to the source (e.g. for SPARQL endpoints)
+    if (!await passFullOperationToSource(action.operation, querySources ?? [], context)) {
+      const services: Set<string> = new Set();
+      algebraUtils.visitOperation(action.operation, {
+        [Algebra.Types.SERVICE]: {
+          preVisitor: () => ({ continue: false }),
+          visitor: (serviceOperation) => {
+            if (serviceOperation.name.termType === 'NamedNode') {
+              services.add(serviceOperation.name.value);
+            }
+          },
+        },
+      });
+      const serviceSources: Record<string, IQuerySourceWrapper> = Object.fromEntries(await Promise.all([ ...services ]
+        .map(async service => [ service, await this.identifySource({
+          type: this.serviceForceSparqlEndpoint ? 'sparql' : undefined,
+          value: service,
+        }, context) ])));
+      if (services.size > 0) {
+        context = context.set(KeysQueryOperation.serviceSources, serviceSources);
+      }
     }
 
     return { context, operation: action.operation };
@@ -124,6 +152,11 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
 }
 
 export interface IActorOptimizeQueryOperationQuerySourceIdentifyArgs extends IActorOptimizeQueryOperationArgs {
+  /**
+   * If the SERVICE target should be assumed to be a SPARQL endpoint.
+   * @default {false}
+   */
+  serviceForceSparqlEndpoint: boolean;
   /**
    * The maximum number of entries in the LRU cache, set to 0 to disable.
    * @range {integer}

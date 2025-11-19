@@ -4,16 +4,16 @@ import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comu
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
-import {
-  ActorRdfUpdateQuadsDestination,
-  getContextDestination,
-  getContextDestinationUrl,
-  getDataDestinationType,
-} from '@comunica/bus-rdf-update-quads';
+import { ActorRdfUpdateQuadsDestination } from '@comunica/bus-rdf-update-quads';
 import type { IActionRdfUpdateQuads, IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { IActionContext, ICachePolicy, IDataDestination } from '@comunica/types';
+import {
+  getContextDestination,
+  getContextDestinationUrl,
+  getDataDestinationType,
+} from '@comunica/utils-query-operation';
 import { LRUCache } from 'lru-cache';
 
 /**

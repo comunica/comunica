@@ -42,7 +42,6 @@
   },
   "dependencies": {
     "@comunica/bus-optimize-query-operation": "^4.4.0",
-    "@comunica/bus-rdf-update-quads": "^4.4.1",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
     "@comunica/types": "^4.4.0",

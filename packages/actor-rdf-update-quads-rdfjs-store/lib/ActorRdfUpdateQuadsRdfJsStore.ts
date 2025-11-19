@@ -3,11 +3,12 @@ import type {
   IActorRdfUpdateQuadsArgs,
   IQuadDestination,
 } from '@comunica/bus-rdf-update-quads';
-import { ActorRdfUpdateQuadsDestination, getContextDestination } from '@comunica/bus-rdf-update-quads';
+import { ActorRdfUpdateQuadsDestination } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { getContextDestination } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { RdfJsQuadDestination } from './RdfJsQuadDestination';
 

@@ -1035,6 +1035,46 @@ WHERE {
       });
     });
 
+    describe('on multiple sources', () => {
+      it('with an explicit SERVICE clause without sources in context', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT ?movie ?title ?name
+WHERE {
+  SERVICE <https://fragments.dbpedia.org/2016-04/en> {
+    ?movie dbpedia-owl:starring [ rdfs:label "Brad Pitt"@en ];
+         rdfs:label ?title;
+         dbpedia-owl:director [ rdfs:label ?name ].
+    FILTER LANGMATCHES(LANG(?title), "EN")
+    FILTER LANGMATCHES(LANG(?name),  "EN")
+  }
+}`, {
+          sources: [],
+        });
+        await expect(bindingsStream.toArray()).resolves.toHaveLength(43);
+      });
+
+      it('with explicit SERVICE clauses without sources in context', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT ?person ?name ?book ?title {
+  SERVICE <https://fragments.dbpedia.org/2016-04/en> {
+    ?person dbpedia-owl:birthPlace [ rdfs:label "San Francisco"@en ].
+  }
+  SERVICE <https://data.linkeddatafragments.org/viaf> {
+    ?viafID schema:sameAs ?person;
+               schema:name ?name.
+  }
+  SERVICE <https://data.linkeddatafragments.org/harvard> {
+    ?book dc:contributor [ foaf:name ?name ];
+              dc:title ?title.
+  }
+} LIMIT 10
+`, {
+          sources: [],
+        });
+        await expect(bindingsStream.toArray()).resolves.toHaveLength(10);
+      });
+    });
+
     describe('property paths', () => {
       it('should handle zero-or-more paths with lists', async() => {
         const context: QueryStringContext = {

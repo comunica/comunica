@@ -5,6 +5,9 @@
 An [Optimize Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation) actor
 that identifies all query sources in the context using
 the [Query Source Identify bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-identify).
+It will store all query sources in the context using `KeysQueryOperation.querySources`,
+and sources corresponding to the SERVICE clauses within the query will be stored
+using `KeysQueryOperation.serviceSources`.
 
 This actor also contains a cache so that identical sources will be reused across multiple query executions.
 This cache can be invalidated via `engine.invalidateHttpCache()`.
@@ -43,6 +46,7 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
+* `serviceForceSparqlEndpoint`: Optional flag indicating if the SERVICE target should be assumed to be a SPARQL endpoint, defaults to `false`.
 * `cacheSize`: The maximum number of entries in the LRU cache, set to 0 to disable, defaults to 100.
 * `httpInvalidator`: An optional actor that listens to HTTP invalidation events.
 * `mediatorQuerySourceIdentify`: A mediator over the [Query Source Identify bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-identify).

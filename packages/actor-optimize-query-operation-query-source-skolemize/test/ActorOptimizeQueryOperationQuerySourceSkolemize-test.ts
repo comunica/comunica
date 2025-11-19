@@ -31,7 +31,9 @@ describe('ActorOptimizeQueryOperationQuerySourceSkolemize', () => {
       it('with an empty context', async() => {
         const contextIn = new ActionContext();
         const { context: contextOut } = await actor.run({ context: contextIn, operation });
-        expect(contextOut).toEqual(new ActionContext({}));
+        expect(contextOut).toEqual(new ActionContext({
+          [KeysQuerySourceIdentify.sourceIds.name]: new Map(),
+        }));
       });
 
       it('with sources', async() => {

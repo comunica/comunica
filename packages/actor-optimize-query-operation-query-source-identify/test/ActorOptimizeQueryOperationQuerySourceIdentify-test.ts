@@ -7,16 +7,22 @@ import type { IAction } from '@comunica/core';
 import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
 import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
 import type { IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
-import type { Algebra } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationQuerySourceIdentify } from '../lib/ActorOptimizeQueryOperationQuerySourceIdentify';
 import '@comunica/utils-jest';
+
+const AF = new AlgebraFactory();
+const DF = new DataFactory();
 
 describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
   let bus: any;
   let mediatorContextPreprocess: MediatorOptimizeQueryOperation;
   let contextIn: IActionContext;
   let operation: Algebra.Operation;
+  let operationService: Algebra.Operation;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -26,6 +32,10 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       },
     };
     operation = <any> {};
+    operationService = AF.createJoin([
+      AF.createService(<any> {}, DF.namedNode('source1')),
+      AF.createService(<any> {}, DF.namedNode('source2')),
+    ]);
   });
 
   describe('An ActorOptimizeQueryOperationQuerySourceIdentify instance', () => {
@@ -36,9 +46,23 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
 
     beforeEach(() => {
       mediatorQuerySourceIdentify = <any> {
-        async mediate(action: IActionQuerySourceIdentify) {
+        mediate: jest.fn(async(action: IActionQuerySourceIdentify) => {
+          if (action.querySourceUnidentified.value === 'sourceSparql') {
+            return { querySource: <any> {
+              ofUnidentified: action.querySourceUnidentified,
+              source: {
+                getSelectorShape() {
+                  return {
+                    type: 'operation',
+                    operation: { operationType: 'wildcard' },
+                    joinBindings: true,
+                  };
+                },
+              },
+            }};
+          }
           return { querySource: <any> { ofUnidentified: action.querySourceUnidentified }};
-        },
+        }),
       };
       httpInvalidator = <any>{
         addInvalidateListener: (l: any) => listener = l,
@@ -46,6 +70,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       actor = new ActorOptimizeQueryOperationQuerySourceIdentify({
         name: 'actor',
         bus,
+        serviceForceSparqlEndpoint: false,
         cacheSize: 10,
         httpInvalidator,
         mediatorQuerySourceIdentify,
@@ -82,6 +107,52 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         ]);
         const { context: contextOut } = await actor.run({ context: contextIn, operation });
         expect(contextOut).not.toBe(contextIn);
+        expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
+          { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
+          { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+          { ofUnidentified: expect.objectContaining({ value: source3 }) },
+        ]);
+      });
+
+      it('with SERVICE clauses', async() => {
+        const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+        expect(contextOut).not.toBe(contextIn);
+        expect(contextOut.get(KeysQueryOperation.serviceSources)).toEqual({
+          source1: { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
+          source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+        });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorQuerySourceIdentify.mediate)
+          .toHaveBeenCalledWith({ querySourceUnidentified: { value: 'source1' }, context: expect.anything() });
+        expect(mediatorQuerySourceIdentify.mediate)
+          .toHaveBeenCalledWith({ querySourceUnidentified: { value: 'source2' }, context: expect.anything() });
+      });
+
+      it('with SERVICE clauses but the single source accepts the full query', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          'sourceSparql',
+        ]);
+        const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+        expect(contextOut).not.toBe(contextIn);
+        expect(contextOut.has(KeysQueryOperation.serviceSources)).toBeFalsy();
+        expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
+          { ofUnidentified: expect.objectContaining({ value: 'sourceSparql' }), source: expect.anything() },
+        ]);
+      });
+
+      it('with SERVICE clauses and multiple sources', async() => {
+        const source3 = RdfStore.createDefault();
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          'source1',
+          { value: 'source2' },
+          source3,
+        ]);
+        const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+        expect(contextOut).not.toBe(contextIn);
+        expect(contextOut.get(KeysQueryOperation.serviceSources)).toEqual({
+          source1: { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
+          source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+        });
         expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
           { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
           { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
@@ -227,6 +298,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         actor = new ActorOptimizeQueryOperationQuerySourceIdentify({
           name: 'actor',
           bus,
+          serviceForceSparqlEndpoint: false,
           cacheSize: 0,
           httpInvalidator,
           mediatorQuerySourceIdentify,
@@ -283,6 +355,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       actor = new ActorOptimizeQueryOperationQuerySourceIdentify({
         name: 'actor',
         bus,
+        serviceForceSparqlEndpoint: false,
         cacheSize: 0,
         httpInvalidator,
         mediatorQuerySourceIdentify,
@@ -317,6 +390,53 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
       expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
         .not.toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+    });
+  });
+
+  describe('An ActorOptimizeQueryOperationQuerySourceIdentify instance with serviceForceSparqlEndpoint', () => {
+    let actor: ActorOptimizeQueryOperationQuerySourceIdentify;
+    let mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
+    let httpInvalidator: ActorHttpInvalidateListenable;
+
+    beforeEach(() => {
+      mediatorQuerySourceIdentify = <any> {
+        mediate: jest.fn(async(action: IActionQuerySourceIdentify) => {
+          return {
+            querySource: <any> { ofUnidentified: action.querySourceUnidentified, source: { referenceValue: 'abc' }},
+          };
+        }),
+      };
+      httpInvalidator = <any>{
+        addInvalidateListener: jest.fn(),
+      };
+      actor = new ActorOptimizeQueryOperationQuerySourceIdentify({
+        name: 'actor',
+        bus,
+        serviceForceSparqlEndpoint: true,
+        cacheSize: 0,
+        httpInvalidator,
+        mediatorQuerySourceIdentify,
+        mediatorContextPreprocess,
+      });
+      contextIn = new ActionContext();
+    });
+
+    it('with SERVICE clauses', async() => {
+      const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+      expect(contextOut).not.toBe(contextIn);
+      expect(contextOut.get(KeysQueryOperation.serviceSources)).toEqual({
+        source1: { ofUnidentified: expect.objectContaining({ value: 'source1' }), source: { referenceValue: 'abc' }},
+        source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }), source: { referenceValue: 'abc' }},
+      });
+      expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(2);
+      expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
+        querySourceUnidentified: { type: 'sparql', value: 'source1' },
+        context: expect.anything(),
+      });
+      expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
+        querySourceUnidentified: { type: 'sparql', value: 'source2' },
+        context: expect.anything(),
+      });
     });
   });
 });

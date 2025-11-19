@@ -69,7 +69,10 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     const sources = this.getSources(operation);
     // eslint-disable-next-line ts/no-unnecessary-type-assertion
     const sourceShapes = new Map(<[IQuerySourceWrapper, FragmentSelectorShape][]> await Promise.all(sources
-      .map(async source => [ source, await source.source.getSelectorShape(action.context) ])));
+      .map(async source => [
+        source,
+        await source.source.getSelectorShape(source.context ? action.context.merge(source.context) : action.context),
+      ])));
 
     // Push down all filters
     // We loop until no more filters can be pushed down.

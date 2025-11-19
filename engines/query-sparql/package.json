@@ -223,7 +223,6 @@
     "@comunica/actor-query-operation-path-zero-or-one": "^4.4.1",
     "@comunica/actor-query-operation-project": "^4.4.1",
     "@comunica/actor-query-operation-reduced-hash": "^4.4.1",
-    "@comunica/actor-query-operation-service": "^4.4.1",
     "@comunica/actor-query-operation-slice": "^4.4.1",
     "@comunica/actor-query-operation-source": "^4.4.1",
     "@comunica/actor-query-operation-union": "^4.4.1",

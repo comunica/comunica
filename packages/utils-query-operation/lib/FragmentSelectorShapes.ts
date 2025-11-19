@@ -1,5 +1,7 @@
-import type { FragmentSelectorShape } from '@comunica/types';
+import { KeysRdfUpdateQuads } from '@comunica/context-entries';
+import type { FragmentSelectorShape, IActionContext, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, algebraUtils, isKnownSubType } from '@comunica/utils-algebra';
+import { getDataDestinationValue } from './Utils';
 
 /**
  * Check if the given shape accepts the given query operation.
@@ -157,3 +159,26 @@ export type FragmentSelectorShapeTestFlags = {
   filterBindings?: boolean;
   wildcardAcceptAllExtensionFunctions?: boolean;
 };
+
+export async function passFullOperationToSource(
+  operation: Algebra.Operation,
+  sources: IQuerySourceWrapper[],
+  context: IActionContext,
+): Promise<boolean> {
+  if (sources.length === 1) {
+    const sourceWrapper = sources[0];
+    const destination: IDataDestination | undefined = context.get(KeysRdfUpdateQuads.destination);
+    if (!destination || sourceWrapper.source.referenceValue === getDataDestinationValue(destination)) {
+      try {
+        const shape = await sourceWrapper.source.getSelectorShape(context);
+        if (doesShapeAcceptOperation(shape, operation)) {
+          return true;
+        }
+      } catch {
+        // Fallback to the default case when the selector shape does not exist,
+        // which can occur for a non-existent destination.
+      }
+    }
+  }
+  return false;
+}
