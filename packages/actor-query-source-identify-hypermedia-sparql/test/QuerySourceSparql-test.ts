@@ -1,4 +1,5 @@
 import { PassThrough } from 'node:stream';
+import { ActorQuerySerializeSparql } from '@comunica/actor-query-serialize-sparql';
 import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, IDataset, QueryResultCardinality } from '@comunica/types';
@@ -74,6 +75,11 @@ describe('QuerySourceSparql', () => {
       };
     }),
   };
+  const mediatorQuerySerialize: any = {
+    mediate: jest.fn((action: any) => new ActorQuerySerializeSparql(<any> {
+      bus: { subscribe: jest.fn() },
+    }).run(action)),
+  };
   let source: QuerySourceSparql;
 
   beforeEach(() => {
@@ -88,6 +94,7 @@ describe('QuerySourceSparql', () => {
       url,
       ctx,
       mediatorHttp,
+      mediatorQuerySerialize,
       'values',
       DF,
       AF,
@@ -246,6 +253,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -322,6 +330,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -400,6 +409,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -466,6 +476,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -590,6 +601,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -660,6 +672,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -734,6 +747,7 @@ describe('QuerySourceSparql', () => {
         `${url}backup`,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -778,6 +792,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -845,6 +860,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -916,6 +932,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -973,6 +990,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1039,6 +1057,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1112,6 +1131,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1197,6 +1217,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1231,6 +1252,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1281,6 +1303,7 @@ describe('QuerySourceSparql', () => {
           url,
           ctx,
           mediatorHttp,
+          mediatorQuerySerialize,
           'values',
           DF,
           AF,
@@ -1366,7 +1389,7 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
-      expect(lastQuery).toBe(`query=SELECT+%3Fp+WHERE+%7B+VALUES%28+%29%7B+%7D%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
+      expect(lastQuery).toBe(`query=SELECT+%28+COUNT%28+*+%29+AS+%3Fcount+%29+WHERE+%7B+VALUES%28+%29%7B+%7D%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context: ctx,
@@ -1401,7 +1424,7 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
-      expect(lastQuery).toBe(`query=SELECT+%3Fp+WHERE+%7B+VALUES%28+%29%7B+%7D%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
+      expect(lastQuery).toBe(`query=SELECT+%28+COUNT%28+*+%29+AS+%3Fcount+%29+WHERE+%7B+VALUES%28+%29%7B+%7D%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context: ctx.set(KeysInitQuery.queryString, 'abc'),
@@ -1469,6 +1492,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1595,6 +1619,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1649,6 +1674,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1702,6 +1728,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1756,6 +1783,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1791,6 +1819,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1857,6 +1886,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1904,6 +1934,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -1958,6 +1989,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2006,6 +2038,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2059,6 +2092,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2106,6 +2140,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         thisMediator,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2284,7 +2319,7 @@ describe('QuerySourceSparql', () => {
     const operation = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
 
     it('should return existing estimate from cache when available', async() => {
-      const key = source.operationToNormalizedCountQuery(operation);
+      const key = await source.operationToNormalizedCountQuery(operation);
       const cardinality: QueryResultCardinality = {
         type: 'estimate',
         value: 987654,
@@ -2319,6 +2354,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2349,6 +2385,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2388,6 +2425,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2431,6 +2469,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2482,6 +2521,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2506,6 +2546,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2530,6 +2571,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2554,6 +2596,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2578,6 +2621,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,
@@ -2602,6 +2646,7 @@ describe('QuerySourceSparql', () => {
         url,
         ctx,
         mediatorHttp,
+        mediatorQuerySerialize,
         'values',
         DF,
         AF,

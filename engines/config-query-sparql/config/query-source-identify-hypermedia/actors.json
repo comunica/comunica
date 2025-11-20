@@ -21,7 +21,8 @@
       "@id": "urn:comunica:default:query-source-identify-hypermedia/actors#sparql",
       "@type": "ActorQuerySourceIdentifyHypermediaSparql",
       "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
-      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
+      "mediatorQuerySerialize": { "@id": "urn:comunica:default:query-serialize/mediators#main" }
     },
     {
       "@id": "urn:comunica:default:query-source-identify-hypermedia/actors#none",

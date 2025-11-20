@@ -1,5 +1,6 @@
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
+import type { MediatorQuerySerialize } from '@comunica/bus-query-serialize';
 import type {
   IActionQuerySourceIdentifyHypermedia,
   IActorQuerySourceIdentifyHypermediaOutput,
@@ -23,6 +24,7 @@ import { QuerySourceSparql } from './QuerySourceSparql';
 export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceIdentifyHypermedia {
   public readonly mediatorHttp: MediatorHttp;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  public readonly mediatorQuerySerialize: MediatorQuerySerialize;
   public readonly checkUrlSuffix: boolean;
   public readonly forceHttpGet: boolean;
   public readonly cacheSize: number;
@@ -37,6 +39,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     super(args, 'sparql');
     this.mediatorHttp = args.mediatorHttp;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
+    this.mediatorQuerySerialize = args.mediatorQuerySerialize;
     this.checkUrlSuffix = args.checkUrlSuffix;
     this.forceHttpGet = args.forceHttpGet;
     this.cacheSize = args.cacheSize;
@@ -70,6 +73,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       action.url,
       action.context,
       this.mediatorHttp,
+      this.mediatorQuerySerialize,
       this.bindMethod,
       dataFactory,
       algebraFactory,
@@ -97,6 +101,10 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * A mediator for creating binding context merge handlers
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  /**
+   * Mediator for serializing queries.
+   */
+  mediatorQuerySerialize: MediatorQuerySerialize;
   /**
    * If URLs ending with '/sparql' should also be considered SPARQL endpoints.
    * @default {true}

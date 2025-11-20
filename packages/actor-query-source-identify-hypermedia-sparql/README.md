@@ -30,7 +30,8 @@ After installing, this package can be added to your engine's configuration as fo
       "@id": "urn:comunica:default:query-source-identify-hypermedia/actors#sparql",
       "@type": "ActorQuerySourceIdentifyHypermediaSparql",
       "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
-      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
+      "mediatorQuerySerialize": { "@id": "urn:comunica:default:query-serialize/mediators#main" }
     }
   ]
 }
@@ -40,6 +41,7 @@ After installing, this package can be added to your engine's configuration as fo
 
 * `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
 * `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).
+* `mediatorQuerySerialize`: A mediator over the [Query Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-serialize).
 * `checkUrlSuffix`: If URLs ending with '/sparql' should also be considered SPARQL endpoints, defaults to `true`.
 * `forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.
 * `forceSourceType`: Forces all sources provided to be interpreted as SPARQL endpoints, defaults to `false`.

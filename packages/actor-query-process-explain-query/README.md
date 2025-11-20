@@ -30,8 +30,13 @@ After installing, this package can be added to your engine's configuration as fo
     ...
     {
       "@id": "urn:comunica:default:query-process/actors#explain-query",
-      "@type": "ActorQueryProcessExplainService"
+      "@type": "ActorQueryProcessExplainService",
+      "mediatorQuerySerialize": { "@id": "urn:comunica:default:query-serialize/mediators#main" }
     }
   ]
 }
 ```
+
+### Config Parameters
+
+* `mediatorQuerySerialize`: A mediator over the [Query Serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-serialize).

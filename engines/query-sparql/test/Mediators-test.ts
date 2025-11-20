@@ -26,6 +26,7 @@ import type {
   IActorTestQueryResultSerializeHandle,
 } from '@comunica/bus-query-result-serialize';
 
+import type { IActionQuerySerialize, IActorQuerySerializeOutput } from '@comunica/bus-query-serialize';
 import type {
   IActionQuerySourceDereferenceLink,
   IActorQuerySourceDereferenceLinkOutput,
@@ -189,6 +190,16 @@ IActorTestQueryResultSerializeHandle
   { handle: { type: 'abc', context }},
     `Query result serialization failed: none of the configured actors were able to serialize for type abc`,
 );
+  addTest<
+    IActionQuerySerialize,
+    IActorQuerySerializeOutput
+  >(
+    'query-serialize',
+    ':query-source-identify-hypermedia/actors#sparql',
+    'mediatorQuerySerialize',
+    { queryFormat: { language: 'sparql', version: '1.1' }, operation: <any> {}},
+    `Query serializing failed: none of the configured parsers were able to serialize for the query language "sparql" at version "1.1"`,
+  );
   addTest<IActionQuerySourceDereferenceLink, IActorQuerySourceDereferenceLinkOutput>(
     'query-source-dereference-link',
     ':query-source-identify/actors#hypermedia',

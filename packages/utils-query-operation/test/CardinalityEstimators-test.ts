@@ -37,9 +37,9 @@ describe('CardinalityEstimators', () => {
     const pattern1 = AF.createPattern(DF.variable('s'), DF.variable('p1'), DF.variable('o1'));
     const pattern2 = AF.createPattern(DF.variable('s'), DF.variable('p2'), DF.variable('o2'));
 
-    it('should return estimated infinity for an unsupported operation', () => {
+    it('should return estimated infinity for an unsupported operation', async() => {
       const operation = <Algebra.Operation>{ type: 'unsupported' };
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: Number.POSITIVE_INFINITY,
         dataset: datasetUri,
@@ -48,9 +48,9 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(1, operation);
     });
 
-    it('should return 1 for ask', () => {
+    it('should return 1 for ask', async() => {
       const operation = <Algebra.Operation>{ type: Algebra.Types.ASK };
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'exact',
         value: 1,
         dataset: datasetUri,
@@ -70,9 +70,9 @@ describe('CardinalityEstimators', () => {
       Algebra.Types.CREATE,
       Algebra.Types.MOVE,
       Algebra.Types.COPY,
-    ])('should return exact 0 for %s', (type) => {
+    ])('should return exact 0 for %s', async(type) => {
       const operation = <Algebra.Operation>{ type };
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'exact',
         value: 0,
         dataset: datasetUri,
@@ -85,9 +85,9 @@ describe('CardinalityEstimators', () => {
       Algebra.Types.SERVICE,
       Algebra.Types.DESCRIBE,
       Algebra.Types.EXPRESSION,
-    ])('should return estimated infinity for %s', (type) => {
+    ])('should return estimated infinity for %s', async(type) => {
       const operation = <Algebra.Operation>{ type };
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: Number.POSITIVE_INFINITY,
         dataset: datasetUri,
@@ -107,9 +107,9 @@ describe('CardinalityEstimators', () => {
       Algebra.Types.EXTEND,
       Algebra.Types.FROM,
       Algebra.Types.GRAPH,
-    ])('should return estimate for %s using input', (type) => {
+    ])('should return estimate for %s using input', async(type) => {
       const operation = <Algebra.Operation>{ type, input: pattern1 };
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 2,
         dataset: datasetUri,
@@ -124,9 +124,9 @@ describe('CardinalityEstimators', () => {
       Algebra.Types.ZERO_OR_MORE_PATH,
       Algebra.Types.ONE_OR_MORE_PATH,
       Algebra.Types.INV,
-    ])('should return estimate for %s using path', (type) => {
+    ])('should return estimate for %s using path', async(type) => {
       const operation = <Algebra.Operation>{ type, path: pattern1 };
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 2,
         dataset: datasetUri,
@@ -140,9 +140,9 @@ describe('CardinalityEstimators', () => {
       Algebra.Types.UNION,
       Algebra.Types.SEQ,
       Algebra.Types.ALT,
-    ])('should return estimate for %s using input', (type) => {
+    ])('should return estimate for %s using input', async(type) => {
       const operation = <Algebra.Operation>{ type, input: [ pattern1, pattern2 ]};
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 4,
         dataset: datasetUri,
@@ -153,10 +153,10 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(3, (<any> operation).input[1]);
     });
 
-    it('should return estimate for join', () => {
+    it('should return estimate for join', async() => {
       const input = [ pattern1, pattern2 ];
       const operation = <Algebra.Operation>{ type: Algebra.Types.JOIN, input };
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 2,
         dataset: datasetUri,
@@ -167,10 +167,10 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(3, (<any> operation).input[1]);
     });
 
-    it('should return estimate for bgp', () => {
+    it('should return estimate for bgp', async() => {
       const patterns = [ pattern1, pattern2 ];
       const operation = <Algebra.Operation>{ type: Algebra.Types.BGP, patterns };
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 2,
         dataset: datasetUri,
@@ -181,9 +181,9 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(3, (<any> operation).patterns[1]);
     });
 
-    it('should return estimate for slice', () => {
+    it('should return estimate for slice', async() => {
       const operation = AF.createSlice(pattern1, 1, 2);
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 1,
         dataset: datasetUri,
@@ -193,9 +193,9 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(2, operation.input);
     });
 
-    it('should return estimate for slice without length', () => {
+    it('should return estimate for slice without length', async() => {
       const operation = AF.createSlice(pattern1, 1);
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 1,
         dataset: datasetUri,
@@ -205,9 +205,9 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(2, operation.input);
     });
 
-    it('should return estimate for slice over nop', () => {
+    it('should return estimate for slice over nop', async() => {
       const operation = AF.createSlice(AF.createNop(), 1, 2);
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'exact',
         value: 0,
         dataset: datasetUri,
@@ -217,9 +217,9 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(2, operation.input);
     });
 
-    it('should return estimate for minus', () => {
+    it('should return estimate for minus', async() => {
       const operation = AF.createMinus(pattern1, pattern2);
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 0,
         dataset: datasetUri,
@@ -230,9 +230,9 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(3, operation.input[1]);
     });
 
-    it('should return estimate for pattern', () => {
+    it('should return estimate for pattern', async() => {
       const operation = pattern1;
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 2,
         dataset: datasetUri,
@@ -241,13 +241,13 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(1, operation);
     });
 
-    it('should return estimate for nps', () => {
+    it('should return estimate for nps', async() => {
       const operation = AF.createNps([ namedNode ]);
       const expectedLink = AF.createLink(namedNode);
       const expectedSeq = AF.createSeq([ expectedLink ]);
       const expectedTotalPattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
       const expectedLinkPattern = AF.createPattern(DF.variable('s'), namedNode, DF.variable('o'));
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 0,
         dataset: datasetUri,
@@ -260,10 +260,10 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(5, expectedTotalPattern);
     });
 
-    it('should return estimate for path', () => {
+    it('should return estimate for path', async() => {
       const expectedPredicatePattern = AF.createPattern(DF.variable('s'), namedNode, DF.variable('o'));
       const operation = AF.createPath(pattern1.subject, AF.createLink(namedNode), pattern1.object);
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 2,
         dataset: datasetUri,
@@ -274,9 +274,9 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(3, expectedPredicatePattern);
     });
 
-    it.each([ 0, 1, 10 ])(`should return estimate for ${Algebra.Types.VALUES} with %d bindings`, (count) => {
+    it.each([ 0, 1, 10 ])(`should return estimate for ${Algebra.Types.VALUES} with %d bindings`, async(count) => {
       const operation = <Algebra.Operation>{ type: Algebra.Types.VALUES, bindings: { length: count }};
-      expect(estimateCardinality(operation, dataset)).toEqual({
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'exact',
         value: count,
         dataset: datasetUri,
@@ -287,8 +287,8 @@ describe('CardinalityEstimators', () => {
   });
 
   describe('estimateUnionCardinality', () => {
-    it('should return 0 without any input', () => {
-      expect(estimateUnionCardinality([], dataset)).toEqual({
+    it('should return 0 without any input', async() => {
+      await expect(estimateUnionCardinality([], dataset)).resolves.toEqual({
         type: 'exact',
         value: 0,
         dataset: datasetUri,
@@ -296,9 +296,9 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).not.toHaveBeenCalled();
     });
 
-    it('should return the sum of input', () => {
+    it('should return the sum of input', async() => {
       const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-      expect(estimateUnionCardinality([ pattern ], dataset)).toEqual({
+      await expect(estimateUnionCardinality([ pattern ], dataset)).resolves.toEqual({
         type: 'estimate',
         value: 2,
         dataset: datasetUri,

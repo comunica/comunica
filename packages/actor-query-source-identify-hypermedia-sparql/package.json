@@ -43,6 +43,7 @@
   "dependencies": {
     "@comunica/bus-http": "^4.4.0",
     "@comunica/bus-merge-bindings-context": "^4.4.0",
+    "@comunica/bus-query-serialize": "^4.4.0",
     "@comunica/bus-query-source-identify-hypermedia": "^4.4.0",
     "@comunica/context-entries": "^4.4.1",
     "@comunica/core": "^4.4.0",
@@ -52,9 +53,6 @@
     "@comunica/utils-metadata": "^4.4.0",
     "@comunica/utils-query-operation": "^4.4.1",
     "@rdfjs/types": "*",
-    "@traqula/algebra-sparql-1-2": "^0.0.24",
-    "@traqula/core": "^0.0.24",
-    "@traqula/generator-sparql-1-2": "^0.0.24",
     "asynciterator": "^3.10.0",
     "fetch-sparql-endpoint": "7.0.0-beta.3",
     "lru-cache": "^11.2.2",

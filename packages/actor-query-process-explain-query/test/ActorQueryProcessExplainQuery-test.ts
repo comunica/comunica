@@ -1,3 +1,4 @@
+import { ActorQuerySerializeSparql } from '@comunica/actor-query-serialize-sparql';
 import type { IQueryProcessSequential } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -51,7 +52,12 @@ describe('ActorQueryProcessExplainQuery', () => {
           };
         },
       };
-      actor = new ActorQueryProcessExplainQuery({ name: 'actor', bus, queryProcessor });
+      const mediatorQuerySerialize: any = {
+        mediate: jest.fn((action: any) => new ActorQuerySerializeSparql(<any> {
+          bus: { subscribe: jest.fn() },
+        }).run(action)),
+      };
+      actor = new ActorQueryProcessExplainQuery({ name: 'actor', bus, queryProcessor, mediatorQuerySerialize });
     });
 
     describe('test', () => {

@@ -10,6 +10,9 @@ import '@comunica/utils-jest';
 const mediatorMergeBindingsContext: any = {
   mediate: () => ({}),
 };
+const mediatorQuerySerialize: any = {
+  mediate: () => ({}),
+};
 
 const DF = new DataFactory();
 
@@ -53,6 +56,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         forceHttpGet: false,
         cacheSize: 1_024,
         mediatorMergeBindingsContext,
+        mediatorQuerySerialize,
         bindMethod: 'values',
         countTimeout: 3_000,
         cardinalityCountQueries: true,
@@ -119,6 +123,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           bindMethod: 'values',
           countTimeout: 3_000,
           mediatorMergeBindingsContext,
+          mediatorQuerySerialize,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
@@ -138,6 +143,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           bindMethod: 'values',
           countTimeout: 3_000,
           mediatorMergeBindingsContext,
+          mediatorQuerySerialize,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
@@ -158,6 +164,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           bindMethod: 'values',
           countTimeout: 3_000,
           mediatorMergeBindingsContext,
+          mediatorQuerySerialize,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
@@ -182,6 +189,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           bindMethod: 'values',
           countTimeout: 3_000,
           mediatorMergeBindingsContext,
+          mediatorQuerySerialize,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
           cacheSize: 0,

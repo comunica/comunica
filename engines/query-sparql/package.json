@@ -250,6 +250,7 @@
     "@comunica/actor-query-result-serialize-stats": "^4.4.1",
     "@comunica/actor-query-result-serialize-table": "^4.4.1",
     "@comunica/actor-query-result-serialize-tree": "^4.4.1",
+    "@comunica/actor-query-serialize-sparql": "^4.4.0",
     "@comunica/actor-query-source-dereference-link-force-sparql": "^4.0.0",
     "@comunica/actor-query-source-dereference-link-hypermedia": "^4.0.0",
     "@comunica/actor-query-source-identify-hypermedia": "^4.4.1",

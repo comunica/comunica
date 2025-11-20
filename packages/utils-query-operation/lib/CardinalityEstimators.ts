@@ -11,11 +11,11 @@ const AF = new AlgebraFactory(DF);
  * Estimate the cardinality of the provided operation using the specified dataset metadata.
  * This is the primary function that should be called to perform cardinality estimation.
  */
-export function estimateCardinality(
+export async function estimateCardinality(
   operation: Algebra.Operation,
   dataset: IDataset,
-): QueryResultCardinality {
-  const estimate = dataset.getCardinality(operation);
+): Promise<QueryResultCardinality> {
+  const estimate = await dataset.getCardinality(operation);
 
   if (estimate) {
     return estimate;
@@ -87,12 +87,12 @@ export function estimateCardinality(
 /**
  * Estimate the cardinality of a minus, by taking into account the input cardinalities.
  */
-export function estimateMinusCardinality(
+export async function estimateMinusCardinality(
   minus: Algebra.Minus,
   dataset: IDataset,
-): QueryResultCardinality {
-  const estimateFirst = estimateCardinality(minus.input[0], dataset);
-  const estimateSecond = estimateCardinality(minus.input[1], dataset);
+): Promise<QueryResultCardinality> {
+  const estimateFirst = await estimateCardinality(minus.input[0], dataset);
+  const estimateSecond = await estimateCardinality(minus.input[1], dataset);
   return {
     type: 'estimate',
     value: Math.max(estimateFirst.value - estimateSecond.value, 0),
@@ -103,11 +103,11 @@ export function estimateMinusCardinality(
 /**
  * Estimate the cardinality of a slice operation, taking into account the input cardinality and the slice range.
  */
-export function estimateSliceCardinality(
+export async function estimateSliceCardinality(
   slice: Algebra.Slice,
   dataset: IDataset,
-): QueryResultCardinality {
-  const estimate = estimateCardinality(slice.input, dataset);
+): Promise<QueryResultCardinality> {
+  const estimate = await estimateCardinality(slice.input, dataset);
   if (estimate.value > 0) {
     estimate.value = Math.max(estimate.value - slice.start, 0);
     if (slice.length !== undefined) {
@@ -120,13 +120,13 @@ export function estimateSliceCardinality(
 /**
  * Estimate the cardinality of a union, using a sum of the individual input cardinalities.
  */
-export function estimateUnionCardinality(
+export async function estimateUnionCardinality(
   input: Algebra.Operation[],
   dataset: IDataset,
-): QueryResultCardinality {
+): Promise<QueryResultCardinality> {
   const estimate: QueryResultCardinality = { type: 'exact', value: 0, dataset: dataset.uri };
   for (const operation of input) {
-    const cardinality = estimateCardinality(operation, dataset);
+    const cardinality = await estimateCardinality(operation, dataset);
     if (cardinality.type === 'estimate' && estimate.type === 'exact') {
       estimate.type = cardinality.type;
     }
@@ -144,10 +144,10 @@ export function estimateUnionCardinality(
  * This should provide a good balance between selective groups of operations,
  * as well as cartesian joins between groups that do not overlap.
  */
-export function estimateJoinCardinality(
+export async function estimateJoinCardinality(
   operations: Algebra.Operation[],
   dataset: IDataset,
-): QueryResultCardinality {
+): Promise<QueryResultCardinality> {
   const operationGroups: { ops: Algebra.Operation[]; vars: Set<string> }[] = [];
   for (const operation of operations) {
     const vars = algebraUtils.inScopeVariables(operation).map(v => v.value);
@@ -163,8 +163,10 @@ export function estimateJoinCardinality(
   }
   const cardinality: QueryResultCardinality = {
     type: 'estimate',
-    value: operationGroups
-      .map(g => Math.min(...g.ops.map(o => estimateCardinality(o, dataset).value)))
+    value: (await Promise.all(operationGroups
+      .map(async g => Math.min(...await Promise.all(
+        g.ops.map(async o => (await estimateCardinality(o, dataset)).value),
+      )))))
       .reduce((acc, cur) => acc * cur, 1),
     dataset: dataset.uri,
   };
@@ -175,14 +177,14 @@ export function estimateJoinCardinality(
  * Estimate the cardinality of a negated property set, by subtracting the non-inversed
  * estimate from the total number of triples.
  */
-export function estimateNpsCardinality(
+export async function estimateNpsCardinality(
   nps: Algebra.Nps,
   dataset: IDataset,
-): QueryResultCardinality {
+): Promise<QueryResultCardinality> {
   const seq = AF.createSeq([ ...nps.iris ].reverse().map(iri => AF.createLink(iri)));
-  const seqCardinality = estimateCardinality(seq, dataset);
+  const seqCardinality = await estimateCardinality(seq, dataset);
   const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-  const patternCardinality = estimateCardinality(pattern, dataset);
+  const patternCardinality = await estimateCardinality(pattern, dataset);
   return {
     type: 'estimate',
     value: Math.max(0, patternCardinality.value - seqCardinality.value),

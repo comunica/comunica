@@ -10,7 +10,8 @@
     {
       "@id": "urn:comunica:default:query-process/actors#explain-query",
       "@type": "ActorQueryProcessExplainQuery",
-      "queryProcessor": { "@id": "urn:comunica:default:query-process/actors#sequential" }
+      "queryProcessor": { "@id": "urn:comunica:default:query-process/actors#sequential" },
+      "mediatorQuerySerialize": { "@id": "urn:comunica:default:query-serialize/mediators#main" }
     }
   ]
 }
