@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-iterator",
-  "version": "4.0.1",
+  "version": "4.5.0",
   "description": "Async iterator utilities",
   "license": "MIT",
   "funding": {

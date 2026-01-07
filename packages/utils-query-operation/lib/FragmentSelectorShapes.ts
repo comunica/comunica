@@ -63,7 +63,7 @@ function doesShapeAcceptOperationRecurseShape(
       return shapeOperation.type === operation.type;
     }
     case 'pattern': {
-      if (doesShapeAcceptOperationRecurseOperationAndShape(shapeTop, shapeActive.children, operation, options) &&
+      if (!doesShapeAcceptOperationRecurseOperationAndShape(shapeTop, shapeActive.children, operation, options) &&
         !doesShapeAcceptOperationRecurseOperation(shapeTop, operation, options)) {
         return false;
       }
@@ -117,8 +117,9 @@ function doesShapeAcceptOperationRecurseOperationAndShape(
         return false;
       }
     }
+    return true;
   }
-  return true;
+  return false;
 }
 
 function doesShapeAcceptOperationRecurseOperation(

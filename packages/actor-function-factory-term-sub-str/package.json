@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-function-factory-term-sub-str",
-  "version": "4.4.1",
+  "version": "4.5.0",
   "description": "A term-sub-str function-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^4.4.1",
-    "@comunica/utils-expression-evaluator": "^4.4.1"
+    "@comunica/bus-function-factory": "^4.5.0",
+    "@comunica/utils-expression-evaluator": "^4.5.0"
   }
 }

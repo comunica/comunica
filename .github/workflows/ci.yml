@@ -25,7 +25,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v6
         with:
@@ -60,7 +60,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
@@ -96,7 +96,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
@@ -105,7 +105,7 @@ jobs:
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile --network-timeout 36000
       - name: Load RDF test suite cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             .rdf-test-suite-cache
@@ -140,7 +140,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v6
         with:
@@ -186,7 +186,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v6
         with:
@@ -214,7 +214,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v6
         with:
@@ -258,7 +258,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
         uses: actions/setup-node@v6
         with:
@@ -268,7 +268,7 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: Run benchmarks
         run: cd performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: performance-benchmark-${{ matrix.benchmark }}
           path: performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
@@ -288,28 +288,28 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
         uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION_HIGHEST }}
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           name: performance-benchmark-watdiv-file
           path: performance/benchmark-watdiv-file/combinations/combination_0/output/
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           name: performance-benchmark-watdiv-tpf
           path: performance/benchmark-watdiv-tpf/combinations/combination_0/output/
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           name: performance-benchmark-bsbm-file
           path: performance/benchmark-bsbm-file/combinations/combination_0/output/
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           name: performance-benchmark-bsbm-tpf
           path: performance/benchmark-bsbm-tpf/combinations/combination_0/output/
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: performance-benchmark-web
           path: performance/benchmark-web/combinations/combination_0/output/
@@ -365,7 +365,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v6
         with:

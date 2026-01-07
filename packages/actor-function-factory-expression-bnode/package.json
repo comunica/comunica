@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-function-factory-expression-bnode",
-  "version": "4.4.1",
+  "version": "4.5.0",
   "description": "A expression-bnode function-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,10 +37,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^4.4.1",
-    "@comunica/context-entries": "^4.4.1",
-    "@comunica/types": "^4.4.0",
+    "@comunica/bus-function-factory": "^4.5.0",
+    "@comunica/context-entries": "^4.5.0",
+    "@comunica/types": "^4.5.0",
     "@comunica/utils-data-factory": "^4.0.1",
-    "@comunica/utils-expression-evaluator": "^4.4.1"
+    "@comunica/utils-expression-evaluator": "^4.5.0"
   }
 }

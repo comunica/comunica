@@ -28,6 +28,13 @@ const SHAPE_SPARQL_1_1: FragmentSelectorShape = {
           {
             type: 'operation',
             operation: { operationType: 'type', type: Algebra.Types.CONSTRUCT },
+            children: [
+              {
+                type: 'operation',
+                operation: { operationType: 'wildcard' },
+                joinBindings: true,
+              },
+            ],
           },
         ],
       },
@@ -88,6 +95,13 @@ describe('FragmentSelectorShapes', () => {
           {
             type: 'operation',
             operation: { operationType: 'type', type: Algebra.Types.CONSTRUCT },
+            children: [
+              {
+                type: 'operation',
+                operation: { operationType: 'wildcard' },
+                joinBindings: true,
+              },
+            ],
           },
         ],
       }, AF.createDistinct(AF.createConstruct(AF.createNop(), [])))).toBeTruthy();
@@ -225,6 +239,118 @@ describe('FragmentSelectorShapes', () => {
       }, AF.createUnion([]))).toBeFalsy();
     });
 
+    describe('for a large disjunction', () => {
+      const shape: FragmentSelectorShape = {
+        type: 'disjunction',
+        children: [
+          {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.Types.PROJECT },
+          },
+          {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.Types.PATTERN },
+          },
+          {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.Types.SLICE },
+          },
+          {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.Types.BGP },
+          },
+          {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.Types.JOIN },
+          },
+          {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.Types.EXTEND },
+          },
+          {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.Types.UNION },
+          },
+          {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.Types.VALUES },
+          },
+          {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.Types.FILTER },
+          },
+          {
+            type: 'operation',
+            operation: { operationType: 'type', type: Algebra.Types.LEFT_JOIN },
+          },
+        ],
+      };
+
+      it('should not accept property paths', () => {
+        expect(doesShapeAcceptOperation(shape, AF.createPath(
+          <any> undefined,
+          <any> undefined,
+          <any> undefined,
+        ))).toBeFalsy();
+      });
+
+      it('should not accept property paths in a join', () => {
+        expect(doesShapeAcceptOperation(shape, AF.createJoin([
+          AF.createPath(
+            <any> undefined,
+            <any> undefined,
+            <any> undefined,
+          ),
+          AF.createPath(
+            <any> undefined,
+            <any> undefined,
+            <any> undefined,
+          ),
+        ]))).toBeFalsy();
+      });
+
+      it('should not accept property paths in a join in a projection', () => {
+        expect(doesShapeAcceptOperation(shape, AF.createProject(
+          AF.createJoin([
+            AF.createPath(
+              <any> undefined,
+              <any> undefined,
+              <any> undefined,
+            ),
+            AF.createPath(
+              <any> undefined,
+              <any> undefined,
+              <any> undefined,
+            ),
+          ]),
+          [],
+        ))).toBeFalsy();
+      });
+
+      it('should accept property paths', () => {
+        expect(doesShapeAcceptOperation(shape, AF.createPattern(
+          <any> undefined,
+          <any> undefined,
+          <any> undefined,
+        ))).toBeTruthy();
+      });
+
+      it('should accept property paths in a join', () => {
+        expect(doesShapeAcceptOperation(shape, AF.createJoin([
+          AF.createPattern(
+            <any> undefined,
+            <any> undefined,
+            <any> undefined,
+          ),
+          AF.createPattern(
+            <any> undefined,
+            <any> undefined,
+            <any> undefined,
+          ),
+        ]))).toBeTruthy();
+      });
+    });
+
     it('should accept valid negation', () => {
       expect(doesShapeAcceptOperation({
         type: 'negation',
@@ -273,6 +399,13 @@ describe('FragmentSelectorShapes', () => {
             {
               type: 'operation',
               operation: { operationType: 'type', type: Algebra.Types.CONSTRUCT },
+              children: [
+                {
+                  type: 'operation',
+                  operation: { operationType: 'wildcard' },
+                  joinBindings: true,
+                },
+              ],
             },
           ],
         },

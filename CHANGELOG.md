@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v4.5.0"></a>
+## [v4.5.0](https://github.com/comunica/comunica/compare/v4.4.1...v4.5.0) - 2025-11-18
+
+### Added
+* [Handle sd:propertyFeature in SPARQL endpoints](https://github.com/comunica/comunica/commit/e7949c4b2c77df52ab58c66e5eb95dde53147cdc)
+
+### Fixed
+* [Fix FragmentSelectorShape not matching on top-level disjunctions](https://github.com/comunica/comunica/commit/45cb52fd2a66d3e36fecc7bdaa8c374ea9a2e8a2)
+* [Fix outer GRAPH ?g being considered in MINUS variable disjointness](https://github.com/comunica/comunica/commit/7e215eea862e317bc8f56aa1cced97f9afd6e9a1)
+* [Fix LIMIT not terminating link traversal (#1634)](https://github.com/comunica/comunica/commit/2582af3942ac23b862ecb6920de570173b397220)
+
 <a name="v4.4.1"></a>
 ## [v4.4.1](https://github.com/comunica/comunica/compare/v4.4.0...v4.4.1) - 2025-09-25
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-bindings-index",
-  "version": "4.4.0",
+  "version": "4.5.0",
   "description": "Utilities related to a bindings index",
   "license": "MIT",
   "funding": {
@@ -38,7 +38,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/types": "^4.4.0",
+    "@comunica/types": "^4.5.0",
     "@rdfjs/types": "*"
   }
 }
