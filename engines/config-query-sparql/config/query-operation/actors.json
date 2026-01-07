@@ -18,7 +18,6 @@
     "ccqs:config/query-operation/actors/query/orderby.json",
     "ccqs:config/query-operation/actors/query/project.json",
     "ccqs:config/query-operation/actors/query/reduced.json",
-    "ccqs:config/query-operation/actors/query/service.json",
     "ccqs:config/query-operation/actors/query/slice.json",
     "ccqs:config/query-operation/actors/query/source.json",
     "ccqs:config/query-operation/actors/query/union.json",

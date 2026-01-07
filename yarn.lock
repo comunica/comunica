@@ -441,35 +441,6 @@
     "@comunica/core" "^2.10.0"
     readable-stream "^4.4.2"
 
-"@comunica/actor-context-preprocess-query-source-identify@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@comunica/actor-context-preprocess-query-source-identify/-/actor-context-preprocess-query-source-identify-4.5.0.tgz#91d693751fbc0a8e1b714864817ec6f1deaee281"
-  integrity sha512-iabRMWYIvolhN90lREOW/nvHY2JmF+oRrQUsELFjyDQnEirY0IHFl7kUskn8RvGoLmgPCKD9nIB3yNPgL/Ggpg==
-  dependencies:
-    "@comunica/bus-context-preprocess" "^4.5.0"
-    "@comunica/bus-http-invalidate" "^4.5.0"
-    "@comunica/bus-query-source-identify" "^4.5.0"
-    "@comunica/context-entries" "^4.5.0"
-    "@comunica/core" "^4.5.0"
-    "@comunica/types" "^4.5.0"
-    lru-cache "^10.0.0"
-
-"@comunica/actor-context-preprocess-query-source-skolemize@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@comunica/actor-context-preprocess-query-source-skolemize/-/actor-context-preprocess-query-source-skolemize-4.5.0.tgz#978b0ec8bf7e4251fd8c465546eaa564f19af0d7"
-  integrity sha512-BTzlIXHFcX4+tniNAnnh+whGVy7Cy0Gsj57O3jcPjFYdj1Z0AFRValT28G1sYn0avPYoOE9JDAM5cgZVdxUHHg==
-  dependencies:
-    "@comunica/bus-context-preprocess" "^4.5.0"
-    "@comunica/context-entries" "^4.5.0"
-    "@comunica/core" "^4.5.0"
-    "@comunica/types" "^4.5.0"
-    "@comunica/utils-data-factory" "^4.0.1"
-    "@comunica/utils-metadata" "^4.5.0"
-    "@rdfjs/types" "*"
-    asynciterator "^3.9.0"
-    rdf-terms "^1.11.0"
-    sparqlalgebrajs "^5.0.2"
-
 "@comunica/actor-http-fetch@^2.0.1":
   version "2.10.2"
   resolved "https://registry.npmjs.org/@comunica/actor-http-fetch/-/actor-http-fetch-2.10.2.tgz"
@@ -490,25 +461,6 @@
     "@comunica/context-entries" "^2.10.0"
     "@comunica/mediatortype-time" "^2.10.0"
     "@comunica/types" "^2.10.0"
-
-"@comunica/actor-query-operation-service@^4.5.0":
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/@comunica/actor-query-operation-service/-/actor-query-operation-service-4.5.0.tgz#b3fc18aa5fa0b6ede7605fa2f355e79f658209da"
-  integrity sha512-YuivydtZj4R+zbzQQgp1NTCLoXgP/sfquIY006LW4pQ8iyuY8nnCgH5lbmizHkuxGSmQn/Ii2HZOTMMaa3W3qA==
-  dependencies:
-    "@comunica/bus-http-invalidate" "^4.5.0"
-    "@comunica/bus-merge-bindings-context" "^4.5.0"
-    "@comunica/bus-query-operation" "^4.5.0"
-    "@comunica/bus-query-source-identify" "^4.5.0"
-    "@comunica/context-entries" "^4.5.0"
-    "@comunica/core" "^4.5.0"
-    "@comunica/types" "^4.5.0"
-    "@comunica/utils-bindings-factory" "^4.5.0"
-    "@comunica/utils-metadata" "^4.5.0"
-    "@comunica/utils-query-operation" "^4.5.0"
-    asynciterator "^3.9.0"
-    lru-cache "^10.0.0"
-    sparqlalgebrajs "^5.0.2"
 
 "@comunica/actor-rdf-parse-html-microdata@^2.0.1":
   version "2.10.0"
@@ -9526,15 +9478,15 @@ loose-envify@^1.4.0:
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
 
-lru-cache@^10.0.0, lru-cache@^10.2.2:
-  version "10.4.3"
-  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-10.4.3.tgz#410fc8a17b70e598013df257c2446b7f3383f119"
-  integrity sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==
-
 lru-cache@^10.0.1, lru-cache@^10.2.0:
   version "10.2.0"
   resolved "https://registry.npmjs.org/lru-cache/-/lru-cache-10.2.0.tgz"
   integrity sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==
+
+lru-cache@^10.2.2:
+  version "10.4.3"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-10.4.3.tgz#410fc8a17b70e598013df257c2446b7f3383f119"
+  integrity sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==
 
 lru-cache@^11.0.0, lru-cache@^11.1.0, lru-cache@^11.2.1, lru-cache@^11.2.2:
   version "11.2.2"
@@ -11820,7 +11772,7 @@ rdf-string@^2.0.1:
   dependencies:
     rdf-data-factory "^2.0.0"
 
-rdf-terms@^1.10.0, rdf-terms@^1.11.0, rdf-terms@^1.7.0:
+rdf-terms@^1.10.0, rdf-terms@^1.7.0:
   version "1.11.0"
   resolved "https://registry.npmjs.org/rdf-terms/-/rdf-terms-1.11.0.tgz"
   integrity sha512-iKlVgnMopRKl9pHVNrQrax7PtZKRCT/uJIgYqvuw1VVQb88zDvurtDr1xp0rt7N9JtKtFwUXoIQoEsjyRo20qQ==
@@ -12851,20 +12803,6 @@ sparqlalgebrajs@^4.2.0:
     rdf-isomorphic "^1.3.0"
     rdf-string "^1.6.0"
     rdf-terms "^1.10.0"
-    sparqljs "^3.7.1"
-
-sparqlalgebrajs@^5.0.2:
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-5.0.2.tgz#ec61c85bdfc053095815c5b375703cb78849b424"
-  integrity sha512-Xz7byRqWqCMkbM+3ogGmKO/wsezQKQQNleoggP03sCTTFfCh/ZlN5CGt+HkrOenDSktZ93jpKFbbaIRjLOYtWw==
-  dependencies:
-    "@types/sparqljs" "^3.1.3"
-    fast-deep-equal "^3.1.3"
-    minimist "^1.2.6"
-    rdf-data-factory "^2.0.1"
-    rdf-isomorphic "^2.0.0"
-    rdf-string "^2.0.0"
-    rdf-terms "^2.0.0"
     sparqljs "^3.7.1"
 
 sparqljs@^3.0.0, sparqljs@^3.7.1:

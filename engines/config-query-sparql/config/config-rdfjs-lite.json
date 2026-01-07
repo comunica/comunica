@@ -30,6 +30,10 @@
     "ccqs:config/query-process/mediators.json",
 
     "ccqs:config/query-result-serialize/mediators.json",
+
+    "ccqs:config/query-serialize/mediators.json",
+
+    "ccqs:config/query-source-dereference-link/mediators.json",
     "ccqs:config/query-source-identify/actors-rdfjs-lite.json",
     "ccqs:config/query-source-identify/mediators.json",
     "ccqs:config/query-source-identify-hypermedia/mediators.json",
