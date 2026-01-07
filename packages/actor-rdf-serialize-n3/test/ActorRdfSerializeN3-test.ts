@@ -125,11 +125,11 @@ describe('ActorRdfSerializeN3', () => {
         );
       });
 
-      it('should run on quoted triples', async() => {
+      it('should run on triple terms', async() => {
         const output: any = await actor
           .run({ handle: { quadStream: quadStreamQuoted(), context }, handleMediaType: 'text/turtle', context });
         await expect(stringifyStream(output.handle.data)).resolves.toBe(
-          `<<<ex:s1> <ex:p1> <ex:o1>>> <http://example.org/b> <http://example.org/c>;
+          `<<(<ex:s1> <ex:p1> <ex:o1>)>> <http://example.org/b> <http://example.org/c>;
     <http://example.org/d> <http://example.org/e>.
 `,
         );

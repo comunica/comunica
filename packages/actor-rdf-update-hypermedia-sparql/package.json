@@ -50,7 +50,7 @@
     "@jeswr/stream-to-string": "^2.0.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.10.0",
-    "fetch-sparql-endpoint": "^7.0.0",
+    "fetch-sparql-endpoint": "^7.1.0",
     "rdf-string-ttl": "^2.0.1"
   }
 }

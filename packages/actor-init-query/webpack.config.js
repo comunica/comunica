@@ -23,9 +23,9 @@ module.exports = function createConfig(packagePath) {
     },
     performance: {
       hints: 'error',
-      // Bundle size limited to ~2.2 MB
-      maxAssetSize: 2_250_000,
-      maxEntrypointSize: 2_250_000,
+      // Bundle size limited to ~2.3 MB
+      maxAssetSize: 2_350_000,
+      maxEntrypointSize: 2_350_000,
     },
     plugins: [
       new webpack.ProgressPlugin(),
