@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-rdfjs",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
   "license": "MIT",
   "funding": {
@@ -155,7 +155,7 @@
     "@comunica/actor-function-factory-term-year": "^5.0.0",
     "@comunica/actor-hash-bindings-murmur": "^5.0.0",
     "@comunica/actor-hash-quads-murmur": "^5.0.0",
-    "@comunica/actor-init-query": "^5.0.0",
+    "@comunica/actor-init-query": "^5.0.1",
     "@comunica/actor-optimize-query-operation-assign-sources-exhaustive": "^5.0.0",
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^5.0.0",
     "@comunica/actor-optimize-query-operation-construct-distinct": "^5.0.0",

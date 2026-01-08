@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.0.1"></a>
+## [v5.0.1](https://github.com/comunica/comunica/compare/v5.0.0...v5.0.1) - 2026-01-08
+
+### Fixed
+* [Bump max bundle size](https://github.com/comunica/comunica/commit/7b7bf7a99b4af167582d2772ebc37e3d5c274334)
+
 <a name="v5.0.0"></a>
 ## [v5.0.0](https://github.com/comunica/comunica/compare/v4.5.0...v5.0.0) - 2026-01-08
 
