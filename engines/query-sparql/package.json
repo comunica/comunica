@@ -25,7 +25,8 @@
     "sparql engine",
     "sparql query",
     "sparql update",
-    "sparql 1.1"
+    "sparql 1.1",
+    "sparql 1.2"
   ],
   "sideEffects": false,
   "main": "lib/index.js",

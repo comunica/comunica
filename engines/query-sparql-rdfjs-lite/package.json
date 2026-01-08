@@ -26,6 +26,7 @@
     "sparql query",
     "sparql update",
     "sparql 1.1",
+    "sparql 1.2",
     "rdfjs",
     "rdf/js"
   ],
