@@ -17,7 +17,7 @@ $ yarn add @comunica/bus-http
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^4.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^5.0.0/components/context.jsonld"`
 * **Bus name**: `ActorHttp:_default_bus`
 
 ## Creating actors on this bus

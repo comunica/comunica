@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-iterator-transform",
-  "version": "4.5.0",
+  "version": "5.0.0",
   "description": "A comunica bus for iterator-transform events.",
   "lsd:module": true,
   "license": "MIT",
@@ -40,9 +40,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^4.5.0",
-    "@comunica/types": "^4.5.0",
-    "@comunica/utils-algebra": "^4.0.2",
+    "@comunica/core": "^5.0.0",
+    "@comunica/types": "^5.0.0",
+    "@comunica/utils-algebra": "^5.0.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.10.0"
   }

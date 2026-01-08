@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-data-factory",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "RDFJS DataFactory utilities",
   "license": "MIT",
   "funding": {

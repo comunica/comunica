@@ -19,7 +19,7 @@ $ yarn add @comunica/bus-hash-bindings
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-hash-bindings/^4.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-hash-bindings/^5.0.0/components/context.jsonld"`
 * **Bus name**: `ActorHashBindings:_default_bus`
 
 ## Creating actors on this bus

@@ -1,9 +1,9 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^5.0.0/components/context.jsonld"
   ],
   "@graph": [
     {

@@ -13,7 +13,7 @@ export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOu
 
   /* eslint-disable max-len */
   /**
-   * @param args - @defaultNested {<npmd:@comunica/bus-http/^4.0.0/components/ActorHttp.jsonld#ActorHttp_default_bus>} bus
+   * @param args - @defaultNested {<npmd:@comunica/bus-http/^5.0.0/components/ActorHttp.jsonld#ActorHttp_default_bus>} bus
    */
   public constructor(args: IActionObserverHttpArgs) {
     super(args);
@@ -41,7 +41,7 @@ export interface IActionObserverHttpArgs extends IActionObserverArgs<IActionHttp
   /* eslint-disable max-len */
   /**
    * An actor that listens to HTTP invalidation events
-   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^4.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
+   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^5.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
    */
   httpInvalidator: ActorHttpInvalidateListenable;
   /* eslint-enable max-len */

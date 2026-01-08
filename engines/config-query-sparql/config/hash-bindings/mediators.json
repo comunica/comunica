@@ -1,7 +1,7 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-hash-bindings/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-hash-bindings/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^5.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:hash-bindings/mediators#main",
   "@type": "MediatorRace",

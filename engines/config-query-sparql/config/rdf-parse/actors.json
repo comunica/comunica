@@ -1,13 +1,13 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^4.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^5.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-n3/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-xml-rdfa/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-shaclc/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-n3/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-xml-rdfa/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-shaclc/^5.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",

@@ -18,7 +18,7 @@ $ yarn add @comunica/bus-init
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^4.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^5.0.0/components/context.jsonld"`
 * **Bus name**: `ActorInit:_default_bus`
 
 ## Creating actors on this bus

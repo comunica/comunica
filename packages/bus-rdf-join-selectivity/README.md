@@ -19,7 +19,7 @@ $ yarn add @comunica/bus-rdf-join-selectivity
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join-selectivity/^4.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join-selectivity/^5.0.0/components/context.jsonld"`
 * **Bus name**: `ActorRdfJoinSelectivity:_default_bus`
 
 ## Creating actors on this bus

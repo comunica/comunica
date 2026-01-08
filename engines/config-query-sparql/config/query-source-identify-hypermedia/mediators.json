@@ -1,7 +1,7 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-source-identify-hypermedia/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-source-identify-hypermedia/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^5.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:query-source-identify-hypermedia/mediators#main",
   "@type": "MediatorNumber",

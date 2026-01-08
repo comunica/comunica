@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-optional-bind",
-  "version": "4.5.0",
+  "version": "5.0.0",
   "description": "A optional-bind rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,16 +41,16 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-rdf-join-inner-multi-bind": "^4.5.0",
-    "@comunica/bus-merge-bindings-context": "^4.5.0",
-    "@comunica/bus-query-operation": "^4.5.0",
-    "@comunica/bus-rdf-join": "^4.5.0",
-    "@comunica/context-entries": "^4.5.0",
-    "@comunica/core": "^4.5.0",
-    "@comunica/mediatortype-join-coefficients": "^4.5.0",
-    "@comunica/types": "^4.5.0",
-    "@comunica/utils-algebra": "^4.0.2",
-    "@comunica/utils-bindings-factory": "^4.5.0",
-    "@comunica/utils-query-operation": "^4.5.0"
+    "@comunica/actor-rdf-join-inner-multi-bind": "^5.0.0",
+    "@comunica/bus-merge-bindings-context": "^5.0.0",
+    "@comunica/bus-query-operation": "^5.0.0",
+    "@comunica/bus-rdf-join": "^5.0.0",
+    "@comunica/context-entries": "^5.0.0",
+    "@comunica/core": "^5.0.0",
+    "@comunica/mediatortype-join-coefficients": "^5.0.0",
+    "@comunica/types": "^5.0.0",
+    "@comunica/utils-algebra": "^5.0.0",
+    "@comunica/utils-bindings-factory": "^5.0.0",
+    "@comunica/utils-query-operation": "^5.0.0"
   }
 }

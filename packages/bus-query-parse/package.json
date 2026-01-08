@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-query-parse",
-  "version": "4.5.0",
+  "version": "5.0.0",
   "description": "A comunica bus for query-parse events.",
   "lsd:module": true,
   "license": "MIT",
@@ -40,8 +40,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^4.5.0",
-    "@comunica/utils-algebra": "^4.0.2",
+    "@comunica/core": "^5.0.0",
+    "@comunica/utils-algebra": "^5.0.0",
     "@rdfjs/types": "*"
   }
 }

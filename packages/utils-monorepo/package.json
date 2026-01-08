@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-monorepo",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "Monorepo utilities for Comunica",
   "license": "MIT",
   "funding": {

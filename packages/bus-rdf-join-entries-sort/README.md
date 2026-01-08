@@ -19,7 +19,7 @@ $ yarn add @comunica/bus-rdf-join-entries-sort
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join-entries-sort/^4.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join-entries-sort/^5.0.0/components/context.jsonld"`
 * **Bus name**: `ActorRdfJoinEntriesSort:_default_bus`
 
 ## Creating actors on this bus

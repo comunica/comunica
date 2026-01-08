@@ -19,7 +19,7 @@ $ yarn add @comunica/bus-merge-bindings-context
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-merge-bindings-context/^4.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-merge-bindings-context/^5.0.0/components/context.jsonld"`
 * **Bus name**: `ActorMergeBindingsContext:_default_bus`
 
 ## Creating actors on this bus

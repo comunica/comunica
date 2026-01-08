@@ -1,6 +1,51 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.0.0"></a>
+## [v5.0.0](https://github.com/comunica/comunica/compare/v4.5.0...v5.0.0) - 2026-01-08
+
+### BREAKING CHANGES
+
+The following breaking changes will only impact users of Node.js < 20,
+users that issue RDF/SPARQL-star queries (now interpreted as RDF/SPARQL 1.2),
+and users that develop custom components or engines with Comunica.
+
+* [Drop Node 18 support and set TS target to es2023](https://github.com/comunica/comunica/commit/09db0d31ec576ab63e5bc49691033aaa6def8e9c)
+* [Remove link traversal logic from hypermedia actor](https://github.com/comunica/comunica/commit/cdf98fd988d7775ff1a22a427773280792ac8bf2)
+* [Move query source identification to optimize bus](https://github.com/comunica/comunica/commit/f492ab23dd7d369590184c4989edf700208190c8)
+* [Rename hypermedia-resolve bus to dereference-link](https://github.com/comunica/comunica/commit/ef6f96cfd8faf7c37955bb7e0fe9f6fc6a994bdf)
+* [Make HashFunction accept Iterable of variables instead of array](https://github.com/comunica/comunica/commit/dda63f141cf9d8694185dde2914a21389247dbe4)
+* [Rewrite SERVICE clauses as query operation with annotated source](https://github.com/comunica/comunica/commit/04b51f8b45a4ef0cbc870fe132b102c237d58e17)
+
+### Added
+* Add RDF and SPARQL 1.2 support (replaces RDF/SPARQL-star support)
+  * [Replace sparqljs parser by traqula](https://github.com/comunica/comunica/commit/c76421a0616b052233edf101a6a177ae1aac1fe4)
+  * [Migrate to traqula's extensible algebra (#1614)](https://github.com/comunica/comunica/commit/db7fb393b8ee89c9e52f8ab1137306e243cb8bba)
+  * [Update to N3.js v2](https://github.com/comunica/comunica/commit/09f634e5bbc7715ab655edb5170d9a8fc6b54c72)
+  * [Add new functions related to literals with base direction](https://github.com/comunica/comunica/commit/48dde680e6731d830406c992541255e5ba778125)
+  * [Add foundation for base direction support in functions](https://github.com/comunica/comunica/commit/d8d33ce9bf55a40987cda00c132868c22891670b)
+  * [Support base directions and triple terms in query result serializers](https://github.com/comunica/comunica/commit/7265e10b6d320cbf31f27ec62471aa5ba0551d99)
+  * [Update to rdf-data-factory@2 and @rdfjs/types@2](https://github.com/comunica/comunica/commit/830fbee0045f15b7ec345ea4d64a5a152b7b5f12)
+  * [Handle version announcement for parsing RDF](https://github.com/comunica/comunica/commit/7ca368c534d0d98754ef2a96ac4690796d880913)
+  * [Also error on unsupported versions as media type parameters on SPARQL endpoints](https://github.com/comunica/comunica/commit/46e782cf0e7f6015eb24ecf30cae507af5be57ca)
+  * [Emit error on unsupported versions at SPARQL endpoints](https://github.com/comunica/comunica/commit/a0a0b14fcf9e58fb86084dd4991e44dd01376bcf)
+* Make HTTP caching take into account caching headers
+  * [Make caches depend on HTTP cache semantics](https://github.com/comunica/comunica/commit/9dad2ce34a50936e1ae278e6e5723de75d0f6a1b)
+  * [Add in-memory HTTP caching](https://github.com/comunica/comunica/commit/d2c7e46d02ab2eb7577d9b6e18b4be344c04ed22)
+  * [Cache JSON-LD context in HTTP-dependent cache](https://github.com/comunica/comunica/commit/bf9c521a579548cfaf2fdeda79b3d089fe91eaa9)
+* [Support HTTP abort signals via httpAbortSignal context entry](https://github.com/comunica/comunica/commit/096be0f2b63c1262ef41f3d2867ad50f5e47c654)
+* [Add missing IQueryContextCommon entries](https://github.com/comunica/comunica/commit/0ad765aeb8100dd5f43684261e1f7402ffa27ee4)
+* [Fallback SPARQL endpoint requests to original URL if SD URL 404's](https://github.com/comunica/comunica/commit/d46a6578d8a990cf6ebcf0834a11a801c77061c9)
+* [Add explain mode that outputs a query after optimization](https://github.com/comunica/comunica/commit/cead31cdaef01ec797578488a7f8ae11b3954bfb)
+* [Move query serialization to a new dedicated bus](https://github.com/comunica/comunica/commit/2d88b82b158b3d561041a32bb354c21477c9cd36)
+
+### Fixed
+* [Fix lte operator not correctly handling error propagation](https://github.com/comunica/comunica/commit/a8c87f7a721f779225d5820480b1435bde3ced48)
+* [Fix outer GRAPH ?g being considered in MINUS variable disjointness](https://github.com/comunica/comunica/commit/5399977996b78403cf272d62d115625685e23574)
+* [Destroy non-smallest streams in bind join](https://github.com/comunica/comunica/commit/b2ef233775fecc55ab880ae0de20e53c7a02a6ff)
+* [Fix sd:defaultGraph parsing with QPF endpoints](https://github.com/comunica/comunica/commit/6bb44bcf06b652e6d0facedd05146d88cc7998e9)
+* [Don't rate limit 404's](https://github.com/comunica/comunica/commit/d6508e7c433d3938f93cc25078327b7845956b36)
+
 <a name="v4.5.0"></a>
 ## [v4.5.0](https://github.com/comunica/comunica/compare/v4.4.1...v4.5.0) - 2025-11-18
 

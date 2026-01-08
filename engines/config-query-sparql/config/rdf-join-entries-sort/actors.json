@@ -1,9 +1,9 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^4.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^5.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-entries-sort-cardinality/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-entries-sort-selectivity/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-entries-sort-cardinality/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-entries-sort-selectivity/^5.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",

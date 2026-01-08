@@ -1,6 +1,6 @@
 {
   "name": "@comunica/types",
-  "version": "4.5.0",
+  "version": "5.0.0",
   "description": "Typings module for Comunica",
   "lsd:module": true,
   "license": "MIT",
@@ -42,7 +42,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/utils-algebra": "^4.0.2",
+    "@comunica/utils-algebra": "^5.0.0",
     "@rdfjs/types": "*",
     "@types/yargs": "^17.0.24",
     "asynciterator": "^3.10.0",

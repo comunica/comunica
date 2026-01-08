@@ -29,7 +29,7 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-selectivity-variable-counting/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-selectivity-variable-counting/^5.0.0/components/context.jsonld"
   ],
   "actors": [
     ...

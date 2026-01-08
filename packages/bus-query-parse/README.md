@@ -17,7 +17,7 @@ $ yarn add @comunica/bus-query-parse
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-parse/^4.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-parse/^5.0.0/components/context.jsonld"`
 * **Bus name**: `ActorQueryParse:_default_bus`
 
 ## Creating actors on this bus

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-function-factory-term-str-langdir",
-  "version": "4.0.2",
+  "version": "5.0.0",
   "description": "A term-str-langdir function-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^4.0.2",
-    "@comunica/utils-expression-evaluator": "^4.0.2"
+    "@comunica/bus-function-factory": "^5.0.0",
+    "@comunica/utils-expression-evaluator": "^5.0.0"
   }
 }

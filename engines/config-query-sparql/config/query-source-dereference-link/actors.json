@@ -1,9 +1,9 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^4.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^5.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-dereference-link-force-sparql/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-dereference-link-hypermedia/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-dereference-link-force-sparql/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-source-dereference-link-hypermedia/^5.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
