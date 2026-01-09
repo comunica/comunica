@@ -47,6 +47,6 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.10.0",
     "readable-stream": "^4.7.0",
-    "shaclc-parse": "^1.4.0"
+    "shaclc-parse": "^2.0.0"
   }
 }

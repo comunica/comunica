@@ -44,6 +44,6 @@
     "@comunica/bus-rdf-serialize": "^5.0.0",
     "arrayify-stream": "^2.0.1",
     "readable-stream": "^4.7.0",
-    "shaclc-write": "^1.4.2"
+    "shaclc-write": "^1.6.0"
   }
 }

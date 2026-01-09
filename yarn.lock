@@ -11978,14 +11978,6 @@ rdf-stores@^2.1.1:
     rdf-string "^2.0.0"
     rdf-terms "^2.0.0"
 
-rdf-string-ttl@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.npmjs.org/rdf-string-ttl/-/rdf-string-ttl-1.3.2.tgz"
-  integrity sha512-yqolaVoUvTaSC5aaQuMcB4BL54G/pCGsV4jQH87f0TvAx8zHZG0koh7XWrjva/IPGcVb1QTtaeEdfda5mcddJg==
-  dependencies:
-    "@rdfjs/types" "*"
-    rdf-data-factory "^1.1.0"
-
 rdf-string-ttl@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/rdf-string-ttl/-/rdf-string-ttl-2.0.1.tgz#74ece2fa804c32fe7de3531b1feb7e1e580a1d80"
@@ -12743,14 +12735,22 @@ shaclc-parse@^1.4.0:
     "@rdfjs/types" "^1.1.0"
     n3 "^1.16.3"
 
-shaclc-write@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.npmjs.org/shaclc-write/-/shaclc-write-1.4.2.tgz"
-  integrity sha512-aejD8fNgTfTINInjlwW7oz4GbmIJmDFJu4Tc3WVhmMH2QV24F+Ey/I/obMP/cQu/LwcfX7O2eu7bI9RUFeDMWw==
+shaclc-parse@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/shaclc-parse/-/shaclc-parse-2.0.0.tgz#326fa50202bb5bc104c9bd10e55a9016f21431e9"
+  integrity sha512-YEznPru7QmcIR1lF/lCvvrrcjZ8vWfKBMAketPb2CRWkrA0LUffTzrW0tOepue/evUREkJyl8LeVpcmyyKF+ng==
+  dependencies:
+    "@rdfjs/types" "^2.0.0"
+    n3 "^2.0.0"
+
+shaclc-write@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/shaclc-write/-/shaclc-write-1.6.0.tgz#79ebe400ca935a19157650d77c190ef367ce45c5"
+  integrity sha512-KCteNxu/a3HDCf32tCURgKA0waY+M6NEuFoRPQcfBvJxUyu4uTXRTPqDc8EMse0TvwwwMTItahb9C47Bh+CP/Q==
   dependencies:
     "@jeswr/prefixcc" "^1.2.1"
-    n3 "^1.16.3"
-    rdf-string-ttl "^1.3.2"
+    n3 "^2.0.0"
+    rdf-string-ttl "^2.0.1"
 
 shallow-clone@^3.0.0:
   version "3.0.1"
