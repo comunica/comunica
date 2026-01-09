@@ -169,6 +169,7 @@ module.exports = config([
       // Dev-only files that are not checked in
       '**/bintest/**',
       '**/componentsjs-error-state.json',
+      'lerna.json',
     ],
   },
 ]);
