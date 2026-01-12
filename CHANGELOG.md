@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.0.2"></a>
+## [v5.0.2](https://github.com/comunica/comunica/compare/v5.0.1...v5.0.2) - 2026-01-12
+
+### Fixed
+* [Fix ActionContext#ensureActionContext failing on dual packages](https://github.com/comunica/comunica/commit/6262cd4ca705c4d7960fd8accffa1441476cdb52)
+
+### Changed
+* [Bump shaclc dependencies to reduce bundle size](https://github.com/comunica/comunica/commit/34cca6fe5891ef492805eaae71434d02f4b373e4)
+
 <a name="v5.0.1"></a>
 ## [v5.0.1](https://github.com/comunica/comunica/compare/v5.0.0...v5.0.1) - 2026-01-08
 

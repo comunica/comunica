@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-hash-bindings-murmur",
-  "version": "5.0.0",
+  "version": "5.0.2",
   "description": "A murmur hash-bindings actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,8 +41,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-hash-bindings": "^5.0.0",
-    "@comunica/core": "^5.0.0",
+    "@comunica/bus-hash-bindings": "^5.0.2",
+    "@comunica/core": "^5.0.2",
     "@types/imurmurhash": "^0.1.4",
     "imurmurhash": "^0.1.4"
   }

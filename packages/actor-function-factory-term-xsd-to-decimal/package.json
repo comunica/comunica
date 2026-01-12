@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-function-factory-term-xsd-to-decimal",
-  "version": "5.0.0",
+  "version": "5.0.2",
   "description": "A term-xsd-to-decimal function-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,7 +37,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^5.0.0",
-    "@comunica/utils-expression-evaluator": "^5.0.0"
+    "@comunica/bus-function-factory": "^5.0.2",
+    "@comunica/utils-expression-evaluator": "^5.0.2"
   }
 }
