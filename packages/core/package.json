@@ -1,6 +1,6 @@
 {
   "name": "@comunica/core",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": true,
   "license": "MIT",

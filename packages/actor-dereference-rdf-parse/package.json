@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-dereference-rdf-parse",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A parse dereference-rdf actor",
   "lsd:module": true,
   "license": "MIT",
@@ -42,8 +42,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-dereference": "^5.0.2",
-    "@comunica/bus-dereference-rdf": "^5.0.2",
-    "@comunica/bus-rdf-parse": "^5.0.2"
+    "@comunica/bus-dereference": "^5.0.3",
+    "@comunica/bus-dereference-rdf": "^5.0.3",
+    "@comunica/bus-rdf-parse": "^5.0.3"
   }
 }

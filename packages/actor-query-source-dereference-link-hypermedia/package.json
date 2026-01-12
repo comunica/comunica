@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-dereference-link-hypermedia",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A dereference query-source-dereference-link actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,15 +41,15 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-dereference": "^5.0.2",
-    "@comunica/bus-dereference-rdf": "^5.0.2",
-    "@comunica/bus-query-source-dereference-link": "^5.0.2",
-    "@comunica/bus-query-source-identify-hypermedia": "^5.0.2",
-    "@comunica/bus-rdf-metadata": "^5.0.2",
-    "@comunica/bus-rdf-metadata-accumulate": "^5.0.2",
-    "@comunica/bus-rdf-metadata-extract": "^5.0.2",
-    "@comunica/context-entries": "^5.0.2",
-    "@comunica/core": "^5.0.2",
+    "@comunica/bus-dereference": "^5.0.3",
+    "@comunica/bus-dereference-rdf": "^5.0.3",
+    "@comunica/bus-query-source-dereference-link": "^5.0.3",
+    "@comunica/bus-query-source-identify-hypermedia": "^5.0.3",
+    "@comunica/bus-rdf-metadata": "^5.0.3",
+    "@comunica/bus-rdf-metadata-accumulate": "^5.0.3",
+    "@comunica/bus-rdf-metadata-extract": "^5.0.3",
+    "@comunica/context-entries": "^5.0.3",
+    "@comunica/core": "^5.0.3",
     "@comunica/types": "^5.0.0",
     "readable-stream": "^4.7.0"
   }

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/statistic-link-discovery",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "Comunica package that defines the statistic tracking link discovery events",
   "license": "MIT",
   "funding": {
@@ -39,8 +39,8 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/context-entries": "^5.0.2",
-    "@comunica/core": "^5.0.2",
+    "@comunica/context-entries": "^5.0.3",
+    "@comunica/core": "^5.0.3",
     "@comunica/statistic-base": "^5.0.0",
     "@comunica/types": "^5.0.0"
   }

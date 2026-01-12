@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-extract-hydra-count",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A hydra-count rdf-metadata-extract actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,7 +41,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-metadata-extract": "^5.0.2",
-    "@comunica/core": "^5.0.2"
+    "@comunica/bus-rdf-metadata-extract": "^5.0.3",
+    "@comunica/core": "^5.0.3"
   }
 }

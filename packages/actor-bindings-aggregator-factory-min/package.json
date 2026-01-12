@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-bindings-aggregator-factory-min",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A min expression-evaluator-aggregate actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,12 +37,12 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-bindings-aggregator-factory": "^5.0.2",
-    "@comunica/core": "^5.0.2",
+    "@comunica/bus-bindings-aggregator-factory": "^5.0.3",
+    "@comunica/core": "^5.0.3",
     "@comunica/types": "^5.0.0",
     "@rdfjs/types": "*"
   },
   "devDependencies": {
-    "@comunica/bus-term-comparator-factory": "^5.0.2"
+    "@comunica/bus-term-comparator-factory": "^5.0.3"
   }
 }

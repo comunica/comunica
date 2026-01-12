@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.0.3"></a>
+## [v5.0.3](https://github.com/comunica/comunica/compare/v5.0.2...v5.0.3) - 2026-01-12
+
+### Fixed
+* [Fix ActionContext#ensureActionContext failing in obfuscated environments](https://github.com/comunica/comunica/commit/470692e848e08405aeb83f16e9063924eafa21c0)
+
 <a name="v5.0.2"></a>
 ## [v5.0.2](https://github.com/comunica/comunica/compare/v5.0.1...v5.0.2) - 2026-01-12
 

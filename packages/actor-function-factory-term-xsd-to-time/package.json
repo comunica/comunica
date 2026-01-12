@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-function-factory-term-xsd-to-time",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A term-xsd-to-time function-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,8 +37,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^5.0.2",
+    "@comunica/bus-function-factory": "^5.0.3",
     "@comunica/types": "^5.0.0",
-    "@comunica/utils-expression-evaluator": "^5.0.2"
+    "@comunica/utils-expression-evaluator": "^5.0.3"
   }
 }

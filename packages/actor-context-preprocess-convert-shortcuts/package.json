@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-context-preprocess-convert-shortcuts",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A convert-shortcuts context-preprocess actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,8 +41,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-context-preprocess": "^5.0.2",
-    "@comunica/core": "^5.0.2",
+    "@comunica/bus-context-preprocess": "^5.0.3",
+    "@comunica/core": "^5.0.3",
     "@comunica/types": "^5.0.0"
   }
 }

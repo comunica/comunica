@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-selectivity-variable-counting",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A variable-counting rdf-join-selectivity actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,9 +41,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-join-selectivity": "^5.0.2",
-    "@comunica/core": "^5.0.2",
-    "@comunica/mediatortype-accuracy": "^5.0.2",
+    "@comunica/bus-rdf-join-selectivity": "^5.0.3",
+    "@comunica/core": "^5.0.3",
+    "@comunica/mediatortype-accuracy": "^5.0.3",
     "@comunica/utils-algebra": "^5.0.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-function-factory-term-replace",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A term-replace function-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,8 +37,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-function-factory-term-regex": "^5.0.2",
-    "@comunica/bus-function-factory": "^5.0.2",
-    "@comunica/utils-expression-evaluator": "^5.0.2"
+    "@comunica/actor-function-factory-term-regex": "^5.0.3",
+    "@comunica/bus-function-factory": "^5.0.3",
+    "@comunica/utils-expression-evaluator": "^5.0.3"
   }
 }

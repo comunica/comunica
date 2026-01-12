@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-limit-rate",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "Comunica HTTP bus actor that performs rate limiting",
   "lsd:module": true,
   "license": "MIT",
@@ -35,9 +35,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-http": "^5.0.2",
-    "@comunica/bus-http-invalidate": "^5.0.2",
-    "@comunica/core": "^5.0.2",
-    "@comunica/mediatortype-time": "^5.0.2"
+    "@comunica/bus-http": "^5.0.3",
+    "@comunica/bus-http-invalidate": "^5.0.3",
+    "@comunica/core": "^5.0.3",
+    "@comunica/mediatortype-time": "^5.0.3"
   }
 }

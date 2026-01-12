@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-optional-hash",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A optional-hash rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,11 +41,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-join": "^5.0.2",
-    "@comunica/core": "^5.0.2",
-    "@comunica/mediatortype-join-coefficients": "^5.0.2",
+    "@comunica/bus-rdf-join": "^5.0.3",
+    "@comunica/core": "^5.0.3",
+    "@comunica/mediatortype-join-coefficients": "^5.0.3",
     "@comunica/types": "^5.0.0",
-    "@comunica/utils-bindings-factory": "^5.0.2",
+    "@comunica/utils-bindings-factory": "^5.0.3",
     "@comunica/utils-bindings-index": "^5.0.0",
     "@comunica/utils-iterator": "^5.0.0",
     "asynciterator": "^3.10.0",

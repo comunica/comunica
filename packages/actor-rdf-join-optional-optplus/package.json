@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-optional-optplus",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A optional-optplus rdf-join actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,9 +41,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-join": "^5.0.2",
-    "@comunica/core": "^5.0.2",
-    "@comunica/mediatortype-join-coefficients": "^5.0.2",
+    "@comunica/bus-rdf-join": "^5.0.3",
+    "@comunica/core": "^5.0.3",
+    "@comunica/mediatortype-join-coefficients": "^5.0.3",
     "asynciterator": "^3.10.0"
   }
 }

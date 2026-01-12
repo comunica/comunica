@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-expression-evaluator-factory",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A comunica bus for expression-evaluator-factory events.",
   "lsd:module": true,
   "license": "MIT",
@@ -36,10 +36,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^5.0.2",
-    "@comunica/bus-merge-bindings-context": "^5.0.2",
-    "@comunica/bus-query-operation": "^5.0.2",
-    "@comunica/core": "^5.0.2",
+    "@comunica/bus-function-factory": "^5.0.3",
+    "@comunica/bus-merge-bindings-context": "^5.0.3",
+    "@comunica/bus-query-operation": "^5.0.3",
+    "@comunica/core": "^5.0.3",
     "@comunica/types": "^5.0.0",
     "@comunica/utils-algebra": "^5.0.0"
   }

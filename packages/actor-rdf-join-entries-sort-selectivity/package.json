@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-entries-sort-selectivity",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "A selectivity rdf-join-entries-sort actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,9 +41,9 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-rdf-join-entries-sort": "^5.0.2",
-    "@comunica/bus-rdf-join-selectivity": "^5.0.2",
-    "@comunica/core": "^5.0.2",
+    "@comunica/bus-rdf-join-entries-sort": "^5.0.3",
+    "@comunica/bus-rdf-join-selectivity": "^5.0.3",
+    "@comunica/core": "^5.0.3",
     "@comunica/types": "^5.0.0"
   }
 }
