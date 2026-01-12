@@ -88,8 +88,10 @@ export class ActionContext implements IActionContext {
    * @return {ActionContext} An action context object.
    */
   public static ensureActionContext(maybeActionContext?: IActionContext | Record<string, any>): IActionContext {
-    return maybeActionContext instanceof ActionContext ?
-      maybeActionContext :
+    // This should be an instanceof, but can fail when this package is loaded multiple times,
+    // with multiple ActionContexts existing in parallel.
+    return maybeActionContext?.constructor?.name === 'ActionContext' ?
+      <IActionContext> maybeActionContext :
       new ActionContext(Map(maybeActionContext ?? {}));
   }
 }
