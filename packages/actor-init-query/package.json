@@ -59,7 +59,7 @@
     "process": "^0.11.10",
     "rdf-quad": "^2.0.0",
     "readable-stream": "^4.7.0",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   },
   "optionalDependencies": {
     "process": "^0.11.10"
