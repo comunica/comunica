@@ -35,6 +35,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
     operationService = AF.createJoin([
       AF.createService(<any> {}, DF.namedNode('source1')),
       AF.createService(<any> {}, DF.namedNode('source2')),
+      AF.createService(<any> {}, DF.variable('source3')),
     ]);
   });
 

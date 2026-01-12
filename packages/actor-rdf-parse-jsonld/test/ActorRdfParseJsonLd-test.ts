@@ -364,6 +364,44 @@ describe('ActorRdfParseJsonLd', () => {
         expect((<any> actor).cache.has('https://schema.org/')).toBeTruthy();
       });
 
+      it('should run for a remote context and not use cache when disabled', async() => {
+        await new ActorRdfParseJsonLd({
+          bus,
+          mediaTypePriorities: {
+            'application/json': 1,
+            'application/ld+json': 1,
+          },
+          mediaTypeFormats: {},
+          mediatorHttp,
+          name: 'actor',
+          httpInvalidator,
+          cacheSize: 0,
+        }).run({
+          handle: {
+            data: inputRemoteContext,
+            metadata: { baseIRI: '' },
+            context,
+          },
+          handleMediaType: 'application/ld+json',
+          context,
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        await actor.run({
+          handle: { data: inputRemoteContext2, metadata: { baseIRI: '' }, context },
+          handleMediaType: 'application/ld+json',
+          context: context.set(new ActionContextKey('disableCachePolicy'), true),
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+        expect((<any> actor).cache.has('https://schema.org/')).toBeTruthy();
+      });
+
       it('should run for a remote context and not use cache without cache policy', async() => {
         await actor.run({
           handle: {

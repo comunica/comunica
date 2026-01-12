@@ -305,6 +305,18 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect((<any> operationOut).input[1].type).toEqual(Algebra.Types.SERVICE);
       });
 
+      it('for service with variable should not assign', async() => {
+        source1.context = new ActionContext({ a: 'b' });
+        const operationIn = AF.createService(
+          AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.variable('source1'),
+          true,
+        );
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ], { source1 });
+        expect(operationOut.type).toEqual(Algebra.Types.SERVICE);
+        expect(getOperationSource(operationOut)).toBeUndefined();
+      });
+
       it('for a construct query', async() => {
         const operationIn = AF.createConstruct(
           AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),

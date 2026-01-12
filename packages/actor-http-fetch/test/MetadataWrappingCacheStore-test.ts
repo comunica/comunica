@@ -29,6 +29,25 @@ describe('MetadataWrappingCacheStore', () => {
     });
   });
 
+  it('delegates get for undefined cache value', async() => {
+    wrapped = <CacheStore> <any> {
+      get: jest.fn(() => {
+        return undefined;
+      }),
+    };
+    wrapper = new MetadataWrappingCacheStore(wrapped);
+    await expect(wrapper.get({
+      origin: 'O',
+      path: 'P',
+      method: 'GET',
+    })).resolves.toBeUndefined();
+    expect(wrapped.get).toHaveBeenCalledWith({
+      origin: 'O',
+      path: 'P',
+      method: 'GET',
+    });
+  });
+
   it('delegates createWriteStream', async() => {
     expect(wrapper.createWriteStream({
       origin: 'O',

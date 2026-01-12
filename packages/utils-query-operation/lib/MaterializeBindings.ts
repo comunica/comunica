@@ -164,9 +164,7 @@ export function materializeOperation(
           options,
         );
 
-        if (values.length > 0) {
-          recursionResultInput = algebraFactory.createJoin([ ...values, recursionResultInput ]);
-        }
+        recursionResultInput = algebraFactory.createJoin([ ...values, recursionResultInput ]);
 
         return algebraFactory.createFilter(recursionResultInput, recursionResultExpression);
       },
