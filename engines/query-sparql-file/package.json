@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-file",
-  "version": "5.0.3",
+  "version": "5.0.5",
   "description": "A SPARQL query engine for querying over local and remote RDF files",
   "license": "MIT",
   "funding": {
@@ -208,7 +208,7 @@
     "@comunica/actor-query-operation-path-one-or-more": "^5.0.3",
     "@comunica/actor-query-operation-path-seq": "^5.0.3",
     "@comunica/actor-query-operation-path-zero-or-more": "^5.0.3",
-    "@comunica/actor-query-operation-path-zero-or-one": "^5.0.3",
+    "@comunica/actor-query-operation-path-zero-or-one": "^5.0.5",
     "@comunica/actor-query-operation-project": "^5.0.3",
     "@comunica/actor-query-operation-reduced-hash": "^5.0.3",
     "@comunica/actor-query-operation-slice": "^5.0.3",

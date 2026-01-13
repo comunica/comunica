@@ -1,6 +1,6 @@
 {
   "name": "benchmark-watdiv-tpf",
-  "version": "5.0.0",
+  "version": "5.0.5",
   "private": true,
   "scripts": {
     "jbr": "cross-env NODE_OPTIONS=--max-old-space-size=8192 jbr",

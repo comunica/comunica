@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.0.5"></a>
+## [v5.0.5](https://github.com/comunica/comunica/compare/v5.0.4...v5.0.5) - 2026-01-13
+
+### Fixed
+* [Fix incorrect handling of zero-or-one path with var subject and object](https://github.com/comunica/comunica/commit/6eedf80d80474c08a445be101213e73cdd4d83c5)
+
 <a name="v5.0.4"></a>
 ## [v5.0.4](https://github.com/comunica/comunica/compare/v5.0.3...v5.0.4) - 2026-01-13
 

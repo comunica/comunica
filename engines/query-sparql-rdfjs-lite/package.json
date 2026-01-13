@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-rdfjs-lite",
-  "version": "5.0.3",
+  "version": "5.0.5",
   "description": "A lightweight SPARQL query engine for querying over RDF/JS sources",
   "license": "MIT",
   "funding": {
@@ -191,7 +191,7 @@
     "@comunica/actor-query-operation-path-one-or-more": "^5.0.3",
     "@comunica/actor-query-operation-path-seq": "^5.0.3",
     "@comunica/actor-query-operation-path-zero-or-more": "^5.0.3",
-    "@comunica/actor-query-operation-path-zero-or-one": "^5.0.3",
+    "@comunica/actor-query-operation-path-zero-or-one": "^5.0.5",
     "@comunica/actor-query-operation-project": "^5.0.3",
     "@comunica/actor-query-operation-reduced-hash": "^5.0.3",
     "@comunica/actor-query-operation-slice": "^5.0.3",
