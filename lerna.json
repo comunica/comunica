@@ -27,6 +27,5 @@
   "npmClientArgs": [
     "--pure-lockfile"
   ],
-  "lerna-script-tasks": "./packages/utils-monorepo/lib/depCheck.js",
   "$schema": "node_modules/lerna/schemas/lerna-schema.json"
 }
