@@ -30,10 +30,10 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: jest.fn((arg: any) => {
-        if (arg.operation.type === 'filter') {
+        if (arg.operation.type === 'union') {
           return Promise.resolve({
             bindingsStream: new ArrayIterator([
-              BF.fromRecord({ z: DF.namedNode('1') }),
+              BF.fromRecord({ x: DF.namedNode('1') }),
             ], { autoStart: false }),
             metadata: () => Promise.resolve({
               state: new MetadataValidationState(),
@@ -303,7 +303,8 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
-          [ DF.variable('z'), DF.namedNode('1') ],
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
         ]),
         BF.bindings([
           [ DF.variable('x'), DF.namedNode('1') ],
@@ -346,7 +347,8 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
-          [ DF.variable('z'), DF.namedNode('1') ],
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
         ]),
         BF.bindings([
           [ DF.variable('x'), DF.namedNode('1') ],
@@ -364,22 +366,28 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
 
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         context: expect.any(ActionContext),
-        operation: AF.createFilter(
+        operation: AF.createUnion([
           AF.createUnion([
             assignOperationSource(
-              AF.createPattern(DF.variable('x'), DF.variable('b'), DF.variable('y')),
+              AF.createPattern(DF.variable('x'), DF.variable('p'), DF.variable('xb')),
               source1,
             ),
             assignOperationSource(
-              AF.createPattern(DF.variable('x'), DF.variable('b'), DF.variable('y')),
+              AF.createPattern(DF.variable('x'), DF.variable('p'), DF.variable('xb')),
               source2,
             ),
           ]),
-          AF.createOperatorExpression('=', [
-            AF.createTermExpression(DF.variable('x')),
-            AF.createTermExpression(DF.variable('y')),
+          AF.createUnion([
+            assignOperationSource(
+              AF.createPattern(DF.variable('xb'), DF.variable('p'), DF.variable('x')),
+              source1,
+            ),
+            assignOperationSource(
+              AF.createPattern(DF.variable('xb'), DF.variable('p'), DF.variable('x')),
+              source2,
+            ),
           ]),
-        ),
+        ]),
       });
     });
   });
