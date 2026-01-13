@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.0.4"></a>
+## [v5.0.4](https://github.com/comunica/comunica/compare/v5.0.3...v5.0.4) - 2026-01-13
+
+### Changed
+* [Modernize depcheck util](https://github.com/comunica/comunica/commit/bac72f3ff4c30adaff8211b059b56f4dc8216aef)
+
 <a name="v5.0.3"></a>
 ## [v5.0.3](https://github.com/comunica/comunica/compare/v5.0.2...v5.0.3) - 2026-01-12
 
