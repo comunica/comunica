@@ -329,6 +329,15 @@ export const KeysRdfParseHtmlScript = {
   extractAllScripts: new ActionContextKey<boolean>('extractAllScripts'),
 };
 
+export const KeysRdfSerialize = {
+  /**
+   * Prefixes that will be used by RDF serializers.
+   */
+  rdfSerializationPrefixes: new ActionContextKey<Record<string, string>>(
+    '@comunica/bus-rdf-serialize:rdfSerializationPrefixes',
+  ),
+};
+
 export const KeysQuerySourceIdentify = {
   /**
    * A map containing unique IDs for each source

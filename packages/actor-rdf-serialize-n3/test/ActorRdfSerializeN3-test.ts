@@ -1,4 +1,5 @@
 import { Readable } from 'node:stream';
+import { KeysRdfSerialize } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
@@ -111,6 +112,25 @@ describe('ActorRdfSerializeN3', () => {
         await expect(stringifyStream(output.handle.data)).resolves.toBe(
           `<http://example.org/a> <http://example.org/b> <http://example.org/c>;
     <http://example.org/d> <http://example.org/e>.
+`,
+        );
+      });
+
+      it('should run with prefixes', async() => {
+        const output: any = await actor
+          .run({
+            handle: {
+              quadStream: quadStream(),
+              context: context.set(KeysRdfSerialize.rdfSerializationPrefixes, { ex: 'http://example.org/' }),
+            },
+            handleMediaType: 'text/turtle',
+            context,
+          });
+        await expect(stringifyStream(output.handle.data)).resolves.toBe(
+          `@prefix ex: <http://example.org/>.
+
+ex:a ex:b ex:c;
+    ex:d ex:e.
 `,
         );
       });

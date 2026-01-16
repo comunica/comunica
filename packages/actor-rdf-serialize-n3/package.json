@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@comunica/bus-rdf-serialize": "^5.0.3",
+    "@comunica/context-entries": "^5.0.3",
     "n3": "^2.0.0"
   }
 }

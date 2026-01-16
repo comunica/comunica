@@ -63,6 +63,7 @@ export interface IQueryContextCommon {
   invalidateCache?: boolean;
   dataFactory?: ComunicaDataFactory;
   distinctConstruct?: boolean;
+  rdfSerializationPrefixes?: Record<string, string>;
 
   sources: SourceType[];
 }

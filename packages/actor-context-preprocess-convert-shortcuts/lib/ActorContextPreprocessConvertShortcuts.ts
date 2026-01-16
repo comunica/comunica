@@ -79,7 +79,8 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "traverse": "@comunica/bus-query-source-identify:traverse",
    *   "invalidateCache": "@comunica/actor-init-query:invalidateCache",
    *   "dataFactory": "@comunica/actor-init-query:dataFactory",
-   *   "distinctConstruct": "@comunica/actor-init-query:distinctConstruct"
+   *   "distinctConstruct": "@comunica/actor-init-query:distinctConstruct",
+   *   "rdfSerializationPrefixes": "@comunica/bus-rdf-serialize:rdfSerializationPrefixes"
    * }}
    */
   contextKeyShortcuts: Record<string, string>;
