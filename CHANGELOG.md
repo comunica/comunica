@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.1.0"></a>
+## [v5.1.0](https://github.com/comunica/comunica/compare/v5.0.5...v5.1.0) - 2026-01-16
+
+### Added
+* [Allow prefixes to passed to N3 serializer with rdfSerializationPrefixes](https://github.com/comunica/comunica/commit/ac1c640b8493b5efd25397dda3fd01725136ff31)
+
 <a name="v5.0.5"></a>
 ## [v5.0.5](https://github.com/comunica/comunica/compare/v5.0.4...v5.0.5) - 2026-01-13
 

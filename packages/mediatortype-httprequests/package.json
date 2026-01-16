@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediatortype-httprequests",
-  "version": "5.0.3",
+  "version": "5.1.0",
   "description": "A comunica mediator type for the 'httpRequests' parameter.",
   "lsd:module": true,
   "license": "MIT",
@@ -38,6 +38,6 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@comunica/core": "^5.0.3"
+    "@comunica/core": "^5.1.0"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/core",
-  "version": "5.0.3",
+  "version": "5.1.0",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": true,
   "license": "MIT",
@@ -45,7 +45,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/types": "^5.0.0",
+    "@comunica/types": "^5.1.0",
     "immutable": "^5.1.3"
   }
 }
