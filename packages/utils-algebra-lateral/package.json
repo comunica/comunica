@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/actor-query-parse-sparql",
+  "name": "@comunica/utils-algebra-lateral",
   "version": "5.1.0",
-  "description": "A algebra sparql-parse actor",
+  "description": "An abstract actor for handling mediatypes",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-query-parse-sparql"
+    "directory": "packages/actor-abstract-mediatyped"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -20,8 +20,8 @@
   "keywords": [
     "comunica",
     "actor",
-    "sparql-parse",
-    "algebra"
+    "abstract",
+    "mediatype"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -41,12 +41,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-parse": "^5.1.0",
-    "@comunica/context-entries": "^5.1.0",
-    "@comunica/core": "^5.1.0",
-    "@comunica/types": "^5.1.0",
-    "@comunica/utils-algebra-lateral": "^5.1.0",
+    "@comunica/utils-algebra": "^5.0.0",
     "@traqula/algebra-sparql-1-2": "^1.0.0",
+    "@traqula/algebra-transformations-1-2": "^1.0.0",
+    "@traqula/core": "^1.0.0",
+    "@traqula/generator-sparql-1-2": "^1.0.0",
     "@traqula/parser-sparql-1-2": "^1.0.0",
     "@traqula/rules-sparql-1-2": "^1.0.0"
   }

@@ -4,9 +4,11 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { toAlgebra } from '@traqula/algebra-sparql-1-2';
-import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
+import { toComunicaAlgebra as toAlgebra, ComunicaSparqlParser as SparqlParser } from '@comunica/utils-algebra-lateral';
 import { AstFactory } from '@traqula/rules-sparql-1-2';
+
+// Import { toAlgebra } from '@traqula/algebra-sparql-1-2';
+// import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 
 /**
  * A comunica Algebra SPARQL Parse Actor.

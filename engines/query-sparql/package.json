@@ -210,6 +210,7 @@
     "@comunica/actor-query-operation-from-quad": "^5.1.0",
     "@comunica/actor-query-operation-group": "^5.1.0",
     "@comunica/actor-query-operation-join": "^5.1.0",
+    "@comunica/actor-query-operation-lateral": "^5.1.0",
     "@comunica/actor-query-operation-leftjoin": "^5.1.0",
     "@comunica/actor-query-operation-minus": "^5.1.0",
     "@comunica/actor-query-operation-nop": "^5.1.0",
