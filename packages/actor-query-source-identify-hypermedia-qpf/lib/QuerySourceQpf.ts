@@ -1,6 +1,6 @@
 import type { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls';
 import type { MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
-import { filterMatchingQuotedQuads, quadsToBindings } from '@comunica/bus-query-source-identify';
+import { quadsToBindings } from '@comunica/bus-query-source-identify';
 import type { MediatorRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { KeysQueryOperation } from '@comunica/context-entries';
@@ -158,7 +158,7 @@ export class QuerySourceQpf implements IQuerySource {
     const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
 
     // Create an async iterator from the matched quad stream
-    let it = this.match(
+    const it = this.match(
       operation.subject,
       operation.predicate,
       operation.object,
@@ -168,7 +168,6 @@ export class QuerySourceQpf implements IQuerySource {
       options,
     );
 
-    it = filterMatchingQuotedQuads(operation, it);
     return quadsToBindings(it, operation, this.dataFactory, this.bindingsFactory, unionDefaultGraph);
   }
 
