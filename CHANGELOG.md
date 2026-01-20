@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.1.1"></a>
+## [v5.1.1](https://github.com/comunica/comunica/compare/v5.1.0...v5.1.1) - 2026-01-20
+
+### Changed
+* [Remove unnecessary quoted triple filtering in QPF](https://github.com/comunica/comunica/commit/53ca9a46c9e91eb69ef7fb2c290c4a0448987b59)
+
 <a name="v5.1.0"></a>
 ## [v5.1.0](https://github.com/comunica/comunica/compare/v5.0.5...v5.1.0) - 2026-01-16
 

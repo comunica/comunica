@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-hypermedia-qpf",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "A qpf query-source-identify-hypermedia actor",
   "lsd:module": true,
   "license": "MIT",
