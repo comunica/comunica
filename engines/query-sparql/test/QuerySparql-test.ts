@@ -981,6 +981,8 @@ SELECT * WHERE {
 }`, {
           sources: [ 'https://api.community.hubl.world/skills/' ],
         });
+        expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
+      });
 
       it('on the LOV SPARQL service description (no browser)', async() => {
         await expect(engine.queryBindings(`

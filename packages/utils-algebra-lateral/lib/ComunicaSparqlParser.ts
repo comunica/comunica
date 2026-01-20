@@ -2,7 +2,12 @@ import type { ParserBuildArgs, RuleDefReturn } from '@traqula/core';
 import { createToken, GeneratorBuilder, LexerBuilder, ParserBuilder } from '@traqula/core';
 import { sparql12GeneratorBuilder } from '@traqula/generator-sparql-1-2';
 import { sparql12ParserBuilder } from '@traqula/parser-sparql-1-2';
-import { lex as l12, completeParseContext, completeGeneratorContext, copyParseContext } from '@traqula/rules-sparql-1-2';
+import {
+  lex as l12,
+  completeParseContext,
+  completeGeneratorContext,
+  copyParseContext,
+} from '@traqula/rules-sparql-1-2';
 import type * as T12 from '@traqula/rules-sparql-1-2';
 import type { PatternLateral } from './ComunicaSparqlAst';
 
