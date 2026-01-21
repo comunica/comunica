@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.1.2"></a>
+## [v5.1.2](https://github.com/comunica/comunica/compare/v5.1.1...v5.1.2) - 2026-01-21
+
+### Fixed
+* [Fix undefined context when querying slow SPARQL endpoints](https://github.com/comunica/comunica/commit/91057abd44a62cc627f0ae587f65ef31b95add5e)
+
 <a name="v5.1.1"></a>
 ## [v5.1.1](https://github.com/comunica/comunica/compare/v5.1.0...v5.1.1) - 2026-01-20
 

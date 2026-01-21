@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "description": "A SPARQL query engine for querying over decentralized RDF knowledge graphs on the Web",
   "license": "MIT",
   "funding": {
@@ -257,7 +257,7 @@
     "@comunica/actor-query-source-identify-hypermedia": "^5.1.0",
     "@comunica/actor-query-source-identify-hypermedia-none": "^5.1.0",
     "@comunica/actor-query-source-identify-hypermedia-qpf": "^5.1.1",
-    "@comunica/actor-query-source-identify-hypermedia-sparql": "^5.1.0",
+    "@comunica/actor-query-source-identify-hypermedia-sparql": "^5.1.2",
     "@comunica/actor-query-source-identify-rdfjs": "^5.1.0",
     "@comunica/actor-query-source-identify-serialized": "^5.1.0",
     "@comunica/actor-rdf-join-entries-sort-cardinality": "^5.1.0",

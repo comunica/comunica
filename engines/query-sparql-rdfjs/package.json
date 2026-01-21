@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-rdfjs",
-  "version": "5.1.0",
+  "version": "5.1.2",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
   "license": "MIT",
   "funding": {
@@ -223,7 +223,7 @@
     "@comunica/actor-query-result-serialize-tree": "^5.1.0",
     "@comunica/actor-query-serialize-sparql": "^5.1.0",
     "@comunica/actor-query-source-identify-hypermedia": "^5.1.0",
-    "@comunica/actor-query-source-identify-hypermedia-sparql": "^5.1.0",
+    "@comunica/actor-query-source-identify-hypermedia-sparql": "^5.1.2",
     "@comunica/actor-query-source-identify-rdfjs": "^5.1.0",
     "@comunica/actor-rdf-join-entries-sort-cardinality": "^5.1.0",
     "@comunica/actor-rdf-join-entries-sort-selectivity": "^5.1.0",

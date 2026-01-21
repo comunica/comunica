@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-hypermedia-sparql",
-  "version": "5.1.0",
+  "version": "5.1.2",
   "description": "A sparql query-source-identify-hypermedia actor",
   "lsd:module": true,
   "license": "MIT",
