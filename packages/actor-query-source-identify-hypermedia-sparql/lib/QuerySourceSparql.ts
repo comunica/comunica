@@ -215,7 +215,6 @@ export class QuerySourceSparql implements IQuerySource {
       this.lastSourceContext = this.context.merge(context);
       const query: string = context.get(KeysInitQuery.queryString) ?? await this.operationToQuery(operation);
       const rawStream = await this.endpointFetcher.fetchTriples(this.url, query);
-      this.lastSourceContext = undefined;
       return rawStream;
     })(), { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
     this.attachMetadata(quads, context, Promise.resolve((<Algebra.Operation & { input: any }>operation).input));
@@ -231,7 +230,6 @@ export class QuerySourceSparql implements IQuerySource {
     this.lastSourceContext = this.context.merge(context);
     const query: string = context.get(KeysInitQuery.queryString) ?? await this.operationToQuery(operation);
     const promise = this.endpointFetcher.fetchAsk(this.url, query);
-    this.lastSourceContext = undefined;
     return promise;
   }
 
@@ -239,7 +237,6 @@ export class QuerySourceSparql implements IQuerySource {
     this.lastSourceContext = this.context.merge(context);
     const query: string = context.get(KeysInitQuery.queryString) ?? await this.operationToQuery(operation);
     const promise = this.endpointFetcher.fetchUpdate(this.url, query);
-    this.lastSourceContext = undefined;
     return promise;
   }
 
@@ -587,7 +584,6 @@ export class QuerySourceSparql implements IQuerySource {
 
     this.lastSourceContext = this.context.merge(context);
     const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query);
-    this.lastSourceContext = undefined;
 
     const wrapped = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
     return wrapped.map<RDF.Bindings>((rawData: Record<string, RDF.Term>) => {
