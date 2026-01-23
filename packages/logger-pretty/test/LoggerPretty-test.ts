@@ -309,4 +309,15 @@ describe('LoggerPretty', () => {
       expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
   });
+
+  it('should flush on exit', () => {
+    const processOnSpy = jest.spyOn(process, 'on');
+    const logger = new LoggerPretty({ level: 'warn' });
+    const flushSpy = jest.spyOn(logger, 'flush');
+
+    expect(processOnSpy).toHaveBeenCalledWith('exit', expect.any(Function));
+    const exitCallback = processOnSpy.mock.calls.find(call => call[0] === 'exit')![1];
+    exitCallback();
+    expect(flushSpy).toHaveBeenCalledTimes(1);
+  });
 });
