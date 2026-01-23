@@ -27,7 +27,6 @@ export class LoggerPretty extends Logger {
     this.level = args.level;
     this.levelOrdinal = Logger.getLevelOrdinal(this.level);
     this.actors = args.actors;
-    process.on('exit', () => this.flush());
   }
 
   public debug(message: string, data?: any): void {
@@ -52,9 +51,8 @@ export class LoggerPretty extends Logger {
 
   public warn(message: string, data?: any): void {
     this.logGrouped(message, (count) => {
-      for (let i = 0; i < count; i++) {
-        this.log('warn', LoggerPretty.COLOR_YELLOW, message, data);
-      }
+      const suffix = count > 1 ? ` (${count} times)` : '';
+      this.log('warn', LoggerPretty.COLOR_YELLOW, `${message}${suffix}`, data);
     });
   }
 

@@ -3,7 +3,12 @@ import { LoggerPretty } from '../lib/LoggerPretty';
 describe('LoggerPretty', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     jest.spyOn(process.stderr, 'write').mockImplementation();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('should work on complex values', () => {
@@ -177,7 +182,7 @@ describe('LoggerPretty', () => {
       logger.warn('bla', {});
       expect(process.stderr.write).toHaveBeenCalledTimes(1);
       logger.flush();
-      expect(process.stderr.write).toHaveBeenCalledTimes(3);
+      expect(process.stderr.write).toHaveBeenCalledTimes(2);
     });
 
     it('should log for error', () => {
@@ -310,14 +315,14 @@ describe('LoggerPretty', () => {
     });
   });
 
-  it('should flush on exit', () => {
-    const processOnSpy = jest.spyOn(process, 'on');
+  it('should flush debounced', () => {
     const logger = new LoggerPretty({ level: 'warn' });
     const flushSpy = jest.spyOn(logger, 'flush');
 
-    expect(processOnSpy).toHaveBeenCalledWith('exit', expect.any(Function));
-    const exitCallback = processOnSpy.mock.calls.find(call => call[0] === 'exit')![1];
-    exitCallback();
+    logger.warn('bla', {});
+    logger.warn('bla', {});
+
+    jest.runAllTimers();
     expect(flushSpy).toHaveBeenCalledTimes(1);
   });
 });
