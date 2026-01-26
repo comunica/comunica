@@ -276,6 +276,7 @@
     "@comunica/actor-rdf-metadata-extract-post-accepted": "^5.1.0",
     "@comunica/actor-rdf-metadata-extract-put-accepted": "^5.1.0",
     "@comunica/actor-rdf-metadata-extract-request-time": "^5.1.0",
+    "@comunica/actor-rdf-metadata-extract-server-software": "^5.1.0",
     "@comunica/actor-rdf-metadata-extract-sparql-service": "^5.1.0",
     "@comunica/actor-rdf-metadata-extract-void": "^5.1.0",
     "@comunica/actor-rdf-metadata-primary-topic": "^5.1.0",
