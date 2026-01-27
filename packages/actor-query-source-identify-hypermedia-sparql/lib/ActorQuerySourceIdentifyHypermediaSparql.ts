@@ -51,7 +51,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     this.cardinalityEstimateConstruction = args.cardinalityEstimateConstruction;
     this.forceGetIfUrlLengthBelow = args.forceGetIfUrlLengthBelow;
     this.sparqlServerSoftwarePatterns = (
-      args.sparqlServerSoftwarePatterns ?? [ 'Virtuoso', 'Fuseki' ]
+      args.sparqlServerSoftwarePatterns ?? []
     ).map(pattern => new RegExp(pattern, 'u'));
   }
 
@@ -174,8 +174,6 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
   forceGetIfUrlLengthBelow: number;
   /**
    * Regexes to match against the server header to identify SPARQL endpoints.
-   * @default {Virtuoso}
-   * @default {Fuseki}
    */
   sparqlServerSoftwarePatterns?: string[];
 }
