@@ -31,7 +31,8 @@ After installing, this package can be added to your engine's configuration as fo
       "@type": "ActorQuerySourceIdentifyHypermediaSparql",
       "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
       "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
-      "mediatorQuerySerialize": { "@id": "urn:comunica:default:query-serialize/mediators#main" }
+      "mediatorQuerySerialize": { "@id": "urn:comunica:default:query-serialize/mediators#main" },
+      "sparqlServerSoftwarePatterns": ["Virtuoso", "Fuseki"]
     }
   ]
 }
