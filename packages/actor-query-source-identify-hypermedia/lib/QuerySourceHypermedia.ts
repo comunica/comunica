@@ -93,7 +93,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     return new TransformIterator(async() => {
       const source = await this.getSourceCached(this.firstLink, {}, context);
       return source.source.queryQuads(operation, context);
-    });
+    }, { autoStart: false });
   }
 
   public async queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
