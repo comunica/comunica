@@ -1033,6 +1033,23 @@ WHERE {
         });
         await expect((bindingsStream.toArray())).resolves.toHaveLength(1);
       });
+
+      it('on a SPARQL endpoint detected via Server header', async() => {
+        const result = <QueryBindings> await engine.query(`
+        SELECT * WHERE {
+          ?s ?p ?o.
+        } LIMIT 1`, { sources: [ 'http://data.cervantesvirtual.com/openrdf-sesame/repositories/data' ]});
+
+        const expectedResult: Bindings[] = [
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://www.openlinksw.com/virtrdf-data-formats#default-iid') ],
+            [ DF.variable('p'), DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type') ],
+            [ DF.variable('o'), DF.namedNode('http://www.openlinksw.com/schemas/virtrdf#QuadMapFormat') ],
+          ]),
+        ];
+
+        await expect(result.execute()).resolves.toEqualBindingsStream(expectedResult);
+      });
     });
 
     describe('on multiple sources', () => {
