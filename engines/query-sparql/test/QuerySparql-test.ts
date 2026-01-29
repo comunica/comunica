@@ -1034,7 +1034,7 @@ WHERE {
         await expect((bindingsStream.toArray())).resolves.toHaveLength(1);
       });
 
-      it('on a SPARQL endpoint detected via Server header', async() => {
+      it('on a SPARQL endpoint detected via Server header (no browser)', async() => {
         const result = <QueryBindings> await engine.query(`
         SELECT * WHERE {
           ?s ?p ?o.
