@@ -15,9 +15,9 @@
     "ccqs:config/hash-bindings/mediators.json",
     "ccqs:config/hash-quads/actors.json",
     "ccqs:config/hash-quads/mediators.json",
-    "ccqs:config/http/actors.json",
+
     "ccqs:config/http/mediators.json",
-    "ccqs:config/http-invalidate/actors.json",
+
     "ccqs:config/http-invalidate/mediators.json",
     "ccqs:config/init/actors.json",
     "ccqs:config/merge-bindings-context/actors.json",
@@ -34,42 +34,39 @@
     "ccqs:config/query-result-serialize/mediators.json",
     "ccqs:config/query-serialize/actors.json",
     "ccqs:config/query-serialize/mediators.json",
-    "ccqs:config/query-source-dereference-link/actors.json",
+
     "ccqs:config/query-source-dereference-link/mediators.json",
-    "ccqs:config/query-source-identify/actors.json",
+    "ccqs:config/query-source-identify/actors-rdfjs.json",
     "ccqs:config/query-source-identify/mediators.json",
-    "ccqs:config/query-source-identify-hypermedia/actors-v5-1-0.json",
+    "ccqs:config/query-source-identify-hypermedia/actors-sparql-v5-1-0.json",
     "ccqs:config/query-source-identify-hypermedia/mediators.json",
-    "ccqs:config/dereference/actors.json",
-    "ccqs:config/dereference/mediators.json",
-    "ccqs:config/dereference-rdf/actors.json",
+
     "ccqs:config/dereference-rdf/mediators.json",
+
     "ccqs:config/rdf-join/actors.json",
     "ccqs:config/rdf-join/mediators.json",
     "ccqs:config/rdf-join-entries-sort/actors.json",
     "ccqs:config/rdf-join-entries-sort/mediators.json",
     "ccqs:config/rdf-join-selectivity/actors.json",
     "ccqs:config/rdf-join-selectivity/mediators.json",
-    "ccqs:config/rdf-metadata/actors.json",
+
     "ccqs:config/rdf-metadata/mediators.json",
     "ccqs:config/rdf-metadata-accumulate/actors.json",
     "ccqs:config/rdf-metadata-accumulate/mediators.json",
-    "ccqs:config/rdf-metadata-extract/actors-v5-1-0.json",
+
     "ccqs:config/rdf-metadata-extract/mediators.json",
-    "ccqs:config/rdf-parse/actors.json",
-    "ccqs:config/rdf-parse/mediators.json",
-    "ccqs:config/rdf-parse-html/actors.json",
-    "ccqs:config/rdf-resolve-hypermedia-links/actors.json",
+
     "ccqs:config/rdf-resolve-hypermedia-links/mediators.json",
-    "ccqs:config/rdf-resolve-hypermedia-links-queue/actors.json",
+
     "ccqs:config/rdf-resolve-hypermedia-links-queue/mediators.json",
+
     "ccqs:config/rdf-serialize/actors.json",
     "ccqs:config/rdf-serialize/mediators.json",
-    "ccqs:config/rdf-update-hypermedia/actors.json",
-    "ccqs:config/rdf-update-hypermedia/mediators.json",
-    "ccqs:config/rdf-update-quads/actors.json",
+
+    "ccqs:config/rdf-update-quads/actors-rdfjs.json",
     "ccqs:config/rdf-update-quads/mediators.json",
     "ccqs:config/term-comparator-factory/actors.json",
     "ccqs:config/term-comparator-factory/mediators.json"
+
   ]
 }

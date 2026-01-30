@@ -1035,7 +1035,7 @@ WHERE {
       });
 
       it('on a SPARQL endpoint detected via Server header (no browser)', async() => {
-        const result = <QueryBindings> await engine.query(`
+        const result = await engine.queryBindings(`
         SELECT * WHERE {
           ?s ?p ?o.
         } LIMIT 1`, { sources: [ 'http://data.cervantesvirtual.com/openrdf-sesame/repositories/data' ]});
@@ -1048,7 +1048,7 @@ WHERE {
           ]),
         ];
 
-        await expect(result.execute()).resolves.toEqualBindingsStream(expectedResult);
+        await expect(result).toEqualBindingsStream(expectedResult);
       });
     });
 
