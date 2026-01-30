@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-init",
-  "version": "5.1.0",
+  "version": "5.1.3",
   "description": "A comunica bus for 'init' events.",
   "lsd:module": true,
   "license": "MIT",
@@ -40,7 +40,7 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/core": "^5.1.0",
+    "@comunica/core": "^5.1.3",
     "readable-stream": "^4.7.0"
   }
 }

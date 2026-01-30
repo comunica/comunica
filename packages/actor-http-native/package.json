@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-native",
-  "version": "5.1.0",
+  "version": "5.1.3",
   "description": "A native http actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,10 +41,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-http": "^5.1.0",
-    "@comunica/context-entries": "^5.1.0",
-    "@comunica/core": "^5.1.0",
-    "@comunica/mediatortype-time": "^5.1.0",
+    "@comunica/bus-http": "^5.1.3",
+    "@comunica/context-entries": "^5.1.3",
+    "@comunica/core": "^5.1.3",
+    "@comunica/mediatortype-time": "^5.1.3",
     "@types/http-link-header": "^1.0.7",
     "follow-redirects": "^1.15.2",
     "http-link-header": "^1.1.3"

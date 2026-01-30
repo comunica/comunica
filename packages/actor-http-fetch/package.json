@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-fetch",
-  "version": "5.1.0",
+  "version": "5.1.3",
   "description": "A fetch http actor",
   "lsd:module": true,
   "license": "MIT",
@@ -39,12 +39,12 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-http": "^5.1.0",
-    "@comunica/bus-http-invalidate": "^5.1.0",
-    "@comunica/context-entries": "^5.1.0",
-    "@comunica/core": "^5.1.0",
-    "@comunica/mediatortype-time": "^5.1.0",
-    "@comunica/types": "^5.1.0",
+    "@comunica/bus-http": "^5.1.3",
+    "@comunica/bus-http-invalidate": "^5.1.3",
+    "@comunica/context-entries": "^5.1.3",
+    "@comunica/core": "^5.1.3",
+    "@comunica/mediatortype-time": "^5.1.3",
+    "@comunica/types": "^5.1.3",
     "@types/http-cache-semantics": "^4.0.4",
     "http-cache-semantics": "^4.2.0",
     "undici": "^7.16.0"
