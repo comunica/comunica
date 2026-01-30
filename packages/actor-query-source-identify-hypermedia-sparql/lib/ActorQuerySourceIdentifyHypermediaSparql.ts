@@ -34,6 +34,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly cardinalityCountQueries: boolean;
   public readonly cardinalityEstimateConstruction: boolean;
   public readonly forceGetIfUrlLengthBelow: number;
+  public readonly sparqlServerSoftwarePatterns: RegExp[];
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -49,13 +50,29 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     this.cardinalityCountQueries = args.cardinalityCountQueries;
     this.cardinalityEstimateConstruction = args.cardinalityEstimateConstruction;
     this.forceGetIfUrlLengthBelow = args.forceGetIfUrlLengthBelow;
+    this.sparqlServerSoftwarePatterns = (
+      args.sparqlServerSoftwarePatterns ?? []
+    ).map(pattern => new RegExp(pattern, 'u'));
+  }
+
+  public checkServerSoftware(serverSoftware?: string): boolean {
+    if (!serverSoftware) {
+      return false;
+    }
+    for (const regex of this.sparqlServerSoftwarePatterns) {
+      if (regex.test(serverSoftware)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public async testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
     if (!action.forceSourceType && !this.forceSourceType && !action.metadata.sparqlService &&
-      !(this.checkUrlSuffix && (action.url.endsWith('/sparql') || action.url.endsWith('/sparql/')))) {
+      !(this.checkUrlSuffix && (action.url.endsWith('/sparql') || action.url.endsWith('/sparql/'))) &&
+        !this.checkServerSoftware(action.metadata.serverSoftware)) {
       return failTest(`Actor ${this.name} could not detect a SPARQL service description or URL ending on /sparql.`);
     }
     return passTest({ filterFactor: 1 });
@@ -155,6 +172,10 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * @default {600}
    */
   forceGetIfUrlLengthBelow: number;
+  /**
+   * Regexes to match against the server header to identify SPARQL endpoints.
+   */
+  sparqlServerSoftwarePatterns?: string[];
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';
