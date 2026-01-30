@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-extract-server-software",
-  "version": "5.1.0",
+  "version": "5.1.3",
   "description": "A server-software rdf-metadata-extract actor",
   "lsd:module": true,
   "license": "MIT",
