@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-dereference-link-force-sparql",
-  "version": "5.1.0",
+  "version": "5.1.3",
   "description": "A force-sparql query-source-dereference-link actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,11 +41,11 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-source-dereference-link": "^5.1.0",
-    "@comunica/bus-query-source-identify-hypermedia": "^5.1.0",
-    "@comunica/bus-rdf-metadata-accumulate": "^5.1.0",
-    "@comunica/context-entries": "^5.1.0",
-    "@comunica/core": "^5.1.0",
+    "@comunica/bus-query-source-dereference-link": "^5.1.3",
+    "@comunica/bus-query-source-identify-hypermedia": "^5.1.3",
+    "@comunica/bus-rdf-metadata-accumulate": "^5.1.3",
+    "@comunica/context-entries": "^5.1.3",
+    "@comunica/core": "^5.1.3",
     "readable-stream": "^4.7.0"
   }
 }

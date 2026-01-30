@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-alt",
-  "version": "5.1.0",
+  "version": "5.1.3",
   "description": "A path-alt query-operation actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,14 +41,14 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-abstract-path": "^5.1.0",
-    "@comunica/actor-query-operation-union": "^5.1.0",
-    "@comunica/bus-query-operation": "^5.1.0",
-    "@comunica/bus-rdf-metadata-accumulate": "^5.1.0",
-    "@comunica/context-entries": "^5.1.0",
-    "@comunica/types": "^5.1.0",
-    "@comunica/utils-algebra": "^5.0.0",
-    "@comunica/utils-query-operation": "^5.1.0",
+    "@comunica/actor-abstract-path": "^5.1.3",
+    "@comunica/actor-query-operation-union": "^5.1.3",
+    "@comunica/bus-query-operation": "^5.1.3",
+    "@comunica/bus-rdf-metadata-accumulate": "^5.1.3",
+    "@comunica/context-entries": "^5.1.3",
+    "@comunica/types": "^5.1.3",
+    "@comunica/utils-algebra": "^5.1.3",
+    "@comunica/utils-query-operation": "^5.1.3",
     "asynciterator": "^3.10.0"
   }
 }

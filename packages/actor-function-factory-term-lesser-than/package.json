@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-function-factory-term-lesser-than",
-  "version": "5.1.0",
+  "version": "5.1.3",
   "description": "A term-lesser-than function-factory actor",
   "lsd:module": true,
   "license": "MIT",
@@ -37,8 +37,8 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-function-factory": "^5.1.0",
-    "@comunica/context-entries": "^5.1.0",
-    "@comunica/utils-expression-evaluator": "^5.1.0"
+    "@comunica/bus-function-factory": "^5.1.3",
+    "@comunica/context-entries": "^5.1.3",
+    "@comunica/utils-expression-evaluator": "^5.1.3"
   }
 }

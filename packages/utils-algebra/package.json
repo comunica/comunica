@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-algebra",
-  "version": "5.0.0",
+  "version": "5.1.3",
   "description": "Query algebra definitions and utilities",
   "license": "MIT",
   "funding": {
@@ -36,7 +36,7 @@
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@traqula/algebra-transformations-1-2": "^1.0.0",
+    "@traqula/algebra-transformations-1-2": "^1.0.1",
     "@traqula/core": "^1.0.0"
   }
 }

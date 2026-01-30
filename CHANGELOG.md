@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.1.3"></a>
+## [v5.1.3](https://github.com/comunica/comunica/compare/v5.1.2...v5.1.3) - 2026-01-30
+
+### Fixed
+* [Update to Traqula 1.0.1, Closes #1655](https://github.com/comunica/comunica/commit/bd4d9986cc98840bceb613b2417b1bba98e956ee)
+* [Fix missing autoStart: false in QuerySourceHypermedia, #1655](https://github.com/comunica/comunica/commit/1acdfc1f89e5ccd07db88a765f78d1db6336187e)
+
 <a name="v5.1.2"></a>
 ## [v5.1.2](https://github.com/comunica/comunica/compare/v5.1.1...v5.1.2) - 2026-01-21
 

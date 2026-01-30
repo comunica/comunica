@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-result-serialize-table",
-  "version": "5.1.0",
+  "version": "5.1.3",
   "description": "A table query-result-serialize actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,10 +41,10 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-query-result-serialize": "^5.1.0",
-    "@comunica/context-entries": "^5.1.0",
-    "@comunica/core": "^5.1.0",
-    "@comunica/types": "^5.1.0",
+    "@comunica/bus-query-result-serialize": "^5.1.3",
+    "@comunica/context-entries": "^5.1.3",
+    "@comunica/core": "^5.1.3",
+    "@comunica/types": "^5.1.3",
     "@rdfjs/types": "*",
     "rdf-string": "^2.0.1",
     "rdf-terms": "^2.0.0",
