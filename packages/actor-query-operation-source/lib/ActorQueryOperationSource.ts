@@ -10,7 +10,7 @@ import type {
 } from '@comunica/types';
 import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
-import { getOperationSource } from '@comunica/utils-query-operation';
+import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 
 /**
  * A comunica Source Query Operation Actor.
@@ -21,8 +21,16 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
   }
 
   public async test(action: IActionQueryOperation): Promise<TestResult<IActorTest>> {
-    if (!getOperationSource(action.operation)) {
+    const source = getOperationSource(action.operation);
+    if (!source) {
       return failTest(`Actor ${this.name} requires an operation with source annotation.`);
+    }
+    if (!doesShapeAcceptOperation(
+      await source.source.getSelectorShape(action.context),
+      action.operation,
+      { wildcardAcceptAllExtensionFunctions: true },
+    )) {
+      return failTest(`Actor ${this.name} does not accept the operation ${action.operation.type}.`);
     }
     return passTest({ httpRequests: 1 });
   }

@@ -37,15 +37,31 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         const vars: RDF.Variable[] = [];
         const distinct: boolean = arg.operation.type === 'distinct';
 
-        if (arg.operation.type === 'union') {
-          for (const name of QUAD_TERM_NAMES) {
-            if (arg.operation.input[0][name].termType === 'Variable' ||
-            arg.operation.input[0][name].termType === 'BlankNode') {
-              vars.push(arg.operation.input[0][name]);
+        if (arg.operation.type === 'nodes') {
+          vars.push(arg.operation.variable);
+          if (arg.operation.graph.termType === 'Variable') {
+            vars.push(arg.operation.graph);
+          }
+        } else if (arg.operation.type === 'union') {
+          if (arg.operation.input[0].type === 'pattern') {
+            for (const name of QUAD_TERM_NAMES) {
+              if (arg.operation.input[0][name].termType === 'Variable' ||
+                arg.operation.input[0][name].termType === 'BlankNode') {
+                vars.push(arg.operation.input[0][name]);
+              }
+              if (arg.operation.input[1][name].termType === 'Variable' ||
+                arg.operation.input[1][name].termType === 'BlankNode') {
+                vars.push(arg.operation.input[1][name]);
+              }
             }
-            if (arg.operation.input[1][name].termType === 'Variable' ||
-            arg.operation.input[1][name].termType === 'BlankNode') {
-              vars.push(arg.operation.input[1][name]);
+          } else {
+            vars.push(arg.operation.input[0].variable);
+            if (arg.operation.input[0].graph.termType === 'Variable') {
+              vars.push(arg.operation.input[0].graph);
+            }
+            vars.push(arg.operation.input[1].variable);
+            if (arg.operation.input[1].graph.termType === 'Variable') {
+              vars.push(arg.operation.input[1].graph);
             }
           }
         } else {
@@ -364,10 +380,6 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
           [ DF.variable('y'), DF.namedNode('1') ],
         ]),
         BF.bindings([
-          [ DF.variable('x'), DF.namedNode('3') ],
-          [ DF.variable('y'), DF.namedNode('3') ],
-        ]),
-        BF.bindings([
           [ DF.variable('x'), DF.namedNode('1') ],
           [ DF.variable('y'), DF.namedNode('2') ],
         ]),
@@ -376,56 +388,28 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
           [ DF.variable('y'), DF.namedNode('3') ],
         ]),
         BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
           [ DF.variable('x'), DF.namedNode('3') ],
           [ DF.variable('y'), DF.namedNode('1') ],
         ]),
         BF.bindings([
           [ DF.variable('x'), DF.namedNode('3') ],
           [ DF.variable('y'), DF.namedNode('2') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('2') ],
-          [ DF.variable('y'), DF.namedNode('2') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('2') ],
-          [ DF.variable('y'), DF.namedNode('1') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('2') ],
-          [ DF.variable('y'), DF.namedNode('3') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('4') ],
-          [ DF.variable('y'), DF.namedNode('4') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('4') ],
-          [ DF.variable('y'), DF.namedNode('1') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('4') ],
-          [ DF.variable('y'), DF.namedNode('2') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('4') ],
-          [ DF.variable('y'), DF.namedNode('3') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('5') ],
-          [ DF.variable('y'), DF.namedNode('5') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('5') ],
-          [ DF.variable('y'), DF.namedNode('1') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('5') ],
-          [ DF.variable('y'), DF.namedNode('2') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('5') ],
-          [ DF.variable('y'), DF.namedNode('3') ],
         ]),
       ]);
     });
@@ -455,21 +439,66 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         BF.bindings([
           [ DF.variable('x'), DF.namedNode('1') ],
           [ DF.variable('y'), DF.namedNode('1') ],
-          [ DF.variable('g'), DF.namedNode('4') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('3') ],
-          [ DF.variable('y'), DF.namedNode('3') ],
-          [ DF.variable('g'), DF.namedNode('4') ],
+          [ DF.variable('g'), DF.namedNode('2') ],
         ]),
         BF.bindings([
           [ DF.variable('x'), DF.namedNode('1') ],
           [ DF.variable('y'), DF.namedNode('2') ],
-          [ DF.variable('g'), DF.namedNode('4') ],
+          [ DF.variable('g'), DF.namedNode('2') ],
         ]),
         BF.bindings([
           [ DF.variable('x'), DF.namedNode('1') ],
           [ DF.variable('y'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('1') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('2') ],
+          [ DF.variable('g'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('1') ],
+          [ DF.variable('g'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('2') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
+          [ DF.variable('g'), DF.namedNode('3') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode('3') ],
+          [ DF.variable('y'), DF.namedNode('3') ],
           [ DF.variable('g'), DF.namedNode('4') ],
         ]),
         BF.bindings([
@@ -483,74 +512,19 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
           [ DF.variable('g'), DF.namedNode('4') ],
         ]),
         BF.bindings([
-          [ DF.variable('x'), DF.namedNode('2') ],
-          [ DF.variable('y'), DF.namedNode('2') ],
-          [ DF.variable('g'), DF.namedNode('5') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('4') ],
-          [ DF.variable('y'), DF.namedNode('4') ],
-          [ DF.variable('g'), DF.namedNode('5') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('2') ],
-          [ DF.variable('y'), DF.namedNode('1') ],
-          [ DF.variable('g'), DF.namedNode('5') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('2') ],
-          [ DF.variable('y'), DF.namedNode('3') ],
-          [ DF.variable('g'), DF.namedNode('5') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('4') ],
-          [ DF.variable('y'), DF.namedNode('1') ],
-          [ DF.variable('g'), DF.namedNode('5') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('4') ],
-          [ DF.variable('y'), DF.namedNode('2') ],
-          [ DF.variable('g'), DF.namedNode('5') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('4') ],
-          [ DF.variable('y'), DF.namedNode('3') ],
-          [ DF.variable('g'), DF.namedNode('5') ],
-        ]),
-        BF.bindings([
           [ DF.variable('x'), DF.namedNode('3') ],
           [ DF.variable('y'), DF.namedNode('3') ],
-          [ DF.variable('g'), DF.namedNode('6') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('5') ],
-          [ DF.variable('y'), DF.namedNode('5') ],
-          [ DF.variable('g'), DF.namedNode('6') ],
+          [ DF.variable('g'), DF.namedNode('4') ],
         ]),
         BF.bindings([
           [ DF.variable('x'), DF.namedNode('3') ],
           [ DF.variable('y'), DF.namedNode('1') ],
-          [ DF.variable('g'), DF.namedNode('6') ],
+          [ DF.variable('g'), DF.namedNode('4') ],
         ]),
         BF.bindings([
           [ DF.variable('x'), DF.namedNode('3') ],
           [ DF.variable('y'), DF.namedNode('2') ],
-          [ DF.variable('g'), DF.namedNode('6') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('5') ],
-          [ DF.variable('y'), DF.namedNode('1') ],
-          [ DF.variable('g'), DF.namedNode('6') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('5') ],
-          [ DF.variable('y'), DF.namedNode('2') ],
-          [ DF.variable('g'), DF.namedNode('6') ],
-        ]),
-        BF.bindings([
-          [ DF.variable('x'), DF.namedNode('5') ],
-          [ DF.variable('y'), DF.namedNode('3') ],
-          [ DF.variable('g'), DF.namedNode('6') ],
+          [ DF.variable('g'), DF.namedNode('4') ],
         ]),
       ]);
     });
@@ -575,19 +549,13 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
           { variable: DF.variable('y'), canBeUndef: false },
         ],
       });
-      await expect(output.bindingsStream.toArray()).resolves.toHaveLength(22);
+      await expect(output.bindingsStream.toArray()).resolves.toHaveLength(20);
 
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         context: expect.any(ActionContext),
         operation: AF.createUnion([
-          assignOperationSource(
-            AF.createPattern(DF.variable('x'), DF.variable('b'), DF.variable('y')),
-            source1,
-          ),
-          assignOperationSource(
-            AF.createPattern(DF.variable('x'), DF.variable('b'), DF.variable('y')),
-            source2,
-          ),
+          assignOperationSource(AF.createNodes(DF.defaultGraph(), DF.variable('x')), source1),
+          assignOperationSource(AF.createNodes(DF.defaultGraph(), DF.variable('x')), source2),
         ]),
       });
     });

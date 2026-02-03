@@ -12,7 +12,8 @@ import type { TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { storeStream } from 'rdf-store-stream';
+import type * as RDF from '@rdfjs/types';
+import { RdfStore } from 'rdf-stores';
 
 /**
  * A comunica None Query Source Identify Hypermedia Actor.
@@ -35,13 +36,20 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     this.logInfo(action.context, `Identified as file source: ${action.url}`);
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const source = new QuerySourceRdfJs(
-      await storeStream(action.quads),
+      await ActorQuerySourceIdentifyHypermediaNone.storeStream(action.quads),
       dataFactory,
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
     );
     source.toString = () => `QuerySourceRdfJs(${action.url})`;
     source.referenceValue = action.url;
     return { source };
+  }
+
+  public static storeStream<Q extends RDF.BaseQuad = RDF.Quad>(stream: RDF.Stream<Q>): Promise<RDF.Store<Q>> {
+    const store: RDF.Store<Q> = <RDF.Store<Q>> <RDF.Store> RdfStore.createDefault(true);
+    return new Promise((resolve, reject) => store.import(stream)
+      .on('error', reject)
+      .once('end', () => resolve(store)));
   }
 }
 

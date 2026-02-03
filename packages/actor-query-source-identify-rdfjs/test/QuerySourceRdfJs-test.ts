@@ -2,7 +2,7 @@ import { Readable } from 'node:stream';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { AlgebraFactory } from '@comunica/utils-algebra';
+import { AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import arrayifyStream from 'arrayify-stream';
@@ -25,12 +25,14 @@ describe('QuerySourceRdfJs', () => {
   let source: QuerySourceRdfJs;
   beforeEach(() => {
     ctx = new ActionContext({});
-    store = RdfStore.createDefault();
+    store = RdfStore.createDefault(true);
     source = new QuerySourceRdfJs(store, DF, BF);
   });
 
   describe('getSelectorShape', () => {
-    it('should return a selector shape', async() => {
+    it('should return a selector shape when indexNodes is false', async() => {
+      store = RdfStore.createDefault();
+      source = new QuerySourceRdfJs(store, DF, BF);
       await expect(source.getSelectorShape()).resolves.toEqual({
         type: 'operation',
         operation: {
@@ -41,6 +43,33 @@ describe('QuerySourceRdfJs', () => {
           DF.variable('s'),
           DF.variable('p'),
           DF.variable('o'),
+        ],
+      });
+    });
+
+    it('should return a selector shape', async() => {
+      await expect(source.getSelectorShape()).resolves.toEqual({
+        type: 'disjunction',
+        children: [
+          {
+            type: 'operation',
+            operation: {
+              operationType: 'pattern',
+              pattern: AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            },
+            variablesOptional: [
+              DF.variable('s'),
+              DF.variable('p'),
+              DF.variable('o'),
+            ],
+          },
+          {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: TypesComunica.NODES,
+            },
+          },
         ],
       });
     });
@@ -876,6 +905,82 @@ describe('QuerySourceRdfJs', () => {
               requestTime: 0,
             });
         });
+      });
+    });
+
+    describe('for nodes operations', () => {
+      beforeEach(() => {
+        store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.defaultGraph()));
+        store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o2'), DF.namedNode('g2')));
+      });
+
+      it('should return nodes in the default graph', async() => {
+        const data = source.queryBindings(
+          AF.createNodes(DF.defaultGraph(), DF.variable('x')),
+          ctx,
+        );
+        await expect(data).toEqualBindingsStream([
+          BF.fromRecord({ x: DF.namedNode('s1') }),
+          BF.fromRecord({ x: DF.namedNode('o1') }),
+        ]);
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+          .toEqual({
+            cardinality: { type: 'exact', value: 2 },
+            state: expect.any(MetadataValidationState),
+            variables: [
+              { variable: DF.variable('x'), canBeUndef: false },
+            ],
+            requestTime: 0,
+          });
+      });
+
+      it('should return nodes in a variable graph', async() => {
+        const data = source.queryBindings(
+          AF.createNodes(DF.variable('g'), DF.variable('x')),
+          ctx,
+        );
+        await expect(data).toEqualBindingsStream([
+          BF.fromRecord({ g: DF.defaultGraph(), x: DF.namedNode('s1') }),
+          BF.fromRecord({ g: DF.defaultGraph(), x: DF.namedNode('o1') }),
+          BF.fromRecord({ g: DF.namedNode('g2'), x: DF.namedNode('s1') }),
+          BF.fromRecord({ g: DF.namedNode('g2'), x: DF.namedNode('o2') }),
+        ]);
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+          .toEqual({
+            cardinality: { type: 'exact', value: 4 },
+            state: expect.any(MetadataValidationState),
+            variables: [
+              { variable: DF.variable('g'), canBeUndef: false },
+              { variable: DF.variable('x'), canBeUndef: false },
+            ],
+            requestTime: 0,
+          });
+      });
+
+      it('should return nodes in the default graph when matchNodes returns a plain stream', async() => {
+        (<any> store).matchNodes = () => {
+          return Readable.from([
+            [ DF.defaultGraph(), DF.namedNode('s1') ],
+            [ DF.defaultGraph(), DF.namedNode('o1') ],
+          ]);
+        };
+        const data = source.queryBindings(
+          AF.createNodes(DF.defaultGraph(), DF.variable('x')),
+          ctx,
+        );
+        await expect(data).toEqualBindingsStream([
+          BF.fromRecord({ x: DF.namedNode('s1') }),
+          BF.fromRecord({ x: DF.namedNode('o1') }),
+        ]);
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+          .toEqual({
+            cardinality: { type: 'exact', value: 2 },
+            state: expect.any(MetadataValidationState),
+            variables: [
+              { variable: DF.variable('x'), canBeUndef: false },
+            ],
+            requestTime: 0,
+          });
       });
     });
   });

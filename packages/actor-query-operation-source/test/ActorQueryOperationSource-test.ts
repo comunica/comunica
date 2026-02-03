@@ -63,8 +63,39 @@ describe('ActorQueryOperationSource', () => {
       it('should handle operations with top-level source', async() => {
         await expect(actor.test({
           context: new ActionContext(),
-          operation: assignOperationSource(AF.createNop(), <any>{}),
+          operation: assignOperationSource(AF.createNop(), <any>{
+            source: {
+              getSelectorShape() {
+                return {
+                  type: 'operation',
+                  operation: {
+                    operationType: 'wildcard',
+                  },
+                };
+              },
+            },
+          }),
         })).resolves.toPassTest({ httpRequests: 1 });
+      });
+
+      it('should not handle operations with top-level source that does not accept the operation', async() => {
+        await expect(actor.test({
+          context: new ActionContext(),
+          operation: assignOperationSource(AF.createNop(), <any>{
+            source: {
+              getSelectorShape() {
+                return {
+                  type: 'operation',
+                  operation: {
+                    operationType: 'type',
+                    type: 'abc',
+                  },
+                };
+              },
+            },
+          }),
+        }))
+          .resolves.toFailTest(`Actor actor does not accept the operation nop.`);
       });
 
       it('should not handle operations without top-level source', async() => {

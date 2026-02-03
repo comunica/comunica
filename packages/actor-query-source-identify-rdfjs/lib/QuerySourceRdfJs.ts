@@ -1,19 +1,19 @@
 import { filterMatchingQuotedQuads, getVariables, quadsToBindings } from '@comunica/bus-query-source-identify';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type {
-  IQuerySource,
   BindingsStream,
-  IActionContext,
-  FragmentSelectorShape,
   ComunicaDataFactory,
+  FragmentSelectorShape,
+  IActionContext,
+  IQuerySource,
   QuerySourceReference,
 } from '@comunica/types';
-import { Algebra, AlgebraFactory, isKnownOperation } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, isKnownOperation, TypesComunica } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
-import { someTermsNested, filterTermsNested, someTerms, uniqTerms } from 'rdf-terms';
+import { filterTermsNested, someTerms, someTermsNested, uniqTerms } from 'rdf-terms';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
 export class QuerySourceRdfJs implements IQuerySource {
@@ -34,7 +34,7 @@ export class QuerySourceRdfJs implements IQuerySource {
     this.dataFactory = dataFactory;
     this.bindingsFactory = bindingsFactory;
     const AF = new AlgebraFactory(<RDF.DataFactory> this.dataFactory);
-    this.selectorShape = {
+    let selectorShape: FragmentSelectorShape = {
       type: 'operation',
       operation: {
         operationType: 'pattern',
@@ -50,6 +50,22 @@ export class QuerySourceRdfJs implements IQuerySource {
         this.dataFactory.variable('o'),
       ],
     };
+    if ('features' in this.source && this.source.features?.indexNodes) {
+      selectorShape = {
+        type: 'disjunction',
+        children: [
+          selectorShape,
+          {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: TypesComunica.NODES,
+            },
+          },
+        ],
+      };
+    }
+    this.selectorShape = selectorShape;
     this.dummyDefaultGraph = this.dataFactory.variable('__comunica:defaultGraph');
   }
 
@@ -74,6 +90,33 @@ export class QuerySourceRdfJs implements IQuerySource {
   }
 
   public queryBindings(operation: Algebra.Operation, context: IActionContext): BindingsStream {
+    if (isKnownOperation(operation, TypesComunica.NODES) &&
+      'matchNodes' in this.source && this.source.matchNodes) {
+      const rawStream = this.source.matchNodes(operation.graph);
+      const isGraphVariable = operation.graph.termType === 'Variable';
+      const it: AsyncIterator<[ RDF.Term, RDF.Term ]> = rawStream instanceof AsyncIterator ?
+        rawStream :
+        wrapAsyncIterator<[ RDF.Term, RDF.Term ]>(rawStream, { autoStart: false });
+      const bs = it.map<RDF.Bindings>(tuple => this.bindingsFactory.bindings([
+        ...(isGraphVariable ? [ <[RDF.Variable, RDF.Term]> [ <RDF.Variable> operation.graph, tuple[0] ] ] : []),
+        [ operation.variable, tuple[1] ],
+      ]));
+      bs.setProperty('metadata', {
+        state: new MetadataValidationState(),
+        cardinality: {
+          type: 'exact',
+          value: this.source.countNodes!(operation.graph),
+        },
+        // Force requestTime to zero, since this will be free for future calls, as we're fully indexed at this stage.
+        requestTime: 0,
+        variables: [
+          ...(isGraphVariable ? [{ variable: operation.graph, canBeUndef: false }] : []),
+          { variable: operation.variable, canBeUndef: false },
+        ],
+      });
+      return bs;
+    }
+
     if (!isKnownOperation(operation, Algebra.Types.PATTERN)) {
       throw new Error(`Attempted to pass non-pattern operation '${operation.type}' to QuerySourceRdfJs`);
     }
