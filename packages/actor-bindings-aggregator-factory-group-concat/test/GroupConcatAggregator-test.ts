@@ -88,7 +88,7 @@ describe('CountAggregator', () => {
         BF.bindings([[ DF.variable('x'), DF.literal('d', 'en') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(DF.literal('a b c d', 'en'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(DF.literal('a b c d'));
     });
 
     it('with a list of different language strings', async() => {
