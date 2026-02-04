@@ -3,12 +3,7 @@ import { LoggerPretty } from '../lib/LoggerPretty';
 describe('LoggerPretty', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
     jest.spyOn(process.stderr, 'write').mockImplementation();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
   });
 
   it('should work on complex values', () => {
@@ -176,13 +171,16 @@ describe('LoggerPretty', () => {
       expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
-    it('should log for repeated warn', () => {
+    it('should buffer repeated warns and output count on flush', () => {
       logger.warn('bla', {});
       logger.warn('bla', {});
       logger.warn('bla', {});
       expect(process.stderr.write).toHaveBeenCalledTimes(1);
       logger.flush();
       expect(process.stderr.write).toHaveBeenCalledTimes(2);
+      expect(process.stderr.write).toHaveBeenLastCalledWith(
+        expect.stringContaining('(2 times)'),
+      );
     });
 
     it('should log for error', () => {
@@ -313,16 +311,5 @@ describe('LoggerPretty', () => {
       logger.trace('bla');
       expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
-  });
-
-  it('should flush debounced', () => {
-    const logger = new LoggerPretty({ level: 'warn' });
-    const flushSpy = jest.spyOn(logger, 'flush');
-
-    logger.warn('bla', {});
-    logger.warn('bla', {});
-
-    jest.runAllTimers();
-    expect(flushSpy).toHaveBeenCalledTimes(1);
   });
 });

@@ -33,8 +33,6 @@ export abstract class Logger {
   }> = {};
 
   protected repetitionCounter = 0;
-  protected debounceTimeout: any = null;
-  protected readonly debounceDelay = 100;
 
   protected readonly groupedLogLimit = 5;
 
@@ -50,7 +48,7 @@ export abstract class Logger {
    * If the same key is passed multiple times,
    * only the first time the emit callback will be invoked immediately.
    * All subsequent calls will be buffered,
-   * until other messages are passed more than {@link Logger#groupedLogLimit} times,
+   * until at least {@link Logger#groupedLogLimit} other logGrouped calls are made,
    * or {@link Logger#flush} is called.
    * @param key A unique key for this message (e.g. the message template).
    * @param emit A callback to emit the message.
@@ -69,13 +67,6 @@ export abstract class Logger {
       }
     }
 
-    if (!this.debounceTimeout) {
-      this.debounceTimeout = setTimeout(() => {
-        this.debounceTimeout = null;
-        this.flush();
-      }, this.debounceDelay);
-    }
-
     this.activeLogGroups[key] = { count: 0, lastSeenIndex: this.repetitionCounter++, callback: emit };
     emit(1);
   }
@@ -84,10 +75,6 @@ export abstract class Logger {
    * Flush all active log groups.
    */
   public flush(): void {
-    if (this.debounceTimeout) {
-      clearTimeout(this.debounceTimeout);
-      this.debounceTimeout = null;
-    }
     for (const key in this.activeLogGroups) {
       const { count, callback } = this.activeLogGroups[key];
       delete this.activeLogGroups[key];

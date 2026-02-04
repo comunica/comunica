@@ -131,5 +131,43 @@ describe('Logger', () => {
       expect(emitA).toHaveBeenNthCalledWith(2, 1);
       expect(emitA).toHaveBeenNthCalledWith(3, 1);
     });
+
+    it('should do nothing when flush is called with no pending messages', () => {
+      const emit = jest.fn();
+      logger.flush();
+      expect(emit).not.toHaveBeenCalled();
+    });
+
+    it('should flush all groups when multiple groups have pending messages', () => {
+      const emitA = jest.fn();
+      const emitB = jest.fn();
+
+      logger.logGrouped('A', emitA);
+      logger.logGrouped('A', emitA);
+      logger.logGrouped('B', emitB);
+      logger.logGrouped('B', emitB);
+
+      expect(emitA).toHaveBeenCalledTimes(1);
+      expect(emitB).toHaveBeenCalledTimes(1);
+
+      logger.flush();
+
+      expect(emitA).toHaveBeenCalledTimes(2);
+      expect(emitA).toHaveBeenNthCalledWith(2, 1);
+      expect(emitB).toHaveBeenCalledTimes(2);
+      expect(emitB).toHaveBeenNthCalledWith(2, 1);
+    });
+
+    it('should do nothing when flush is called twice', () => {
+      const emit = jest.fn();
+      logger.logGrouped('warn', emit);
+      logger.logGrouped('warn', emit);
+
+      logger.flush();
+      expect(emit).toHaveBeenCalledTimes(2);
+
+      logger.flush();
+      expect(emit).toHaveBeenCalledTimes(2);
+    });
   });
 });
