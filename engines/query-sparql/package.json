@@ -212,6 +212,7 @@
     "@comunica/actor-query-operation-join": "^5.1.3",
     "@comunica/actor-query-operation-leftjoin": "^5.1.3",
     "@comunica/actor-query-operation-minus": "^5.1.3",
+    "@comunica/actor-query-operation-nodes": "^5.1.3",
     "@comunica/actor-query-operation-nop": "^5.1.3",
     "@comunica/actor-query-operation-orderby": "^5.1.3",
     "@comunica/actor-query-operation-path-alt": "^5.1.3",

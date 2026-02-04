@@ -3,8 +3,10 @@
  * Thereby opening up the algebra for unknown extensions
  */
 
+import type * as RDF from '@rdfjs/types';
 import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import type { Patch } from '@traqula/core';
+import type { TypesComunica } from './TypesComunica';
 
 export { Types, ExpressionTypes } from '@traqula/algebra-transformations-1-2';
 
@@ -47,7 +49,7 @@ export type Closed<T extends object > = {[K in keyof T]: CloseSingle<T[K]> };
 // Redefinitions of types
 export type KnownOperation = Ask | KnownExpression | Bgp | Construct | Describe | Distinct | Extend | From | Filter
   | Graph | Group | Join | LeftJoin | Minus | Nop | OrderBy | Path | Pattern | Project | KnownPropertyPathSymbol
-  | Reduced | Service | Slice | Union | Values | KnownUpdate | CompositeUpdate;
+  | Reduced | Service | Slice | Union | Values | KnownUpdate | CompositeUpdate | Nodes;
 export type KnownExpression = AggregateExpression | GroupConcatExpression | ExistenceExpression | NamedExpression |
   OperatorExpression | TermExpression | WildcardExpression | BoundAggregate;
 export type KnownPropertyPathSymbol = Alt | Inv | Link | Nps | OneOrMorePath | Seq | ZeroOrMorePath | ZeroOrOnePath;
@@ -166,3 +168,15 @@ export type UpdateGraphShortcut = Opened<Algebra.UpdateGraphShortcut>;
 export type Add = Opened<Algebra.Add>;
 export type Move = Opened<Algebra.Move>;
 export type Copy = Opened<Algebra.Copy>;
+
+/**
+ * A non-standard operator to represent the nodes of a graph.
+ * It returns all nodes (subjects or objects) in the graph.
+ * https://www.w3.org/TR/sparql12-query/#defn_nodeSet
+ */
+export interface NodesUnopened extends BaseOperation {
+  type: TypesComunica.NODES;
+  graph: RDF.Term;
+  variable: RDF.Variable;
+}
+export type Nodes = Opened<NodesUnopened>;

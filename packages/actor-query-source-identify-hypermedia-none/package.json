@@ -46,8 +46,8 @@
     "@comunica/bus-query-source-identify-hypermedia": "^5.1.3",
     "@comunica/context-entries": "^5.1.3",
     "@comunica/core": "^5.1.3",
-    "@comunica/types": "^5.1.3",
     "@comunica/utils-bindings-factory": "^5.1.3",
-    "rdf-store-stream": "^3.0.0"
+    "@rdfjs/types": "*",
+    "rdf-stores": "^2.1.1"
   }
 }

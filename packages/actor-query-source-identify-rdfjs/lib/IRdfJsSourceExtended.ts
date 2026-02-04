@@ -13,6 +13,10 @@ export interface IRdfJsSourceExtended extends RDF.Source {
      * and must be replaced by `undefined` and filtered by the caller afterwards.
      */
     quotedTripleFiltering?: boolean;
+    /**
+     * If this is true, matchNodes and countNodes must be available.
+     */
+    indexNodes?: boolean;
   };
 
   /**
@@ -47,4 +51,20 @@ export interface IRdfJsSourceExtended extends RDF.Source {
     object: RDF.Term,
     graph: RDF.Term,
   ) => EventEmitter;
+
+  /**
+   * Returns a stream that produces all nodes as terms in the given graph.
+   * Nodes are all terms that are either a subject or object within the graph.
+   *
+   * This will only be used if `features.indexNodes` is true.
+   */
+  matchNodes?: (graph: RDF.Term) => EventEmitter;
+
+  /**
+   * Returns the number of nodes in the given graph.
+   * Nodes are all terms that are either a subject or object within the graph.
+   *
+   * This will only be used if `features.indexNodes` is true.
+   */
+  countNodes?: (graph: RDF.Term) => number;
 }

@@ -6,6 +6,7 @@ import { algebraUtils, Types } from '@traqula/algebra-transformations-1-2';
 import type { TransformContext, VisitContext } from '@traqula/core';
 import { TransformerSubTyped } from '@traqula/core';
 import type { KnownOperation, Operation } from './Algebra';
+import { TypesComunica } from './TypesComunica';
 
 export const resolveIRI = algebraUtils.resolveIRI;
 export const objectify = algebraUtils.objectify;
@@ -84,6 +85,7 @@ export const transformer = new TransformerSubTyped<KnownOperation>({
   [Types.ADD]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
   [Types.MOVE]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
   [Types.COPY]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
+  [TypesComunica.NODES]: { ignoreKeys: new Set([ 'variable', 'metadata' ]) },
 });
 
 /**

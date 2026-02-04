@@ -57,7 +57,7 @@ module.exports = function(engine) {
 };
 
 function source(data) {
-  const store = RdfStore.createDefault();
+  const store = RdfStore.createDefault(true);
   for (quad of data) {
     store.addQuad(quad);
   }

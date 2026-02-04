@@ -1371,6 +1371,39 @@ WHERE {
             ]),
           ]);
         });
+
+        it('should correctly terminate for an rdf-stores store with nodes index', async() => {
+          const store = RdfStore.createDefault(true);
+          const A = DF.namedNode('http://example.org/a');
+          const B = DF.namedNode('http://example.org/b');
+          const C = DF.namedNode('http://example.org/c');
+          const P = DF.namedNode('http://example.org/p');
+
+          store.addQuad(DF.quad(A, P, B));
+          store.addQuad(DF.quad(A, P, C));
+          store.addQuad(DF.quad(B, P, A));
+          store.addQuad(DF.quad(B, P, C));
+          store.addQuad(DF.quad(C, P, A));
+          store.addQuad(DF.quad(C, P, B));
+
+          const result = <QueryBindings> await engine.query(`
+        PREFIX : <http://example.org/>
+        SELECT * WHERE {
+            ?a (:p/:p)* :b .
+        }`, { sources: [ store ]});
+
+          await expect(result.execute()).resolves.toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/b') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/a') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/c') ],
+            ]),
+          ]);
+        });
       });
 
       describe('should handle zero-or-more paths with lists after a link', () => {
@@ -1467,6 +1500,40 @@ SELECT ?option WHERE {
           BF.bindings([
             [ DF.variable('s'), DF.namedNode('ex:s1') ],
             [ DF.variable('o'), DF.namedNode('ex:s1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.literal('s1') ],
+            [ DF.variable('o'), DF.literal('s1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s2') ],
+            [ DF.variable('o'), DF.namedNode('ex:s2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.literal('s2') ],
+            [ DF.variable('o'), DF.literal('s2') ],
+          ]),
+        ]);
+      });
+
+      it('should handle zero-or-one path with variable subject and object with nodes index', async() => {
+        const store = RdfStore.createDefault(true);
+        store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:name'), DF.literal('s1')));
+        store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:knows'), DF.namedNode('ex:s2')));
+        store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:name'), DF.literal('s2')));
+        const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT ?s ?o WHERE {
+          ?s ex:knows? ?o .
+        }`, { sources: [ store ]});
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s1') ],
+            [ DF.variable('o'), DF.namedNode('ex:s1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s1') ],
+            [ DF.variable('o'), DF.namedNode('ex:s2') ],
           ]),
           BF.bindings([
             [ DF.variable('s'), DF.literal('s1') ],

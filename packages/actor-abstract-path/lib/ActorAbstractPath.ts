@@ -83,6 +83,27 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     return { context, operation: undefined };
   }
 
+  public async getNodes(
+    operation: Algebra.Path,
+    context: IActionContext,
+    algebraFactory: AlgebraFactory,
+    sources: IQuerySourceWrapper[],
+  ): Promise<IQueryOperationResultBindings> {
+    const result = getSafeBindings(
+      await this.mediatorQueryOperation.mediate({
+        context,
+        operation: this.assignPatternSources(
+          algebraFactory,
+          algebraFactory.createNodes(operation.graph, <RDF.Variable> operation.subject),
+          sources,
+        ),
+      }),
+    );
+    result.bindingsStream = result.bindingsStream.map(bindings => bindings
+      .set(<RDF.Variable> operation.object, bindings.get(<RDF.Variable> operation.subject)!));
+    return result;
+  }
+
   private async predicateStarGraphVariable(
     subject: RDF.Term,
     object: RDF.Variable,
@@ -396,7 +417,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
   public assignPatternSources(
     algebraFactory: AlgebraFactory,
-    pattern: Algebra.Pattern,
+    pattern: Algebra.Operation,
     sources: IQuerySourceWrapper[],
   ): Algebra.Operation {
     if (sources.length === 0) {

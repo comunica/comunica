@@ -30,7 +30,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: jest.fn((arg: any) => {
-        if (arg.operation.type === 'union') {
+        if (arg.operation.type === 'nodes' || arg.operation.type === 'union') {
           return Promise.resolve({
             bindingsStream: new ArrayIterator([
               BF.fromRecord({ x: DF.namedNode('1') }),
@@ -367,26 +367,8 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         context: expect.any(ActionContext),
         operation: AF.createUnion([
-          AF.createUnion([
-            assignOperationSource(
-              AF.createPattern(DF.variable('x'), DF.variable('p'), DF.variable('xb')),
-              source1,
-            ),
-            assignOperationSource(
-              AF.createPattern(DF.variable('x'), DF.variable('p'), DF.variable('xb')),
-              source2,
-            ),
-          ]),
-          AF.createUnion([
-            assignOperationSource(
-              AF.createPattern(DF.variable('xb'), DF.variable('p'), DF.variable('x')),
-              source1,
-            ),
-            assignOperationSource(
-              AF.createPattern(DF.variable('xb'), DF.variable('p'), DF.variable('x')),
-              source2,
-            ),
-          ]),
+          assignOperationSource(AF.createNodes(DF.defaultGraph(), DF.variable('x')), source1),
+          assignOperationSource(AF.createNodes(DF.defaultGraph(), DF.variable('x')), source2),
         ]),
       });
     });
