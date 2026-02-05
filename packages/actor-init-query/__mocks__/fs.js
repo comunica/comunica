@@ -55,7 +55,7 @@ fs.readFileSync = jest.fn((path) => {
 
 // Add promises support for async file reading
 fs.promises = {
-  readFile: jest.fn((path, encoding) => {
+  readFile: jest.fn((path, _encoding) => {
     if (path.includes('sparql-endpoint.html')) {
       return Promise.resolve(testHtmlTemplate);
     }

@@ -18,7 +18,7 @@ import { Readable } from 'readable-stream';
 import { QueryEngineFactoryBase, QueryEngineBase } from '../__mocks__';
 
 // @ts-expect-error
-import { fs, testArgumentDict, testFileContentDict, testHtmlTemplate } from '../__mocks__/fs';
+import { fs, testArgumentDict, testFileContentDict } from '../__mocks__/fs';
 
 // @ts-expect-error
 import { http, ServerResponseMock } from '../__mocks__/http';
@@ -2166,7 +2166,6 @@ INSERT DATA {
     describe('writeQueryResult with HTML Accept header', () => {
       let response: any;
       let request: any;
-      let endCalledPromise: any;
 
       beforeEach(() => {
         response = new ServerResponseMock();
@@ -2177,12 +2176,11 @@ INSERT DATA {
           host: 'localhost:3000',
           accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         };
-        endCalledPromise = new Promise(resolve => response.onEnd = resolve);
       });
 
       it('should call writeHtmlView when Accept header contains text/html and no query', async() => {
         const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
-        
+
         await instance.writeQueryResult(
           await new QueryEngineFactoryBase().create(),
           new PassThrough(),
@@ -2208,7 +2206,7 @@ INSERT DATA {
         request.headers.accept = 'application/json';
         const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
         const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
-        
+
         await instance.writeQueryResult(
           await new QueryEngineFactoryBase().create(),
           new PassThrough(),
@@ -2228,7 +2226,7 @@ INSERT DATA {
 
       it('should not call writeHtmlView when query is provided even with text/html Accept header', async() => {
         const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
-        
+
         await instance.writeQueryResult(
           await new QueryEngineFactoryBase().create(),
           new PassThrough(),
