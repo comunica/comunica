@@ -53,7 +53,7 @@ describe('ActorRdfSerializeJsonLd', () => {
         quadStream = () => new ArrayIterator([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
-        ]);
+        ], { autoStart: false });
         quadStreamPipeable = () => streamifyArray([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
@@ -61,7 +61,7 @@ describe('ActorRdfSerializeJsonLd', () => {
         quadStreamQuoted = () => new ArrayIterator([
           quad('<<ex:s1 ex:p1 ex:o1>>', 'http://example.org/b', 'http://example.org/c'),
           quad('<<ex:s1 ex:p1 ex:o1>>', 'http://example.org/d', 'http://example.org/e'),
-        ]);
+        ], { autoStart: false });
       });
 
       it('should run', async() => {
@@ -159,7 +159,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
         quad('http://example.org/a2', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a2', 'http://example.org/d', 'http://example.org/e'),
-      ]), context }, handleMediaType: 'application/ld+json', context })
+      ], { autoStart: false }), context }, handleMediaType: 'application/ld+json', context })
         .then(async(output: any) => await expect(stringifyStream(output.handle.data)).resolves.toBe(
           `[
   {
@@ -211,7 +211,7 @@ describe('ActorRdfSerializeJsonLd', () => {
         quadStream = new ArrayIterator([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
-        ]);
+        ], { autoStart: false });
         quadsError = new Readable();
         quadsError._read = () => quadsError.emit('error', new Error('SerializeJsonLd'));
       });

@@ -722,7 +722,7 @@ describe('ActorQueryOperationGroup', () => {
           [ DF.variable('y'), int('3') ],
         ]),
       ];
-      const bindingsStream = new ArrayIterator(inputBindings).transform({
+      const bindingsStream = new ArrayIterator(inputBindings, { autoStart: false }).transform({
         autoStart: false,
         transform(result, done, push) {
           push(result);

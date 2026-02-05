@@ -52,7 +52,7 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
             [ DF.variable('a'), DF.literal('a1') ],
             [ DF.variable('c'), DF.literal('c1') ],
           ]),
-        ]),
+        ], { autoStart: false }),
         metadata,
         context: new ActionContext(),
         originalAction: { context: new ActionContext() },
@@ -62,7 +62,7 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
         operation: types.CONSTRUCT,
         stream: new ArrayIterator<RDF.Quad>([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
-        ]),
+        ], { autoStart: false }),
         metadata,
         context: new ActionContext(),
         originalAction: { context: new ActionContext() },

@@ -40,7 +40,7 @@ describe('QuadDestinationSparql', () => {
         insert: new ArrayIterator([
           DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
           DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
-        ]),
+        ], { autoStart: false }),
       });
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
@@ -67,7 +67,7 @@ describe('QuadDestinationSparql', () => {
             DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
           ),
           DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
-        ]),
+        ], { autoStart: false }),
       });
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
@@ -94,7 +94,7 @@ describe('QuadDestinationSparql', () => {
         ok: false,
       });
       (<any>body).cancel = jest.fn();
-      await expect(destination.update({ insert: new ArrayIterator<RDF.Quad>([]) })).rejects
+      await expect(destination.update({ insert: new ArrayIterator<RDF.Quad>([], { autoStart: false }) })).rejects
         .toThrow(`Invalid SPARQL endpoint response from abc (HTTP status 400):\nempty response`);
     });
   });
@@ -105,7 +105,7 @@ describe('QuadDestinationSparql', () => {
         delete: new ArrayIterator([
           DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
           DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
-        ]),
+        ], { autoStart: false }),
       });
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
@@ -130,11 +130,11 @@ describe('QuadDestinationSparql', () => {
         insert: new ArrayIterator([
           DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
           DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
-        ]),
+        ], { autoStart: false }),
         delete: new ArrayIterator([
           DF.quad(DF.namedNode('ex:sd1'), DF.namedNode('ex:pd1'), DF.namedNode('ex:od1')),
           DF.quad(DF.namedNode('ex:sd2'), DF.namedNode('ex:pd2'), DF.namedNode('ex:od2'), DF.namedNode('ex:gd2')),
-        ]),
+        ], { autoStart: false }),
       });
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({

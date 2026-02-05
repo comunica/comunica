@@ -185,7 +185,7 @@ describe('PathVariableObjectIterator', () => {
 
   it('handles immediately ending mediation results', async() => {
     mediatorQueryOperation.mediate = <any> (() => {
-      const bindingsStream = new ArrayIterator<RDF.Bindings>([]);
+      const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
       createdBindingsStreams.push(bindingsStream);
       return { type: 'bindings', bindingsStream };
     });

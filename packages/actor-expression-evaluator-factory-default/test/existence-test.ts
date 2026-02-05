@@ -77,7 +77,7 @@ describe('should be able to handle EXIST filters', () => {
   });
 
   it('like an EXIST that errors', async() => {
-    const bindingsStream = new ArrayIterator([{}, {}, {}]).transform({
+    const bindingsStream = new ArrayIterator([{}, {}, {}], { autoStart: false }).transform({
       autoStart: false,
       transform(item, done, push) {
         push(item);

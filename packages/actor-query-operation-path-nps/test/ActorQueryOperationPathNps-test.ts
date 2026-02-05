@@ -45,7 +45,7 @@ describe('ActorQueryOperationPathNps', () => {
         }
 
         return Promise.resolve({
-          bindingsStream: new ArrayIterator(bindings),
+          bindingsStream: new ArrayIterator(bindings, { autoStart: false }),
           metadata: () => Promise.resolve({ cardinality: 3 }),
           operated: arg,
           type: 'bindings',

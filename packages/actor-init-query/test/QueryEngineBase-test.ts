@@ -224,7 +224,7 @@ describe('QueryEngineBase', () => {
             BF.bindings([
               [ DF.variable('a'), DF.namedNode('ex:a') ],
             ]),
-          ]);
+          ], { autoStart: false });
           await expect(queryEngine.queryBindings('SELECT ...')).resolves.toEqualBindingsStream([
             BF.bindings([
               [ DF.variable('a'), DF.namedNode('ex:a') ],
@@ -243,7 +243,7 @@ describe('QueryEngineBase', () => {
         it('handles a valid bindings query', async() => {
           input = new ArrayIterator([
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
-          ]);
+          ], { autoStart: false });
           jest.spyOn(mediatorQueryProcess, 'mediate')
             .mockResolvedValue({ result: { type: 'quads', quadStream: input }});
           await expect(arrayifyStream(await queryEngine.queryQuads('CONSTRUCT ...'))).resolves.toEqualRdfQuadArray([
@@ -356,7 +356,7 @@ describe('QueryEngineBase', () => {
           BF.bindings([
             [ DF.variable('a'), DF.namedNode('ex:a') ],
           ]),
-        ]),
+        ], { autoStart: false }),
         metadata: async() => ({
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 1 },
@@ -386,7 +386,7 @@ describe('QueryEngineBase', () => {
         type: 'quads',
         quadStream: new ArrayIterator([
           DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
-        ]),
+        ], { autoStart: false }),
         metadata: async() => ({
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 1 },
@@ -449,7 +449,7 @@ describe('QueryEngineBase', () => {
             BF.bindings([
               [ DF.variable('a'), DF.namedNode('ex:a') ],
             ]),
-          ]),
+          ], { autoStart: false }),
           metadata: () => (<any>{}),
           context: new ActionContext({ [KeysCore.log.name]: mockLogger }),
         });
@@ -464,7 +464,7 @@ describe('QueryEngineBase', () => {
           type: 'quads',
           quadStream: new ArrayIterator([
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
-          ]),
+          ], { autoStart: false }),
           metadata: () => (<any>{}),
           context: new ActionContext({ [KeysCore.log.name]: mockLogger }),
         });
@@ -518,7 +518,7 @@ describe('QueryEngineBase', () => {
           BF.bindings([
             [ DF.variable('a'), DF.namedNode('ex:a') ],
           ]),
-        ]),
+        ], { autoStart: false }),
         metadata: async() => (<any>{
           cardinality: { type: 'estimate', value: 1 },
 
@@ -544,7 +544,7 @@ describe('QueryEngineBase', () => {
         resultType: 'quads',
         execute: async() => new ArrayIterator([
           DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
-        ]),
+        ], { autoStart: false }),
         metadata: async() => (<any>{ cardinality: 1 }),
       });
 

@@ -98,12 +98,12 @@ IActorRdfJoinSelectivityOutput
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('b'), DF.literal('b1') ],
-                ]),
+                ], { autoStart: false }),
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('b'), DF.literal('b2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -127,12 +127,12 @@ IActorRdfJoinSelectivityOutput
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('c'), DF.literal('c1') ],
-                ]),
+                ], { autoStart: false }),
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('c'), DF.literal('c2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -156,12 +156,12 @@ IActorRdfJoinSelectivityOutput
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('b'), DF.literal('b1') ],
-                ]),
+                ], { autoStart: false }),
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('b'), DF.literal('b2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -191,12 +191,12 @@ IActorRdfJoinSelectivityOutput
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('b'), DF.literal('b1') ],
-                ]),
+                ], { autoStart: false }),
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('b'), DF.literal('b2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -220,12 +220,12 @@ IActorRdfJoinSelectivityOutput
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('c'), DF.literal('c1') ],
-                ]),
+                ], { autoStart: false }),
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('c'), DF.literal('c2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -249,12 +249,12 @@ IActorRdfJoinSelectivityOutput
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('b'), DF.literal('b1') ],
-                ]),
+                ], { autoStart: false }),
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('b'), DF.literal('b2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -278,12 +278,12 @@ IActorRdfJoinSelectivityOutput
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('d'), DF.literal('d1') ],
-                ]),
+                ], { autoStart: false }),
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('d'), DF.literal('d2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -313,12 +313,12 @@ IActorRdfJoinSelectivityOutput
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('b'), DF.literal('b1') ],
-                ]),
+                ], { autoStart: false }),
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('b'), DF.literal('b2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -342,12 +342,12 @@ IActorRdfJoinSelectivityOutput
                 BF.bindings([
                   [ DF.variable('c'), DF.literal('c1') ],
                   [ DF.variable('d'), DF.literal('d1') ],
-                ]),
+                ], { autoStart: false }),
                 BF.bindings([
                   [ DF.variable('c'), DF.literal('c2') ],
                   [ DF.variable('d'), DF.literal('d2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -371,12 +371,12 @@ IActorRdfJoinSelectivityOutput
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('b'), DF.literal('b1') ],
-                ]),
+                ], { autoStart: false }),
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('b'), DF.literal('b2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -400,12 +400,12 @@ IActorRdfJoinSelectivityOutput
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a1') ],
                   [ DF.variable('d'), DF.literal('d1') ],
-                ]),
+                ], { autoStart: false }),
                 BF.bindings([
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('d'), DF.literal('d2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -590,7 +590,7 @@ IActorRdfJoinSelectivityOutput
 function createEntry(vars: string[], cardinality: number): IJoinEntryWithMetadata {
   return {
     output: {
-      bindingsStream: new ArrayIterator<RDF.Bindings>([]),
+      bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
       metadata: () => Promise.resolve({
         state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: cardinality },

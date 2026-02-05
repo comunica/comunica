@@ -74,8 +74,8 @@ describe('ActorRdfUpdateQuadsDestination', () => {
 
     it('should run with streams', async() => {
       await actor.run({
-        quadStreamInsert: new ArrayIterator([]),
-        quadStreamDelete: new ArrayIterator([]),
+        quadStreamInsert: new ArrayIterator([], { autoStart: false }),
+        quadStreamDelete: new ArrayIterator([], { autoStart: false }),
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       }).then(async(output: any) => {
         await expect(output.execute()).resolves.toBeUndefined();

@@ -82,11 +82,11 @@ describe('ActorQueryResultSerializeStats', () => {
         BF.bindings([
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
-      ]);
+      ], { autoStart: false });
       quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
-      ]);
+      ], { autoStart: false });
       streamError = new Readable();
       streamError._read = () => streamError.emit('error', new Error('SparqlSerializeStats'));
     });
