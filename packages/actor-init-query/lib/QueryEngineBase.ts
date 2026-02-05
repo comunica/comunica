@@ -1,5 +1,5 @@
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type {
   IActionContext,
@@ -204,11 +204,17 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
    * @param internalResult An intermediary query result.
    */
   public static internalToFinalResult(internalResult: IQueryOperationResult): QueryType {
+    const logger = internalResult.context?.get(KeysCore.log);
     switch (internalResult.type) {
       case 'bindings':
         return {
           resultType: 'bindings',
-          execute: async() => internalResult.bindingsStream,
+          execute: async() => {
+            if (logger) {
+              internalResult.bindingsStream.on?.('end', () => logger.flush());
+            }
+            return internalResult.bindingsStream;
+          },
           metadata: async() => {
             const meta = <any> await internalResult.metadata();
             meta.variables = meta.variables.map((variable: any) => variable.variable);
@@ -219,20 +225,33 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
       case 'quads':
         return {
           resultType: 'quads',
-          execute: async() => internalResult.quadStream,
+          execute: async() => {
+            if (logger) {
+              internalResult.quadStream.on?.('end', () => logger.flush());
+            }
+            return internalResult.quadStream;
+          },
           metadata: async() => <any> await internalResult.metadata(),
           context: internalResult.context,
         };
       case 'boolean':
         return {
           resultType: 'boolean',
-          execute: async() => internalResult.execute(),
+          execute: async() => {
+            const result = await internalResult.execute();
+            logger?.flush();
+            return result;
+          },
           context: internalResult.context,
         };
       case 'void':
         return {
           resultType: 'void',
-          execute: async() => internalResult.execute(),
+          execute: async() => {
+            const result = await internalResult.execute();
+            logger?.flush();
+            return result;
+          },
           context: internalResult.context,
         };
     }

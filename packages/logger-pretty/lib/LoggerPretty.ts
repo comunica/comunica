@@ -50,7 +50,10 @@ export class LoggerPretty extends Logger {
   }
 
   public warn(message: string, data?: any): void {
-    this.log('warn', LoggerPretty.COLOR_YELLOW, message, data);
+    this.logGrouped(message, (count) => {
+      const suffix = count > 1 ? ` (${count} times)` : '';
+      this.log('warn', LoggerPretty.COLOR_YELLOW, `${message}${suffix}`, data);
+    });
   }
 
   protected log(level: string, color: string, message: string, data?: any): void {

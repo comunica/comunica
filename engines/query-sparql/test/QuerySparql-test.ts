@@ -1,6 +1,7 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { Logger } from '@comunica/types';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Bindings } from '@comunica/utils-bindings-factory';
@@ -1935,6 +1936,39 @@ WHERE {
             [ DF.variable('label'), DF.literal('Horse', 'en-ca') ],
           ]),
         ]);
+      });
+    });
+
+    describe('logger warning grouping (no browser)', () => {
+      class TestLogger extends Logger {
+        public readonly warnings: string[] = [];
+
+        public warn(message: string, _data?: any): void {
+          this.logGrouped(message, (count) => {
+            const suffix = count > 1 ? ` (${count} times)` : '';
+            this.warnings.push(`${message}${suffix}`);
+          });
+        }
+
+        public trace(_message: string, _data?: any) {}
+        public debug(_message: string, _data?: any) {}
+        public info(_message: string, _data?: any) {}
+        public error(_message: string, _data?: any) {}
+        public fatal(_message: string, _data?: any) {}
+      }
+
+      it('should group repeated warnings', async() => {
+        const logger = new TestLogger();
+        const query = 'CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o FILTER(contains(?o, "Purpose")) }';
+        const context: QueryStringContext = {
+          sources: [ 'http://www.w3.org/ns/odrl/2/' ],
+          log: logger,
+        };
+
+        await arrayifyStream(await engine.queryQuads(query, context));
+
+        expect(logger.warnings[0]).toBe('Error occurred while filtering.');
+        expect(logger.warnings[1]).toMatch(/Error occurred while filtering\. \(\d+ times\)/u);
       });
     });
   });

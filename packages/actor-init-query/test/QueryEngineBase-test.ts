@@ -1,5 +1,5 @@
 import { Readable, Transform } from 'node:stream';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type {
   IActionContext,
@@ -12,6 +12,7 @@ import type {
   IQueryOperationResultBoolean,
   IQueryOperationResultVoid,
   IQueryEngine,
+  Logger,
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -430,6 +431,82 @@ describe('QueryEngineBase', () => {
       expect(final.resultType).toBe('void');
       await expect(final.execute()).resolves.toBeUndefined();
       expect(final.context).toEqual(new ActionContext({ c: 'd' }));
+    });
+
+    describe('logger flush', () => {
+      let mockLogger: Logger;
+
+      beforeEach(() => {
+        mockLogger = <Logger><unknown>{
+          flush: jest.fn(),
+        };
+      });
+
+      it('should flush logger when bindings stream ends', async() => {
+        const final = <QueryType & IQueryBindingsEnhanced> QueryEngineBase.internalToFinalResult({
+          type: 'bindings',
+          bindingsStream: new ArrayIterator<RDF.Bindings>([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a') ],
+            ]),
+          ]),
+          metadata: () => (<any>{}),
+          context: new ActionContext({ [KeysCore.log.name]: mockLogger }),
+        });
+
+        await arrayifyStream(await final.execute());
+
+        expect(mockLogger.flush).toHaveBeenCalledTimes(1);
+      });
+
+      it('should flush logger when quads stream ends', async() => {
+        const final = <QueryType & IQueryQuadsEnhanced> QueryEngineBase.internalToFinalResult({
+          type: 'quads',
+          quadStream: new ArrayIterator([
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+          ]),
+          metadata: () => (<any>{}),
+          context: new ActionContext({ [KeysCore.log.name]: mockLogger }),
+        });
+
+        await arrayifyStream(await final.execute());
+
+        expect(mockLogger.flush).toHaveBeenCalledTimes(1);
+      });
+
+      it('should flush logger after boolean execute resolves', async() => {
+        const final = <QueryType & RDF.QueryBoolean> QueryEngineBase.internalToFinalResult({
+          type: 'boolean',
+          execute: () => Promise.resolve(true),
+          context: new ActionContext({ [KeysCore.log.name]: mockLogger }),
+        });
+
+        await final.execute();
+
+        expect(mockLogger.flush).toHaveBeenCalledTimes(1);
+      });
+
+      it('should flush logger after void execute resolves', async() => {
+        const final = <QueryType & RDF.QueryVoid> QueryEngineBase.internalToFinalResult({
+          type: 'void',
+          execute: () => Promise.resolve(),
+          context: new ActionContext({ [KeysCore.log.name]: mockLogger }),
+        });
+
+        await final.execute();
+
+        expect(mockLogger.flush).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not error when no logger is in context', async() => {
+        const final = <QueryType & RDF.QueryBoolean> QueryEngineBase.internalToFinalResult({
+          type: 'boolean',
+          execute: () => Promise.resolve(true),
+          context: new ActionContext(),
+        });
+
+        await expect(final.execute()).resolves.toBe(true);
+      });
     });
   });
 
