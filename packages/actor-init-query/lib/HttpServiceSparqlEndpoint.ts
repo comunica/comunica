@@ -651,8 +651,8 @@ export class HttpServiceSparqlEndpoint {
     let html = await fs.promises.readFile(htmlPath, 'utf8');
 
     // Replace placeholders
-    html = html.replace('%%ENDPOINT_PATH%%', endpointPath);
-    html = html.replace('%%DEFAULT_QUERY%%', defaultQuery);
+    html = html.replaceAll('%%ENDPOINT_PATH%%', endpointPath);
+    html = html.replaceAll('%%DEFAULT_QUERY%%', defaultQuery);
 
     response.writeHead(200, {
       'content-type': HttpServiceSparqlEndpoint.MIME_HTML,
