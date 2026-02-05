@@ -37,6 +37,9 @@ const testHtmlTemplate = `<!DOCTYPE html>
 <h1>Comunica SPARQL Endpoint</h1>
 <div>Endpoint: %%ENDPOINT_PATH%%</div>
 <div>Query: %%DEFAULT_QUERY%%</div>
+<script>
+  const endpoint = window.location.origin + "%%ENDPOINT_PATH%%";
+</script>
 </body>
 </html>`;
 
