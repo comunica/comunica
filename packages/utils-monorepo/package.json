@@ -34,6 +34,9 @@
     "lib/**/*.js.map",
     "sh/**/*.sh"
   ],
+  "exports": {
+    "./eslint/require-async-iterator-autostart-false": "./lib/eslint/require-async-iterator-autostart-false.js"
+  },
   "scripts": {
     "build": "yarn run build:ts",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
@@ -42,5 +45,8 @@
     "@manypkg/get-packages": "^3.1.0",
     "depcheck": "^1.4.7",
     "process": "^0.11.10"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
   }
 }
