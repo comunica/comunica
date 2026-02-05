@@ -893,7 +893,7 @@ SELECT * WHERE {
 
         await expect(result.execute()).resolves.toEqualBindingsStream(expectedResult);
 
-        // First filtres are collected and a single filter wraps the group.
+        // First filters are collected and a single filter wraps the group.
         // Then that outer filter in the right is placed as and expression for the leftJoin:
         // https://www.w3.org/TR/sparql12-query/#sparqlTranslateGraphPatterns
         const resultWithExtraFilter = <QueryBindings> await engine.query(`
