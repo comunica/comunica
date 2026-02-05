@@ -16,7 +16,7 @@ describe('ChunkedIterator', () => {
         [ 1 ],
         [ 2 ],
         [ 3 ],
-      ], { autoStart: false });
+      ]);
     });
   });
 
@@ -26,7 +26,7 @@ describe('ChunkedIterator', () => {
       await expect(flattenIterator(itr)).resolves.toEqual([
         [ 0, 1 ],
         [ 2, 3 ],
-      ], { autoStart: false });
+      ]);
     });
 
     it('should split up into blocks of 2 with an uneven input count', async() => {
@@ -35,7 +35,7 @@ describe('ChunkedIterator', () => {
         [ 0, 1 ],
         [ 2, 3 ],
         [ 4 ],
-      ], { autoStart: false });
+      ]);
     });
   });
 
@@ -45,7 +45,7 @@ describe('ChunkedIterator', () => {
       await expect(flattenIterator(itr)).resolves.toEqual([
         [ 0, 1, 2 ],
         [ 3, 4 ],
-      ], { autoStart: false });
+      ]);
     });
   });
 });

@@ -53,7 +53,7 @@ IActorRdfJoinSelectivityOutput
       bindingsStream: new MultiTransformIterator(
         bufferedIterator,
         {
-          multiTransform: bindings => new SingletonIterator(bindings, { autoStart: false }),
+          multiTransform: bindings => new SingletonIterator(bindings),
         },
         { autoStart: false },
       ),
