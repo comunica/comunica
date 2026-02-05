@@ -37,6 +37,7 @@ const cluster: Cluster = clusterUntyped;
 export class HttpServiceSparqlEndpoint {
   public static readonly MIME_PLAIN = 'text/plain';
   public static readonly MIME_JSON = 'application/json';
+  public static readonly MIME_HTML = 'text/html';
 
   public readonly engine: Promise<QueryEngineBase>;
 
@@ -436,6 +437,11 @@ export class HttpServiceSparqlEndpoint {
     queryId: number,
   ): Promise<void> {
     if (!queryBody || !queryBody.value) {
+      // Check if HTML is requested
+      const acceptHeader = request.headers.accept ?? '';
+      if (acceptHeader.includes('text/html')) {
+        return this.writeHtmlView(stdout, request, response);
+      }
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
     }
 
@@ -615,6 +621,101 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
     this.stopResponse(response, 0, process.stderr, eventEmitter);
+  }
+
+  /**
+   * Writes an HTML view with YASGUI for querying the endpoint.
+   * @param {module:stream.internal.Writable} stdout Output stream.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {module:http.ServerResponse} response Response object.
+   */
+  public writeHtmlView(
+    stdout: Writable,
+    request: http.IncomingMessage,
+    response: http.ServerResponse,
+  ): void {
+    stdout.write(`[200] ${request.method} to ${request.url}\n`);
+    stdout.write('      Returning HTML view with YASGUI.\n');
+
+    const defaultQuery = `SELECT * WHERE {
+  ?s ?p ?o
+} LIMIT 100`;
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comunica SPARQL Endpoint</title>
+  <link href="https://cdn.jsdelivr.net/npm/@zazuko/yasgui/build/yasgui.min.css" rel="stylesheet" type="text/css" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+    }
+    .header {
+      background: #2c3e50;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+    .header p {
+      margin: 5px 0;
+      opacity: 0.9;
+    }
+    .header a {
+      color: #3498db;
+      text-decoration: none;
+    }
+    .header a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    #yasgui {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Comunica SPARQL Endpoint</h1>
+    <p>Query this endpoint or visit <a href="https://query.comunica.dev/" target="_blank">query.comunica.dev</a> for federated queries</p>
+  </div>
+  <div class="container">
+    <div id="yasgui"></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@zazuko/yasgui/build/yasgui.min.js"></script>
+  <script>
+    const yasgui = new Yasgui(document.getElementById("yasgui"), {
+      requestConfig: {
+        endpoint: window.location.origin + "/sparql"
+      },
+      copyEndpointOnNewTab: false
+    });
+
+    // Set default query
+    yasgui.getTab().setQuery(\`${defaultQuery}\`);
+  </script>
+</body>
+</html>`;
+
+    response.writeHead(200, {
+      'content-type': HttpServiceSparqlEndpoint.MIME_HTML,
+      'Access-Control-Allow-Origin': '*',
+    });
+    response.end(html);
   }
 
   /**
