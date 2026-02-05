@@ -10,43 +10,47 @@
       box-sizing: border-box;
     }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
       margin: 0;
       padding: 0;
       background: #ffffff;
       color: #333;
-      line-height: 1.6;
     }
     .header {
-      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      background: #9C0510;
       color: white;
-      padding: 2rem 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 1rem 3rem;
+      height: 3.5rem;
+      display: flex;
+      align-items: center;
     }
     .header-content {
       max-width: 1200px;
+      width: 100%;
       margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .header h1 {
-      margin: 0 0 0.5rem 0;
-      font-size: 2rem;
+      margin: 0;
+      font-size: 1.5rem;
       font-weight: 600;
-      letter-spacing: -0.02em;
     }
     .header p {
       margin: 0;
       font-size: 1rem;
-      opacity: 0.95;
     }
     .header a {
-      color: #93c5fd;
+      color: #FFFFFF;
       text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s ease;
+      padding: 0 4px 4px 4px;
     }
-    .header a:hover {
-      color: #dbeafe;
-      text-decoration: underline;
+    .header a:hover,
+    .header a:focus,
+    .header a:active {
+      text-decoration: none;
+      border-bottom: 2px solid #FFFFFF;
     }
     .container {
       max-width: 1200px;
@@ -54,12 +58,22 @@
       padding: 0 1rem;
     }
     #yasgui {
-      border-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      margin-top: 1rem;
     }
     @media (max-width: 768px) {
+      .header {
+        padding: 1rem;
+        height: auto;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
       .header h1 {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
       }
       .header p {
         font-size: 0.9rem;
