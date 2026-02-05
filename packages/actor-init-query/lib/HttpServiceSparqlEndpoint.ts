@@ -631,11 +631,11 @@ export class HttpServiceSparqlEndpoint {
    * @param {module:http.IncomingMessage} request Request object.
    * @param {module:http.ServerResponse} response Response object.
    */
-  public writeHtmlView(
+  public async writeHtmlView(
     stdout: Writable,
     request: http.IncomingMessage,
     response: http.ServerResponse,
-  ): void {
+  ): Promise<void> {
     stdout.write(`[200] ${request.method} to ${request.url}\n`);
     stdout.write('      Returning HTML view with YASGUI.\n');
 
@@ -648,8 +648,8 @@ export class HttpServiceSparqlEndpoint {
 
     // Read HTML template from file
     const htmlPath = path.join(__dirname, 'sparql-endpoint.html');
-    let html = fs.readFileSync(htmlPath, 'utf8');
-    
+    let html = await fs.promises.readFile(htmlPath, 'utf8');
+
     // Replace placeholders
     html = html.replace('%%ENDPOINT_PATH%%', endpointPath);
     html = html.replace('%%DEFAULT_QUERY%%', defaultQuery);

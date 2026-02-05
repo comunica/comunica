@@ -32,9 +32,9 @@
   "files": [
     "components",
     "lib/**/*.d.ts",
+    "lib/**/*.html",
     "lib/**/*.js",
-    "lib/**/*.js.map",
-    "lib/**/*.html"
+    "lib/**/*.js.map"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
