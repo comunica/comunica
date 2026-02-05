@@ -641,6 +641,9 @@ export class HttpServiceSparqlEndpoint {
   ?s ?p ?o
 } LIMIT 100`;
 
+    // Use the current request URL path as the endpoint
+    const endpointPath = request.url ?? '/sparql';
+
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -700,7 +703,7 @@ export class HttpServiceSparqlEndpoint {
   <script>
     const yasgui = new Yasgui(document.getElementById("yasgui"), {
       requestConfig: {
-        endpoint: window.location.origin + "/sparql"
+        endpoint: window.location.origin + "${endpointPath}"
       },
       copyEndpointOnNewTab: false
     });
