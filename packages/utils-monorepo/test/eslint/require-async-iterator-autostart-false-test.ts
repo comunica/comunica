@@ -39,6 +39,10 @@ describe('require-async-iterator-autostart-false', () => {
       {
         code: 'const it = new SingletonIterator(item);',
       },
+      // Valid: Iterator with no arguments (edge case - should be ignored)
+      {
+        code: 'const it = new ArrayIterator();',
+      },
     ],
 
     invalid: [
@@ -73,6 +77,12 @@ describe('require-async-iterator-autostart-false', () => {
         code: 'const it = new AsyncIterator({ autoStart: true });',
         errors: [{ messageId: 'autoStartTrue' }],
         output: 'const it = new AsyncIterator({ autoStart: false });',
+      },
+      // Invalid: autoStart as literal key (edge case)
+      {
+        code: 'const it = new ArrayIterator([], { ["autoStart"]: true });',
+        errors: [{ messageId: 'autoStartTrue' }],
+        output: 'const it = new ArrayIterator([], { ["autoStart"]: false });',
       },
     ],
   });
