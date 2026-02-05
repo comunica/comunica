@@ -35,20 +35,13 @@ export class ActorOptimizeQueryOperationLeftjoinExpressionPushdown extends Actor
     operation = algebraUtils.mapOperation(operation, {
       [Algebra.Types.LEFT_JOIN]: {
         transform: (op: Algebra.LeftJoin) => {
-          // Try to push the expression to either the left or right if it exclusively overlaps with just one of them.
+          // Try to push the expression to the right if it exclusively overlaps with that one.
           if (op.expression) {
             const variablesExpression = getExpressionVariables(op.expression);
             const variablesLeft = algebraUtils.inScopeVariables(op.input[0]);
             const variablesRight = algebraUtils.inScopeVariables(op.input[1]);
             const intersectLeft = self.variablesIntersect(variablesExpression, variablesLeft);
             const intersectRight = self.variablesIntersect(variablesExpression, variablesRight);
-            if (intersectLeft && !intersectRight) {
-              self.logDebug(action.context, `Pushed down optional expression to left-hand operator`);
-              return algebraFactory.createLeftJoin(
-                algebraFactory.createFilter(op.input[0], op.expression),
-                op.input[1],
-              );
-            }
             if (!intersectLeft && intersectRight) {
               self.logDebug(action.context, `Pushed down optional expression to right-hand operator`);
               return algebraFactory.createLeftJoin(
