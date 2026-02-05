@@ -33,7 +33,8 @@
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
-    "lib/**/*.js.map"
+    "lib/**/*.js.map",
+    "lib/**/*.html"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",

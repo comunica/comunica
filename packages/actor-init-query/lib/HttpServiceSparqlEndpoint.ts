@@ -1,8 +1,10 @@
 /* eslint-disable import/no-nodejs-modules,ts/no-require-imports,ts/no-var-requires */
 import type { Cluster } from 'node:cluster';
 import type { EventEmitter } from 'node:events';
+import * as fs from 'node:fs';
 import * as http from 'node:http';
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import * as path from 'node:path';
 import * as querystring from 'node:querystring';
 import type { Writable } from 'node:stream';
 import * as url from 'node:url';
@@ -644,75 +646,13 @@ export class HttpServiceSparqlEndpoint {
     // Use the current request URL path as the endpoint
     const endpointPath = request.url ?? '/sparql';
 
-    const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comunica SPARQL Endpoint</title>
-  <link href="https://cdn.jsdelivr.net/npm/@zazuko/yasgui/build/yasgui.min.css" rel="stylesheet" type="text/css" />
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f5f5;
-    }
-    .header {
-      background: #2c3e50;
-      color: white;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .header h1 {
-      margin: 0 0 10px 0;
-      font-size: 28px;
-      font-weight: 600;
-    }
-    .header p {
-      margin: 5px 0;
-      opacity: 0.9;
-    }
-    .header a {
-      color: #3498db;
-      text-decoration: none;
-    }
-    .header a:hover {
-      text-decoration: underline;
-    }
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    #yasgui {
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <h1>Comunica SPARQL Endpoint</h1>
-    <p>Query this endpoint or visit <a href="https://query.comunica.dev/" target="_blank">query.comunica.dev</a> for federated queries</p>
-  </div>
-  <div class="container">
-    <div id="yasgui"></div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/@zazuko/yasgui/build/yasgui.min.js"></script>
-  <script>
-    const yasgui = new Yasgui(document.getElementById("yasgui"), {
-      requestConfig: {
-        endpoint: window.location.origin + "${endpointPath}"
-      },
-      copyEndpointOnNewTab: false
-    });
-
-    // Set default query
-    yasgui.getTab().setQuery(\`${defaultQuery}\`);
-  </script>
-</body>
-</html>`;
+    // Read HTML template from file
+    const htmlPath = path.join(__dirname, 'sparql-endpoint.html');
+    let html = fs.readFileSync(htmlPath, 'utf8');
+    
+    // Replace placeholders
+    html = html.replace('%%ENDPOINT_PATH%%', endpointPath);
+    html = html.replace('%%DEFAULT_QUERY%%', defaultQuery);
 
     response.writeHead(200, {
       'content-type': HttpServiceSparqlEndpoint.MIME_HTML,
