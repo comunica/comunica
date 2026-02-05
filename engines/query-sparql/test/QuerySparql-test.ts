@@ -1922,7 +1922,7 @@ WHERE {
       });
     });
 
-    describe('logger warning grouping', () => {
+    describe('logger warning grouping (no browser)', () => {
       class TestLogger extends Logger {
         public readonly warnings: string[] = [];
 
