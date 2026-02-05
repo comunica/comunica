@@ -210,7 +210,9 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
         return {
           resultType: 'bindings',
           execute: async() => {
-            internalResult.bindingsStream.on?.('end', () => logger?.flush());
+            if (logger) {
+              internalResult.bindingsStream.on?.('end', () => logger.flush());
+            }
             return internalResult.bindingsStream;
           },
           metadata: async() => {
@@ -224,7 +226,9 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
         return {
           resultType: 'quads',
           execute: async() => {
-            internalResult.quadStream.on?.('end', () => logger?.flush());
+            if (logger) {
+              internalResult.quadStream.on?.('end', () => logger.flush());
+            }
             return internalResult.quadStream;
           },
           metadata: async() => <any> await internalResult.metadata(),
