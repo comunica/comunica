@@ -862,6 +862,53 @@ SELECT * WHERE {
         await expect(result.execute()).resolves.toEqualBindingsStream(expectedResult);
       });
 
+      it('should correctly handle leftJoin expression on targeting left', async() => {
+        const store = new Store();
+
+        store.addQuad(
+          DF.namedNode('http://ex.org/s'),
+          DF.namedNode('http://ex.org/p1'),
+          DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')),
+        );
+        store.addQuad(
+          DF.namedNode('http://ex.org/s'),
+          DF.namedNode('http://ex.org/p2'),
+          DF.literal('10', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')),
+        );
+
+        const result = <QueryBindings> await engine.query(`
+          SELECT * WHERE { 
+          ?s <http://ex.org/p1> ?v1 .
+          OPTIONAL {
+            ?s <http://ex.org/p2> ?v2 .
+            FILTER(?v1 < 3)
+          }
+        }`, { sources: [ store ]});
+
+        const expectedResult: Bindings[] = [
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://ex.org/s') ],
+            [ DF.variable('v1'), DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) ],
+          ]),
+        ];
+
+        await expect(result.execute()).resolves.toEqualBindingsStream(expectedResult);
+
+        // First filters are collected and a single filter wraps the group.
+        // Then that outer filter in the right is placed as and expression for the leftJoin:
+        // https://www.w3.org/TR/sparql12-query/#sparqlTranslateGraphPatterns
+        const resultWithExtraFilter = <QueryBindings> await engine.query(`
+          SELECT * WHERE { 
+          ?s <http://ex.org/p1> ?v1 .
+          OPTIONAL {
+            ?s <http://ex.org/p2> ?v2 .
+            FILTER(?v1 < 3) .
+            FILTER( true ) .
+          }
+        }`, { sources: [ store ]});
+        await expect(resultWithExtraFilter.execute()).resolves.toEqualBindingsStream(expectedResult);
+      });
+
       it('should handle join with empty estimate cardinality', async() => {
         const context: QueryStringContext = {
           sources: [
