@@ -34,9 +34,6 @@
     "lib/**/*.js.map",
     "sh/**/*.sh"
   ],
-  "exports": {
-    "./eslint/require-async-iterator-autostart-false": "./lib/eslint/require-async-iterator-autostart-false.js"
-  },
   "scripts": {
     "build": "yarn run build:ts",
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
