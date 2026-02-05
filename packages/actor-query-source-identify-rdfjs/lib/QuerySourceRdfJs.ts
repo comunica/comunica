@@ -204,7 +204,7 @@ export class QuerySourceRdfJs implements IQuerySource {
 
         // If it's not a stream, turn it into one
         if (typeof (<any> matches).on !== 'function') {
-          matches = <RDF.Stream>(new ArrayIterator(<RDF.DatasetCore> matches));
+          matches = <RDF.Stream>(new ArrayIterator(<RDF.DatasetCore> matches, { autoStart: false }));
         }
 
         (<RDF.Stream>matches).on('error', reject);

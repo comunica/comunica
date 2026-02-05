@@ -20,16 +20,15 @@ module.exports = {
 
   create(context) {
     // List of AsyncIterator class names from asynciterator package
+    // Note: EmptyIterator and SingletonIterator are excluded because they don't accept options
     const iteratorClasses = new Set([
       'AsyncIterator',
       'ArrayIterator',
       'BufferedIterator',
       'ClonedIterator',
-      'EmptyIterator',
       'IntegerIterator',
       'MultiTransformIterator',
       'SimpleTransformIterator',
-      'SingletonIterator',
       'TransformIterator',
       'UnionIterator',
     ]);

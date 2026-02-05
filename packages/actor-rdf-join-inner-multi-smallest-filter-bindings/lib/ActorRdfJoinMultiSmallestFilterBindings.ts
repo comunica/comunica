@@ -148,7 +148,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
       secondIn.operation,
       sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
       { filterBindings: { bindings: chunk, metadata: first.metadata }},
-    )));
+    )), { autoStart: false });
     const second: IJoinEntry = {
       output: {
         type: 'bindings',

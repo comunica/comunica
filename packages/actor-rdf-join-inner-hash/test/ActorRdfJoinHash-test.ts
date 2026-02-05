@@ -499,7 +499,7 @@ IActorRdfJoinSelectivityOutput
             [ DF.variable('b'), DF.literal('b') ],
             [ DF.variable('c'), DF.literal('c') ],
           ]),
-        ], { autoStart: false });
+        ]);
       });
     });
 
@@ -750,7 +750,7 @@ IActorRdfJoinSelectivityOutput
             [ DF.variable('c'), DF.literal('c') ],
             [ DF.variable('b'), DF.literal('b') ],
           ]),
-        ], { autoStart: false });
+        ]);
       });
     });
 
@@ -1288,7 +1288,7 @@ IActorRdfJoinSelectivityOutput
             [ DF.variable('b'), DF.literal('b') ],
             [ DF.variable('c'), DF.literal('c') ],
           ]),
-        ], { autoStart: false });
+        ]);
       });
     });
 
@@ -1537,7 +1537,7 @@ IActorRdfJoinSelectivityOutput
             [ DF.variable('c'), DF.literal('c') ],
             [ DF.variable('b'), DF.literal('b') ],
           ]),
-        ], { autoStart: false });
+        ]);
       });
     });
 

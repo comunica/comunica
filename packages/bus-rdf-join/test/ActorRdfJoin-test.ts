@@ -54,8 +54,8 @@ IActorRdfJoinSelectivityOutput
         bufferedIterator,
         {
           multiTransform: bindings => new SingletonIterator(bindings),
+          autoStart: false,
         },
-        { autoStart: false },
       ),
     };
 

@@ -95,7 +95,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
       operation,
       sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
       { joinBindings: { bindings: chunk, metadata: smallestMetadata }},
-    )));
+    )), { autoStart: false });
 
     return {
       result: {

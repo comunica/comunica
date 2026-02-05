@@ -39,7 +39,7 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(operation.bindings
       .map(x => bindingsFactory.bindings(Object.entries(x)
-        .map(([ key, value ]) => [ dataFactory.variable(key), value ]))));
+        .map(([ key, value ]) => [ dataFactory.variable(key), value ]))), { autoStart: false });
     const metadata = (): Promise<MetadataBindings> => Promise.resolve({
       state: new MetadataValidationState(),
       cardinality: { type: 'exact', value: operation.bindings.length },
