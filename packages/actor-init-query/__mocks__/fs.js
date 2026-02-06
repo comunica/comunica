@@ -30,28 +30,18 @@ const testFileContentDict = {
   ],
 };
 
-const testHtmlTemplate = `<!DOCTYPE html>
-<html>
-<head><title>Test</title></head>
-<body>
-<h1>Comunica SPARQL Endpoint</h1>
-<div>Endpoint: %%ENDPOINT_PATH%%</div>
-<div>Query: %%DEFAULT_QUERY%%</div>
-<script>
-  const endpoint = window.location.origin + "%%ENDPOINT_PATH%%";
-</script>
-</body>
-</html>`;
-
 const testArgumentDict = { sources: [{ type: 'file', value: 'example' }]};
 
 const fs = jest.createMockFromModule('fs');
+const actualFs = jest.requireActual('fs');
+
 // eslint-disable-next-line no-sync
 fs.existsSync = jest.fn(() => true);
 // eslint-disable-next-line no-sync
 fs.readFileSync = jest.fn((path) => {
   if (path.includes('sparql-endpoint.html')) {
-    return testHtmlTemplate;
+    // Use actual fs to read the real HTML file
+    return actualFs.readFileSync(path, 'utf8');
   }
   return JSON.stringify(testFileContentDict);
 });
@@ -60,7 +50,8 @@ fs.readFileSync = jest.fn((path) => {
 fs.promises = {
   readFile: jest.fn((path, _encoding) => {
     if (path.includes('sparql-endpoint.html')) {
-      return Promise.resolve(testHtmlTemplate);
+      // Use actual fs to read the real HTML file
+      return actualFs.promises.readFile(path, 'utf8');
     }
     return Promise.resolve(JSON.stringify(testFileContentDict));
   }),
@@ -70,5 +61,4 @@ module.exports = {
   fs,
   testFileContentDict,
   testArgumentDict,
-  testHtmlTemplate,
 };
