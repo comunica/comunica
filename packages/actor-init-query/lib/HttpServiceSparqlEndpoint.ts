@@ -1,8 +1,10 @@
 /* eslint-disable import/no-nodejs-modules,ts/no-require-imports,ts/no-var-requires */
 import type { Cluster } from 'node:cluster';
 import type { EventEmitter } from 'node:events';
+import * as fs from 'node:fs';
 import * as http from 'node:http';
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import * as path from 'node:path';
 import * as querystring from 'node:querystring';
 import type { Writable } from 'node:stream';
 import * as url from 'node:url';
@@ -37,6 +39,7 @@ const cluster: Cluster = clusterUntyped;
 export class HttpServiceSparqlEndpoint {
   public static readonly MIME_PLAIN = 'text/plain';
   public static readonly MIME_JSON = 'application/json';
+  public static readonly MIME_HTML = 'text/html';
 
   public readonly engine: Promise<QueryEngineBase>;
 
@@ -436,6 +439,11 @@ export class HttpServiceSparqlEndpoint {
     queryId: number,
   ): Promise<void> {
     if (!queryBody || !queryBody.value) {
+      // Check if HTML is requested
+      const acceptHeader = request.headers.accept ?? '';
+      if (acceptHeader.includes('text/html')) {
+        return this.writeHtmlView(stdout, request, response);
+      }
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
     }
 
@@ -615,6 +623,42 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
     this.stopResponse(response, 0, process.stderr, eventEmitter);
+  }
+
+  /**
+   * Writes an HTML view with YASGUI for querying the endpoint.
+   * @param {module:stream.internal.Writable} stdout Output stream.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {module:http.ServerResponse} response Response object.
+   */
+  public async writeHtmlView(
+    stdout: Writable,
+    request: http.IncomingMessage,
+    response: http.ServerResponse,
+  ): Promise<void> {
+    stdout.write(`[200] ${request.method} to ${request.url}\n`);
+    stdout.write('      Returning HTML view with YASGUI.\n');
+
+    const defaultQuery = `SELECT * WHERE {
+  ?s ?p ?o
+} LIMIT 100`;
+
+    // Use the current request URL path as the endpoint
+    const endpointPath = request.url ?? '/sparql';
+
+    // Read HTML template from file
+    const htmlPath = path.join(__dirname, 'sparql-endpoint.html');
+    let html = await fs.promises.readFile(htmlPath, 'utf8');
+
+    // Replace placeholders
+    html = html.replaceAll('%%ENDPOINT_PATH%%', endpointPath);
+    html = html.replaceAll('%%DEFAULT_QUERY%%', defaultQuery);
+
+    response.writeHead(200, {
+      'content-type': HttpServiceSparqlEndpoint.MIME_HTML,
+      'Access-Control-Allow-Origin': '*',
+    });
+    response.end(html);
   }
 
   /**

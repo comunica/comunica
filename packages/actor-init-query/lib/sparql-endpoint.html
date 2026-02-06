@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comunica SPARQL Endpoint</title>
+  <link href="https://cdn.jsdelivr.net/npm/@zazuko/yasgui/build/yasgui.min.css" rel="stylesheet" type="text/css" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      color: #333;
+    }
+    .header {
+      background: #9C0510;
+      color: white;
+      padding: 1rem 3rem;
+      height: 3.5rem;
+      display: flex;
+      align-items: center;
+    }
+    .header-content {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+    .header p {
+      margin: 0;
+      font-size: 1rem;
+    }
+    .header a {
+      color: #FFFFFF;
+      text-decoration: none;
+      padding: 0 4px 4px 4px;
+    }
+    .header a:hover,
+    .header a:focus,
+    .header a:active {
+      text-decoration: none;
+      border-bottom: 2px solid #FFFFFF;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    #yasgui {
+      margin-top: 1rem;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    #yasgui .yasgui .yasqe,
+    #yasgui .yasgui .yasr {
+      max-width: 100%;
+    }
+    #yasgui .yasr_results {
+      max-width: 100%;
+      overflow-x: auto;
+    }
+    @media (max-width: 768px) {
+      .header {
+        padding: 1rem;
+        height: auto;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header h1 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+      .header p {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-content">
+      <h1>Comunica SPARQL Endpoint</h1>
+      <p>Query this endpoint or visit <a href="https://query.comunica.dev/" target="_blank" rel="noopener">query.comunica.dev</a> for federated queries</p>
+    </div>
+  </div>
+  <div class="container">
+    <div id="yasgui"></div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/@zazuko/yasgui/build/yasgui.min.js"></script>
+  <script>
+    const yasgui = new Yasgui(document.getElementById("yasgui"), {
+      requestConfig: {
+        endpoint: window.location.origin + "%%ENDPOINT_PATH%%"
+      },
+      copyEndpointOnNewTab: false
+    });
+    
+    // Set default query
+    yasgui.getTab().setQuery(`%%DEFAULT_QUERY%%`);
+  </script>
+</body>
+</html>
