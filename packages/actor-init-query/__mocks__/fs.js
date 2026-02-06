@@ -41,6 +41,7 @@ fs.existsSync = jest.fn(() => true);
 fs.readFileSync = jest.fn((path) => {
   if (path.includes('sparql-endpoint.html')) {
     // Use actual fs to read the real HTML file
+    // eslint-disable-next-line no-sync
     return actualFs.readFileSync(path, 'utf8');
   }
   return JSON.stringify(testFileContentDict);
