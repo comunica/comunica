@@ -60,11 +60,11 @@ describe('ActorQueryResultSerializeTree', () => {
       bindingsStream = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([[ DF.variable('k1'), DF.literal('v1') ]]),
         BF.bindings([[ DF.variable('k2'), DF.literal('v2') ]]),
-      ]);
+      ], { autoStart: false });
       quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
-      ]);
+      ], { autoStart: false });
       streamError = new Readable();
       streamError._read = () => {
         setTimeout(() => streamError.emit('error', new Error('actor sparql serialize tree test error')));

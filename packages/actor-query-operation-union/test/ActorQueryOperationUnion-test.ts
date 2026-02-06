@@ -126,7 +126,7 @@ describe('ActorQueryOperationUnion', () => {
       stream: new ArrayIterator([
         BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
-      ]),
+      ], { autoStart: false }),
       type: 'bindings',
     });
     opq1 = () => ({

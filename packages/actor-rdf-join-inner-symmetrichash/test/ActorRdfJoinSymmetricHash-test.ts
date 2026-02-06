@@ -320,7 +320,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('b'), DF.literal('b') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables0 = [
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('b'), canBeUndef: false },
@@ -330,7 +330,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables1 = [
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
@@ -367,7 +367,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('b'), DF.literal('b') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables0 = [
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('b'), canBeUndef: false },
@@ -377,7 +377,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('d') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables1 = [
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
@@ -428,7 +428,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('3') ],
           [ DF.variable('b'), DF.literal('4') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables0 = [
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('b'), canBeUndef: false },
@@ -458,7 +458,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('0') ],
           [ DF.variable('c'), DF.literal('4') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables1 = [
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },

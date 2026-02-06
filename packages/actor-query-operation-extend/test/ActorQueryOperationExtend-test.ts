@@ -54,7 +54,7 @@ describe('ActorQueryOperationExtend', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator(input),
+        bindingsStream: new ArrayIterator(input, { autoStart: false }),
         metadata: () => Promise.resolve({
           cardinality: 3,
           variables: [{ variable: DF.variable('a'), canBeUndef: false }],

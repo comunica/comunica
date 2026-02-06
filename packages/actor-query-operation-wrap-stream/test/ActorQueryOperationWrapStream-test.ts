@@ -98,10 +98,10 @@ describe('ActorQueryOperationWrapStream', () => {
           [ DF.variable('a'), DF.literal('a2') ],
           [ DF.variable('b'), DF.literal('b2') ],
         ]),
-      ]);
+      ], { autoStart: false });
       quadOutput = new ArrayIterator<RDF.Quad>([
         DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
-      ]);
+      ], { autoStart: false });
 
       mediatorQueryOperation = {
         async mediate(a: any): Promise<IQueryOperationResultQuads | IQueryOperationResultBindings> {

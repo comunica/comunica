@@ -137,7 +137,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
         BF.bindings([
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
-      ]);
+      ], { autoStart: false });
       bindingsStreamPartial = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
@@ -146,7 +146,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
         BF.bindings(),
-      ]);
+      ], { autoStart: false });
       bindingsStreamMixed = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.literal('v"') ],
@@ -156,7 +156,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           [ DF.variable('k2'), DF.namedNode('v\n\r,') ],
         ]),
         BF.bindings(),
-      ]);
+      ], { autoStart: false });
       bindingsStreamEmpty = <any> new PassThrough();
       (<any> bindingsStreamEmpty)._read = <any> (() => {
         bindingsStreamEmpty.emit('end');

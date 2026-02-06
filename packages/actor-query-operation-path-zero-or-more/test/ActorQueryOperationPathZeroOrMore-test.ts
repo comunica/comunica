@@ -80,7 +80,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         }
 
         return Promise.resolve({
-          bindingsStream: new ArrayIterator(distinct ? [ bindings[0] ] : bindings),
+          bindingsStream: new ArrayIterator(distinct ? [ bindings[0] ] : bindings, { autoStart: false }),
           metadata: () => Promise.resolve({
             cardinality: { value: distinct ? 1 : 3 },
             variables: vars.map(variable => ({ variable, canBeUndef: false })),

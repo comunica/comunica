@@ -596,7 +596,7 @@ export class HttpServiceSparqlEndpoint {
       // Flush results
       const { data } = await engine.resultToString(<QueryQuads>{
         resultType: 'quads',
-        execute: async() => new ArrayIterator(quads),
+        execute: async() => new ArrayIterator(quads, { autoStart: false }),
         metadata: <any>undefined,
       }, mediaType);
       data.on('error', (error: Error) => {

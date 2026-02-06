@@ -72,7 +72,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
         }
 
         return Promise.resolve({
-          bindingsStream: new ArrayIterator(distinct ? [ bindings[0] ] : bindings),
+          bindingsStream: new ArrayIterator(distinct ? [ bindings[0] ] : bindings, { autoStart: false }),
           metadata: () => Promise.resolve({
             state: new MetadataValidationState(),
             cardinality: { type: 'estimate', value: distinct ? 1 : 3 },

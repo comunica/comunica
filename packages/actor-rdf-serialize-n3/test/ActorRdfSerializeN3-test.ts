@@ -56,7 +56,7 @@ describe('ActorRdfSerializeN3', () => {
         quadStream = () => new ArrayIterator([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
-        ]);
+        ], { autoStart: false });
         quadStreamPipeable = streamifyArray([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
@@ -64,7 +64,7 @@ describe('ActorRdfSerializeN3', () => {
         quadStreamQuoted = () => new ArrayIterator([
           quad('<<ex:s1 ex:p1 ex:o1>>', 'http://example.org/b', 'http://example.org/c'),
           quad('<<ex:s1 ex:p1 ex:o1>>', 'http://example.org/d', 'http://example.org/e'),
-        ]);
+        ], { autoStart: false });
         quadsError = new Readable();
         quadsError._read = () => quadsError.emit('error', new Error('SerializeN3'));
       });

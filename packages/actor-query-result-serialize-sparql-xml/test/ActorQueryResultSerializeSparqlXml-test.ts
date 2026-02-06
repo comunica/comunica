@@ -192,7 +192,7 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
       quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
-      ]);
+      ], { autoStart: false });
       metadata = <any> { variables: [
         { variable: DF.variable('k1'), canBeUndef: false },
         { variable: DF.variable('k2'), canBeUndef: false },

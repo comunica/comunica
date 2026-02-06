@@ -93,7 +93,7 @@ describe('VoidMetadataEmitter', () => {
           ]),
         ];
       }
-      return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
+      return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray, { autoStart: false }));
     };
   });
 
@@ -196,7 +196,7 @@ describe('VoidMetadataEmitter', () => {
     const engine = await new QueryEngineFactoryBase().create();
     engine.queryBindings = (): BindingsStream => <BindingsStream>(new ArrayIterator<RDF.Bindings>([ BF.bindings([
       [ DF.variable('error'), DF.literal('error') ],
-    ]) ]));
+    ]) ], { autoStart: false }));
     const spyGetVoIDQuads = jest.spyOn(emitter, 'getVoIDQuads');
     const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
 

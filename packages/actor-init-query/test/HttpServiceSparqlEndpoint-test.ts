@@ -1502,6 +1502,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         serviceDescriptionQuads.push(quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args1'));
         await expect((spyResultToString.mock.calls[0][0]).execute()).resolves.toEqual(new ArrayIterator(
           serviceDescriptionQuads,
+          { autoStart: false },
         ));
       });
 
@@ -1654,7 +1655,7 @@ describe('HttpServiceSparqlEndpoint', () => {
                 ]),
               ];
             }
-            return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
+            return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray, { autoStart: false }));
           };
         });
 

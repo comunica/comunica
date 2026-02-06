@@ -127,7 +127,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
                 [ graph, graphValue ],
               ]));
             },
-            { maxBufferSize: 128 },
+            { maxBufferSize: 128, autoStart: false },
           );
         },
         autoStart: false,
