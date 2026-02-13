@@ -25,7 +25,7 @@ describe('QuerySourceRdfJs', () => {
   let source: QuerySourceRdfJs;
   beforeEach(() => {
     ctx = new ActionContext({});
-    store = RdfStore.createDefault();
+    store = RdfStore.createDefault(true);
     source = new QuerySourceRdfJs(store, DF, BF);
   });
 
