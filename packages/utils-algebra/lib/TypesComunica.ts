@@ -3,4 +3,5 @@
  */
 export enum TypesComunica {
   NODES = 'nodes',
+  DISTINCT_TERMS = 'distinctTerms',
 }

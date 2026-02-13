@@ -17,6 +17,10 @@ export interface IRdfJsSourceExtended extends RDF.Source {
      * If this is true, matchNodes and countNodes must be available.
      */
     indexNodes?: boolean;
+    /**
+     * If this is true, matchDistinctTerms and countDistinctTerms must be available.
+     */
+    indexDistinctTerms?: boolean;
   };
 
   /**
@@ -67,4 +71,32 @@ export interface IRdfJsSourceExtended extends RDF.Source {
    * This will only be used if `features.indexNodes` is true.
    */
   countNodes?: (graph: RDF.Term) => number;
+
+  /**
+   * Returns a stream that produces all distinct combinations of the specified terms.
+   * The stream produces tuples where each element corresponds to a variable in the variables array.
+   *
+   * This will only be used if `features.indexDistinctTerms` is true.
+   */
+  matchDistinctTerms?: (
+    variables: RDF.Variable[],
+    terms: Record<string, 'subject' | 'predicate' | 'object' | 'graph'>,
+    s?: RDF.Term,
+    p?: RDF.Term,
+    o?: RDF.Term,
+    g?: RDF.Term,
+  ) => EventEmitter;
+
+  /**
+   * Returns the number of distinct combinations of the specified terms.
+   *
+   * This will only be used if `features.indexDistinctTerms` is true.
+   */
+  countDistinctTerms?: (
+    terms: Record<string, 'subject' | 'predicate' | 'object' | 'graph'>,
+    s?: RDF.Term,
+    p?: RDF.Term,
+    o?: RDF.Term,
+    g?: RDF.Term,
+  ) => number;
 }
