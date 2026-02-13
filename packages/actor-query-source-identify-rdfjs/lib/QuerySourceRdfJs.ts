@@ -136,16 +136,11 @@ export class QuerySourceRdfJs implements IQuerySource {
       if (!('matchDistinctTerms' in this.source && this.source.matchDistinctTerms)) {
         throw new Error('QuerySourceRdfJs does not support distinct terms operations on this source');
       }
-      const pattern = operation.pattern;
-
-      const rawStream = this.source.matchDistinctTerms(
-        operation.variables,
-        operation.terms,
-        QuerySourceRdfJs.nullifyVariables(pattern.subject, false),
-        QuerySourceRdfJs.nullifyVariables(pattern.predicate, false),
-        QuerySourceRdfJs.nullifyVariables(pattern.object, false),
-        QuerySourceRdfJs.nullifyVariables(pattern.graph, false),
-      );
+      
+      // Convert the terms mapping to an array of QuadTermName in the order of variables
+      const termNames: any[] = operation.variables.map(variable => operation.terms[variable.value]);
+      
+      const rawStream = this.source.matchDistinctTerms(termNames);
       const it: AsyncIterator<RDF.Term[]> = rawStream instanceof AsyncIterator ?
         rawStream :
         wrapAsyncIterator<RDF.Term[]>(rawStream, { autoStart: false });
@@ -156,13 +151,7 @@ export class QuerySourceRdfJs implements IQuerySource {
         state: new MetadataValidationState(),
         cardinality: {
           type: 'exact',
-          value: this.source.countDistinctTerms!(
-            operation.terms,
-            QuerySourceRdfJs.nullifyVariables(pattern.subject, false),
-            QuerySourceRdfJs.nullifyVariables(pattern.predicate, false),
-            QuerySourceRdfJs.nullifyVariables(pattern.object, false),
-            QuerySourceRdfJs.nullifyVariables(pattern.graph, false),
-          ),
+          value: this.source.countDistinctTerms!(termNames),
         },
         // Force requestTime to zero, since this will be free for future calls, as we're fully indexed at this stage.
         requestTime: 0,

@@ -6,6 +6,7 @@
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import type { Patch } from '@traqula/core';
+import type { QuadTermName } from 'rdf-terms';
 import type { TypesComunica } from './TypesComunica';
 
 export { Types, ExpressionTypes } from '@traqula/algebra-transformations-1-2';
@@ -190,6 +191,6 @@ export interface DistinctTermsUnopened extends BaseOperation {
   type: TypesComunica.DISTINCT_TERMS;
   pattern: Pattern;
   variables: RDF.Variable[];
-  terms: Record<string, 'subject' | 'predicate' | 'object' | 'graph'>;
+  terms: Record<string, QuadTermName>;
 }
 export type DistinctTerms = Opened<DistinctTermsUnopened>;

@@ -1,6 +1,6 @@
-# Comunica Distinct Terms Optimize Query Operation Actor
+# Comunica Distinct Terms Pushdown Optimize Query Operation Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-optimize-query-operation-distinct-terms.svg)](https://www.npmjs.com/package/@comunica/actor-optimize-query-operation-distinct-terms)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-optimize-query-operation-distinct-terms-pushdown.svg)](https://www.npmjs.com/package/@comunica/actor-optimize-query-operation-distinct-terms-pushdown)
 
 An [Optimize Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation) actor
 that rewrites `SELECT DISTINCT` queries to use the DistinctTerms operator when querying a single source that supports it.
@@ -13,7 +13,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-optimize-query-operation-distinct-terms
+$ yarn add @comunica/actor-optimize-query-operation-distinct-terms-pushdown
 ```
 
 ## Configure
@@ -23,13 +23,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-distinct-terms/^5.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-distinct-terms-pushdown/^5.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
-      "@id": "urn:comunica:default:optimize-query-operation/actors#distinct-terms",
-      "@type": "ActorOptimizeQueryOperationDistinctTerms"
+      "@id": "urn:comunica:default:optimize-query-operation/actors#distinct-terms-pushdown",
+      "@type": "ActorOptimizeQueryOperationDistinctTermsPushdown"
     }
   ]
 }
