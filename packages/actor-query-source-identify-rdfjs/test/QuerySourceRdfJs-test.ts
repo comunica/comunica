@@ -922,7 +922,7 @@ describe('QuerySourceRdfJs', () => {
         // Add matchNodes and countNodes to the store since RdfStore.createDefault() no longer includes them
         (<any> store).features = { ...(<any> store).features, indexNodes: true };
         (<any> store).matchNodes = (graph: RDF.Term) => {
-          const quads = [...store.match(undefined, undefined, undefined, graph)];
+          const quads = Array.from(store.match(undefined, undefined, undefined, graph));
           const nodes = new Set<RDF.Term>();
           for (const quad of quads) {
             nodes.add(quad.subject);
@@ -931,7 +931,7 @@ describe('QuerySourceRdfJs', () => {
           return new ArrayIterator([...nodes].map(node => [ graph, node ]));
         };
         (<any> store).countNodes = (graph: RDF.Term) => {
-          const quads = [...store.match(undefined, undefined, undefined, graph)];
+          const quads = Array.from(store.match(undefined, undefined, undefined, graph));
           const nodes = new Set<RDF.Term>();
           for (const quad of quads) {
             nodes.add(quad.subject);
