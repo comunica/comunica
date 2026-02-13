@@ -79,7 +79,7 @@ export interface IRdfJsSourceExtended extends RDF.Source {
    *
    * This will only be used if `features.indexDistinctTerms` is true.
    */
-  matchDistinctTerms?: (termNames: QuadTermName[]) => RDF.Stream<RDF.Term[]>;
+  matchDistinctTerms?: (termNames: QuadTermName[]) => EventEmitter;
 
   /**
    * Returns the number of distinct combinations of the specified terms.

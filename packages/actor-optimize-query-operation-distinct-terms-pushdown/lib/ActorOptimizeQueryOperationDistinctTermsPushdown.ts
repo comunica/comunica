@@ -9,6 +9,7 @@ import { failTest, passTestVoid } from '@comunica/core';
 import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import { doesShapeAcceptOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import type { QuadTermName } from 'rdf-terms';
 
 /**
  * A comunica Distinct Terms Optimize Query Operation Actor.
@@ -85,9 +86,9 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
   private mapVariablesToTerms(
     variables: RDF.Variable[],
     pattern: Algebra.Pattern,
-  ): Record<string, 'subject' | 'predicate' | 'object' | 'graph'> | undefined {
-    const termsMapping: Record<string, 'subject' | 'predicate' | 'object' | 'graph'> = {};
-    const termPositions: { term: RDF.Term; position: 'subject' | 'predicate' | 'object' | 'graph' }[] = [
+  ): Record<string, QuadTermName> | undefined {
+    const termsMapping: Record<string, QuadTermName> = {};
+    const termPositions: { term: RDF.Term; position: QuadTermName }[] = [
       { term: pattern.subject, position: 'subject' },
       { term: pattern.predicate, position: 'predicate' },
       { term: pattern.object, position: 'object' },

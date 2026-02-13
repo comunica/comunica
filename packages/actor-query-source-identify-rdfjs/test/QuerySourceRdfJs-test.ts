@@ -5,7 +5,6 @@ import type { IActionContext } from '@comunica/types';
 import { AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { Store } from 'n3';
@@ -921,18 +920,18 @@ describe('QuerySourceRdfJs', () => {
         store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o2'), DF.namedNode('g2')));
         // Add matchNodes and countNodes to the store since RdfStore.createDefault() no longer includes them
         (<any> store).features = { ...(<any> store).features, indexNodes: true };
-        (<any> store).matchNodes = (graph: RDF.Term) => {
+        (<any> store).matchNodes = (graph: any) => {
           const quads = Array.from(store.match(undefined, undefined, undefined, graph));
-          const nodes = new Set<RDF.Term>();
+          const nodes = new Set<any>();
           for (const quad of quads) {
             nodes.add(quad.subject);
             nodes.add(quad.object);
           }
           return new ArrayIterator([...nodes].map(node => [ graph, node ]));
         };
-        (<any> store).countNodes = (graph: RDF.Term) => {
+        (<any> store).countNodes = (graph: any) => {
           const quads = Array.from(store.match(undefined, undefined, undefined, graph));
-          const nodes = new Set<RDF.Term>();
+          const nodes = new Set<any>();
           for (const quad of quads) {
             nodes.add(quad.subject);
             nodes.add(quad.object);

@@ -1,6 +1,7 @@
 import type * as RDF from '@rdfjs/types';
+import type { QuadTermName } from 'rdf-terms';
 import { AlgebraFactory as AlgebraFactoryBase } from '@traqula/algebra-transformations-1-2';
-import type { Algebra, DistinctTerms, Nodes, Operation } from './Algebra';
+import type { Algebra, DistinctTerms, Nodes } from './Algebra';
 import { TypesComunica } from './TypesComunica';
 
 export class AlgebraFactory extends AlgebraFactoryBase {
@@ -15,7 +16,7 @@ export class AlgebraFactory extends AlgebraFactoryBase {
   public createDistinctTerms(
     pattern: Algebra.Pattern,
     variables: RDF.Variable[],
-    terms: Record<string, 'subject' | 'predicate' | 'object' | 'graph'>,
+    terms: Record<string, QuadTermName>,
   ): DistinctTerms {
     return {
       type: TypesComunica.DISTINCT_TERMS,
