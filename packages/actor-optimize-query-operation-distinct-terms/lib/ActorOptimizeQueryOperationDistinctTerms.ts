@@ -6,7 +6,8 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation, TypesComunica } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
+import { doesShapeAcceptOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -23,19 +24,15 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
       return failTest('Only applies to single source queries');
     }
 
-    // Check if the source supports DistinctTerms
-    const source = querySources[0];
-    const selectorShape = await source.source.getSelectorShape(action.context);
-    if (!this.supportsDistinctTerms(selectorShape)) {
-      return failTest('Source does not support DistinctTerms operator');
-    }
-
     return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
+    const querySources = action.context.get(KeysQueryOperation.querySources)!;
+    const source = querySources[0];
+    const selectorShape = await source.source.getSelectorShape(action.context);
 
     const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.PROJECT]: {
@@ -49,79 +46,37 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
           const distinctOp = projectOp.input;
           const innerOp = distinctOp.input;
 
-          // Try to extract a pattern that can be optimized
-          const patternInfo = this.extractPattern(innerOp);
-          if (!patternInfo) {
+          // Only optimize if the inner operation is a pattern
+          if (!isKnownOperation(innerOp, Algebra.Types.PATTERN)) {
             return projectOp;
           }
 
+          const pattern = innerOp;
+
           // Check if the projected variables can be mapped to quad terms
-          const termsMapping = this.mapVariablesToTerms(projectOp.variables, patternInfo.pattern);
+          const termsMapping = this.mapVariablesToTerms(projectOp.variables, pattern);
           if (!termsMapping) {
             return projectOp;
           }
 
           // Create the DistinctTerms operator
           const distinctTermsOp = algebraFactory.createDistinctTerms(
-            patternInfo.pattern,
+            pattern,
             projectOp.variables,
             termsMapping,
           );
 
-          // Wrap in any outer operations that were removed (like Graph)
-          let resultOp: Algebra.Operation = distinctTermsOp;
-          if (patternInfo.graphTerm) {
-            // CreateGraph expects a Variable or NamedNode, not DefaultGraph
-            // If it's a graph operation, the term should be one of these
-            resultOp = algebraFactory.createGraph(
-              resultOp,
-              <RDF.Variable | RDF.NamedNode> patternInfo.graphTerm,
-            );
+          // Check if the source supports this operation
+          if (!doesShapeAcceptOperation(selectorShape, distinctTermsOp)) {
+            return projectOp;
           }
 
-          return algebraFactory.createProject(resultOp, projectOp.variables);
+          return algebraFactory.createProject(distinctTermsOp, projectOp.variables);
         },
       },
     });
 
     return { operation, context: action.context };
-  }
-
-  /**
-   * Check if the selector shape indicates support for DistinctTerms
-   */
-  private supportsDistinctTerms(selectorShape: any): boolean {
-    if (selectorShape.type === 'operation') {
-      return selectorShape.operation?.type === TypesComunica.DISTINCT_TERMS;
-    }
-    if (selectorShape.type === 'disjunction') {
-      return selectorShape.children.some((child: any) => this.supportsDistinctTerms(child));
-    }
-    return false;
-  }
-
-  /**
-   * Extract a pattern from the operation, handling GRAPH wrappers
-   */
-  private extractPattern(operation: Algebra.Operation): {
-    pattern: Algebra.Pattern;
-    graphTerm?: RDF.Term;
-  } | undefined {
-    // Direct pattern
-    if (isKnownOperation(operation, Algebra.Types.PATTERN)) {
-      return { pattern: operation };
-    }
-
-    // Pattern wrapped in GRAPH
-    if (isKnownOperation(operation, Algebra.Types.GRAPH) &&
-        isKnownOperation(operation.input, Algebra.Types.PATTERN)) {
-      return {
-        pattern: operation.input,
-        graphTerm: operation.name,
-      };
-    }
-
-    return undefined;
   }
 
   /**

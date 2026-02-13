@@ -136,11 +136,7 @@ export class QuerySourceRdfJs implements IQuerySource {
       if (!('matchDistinctTerms' in this.source && this.source.matchDistinctTerms)) {
         throw new Error('QuerySourceRdfJs does not support distinct terms operations on this source');
       }
-      // Extract the pattern from the input
-      if (!isKnownOperation(operation.input, Algebra.Types.PATTERN)) {
-        throw new Error(`DistinctTerms operation must have a pattern as input, got '${operation.input.type}'`);
-      }
-      const pattern = operation.input;
+      const pattern = operation.pattern;
 
       const rawStream = this.source.matchDistinctTerms(
         operation.variables,

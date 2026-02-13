@@ -183,11 +183,12 @@ export type Nodes = Opened<NodesUnopened>;
 
 /**
  * A non-standard operator to represent distinct values of specific terms.
- * It returns distinct combinations of the specified quad term positions.
+ * It returns distinct combinations of the specified quad term positions from a pattern.
+ * This is a leaf node operation that directly specifies the pattern to match.
  */
 export interface DistinctTermsUnopened extends BaseOperation {
   type: TypesComunica.DISTINCT_TERMS;
-  input: Operation;
+  pattern: Pattern;
   variables: RDF.Variable[];
   terms: Record<string, 'subject' | 'predicate' | 'object' | 'graph'>;
 }

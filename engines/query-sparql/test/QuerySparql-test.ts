@@ -1372,9 +1372,8 @@ WHERE {
           ]);
         });
 
-        it.skip('should correctly terminate for an rdf-stores store with nodes index', async() => {
-          // Skipped: RdfStore.createDefault() no longer provides indexNodes feature by default
-          const store = RdfStore.createDefault();
+        it('should correctly terminate for an rdf-stores store with nodes index', async() => {
+          const store = RdfStore.createDefault(true);
           const A = DF.namedNode('http://example.org/a');
           const B = DF.namedNode('http://example.org/b');
           const C = DF.namedNode('http://example.org/c');
@@ -1517,9 +1516,8 @@ SELECT ?option WHERE {
         ]);
       });
 
-      it.skip('should handle zero-or-one path with variable subject and object with nodes index', async() => {
-        // Skipped: RdfStore.createDefault() no longer provides indexNodes feature by default
-        const store = RdfStore.createDefault();
+      it('should handle zero-or-one path with variable subject and object with nodes index', async() => {
+        const store = RdfStore.createDefault(true);
         store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:name'), DF.literal('s1')));
         store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:knows'), DF.namedNode('ex:s2')));
         store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:name'), DF.literal('s2')));
@@ -2458,6 +2456,8 @@ CONSTRUCT {
         DF.namedNode('ex:g2'),
       ));
 
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
+
       const bindingsStream = await engine.queryBindings(`
         PREFIX ex: <ex:>
         SELECT DISTINCT ?g ?s WHERE {
@@ -2479,6 +2479,8 @@ CONSTRUCT {
           [ DF.variable('s'), DF.namedNode('ex:s1') ],
         ]),
       ]);
+
+      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should optimize SELECT DISTINCT with subject variable only', async() => {
@@ -2486,6 +2488,8 @@ CONSTRUCT {
       store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
       store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')));
       store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
+
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
 
       const bindingsStream = await engine.queryBindings(`
         PREFIX ex: <ex:>
@@ -2502,6 +2506,8 @@ CONSTRUCT {
           [ DF.variable('s'), DF.namedNode('ex:s2') ],
         ]),
       ]);
+
+      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should optimize SELECT DISTINCT with predicate and object variables', async() => {
@@ -2509,6 +2515,8 @@ CONSTRUCT {
       store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
       store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o2')));
       store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o1')));
+
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
 
       const bindingsStream = await engine.queryBindings(`
         PREFIX ex: <ex:>
@@ -2531,6 +2539,8 @@ CONSTRUCT {
           [ DF.variable('o'), DF.namedNode('ex:o1') ],
         ]),
       ]);
+
+      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should not optimize SELECT DISTINCT with multiple sources', async() => {
@@ -2573,6 +2583,8 @@ CONSTRUCT {
         DF.namedNode('ex:g1'),
       ));
 
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
+
       const bindingsStream = await engine.queryBindings(`
         PREFIX ex: <ex:>
         SELECT DISTINCT ?s WHERE {
@@ -2588,6 +2600,44 @@ CONSTRUCT {
           [ DF.variable('s'), DF.namedNode('ex:s2') ],
         ]),
       ]);
+
+      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle SELECT DISTINCT as inner query within another SELECT', async() => {
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p1'), DF.namedNode('ex:o3')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o4')));
+
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
+
+      const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT ?s ?o WHERE {
+          {
+            SELECT DISTINCT ?s WHERE {
+              ?s ?p ?o
+            }
+          }
+          ?s ex:p1 ?o
+        }
+      `, { sources: [ store ]});
+
+      await expect(bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s1') ],
+          [ DF.variable('o'), DF.namedNode('ex:o1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s2') ],
+          [ DF.variable('o'), DF.namedNode('ex:o3') ],
+        ]),
+      ]);
+
+      // The inner SELECT DISTINCT should have been optimized
+      expect(matchDistinctTermsSpy).toHaveBeenCalled();
     });
   });
 
