@@ -60,7 +60,7 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
             return projectOp;
           }
 
-          // Create the DistinctTerms operator
+          // Create the DistinctTerms operator (replaces the entire PROJECT(DISTINCT(PATTERN)))
           const distinctTermsOp = algebraFactory.createDistinctTerms(
             pattern,
             projectOp.variables,
@@ -72,7 +72,7 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
             return projectOp;
           }
 
-          return algebraFactory.createProject(distinctTermsOp, projectOp.variables);
+          return distinctTermsOp;
         },
       },
     });
