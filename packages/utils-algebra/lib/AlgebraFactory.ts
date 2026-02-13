@@ -1,7 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import { AlgebraFactory as AlgebraFactoryBase } from '@traqula/algebra-transformations-1-2';
-import type { DistinctTerms, Nodes } from './Algebra';
-import type { Operation } from './Algebra';
+import type { DistinctTerms, Nodes, Operation } from './Algebra';
 import { TypesComunica } from './TypesComunica';
 
 export class AlgebraFactory extends AlgebraFactoryBase {

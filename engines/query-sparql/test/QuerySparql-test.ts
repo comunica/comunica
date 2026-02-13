@@ -1373,7 +1373,7 @@ WHERE {
         });
 
         it('should correctly terminate for an rdf-stores store with nodes index', async() => {
-          const store = RdfStore.createDefault(true);
+          const store = RdfStore.createDefault();
           const A = DF.namedNode('http://example.org/a');
           const B = DF.namedNode('http://example.org/b');
           const C = DF.namedNode('http://example.org/c');
@@ -1517,7 +1517,7 @@ SELECT ?option WHERE {
       });
 
       it('should handle zero-or-one path with variable subject and object with nodes index', async() => {
-        const store = RdfStore.createDefault(true);
+        const store = RdfStore.createDefault();
         store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:name'), DF.literal('s1')));
         store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:knows'), DF.namedNode('ex:s2')));
         store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:name'), DF.literal('s2')));
@@ -2430,19 +2430,39 @@ CONSTRUCT {
 
   describe('DistinctTerms optimization', () => {
     it('should optimize SELECT DISTINCT with subject and graph variables', async() => {
-      const store = RdfStore.createDefault(true);
-      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')));
-      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g1')));
-      store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')));
-      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g2')));
-      
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p2'),
+        DF.namedNode('ex:o2'),
+        DF.namedNode('ex:g1'),
+      ));
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s2'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g2'),
+      ));
+
       const bindingsStream = await engine.queryBindings(`
         PREFIX ex: <ex:>
         SELECT DISTINCT ?g ?s WHERE {
           GRAPH ?g { ?s ?p ?o }
         }
       `, { sources: [ store ]});
-      
+
       await expect(bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('g'), DF.namedNode('ex:g1') ],
@@ -2460,18 +2480,18 @@ CONSTRUCT {
     });
 
     it('should optimize SELECT DISTINCT with subject variable only', async() => {
-      const store = RdfStore.createDefault(true);
+      const store = RdfStore.createDefault();
       store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
       store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')));
       store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
-      
+
       const bindingsStream = await engine.queryBindings(`
         PREFIX ex: <ex:>
         SELECT DISTINCT ?s WHERE {
           ?s ?p ?o
         }
       `, { sources: [ store ]});
-      
+
       await expect(bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('s'), DF.namedNode('ex:s1') ],
@@ -2483,18 +2503,18 @@ CONSTRUCT {
     });
 
     it('should optimize SELECT DISTINCT with predicate and object variables', async() => {
-      const store = RdfStore.createDefault(true);
+      const store = RdfStore.createDefault();
       store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
       store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o2')));
       store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o1')));
-      
+
       const bindingsStream = await engine.queryBindings(`
         PREFIX ex: <ex:>
         SELECT DISTINCT ?p ?o WHERE {
           ?s ?p ?o
         }
       `, { sources: [ store ]});
-      
+
       await expect(bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('p'), DF.namedNode('ex:p1') ],
@@ -2512,37 +2532,52 @@ CONSTRUCT {
     });
 
     it('should not optimize SELECT DISTINCT with multiple sources', async() => {
-      const store1 = RdfStore.createDefault(true);
+      const store1 = RdfStore.createDefault();
       store1.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
-      
-      const store2 = RdfStore.createDefault(true);
+
+      const store2 = RdfStore.createDefault();
       store2.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')));
-      
+
       const bindingsStream = await engine.queryBindings(`
         PREFIX ex: <ex:>
         SELECT DISTINCT ?s WHERE {
           ?s ?p ?o
         }
       `, { sources: [ store1, store2 ]});
-      
+
       // Should still work but won't use DistinctTerms optimization
       const bindings = await arrayifyStream(bindingsStream);
       expect(bindings).toHaveLength(2);
     });
 
     it('should handle SELECT DISTINCT with fixed graph', async() => {
-      const store = RdfStore.createDefault(true);
-      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')));
-      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g1')));
-      store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')));
-      
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p2'),
+        DF.namedNode('ex:o2'),
+        DF.namedNode('ex:g1'),
+      ));
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s2'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+
       const bindingsStream = await engine.queryBindings(`
         PREFIX ex: <ex:>
         SELECT DISTINCT ?s WHERE {
           GRAPH ex:g1 { ?s ?p ?o }
         }
       `, { sources: [ store ]});
-      
+
       await expect(bindingsStream).toEqualBindingsStream([
         BF.bindings([
           [ DF.variable('s'), DF.namedNode('ex:s1') ],

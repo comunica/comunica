@@ -3,17 +3,15 @@ import type {
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { getFragmentSelectorShape } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import type { IQuerySource } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation, TypesComunica } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica Distinct Terms Optimize Query Operation Actor.
- * 
+ *
  * This actor rewrites SELECT DISTINCT queries to use the DistinctTerms operator
  * when querying a single source that supports it.
  */
@@ -27,7 +25,7 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
 
     // Check if the source supports DistinctTerms
     const source = querySources[0];
-    const selectorShape = await getFragmentSelectorShape(source);
+    const selectorShape = await source.source.getSelectorShape(action.context);
     if (!this.supportsDistinctTerms(selectorShape)) {
       return failTest('Source does not support DistinctTerms operator');
     }
@@ -41,13 +39,11 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
 
     const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.PROJECT]: {
-        transform: (projectOp, recurse) => {
+        preVisitor: () => ({ continue: false }),
+        transform: (projectOp: Algebra.Project) => {
           // Check if the Project wraps a Distinct operation
           if (!isKnownOperation(projectOp.input, Algebra.Types.DISTINCT)) {
-            return {
-              ...projectOp,
-              input: recurse(projectOp.input),
-            };
+            return projectOp;
           }
 
           const distinctOp = projectOp.input;
@@ -56,19 +52,13 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
           // Try to extract a pattern that can be optimized
           const patternInfo = this.extractPattern(innerOp);
           if (!patternInfo) {
-            return {
-              ...projectOp,
-              input: recurse(projectOp.input),
-            };
+            return projectOp;
           }
 
           // Check if the projected variables can be mapped to quad terms
           const termsMapping = this.mapVariablesToTerms(projectOp.variables, patternInfo.pattern);
           if (!termsMapping) {
-            return {
-              ...projectOp,
-              input: recurse(projectOp.input),
-            };
+            return projectOp;
           }
 
           // Create the DistinctTerms operator
@@ -80,8 +70,13 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
 
           // Wrap in any outer operations that were removed (like Graph)
           let resultOp: Algebra.Operation = distinctTermsOp;
-          if (patternInfo.wrapInGraph) {
-            resultOp = algebraFactory.createGraph(patternInfo.wrapInGraph, resultOp);
+          if (patternInfo.graphTerm) {
+            // CreateGraph expects a Variable or NamedNode, not DefaultGraph
+            // If it's a graph operation, the term should be one of these
+            resultOp = algebraFactory.createGraph(
+              resultOp,
+              <RDF.Variable | RDF.NamedNode> patternInfo.graphTerm,
+            );
           }
 
           return algebraFactory.createProject(resultOp, projectOp.variables);
@@ -110,7 +105,7 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
    */
   private extractPattern(operation: Algebra.Operation): {
     pattern: Algebra.Pattern;
-    wrapInGraph?: RDF.Term;
+    graphTerm?: RDF.Term;
   } | undefined {
     // Direct pattern
     if (isKnownOperation(operation, Algebra.Types.PATTERN)) {
@@ -118,13 +113,12 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
     }
 
     // Pattern wrapped in GRAPH
-    if (isKnownOperation(operation, Algebra.Types.GRAPH)) {
-      if (isKnownOperation(operation.input, Algebra.Types.PATTERN)) {
-        return {
-          pattern: operation.input,
-          wrapInGraph: operation.graph,
-        };
-      }
+    if (isKnownOperation(operation, Algebra.Types.GRAPH) &&
+        isKnownOperation(operation.input, Algebra.Types.PATTERN)) {
+      return {
+        pattern: operation.input,
+        graphTerm: operation.name,
+      };
     }
 
     return undefined;
@@ -138,7 +132,7 @@ export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQuery
     pattern: Algebra.Pattern,
   ): Record<string, 'subject' | 'predicate' | 'object' | 'graph'> | undefined {
     const termsMapping: Record<string, 'subject' | 'predicate' | 'object' | 'graph'> = {};
-    const termPositions: Array<{ term: RDF.Term; position: 'subject' | 'predicate' | 'object' | 'graph' }> = [
+    const termPositions: { term: RDF.Term; position: 'subject' | 'predicate' | 'object' | 'graph' }[] = [
       { term: pattern.subject, position: 'subject' },
       { term: pattern.predicate, position: 'predicate' },
       { term: pattern.object, position: 'object' },

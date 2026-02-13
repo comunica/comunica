@@ -46,7 +46,7 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
   }
 
   public static storeStream<Q extends RDF.BaseQuad = RDF.Quad>(stream: RDF.Stream<Q>): Promise<RDF.Store<Q>> {
-    const store: RDF.Store<Q> = <RDF.Store<Q>> <RDF.Store> RdfStore.createDefault(true);
+    const store: RDF.Store<Q> = <RDF.Store<Q>> <RDF.Store> RdfStore.createDefault();
     return new Promise((resolve, reject) => store.import(stream)
       .on('error', reject)
       .once('end', () => resolve(store)));

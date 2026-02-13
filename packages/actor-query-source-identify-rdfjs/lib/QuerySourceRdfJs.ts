@@ -103,8 +103,10 @@ export class QuerySourceRdfJs implements IQuerySource {
   }
 
   public queryBindings(operation: Algebra.Operation, context: IActionContext): BindingsStream {
-    if (isKnownOperation(operation, TypesComunica.NODES) &&
-      'matchNodes' in this.source && this.source.matchNodes) {
+    if (isKnownOperation(operation, TypesComunica.NODES)) {
+      if (!('matchNodes' in this.source && this.source.matchNodes)) {
+        throw new Error('QuerySourceRdfJs does not support nodes operations on this source');
+      }
       const rawStream = this.source.matchNodes(operation.graph);
       const isGraphVariable = operation.graph.termType === 'Variable';
       const it: AsyncIterator<[ RDF.Term, RDF.Term ]> = rawStream instanceof AsyncIterator ?
@@ -130,14 +132,16 @@ export class QuerySourceRdfJs implements IQuerySource {
       return bs;
     }
 
-    if (isKnownOperation(operation, TypesComunica.DISTINCT_TERMS) &&
-      'matchDistinctTerms' in this.source && this.source.matchDistinctTerms) {
+    if (isKnownOperation(operation, TypesComunica.DISTINCT_TERMS)) {
+      if (!('matchDistinctTerms' in this.source && this.source.matchDistinctTerms)) {
+        throw new Error('QuerySourceRdfJs does not support distinct terms operations on this source');
+      }
       // Extract the pattern from the input
       if (!isKnownOperation(operation.input, Algebra.Types.PATTERN)) {
         throw new Error(`DistinctTerms operation must have a pattern as input, got '${operation.input.type}'`);
       }
       const pattern = operation.input;
-      
+
       const rawStream = this.source.matchDistinctTerms(
         operation.variables,
         operation.terms,
