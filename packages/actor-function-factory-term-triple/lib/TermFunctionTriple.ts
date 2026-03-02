@@ -20,10 +20,10 @@ export class TermFunctionTriple extends TermFunctionBase {
         .onTerm3(
           _ => (subject, predicate, object) => {
             if (subject.termType !== 'namedNode' && subject.termType !== 'blankNode') {
-              throw new ExpressionError(`TRIPLE: invalid subject term type: ${subject.termType}`);
+              throw new ExpressionError(`Subjects in triple terms must either be named nodes or blank nodes`);
             }
             if (predicate.termType !== 'namedNode') {
-              throw new ExpressionError(`TRIPLE: invalid predicate term type: ${predicate.termType}`);
+              throw new ExpressionError(`Predicates in triple terms must be named nodes`);
             }
             return new Quad(subject, predicate, object, new DefaultGraph());
           },

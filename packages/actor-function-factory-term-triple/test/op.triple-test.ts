@@ -16,10 +16,10 @@ describe('evaluation of \'TRIPLE\'', () => {
       [ '<ex:a>', '<ex:b>', '<<( <ex:a> <ex:b> <ex:c> )>>', '<< <ex:a> <ex:b> << <ex:a> <ex:b> <ex:c> >> >>' ],
     ],
     errorArray: [
-      [ '"literal"', '<ex:b>', '<ex:c>', 'TRIPLE: invalid subject term type: literal' ],
-      [ '<<( <ex:a> <ex:b> <ex:c> )>>', '<ex:b>', '<ex:c>', 'TRIPLE: invalid subject term type: quad' ],
-      [ '<ex:a>', '"literal"', '<ex:c>', 'TRIPLE: invalid predicate term type: literal' ],
-      [ '<ex:a>', '<<( <ex:a> <ex:b> <ex:c> )>>', '<ex:c>', 'TRIPLE: invalid predicate term type: quad' ],
+      [ '"literal"', '<ex:b>', '<ex:c>', 'Subjects in triple terms must either be named nodes or blank nodes' ],
+      [ '<<( <ex:a> <ex:b> <ex:c> )>>', '<ex:b>', '<ex:c>', `Subjects in triple terms must either be named nodes or blank nodes` ],
+      [ '<ex:a>', '"literal"', '<ex:c>', 'Predicates in triple terms must be named nodes' ],
+      [ '<ex:a>', '<<( <ex:a> <ex:b> <ex:c> )>>', '<ex:c>', 'Predicates in triple terms must be named nodes' ],
     ],
   });
 });
