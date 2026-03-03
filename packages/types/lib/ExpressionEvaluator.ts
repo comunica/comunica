@@ -87,6 +87,8 @@ export enum ExpressionType {
   Term = 'term',
   Variable = 'variable',
 }
+
+// TODO: next/major - edit these to reflect the RDFJS capitalization (and general typings?)
 export type TermType = 'namedNode' | 'literal' | 'blankNode' | 'quad' | 'defaultGraph';
 
 export type TermExpression = IExpressionProps & {
