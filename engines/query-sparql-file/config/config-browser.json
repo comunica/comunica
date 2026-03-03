@@ -3,6 +3,6 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^5.0.0/components/context.jsonld"
   ],
   "import": [
-    "ccqs:config/config-file-browser-v5-1-0.json"
+    "ccqs:config/config-file-browser-v5-1-3.json"
   ]
 }

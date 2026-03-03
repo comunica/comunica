@@ -6,6 +6,7 @@
 import type * as RDF from '@rdfjs/types';
 import type { Algebra } from '@traqula/algebra-transformations-1-2';
 import type { Patch } from '@traqula/core';
+import type { QuadTermName } from 'rdf-terms';
 import type { TypesComunica } from './TypesComunica';
 
 export { Types, ExpressionTypes } from '@traqula/algebra-transformations-1-2';
@@ -49,7 +50,7 @@ export type Closed<T extends object > = {[K in keyof T]: CloseSingle<T[K]> };
 // Redefinitions of types
 export type KnownOperation = Ask | KnownExpression | Bgp | Construct | Describe | Distinct | Extend | From | Filter
   | Graph | Group | Join | LeftJoin | Minus | Nop | OrderBy | Path | Pattern | Project | KnownPropertyPathSymbol
-  | Reduced | Service | Slice | Union | Values | KnownUpdate | CompositeUpdate | Nodes;
+  | Reduced | Service | Slice | Union | Values | KnownUpdate | CompositeUpdate | Nodes | DistinctTerms;
 export type KnownExpression = AggregateExpression | GroupConcatExpression | ExistenceExpression | NamedExpression |
   OperatorExpression | TermExpression | WildcardExpression | BoundAggregate;
 export type KnownPropertyPathSymbol = Alt | Inv | Link | Nps | OneOrMorePath | Seq | ZeroOrMorePath | ZeroOrOnePath;
@@ -180,3 +181,14 @@ export interface NodesUnopened extends BaseOperation {
   variable: RDF.Variable;
 }
 export type Nodes = Opened<NodesUnopened>;
+
+/**
+ * A non-standard operator to represent distinct values of specific terms.
+ * It returns distinct combinations of the specified quad term positions.
+ */
+export interface DistinctTermsUnopened extends BaseOperation {
+  type: TypesComunica.DISTINCT_TERMS;
+  variables: RDF.Variable[];
+  terms: Record<string, QuadTermName>;
+}
+export type DistinctTerms = Opened<DistinctTermsUnopened>;

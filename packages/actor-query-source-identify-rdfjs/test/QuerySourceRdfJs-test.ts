@@ -30,8 +30,9 @@ describe('QuerySourceRdfJs', () => {
   });
 
   describe('getSelectorShape', () => {
-    it('should return a selector shape when indexNodes is false', async() => {
+    it('should return a selector shape when indexNodes and indexDistinctTerms are false', async() => {
       store = RdfStore.createDefault();
+      store.features.indexDistinctTerms = false;
       source = new QuerySourceRdfJs(store, DF, BF);
       await expect(source.getSelectorShape()).resolves.toEqual({
         type: 'operation',
@@ -68,6 +69,13 @@ describe('QuerySourceRdfJs', () => {
             operation: {
               operationType: 'type',
               type: TypesComunica.NODES,
+            },
+          },
+          {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: TypesComunica.DISTINCT_TERMS,
             },
           },
         ],
@@ -978,6 +986,56 @@ describe('QuerySourceRdfJs', () => {
             state: expect.any(MetadataValidationState),
             variables: [
               { variable: DF.variable('x'), canBeUndef: false },
+            ],
+            requestTime: 0,
+          });
+      });
+    });
+
+    describe('for distinctterms operations', () => {
+      beforeEach(() => {
+        store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.defaultGraph()));
+        store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o2'), DF.namedNode('g2')));
+      });
+
+      it('should return distinct predicates', async() => {
+        const data = source.queryBindings(
+          AF.createDistinctTerms([ DF.variable('p') ], { p: 'predicate' }),
+          ctx,
+        );
+        await expect(data).toEqualBindingsStream([
+          BF.fromRecord({ p: DF.namedNode('p') }),
+        ]);
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+          .toEqual({
+            cardinality: { type: 'exact', value: 1 },
+            state: expect.any(MetadataValidationState),
+            variables: [
+              { variable: DF.variable('p'), canBeUndef: false },
+            ],
+            requestTime: 0,
+          });
+      });
+
+      it('should return distinct predicates when matchDistinctTerms returns a plain stream', async() => {
+        (<any> store).matchDistinctTerms = () => {
+          return Readable.from([
+            [ DF.namedNode('p') ],
+          ]);
+        };
+        const data = source.queryBindings(
+          AF.createDistinctTerms([ DF.variable('p') ], { p: 'predicate' }),
+          ctx,
+        );
+        await expect(data).toEqualBindingsStream([
+          BF.fromRecord({ p: DF.namedNode('p') }),
+        ]);
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+          .toEqual({
+            cardinality: { type: 'exact', value: 1 },
+            state: expect.any(MetadataValidationState),
+            variables: [
+              { variable: DF.variable('p'), canBeUndef: false },
             ],
             requestTime: 0,
           });

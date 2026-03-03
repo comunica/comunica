@@ -50,18 +50,31 @@ export class QuerySourceRdfJs implements IQuerySource {
         this.dataFactory.variable('o'),
       ],
     };
+    const additionalShapes: FragmentSelectorShape[] = [];
     if ('features' in this.source && this.source.features?.indexNodes) {
+      additionalShapes.push({
+        type: 'operation',
+        operation: {
+          operationType: 'type',
+          type: TypesComunica.NODES,
+        },
+      });
+    }
+    if ('features' in this.source && this.source.features?.indexDistinctTerms) {
+      additionalShapes.push({
+        type: 'operation',
+        operation: {
+          operationType: 'type',
+          type: TypesComunica.DISTINCT_TERMS,
+        },
+      });
+    }
+    if (additionalShapes.length > 0) {
       selectorShape = {
         type: 'disjunction',
         children: [
           selectorShape,
-          {
-            type: 'operation',
-            operation: {
-              operationType: 'type',
-              type: TypesComunica.NODES,
-            },
-          },
+          ...additionalShapes,
         ],
       };
     }
@@ -113,6 +126,31 @@ export class QuerySourceRdfJs implements IQuerySource {
           ...(isGraphVariable ? [{ variable: operation.graph, canBeUndef: false }] : []),
           { variable: operation.variable, canBeUndef: false },
         ],
+      });
+      return bs;
+    }
+
+    if (isKnownOperation(operation, TypesComunica.DISTINCT_TERMS) &&
+      'matchDistinctTerms' in this.source && this.source.matchDistinctTerms) {
+      // Convert the terms mapping to an array of QuadTermName in the order of variables
+      const termNames: any[] = operation.variables.map(variable => operation.terms[variable.value]);
+
+      const rawStream = this.source.matchDistinctTerms(termNames);
+      const it: AsyncIterator<RDF.Term[]> = rawStream instanceof AsyncIterator ?
+        rawStream :
+        wrapAsyncIterator<RDF.Term[]>(rawStream, { autoStart: false });
+      const bs = it.map<RDF.Bindings>(terms => this.bindingsFactory.bindings(
+        operation.variables.map((variable, index) => [ variable, terms[index] ]),
+      ));
+      bs.setProperty('metadata', {
+        state: new MetadataValidationState(),
+        cardinality: {
+          type: 'exact',
+          value: this.source.countDistinctTerms!(termNames),
+        },
+        // Force requestTime to zero, since this will be free for future calls, as we're fully indexed at this stage.
+        requestTime: 0,
+        variables: operation.variables.map(variable => ({ variable, canBeUndef: false })),
       });
       return bs;
     }

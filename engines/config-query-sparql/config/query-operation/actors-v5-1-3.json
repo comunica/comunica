@@ -14,6 +14,7 @@
     "ccqs:config/query-operation/actors/query/join.json",
     "ccqs:config/query-operation/actors/query/leftjoin.json",
     "ccqs:config/query-operation/actors/query/minus.json",
+    "ccqs:config/query-operation/actors/query/nodes.json",
     "ccqs:config/query-operation/actors/query/nop.json",
     "ccqs:config/query-operation/actors/query/orderby.json",
     "ccqs:config/query-operation/actors/query/project.json",
