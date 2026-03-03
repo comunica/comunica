@@ -186,7 +186,7 @@ export type Nodes = Opened<NodesUnopened>;
  * A non-standard operator to represent distinct values of specific terms.
  * It returns distinct combinations of the specified quad term positions.
  */
-export interface DistinctTermsUnopened extends UnaryOperationBase {
+export interface DistinctTermsUnopened extends BaseOperation {
   type: TypesComunica.DISTINCT_TERMS;
   variables: RDF.Variable[];
   terms: Record<string, QuadTermName>;

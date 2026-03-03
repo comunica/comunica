@@ -30,8 +30,9 @@ describe('QuerySourceRdfJs', () => {
   });
 
   describe('getSelectorShape', () => {
-    it('should return a selector shape when indexNodes is false', async() => {
+    it('should return a selector shape when indexNodes and indexDistinctTerms are false', async() => {
       store = RdfStore.createDefault();
+      store.features.indexDistinctTerms = false;
       source = new QuerySourceRdfJs(store, DF, BF);
       await expect(source.getSelectorShape()).resolves.toEqual({
         type: 'operation',
@@ -47,13 +48,7 @@ describe('QuerySourceRdfJs', () => {
       });
     });
 
-    it('should return a selector shape with nodes when indexNodes is true', async() => {
-      // Create a mock store with indexNodes feature
-      const mockStore = {
-        match: jest.fn(),
-        features: { indexNodes: true },
-      };
-      source = new QuerySourceRdfJs(mockStore, DF, BF);
+    it('should return a selector shape', async() => {
       await expect(source.getSelectorShape()).resolves.toEqual({
         type: 'disjunction',
         children: [
@@ -74,6 +69,13 @@ describe('QuerySourceRdfJs', () => {
             operation: {
               operationType: 'type',
               type: TypesComunica.NODES,
+            },
+          },
+          {
+            type: 'operation',
+            operation: {
+              operationType: 'type',
+              type: TypesComunica.DISTINCT_TERMS,
             },
           },
         ],
@@ -918,28 +920,6 @@ describe('QuerySourceRdfJs', () => {
       beforeEach(() => {
         store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.defaultGraph()));
         store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o2'), DF.namedNode('g2')));
-        // Add matchNodes and countNodes to the store since RdfStore.createDefault() no longer includes them
-        (<any> store).features = { ...(<any> store).features, indexNodes: true };
-        (<any> store).matchNodes = (graph: any) => {
-          const quads = Array.from(store.match(undefined, undefined, undefined, graph));
-          const nodes = new Set<any>();
-          for (const quad of quads) {
-            nodes.add(quad.subject);
-            nodes.add(quad.object);
-          }
-          return new ArrayIterator([...nodes].map(node => [ graph, node ]));
-        };
-        (<any> store).countNodes = (graph: any) => {
-          const quads = Array.from(store.match(undefined, undefined, undefined, graph));
-          const nodes = new Set<any>();
-          for (const quad of quads) {
-            nodes.add(quad.subject);
-            nodes.add(quad.object);
-          }
-          return nodes.size;
-        };
-        // Re-create source with updated store
-        source = new QuerySourceRdfJs(store, DF, BF);
       });
 
       it('should return nodes in the default graph', async() => {

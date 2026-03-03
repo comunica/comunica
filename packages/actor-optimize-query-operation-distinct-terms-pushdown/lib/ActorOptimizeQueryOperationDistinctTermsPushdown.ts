@@ -3,11 +3,12 @@ import type {
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
-import { failTest, passTestVoid } from '@comunica/core';
+import { passTestVoid } from '@comunica/core';
+import type { FragmentSelectorShape, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
-import { doesShapeAcceptOperation } from '@comunica/utils-query-operation';
+import { assignOperationSource, doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { QuadTermName } from 'rdf-terms';
 
@@ -17,67 +18,85 @@ import type { QuadTermName } from 'rdf-terms';
  * This actor rewrites SELECT DISTINCT queries to use the DistinctTerms operator
  * when querying a single source that supports it.
  */
-export class ActorOptimizeQueryOperationDistinctTerms extends ActorOptimizeQueryOperation {
-  public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
-    // Only optimize if we're querying over a single source
-    const querySources = action.context.get(KeysQueryOperation.querySources);
-    if (!querySources || querySources.length !== 1) {
-      return failTest('Only applies to single source queries');
-    }
-
+export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptimizeQueryOperation {
+  public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
-    const querySources = action.context.get(KeysQueryOperation.querySources)!;
-    const source = querySources[0];
-    const selectorShape = await source.source.getSelectorShape(action.context);
+
+    // Collect selector shapes of all operations
+    const sources = this.getSources(action.operation);
+    // eslint-disable-next-line ts/no-unnecessary-type-assertion
+    const sourceShapes = new Map(<[IQuerySourceWrapper, FragmentSelectorShape][]> await Promise.all(sources
+      .map(async source => [
+        source,
+        await source.source.getSelectorShape(source.context ? action.context.merge(source.context) : action.context),
+      ])));
 
     const operation = algebraUtils.mapOperation(action.operation, {
-      [Algebra.Types.PROJECT]: {
+      [Algebra.Types.DISTINCT]: {
         preVisitor: () => ({ continue: false }),
-        transform: (projectOp: Algebra.Project) => {
-          // Check if the Project wraps a Distinct operation
-          if (!isKnownOperation(projectOp.input, Algebra.Types.DISTINCT)) {
-            return projectOp;
+        transform: (operation: Algebra.Distinct) => {
+          // Check if the Project wraps a Distinct Pattern
+          let source: IQuerySourceWrapper | undefined;
+          // If we have a JOIN with only one input, rewrite it to bring the sole JOIN child upwards one level.
+          if (isKnownOperation(operation.input, Algebra.Types.PROJECT) &&
+            isKnownOperation(operation.input.input, Algebra.Types.JOIN) &&
+            operation.input.input.input.length === 1) {
+            operation.input.input = operation.input.input.input[0];
           }
-
-          const distinctOp = projectOp.input;
-          const innerOp = distinctOp.input;
-
-          // Only optimize if the inner operation is a pattern
-          if (!isKnownOperation(innerOp, Algebra.Types.PATTERN)) {
-            return projectOp;
+          if (!isKnownOperation(operation.input, Algebra.Types.PROJECT) ||
+            !isKnownOperation(operation.input.input, Algebra.Types.PATTERN) ||
+            // eslint-disable-next-line no-cond-assign
+            !(source = getOperationSource(operation.input.input))) {
+            return operation;
           }
-
-          const pattern = innerOp;
 
           // Check if the projected variables can be mapped to quad terms
-          const termsMapping = this.mapVariablesToTerms(projectOp.variables, pattern);
+          const termsMapping = this.mapVariablesToTerms(operation.input.variables, operation.input.input);
           if (!termsMapping) {
-            return projectOp;
+            return operation;
           }
 
-          // Create the DistinctTerms operator (replaces the entire PROJECT(DISTINCT(PATTERN)))
+          // Create the DistinctTerms operator (replaces the entire DISTINCT(PROJECT(PATTERN))
           const distinctTermsOp = algebraFactory.createDistinctTerms(
-            pattern,
-            projectOp.variables,
+            operation.input.variables,
             termsMapping,
           );
 
           // Check if the source supports this operation
-          if (!doesShapeAcceptOperation(selectorShape, distinctTermsOp)) {
-            return projectOp;
+          if (!doesShapeAcceptOperation(sourceShapes.get(source)!, distinctTermsOp)) {
+            return operation;
           }
 
-          return distinctTermsOp;
+          return assignOperationSource(distinctTermsOp, source);
         },
       },
     });
 
     return { operation, context: action.context };
+  }
+
+  /**
+   * Collected all sources that are defined within the given operation of children recursively.
+   * @param operation An operation.
+   */
+  public getSources(operation: Algebra.Operation): IQuerySourceWrapper[] {
+    const sources = new Set<IQuerySourceWrapper>();
+    const sourceAdder = (subOperation: Algebra.Operation): boolean => {
+      const src = getOperationSource(subOperation);
+      if (src) {
+        sources.add(src);
+      }
+      return false;
+    };
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.PATTERN]: { visitor: sourceAdder },
+    });
+    return [ ...sources ];
   }
 
   /**

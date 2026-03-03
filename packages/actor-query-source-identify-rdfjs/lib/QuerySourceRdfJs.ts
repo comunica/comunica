@@ -103,10 +103,8 @@ export class QuerySourceRdfJs implements IQuerySource {
   }
 
   public queryBindings(operation: Algebra.Operation, context: IActionContext): BindingsStream {
-    if (isKnownOperation(operation, TypesComunica.NODES)) {
-      if (!('matchNodes' in this.source && this.source.matchNodes)) {
-        throw new Error('QuerySourceRdfJs does not support nodes operations on this source');
-      }
+    if (isKnownOperation(operation, TypesComunica.NODES) &&
+      'matchNodes' in this.source && this.source.matchNodes) {
       const rawStream = this.source.matchNodes(operation.graph);
       const isGraphVariable = operation.graph.termType === 'Variable';
       const it: AsyncIterator<[ RDF.Term, RDF.Term ]> = rawStream instanceof AsyncIterator ?
@@ -132,14 +130,11 @@ export class QuerySourceRdfJs implements IQuerySource {
       return bs;
     }
 
-    if (isKnownOperation(operation, TypesComunica.DISTINCT_TERMS)) {
-      if (!('matchDistinctTerms' in this.source && this.source.matchDistinctTerms)) {
-        throw new Error('QuerySourceRdfJs does not support distinct terms operations on this source');
-      }
-      
+    if (isKnownOperation(operation, TypesComunica.DISTINCT_TERMS) &&
+      'matchDistinctTerms' in this.source && this.source.matchDistinctTerms) {
       // Convert the terms mapping to an array of QuadTermName in the order of variables
       const termNames: any[] = operation.variables.map(variable => operation.terms[variable.value]);
-      
+
       const rawStream = this.source.matchDistinctTerms(termNames);
       const it: AsyncIterator<RDF.Term[]> = rawStream instanceof AsyncIterator ?
         rawStream :

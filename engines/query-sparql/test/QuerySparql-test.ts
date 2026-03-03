@@ -2637,7 +2637,7 @@ CONSTRUCT {
       ]);
 
       // The inner SELECT DISTINCT should have been optimized
-      expect(matchDistinctTermsSpy).toHaveBeenCalled();
+      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
     });
   });
 
