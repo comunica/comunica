@@ -1,0 +1,125 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^5.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-describe-to-constructs-subject/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-assign-sources-exhaustive/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-bgp/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-bgp-to-join/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-connected/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-prune-empty-source-operations/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-leftjoin-expression-pushdown/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-filter-pushdown/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-distinct-terms-pushdown/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-group-sources/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-rewrite-add/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-rewrite-copy/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-rewrite-move/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-construct-distinct/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-query-source-identify/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-query-source-skolemize/^5.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#rewrite-copy",
+      "@type": "ActorOptimizeQueryOperationRewriteCopy"
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#rewrite-move",
+      "@type": "ActorOptimizeQueryOperationRewriteMove"
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#rewrite-add",
+      "@type": "ActorOptimizeQueryOperationRewriteAdd"
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#describe-to-constructs-subject",
+      "@type": "ActorOptimizeQueryOperationDescribeToConstructsSubject",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-identify" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-identify",
+      "@type": "ActorOptimizeQueryOperationQuerySourceIdentify",
+      "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" },
+      "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
+      "beforeActors": { "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-skolemize" }
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-skolemize",
+      "@type": "ActorOptimizeQueryOperationQuerySourceSkolemize",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#assign-sources-exhaustive" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#assign-sources-exhaustive",
+      "@type": "ActorOptimizeQueryOperationAssignSourcesExhaustive",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#join-bgp" },
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#distinct-terms-pushdown" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#join-bgp",
+      "@type": "ActorOptimizeQueryOperationJoinBgp",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#bgp-to-join" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#bgp-to-join",
+      "@type": "ActorOptimizeQueryOperationBgpToJoin",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#join-connected" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#join-connected",
+      "@type": "ActorOptimizeQueryOperationJoinConnected",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#prune-empty-source-operations" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#prune-empty-source-operations",
+      "@type": "ActorOptimizeQueryOperationPruneEmptySourceOperations",
+      "useAskIfSupported": false,
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#filter-pushdown" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#leftjoin-expression-pushdown",
+      "@type": "ActorOptimizeQueryOperationLeftjoinExpressionPushdown",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#filter-pushdown" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#filter-pushdown",
+      "@type": "ActorOptimizeQueryOperationFilterPushdown",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#group-sources" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#distinct-terms-pushdown",
+      "@type": "ActorOptimizeQueryOperationDistinctTermsPushdown",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#group-sources" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#group-sources",
+      "@type": "ActorOptimizeQueryOperationGroupSources"
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#construct-distinct",
+      "@type": "ActorOptimizeQueryOperationConstructDistinct"
+    }
+  ]
+}

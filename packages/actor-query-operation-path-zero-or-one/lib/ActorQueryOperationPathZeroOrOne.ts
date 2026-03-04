@@ -75,26 +75,8 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     let bindingsStream: BindingsStream;
     if (operation.subject.termType === 'Variable' && operation.object.termType === 'Variable') {
       // Both subject and object are variables
-      // To determine the "Zero" part, we
-      // query { ?s ?p ?x } UNION { ?x ?p ?s } , to get all possible namedNodes in de the db
-      const varP = this.generateVariable(dataFactory, operation, 'p');
-      const varX = this.generateVariable(dataFactory, operation, 'x');
-      const bindingsZero = getSafeBindings(
-        await this.mediatorQueryOperation.mediate({
-          context,
-          operation: algebraFactory.createUnion([
-            this.assignPatternSources(algebraFactory, algebraFactory
-              .createPattern(operation.subject, varP, varX, operation.graph), sources),
-            this.assignPatternSources(algebraFactory, algebraFactory
-              .createPattern(varX, varP, operation.subject, operation.graph), sources),
-          ]),
-        }),
-      ).bindingsStream.map(bindings => bindings
-        .delete(varP)
-        .delete(varX)
-        .set(<RDF.Variable> operation.object, bindings.get(<RDF.Variable> operation.subject)!));
       bindingsStream = new UnionIterator([
-        bindingsZero,
+        (await this.getNodes(operation, context, algebraFactory, sources)).bindingsStream,
         bindingsOne.bindingsStream,
       ], { autoStart: false });
     } else {

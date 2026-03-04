@@ -1,4 +1,4 @@
-import type { Algebra } from '@comunica/utils-algebra';
+import type { Algebra, TypesComunica } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { BindingsStream } from './Bindings';
@@ -178,7 +178,7 @@ export type FragmentSelectorShape = {
    */
   operation: {
     operationType: 'type';
-    type: Algebra.Types;
+    type: Algebra.Types | TypesComunica;
   } | {
     operationType: 'pattern';
     pattern: Algebra.Operation;

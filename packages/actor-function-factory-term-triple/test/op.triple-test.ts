@@ -3,7 +3,6 @@ import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTab
 import { ActorFunctionFactoryTermTriple } from '../lib';
 
 describe('evaluation of \'TRIPLE\'', () => {
-  // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#triple-function
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermTriple(args),
@@ -14,6 +13,13 @@ describe('evaluation of \'TRIPLE\'', () => {
     testArray: [
       [ '<ex:a>', '<ex:b>', '<ex:c>', '<< <ex:a> <ex:b> <ex:c> >>' ],
       [ '<ex:a>', '<ex:b>', '"123"', '<< <ex:a> <ex:b> "123" >>' ],
+      [ '<ex:a>', '<ex:b>', '<<( <ex:a> <ex:b> <ex:c> )>>', '<< <ex:a> <ex:b> << <ex:a> <ex:b> <ex:c> >> >>' ],
+    ],
+    errorArray: [
+      [ '"literal"', '<ex:b>', '<ex:c>', 'Subjects in triple terms must either be named nodes or blank nodes' ],
+      [ '<<( <ex:a> <ex:b> <ex:c> )>>', '<ex:b>', '<ex:c>', `Subjects in triple terms must either be named nodes or blank nodes` ],
+      [ '<ex:a>', '"literal"', '<ex:c>', 'Predicates in triple terms must be named nodes' ],
+      [ '<ex:a>', '<<( <ex:a> <ex:b> <ex:c> )>>', '<ex:c>', 'Predicates in triple terms must be named nodes' ],
     ],
   });
 });
