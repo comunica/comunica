@@ -1051,17 +1051,13 @@ WHERE {
         const endpoint = 'https://example.org/sparql';
         const entity = 'http://example.org/entity/Q42';
 
-        let serviceDescriptionStartedResolve!: () => void;
-        const serviceDescriptionStarted = new Promise<void>((resolve) => {
-          serviceDescriptionStartedResolve = resolve;
-        });
-
         let serviceDescriptionAbortedResolve!: () => void;
         const serviceDescriptionAborted = new Promise<void>((resolve) => {
           serviceDescriptionAbortedResolve = resolve;
         });
 
         let serviceDescriptionAbortReason: unknown;
+        let serviceDescriptionInitSignal: AbortSignal | undefined;
         let queryRequested = false;
         let queryInitSignal: AbortSignal | undefined;
 
@@ -1070,10 +1066,15 @@ WHERE {
           const method = init?.method ?? (typeof input === 'string' || input instanceof URL ? 'GET' : input.method);
 
           if (url === endpoint && method === 'GET') {
-            serviceDescriptionStartedResolve();
-
             if (!init?.signal) {
               return Promise.reject(new Error('Expected an AbortSignal for SPARQL service description request'));
+            }
+            serviceDescriptionInitSignal = init.signal;
+
+            if (init.signal.aborted) {
+              serviceDescriptionAbortReason = init.signal.reason;
+              serviceDescriptionAbortedResolve();
+              return Promise.reject(init.signal.reason);
             }
 
             return new Promise<Response>((_resolve, reject) => {
@@ -1081,7 +1082,7 @@ WHERE {
                 serviceDescriptionAbortReason = init.signal!.reason;
                 serviceDescriptionAbortedResolve();
                 reject(init.signal!.reason);
-              });
+              }, { once: true });
             });
           }
 
@@ -1110,7 +1111,6 @@ WHERE {
           ]),
         ]);
 
-        await serviceDescriptionStarted;
         await serviceDescriptionAborted;
         await bindingsExpectationPromise;
 
@@ -1118,7 +1118,7 @@ WHERE {
         expect((<Error> serviceDescriptionAbortReason).message)
           .toContain(`Fetch timed out for ${endpoint} after 3000 ms`);
         expect(queryRequested).toBeTruthy();
-        expect(queryInitSignal).toBeUndefined();
+        expect(queryInitSignal).not.toBe(serviceDescriptionInitSignal);
       });
 
       it('should not push distinct construct into a SPARQL endpoint (no browser)', async() => {

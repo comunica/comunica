@@ -56,14 +56,13 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
       isSparqlServiceDescriptionDereference
     ) {
       const existingTimeout = context.get(KeysHttp.httpTimeout);
-      const effectiveTimeout = existingTimeout && existingTimeout > 0 ?
+      const effectiveTimeout = existingTimeout !== undefined && existingTimeout > 0 ?
         Math.min(existingTimeout, this.sparqlServiceDescriptionTimeout) :
         this.sparqlServiceDescriptionTimeout;
-      let dereferenceContext = context.set(KeysHttp.httpTimeout, effectiveTimeout);
-      if (context.get(KeysHttp.httpBodyTimeout) === undefined) {
-        dereferenceContext = dereferenceContext.set(KeysHttp.httpBodyTimeout, true);
+      if (effectiveTimeout === existingTimeout) {
+        return context;
       }
-      return dereferenceContext;
+      return context.set(KeysHttp.httpTimeout, effectiveTimeout);
     }
     return context;
   }
