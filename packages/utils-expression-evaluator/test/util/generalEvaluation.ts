@@ -4,11 +4,11 @@ import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import { DataFactory } from 'rdf-data-factory';
+import { getMockEEActionContext, getMockEEFactory } from './helpers';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -55,7 +55,11 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
   }
 }
 
-const parser = new SparqlParser();
+const parser = new SparqlParser({
+  lexerConfig: {
+    positionTracking: 'full',
+  },
+});
 function parse(query: string) {
   const parsedSyntax = parser.parse(query);
   const sparqlQuery = <Algebra.Project> toAlgebra(parsedSyntax);
