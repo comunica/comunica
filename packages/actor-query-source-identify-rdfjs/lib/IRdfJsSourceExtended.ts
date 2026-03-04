@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-nodejs-modules
 import type { EventEmitter } from 'node:events';
 import type * as RDF from '@rdfjs/types';
+import type { QuadTermName } from 'rdf-terms';
 
 export interface IRdfJsSourceExtended extends RDF.Source {
   /**
@@ -13,6 +14,14 @@ export interface IRdfJsSourceExtended extends RDF.Source {
      * and must be replaced by `undefined` and filtered by the caller afterwards.
      */
     quotedTripleFiltering?: boolean;
+    /**
+     * If this is true, matchNodes and countNodes must be available.
+     */
+    indexNodes?: boolean;
+    /**
+     * If this is true, matchDistinctTerms and countDistinctTerms must be available.
+     */
+    indexDistinctTerms?: boolean;
   };
 
   /**
@@ -47,4 +56,35 @@ export interface IRdfJsSourceExtended extends RDF.Source {
     object: RDF.Term,
     graph: RDF.Term,
   ) => EventEmitter;
+
+  /**
+   * Returns a stream that produces all nodes as terms in the given graph.
+   * Nodes are all terms that are either a subject or object within the graph.
+   *
+   * This will only be used if `features.indexNodes` is true.
+   */
+  matchNodes?: (graph: RDF.Term) => EventEmitter;
+
+  /**
+   * Returns the number of nodes in the given graph.
+   * Nodes are all terms that are either a subject or object within the graph.
+   *
+   * This will only be used if `features.indexNodes` is true.
+   */
+  countNodes?: (graph: RDF.Term) => number;
+
+  /**
+   * Returns a stream that produces all distinct combinations of the specified terms.
+   * The stream produces arrays where each element corresponds to a term in the termNames array.
+   *
+   * This will only be used if `features.indexDistinctTerms` is true.
+   */
+  matchDistinctTerms?: (termNames: QuadTermName[]) => EventEmitter;
+
+  /**
+   * Returns the number of distinct combinations of the specified terms.
+   *
+   * This will only be used if `features.indexDistinctTerms` is true.
+   */
+  countDistinctTerms?: (termNames: QuadTermName[]) => number;
 }

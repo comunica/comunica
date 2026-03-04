@@ -36,7 +36,9 @@
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
+    "@rdfjs/types": "*",
     "@traqula/algebra-transformations-1-2": "^1.0.1",
-    "@traqula/core": "^1.0.0"
+    "@traqula/core": "^1.0.0",
+    "rdf-terms": "^2.0.0"
   }
 }
