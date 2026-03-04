@@ -273,6 +273,28 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
         expect((<any> cachePolicy).cachePolicy).toBe('CACHEPOLICY');
       });
 
+      it('should default sparqlServiceDescriptionTimeout to 3000 when undefined', async() => {
+        const actorWithoutTimeout = new ActorQuerySourceDereferenceLinkHypermedia({
+          name: 'actor',
+          bus,
+          mediatorDereferenceRdf,
+          mediatorMetadata,
+          mediatorMetadataExtract,
+          mediatorMetadataAccumulate,
+          mediatorQuerySourceIdentifyHypermedia,
+        });
+
+        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
+
+        await actorWithoutTimeout.run({
+          link: { url: 'https://example.org/sparql' },
+          context: new ActionContext(),
+        });
+
+        const dereferenceCall = dereferenceSpy.mock.calls[0][0];
+        expect(dereferenceCall.context.get(KeysHttp.httpTimeout)).toBe(3_000);
+      });
+
       it('should apply a timeout to SPARQL service description dereferences', async() => {
         const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
         const identifySpy = jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
