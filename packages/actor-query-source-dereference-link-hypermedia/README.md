@@ -33,7 +33,8 @@ After installing, this package can be added to your engine's configuration as fo
       "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
       "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" },
       "mediatorMetadataAccumulate": { "@id": "urn:comunica:default:rdf-metadata-accumulate/mediators#main" },
-      "mediatorQuerySourceIdentifyHypermedia": { "@id": "urn:comunica:default:query-source-identify-hypermedia/mediators#main" }
+      "mediatorQuerySourceIdentifyHypermedia": { "@id": "urn:comunica:default:query-source-identify-hypermedia/mediators#main" },
+      "sparqlServiceDescriptionTimeout": 3000
     }
   ]
 }
@@ -46,3 +47,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `mediatorMetadataExtract`: A mediator over the [Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-metadata-extract).
 * `mediatorMetadataAccumulate`: A mediator over the [Metadata Accumulatebus](https://github.com/comunica/comunica/tree/master/packages/bus-metadata-accumulate).
 * `mediatorQuerySourceIdentifyHypermedia`: A mediator over the [Query Source Identify Hypermedia bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-identify-hypermedia).
+* `sparqlServiceDescriptionTimeout`: Timeout in ms for dereferencing SPARQL service descriptions. Defaults to `3000`.

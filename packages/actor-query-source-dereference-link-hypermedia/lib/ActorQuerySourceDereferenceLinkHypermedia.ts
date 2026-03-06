@@ -11,10 +11,10 @@ import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
-import { KeysStatistics } from '@comunica/context-entries';
+import { KeysHttp, KeysStatistics } from '@comunica/context-entries';
 import type { TestResult, IActorTest } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { ICachePolicy, MetadataBindings } from '@comunica/types';
+import type { IActionContext, ICachePolicy, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
 import { QuerySourceCachePolicyDereferenceWrapper } from './QuerySourceCachePolicyDereferenceWrapper';
@@ -28,6 +28,7 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
   public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   public readonly mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   public readonly mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia;
+  public readonly sparqlServiceDescriptionTimeout: number;
 
   public constructor(args: IActorQuerySourceDereferenceLinkHypermediaArgs) {
     super(args);
@@ -36,10 +37,34 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     this.mediatorMetadataExtract = args.mediatorMetadataExtract;
     this.mediatorMetadataAccumulate = args.mediatorMetadataAccumulate;
     this.mediatorQuerySourceIdentifyHypermedia = args.mediatorQuerySourceIdentifyHypermedia;
+    this.sparqlServiceDescriptionTimeout = args.sparqlServiceDescriptionTimeout ?? 3000;
   }
 
   public async test(_action: IActionQuerySourceDereferenceLink): Promise<TestResult<IActorTest>> {
     return passTestVoid();
+  }
+
+  protected getDereferenceRdfContext(
+    context: IActionContext,
+    url: string,
+    forceSourceType?: string,
+  ): IActionContext {
+    const isSparqlServiceDescriptionDereference = forceSourceType === 'sparql' ||
+      (!forceSourceType && (url.endsWith('/sparql') || url.endsWith('/sparql/')));
+    if (
+      this.sparqlServiceDescriptionTimeout > 0 &&
+      isSparqlServiceDescriptionDereference
+    ) {
+      const existingTimeout = context.get(KeysHttp.httpTimeout);
+      const effectiveTimeout = existingTimeout !== undefined && existingTimeout > 0 ?
+        Math.min(existingTimeout, this.sparqlServiceDescriptionTimeout) :
+        this.sparqlServiceDescriptionTimeout;
+      if (effectiveTimeout === existingTimeout) {
+        return context;
+      }
+      return context.set(KeysHttp.httpTimeout, effectiveTimeout);
+    }
+    return context;
   }
 
   public async run(action: IActionQuerySourceDereferenceLink): Promise<IActorQuerySourceDereferenceLinkOutput> {
@@ -49,8 +74,9 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     let metadata: Record<string, any>;
     let cachePolicy: ICachePolicy<IActionQuerySourceDereferenceLink> | undefined;
     try {
+      const dereferenceRdfContext = this.getDereferenceRdfContext(context, url, action.link.forceSourceType);
       const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediatorDereferenceRdf
-        .mediate({ context, url });
+        .mediate({ context: dereferenceRdfContext, url });
       url = dereferenceRdfOutput.url;
       if (dereferenceRdfOutput.cachePolicy) {
         cachePolicy = new QuerySourceCachePolicyDereferenceWrapper(dereferenceRdfOutput.cachePolicy);
@@ -142,4 +168,10 @@ export interface IActorQuerySourceDereferenceLinkHypermediaArgs extends IActorQu
    * The hypermedia resolve mediator
    */
   mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia;
+  /**
+   * Timeout in ms for dereferencing SPARQL service descriptions.
+   * @range {integer}
+   * @default {3000}
+   */
+  sparqlServiceDescriptionTimeout?: number;
 }

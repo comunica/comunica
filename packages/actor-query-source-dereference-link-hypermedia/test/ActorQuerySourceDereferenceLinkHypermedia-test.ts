@@ -15,6 +15,7 @@ import type {
   MediatorRdfMetadataAccumulate,
 } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import { KeysHttp } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { ICachePolicy, IQuerySource } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
@@ -124,6 +125,7 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
         mediatorMetadataExtract,
         mediatorMetadataAccumulate,
         mediatorQuerySourceIdentifyHypermedia,
+        sparqlServiceDescriptionTimeout: 3_000,
       });
     });
 
@@ -269,6 +271,104 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
         expect(source).toBe('QUERYSOURCE');
         expect(cachePolicy).toBeInstanceOf(QuerySourceCachePolicyDereferenceWrapper);
         expect((<any> cachePolicy).cachePolicy).toBe('CACHEPOLICY');
+      });
+
+      it('should default sparqlServiceDescriptionTimeout to 3000 when undefined', async() => {
+        const actorWithoutTimeout = new ActorQuerySourceDereferenceLinkHypermedia({
+          name: 'actor',
+          bus,
+          mediatorDereferenceRdf,
+          mediatorMetadata,
+          mediatorMetadataExtract,
+          mediatorMetadataAccumulate,
+          mediatorQuerySourceIdentifyHypermedia,
+        });
+
+        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
+
+        await actorWithoutTimeout.run({
+          link: { url: 'https://example.org/sparql' },
+          context: new ActionContext(),
+        });
+
+        const dereferenceCall = dereferenceSpy.mock.calls[0][0];
+        expect(dereferenceCall.context.get(KeysHttp.httpTimeout)).toBe(3_000);
+      });
+
+      it('should apply a timeout to SPARQL service description dereferences', async() => {
+        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
+        const identifySpy = jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
+
+        const context = new ActionContext();
+        await actor.run({
+          link: { url: 'https://example.org/sparql' },
+          context,
+        });
+
+        expect(dereferenceSpy).toHaveBeenCalledTimes(1);
+        expect(identifySpy).toHaveBeenCalledTimes(1);
+
+        const dereferenceCall = dereferenceSpy.mock.calls[0][0];
+        expect(dereferenceCall.context.get(KeysHttp.httpTimeout)).toBe(3_000);
+
+        const identifyCall = identifySpy.mock.calls[0][0];
+        expect(identifyCall.context.get(KeysHttp.httpTimeout)).toBeUndefined();
+      });
+
+      it('should decrease an existing httpTimeout when dereferencing SPARQL service descriptions', async() => {
+        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
+        const identifySpy = jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
+
+        const context = new ActionContext({ [KeysHttp.httpTimeout.name]: 10_000 });
+        await actor.run({
+          link: { url: 'https://query.wikidata.org/sparql' },
+          context,
+        });
+
+        const dereferenceCall = dereferenceSpy.mock.calls[0][0];
+        expect(dereferenceCall.context.get(KeysHttp.httpTimeout)).toBe(3_000);
+
+        const identifyCall = identifySpy.mock.calls[0][0];
+        expect(identifyCall.context.get(KeysHttp.httpTimeout)).toBe(10_000);
+      });
+
+      it('should not apply a timeout to non-SPARQL dereferences', async() => {
+        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
+
+        await actor.run({
+          link: { url: 'https://example.org/data.ttl' },
+          context: new ActionContext(),
+        });
+
+        const dereferenceCall = dereferenceSpy.mock.calls[0][0];
+        expect(dereferenceCall.context.get(KeysHttp.httpTimeout)).toBeUndefined();
+        expect(dereferenceCall.context.get(KeysHttp.httpBodyTimeout)).toBeUndefined();
+      });
+
+      it('should not apply a timeout when source type is forced to non-SPARQL', async() => {
+        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
+
+        await actor.run({
+          link: { url: 'https://example.org/sparql', forceSourceType: 'file' },
+          context: new ActionContext(),
+        });
+
+        const dereferenceCall = dereferenceSpy.mock.calls[0][0];
+        expect(dereferenceCall.context.get(KeysHttp.httpTimeout)).toBeUndefined();
+        expect(dereferenceCall.context.get(KeysHttp.httpBodyTimeout)).toBeUndefined();
+      });
+
+      it('should not increase an existing httpTimeout when dereferencing SPARQL service descriptions', async() => {
+        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
+
+        const context = new ActionContext({ [KeysHttp.httpTimeout.name]: 1_000 });
+        await actor.run({
+          link: { url: 'https://query.wikidata.org/sparql' },
+          context,
+        });
+
+        const dereferenceCall = dereferenceSpy.mock.calls[0][0];
+        expect(dereferenceCall.context.get(KeysHttp.httpTimeout)).toBe(1_000);
       });
     });
   });
