@@ -3,9 +3,8 @@
   "include": [
     "engines/**/*.ts",
     "jest.config.ts",
-    "karma.conf.ts",
-    "karma.setup.ts",
     "packages/**/*.ts",
+    "playwright.config.ts",
     "performance/**/*.ts"
   ],
   "exclude": [

@@ -141,26 +141,6 @@ module.exports = config([
     },
   },
   {
-    // Karma config and Lerna custom script because they have identical rules
-    files: [
-      'lerna-custom-script.js',
-    ],
-    rules: {
-      'ts/no-var-requires': 'off',
-      'ts/no-require-imports': 'off',
-      'import/no-nodejs-modules': 'off',
-    },
-  },
-  {
-    // Karma setup script
-    files: [
-      'karma.setup.ts',
-    ],
-    rules: {
-      'import/no-extraneous-dependencies': 'off',
-    },
-  },
-  {
     files: [
       'eslint.config.js',
     ],

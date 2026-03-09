@@ -24,6 +24,8 @@ yarn-error.log
 **/benchmarks/**/*.js.map
 **/benchmarks/**/*.d.ts
 coverage
+playwright-report
+test-results
 documentation
 earl.ttl
 componentsjs-error-state.json
