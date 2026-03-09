@@ -988,7 +988,7 @@ SELECT * WHERE {
         expect(called).toBe(0);
       });
 
-      it('with two triple patterns over a paged collection (no browser)', async() => {
+      it('with two triple patterns over a paged collection', async() => {
         const bindingsStream = await engine.queryBindings(`
 SELECT *
 WHERE {
@@ -1017,7 +1017,7 @@ SELECT * WHERE {
         expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
       });*/
 
-      it('on the LOV SPARQL service description (no browser)', async() => {
+      it('on the LOV SPARQL service description', async() => {
         await expect(engine.queryBindings(`
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1031,7 +1031,7 @@ WHERE {
         })).rejects.toThrow('RDF parsing failed');
       });
 
-      it('on the LOV SPARQL service description with property paths (2) (no browser)', async() => {
+      it('on the LOV SPARQL service description with property paths (2)', async() => {
         await expect(engine.queryBindings(`
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -1045,7 +1045,7 @@ WHERE {
         })).rejects.toThrow('RDF parsing failed');
       });
 
-      it('should time out slow SPARQL service description requests and continue processing (no browser)', async() => {
+      it('should time out slow SPARQL service description requests and continue processing', async() => {
         await engine.invalidateHttpCache();
 
         const endpoint = 'https://example.org/sparql';
@@ -1121,7 +1121,7 @@ WHERE {
         expect(queryInitSignal).not.toBe(serviceDescriptionInitSignal);
       });
 
-      it('should not push distinct construct into a SPARQL endpoint (no browser)', async() => {
+      it('should not push distinct construct into a SPARQL endpoint', async() => {
         const quadsStream = await engine.queryQuads(`
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 construct { ?s a dcat:Dataset }
@@ -1135,7 +1135,7 @@ where {
         await expect((quadsStream.toArray())).resolves.toHaveLength(1);
       });
 
-      it('should not push unsupported extension functions into a SPARQL endpoint (no browser)', async() => {
+      it('should not push unsupported extension functions into a SPARQL endpoint', async() => {
         const bindingsStream = await engine.queryBindings(`
 PREFIX dbr: <http://dbpedia.org/resource/>
 PREFIX dbo: <http://dbpedia.org/ontology/>
@@ -1158,7 +1158,7 @@ WHERE {
         await expect((bindingsStream.toArray())).resolves.toHaveLength(1);
       });
 
-      it('on a SPARQL endpoint detected via Server header (no browser)', async() => {
+      it('on a SPARQL endpoint detected via Server header', async() => {
         const result = await engine.queryBindings(`
         SELECT * WHERE {
           ?s ?p ?o.
@@ -2129,7 +2129,7 @@ WHERE {
       });
     });
 
-    describe('logger warning grouping (no browser)', () => {
+    describe('logger warning grouping', () => {
       class TestLogger extends Logger {
         public readonly warnings: string[] = [];
 
@@ -2221,8 +2221,7 @@ CONSTRUCT {
       .toBeRdfIsomorphic(expectedResult);
   });
 
-  // We skip these tests in browsers due to CORS issues
-  describe('foaf ontology broken link (no browser)', () => {
+  describe('foaf ontology broken link', () => {
     it('returns results with link recovery on [using full key]', async() => {
       const result = <QueryBindings> await engine.query(`SELECT * WHERE {
     <http://xmlns.com/foaf/0.1/> a <http://www.w3.org/2002/07/owl#Ontology>.
@@ -2585,7 +2584,7 @@ CONSTRUCT {
     });
   });
 
-  describe('DistinctTerms optimization (no browser)', () => {
+  describe('DistinctTerms optimization', () => {
     it('should optimize SELECT DISTINCT with subject and graph variables', async() => {
       const store = RdfStore.createDefault();
       store.addQuad(DF.quad(
