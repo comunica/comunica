@@ -141,6 +141,8 @@ jobs:
           cache: yarn
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile
+      - name: Build browser bundles
+        run: yarn run build:browser
       - name: Install Playwright browsers
         run: yarn playwright install --with-deps
       - name: Run browser tests
