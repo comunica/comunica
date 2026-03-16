@@ -86,6 +86,6 @@
     "typescript": "^5.9.3",
     "webpack": "^5.0.0",
     "webpack-bundle-analyzer": "^5.0.0",
-    "webpack-cli": "^6.0.0"
+    "webpack-cli": "^7.0.0"
   }
 }
