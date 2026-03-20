@@ -35,7 +35,7 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Context Parameters
 
-* `KeysHttp.httpRetryBodyCount`: The number of retries when a response body stream errors mid-read. Responses are buffered until complete.
-* `KeysHttp.httpRetryBodyDelayFallback`: The fallback retry delay in milliseconds between body retries.
-* `KeysHttp.httpRetryBodyAllowUnsafe`: Allow body retries for non-idempotent methods or non-replayable request bodies.
-* `KeysHttp.httpRetryBodyMaxBytes`: Maximum number of bytes to buffer per attempt. When exceeded, body retries are disabled and the response continues streaming as-is.
+* `KeysHttp.httpRetryBodyCount`: The number of retries when a response body stream errors mid-read. Responses are buffered until complete. This has no default, and must be set to a value greater than `0` to enable body retries.
+* `KeysHttp.httpRetryBodyDelayFallback`: The fallback retry delay in milliseconds between body retries. Defaults to `0`.
+* `KeysHttp.httpRetryBodyAllowUnsafe`: Allow body retries for non-idempotent methods or non-replayable request bodies. Defaults to `false`.
+* `KeysHttp.httpRetryBodyMaxBytes`: The optional maximum number of bytes to buffer per attempt. When exceeded, body retries are disabled and the response continues streaming as-is. By default, this is unset.
