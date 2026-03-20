@@ -128,13 +128,6 @@ jobs:
 
   browsertest:
     name: Browser tests
-    strategy:
-      fail-fast: false
-      matrix:
-        browser:
-          - Chrome
-          - Firefox
-          - Webkit
     runs-on: ubuntu-latest
     steps:
       - name: Ensure line endings are consistent
@@ -148,19 +141,12 @@ jobs:
           cache: yarn
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile
-      - name: Install ${{ matrix.browser }} via Playwright
-        if: startsWith(matrix.browser, 'Webkit')
-        # The @L will convert 'Webkit' into lowercase 'webkit' which is the name Playwright expects.
-        run: yarn playwright install --with-deps ${BROWSER_NAME@L}
-        env:
-          BROWSER_NAME: ${{ matrix.browser }}
+      - name: Build browser bundles
+        run: yarn run build:browser
+      - name: Install Playwright browsers
+        run: yarn playwright install --with-deps
       - name: Run browser tests
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 2
-          max_attempts: 3
-          # The tests will run on 'WebkitHeadless', 'FirefoxHeadless' and 'ChromeHeadless'
-          command: yarn run test:browser --browsers ${{ matrix.browser }}Headless
+        run: yarn run test:browser
 
   coveralls:
     name: Coverage check
