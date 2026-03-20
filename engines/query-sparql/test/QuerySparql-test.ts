@@ -2161,6 +2161,53 @@ WHERE {
         expect(logger.warnings[1]).toMatch(/Error occurred while filtering\. \(\d+ times\)/u);
       });
     });
+
+    describe('HTTP retry body', () => {
+      it('should retry when the response body stream breaks', async() => {
+        const turtle = '<http://example.org/s> <http://example.org/p> <http://example.org/o> .\n';
+        let getRequests = 0;
+        const contentLength = String(Buffer.byteLength(turtle));
+        const url = 'http://example.org/data.ttl';
+        const fetch = async(_input: RequestInfo | URL, _init?: RequestInit): Promise<Response> => {
+          getRequests++;
+          if (getRequests === 1) {
+            return new Response(new ReadableStream({
+              start(controller) {
+                controller.enqueue(Buffer.from(turtle.slice(0, 20)));
+                setTimeout(() => controller.error(new Error('Body stream error')), 0);
+              },
+            }), {
+              status: 200,
+              headers: {
+                'Content-Type': 'text/turtle',
+                'Content-Length': contentLength,
+              },
+            });
+          }
+
+          return new Response(turtle, {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/turtle',
+              'Content-Length': contentLength,
+            },
+          });
+        };
+
+        await expect(arrayifyStream(await engine.queryQuads('CONSTRUCT WHERE { ?s ?p ?o }', {
+          sources: [ url ],
+          fetch,
+          httpRetryBodyCount: 1,
+        }))).resolves.toBeRdfIsomorphic([
+          DF.quad(
+            DF.namedNode('http://example.org/s'),
+            DF.namedNode('http://example.org/p'),
+            DF.namedNode('http://example.org/o'),
+          ),
+        ]);
+        expect(getRequests).toBe(2);
+      });
+    });
   });
 
   it('recursive triple term creation', async() => {

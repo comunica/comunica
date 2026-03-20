@@ -184,6 +184,7 @@
     "@comunica/actor-http-limit-rate": "^5.1.3",
     "@comunica/actor-http-proxy": "^5.1.3",
     "@comunica/actor-http-retry": "^5.1.3",
+    "@comunica/actor-http-retry-body": "^5.1.3",
     "@comunica/actor-http-wayback": "^5.1.3",
     "@comunica/actor-init-query": "^5.1.3",
     "@comunica/actor-optimize-query-operation-assign-sources-exhaustive": "^5.1.3",

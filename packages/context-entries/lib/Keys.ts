@@ -83,6 +83,25 @@ export const KeysHttp = {
    */
   httpRetryStatusCodes: new ActionContextKey<number[]>('@comunica/bus-http:http-retry-status-codes'),
   /**
+   * Number of retries to make when the response body stream errors mid-read.
+   * Response bodies are buffered per attempt (unless disabled by `httpRetryBodyMaxBytes`)
+   * to avoid emitting partial data to downstream parsers.
+   */
+  httpRetryBodyCount: new ActionContextKey<number>('@comunica/bus-http:http-retry-body-count'),
+  /**
+   * The fallback retry delay in milliseconds between body retries.
+   */
+  httpRetryBodyDelayFallback: new ActionContextKey<number>('@comunica/bus-http:http-retry-body-delay-fallback'),
+  /**
+   * Allow body retries for non-idempotent methods or non-replayable request bodies.
+   */
+  httpRetryBodyAllowUnsafe: new ActionContextKey<boolean>('@comunica/bus-http:http-retry-body-allow-unsafe'),
+  /**
+   * Maximum number of bytes to buffer when retrying response body streams.
+   * When exceeded, body retries are disabled and the response will continue streaming as-is.
+   */
+  httpRetryBodyMaxBytes: new ActionContextKey<number>('@comunica/bus-http:http-retry-body-max-bytes'),
+  /**
    * An abort signal for aborting pending HTTP requests.
    */
   httpAbortSignal: new ActionContextKey<AbortSignal>('@comunica/bus-http:http-abort-controller'),
