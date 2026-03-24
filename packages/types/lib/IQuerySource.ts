@@ -32,7 +32,14 @@ export interface IQuerySourceTraverse {
   context?: IActionContext | Record<string, any>;
 }
 
-export type QuerySourceUnidentifiedExpanded = IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized;
+export interface IQuerySourceCompositeFile {
+  type: 'compositefile';
+  value: string[];
+  context?: IActionContext;
+}
+
+export type QuerySourceUnidentifiedExpanded =
+  IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized | IQuerySourceCompositeFile;
 export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | RDF.DatasetCore |
 QuerySourceUnidentifiedExpanded | IQuerySourceUnidentifiedExpandedRawContext | IQuerySourceTraverse;
 
