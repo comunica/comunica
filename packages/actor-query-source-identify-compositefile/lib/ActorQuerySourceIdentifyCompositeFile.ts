@@ -56,7 +56,7 @@ export class ActorQuerySourceIdentifyCompositeFile extends ActorQuerySourceIdent
       });
 
       // Get all quads from this source using a wildcard quad pattern
-      const quadStream = querySource.source.queryQuads(
+      const sourceQuadStream = querySource.source.queryQuads(
         AF.createPattern(
           dataFactory.variable('s'),
           dataFactory.variable('p'),
@@ -68,7 +68,7 @@ export class ActorQuerySourceIdentifyCompositeFile extends ActorQuerySourceIdent
 
       // Import quads into the combined store
       await new Promise<void>((resolve, reject) => {
-        store.import(<RDF.Stream<RDF.Quad>><unknown> quadStream)
+        store.import(<RDF.Stream<RDF.Quad>><unknown> sourceQuadStream)
           .on('error', reject)
           .once('end', resolve);
       });

@@ -32,6 +32,10 @@ export interface IQuerySourceTraverse {
   context?: IActionContext | Record<string, any>;
 }
 
+/**
+ * A composite file source that combines multiple file URLs into a single queryable source.
+ * All files are loaded and merged into one in-memory RDF store before querying.
+ */
 export interface IQuerySourceCompositeFile {
   type: 'compositefile';
   value: string[];

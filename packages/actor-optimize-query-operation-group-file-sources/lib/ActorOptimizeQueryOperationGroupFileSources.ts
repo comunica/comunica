@@ -85,9 +85,9 @@ export class ActorOptimizeQueryOperationGroupFileSources extends ActorOptimizeQu
 
           // Use the first file child as a template (remove its source annotation)
           // All file children represent the same pattern – only differ in source annotation
-          const templateChild = { ...fileChildren[0] };
-          removeOperationSource(templateChild);
-          const compositeChild = assignOperationSource(templateChild, compositeWrapper);
+          const groupedPattern = { ...fileChildren[0] };
+          removeOperationSource(groupedPattern);
+          const compositeChild = assignOperationSource(groupedPattern, compositeWrapper);
 
           const newChildren = [ compositeChild, ...otherChildren ];
           if (newChildren.length === 1) {

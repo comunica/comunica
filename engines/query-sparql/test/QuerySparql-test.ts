@@ -1254,7 +1254,7 @@ SELECT ?person ?name ?book ?title {
         });
         const groupedBindings = await groupedResult.toArray();
 
-        expect(compositeBindings.length).toBe(groupedBindings.length);
+        expect(compositeBindings).toHaveLength(groupedBindings.length);
         expect(compositeBindings.length).toBeGreaterThan(0);
       });
     });
