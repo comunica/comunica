@@ -1,11 +1,8 @@
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
-import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationGroupFileSources } from '../lib/ActorOptimizeQueryOperationGroupFileSources';
 import '@comunica/utils-jest';
-
-const DF = new DataFactory();
 
 function createMockSource(filterFactor: number, referenceValue: any = 'http://example.org/source'): IQuerySourceWrapper {
   return <any> {
@@ -56,7 +53,7 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
     });
 
     describe('run', () => {
-      const ctx = new ActionContext({ [Symbol()]: DF });
+      const ctx = new ActionContext();
 
       it('should not modify context when there are no sources', async() => {
         const opIn = <any> { type: 'nop' };
@@ -170,7 +167,7 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
         const fileSource1 = createMockSource(0, 'http://example.org/file1.ttl');
         const fileSource2 = createMockSource(0, 'http://example.org/file2.ttl');
         const context = ctx.set(KeysQueryOperation.querySources, [ fileSource1, fileSource2 ]);
-        const opIn = <any> { type: 'join', input: [] };
+        const opIn = <any> { type: 'join', input: []};
 
         const { operation } = await actor.run({ operation: opIn, context });
 
