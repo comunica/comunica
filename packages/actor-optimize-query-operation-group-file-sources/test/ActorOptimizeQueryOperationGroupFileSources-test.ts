@@ -4,11 +4,12 @@ import type { IQuerySourceWrapper } from '@comunica/types';
 import { ActorOptimizeQueryOperationGroupFileSources } from '../lib/ActorOptimizeQueryOperationGroupFileSources';
 import '@comunica/utils-jest';
 
-function createMockSource(filterFactor: number, referenceValue: any = 'http://example.org/source'): IQuerySourceWrapper {
+function createMockSource(referenceValue: any = 'http://example.org/source', forceSourceType?: string): IQuerySourceWrapper {
   return <any> {
     source: {
       referenceValue,
-      getFilterFactor: jest.fn().mockResolvedValue(filterFactor),
+      firstLink: forceSourceType === undefined ? undefined : { url: referenceValue, forceSourceType },
+      getFilterFactor: jest.fn(),
       getSelectorShape: jest.fn(),
       queryBindings: jest.fn(),
       queryQuads: jest.fn(),
@@ -16,6 +17,10 @@ function createMockSource(filterFactor: number, referenceValue: any = 'http://ex
       queryVoid: jest.fn(),
     },
   };
+}
+
+function createFileMockSource(referenceValue = 'http://example.org/source'): IQuerySourceWrapper {
+  return createMockSource(referenceValue, 'file');
 }
 
 describe('ActorOptimizeQueryOperationGroupFileSources', () => {
@@ -26,7 +31,7 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
 
-    compositeWrapper = createMockSource(0, 'http://example.org/file1.ttl\nhttp://example.org/file2.ttl');
+    compositeWrapper = createFileMockSource('http://example.org/file1.ttl\nhttp://example.org/file2.ttl');
     mediatorQuerySourceIdentify = {
       mediate: jest.fn().mockResolvedValue({ querySource: compositeWrapper }),
     };
@@ -65,7 +70,7 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
       });
 
       it('should not modify context when there is only 1 file source', async() => {
-        const fileSource = createMockSource(0, 'http://example.org/file1.ttl');
+        const fileSource = createFileMockSource('http://example.org/file1.ttl');
         const context = ctx.set(KeysQueryOperation.querySources, [ fileSource ]);
         const opIn = <any> { type: 'nop' };
 
@@ -77,8 +82,8 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
       });
 
       it('should not modify context when there is only 1 file source among non-file sources', async() => {
-        const fileSource = createMockSource(0, 'http://example.org/file1.ttl');
-        const sparqlSource = createMockSource(1, 'http://example.org/sparql');
+        const fileSource = createFileMockSource('http://example.org/file1.ttl');
+        const sparqlSource = createMockSource('http://example.org/sparql');
         const querySources = [ fileSource, sparqlSource ];
         const context = ctx.set(KeysQueryOperation.querySources, querySources);
         const opIn = <any> { type: 'nop' };
@@ -90,9 +95,24 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
         expect(mediatorQuerySourceIdentify.mediate).not.toHaveBeenCalled();
       });
 
+      it('should not group in-memory sources (no firstLink.forceSourceType)', async() => {
+        // Serialized and RdfJS in-memory sources have no firstLink on their source
+        const inMemorySource1 = createMockSource({});
+        const inMemorySource2 = createMockSource({});
+        const querySources = [ inMemorySource1, inMemorySource2 ];
+        const context = ctx.set(KeysQueryOperation.querySources, querySources);
+        const opIn = <any> { type: 'nop' };
+
+        const { operation, context: ctxOut } = await actor.run({ operation: opIn, context });
+
+        expect(operation).toBe(opIn);
+        expect(ctxOut.get(KeysQueryOperation.querySources)).toBe(querySources);
+        expect(mediatorQuerySourceIdentify.mediate).not.toHaveBeenCalled();
+      });
+
       it('should group 2 file sources into a single compositefile source', async() => {
-        const fileSource1 = createMockSource(0, 'http://example.org/file1.ttl');
-        const fileSource2 = createMockSource(0, 'http://example.org/file2.ttl');
+        const fileSource1 = createFileMockSource('http://example.org/file1.ttl');
+        const fileSource2 = createFileMockSource('http://example.org/file2.ttl');
         const querySources = [ fileSource1, fileSource2 ];
         const context = ctx.set(KeysQueryOperation.querySources, querySources);
         const opIn = <any> { type: 'nop' };
@@ -117,9 +137,9 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
       });
 
       it('should group 3 file sources into a single compositefile source', async() => {
-        const fileSource1 = createMockSource(0, 'http://example.org/file1.ttl');
-        const fileSource2 = createMockSource(0, 'http://example.org/file2.ttl');
-        const fileSource3 = createMockSource(0, 'http://example.org/file3.ttl');
+        const fileSource1 = createFileMockSource('http://example.org/file1.ttl');
+        const fileSource2 = createFileMockSource('http://example.org/file2.ttl');
+        const fileSource3 = createFileMockSource('http://example.org/file3.ttl');
         const querySources = [ fileSource1, fileSource2, fileSource3 ];
         const context = ctx.set(KeysQueryOperation.querySources, querySources);
         const opIn = <any> { type: 'nop' };
@@ -146,9 +166,9 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
       });
 
       it('should group file sources but keep non-file sources', async() => {
-        const fileSource1 = createMockSource(0, 'http://example.org/file1.ttl');
-        const fileSource2 = createMockSource(0, 'http://example.org/file2.ttl');
-        const sparqlSource = createMockSource(1, 'http://example.org/sparql');
+        const fileSource1 = createFileMockSource('http://example.org/file1.ttl');
+        const fileSource2 = createFileMockSource('http://example.org/file2.ttl');
+        const sparqlSource = createMockSource('http://example.org/sparql');
         const querySources = [ fileSource1, fileSource2, sparqlSource ];
         const context = ctx.set(KeysQueryOperation.querySources, querySources);
         const opIn = <any> { type: 'nop' };
@@ -164,8 +184,8 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
       });
 
       it('should return the operation unchanged', async() => {
-        const fileSource1 = createMockSource(0, 'http://example.org/file1.ttl');
-        const fileSource2 = createMockSource(0, 'http://example.org/file2.ttl');
+        const fileSource1 = createFileMockSource('http://example.org/file1.ttl');
+        const fileSource2 = createFileMockSource('http://example.org/file2.ttl');
         const context = ctx.set(KeysQueryOperation.querySources, [ fileSource1, fileSource2 ]);
         const opIn = <any> { type: 'join', input: []};
 
@@ -174,15 +194,15 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
         expect(operation).toBe(opIn);
       });
 
-      it('should call getFilterFactor with the action context', async() => {
-        const fileSource1 = createMockSource(0, 'http://example.org/file1.ttl');
-        const fileSource2 = createMockSource(0, 'http://example.org/file2.ttl');
+      it('should not call getFilterFactor on any source', async() => {
+        const fileSource1 = createFileMockSource('http://example.org/file1.ttl');
+        const fileSource2 = createFileMockSource('http://example.org/file2.ttl');
         const context = ctx.set(KeysQueryOperation.querySources, [ fileSource1, fileSource2 ]);
 
         await actor.run({ operation: <any> { type: 'nop' }, context });
 
-        expect(fileSource1.source.getFilterFactor).toHaveBeenCalledWith(context);
-        expect(fileSource2.source.getFilterFactor).toHaveBeenCalledWith(context);
+        expect(fileSource1.source.getFilterFactor).not.toHaveBeenCalled();
+        expect(fileSource2.source.getFilterFactor).not.toHaveBeenCalled();
       });
     });
   });

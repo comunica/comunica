@@ -14,7 +14,7 @@ import type { IQuerySourceWrapper } from '@comunica/types';
  * A comunica Group File Sources Optimize Query Operation Actor.
  *
  * Optimizes federated queries over file sources by combining multiple
- * file sources (those with a filter factor of 0) into a single 'compositefile' source.
+ * file sources (those identified with forceSourceType 'file') into a single 'compositefile' source.
  * This actor runs after source identification and before source skolemization.
  */
 export class ActorOptimizeQueryOperationGroupFileSources extends ActorOptimizeQueryOperation {
@@ -32,11 +32,11 @@ export class ActorOptimizeQueryOperationGroupFileSources extends ActorOptimizeQu
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const querySources: IQuerySourceWrapper[] = action.context.get(KeysQueryOperation.querySources) ?? [];
 
-    // Determine the filter factor for each source to identify file sources (filter factor === 0)
-    const filterFactors = await Promise.all(
-      querySources.map(wrapper => wrapper.source.getFilterFactor(action.context)),
+    // Identify file sources by checking for forceSourceType === 'file' on the underlying hypermedia source link.
+    // This avoids calling getFilterFactor(), which would trigger lazy source loading (network I/O).
+    const fileSources = querySources.filter(
+      wrapper => (<any> wrapper.source).firstLink?.forceSourceType === 'file',
     );
-    const fileSources = querySources.filter((_, i) => filterFactors[i] === 0);
 
     // Only optimize when there are at least 2 file sources
     if (fileSources.length < 2) {
