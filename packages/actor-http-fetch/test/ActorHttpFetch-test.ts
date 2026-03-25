@@ -147,7 +147,7 @@ describe('ActorHttpFetch', () => {
       const errorHandler = jest.fn();
       const successHandler = jest.fn();
       const promise = actor.run({ input, context: context.set(KeysHttp.httpAbortSignal, abortController.signal) });
-      promise.then(successHandler).catch(errorHandler);
+      await promise.then(successHandler).catch(errorHandler);
       await jest.runAllTimersAsync();
       expect(successHandler).not.toHaveBeenCalled();
       expect(errorHandler).toHaveBeenCalledTimes(1);
@@ -170,7 +170,7 @@ describe('ActorHttpFetch', () => {
       const successHandler = jest.fn();
       const promise = actor
         .run({ input, init, context: context.set(KeysHttp.httpAbortSignal, abortController.signal) });
-      promise.then(successHandler).catch(errorHandler);
+      await promise.then(successHandler).catch(errorHandler);
       await jest.runAllTimersAsync();
       expect(successHandler).not.toHaveBeenCalled();
       expect(errorHandler).toHaveBeenCalledTimes(1);
@@ -191,6 +191,7 @@ describe('ActorHttpFetch', () => {
       jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
       const errorHandler = jest.fn();
       const successHandler = jest.fn();
+
       actor.run({ input, context: contextWithTimeout }).then(successHandler).catch(errorHandler);
       await jest.runAllTimersAsync();
       expect(successHandler).not.toHaveBeenCalled();
@@ -218,6 +219,7 @@ describe('ActorHttpFetch', () => {
       jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockImplementation(args => args);
       const errorHandler = jest.fn();
       const successHandler = jest.fn();
+
       actor.run({ input, init, context: contextWithTimeout }).then(successHandler).catch(errorHandler);
       await jest.runAllTimersAsync();
       expect(successHandler).not.toHaveBeenCalled();
@@ -268,6 +270,7 @@ describe('ActorHttpFetch', () => {
       const responseReader = response.body!.getReader();
       const errorHandler = jest.fn();
       const successHandler = jest.fn();
+
       responseReader.read().then(successHandler).catch(errorHandler);
       await jest.runAllTimersAsync();
       expect(successHandler).not.toHaveBeenCalled();

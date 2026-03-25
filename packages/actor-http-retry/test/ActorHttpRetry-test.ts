@@ -169,7 +169,7 @@ describe('ActorHttpRetry', () => {
       jest.spyOn(Date, 'now').mockReturnValue(0);
       jest.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(retryAfterDate);
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any> callback());
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
       expect(mediatorHttp.mediate).not.toHaveBeenCalled();
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
@@ -228,7 +228,7 @@ describe('ActorHttpRetry', () => {
 
   describe('sleep', () => {
     beforeEach(() => {
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any> callback());
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
     });
 
     it('should sleep the specified amount of milliseconds', async() => {

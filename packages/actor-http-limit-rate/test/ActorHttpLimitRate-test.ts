@@ -62,7 +62,7 @@ describe('ActorHttpLimitRate', () => {
       const duration = 100;
       jest.spyOn(Date, 'now').mockReturnValueOnce(0).mockReturnValueOnce(duration);
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any>callback());
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
       const action = { context: new ActionContext({}), input: url };
       expect(actorHostData.has(host)).toBeFalsy();
       await expect(actor.run(action)).resolves.toEqual(response);
@@ -80,7 +80,7 @@ describe('ActorHttpLimitRate', () => {
       const responseTime = 200;
       jest.spyOn(Date, 'now').mockReturnValueOnce(0).mockReturnValueOnce(responseTime);
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any>callback());
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
       actorHostData.set(host, { latestRequestTimestamp: 0, rateLimited: true, requestInterval: interval });
       const action = { context: new ActionContext({}), input: url };
       await expect(actor.run(action)).resolves.toEqual(response);
@@ -100,7 +100,7 @@ describe('ActorHttpLimitRate', () => {
       (<any>actor).allowOverlap = true;
       jest.spyOn(Date, 'now').mockReturnValueOnce(0).mockReturnValueOnce(responseTime);
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any>callback());
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
       actorHostData.set(host, { latestRequestTimestamp: 0, rateLimited: true, requestInterval: interval });
       const action = { context: new ActionContext({}), input: url };
       await expect(actor.run(action)).resolves.toEqual(response);
@@ -126,7 +126,7 @@ describe('ActorHttpLimitRate', () => {
         .mockReturnValueOnce(0).mockReturnValueOnce(duration1)
         .mockReturnValueOnce(0).mockReturnValueOnce(duration2);
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any>callback());
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
       const action = { context: new ActionContext({}), input: url };
       expect(actorHostData.has(host)).toBeFalsy();
       // First call, when the duration is assigned as the delay
@@ -158,7 +158,7 @@ describe('ActorHttpLimitRate', () => {
         .mockReturnValueOnce(0).mockReturnValueOnce(duration1)
         .mockReturnValueOnce(0).mockReturnValueOnce(duration2);
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any>callback());
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
       const action = { context: new ActionContext({}), input: url };
       expect(actorHostData.has(host)).toBeFalsy();
       // First call, when the duration is assigned as the delay
@@ -185,7 +185,7 @@ describe('ActorHttpLimitRate', () => {
       jest.spyOn(Date, 'now').mockReturnValueOnce(0);
       jest.spyOn(Date, 'now').mockReturnValueOnce(100);
       jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(new Error(errorMessage));
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any>callback());
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
       const action = { context: new ActionContext({}), input: url };
       await expect(actor.run(action)).rejects.toThrow(errorMessage);
       expect(globalThis.setTimeout).not.toHaveBeenCalled();
@@ -194,7 +194,7 @@ describe('ActorHttpLimitRate', () => {
     it('should not mark 404s as failed requests', async() => {
       const response = { ok: false, status: 404 };
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation(callback => <any>callback());
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
       const action = { context: new ActionContext({}), input: url };
       expect(actorHostData.has(host)).toBeFalsy();
       await expect(actor.run(action)).resolves.toEqual(response);

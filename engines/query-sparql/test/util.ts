@@ -38,7 +38,6 @@ export async function fetch(...args: Parameters<typeof fetchFn>): ReturnType<typ
     fs.writeFileSync(pth, JSON.stringify({
       ...res,
       content: await res.text(),
-      // @ts-expect-error
       headers: [ ...res.headers.entries() ],
     }));
   }
