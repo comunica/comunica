@@ -12,6 +12,9 @@ module.exports = function createConfig(packagePath) {
           test: /\.ts$/u,
           loader: 'ts-loader',
           exclude: /node_modules/u,
+          options: {
+            transpileOnly: true,
+          },
         },
       ],
     },
