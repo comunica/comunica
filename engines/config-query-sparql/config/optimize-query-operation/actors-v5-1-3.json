@@ -47,6 +47,12 @@
       "@type": "ActorOptimizeQueryOperationQuerySourceIdentify",
       "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" },
       "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
+      "beforeActors": { "@id": "urn:comunica:default:optimize-query-operation/actors#group-file-sources" }
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#group-file-sources",
+      "@type": "ActorOptimizeQueryOperationGroupFileSources",
+      "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" },
       "beforeActors": { "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-skolemize" }
     },
     {
@@ -89,14 +95,6 @@
       "@id": "urn:comunica:default:optimize-query-operation/actors#prune-empty-source-operations",
       "@type": "ActorOptimizeQueryOperationPruneEmptySourceOperations",
       "useAskIfSupported": false,
-      "beforeActors": [
-        { "@id": "urn:comunica:default:optimize-query-operation/actors#group-file-sources" }
-      ]
-    },
-    {
-      "@id": "urn:comunica:default:optimize-query-operation/actors#group-file-sources",
-      "@type": "ActorOptimizeQueryOperationGroupFileSources",
-      "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" },
       "beforeActors": [
         { "@id": "urn:comunica:default:optimize-query-operation/actors#filter-pushdown" }
       ]

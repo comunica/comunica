@@ -1257,6 +1257,24 @@ SELECT ?person ?name ?book ?title {
         expect(compositeBindings).toHaveLength(groupedBindings.length);
         expect(compositeBindings.length).toBeGreaterThan(0);
       });
+
+      it('should internally use a single compositefile source when grouping file sources', async() => {
+        const url1 = 'https://www.rubensworks.net/';
+        const url2 = 'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/tests/valid/basic-shape-iri.ttl';
+
+        // Explain the physical plan for two individual file sources
+        const result = await engine.explain(`SELECT * WHERE { ?s ?p ?o }`, {
+          sources: [
+            { type: 'file', value: url1 },
+            { type: 'file', value: url2 },
+          ],
+        }, 'physical');
+
+        // The physical plan should show a single composite source, not two separate file sources
+        expect(result.data).toContain(`QuerySourceRdfJs(${url1},${url2})`);
+        // Only one source (SkolemID:0), not two (SkolemID:0 and SkolemID:1)
+        expect(result.data).not.toContain('SkolemID:1');
+      });
     });
 
     describe('property paths', () => {
