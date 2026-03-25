@@ -32,15 +32,16 @@ export class ActorOptimizeQueryOperationGroupFileSources extends ActorOptimizeQu
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const querySources: IQuerySourceWrapper[] = action.context.get(KeysQueryOperation.querySources) ?? [];
 
+    // Only optimize when there are at least 2 sources
+    if (querySources.length < 2) {
+      return { operation: action.operation, context: action.context };
+    }
+
     // Identify file sources
     const fileSources = (await Promise.all(querySources
       .map(async wrapper => ({
         wrapper,
-        // If the source has a forced file type, then we know it's a file,
-        // otherwise, we need to invoke getFilterFactor (which is more expensive due to the HTTP lookup)
-        filterFactor: (<any> wrapper.source).firstLink?.forceSourceType === 'file' ?
-          0 :
-          await wrapper.source.getFilterFactor(action.context),
+        filterFactor: await this.getFilterFactorSafe(wrapper, action.context),
       }))))
       .filter(entry => entry.filterFactor === 0)
       .map(entry => entry.wrapper);
@@ -67,6 +68,20 @@ export class ActorOptimizeQueryOperationGroupFileSources extends ActorOptimizeQu
       operation: action.operation,
       context: action.context.set(KeysQueryOperation.querySources, newQuerySources),
     };
+  }
+
+  private async getFilterFactorSafe(sourceWrapper: IQuerySourceWrapper, context: any): Promise<number | undefined> {
+    const firstLink = (<any> sourceWrapper.source).firstLink;
+    // Only hypermedia sources can represent files.
+    // If the source has a forced file type, then we know it's a file,
+    // otherwise, we need to invoke getFilterFactor (which is more expensive due to the HTTP lookup).
+    if (firstLink === undefined) {
+      return undefined;
+    }
+    if (firstLink.forceSourceType === 'file') {
+      return 0;
+    }
+    return sourceWrapper.source.getFilterFactor(context);
   }
 }
 

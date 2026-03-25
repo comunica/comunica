@@ -122,7 +122,7 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
+          expect(result).toBeRdfIsomorphic(expectedResult);
         });
 
         it('should return the valid result with a json-ld data source', async() => {
@@ -132,7 +132,7 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
+          expect(result).toBeRdfIsomorphic(expectedResult);
         });
 
         it('should return the valid result with no base IRI', async() => {
@@ -160,7 +160,7 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
+          expect(result).toBeRdfIsomorphic(expectedResult);
         });
 
         it('should return the valid result with multiple sources', async() => {
@@ -1271,7 +1271,7 @@ SELECT ?person ?name ?book ?title {
         }, 'physical');
 
         // The physical plan should show a single composite source, not two separate file sources
-        expect(result.data).toContain(`QuerySourceRdfJs(${url1},${url2})`);
+        expect(result.data).toContain(`QuerySourceRdfJs(composite: ${url1},${url2})`);
         // Only one source (SkolemID:0), not two (SkolemID:0 and SkolemID:1)
         expect(result.data).not.toContain('SkolemID:1');
       });

@@ -145,7 +145,7 @@ describe('ActorQuerySourceIdentifyCompositeFile', () => {
         const { source } = result.querySource;
         expect(source).toBeInstanceOf(QuerySourceRdfJs);
         expect(source.referenceValue).toBe('http://example.org/file1.ttl\nhttp://example.org/file2.ttl');
-        expect(source.toString()).toBe(`QuerySourceRdfJs(http://example.org/file1.ttl,http://example.org/file2.ttl)`);
+        expect(source.toString()).toBe(`QuerySourceRdfJs(composite: http://example.org/file1.ttl,http://example.org/file2.ttl)`);
 
         const stream = source.queryBindings(AF.createPattern(v1, v2, v3), context);
         await expect(new Promise((resolve, reject) => {

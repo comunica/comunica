@@ -83,8 +83,10 @@ export class ActorQuerySourceIdentifyCompositeFile extends ActorQuerySourceIdent
       dataFactory,
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
     );
-    querySource.referenceValue = compositeSource.value.join('\n');
-    querySource.toString = () => `QuerySourceRdfJs(composite: ${compositeSource.value.join(',')})`;
+    const sourceValues = compositeSource.value
+      .map(source => typeof source === 'string' ? source : <string> source.source.referenceValue);
+    querySource.referenceValue = sourceValues.join('\n');
+    querySource.toString = () => `QuerySourceRdfJs(composite: ${sourceValues.join(',')})`;
 
     return {
       querySource: {

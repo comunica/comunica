@@ -124,7 +124,7 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
         expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
           querySourceUnidentified: {
             type: 'compositefile',
-            value: [ 'http://example.org/file1.ttl', 'http://example.org/file2.ttl' ],
+            value: [ fileSource1, fileSource2 ],
           },
           context,
         });
@@ -152,9 +152,9 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
           querySourceUnidentified: {
             type: 'compositefile',
             value: [
-              'http://example.org/file1.ttl',
-              'http://example.org/file2.ttl',
-              'http://example.org/file3.ttl',
+              fileSource1,
+              fileSource2,
+              fileSource3,
             ],
           },
           context,
