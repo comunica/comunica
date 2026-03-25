@@ -49,11 +49,15 @@ export class ActorQuerySourceIdentifyCompositeFile extends ActorQuerySourceIdent
     // Create a combined RDF store from all file sources
     const store: RDF.Store = RdfStore.createDefault(true);
 
-    for (const url of compositeSource.value) {
-      const { querySource } = await this.mediatorQuerySourceIdentify.mediate({
-        querySourceUnidentified: { type: 'file', value: url },
-        context: action.context,
-      });
+    for (const source of compositeSource.value) {
+      // TODO: if we would run into performance issues due to this temporary index+query step,
+      //  use a transient query-once index.
+      const querySource = typeof source === 'string' ?
+          (await this.mediatorQuerySourceIdentify.mediate({
+            querySourceUnidentified: { type: 'file', value: source },
+            context: action.context,
+          })).querySource :
+        source;
 
       // Get all quads from this source using a wildcard quad pattern
       const sourceQuadStream = querySource.source.queryQuads(
@@ -80,7 +84,7 @@ export class ActorQuerySourceIdentifyCompositeFile extends ActorQuerySourceIdent
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
     );
     querySource.referenceValue = compositeSource.value.join('\n');
-    querySource.toString = () => `QuerySourceRdfJs(${compositeSource.value.join(',')})`;
+    querySource.toString = () => `QuerySourceRdfJs(composite: ${compositeSource.value.join(',')})`;
 
     return {
       querySource: {

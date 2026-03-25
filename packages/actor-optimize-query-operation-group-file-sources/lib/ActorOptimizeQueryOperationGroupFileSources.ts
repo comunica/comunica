@@ -32,23 +32,27 @@ export class ActorOptimizeQueryOperationGroupFileSources extends ActorOptimizeQu
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const querySources: IQuerySourceWrapper[] = action.context.get(KeysQueryOperation.querySources) ?? [];
 
-    // Identify file sources by checking for forceSourceType === 'file' on the underlying hypermedia source link.
-    // This avoids calling getFilterFactor(), which would trigger lazy source loading (network I/O).
-    const fileSources = querySources.filter(
-      wrapper => (<any> wrapper.source).firstLink?.forceSourceType === 'file',
-    );
+    // Identify file sources
+    const fileSources = (await Promise.all(querySources
+      .map(async wrapper => ({
+        wrapper,
+        // If the source has a forced file type, then we know it's a file,
+        // otherwise, we need to invoke getFilterFactor (which is more expensive due to the HTTP lookup)
+        filterFactor: (<any> wrapper.source).firstLink?.forceSourceType === 'file' ?
+          0 :
+          await wrapper.source.getFilterFactor(action.context),
+      }))))
+      .filter(entry => entry.filterFactor === 0)
+      .map(entry => entry.wrapper);
 
     // Only optimize when there are at least 2 file sources
     if (fileSources.length < 2) {
       return { operation: action.operation, context: action.context };
     }
 
-    // Collect all file URLs from the identified file sources
-    const fileUrls = fileSources.map(wrapper => <string> wrapper.source.referenceValue);
-
     // Create a single compositefile source via the mediator
     const { querySource: compositeWrapper } = await this.mediatorQuerySourceIdentify.mediate({
-      querySourceUnidentified: { type: 'compositefile', value: fileUrls },
+      querySourceUnidentified: { type: 'compositefile', value: fileSources },
       context: action.context,
     });
 
