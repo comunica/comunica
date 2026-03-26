@@ -5,8 +5,8 @@
 An [Optimize Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation) actor
 that optimizes federated queries over multiple file sources by combining them into a single composite file source.
 
-When a query is executed over two or more `file`-type sources, this actor groups them into a single `compositefile` source
-to avoid redundant network requests and improve query performance.
+When a query is executed over two or more `file`-type sources, this actor groups them into a single `compositefile` source.
+This simplifies query planning by reducing the number of later union branches.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

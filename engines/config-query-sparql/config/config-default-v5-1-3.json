@@ -36,7 +36,7 @@
     "ccqs:config/query-serialize/mediators.json",
     "ccqs:config/query-source-dereference-link/actors.json",
     "ccqs:config/query-source-dereference-link/mediators.json",
-    "ccqs:config/query-source-identify/actors.json",
+    "ccqs:config/query-source-identify/actors-v5-1-3.json",
     "ccqs:config/query-source-identify/mediators.json",
     "ccqs:config/query-source-identify-hypermedia/actors-v5-1-0.json",
     "ccqs:config/query-source-identify-hypermedia/mediators.json",
