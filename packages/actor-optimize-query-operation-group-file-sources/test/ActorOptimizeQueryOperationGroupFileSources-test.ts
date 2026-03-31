@@ -1,4 +1,4 @@
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { ActorOptimizeQueryOperationGroupFileSources } from '../lib/ActorOptimizeQueryOperationGroupFileSources';
@@ -49,11 +49,35 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
     });
 
     describe('test', () => {
-      it('should always pass', async() => {
+      it('should pass for non-update operations outside traversal mode', async() => {
         await expect(actor.test({
           operation: <any> { type: 'nop' },
           context: new ActionContext(),
         })).resolves.toPassTestVoid();
+      });
+
+      it('should fail for traversal mode', async() => {
+        await expect(actor.test({
+          operation: <any> { type: 'nop' },
+          context: new ActionContext().set(KeysQuerySourceIdentify.traverse, true),
+        })).resolves.toFailTest('Actor actor does not work in traversal mode.');
+      });
+
+      it.each([
+        'compositeupdate',
+        'deleteinsert',
+        'load',
+        'clear',
+        'create',
+        'drop',
+        'add',
+        'move',
+        'copy',
+      ])('should fail for SPARQL Update operation type %s', async(type: string) => {
+        await expect(actor.test({
+          operation: <any> { type },
+          context: new ActionContext(),
+        })).resolves.toFailTest('Actor actor does not work for SPARQL Update operations.');
       });
     });
 

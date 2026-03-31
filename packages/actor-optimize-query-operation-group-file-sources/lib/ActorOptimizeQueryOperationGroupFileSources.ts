@@ -5,9 +5,9 @@ import type {
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
-import { passTestVoid } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 
 /**
@@ -18,6 +18,18 @@ import type { IQuerySourceWrapper } from '@comunica/types';
  * This actor runs after source identification and before source skolemization.
  */
 export class ActorOptimizeQueryOperationGroupFileSources extends ActorOptimizeQueryOperation {
+  private static readonly updateOperationTypes = new Set<string>([
+    'compositeupdate',
+    'deleteinsert',
+    'load',
+    'clear',
+    'create',
+    'drop',
+    'add',
+    'move',
+    'copy',
+  ]);
+
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
 
   public constructor(args: IActorOptimizeQueryOperationGroupFileSourcesArgs) {
@@ -25,7 +37,13 @@ export class ActorOptimizeQueryOperationGroupFileSources extends ActorOptimizeQu
     this.mediatorQuerySourceIdentify = args.mediatorQuerySourceIdentify;
   }
 
-  public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+  public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+    if (action.context.get(KeysQuerySourceIdentify.traverse)) {
+      return failTest(`Actor ${this.name} does not work in traversal mode.`);
+    }
+    if (ActorOptimizeQueryOperationGroupFileSources.updateOperationTypes.has(action.operation.type)) {
+      return failTest(`Actor ${this.name} does not work for SPARQL Update operations.`);
+    }
     return passTestVoid();
   }
 
