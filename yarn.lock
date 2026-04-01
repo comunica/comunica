@@ -9419,10 +9419,10 @@ npm-bundled@^4.0.0:
   dependencies:
     npm-normalize-package-bin "^4.0.0"
 
-npm-check-updates@^19.1.2:
-  version "19.1.2"
-  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-19.1.2.tgz#8c11a739f8dc0fb5232bc1252fc2e9f65d6fc1da"
-  integrity sha512-FNeFCVgPOj0fz89hOpGtxP2rnnRHR7hD2E8qNU8SMWfkyDZXA/xpgjsL3UMLSo3F/K13QvJDnbxPngulNDDo/g==
+npm-check-updates@^20.0.0:
+  version "20.0.0"
+  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-20.0.0.tgz#86eb6b288745657edf285288f2659014b81fabdb"
+  integrity sha512-qCs02x51irGf0okCttwv8lHEO2NxT903IJ2bKpG82kIzkm6pfT3CoWB5YIvqY/wi/DdnYRfI7eVfCYYymQgvCg==
 
 npm-install-checks@^7.1.0:
   version "7.1.2"
