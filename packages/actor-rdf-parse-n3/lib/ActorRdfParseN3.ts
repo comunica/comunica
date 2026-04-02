@@ -35,7 +35,6 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, _context: IActionContext):
   Promise<IActorRdfParseOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    action.data.on('error', error => data.emit('error', error));
     const data = <Readable><any>action.data.pipe(new StreamParser({
       factory: dataFactory,
       baseIRI: action.metadata?.baseIRI,
@@ -47,6 +46,7 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
       parseUnsupportedVersions: Boolean(action.context.get(KeysInitQuery.parseUnsupportedVersions)),
       version: action.metadata?.version,
     }));
+    action.data.on('error', error => data.emit('error', error));
     return {
       data,
       metadata: {
