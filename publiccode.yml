@@ -6,6 +6,12 @@ softwareVersion: "5.1.3"
 releaseDate: "2026-01-30"
 logo: "https://comunica.dev/img/comunica_red.svg"
 
+organisation: "Comunica Association"
+
+developmentStatus: stable
+
+roadmap: "https://comunica.dev/roadmap/"
+
 platforms:
   - web
   - linux
@@ -17,6 +23,22 @@ categories:
   - knowledge-management
 
 softwareType: "library"
+
+inputTypes:
+  - text/turtle
+  - application/ld+json
+  - application/n-triples
+  - application/n-quads
+  - application/sparql-query
+  - application/sparql-update
+
+outputTypes:
+  - application/sparql-results+json
+  - application/sparql-results+xml
+  - text/turtle
+  - application/ld+json
+  - application/n-triples
+  - application/n-quads
 
 description:
   en:
@@ -74,3 +96,7 @@ localisation:
   localisationReady: false
   availableLanguages:
     - en
+
+fundedBy:
+  - name: "Dutch Digital Heritage Network"
+    url: "https://netwerkdigitaalerfgoed.nl"

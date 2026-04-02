@@ -35,7 +35,7 @@
     "test:node": "jest",
     "test:spec": "lerna run spec --concurrency 1",
     "test:docker": "lerna run test:docker --concurrency 1",
-    "version": "manual-git-changelog onversion"
+    "version": "manual-git-changelog onversion && packages/utils-monorepo/sh/update-publiccode.sh"
   },
   "devDependencies": {
     "@playwright/test": "^1.58.2",
