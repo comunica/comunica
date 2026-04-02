@@ -1,0 +1,102 @@
+publiccodeYmlVersion: '0.4'
+
+name: Comunica
+url: https://github.com/comunica/comunica
+softwareVersion: 5.1.3
+releaseDate: 2026-01-30
+logo: https://comunica.dev/img/comunica_red.svg
+
+organisation: Comunica Association
+
+developmentStatus: stable
+
+roadmap: https://comunica.dev/roadmap/
+
+platforms:
+  - web
+  - linux
+  - mac
+  - windows
+
+categories:
+  - data-analytics
+  - knowledge-management
+
+softwareType: library
+
+inputTypes:
+  - text/turtle
+  - application/ld+json
+  - application/n-triples
+  - application/n-quads
+  - application/sparql-query
+  - application/sparql-update
+
+outputTypes:
+  - application/sparql-results+json
+  - application/sparql-results+xml
+  - text/turtle
+  - application/ld+json
+  - application/n-triples
+  - application/n-quads
+
+description:
+  en:
+    localisedName: Comunica
+    shortDescription: >
+      A knowledge graph querying framework for JavaScript supporting
+      SPARQL and GraphQL over decentralized RDF on the Web.
+    longDescription: >
+      Comunica is a highly modular and flexible meta query engine platform
+      for the Web. It is primarily designed to execute SPARQL queries over
+      one or more interfaces of Linked Data on the Web, such as SPARQL
+      endpoints, Triple Pattern Fragments interfaces, RDF documents and
+      more. Its modular nature makes it easy to extend, configure and
+      experiment with different query processing techniques.
+
+      Comunica provides multiple ready-to-use query engine configurations
+      including: a full SPARQL engine, an engine for querying local RDF
+      files, an engine for querying over in-memory RDF datasets, an engine
+      for querying within Solid data vaults, and an engine for link
+      traversal across the Web. It also supports GraphQL-LD queries over
+      RDF, and can be used both as a Node.js library, from the command
+      line, from a browser application and as a SPARQL HTTP endpoint.
+
+      Comunica is built around a publish/subscribe bus-and-mediator pattern
+      where actors implement distinct functionalities. This design allows
+      developers to swap out or add individual actor components to create
+      custom query engine configurations tailored to their specific use case.
+      It is maintained by the Comunica Association and the research groups
+      IDLab at Ghent University and imec, Belgium.
+    documentation: https://comunica.dev/docs/
+    apiDocumentation: https://comunica.github.io/comunica/
+    features:
+      - SPARQL 1.1 query and update support
+      - GraphQL-LD querying over RDF
+      - Querying over multiple heterogeneous sources
+      - SPARQL endpoint setup
+      - Solid protocol support
+      - Link traversal across the Web
+      - Highly modular and configurable architecture
+      - Browser and Node.js support
+      - Docker support
+
+legal:
+  license: MIT
+  mainCopyrightOwner: Comunica Association
+  repoOwner: https://github.com/comunica
+
+maintenance:
+  type: community
+  contacts:
+    - name: Ruben Taelman
+      affiliation: Ghent University – imec
+
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - en
+
+fundedBy:
+  - name: Dutch Digital Heritage Network
+    url: https://netwerkdigitaalerfgoed.nl
