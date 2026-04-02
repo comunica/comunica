@@ -32,7 +32,18 @@ export interface IQuerySourceTraverse {
   context?: IActionContext | Record<string, any>;
 }
 
-export type QuerySourceUnidentifiedExpanded = IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized;
+/**
+ * A composite file source that combines multiple file URLs or sources into a single queryable source.
+ * All files are loaded and merged into one in-memory RDF store before querying.
+ */
+export interface IQuerySourceCompositeFile {
+  type: 'compositefile';
+  value: (string | IQuerySourceWrapper)[];
+  context?: IActionContext;
+}
+
+export type QuerySourceUnidentifiedExpanded =
+  IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized | IQuerySourceCompositeFile;
 export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | RDF.DatasetCore |
 QuerySourceUnidentifiedExpanded | IQuerySourceUnidentifiedExpandedRawContext | IQuerySourceTraverse;
 
