@@ -1,16 +1,16 @@
-publiccodeYmlVersion: "0.4"
+publiccodeYmlVersion: '0.4'
 
 name: Comunica
-url: "https://github.com/comunica/comunica"
-softwareVersion: "5.1.3"
-releaseDate: "2026-01-30"
-logo: "https://comunica.dev/img/comunica_red.svg"
+url: https://github.com/comunica/comunica
+softwareVersion: 5.1.3
+releaseDate: '2026-01-30'
+logo: https://comunica.dev/img/comunica_red.svg
 
-organisation: "Comunica Association"
+organisation: Comunica Association
 
 developmentStatus: stable
 
-roadmap: "https://comunica.dev/roadmap/"
+roadmap: https://comunica.dev/roadmap/
 
 platforms:
   - web
@@ -22,7 +22,7 @@ categories:
   - data-analytics
   - knowledge-management
 
-softwareType: "library"
+softwareType: library
 
 inputTypes:
   - text/turtle
@@ -68,8 +68,8 @@ description:
       custom query engine configurations tailored to their specific use case.
       It is maintained by the Comunica Association and the research groups
       IDLab at Ghent University and imec, Belgium.
-    documentation: "https://comunica.dev/docs/"
-    apiDocumentation: "https://comunica.github.io/comunica/"
+    documentation: https://comunica.dev/docs/
+    apiDocumentation: https://comunica.github.io/comunica/
     features:
       - SPARQL 1.1 query and update support
       - GraphQL-LD querying over RDF
@@ -83,14 +83,14 @@ description:
 
 legal:
   license: MIT
-  mainCopyrightOwner: "Comunica Association"
-  repoOwner: "https://github.com/comunica"
+  mainCopyrightOwner: Comunica Association
+  repoOwner: https://github.com/comunica
 
 maintenance:
   type: community
   contacts:
     - name: Ruben Taelman
-      affiliation: "Ghent University – imec"
+      affiliation: Ghent University – imec
 
 localisation:
   localisationReady: false
@@ -98,5 +98,5 @@ localisation:
     - en
 
 fundedBy:
-  - name: "Dutch Digital Heritage Network"
-    url: "https://netwerkdigitaalerfgoed.nl"
+  - name: Dutch Digital Heritage Network
+    url: https://netwerkdigitaalerfgoed.nl
