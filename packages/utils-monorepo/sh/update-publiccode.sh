@@ -11,6 +11,6 @@ const version = process.env.VERSION;
 const releaseDate = process.env.RELEASE_DATE;
 let content = fs.readFileSync('publiccode.yml', 'utf8');
 content = content.replace(/^softwareVersion: .*/m, 'softwareVersion: ' + version);
-content = content.replace(/^releaseDate: .*/m, \"releaseDate: '\" + releaseDate + \"'\");
+content = content.replace(/^releaseDate: .*/m, 'releaseDate: ' + releaseDate);
 fs.writeFileSync('publiccode.yml', content);
 "
