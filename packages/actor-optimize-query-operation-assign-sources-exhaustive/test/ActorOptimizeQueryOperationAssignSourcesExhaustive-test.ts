@@ -38,6 +38,18 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
       }),
     },
   };
+  const sourceServiceExecutor: IQuerySourceWrapper = <any> {
+    source: {
+      referenceValue: 'source1',
+      supportsServiceOperationInjection: true,
+      getSelectorShape: () => ({
+        type: 'operation',
+        operation: {
+          operationType: 'wildcard',
+        },
+      }),
+    },
+  };
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -183,6 +195,24 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(operationOut).not.toBe(operationIn);
         expect(contextOut.get(KeysInitQuery.queryString)).toBeUndefined();
       });
+
+      it('should not globally assign an operation when custom service sources are present', async() => {
+        const operationIn = AF.createService(
+          AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.namedNode('source1'),
+        );
+        const { operation: operationOut } = await actor.run({
+          operation: operationIn,
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
+            .set(KeysQueryOperation.querySources, [ source1 ])
+            .set(KeysQueryOperation.serviceSources, { source1: sourceServiceExecutor }),
+        });
+        expect(operationOut.type).toBe(Algebra.Types.PATTERN);
+        expect(getOperationSource(operationOut)).toEqual({
+          source: sourceServiceExecutor.source,
+          context: new ActionContext({ [KeysQueryOperation.serviceOperation.name]: operationIn }),
+        });
+      });
     });
 
     describe('assignExhaustive', () => {
@@ -255,6 +285,22 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ], { source1 });
         expect(operationOut.type).toEqual(Algebra.Types.PATTERN);
         expect(getOperationSource(operationOut)).toBe(source1);
+      });
+
+      it('for service with a custom executor source should inject the SERVICE operation', async() => {
+        const operationIn = AF.createService(
+          AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.namedNode('source1'),
+        );
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ sourceServiceExecutor ], {
+          source1: sourceServiceExecutor,
+        });
+        expect(operationOut.type).toEqual(Algebra.Types.PATTERN);
+        expect(getOperationSource(operationOut)).not.toBe(sourceServiceExecutor);
+        expect(getOperationSource(operationOut)).toEqual({
+          source: sourceServiceExecutor.source,
+          context: new ActionContext({ [KeysQueryOperation.serviceOperation.name]: operationIn }),
+        });
       });
 
       it('for service with silent with a known source should assign', async() => {

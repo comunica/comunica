@@ -129,6 +129,53 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           .toHaveBeenCalledWith({ querySourceUnidentified: { value: 'source2' }, context: expect.anything() });
       });
 
+      it('with SERVICE clauses and custom service executors', async() => {
+        const serviceExecutor = jest.fn();
+        contextIn = contextIn.set(KeysInitQuery.serviceExecutors, {
+          source1: serviceExecutor,
+        });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+        expect(contextOut).not.toBe(contextIn);
+        expect(contextOut.get(KeysQueryOperation.serviceSources)).toMatchObject({
+          source1: {
+            source: {
+              referenceValue: 'source1',
+              supportsServiceOperationInjection: true,
+            },
+          },
+          source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+        });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(1);
+        expect(mediatorQuerySourceIdentify.mediate)
+          .toHaveBeenCalledWith({ querySourceUnidentified: { value: 'source2' }, context: expect.anything() });
+      });
+
+      it('with SERVICE clauses and a custom service executor creator', async() => {
+        const serviceExecutor = jest.fn();
+        contextIn = contextIn.set(KeysInitQuery.serviceExecutorCreator, async serviceNamedNode =>
+          serviceNamedNode.value === 'source1' ? serviceExecutor : undefined);
+        const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+        expect(contextOut).not.toBe(contextIn);
+        expect(contextOut.get(KeysQueryOperation.serviceSources)).toMatchObject({
+          source1: {
+            source: {
+              referenceValue: 'source1',
+              supportsServiceOperationInjection: true,
+            },
+          },
+          source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+        });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(1);
+      });
+
+      it('with SERVICE clauses and both custom service executor variants should reject', async() => {
+        contextIn = contextIn
+          .set(KeysInitQuery.serviceExecutors, { source1: jest.fn() })
+          .set(KeysInitQuery.serviceExecutorCreator, async() => undefined);
+        await expect(actor.run({ context: contextIn, operation: operationService }))
+          .rejects.toThrow('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
+      });
+
       it('with SERVICE clauses but the single source accepts the full query', async() => {
         contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
           'sourceSparql',
@@ -139,6 +186,36 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
           { ofUnidentified: expect.objectContaining({ value: 'sourceSparql' }), source: expect.anything() },
         ]);
+      });
+
+      it('with SERVICE clauses and a custom executor should not bypass a single full-query source', async() => {
+        const serviceExecutor = jest.fn();
+        contextIn = contextIn
+          .set(KeysInitQuery.querySourcesUnidentified, [
+            'sourceSparql',
+          ])
+          .set(KeysInitQuery.serviceExecutors, {
+            source1: serviceExecutor,
+          });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+        expect(contextOut).not.toBe(contextIn);
+        expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
+          { ofUnidentified: expect.objectContaining({ value: 'sourceSparql' }), source: expect.anything() },
+        ]);
+        expect(contextOut.get(KeysQueryOperation.serviceSources)).toMatchObject({
+          source1: {
+            source: {
+              referenceValue: 'source1',
+              supportsServiceOperationInjection: true,
+            },
+          },
+          source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+        });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorQuerySourceIdentify.mediate)
+          .toHaveBeenCalledWith({ querySourceUnidentified: { value: 'sourceSparql' }, context: expect.anything() });
+        expect(mediatorQuerySourceIdentify.mediate)
+          .toHaveBeenCalledWith({ querySourceUnidentified: { value: 'source2' }, context: expect.anything() });
       });
 
       it('with SERVICE clauses and multiple sources', async() => {
