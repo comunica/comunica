@@ -6,6 +6,7 @@ import type { IProxyHandler } from './IProxyHandler';
 import type { SourceType } from './IQueryEngine';
 import type { QueryExplainMode } from './IQueryOperationResult';
 import type { Logger } from './Logger';
+import type { AsyncServiceExecutor, AsyncServiceExecutorCreator } from './ServiceExecutor';
 
 // We omit `& RDF.QuerySourceContext<SourceType>` in the following two types
 // as the QuerySourceContext proved to be too developer-unfriendly.
@@ -60,6 +61,8 @@ export interface IQueryContextCommon {
   extensionFunctionsAlwaysPushdown?: boolean;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode)
   => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
+  serviceExecutors?: Record<string, AsyncServiceExecutor>;
+  serviceExecutorCreator?: AsyncServiceExecutorCreator;
   functionArgumentsCache?: FunctionArgumentsCache;
   explain?: QueryExplainMode;
   unionDefaultGraph?: boolean;

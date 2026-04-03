@@ -1,6 +1,8 @@
 import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
 import type {
   AsyncExtensionFunctionCreator,
+  AsyncServiceExecutor,
+  AsyncServiceExecutorCreator,
   Bindings,
   FunctionArgumentsCache,
   IActionContext,
@@ -221,6 +223,27 @@ export const KeysInitQuery = {
   Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>
     >('@comunica/actor-init-query:extensionFunctions'),
   /**
+   * @range {(serviceNamedNode: RDF.NamedNode) => Promise<AsyncServiceExecutor | undefined> |
+   * AsyncServiceExecutor | undefined}
+   * Service executor creator for a given SERVICE IRI.
+   * Returned value should be a custom SERVICE executor implementation.
+   * Undefined may be returned if no implementation exists for the given SERVICE IRI.
+   *
+   * The dictionary-based serviceExecutors context entry may be used instead, but not simultaneously.
+   */
+  serviceExecutorCreator: new ActionContextKey<AsyncServiceExecutorCreator>(
+    '@comunica/actor-init-query:serviceExecutorCreator',
+  ),
+  /**
+   * Dictionary of custom SERVICE executors.
+   * Key is the IRI of the SERVICE target, and value is the executor implementation.
+   *
+   * The callback-based serviceExecutorCreator context entry may be used instead, but not simultaneously.
+   */
+  serviceExecutors: new ActionContextKey<Record<string, AsyncServiceExecutor>>(
+    '@comunica/actor-init-query:serviceExecutors',
+  ),
+  /**
    * If extension functions must always be pushed down to sources that support expressions,
    * even if those sources to not explicitly declare support for these extension functions.
    */
@@ -320,6 +343,10 @@ export const KeysQueryOperation = {
   serviceSources: new ActionContextKey<Record<string, IQuerySourceWrapper>>(
     '@comunica/bus-query-operation:serviceSources',
   ),
+  /**
+   * The original SERVICE algebra operation associated with the currently executing custom SERVICE source.
+   */
+  serviceOperation: new ActionContextKey<Algebra.Service>('@comunica/bus-query-operation:serviceOperation'),
 };
 
 export const KeysRdfParseJsonLd = {

@@ -20,6 +20,8 @@ describe('ActorContextPreprocessConvertShortcuts', () => {
           sources: '@comunica/actor-init-query:querySourcesUnidentified',
           destination: '@comunica/bus-rdf-update-quads:destination',
           initialBindings: '@comunica/actor-init-query:initialBindings',
+          serviceExecutors: '@comunica/actor-init-query:serviceExecutors',
+          serviceExecutorCreator: '@comunica/actor-init-query:serviceExecutorCreator',
         },
       });
     });
@@ -36,10 +38,14 @@ describe('ActorContextPreprocessConvertShortcuts', () => {
       });
 
       it('with a non-empty context', async() => {
+        const serviceExecutors = { 'urn:service': jest.fn() };
+        const serviceExecutorCreator = jest.fn();
         const contextIn = new ActionContext({
           sources: [ 'a' ],
           destination: 'd',
           initialBindings: { bindings: true },
+          serviceExecutors,
+          serviceExecutorCreator,
           other: true,
         });
         const { context: contextOut } = await actor.run({ context: contextIn });
@@ -47,6 +53,8 @@ describe('ActorContextPreprocessConvertShortcuts', () => {
           '@comunica/actor-init-query:querySourcesUnidentified': [ 'a' ],
           '@comunica/bus-rdf-update-quads:destination': 'd',
           '@comunica/actor-init-query:initialBindings': { bindings: true },
+          '@comunica/actor-init-query:serviceExecutors': serviceExecutors,
+          '@comunica/actor-init-query:serviceExecutorCreator': serviceExecutorCreator,
           other: true,
         }));
       });

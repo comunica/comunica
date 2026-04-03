@@ -32,10 +32,11 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
 
     const sources = action.context.get(KeysQueryOperation.querySources) ?? [];
     const serviceSources = action.context.get(KeysQueryOperation.serviceSources) ?? {};
-    if (sources.length === 0 && Object.keys(serviceSources).length === 0) {
+    const hasServiceSources = Object.keys(serviceSources).length > 0;
+    if (sources.length === 0 && !hasServiceSources) {
       return { operation: action.operation, context: action.context };
     }
-    if (await passFullOperationToSource(action.operation, sources, action.context)) {
+    if (!hasServiceSources && (await passFullOperationToSource(action.operation, sources, action.context))) {
       return {
         operation: assignOperationSource(action.operation, sources[0]),
         context: action.context,
@@ -82,7 +83,14 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
           if (serviceOp.name.termType === 'NamedNode') {
             let source = serviceSources[serviceOp.name.value];
             if (source) {
-              if (serviceOp.silent) {
+              if (ActorOptimizeQueryOperationAssignSourcesExhaustive.supportsServiceOperationInjection(source.source)) {
+                let context = (source.context ?? new ActionContext())
+                  .set(KeysQueryOperation.serviceOperation, serviceOp);
+                if (serviceOp.silent) {
+                  context = context.set(KeysInitQuery.lenient, true);
+                }
+                source = { ...source, context };
+              } else if (serviceOp.silent) {
                 source = {
                   ...source,
                   context: (source.context ?? new ActionContext()).set(KeysInitQuery.lenient, true),
@@ -136,5 +144,17 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
         ),
       },
     });
+  }
+
+  public static supportsServiceOperationInjection(source: unknown): boolean {
+    if (source === null || typeof source !== 'object') {
+      return false;
+    }
+    const { supportsServiceOperationInjection, innerSource } = <{
+      supportsServiceOperationInjection?: boolean;
+      innerSource?: unknown;
+    }> source;
+    return supportsServiceOperationInjection === true ||
+      ActorOptimizeQueryOperationAssignSourcesExhaustive.supportsServiceOperationInjection(innerSource);
   }
 }
