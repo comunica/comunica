@@ -38,7 +38,16 @@ export class DocumentLoaderMediated extends FetchDocumentLoader {
         lastCachePolicies[<string> url] = (context: IActionContext) => response
           .cachePolicy!.satisfiesWithoutRevalidation({ input: url, init, context });
       }
-      response.json = async() => JSON.parse(await stringifyStream(ActorHttp.toNodeReadable(response.body)));
+      response.json = async() => {
+        const body = await stringifyStream(ActorHttp.toNodeReadable(response.body));
+        try {
+          return JSON.parse(body);
+        } catch (error: unknown) {
+          throw new Error(
+            `Failed to parse JSON-LD response from ${url}: ${(<Error> error).message}`,
+          );
+        }
+      };
       return response;
     };
   }
