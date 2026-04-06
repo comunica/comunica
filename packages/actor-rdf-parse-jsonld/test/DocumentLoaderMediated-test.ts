@@ -1,6 +1,6 @@
 import { Readable } from 'node:stream';
-import { ActionContext } from '@comunica/core';
 import { KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { DocumentLoaderMediated } from '../lib/DocumentLoaderMediated';
 
@@ -19,7 +19,7 @@ describe('DocumentLoaderMediated', () => {
 
   describe('createFetcher', () => {
     it('should parse valid JSON from response body', async() => {
-      const payload = { '@context': { '@vocab': 'http://example.org/' } };
+      const payload = { '@context': { '@vocab': 'http://example.org/'}};
       mediatorHttp.mediate.mockResolvedValueOnce({
         body: Readable.from([ JSON.stringify(payload) ]),
         ok: true,
@@ -65,7 +65,7 @@ describe('DocumentLoaderMediated', () => {
       try {
         await response.json();
       } catch (error: unknown) {
-        thrown = error as Error;
+        thrown = <Error> error;
       }
 
       expect(thrown).toBeInstanceOf(Error);

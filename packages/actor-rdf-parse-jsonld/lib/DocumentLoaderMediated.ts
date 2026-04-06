@@ -43,8 +43,9 @@ export class DocumentLoaderMediated extends FetchDocumentLoader {
         try {
           return JSON.parse(body);
         } catch (error: unknown) {
+          const urlStr: string = typeof url === 'string' ? url : url.url;
           throw new Error(
-            `Failed to parse JSON-LD response from ${url}: ${(<Error> error).message}`,
+            `Failed to parse JSON-LD response from ${urlStr}: ${(<Error> error).message}`,
           );
         }
       };
