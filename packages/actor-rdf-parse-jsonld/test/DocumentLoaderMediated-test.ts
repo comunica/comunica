@@ -19,7 +19,7 @@ describe('DocumentLoaderMediated', () => {
 
   describe('createFetcher', () => {
     it('should parse valid JSON from response body', async() => {
-      const payload = { '@context': { '@vocab': 'http://example.org/'}};
+      const payload = { '@context': { '@vocab': 'http://example.org/' } };
       mediatorHttp.mediate.mockResolvedValueOnce({
         body: Readable.from([ JSON.stringify(payload) ]),
         ok: true,
