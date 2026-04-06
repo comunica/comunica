@@ -72,6 +72,23 @@ describe('DocumentLoaderMediated', () => {
       expect(thrown!.message).toContain('Failed to parse JSON-LD response from http://example.org/broken.json:');
     });
 
+    it('should use Request.url when url is a Request object and JSON parse fails', async() => {
+      mediatorHttp.mediate.mockResolvedValueOnce({
+        body: Readable.from([ 'not json' ]),
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+      });
+
+      const fetcher = (<any> DocumentLoaderMediated).createFetcher(mediatorHttp, context, {});
+      const request = new Request('http://example.org/request-url.json');
+      const response = await fetcher(request, {});
+
+      await expect(response.json()).rejects.toThrow(
+        'Failed to parse JSON-LD response from http://example.org/request-url.json:',
+      );
+    });
+
     it('should store cache policy when present in response', async() => {
       const lastCachePolicies: Record<string, any> = {};
       const cachePolicyFn = jest.fn().mockReturnValue(true);
