@@ -12,7 +12,7 @@ import {
   translateQuad,
   translateTerm,
 } from '@traqula/algebra-transformations-1-1';
-import type { Algebra, AstToRdfTerm } from '@traqula/algebra-transformations-1-1';
+import type { Algebra, AstToRdfTerm, translateAggregates } from '@traqula/algebra-transformations-1-1';
 import { createAlgebraContext } from '@traqula/algebra-transformations-1-2';
 import type { ContextConfigs } from '@traqula/algebra-transformations-1-2';
 import type { Wrap, ParserBuildArgs } from '@traqula/core';
@@ -170,31 +170,25 @@ export class PatchedParser {
   }
 }
 
-const origTranslateAggregates = toAlgebra12Builder.getRule('translateAggregates');
-
 /**
  * Patched version of translateAggregates that handles CONSTRUCT templates with GRAPH clauses.
  * The standard template type is PatternBgp, but our patched parser produces
  * (PatternBgp | PatternGraph)[] to support CONSTRUCT { GRAPH ?g { ... } } syntax.
  */
-const patchedTranslateAggregates: typeof origTranslateAggregates = {
+const patchedTranslateAggregates: typeof translateAggregates = {
   name: 'translateAggregates',
-  fun: ({ SUBRULE }: any) => (
-    { astFactory: F, algebraFactory: AF, dataFactory: DF }: any,
-    query: any,
-    res: any,
-  ): Algebra.Operation => {
-    const bindPatterns: T12.PatternBind[] = [];
+  fun: ({ SUBRULE }) => ({ astFactory: F, algebraFactory: AF, dataFactory: DF }, query, res): Algebra.Operation => {
+    const bindPatterns: T11.PatternBind[] = [];
 
-    const varAggrMap: Record<string, T12.ExpressionAggregate> = {};
+    const varAggrMap: Record<string, T11.ExpressionAggregate> = {};
     const variables = F.isQuerySelect(query) || F.isQueryDescribe(query) ?
       query.variables.map(x => SUBRULE(mapAggregate, x, varAggrMap)) :
       undefined;
     const having = query.solutionModifiers.having ?
-      query.solutionModifiers.having.having.map(x => SUBRULE(mapAggregate, x, varAggrMap)) :
+      query.solutionModifiers.having.having.map(x => <typeof x>SUBRULE(mapAggregate, x, varAggrMap)) :
       undefined;
     const order = query.solutionModifiers.order ?
-      query.solutionModifiers.order.orderDefs.map(x => SUBRULE(mapAggregate, x, varAggrMap)) :
+      query.solutionModifiers.order.orderDefs.map(x => <typeof x>SUBRULE(mapAggregate, x, varAggrMap)) :
       undefined;
 
     // Step: GROUP BY - If we found an aggregate, in group by or implicitly, do Group function.
@@ -211,7 +205,7 @@ const patchedTranslateAggregates: typeof origTranslateAggregates = {
             vars.push(<RDF.Variable>SUBRULE(translateTerm, expression));
           } else {
             let var_: RDF.Variable;
-            let expr: T12.Expression;
+            let expr: T11.Expression;
             if ('variable' in expression) {
               var_ = <AstToRdfTerm<typeof expression.variable>>SUBRULE(translateTerm, expression.variable);
               expr = expression.value;
@@ -249,7 +243,7 @@ const patchedTranslateAggregates: typeof origTranslateAggregates = {
           .sort((left, right) => left.value.localeCompare(right.value));
       } else {
         // Wildcard has been filtered out above
-        for (const var_ of <(T12.TermVariable | T12.TermIri | T12.PatternBind)[]> variables) {
+        for (const var_ of <(T11.TermVariable | T11.TermIri | T11.PatternBind)[]> variables) {
           // Can have non-variables with DESCRIBE
           if (F.isTerm(var_)) {
             PatternValues.push(<AstToRdfTerm<typeof var_>>SUBRULE(translateTerm, var_));
@@ -305,25 +299,25 @@ const patchedTranslateAggregates: typeof origTranslateAggregates = {
     /// THIS IS THE PART THAT CHANGED
     if (F.isQueryConstruct(query)) {
       const constructQuads: Algebra.Pattern[] = [];
-      const template = <(T12.PatternBgp | T12.PatternGraph)[]> query.template;
+      const template = <(T11.PatternBgp | T11.PatternGraph)[]> <unknown> query.template;
 
       function processConstructTemplate(
-        items: (T12.PatternBgp | T12.PatternGraph)[],
+        items: (T11.PatternBgp | T11.PatternGraph)[],
         graph?: any,
       ): void {
         for (const item of items) {
           if (F.isPatternBgp(item)) {
             let triples: any[] = [];
-            SUBRULE(translateBasicGraphPattern, (<T12.PatternBgp> item).triples, triples);
+            SUBRULE(translateBasicGraphPattern, (item).triples, triples);
             if (graph) {
               triples = triples.map((t: any) => Object.assign(t, { graph }));
             }
             constructQuads.push(...triples.map((quad: any) => SUBRULE(translateQuad, quad)));
           } else if (F.isPatternGraph(item)) {
-            const graphItem = <T12.PatternGraph> item;
+            const graphItem = item;
             const graphTerm = SUBRULE(translateTerm, graphItem.name);
             processConstructTemplate(
-              <(T12.PatternBgp | T12.PatternGraph)[]> graphItem.patterns,
+              <(T11.PatternBgp | T11.PatternGraph)[]> graphItem.patterns,
               graphTerm,
             );
           }
