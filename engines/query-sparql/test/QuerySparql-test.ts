@@ -2268,6 +2268,76 @@ CONSTRUCT {
       .toBeRdfIsomorphic(expectedResult);
   });
 
+  describe('CONSTRUCT with quad patterns (GRAPH clauses in CONSTRUCT template)', () => {
+    const trigValue = `
+PREFIX ex: <http://example.org/>
+GRAPH ex:g1 {
+  ex:s1 ex:p1 ex:o1 .
+  ex:s2 ex:p2 ex:o2 .
+}
+GRAPH ex:g2 {
+  ex:s3 ex:p3 ex:o3 .
+}
+`;
+
+    it('shorthand form: CONSTRUCT WHERE { GRAPH ?g { ?s ?p ?o } } produces named-graph quads', async() => {
+      const query = 'CONSTRUCT WHERE { GRAPH ?g { ?s ?p ?o } }';
+      const context: QueryStringContext = { sources: [
+        { type: 'serialized', value: trigValue, mediaType: 'application/trig', baseIRI: 'http://example.org/' },
+      ]};
+      const result = await arrayifyStream(await engine.queryQuads(query, context));
+      expect(result).toBeRdfIsomorphic([
+        DF.quad(DF.namedNode('http://example.org/s1'), DF.namedNode('http://example.org/p1'), DF.namedNode('http://example.org/o1'), DF.namedNode('http://example.org/g1')),
+        DF.quad(DF.namedNode('http://example.org/s2'), DF.namedNode('http://example.org/p2'), DF.namedNode('http://example.org/o2'), DF.namedNode('http://example.org/g1')),
+        DF.quad(DF.namedNode('http://example.org/s3'), DF.namedNode('http://example.org/p3'), DF.namedNode('http://example.org/o3'), DF.namedNode('http://example.org/g2')),
+      ]);
+    });
+
+    it('explicit form: CONSTRUCT { GRAPH ?g { ?s ?p ?o } } WHERE { ... } produces named-graph quads', async() => {
+      const query = 'CONSTRUCT { GRAPH ?g { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } }';
+      const context: QueryStringContext = { sources: [
+        { type: 'serialized', value: trigValue, mediaType: 'application/trig', baseIRI: 'http://example.org/' },
+      ]};
+      const result = await arrayifyStream(await engine.queryQuads(query, context));
+      expect(result).toBeRdfIsomorphic([
+        DF.quad(DF.namedNode('http://example.org/s1'), DF.namedNode('http://example.org/p1'), DF.namedNode('http://example.org/o1'), DF.namedNode('http://example.org/g1')),
+        DF.quad(DF.namedNode('http://example.org/s2'), DF.namedNode('http://example.org/p2'), DF.namedNode('http://example.org/o2'), DF.namedNode('http://example.org/g1')),
+        DF.quad(DF.namedNode('http://example.org/s3'), DF.namedNode('http://example.org/p3'), DF.namedNode('http://example.org/o3'), DF.namedNode('http://example.org/g2')),
+      ]);
+    });
+
+    it('mixed CONSTRUCT template with triples and GRAPH clause produces default and named quads', async() => {
+      const query = 'CONSTRUCT { ?s ?p ?o . GRAPH ?g { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } }';
+      const context: QueryStringContext = { sources: [
+        { type: 'serialized', value: trigValue, mediaType: 'application/trig', baseIRI: 'http://example.org/' },
+      ]};
+      const result = await arrayifyStream(await engine.queryQuads(query, context));
+      expect(result).toBeRdfIsomorphic([
+        // Default graph triples
+        DF.quad(DF.namedNode('http://example.org/s1'), DF.namedNode('http://example.org/p1'), DF.namedNode('http://example.org/o1')),
+        DF.quad(DF.namedNode('http://example.org/s2'), DF.namedNode('http://example.org/p2'), DF.namedNode('http://example.org/o2')),
+        DF.quad(DF.namedNode('http://example.org/s3'), DF.namedNode('http://example.org/p3'), DF.namedNode('http://example.org/o3')),
+        // Named graph quads
+        DF.quad(DF.namedNode('http://example.org/s1'), DF.namedNode('http://example.org/p1'), DF.namedNode('http://example.org/o1'), DF.namedNode('http://example.org/g1')),
+        DF.quad(DF.namedNode('http://example.org/s2'), DF.namedNode('http://example.org/p2'), DF.namedNode('http://example.org/o2'), DF.namedNode('http://example.org/g1')),
+        DF.quad(DF.namedNode('http://example.org/s3'), DF.namedNode('http://example.org/p3'), DF.namedNode('http://example.org/o3'), DF.namedNode('http://example.org/g2')),
+      ]);
+    });
+
+    it('CONSTRUCT with static named graph: CONSTRUCT { GRAPH ex:out { ?s ?p ?o } } WHERE { ... }', async() => {
+      const query = 'PREFIX ex: <http://example.org/> CONSTRUCT { GRAPH ex:out { ?s ?p ?o } } WHERE { GRAPH ?g { ?s ?p ?o } }';
+      const context: QueryStringContext = { sources: [
+        { type: 'serialized', value: trigValue, mediaType: 'application/trig', baseIRI: 'http://example.org/' },
+      ]};
+      const result = await arrayifyStream(await engine.queryQuads(query, context));
+      expect(result).toBeRdfIsomorphic([
+        DF.quad(DF.namedNode('http://example.org/s1'), DF.namedNode('http://example.org/p1'), DF.namedNode('http://example.org/o1'), DF.namedNode('http://example.org/out')),
+        DF.quad(DF.namedNode('http://example.org/s2'), DF.namedNode('http://example.org/p2'), DF.namedNode('http://example.org/o2'), DF.namedNode('http://example.org/out')),
+        DF.quad(DF.namedNode('http://example.org/s3'), DF.namedNode('http://example.org/p3'), DF.namedNode('http://example.org/o3'), DF.namedNode('http://example.org/out')),
+      ]);
+    });
+  });
+
   describe('foaf ontology broken link', () => {
     it('returns results with link recovery on [using full key]', async() => {
       const result = <QueryBindings> await engine.query(`SELECT * WHERE {
