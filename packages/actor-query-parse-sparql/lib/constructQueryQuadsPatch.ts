@@ -1,3 +1,20 @@
+import type * as RDF from '@rdfjs/types';
+import { toAlgebra12Builder } from '@traqula/algebra-sparql-1-2';
+import {
+  generateFreshVar,
+  inScopeVariables,
+  mapAggregate,
+  translateBasicGraphPattern,
+  translateBoundAggregate,
+  translateDatasetClause,
+  translateExpression,
+  translateInlineData,
+  translateQuad,
+  translateTerm,
+} from '@traqula/algebra-transformations-1-1';
+import type { Algebra, AstToRdfTerm } from '@traqula/algebra-transformations-1-1';
+import { createAlgebraContext } from '@traqula/algebra-transformations-1-2';
+import type { ContextConfigs } from '@traqula/algebra-transformations-1-2';
 import type { Wrap, ParserBuildArgs } from '@traqula/core';
 import { sparql12ParserBuilder } from '@traqula/parser-sparql-1-2';
 import { lex as l11, gram as g11, sparqlCodepointEscape } from '@traqula/rules-sparql-1-1';
@@ -151,4 +168,197 @@ export class PatchedParser {
     }
     return ast;
   }
+}
+
+const origTranslateAggregates = toAlgebra12Builder.getRule('translateAggregates');
+
+/**
+ * Patched version of translateAggregates that handles CONSTRUCT templates with GRAPH clauses.
+ * The standard template type is PatternBgp, but our patched parser produces
+ * (PatternBgp | PatternGraph)[] to support CONSTRUCT { GRAPH ?g { ... } } syntax.
+ */
+const patchedTranslateAggregates: typeof origTranslateAggregates = {
+  name: 'translateAggregates',
+  fun: ({ SUBRULE }: any) => (
+    { astFactory: F, algebraFactory: AF, dataFactory: DF }: any,
+    query: any,
+    res: any,
+  ): Algebra.Operation => {
+    const bindPatterns: T12.PatternBind[] = [];
+
+    const varAggrMap: Record<string, T12.ExpressionAggregate> = {};
+    const variables = F.isQuerySelect(query) || F.isQueryDescribe(query) ?
+      query.variables.map(x => SUBRULE(mapAggregate, x, varAggrMap)) :
+      undefined;
+    const having = query.solutionModifiers.having ?
+      query.solutionModifiers.having.having.map(x => SUBRULE(mapAggregate, x, varAggrMap)) :
+      undefined;
+    const order = query.solutionModifiers.order ?
+      query.solutionModifiers.order.orderDefs.map(x => SUBRULE(mapAggregate, x, varAggrMap)) :
+      undefined;
+
+    // Step: GROUP BY - If we found an aggregate, in group by or implicitly, do Group function.
+    // 18.2.4.1 Grouping and Aggregation
+    if (query.solutionModifiers.group ?? Object.keys(varAggrMap).length > 0) {
+      const aggregates = Object.keys(varAggrMap).map(var_ =>
+        SUBRULE(translateBoundAggregate, varAggrMap[var_], DF.variable(var_)));
+      const vars: RDF.Variable[] = [];
+      if (query.solutionModifiers.group) {
+        for (const expression of query.solutionModifiers.group.groupings) {
+          // https://www.w3.org/TR/sparql11-query/#rGroupCondition
+          if (F.isTerm(expression)) {
+            // This will always be a var, otherwise sparql would be invalid
+            vars.push(<RDF.Variable>SUBRULE(translateTerm, expression));
+          } else {
+            let var_: RDF.Variable;
+            let expr: T12.Expression;
+            if ('variable' in expression) {
+              var_ = <AstToRdfTerm<typeof expression.variable>>SUBRULE(translateTerm, expression.variable);
+              expr = expression.value;
+            } else {
+              var_ = SUBRULE(generateFreshVar);
+              expr = expression;
+            }
+            res = AF.createExtend(res, var_, SUBRULE(translateExpression, expr));
+            vars.push(var_);
+          }
+        }
+      }
+      res = AF.createGroup(res, vars, aggregates);
+    }
+
+    // 18.2.4.2
+    if (having) {
+      for (const filter of having) {
+        res = AF.createFilter(res, SUBRULE(translateExpression, filter));
+      }
+    }
+
+    // 18.2.4.3
+    if (query.values) {
+      res = AF.createJoin([ res, SUBRULE(translateInlineData, query.values) ]);
+    }
+
+    // 18.2.4.4
+    let PatternValues: (RDF.Variable | RDF.NamedNode)[] = [];
+
+    if (variables) {
+      // Sort variables for consistent output
+      if (variables.some(wild => F.isWildcard(wild))) {
+        PatternValues = [ ...SUBRULE(inScopeVariables, query).values() ].map(x => DF.variable(x))
+          .sort((left, right) => left.value.localeCompare(right.value));
+      } else {
+        // Wildcard has been filtered out above
+        for (const var_ of <(T12.TermVariable | T12.TermIri | T12.PatternBind)[]> variables) {
+          // Can have non-variables with DESCRIBE
+          if (F.isTerm(var_)) {
+            PatternValues.push(<AstToRdfTerm<typeof var_>>SUBRULE(translateTerm, var_));
+          } else {
+            // ... AS ?x
+            PatternValues.push(<AstToRdfTerm<typeof var_.variable>>SUBRULE(translateTerm, var_.variable));
+            bindPatterns.push(var_);
+          }
+        }
+      }
+    }
+
+    // TODO: Jena simplifies by having a list of extends
+    for (const bind of bindPatterns) {
+      res = AF.createExtend(
+        res,
+          <AstToRdfTerm<typeof bind.variable>>SUBRULE(translateTerm, bind.variable),
+          SUBRULE(translateExpression, bind.expression),
+      );
+    }
+
+    // 18.2.5
+    // not using toList and toMultiset
+
+    // 18.2.5.1
+    if (order) {
+      res = AF.createOrderBy(res, order.map((expr) => {
+        let result = SUBRULE(translateExpression, expr.expression);
+        if (expr.descending) {
+          result = AF.createOperatorExpression('desc', [ result ]);
+        }
+        return result;
+      }));
+    }
+
+    // 18.2.5.2
+    // construct does not need a project (select, ask and describe do)
+    if (F.isQuerySelect(query)) {
+      // Named nodes are only possible in a DESCRIBE so this cast is safe
+      res = AF.createProject(res, <RDF.Variable[]> PatternValues);
+    }
+
+    // 18.2.5.3
+    if ((<{ distinct?: unknown }>query).distinct) {
+      res = AF.createDistinct(res);
+    }
+
+    // 18.2.5.4
+    if ((<{ reduced?: unknown }>query).reduced) {
+      res = AF.createReduced(res);
+    }
+
+    /// THIS IS THE PART THAT CHANGED
+    if (F.isQueryConstruct(query)) {
+      const constructQuads: Algebra.Pattern[] = [];
+      const template = <(T12.PatternBgp | T12.PatternGraph)[]> query.template;
+
+      function processConstructTemplate(
+        items: (T12.PatternBgp | T12.PatternGraph)[],
+        graph?: any,
+      ): void {
+        for (const item of items) {
+          if (F.isPatternBgp(item)) {
+            let triples: any[] = [];
+            SUBRULE(translateBasicGraphPattern, (<T12.PatternBgp> item).triples, triples);
+            if (graph) {
+              triples = triples.map((t: any) => Object.assign(t, { graph }));
+            }
+            constructQuads.push(...triples.map((quad: any) => SUBRULE(translateQuad, quad)));
+          } else if (F.isPatternGraph(item)) {
+            const graphItem = <T12.PatternGraph> item;
+            const graphTerm = SUBRULE(translateTerm, graphItem.name);
+            processConstructTemplate(
+              <(T12.PatternBgp | T12.PatternGraph)[]> graphItem.patterns,
+              graphTerm,
+            );
+          }
+        }
+      }
+
+      processConstructTemplate(template);
+      res = AF.createConstruct(res, constructQuads);
+    } else if (F.isQueryAsk(query)) {
+      res = AF.createAsk(res);
+    } else if (F.isQueryDescribe(query)) {
+      res = AF.createDescribe(res, PatternValues);
+    }
+
+    // Slicing needs to happen after construct/describe
+    // 18.2.5.5
+    const limitOffset = query.solutionModifiers.limitOffset;
+    if (limitOffset?.limit ?? limitOffset?.offset) {
+      res = AF.createSlice(res, limitOffset.offset ?? 0, limitOffset.limit);
+    }
+
+    if (query.datasets.clauses.length > 0) {
+      const clauses = SUBRULE(translateDatasetClause, query.datasets);
+      res = AF.createFrom(res, clauses.default, clauses.named);
+    }
+
+    return res;
+  },
+};
+
+export const patchedAlgebraBuilder = toAlgebra12Builder
+  .patchRule(patchedTranslateAggregates);
+
+export function toAlgebraPatched(query: T12.SparqlQuery, options: ContextConfigs = {}): Algebra.Operation {
+  const c = createAlgebraContext(options);
+  const transformer = patchedAlgebraBuilder.build();
+  return transformer.translateQuery(c, query, options.quads, options.blankToVariable);
 }

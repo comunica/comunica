@@ -46,6 +46,7 @@
     "@comunica/core": "^5.1.3",
     "@comunica/types": "^5.1.3",
     "@traqula/algebra-sparql-1-2": "^1.0.1",
+    "@traqula/algebra-transformations-1-1": "^1.0.1",
     "@traqula/algebra-transformations-1-2": "^1.0.1",
     "@traqula/parser-sparql-1-2": "^1.0.1",
     "@traqula/rules-sparql-1-1": "^1.0.1",
