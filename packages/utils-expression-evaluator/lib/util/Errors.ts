@@ -119,14 +119,11 @@ export class InvalidTimezoneCall extends ExpressionError {
 }
 
 export class IncompatibleLanguageOperation extends ExpressionError {
-  public constructor(public arg1: E.LangStringLiteral, public arg2: E.LangStringLiteral) {
+  public constructor(
+    public arg1: E.LangStringLiteral | E.DirLangStringLiteral,
+    public arg2: E.LangStringLiteral | E.DirLangStringLiteral,
+  ) {
     super(`Operation on incompatible language literals '${pp(arg1)}' and '${pp(arg2)}'`);
-  }
-}
-
-export class IncompatibleDirectionalLanguageOperation extends ExpressionError {
-  public constructor(public arg1: E.DirLangStringLiteral, public arg2: E.DirLangStringLiteral) {
-    super(`Operation on incompatible directional language literals '${pp(arg1)}' and '${pp(arg2)}'`);
   }
 }
 

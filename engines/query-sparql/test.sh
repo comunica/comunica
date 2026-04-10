@@ -1,0 +1,1 @@
+node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js https://w3c.github.io/rdf-tests/sparql/sparql12/manifest.ttl -c ../../.rdf-test-suite-cache/ -m "https://w3c.github.io/rdf-tests/~/home/jitsedesmet/Documents/PhD/code/rdf-tests/"

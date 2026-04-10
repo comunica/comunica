@@ -19,6 +19,7 @@ import { NonLexicalLiteral } from '../expressions';
 import * as C from '../util/Consts';
 import { TypeURL } from '../util/Consts';
 import * as Err from '../util/Errors';
+import { IncompatibleLanguageOperation } from '../util/Errors';
 import type {
   ArgumentType,
 } from './OverloadTree';
@@ -306,6 +307,68 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * https://www.w3.org/TR/sparql12-query/#dfn-argument-compatible
+   */
+  public verifyCompatibility(
+    litA: E.Literal<string> | E.LangStringLiteral | E.DirLangStringLiteral,
+    litB: E.Literal<string> | E.LangStringLiteral | E.DirLangStringLiteral,
+  ): void {
+    // The fact that it is stringly means that it is either xsd:string or a subType, or it is langDirStr or LanStr
+    const typeA = litA.dataType;
+    const typeB = litB.dataType;
+    if (typeA === TypeURL.RDF_DIR_LANG_STRING) {
+      if (typeB === TypeURL.RDF_LANG_STRING) {
+        throw new IncompatibleLanguageOperation(<E.DirLangStringLiteral> litA, <E.LangStringLiteral> litB);
+      }
+      if (typeB === TypeURL.RDF_DIR_LANG_STRING &&
+          !(litA.language === litB.language && litA.direction === litB.direction)) {
+        throw new IncompatibleLanguageOperation(<E.DirLangStringLiteral> litA, <E.DirLangStringLiteral> litB);
+      }
+    } else if (typeA === TypeURL.RDF_LANG_STRING) {
+      if (typeB === TypeURL.RDF_DIR_LANG_STRING) {
+        throw new IncompatibleLanguageOperation(<E.LangStringLiteral> litA, <E.DirLangStringLiteral> litB);
+      }
+      if (typeB === TypeURL.RDF_LANG_STRING && litA.language !== litB.language) {
+        throw new IncompatibleLanguageOperation(<E.LangStringLiteral> litA, <E.LangStringLiteral> litB);
+      }
+    }
+  }
+
+  public onCompatibleStringly2(
+    op: (expressionEvaluator: IInternalEvaluator) => (litA: E.Literal<string>, litB: E.Literal<string>) => Term,
+    addInvalidHandling = true,
+  ): Builder {
+    return this.set(
+      [ C.TypeAlias.SPARQL_STRINGLY, C.TypeAlias.SPARQL_STRINGLY ],
+      expressionEvaluator => ([ litA, litB ]: [
+          E.Literal<string> | E.LangStringLiteral | E.DirLangStringLiteral,
+          E.Literal<string> | E.LangStringLiteral | E.DirLangStringLiteral,
+      ]) => {
+        this.verifyCompatibility(litA, litB);
+        return op(expressionEvaluator)(litA, litB);
+      },
+      addInvalidHandling,
+    );
+  }
+
+  public onCompatibleStringly2Typed(
+    op: (expressionEvaluator: IInternalEvaluator) => (litA: string, litB: string) => Term,
+    addInvalidHandling = true,
+  ): Builder {
+    return this.set(
+      [ C.TypeAlias.SPARQL_STRINGLY, C.TypeAlias.SPARQL_STRINGLY ],
+      expressionEvaluator => ([ litA, litB ]: [
+        E.Literal<string> | E.LangStringLiteral | E.DirLangStringLiteral,
+        E.Literal<string> | E.LangStringLiteral | E.DirLangStringLiteral,
+      ]) => {
+        this.verifyCompatibility(litA, litB);
+        return op(expressionEvaluator)(litA.typedValue, litB.typedValue);
+      },
+      addInvalidHandling,
+    );
+  }
+
   public onNumeric1(
     op: (expressionEvaluator: IInternalEvaluator) => (val: E.NumericLiteral) => Term,
 addInvalidHandling = true,
@@ -461,8 +524,8 @@ export function double(num: number): E.DoubleLiteral {
   return new E.DoubleLiteral(num);
 }
 
-export function string(str: string): E.StringLiteral {
-  return new E.StringLiteral(str);
+export function string(str: string, dataType?: string): E.StringLiteral {
+  return new E.StringLiteral(str, dataType);
 }
 
 export function langString(str: string, lang: string): E.LangStringLiteral {
