@@ -120,8 +120,8 @@ export class InvalidTimezoneCall extends ExpressionError {
 
 export class IncompatibleLanguageOperation extends ExpressionError {
   public constructor(
-    public arg1: E.LangStringLiteral | E.DirLangStringLiteral,
-    public arg2: E.LangStringLiteral | E.DirLangStringLiteral,
+    public arg1: E.Literal<string>,
+    public arg2: E.Literal<string>,
   ) {
     super(`Operation on incompatible language literals '${pp(arg1)}' and '${pp(arg2)}'`);
   }

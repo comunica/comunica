@@ -319,19 +319,23 @@ addInvalidHandling = true,
     const typeB = litB.dataType;
     if (typeA === TypeURL.RDF_DIR_LANG_STRING) {
       if (typeB === TypeURL.RDF_LANG_STRING) {
-        throw new IncompatibleLanguageOperation(<E.DirLangStringLiteral> litA, <E.LangStringLiteral> litB);
+        throw new IncompatibleLanguageOperation(litA, litB);
       }
       if (typeB === TypeURL.RDF_DIR_LANG_STRING &&
           !(litA.language === litB.language && litA.direction === litB.direction)) {
-        throw new IncompatibleLanguageOperation(<E.DirLangStringLiteral> litA, <E.DirLangStringLiteral> litB);
+        throw new IncompatibleLanguageOperation(litA, litB);
       }
     } else if (typeA === TypeURL.RDF_LANG_STRING) {
       if (typeB === TypeURL.RDF_DIR_LANG_STRING) {
-        throw new IncompatibleLanguageOperation(<E.LangStringLiteral> litA, <E.DirLangStringLiteral> litB);
+        throw new IncompatibleLanguageOperation(litA, litB);
       }
       if (typeB === TypeURL.RDF_LANG_STRING && litA.language !== litB.language) {
-        throw new IncompatibleLanguageOperation(<E.LangStringLiteral> litA, <E.LangStringLiteral> litB);
+        throw new IncompatibleLanguageOperation(litA, litB);
       }
+    }
+    // We now know A is an xsd:string derived
+    if (typeA === TypeURL.XSD_STRING && (typeB === TypeURL.RDF_DIR_LANG_STRING || typeB === TypeURL.RDF_LANG_STRING)) {
+      throw new IncompatibleLanguageOperation(litA, litB);
     }
   }
 

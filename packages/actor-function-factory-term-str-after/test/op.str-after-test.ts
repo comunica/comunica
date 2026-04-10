@@ -17,13 +17,11 @@ describe('evaluations of \'strafter\' like', () => {
         "abc" "b" = "c"
         "abc"@en "ab" = "c"@en
         "abc"@en--ltr "ab" = "c"@en--ltr
-        "abc"@en--ltr "ab"@en = "c"@en--ltr
         "abc"^^xsd:string "" = "abc"^^xsd:string
         "abc" "xyz" = ""
         "abc"@en "z"@en = ""
         "abc"@en "z" = ""
         "abc"@en--ltr "z"@en--ltr = ""
-        "abc"@en--ltr "z"@en = ""
         "abc"@en--ltr "z" = ""
         "abc" "z" = ""
         "abc"@en ""@en = "abc"@en
@@ -31,10 +29,13 @@ describe('evaluations of \'strafter\' like', () => {
         "abc"@en "" = "abc"@en
       `,
     errorTable: `
+        "abc"@en--ltr "ab"@en = 'Operation on incompatible language literals'
+        "abc"@en--ltr "z"@en = 'Operation on incompatible language literals'
         "abc"@en "b"@cy = 'Operation on incompatible language literals'
         "abc"@en--ltr "b"@nl--ltr = 'Operation on incompatible language literals'
-        "abc"@en--ltr "b"@en--rtl = 'Operation on incompatible directional language literals'
+        "abc"@en--ltr "b"@en--rtl = 'Operation on incompatible language literals'
         "abc"@en--ltr "b"@nl = 'Operation on incompatible language literals'
+        "abc"@nl "b"@nl--ltr = 'Operation on incompatible language literals'
       `,
   });
 });
