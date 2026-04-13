@@ -122,7 +122,7 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
+          expect(result).toBeRdfIsomorphic(expectedResult);
         });
 
         it('should return the valid result with a json-ld data source', async() => {
@@ -132,7 +132,7 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
+          expect(result).toBeRdfIsomorphic(expectedResult);
         });
 
         it('should return the valid result with no base IRI', async() => {
@@ -160,7 +160,7 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
+          expect(result).toBeRdfIsomorphic(expectedResult);
         });
 
         it('should return the valid result with multiple sources', async() => {
@@ -1213,6 +1213,67 @@ SELECT ?person ?name ?book ?title {
           sources: [],
         });
         await expect(bindingsStream.toArray()).resolves.toHaveLength(10);
+      });
+    });
+
+    describe('compositefile source', () => {
+      it('should query over a compositefile source with multiple file URLs', async() => {
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?o.
+    }`, {
+          sources: [{
+            type: 'compositefile',
+            value: [
+              'https://www.rubensworks.net/',
+              'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/tests/valid/basic-shape-iri.ttl',
+            ],
+          }],
+        });
+        expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(0);
+      });
+
+      it('should produce the same results as individual file sources grouped by the optimizer', async() => {
+        const query = `SELECT * WHERE { ?s ?p ?o }`;
+        const compositeResult = await engine.queryBindings(query, {
+          sources: [{
+            type: 'compositefile',
+            value: [
+              'https://www.rubensworks.net/',
+              'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/tests/valid/basic-shape-iri.ttl',
+            ],
+          }],
+        });
+        const compositeBindings = await compositeResult.toArray();
+
+        // Two file-type sources will be grouped into a compositefile by the optimizer
+        const groupedResult = await engine.queryBindings(query, {
+          sources: [
+            { type: 'file', value: 'https://www.rubensworks.net/' },
+            { type: 'file', value: 'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/tests/valid/basic-shape-iri.ttl' },
+          ],
+        });
+        const groupedBindings = await groupedResult.toArray();
+
+        expect(compositeBindings).toHaveLength(groupedBindings.length);
+        expect(compositeBindings.length).toBeGreaterThan(0);
+      });
+
+      it('should internally use a single compositefile source when grouping file sources', async() => {
+        const url1 = 'https://www.rubensworks.net/';
+        const url2 = 'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/tests/valid/basic-shape-iri.ttl';
+
+        // Explain the physical plan for two individual file sources
+        const result = await engine.explain(`SELECT * WHERE { ?s ?p ?o }`, {
+          sources: [
+            { type: 'file', value: url1 },
+            { type: 'file', value: url2 },
+          ],
+        }, 'physical');
+
+        // The physical plan should show a single composite source, not two separate file sources
+        expect(result.data).toContain(`QuerySourceRdfJs(composite: ${url1},${url2})`);
+        // Only one source (SkolemID:0), not two (SkolemID:0 and SkolemID:1)
+        expect(result.data).not.toContain('SkolemID:1');
       });
     });
 

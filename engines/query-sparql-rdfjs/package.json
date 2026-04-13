@@ -162,6 +162,7 @@
     "@comunica/actor-optimize-query-operation-describe-to-constructs-subject": "^5.1.3",
     "@comunica/actor-optimize-query-operation-distinct-terms-pushdown": "^5.1.3",
     "@comunica/actor-optimize-query-operation-filter-pushdown": "^5.1.3",
+    "@comunica/actor-optimize-query-operation-group-file-sources": "^5.1.3",
     "@comunica/actor-optimize-query-operation-group-sources": "^5.1.3",
     "@comunica/actor-optimize-query-operation-join-bgp": "^5.1.3",
     "@comunica/actor-optimize-query-operation-join-connected": "^5.1.3",
