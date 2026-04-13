@@ -2129,7 +2129,7 @@ WHERE {
       });
 
       it('with nested FILTER NOT EXISTS', async() => {
-        // https://github.com/comunica/comunica/issues/1504
+        // Outer bindings must be substituted into FILTER NOT EXISTS subqueries to avoid matching unintended solutions.
         const context: QueryStringContext = {
           sources: [
             {

@@ -836,6 +836,25 @@ describe('materializeOperation', () => {
       ));
   });
 
+  it('should not modify a filter expression with empty bindings', () => {
+    const filterOp = AF.createFilter(
+      AF.createBgp([
+        AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+      ]),
+      AF.createOperatorExpression('contains', [
+        AF.createTermExpression(termVariableA),
+        AF.createTermExpression(termVariableB),
+      ]),
+    );
+    expect(materializeOperation(
+      filterOp,
+      bindingsEmpty,
+      AF,
+      BF,
+    ))
+      .toEqual(filterOp);
+  });
+
   it('should not modify a filter expression without operator as expression', () => {
     expect(materializeOperation(
       AF.createFilter(
