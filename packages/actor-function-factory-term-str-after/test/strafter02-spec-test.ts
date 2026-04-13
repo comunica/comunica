@@ -67,13 +67,11 @@ describe('We should respect the strafter02 spec', () => {
       '${s3}' "xyz"^^xsd:string = ""^^xsd:string
     `,
     errorTable: `
-      '${s1}' "b"@cy = 'Argument types not valid for operator'
-      '${s1}' ""@en  = 'Argument types not valid for operator'
-  
+      '${s1}' "b"@cy = 'incompatible language literals'
+      '${s1}' ""@en  = 'incompatible language literals'
       '${s2}' "b"@cy = 'incompatible language literals'
-  
-      '${s3}' ""@en  = 'Argument types not valid for operator'
-      '${s3}' "b"@cy = 'Argument types not valid for operator'
+      '${s3}' ""@en  = 'incompatible language literals'
+      '${s3}' "b"@cy = 'incompatible language literals'
     `,
   });
 });
