@@ -4,21 +4,20 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { toAlgebra } from '@traqula/algebra-sparql-1-2';
-import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import { AstFactory } from '@traqula/rules-sparql-1-2';
+import { PatchedParser, toAlgebraPatched } from './constructQueryQuadsPatch';
 
 /**
  * A comunica Algebra SPARQL Parse Actor.
  */
 export class ActorQueryParseSparql extends ActorQueryParse {
   public readonly prefixes: Record<string, string> | undefined;
-  private readonly parser: SparqlParser;
+  private readonly parser: PatchedParser;
 
   public constructor(args: IActorQueryParseSparqlArgs) {
     super(args);
     this.prefixes = Object.freeze(args.prefixes);
-    this.parser = new SparqlParser({ lexerConfig: {
+    this.parser = new PatchedParser({ lexerConfig: {
       positionTracking: 'onlyOffset',
     }});
   }
@@ -48,7 +47,7 @@ export class ActorQueryParseSparql extends ActorQueryParse {
     }
     return {
       baseIRI,
-      operation: toAlgebra(parsedSyntax, {
+      operation: toAlgebraPatched(parsedSyntax, {
         quads: true,
         prefixes: this.prefixes,
         blankToVariable: true,
