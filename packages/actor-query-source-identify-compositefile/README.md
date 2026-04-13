@@ -6,7 +6,7 @@ A [Query Source Identify](https://github.com/comunica/comunica/tree/master/packa
 
 This actor enables querying over multiple file URLs as a single combined source, such as:
 ```js
-{ sources: [{ type: 'compositefile', value: [ 'https://example.org/file1.ttl', 'https://example.org/file2.ttl' ] }] }
+{ sources: [{ type: 'compositefile', value: [ 'https://example.org/file1.ttl', 'https://example.org/file2.ttl' ]}]; }
 ```
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
