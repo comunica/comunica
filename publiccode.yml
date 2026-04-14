@@ -70,7 +70,6 @@ description:
 legal:
   license: MIT
   mainCopyrightOwner: Comunica Association
-  repoOwner: https://github.com/comunica
 
 maintenance:
   type: community
@@ -85,4 +84,4 @@ localisation:
 
 fundedBy:
   - name: Dutch Digital Heritage Network
-    url: https://netwerkdigitaalerfgoed.nl
+    uri: https://netwerkdigitaalerfgoed.nl
