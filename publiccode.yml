@@ -2,8 +2,8 @@ publiccodeYmlVersion: '0.4'
 
 name: Comunica
 url: https://github.com/comunica/comunica
-softwareVersion: 5.1.3
-releaseDate: 2026-01-30
+softwareVersion: 5.2.0
+releaseDate: 2026-04-14
 logo: https://comunica.dev/img/comunica_red.svg
 
 organisation:

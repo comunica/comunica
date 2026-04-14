@@ -14,3 +14,5 @@ content = content.replace(/^softwareVersion: .*/m, 'softwareVersion: ' + version
 content = content.replace(/^releaseDate: .*/m, 'releaseDate: ' + releaseDate);
 fs.writeFileSync('publiccode.yml', content);
 "
+
+git add publiccode.yml
