@@ -2188,6 +2188,58 @@ WHERE {
           ]),
         ]);
       });
+
+      it('with nested FILTER NOT EXISTS', async() => {
+        // Outer bindings must be substituted into FILTER NOT EXISTS subqueries to avoid matching unintended solutions.
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix : <urn:example:>.
+
+:i1 :p1 :o1.
+:i1 rdf:type :c1.
+:i1 rdf:type :c2.
+
+:c1 rdfs:subClassOf :c2.
+:c1 rdfs:subClassOf :c1.
+:c2 rdfs:subClassOf :c2.
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(engine.queryBindings(`
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX : <urn:example:>
+
+SELECT ?i ?o ?c
+WHERE {
+    ?i :p1 ?o.
+    ?i rdf:type ?c.
+    FILTER NOT EXISTS {
+        ?i rdf:type ?c_other.
+        ?c_other rdfs:subClassOf ?c.
+        FILTER NOT EXISTS {
+            ?c rdfs:subClassOf ?c_other
+        }
+    }
+}
+`, context)).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('i'), DF.namedNode('urn:example:i1') ],
+            [ DF.variable('o'), DF.namedNode('urn:example:o1') ],
+            [ DF.variable('c'), DF.namedNode('urn:example:c1') ],
+          ]),
+        ]);
+      });
     });
 
     describe('logger warning grouping', () => {
