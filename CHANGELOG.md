@@ -1,6 +1,29 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.2.0"></a>
+## [v5.2.0](https://github.com/comunica/comunica/compare/v5.1.3...v5.2.0) - 2026-04-14
+
+### Added
+* [Add compositefile query source and group-file-sources optimizer (#1681)](https://github.com/comunica/comunica/commit/98ff832e051ae6379114a772eca86a5481ec9ada)
+* [Retry response body streams on mid-read failures (#1667)](https://github.com/comunica/comunica/commit/572557d7e675a553f2068ef1b930589148bab4a8)
+* [Timeout SPARQL service description dereferences (#1669)](https://github.com/comunica/comunica/commit/30b28d54619f4ad44fe85468483b645745c0bc10)
+* [Add DistinctTerms operator for optimizing SELECT DISTINCT queries (#1668)](https://github.com/comunica/comunica/commit/88526dc43a891e76e329d7274a5cf68f0b5ffa70)
+* [Add interactive HTML view with YASGUI to comunica-sparql-http (#1664)](https://github.com/comunica/comunica/commit/83d3fbf528efe7ceac5c75ef7e6b609a03fdf4cf)
+* [Optimize Nodes part of property paths using custom new operator](https://github.com/comunica/comunica/commit/059ffca65c63b3a9dfc1f3ba3374ae0548a4a425)
+* [Detect SPARQL endpoints via HTTP Server header heuristics (#1653)](https://github.com/comunica/comunica/commit/1b8aea70c20e01c18e171fab92679cc8f16a3b35)
+
+### Changed
+* [Update dependency bignumber.js to v10](https://github.com/comunica/comunica/commit/bd36eea8943ffd4d9ab78b4621e6749263e5de8e)
+* [Throw error on invalid TRIPLE invocations, Closes #1675](https://github.com/comunica/comunica/commit/ddb8d13a13d4973274107d94f07084fe335d674a)
+* [Group repetitive logger warnings to reduce console noise (#1652)](https://github.com/comunica/comunica/commit/5dadcc8a7b6110c0190af675df9b642e818a55b8)
+
+### Fixed
+* [Fix nested FILTER NOT EXISTS not materializing outer bindings (#1695)](https://github.com/comunica/comunica/commit/32dcc1e9dc411f6238141060f9e668fc47b61367)
+* [Fix language direction handling in argument compatible string functions (#1694)](https://github.com/comunica/comunica/commit/921a47d32f6ed4e021b905d07785b40aacf74e00)
+* [Remove incorrect filter pushdown within the left side of a leftjoin (#1662)](https://github.com/comunica/comunica/commit/930f532ca2e3f98a37b8ae0928ea55c6338ee9f1)
+* [Fix GROUP_CONCAT incorrectly returning language tags](https://github.com/comunica/comunica/commit/4713f85162db9c70420d01a877062d17ebab8f1d)
+
 <a name="v5.1.3"></a>
 ## [v5.1.3](https://github.com/comunica/comunica/compare/v5.1.2...v5.1.3) - 2026-01-30
 
