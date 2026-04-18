@@ -35,8 +35,7 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, _context: IActionContext):
   Promise<IActorRdfParseOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    action.data.on('error', error => data.emit('error', error));
-    const data = <Readable><any>action.data.pipe(new StreamParser({
+    const parser = new StreamParser({
       factory: dataFactory,
       baseIRI: action.metadata?.baseIRI,
       // Enable RDF-star-mode on all formats, except N3, where this is not supported.
@@ -46,7 +45,9 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
       // @ts-expect-error
       parseUnsupportedVersions: Boolean(action.context.get(KeysInitQuery.parseUnsupportedVersions)),
       version: action.metadata?.version,
-    }));
+    });
+    action.data.on('error', error => parser.emit('error', error));
+    const data = <Readable><any>action.data.pipe(parser);
     return {
       data,
       metadata: {

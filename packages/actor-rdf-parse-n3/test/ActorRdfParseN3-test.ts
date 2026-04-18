@@ -266,6 +266,15 @@ describe('ActorRdfParseN3', () => {
           .handle.data)).rejects.toBeTruthy();
       });
 
+      it('should propagate the original error message from input stream errors', async() => {
+        const specificError = new Readable();
+        specificError._read = () => specificError.emit('error', new Error('specific-parse-error-message'));
+        await expect(arrayifyStream((<any>(await actor.run(
+          { handle: { data: specificError, context }, handleMediaType: 'application/trig', context },
+        )))
+          .handle.data)).rejects.toThrow('specific-parse-error-message');
+      });
+
       it('should reject on an invalid version media type parameter', async() => {
         await expect(arrayifyStream((<any> (await actor.run({
           handle: { data: input, metadata: { baseIRI: '', version: '1.2-invalid' }, context },
