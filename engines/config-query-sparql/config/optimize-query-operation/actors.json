@@ -58,8 +58,7 @@
       "@id": "urn:comunica:default:optimize-query-operation/actors#assign-sources-exhaustive",
       "@type": "ActorOptimizeQueryOperationAssignSourcesExhaustive",
       "beforeActors": [
-        { "@id": "urn:comunica:default:optimize-query-operation/actors#join-bgp" },
-        { "@id": "urn:comunica:default:optimize-query-operation/actors#distinct-terms-pushdown" }
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#join-bgp" }
       ]
     },
     {
