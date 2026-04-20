@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.2.1"></a>
+## [v5.2.1](https://github.com/comunica/comunica/compare/v5.2.0...v5.2.1) - 2026-04-20
+
+### Fixed
+* [Remove backwards-incompatible config change in query optimizers (#1701)](https://github.com/comunica/comunica/commit/4384ad36ccea6f29fe62eff7b32f6d2e72a65d3f)
+
 <a name="v5.2.0"></a>
 ## [v5.2.0](https://github.com/comunica/comunica/compare/v5.1.3...v5.2.0) - 2026-04-14
 

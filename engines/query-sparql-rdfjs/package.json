@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-rdfjs",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
   "license": "MIT",
   "funding": {
@@ -256,7 +256,7 @@
     "@comunica/bus-function-factory": "^5.2.0",
     "@comunica/bus-http-invalidate": "^5.2.0",
     "@comunica/bus-query-operation": "^5.2.0",
-    "@comunica/config-query-sparql": "^5.2.0",
+    "@comunica/config-query-sparql": "^5.2.1",
     "@comunica/core": "^5.2.0",
     "@comunica/logger-void": "^5.2.0",
     "@comunica/mediator-all": "^5.2.0",
