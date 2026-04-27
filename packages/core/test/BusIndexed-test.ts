@@ -198,9 +198,12 @@ describe('BusIndexed', () => {
 
   describe('A BusIndexed instance with simple actorIdentifierFields and actionIdentifierFields', () => {
     let bus: any;
-    const actor1 = new (<any> Actor)({ name: 'actor1', bus: new Bus({ name: 'bus1' }), type: '1' });
-    const actor2 = new (<any> Actor)({ name: 'actor2', bus: new Bus({ name: 'bus2' }), type: '2' });
-    const actor3 = new (<any> Actor)({ name: 'actor3', bus: new Bus({ name: 'bus3' }), type: '1' });
+    const actor1 = new (<any> Actor)({ name: 'actor1', bus: new Bus({ name: 'bus1' }) });
+    actor1.type = '1';
+    const actor2 = new (<any> Actor)({ name: 'actor2', bus: new Bus({ name: 'bus2' }) });
+    actor2.type = '2';
+    const actor3 = new (<any> Actor)({ name: 'actor3', bus: new Bus({ name: 'bus3' }) });
+    actor3.type = '1';
     const actor4 = new (<any> Actor)({ name: 'actor4', bus: new Bus({ name: 'bus3' }) });
 
     const observer1 = new (<any> ActionObserver)({ name: 'observer1', bus: new Bus({ name: 'bus1' }) });

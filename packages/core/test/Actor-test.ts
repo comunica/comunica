@@ -30,6 +30,14 @@ describe('Actor', () => {
       map.set('b', [ actor ]);
       expect((<any> b).dependencyLinks).toEqual(map);
     });
+
+    it('should not be vulnerable to prototype pollution via __proto__', () => {
+      const b = new Bus({ name: 'bus' });
+      const args = JSON.parse('{"name":"actor","__proto__":{"polluted":true}}');
+      args.bus = b;
+      new (<any> Actor)(args);
+      expect((<any> {}).polluted).toBeUndefined();
+    });
   });
 
   describe('An Actor instance', () => {
