@@ -37,11 +37,14 @@ implements IActorArgs<I, T, O, TS> {
    */
   protected constructor(args: IActorArgs<I, T, O, TS>) {
     // Copy all own enumerable properties from args, excluding __proto__ to prevent prototype pollution.
+    // This is needed to support BusIndexed-style buses that read actor identifier fields
+    // (e.g. functionNames, operationName) during subscription, before subclass constructors run.
     for (const key of Object.keys(args)) {
       if (key !== '__proto__') {
         (<any> this)[key] = (<any> args)[key];
       }
     }
+    // Explicitly reassign name and bus so TypeScript's definite assignment analysis is satisfied.
     this.name = args.name;
     this.bus = args.bus;
     this.bus.subscribe(this);
