@@ -35,7 +35,6 @@ implements IActorArgs<I, T, O, TS> {
    *        The bus this actor subscribes to.
    * @throws When required arguments are missing.
    */
-  protected constructor(args: IActorArgs<I, T, O, TS>) {
     // Copy all own enumerable properties from args, excluding __proto__ to prevent prototype pollution.
     // TODO: Remove this inheritance in next/major
     for (const key of Object.keys(args)) {
@@ -43,7 +42,6 @@ implements IActorArgs<I, T, O, TS> {
         (<any> this)[key] = (<any> args)[key];
       }
     }
-    // Explicitly reassign name and bus so TypeScript's definite assignment analysis is satisfied.
     this.name = args.name;
     this.bus = args.bus;
     this.bus.subscribe(this);
