@@ -27,8 +27,6 @@ implements IActorArgs<I, T, O, TS> {
   public readonly beforeActors: Actor<I, T, O, TS>[] = [];
 
   /**
-   * All enumerable properties from the `args` object are inherited to this actor.
-   *
    * The actor will subscribe to the given bus when this constructor is called.
    *
    * @param {IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput>} args Arguments object
@@ -38,7 +36,13 @@ implements IActorArgs<I, T, O, TS> {
    * @throws When required arguments are missing.
    */
   protected constructor(args: IActorArgs<I, T, O, TS>) {
-    Object.assign(this, args);
+    // Copy all own enumerable properties from args, excluding __proto__ to prevent prototype pollution.
+    // TODO: Remove this inheritance in next/major
+    for (const key of Object.keys(args)) {
+      if (key !== '__proto__') {
+        (<any> this)[key] = (<any> args)[key];
+      }
+    }
     this.name = args.name;
     this.bus = args.bus;
     this.bus.subscribe(this);
