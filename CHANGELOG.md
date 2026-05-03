@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.2.2"></a>
+## [v5.2.2](https://github.com/comunica/comunica/compare/v5.2.1...v5.2.2) - 2026-05-03
+
+### Changed
+* [Update dependency bignumber.js to v11 (#1698)](https://github.com/comunica/comunica/commit/7213f274972388b33127980aca373b9b912413b9)
+
+### Fixed
+* [Fix aggregate queries with partially unbound variables, Closes #1705](https://github.com/comunica/comunica/commit/cc9d52762622c4de065d216da90612a582f4bbad)
+* [Fix prototype pollution vulnerability in Actor constructor (#1704)](https://github.com/comunica/comunica/commit/aef95bc0adffa5dc500ce0eb5e5fd38d8fe5de1e)
+
 <a name="v5.2.1"></a>
 ## [v5.2.1](https://github.com/comunica/comunica/compare/v5.2.0...v5.2.1) - 2026-04-20
 
