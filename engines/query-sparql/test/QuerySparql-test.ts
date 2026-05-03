@@ -1826,6 +1826,76 @@ SELECT ?option WHERE {
       });
     });
 
+    describe('count distinct with UNION and partially unbound variables', () => {
+      it('should correctly count distinct values when a variable is only bound in one UNION branch', async() => {
+        // Regression test: COUNT(DISTINCT ?x) should ignore bindings where ?x is unbound
+        // (from a UNION branch that doesn't bind ?x), rather than treating the unbound
+        // case as an error that causes the aggregate to return undefined.
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+                @prefix ex: <https://example.org/> .
+                @prefix sh: <http://www.w3.org/ns/shacl#> .
+                @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+                ex:X a sh:NodeShape ;
+                    sh:targetClass ex:A ;
+                    sh:property [
+                        sh:path ex:version ;
+                        sh:datatype xsd:string ;
+                        sh:minCount 1 ;
+                        sh:maxCount 1
+                    ] .
+
+                ex:Y a sh:NodeShape ;
+                    sh:targetClass ex:B ;
+                    sh:property [
+                        sh:path ex:hasRelation ;
+                        sh:class ex:A ;
+                        sh:minCount 1 ;
+                        sh:maxCount 1
+                    ] .
+
+                ex:Z a sh:NodeShape ;
+                    sh:targetClass ex:C ;
+                    sh:property [
+                        sh:path ex:hasStatus ;
+                        sh:class ex:D ;
+                        sh:minCount 1 ;
+                        sh:maxCount 1
+                    ] .
+              `,
+              mediaType: 'text/turtle',
+              baseIRI: 'https://example.org/',
+            },
+          ],
+        };
+
+        const bindings = await arrayifyStream(await engine.queryBindings(`
+          PREFIX sh: <http://www.w3.org/ns/shacl#>
+          SELECT
+            (COUNT(DISTINCT ?nodeShape) AS ?n)
+            (COUNT(DISTINCT ?propertyShape) AS ?m)
+          WHERE {
+            { ?nodeShape a sh:NodeShape . }
+            UNION
+            { ?nodeShape sh:property ?propertyShape . }
+          }
+        `, context));
+
+        expect(bindings).toHaveLength(1);
+        const result = bindings[0];
+        expect(result.get(DF.variable('n'))).toEqual(
+          DF.literal('3', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
+        );
+        expect(result.get(DF.variable('m'))).toEqual(
+          DF.literal('3', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
+        );
+      });
+    });
+
     describe('initialBindings', () => {
       let initialBindings: Bindings;
       let sourcesValue1: string;

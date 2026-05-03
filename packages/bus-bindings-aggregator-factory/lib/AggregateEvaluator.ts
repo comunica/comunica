@@ -72,6 +72,12 @@ export abstract class AggregateEvaluator {
         }
       }
     } catch (error: unknown) {
+      // Per SPARQL spec, aggregate functions ignore unbound variables.
+      // An UnboundVariableError simply means this binding has no value for the aggregate variable,
+      // so we skip it rather than treating it as an error (which would cause the entire aggregate to fail).
+      if (error instanceof Eval.UnboundVariableError) {
+        return;
+      }
       this.safeThrow(error);
     }
   }
