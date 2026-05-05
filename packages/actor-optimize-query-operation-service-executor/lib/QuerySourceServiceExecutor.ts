@@ -8,9 +8,11 @@ import type {
   IQueryBindingsOptions,
   IQuerySource,
 } from '@comunica/types';
+import { algebraUtils } from '@comunica/utils-algebra';
 import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import type * as RDF from '@rdfjs/types';
 import { BufferedIterator } from 'asynciterator';
 
 /**
@@ -109,16 +111,17 @@ export class QuerySourceServiceExecutor implements IQuerySource {
       }
     }();
     serviceBindingsPromise
-      .then(serviceBindings => new Promise<Record<string, any>>((resolve, reject) => {
-        serviceBindings.getProperty('metadata', metadata => resolve(<Record<string, any>> metadata));
-        serviceBindings.on('error', (error) => {
-          if (lenient) {
-            resolve(silentFallback!.metadata);
-          } else {
-            reject(error);
-          }
+      .then((serviceBindings) => {
+        const metadata: Record<string, any> | undefined = serviceBindings.getProperty('metadata');
+        if (metadata) {
+          return metadata;
+        }
+        serviceBindings.getProperty('metadata', (metadata) => {
+          const serviceMetadata = <Record<string, any>> metadata;
+          bindings.setProperty('metadata', QuerySourceServiceExecutor.withMetadataState(serviceMetadata));
         });
-      }))
+        return QuerySourceServiceExecutor.createFallbackMetadata(operation, context);
+      })
       .catch((error) => {
         if (lenient) {
           return silentFallback!.metadata;
@@ -154,6 +157,30 @@ export class QuerySourceServiceExecutor implements IQuerySource {
       };
     }
     return metadata;
+  }
+
+  private static createFallbackMetadata(operation: Algebra.Operation, context: IActionContext): Record<string, any> {
+    const variables: RDF.Variable[] = [];
+    const variableLabels = new Set<string>();
+    const addVariable = (variable: RDF.Variable): void => {
+      if (!variableLabels.has(variable.value)) {
+        variableLabels.add(variable.value);
+        variables.push(variable);
+      }
+    };
+
+    for (const variable of algebraUtils.inScopeVariables(operation)) {
+      addVariable(variable);
+    }
+    for (const variable of context.get(KeysQueryOperation.joinBindings)?.keys() ?? []) {
+      addVariable(variable);
+    }
+
+    return {
+      state: new MetadataValidationState(),
+      cardinality: { type: 'estimate', value: 1 },
+      variables: variables.map(variable => ({ variable, canBeUndef: false })),
+    };
   }
 
   private static createSilentFallbackBinding(context: IActionContext): {

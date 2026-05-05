@@ -12,7 +12,6 @@ import type { TestResult, IActorTest } from '@comunica/core';
 import { passTestVoid, ActionContext } from '@comunica/core';
 import type {
   IActionContext,
-  AsyncServiceExecutor,
   ILink,
   IQuerySourceUnidentifiedExpanded,
   IQuerySourceWrapper,
@@ -22,9 +21,7 @@ import type {
 } from '@comunica/types';
 import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { passFullOperationToSource } from '@comunica/utils-query-operation';
-import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
-import { QuerySourceServiceExecutor } from './QuerySourceServiceExecutor';
 
 /**
  * A comunica Query Source Identify Optimize Query Operation Actor.
@@ -89,43 +86,34 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
         .set(KeysQueryOperation.querySources, querySources);
     }
 
-    const services: Map<string, RDF.NamedNode> = new Map();
+    const services: Set<string> = new Set();
     algebraUtils.visitOperation(action.operation, {
       [Algebra.Types.SERVICE]: {
         preVisitor: () => ({ continue: false }),
         visitor: (serviceOperation) => {
           if (serviceOperation.name.termType === 'NamedNode') {
-            services.set(serviceOperation.name.value, serviceOperation.name);
+            services.add(serviceOperation.name.value);
           }
         },
       },
     });
 
-    if (services.size > 0) {
-      const serviceExecutors: Record<string, AsyncServiceExecutor> = {};
-      for (const [ service, serviceNamedNode ] of services.entries()) {
-        const serviceExecutor = await this.getServiceExecutor(serviceNamedNode, context);
-        if (serviceExecutor) {
-          serviceExecutors[service] = serviceExecutor;
-        }
+    // Identify sources of SERVICE targets, unless the whole query is passed to the source (e.g. for SPARQL endpoints).
+    // If service sources were already registered by a previous actor, complete the remaining SERVICE targets.
+    const existingServiceSources = context.get(KeysQueryOperation.serviceSources);
+    const serviceSources: Record<string, IQuerySourceWrapper> = existingServiceSources ?
+        { ...existingServiceSources } :
+        {};
+    const hasServiceSources = Object.keys(serviceSources).length > 0;
+    if (services.size > 0 &&
+      (hasServiceSources || !await passFullOperationToSource(action.operation, querySources ?? [], context))) {
+      for (const service of services) {
+        serviceSources[service] ??= await this.identifySource({
+          type: this.serviceForceSparqlEndpoint ? 'sparql' : undefined,
+          value: service,
+        }, context);
       }
-
-      // Identify sources of SERVICE targets, unless the whole query is passed to the source (e.g. for SPARQL endpoints)
-      // and no custom executor needs to intercept a SERVICE clause locally.
-      if (Object.keys(serviceExecutors).length > 0 ||
-        !await passFullOperationToSource(action.operation, querySources ?? [], context)) {
-        const serviceSources: Record<string, IQuerySourceWrapper> = {};
-        for (const [ service, serviceNamedNode ] of services.entries()) {
-          const serviceExecutor = serviceExecutors[service];
-          serviceSources[service] = serviceExecutor ?
-              { source: new QuerySourceServiceExecutor(serviceNamedNode.value, serviceExecutor) } :
-            await this.identifySource({
-              type: this.serviceForceSparqlEndpoint ? 'sparql' : undefined,
-              value: serviceNamedNode.value,
-            }, context);
-        }
-        context = context.set(KeysQueryOperation.serviceSources, serviceSources);
-      }
+      context = context.set(KeysQueryOperation.serviceSources, serviceSources);
     }
 
     return { context, operation: action.operation };
@@ -167,21 +155,6 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
     }
 
     return sourcePromise;
-  }
-
-  public async getServiceExecutor(
-    serviceNamedNode: RDF.NamedNode,
-    context: IActionContext,
-  ): Promise<AsyncServiceExecutor | undefined> {
-    if (context.has(KeysInitQuery.serviceExecutorCreator) && context.has(KeysInitQuery.serviceExecutors)) {
-      throw new Error('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
-    }
-    if (context.has(KeysInitQuery.serviceExecutorCreator)) {
-      return context.getSafe(KeysInitQuery.serviceExecutorCreator)(serviceNamedNode);
-    }
-    if (context.has(KeysInitQuery.serviceExecutors)) {
-      return context.getSafe(KeysInitQuery.serviceExecutors)[serviceNamedNode.value];
-    }
   }
 }
 

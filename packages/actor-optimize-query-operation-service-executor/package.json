@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/actor-optimize-query-operation-query-source-identify",
-  "version": "5.1.3",
-  "description": "A query-source-identify optimize-query-operation actor",
+  "name": "@comunica/actor-optimize-query-operation-service-executor",
+  "version": "5.2.2",
+  "description": "A service-executor optimize-query-operation actor",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-optimize-query-operation-query-source-identify"
+    "directory": "packages/actor-optimize-query-operation-service-executor"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -21,7 +21,7 @@
     "comunica",
     "actor",
     "optimize-query-operation",
-    "query-source-identify"
+    "service-executor"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -41,15 +41,14 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/bus-context-preprocess": "^5.1.3",
-    "@comunica/bus-http-invalidate": "^5.1.3",
-    "@comunica/bus-optimize-query-operation": "^5.1.3",
-    "@comunica/bus-query-source-identify": "^5.1.3",
-    "@comunica/context-entries": "^5.1.3",
-    "@comunica/core": "^5.1.3",
-    "@comunica/types": "^5.1.3",
-    "@comunica/utils-algebra": "^5.1.3",
-    "@comunica/utils-query-operation": "^5.1.3",
-    "lru-cache": "^11.2.2"
+    "@comunica/bus-optimize-query-operation": "^5.2.2",
+    "@comunica/context-entries": "^5.2.2",
+    "@comunica/core": "^5.2.2",
+    "@comunica/types": "^5.2.0",
+    "@comunica/utils-algebra": "^5.2.0",
+    "@comunica/utils-bindings-factory": "^5.2.2",
+    "@comunica/utils-metadata": "^5.2.0",
+    "@rdfjs/types": "*",
+    "asynciterator": "^3.10.0"
   }
 }

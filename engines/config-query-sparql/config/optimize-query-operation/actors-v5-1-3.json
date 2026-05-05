@@ -16,6 +16,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-rewrite-copy/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-rewrite-move/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-construct-distinct/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-service-executor/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-query-source-identify/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-query-source-skolemize/^5.0.0/components/context.jsonld"
   ],
@@ -40,6 +41,11 @@
       "beforeActors": [
         { "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-identify" }
       ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#service-executor",
+      "@type": "ActorOptimizeQueryOperationServiceExecutor",
+      "beforeActors": { "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-identify" }
     },
     {
       "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-identify",

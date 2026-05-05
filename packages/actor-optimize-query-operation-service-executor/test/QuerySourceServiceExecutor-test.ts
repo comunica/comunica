@@ -133,6 +133,66 @@ describe('QuerySourceServiceExecutor', () => {
     );
   });
 
+  it('should expose fallback metadata when the executor stream has no metadata', async() => {
+    const serviceOperation = createServiceOperation();
+    const materializedInput = createMaterializedInput();
+    const joinBindings = BF.bindings([[ DF.variable('s'), DF.namedNode('urn:s') ]]);
+    const resultBinding = BF.bindings([
+      [ DF.variable('o'), DF.literal('result') ],
+    ]);
+    const executorBindings = new ArrayIterator([
+      resultBinding,
+    ], { autoStart: false });
+
+    const source = new QuerySourceServiceExecutor('urn:service', <any> jest.fn(async() => executorBindings));
+    const context = new ActionContext()
+      .set(KeysQueryOperation.serviceOperation, serviceOperation)
+      .set(KeysQueryOperation.joinBindings, joinBindings);
+
+    const bindingsStream = source.queryBindings(materializedInput, context);
+
+    await expect(getMetadataBindings(bindingsStream)()).resolves.toEqual(expect.objectContaining({
+      cardinality: { type: 'estimate', value: 1 },
+      variables: [
+        { variable: DF.variable('o'), canBeUndef: false },
+        { variable: DF.variable('s'), canBeUndef: false },
+      ],
+    }));
+    await expect(bindingsStream).toEqualBindingsStream([
+      resultBinding,
+    ]);
+  });
+
+  it('should replace fallback metadata when executor metadata becomes available later', async() => {
+    const serviceOperation = createServiceOperation();
+    const materializedInput = createMaterializedInput();
+    const executorBindings = new ArrayIterator([
+      BF.bindings([
+        [ DF.variable('o'), DF.literal('result') ],
+      ]),
+    ], { autoStart: false });
+    const metadata = {
+      cardinality: { type: 'exact', value: 1 },
+      variables: [
+        { variable: DF.variable('o'), canBeUndef: false },
+      ],
+    };
+
+    const source = new QuerySourceServiceExecutor('urn:service', <any> jest.fn(async() => executorBindings));
+    const context = new ActionContext()
+      .set(KeysQueryOperation.serviceOperation, serviceOperation);
+
+    const bindingsStream = source.queryBindings(materializedInput, context);
+
+    await expect(getMetadataBindings(bindingsStream)()).resolves.toEqual(expect.objectContaining({
+      cardinality: { type: 'estimate', value: 1 },
+    }));
+
+    executorBindings.setProperty('metadata', metadata);
+
+    await expect(getMetadataBindings(bindingsStream)()).resolves.toEqual(expect.objectContaining(metadata));
+  });
+
   it('should preserve the incoming binding for a silent SERVICE when the executor throws', async() => {
     const serviceOperation = createServiceOperation(true);
     const materializedInput = createMaterializedInput();
