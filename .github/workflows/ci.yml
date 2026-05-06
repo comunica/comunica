@@ -362,7 +362,7 @@ jobs:
       - name: Build documentation
         run: yarn run doc
       - name: Prepare artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: documentation
           name: documentation

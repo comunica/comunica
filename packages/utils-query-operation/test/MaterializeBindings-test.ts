@@ -836,6 +836,25 @@ describe('materializeOperation', () => {
       ));
   });
 
+  it('should not modify a filter expression with empty bindings', () => {
+    const filterOp = AF.createFilter(
+      AF.createBgp([
+        AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+      ]),
+      AF.createOperatorExpression('contains', [
+        AF.createTermExpression(termVariableA),
+        AF.createTermExpression(termVariableB),
+      ]),
+    );
+    expect(materializeOperation(
+      filterOp,
+      bindingsEmpty,
+      AF,
+      BF,
+    ))
+      .toEqual(filterOp);
+  });
+
   it('should not modify a filter expression without operator as expression', () => {
     expect(materializeOperation(
       AF.createFilter(
@@ -1109,6 +1128,82 @@ describe('materializeOperation', () => {
           AF.createTermExpression(termVariableB),
           AF.createTermExpression(termVariableB),
         ]),
+      ));
+  });
+
+  it('should modify a filter expression with an existence expression with matching variables', () => {
+    expect(materializeOperation(
+      AF.createFilter(
+        AF.createBgp([
+          AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+        ]),
+        AF.createExistenceExpression(
+          true,
+          AF.createBgp([
+            AF.createPattern(termNamedNode, termNamedNode, termVariableA, termNamedNode),
+          ]),
+        ),
+      ),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createFilter(
+        AF.createBgp([
+          AF.createPattern(valueA, termNamedNode, termVariableB, termNamedNode),
+        ]),
+        AF.createExistenceExpression(
+          true,
+          AF.createBgp([
+            AF.createPattern(termNamedNode, termNamedNode, valueA, termNamedNode),
+          ]),
+        ),
+      ));
+  });
+
+  it('should modify a filter expression with a nested existence expression with matching variables', () => {
+    expect(materializeOperation(
+      AF.createFilter(
+        AF.createFilter(
+          AF.createBgp([
+            AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+          ]),
+          AF.createExistenceExpression(
+            true,
+            AF.createBgp([
+              AF.createPattern(termNamedNode, termNamedNode, termVariableA, termNamedNode),
+            ]),
+          ),
+        ),
+        AF.createExistenceExpression(
+          false,
+          AF.createBgp([
+            AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+          ]),
+        ),
+      ),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createFilter(
+        AF.createFilter(
+          AF.createBgp([
+            AF.createPattern(valueA, termNamedNode, termVariableB, termNamedNode),
+          ]),
+          AF.createExistenceExpression(
+            true,
+            AF.createBgp([
+              AF.createPattern(termNamedNode, termNamedNode, valueA, termNamedNode),
+            ]),
+          ),
+        ),
+        AF.createExistenceExpression(
+          false,
+          AF.createBgp([
+            AF.createPattern(valueA, termNamedNode, termVariableB, termNamedNode),
+          ]),
+        ),
       ));
   });
 

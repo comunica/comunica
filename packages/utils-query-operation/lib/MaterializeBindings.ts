@@ -139,7 +139,31 @@ export function materializeOperation(
       preVisitor: () => ({ continue: false }),
       transform: (filterOp) => {
         const originalBindings: Bindings = <Bindings> options.originalBindings;
-        if (filterOp.expression.subType !== 'operator' || originalBindings.size === 0) {
+        if (originalBindings.size === 0) {
+          return filterOp;
+        }
+
+        if (filterOp.expression.subType === 'existence') {
+          // For existence expressions (EXISTS/NOT EXISTS), materialize the filter input and expression
+          // without adding VALUES clauses, since existence evaluation handles bindings directly.
+          const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
+            filterOp.expression,
+            bindings,
+            algebraFactory,
+            bindingsFactory,
+            options,
+          );
+          const recursionResultInput: Algebra.Operation = materializeOperation(
+            filterOp.input,
+            bindings,
+            algebraFactory,
+            bindingsFactory,
+            options,
+          );
+          return algebraFactory.createFilter(recursionResultInput, recursionResultExpression);
+        }
+
+        if (filterOp.expression.subType !== 'operator') {
           return filterOp;
         }
 
