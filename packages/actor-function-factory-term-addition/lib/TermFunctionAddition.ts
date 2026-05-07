@@ -17,6 +17,9 @@ import {
 } from '@comunica/utils-expression-evaluator';
 import { BigNumber } from 'bignumber.js';
 
+/**
+ * https://www.w3.org/TR/sparql11-query/#OperatorMapping
+ */
 export class TermFunctionAddition extends TermFunctionBase {
   public constructor() {
     super({
