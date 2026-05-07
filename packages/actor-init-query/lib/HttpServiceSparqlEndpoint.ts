@@ -546,6 +546,16 @@ export class HttpServiceSparqlEndpoint {
     this.stopResponse(response, queryId, process.stderr, eventEmitter);
   }
 
+  /**
+   * Writes a SPARQL service description response for the endpoint.
+   * @param {QueryEngineBase} engine A SPARQL engine.
+   * @param {module:stream.internal.Writable} stdout Output stream.
+   * @param {module:stream.internal.Writable} stderr Error output stream.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {module:http.ServerResponse} response Response object.
+   * @param {string} mediaType The requested response media type.
+   * @param {boolean} headOnly If only the header should be written.
+   */
   public async writeServiceDescription(
     engine: QueryEngineBase,
     stdout: Writable,
@@ -747,12 +757,18 @@ export class HttpServiceSparqlEndpoint {
   }
 }
 
+/**
+ * Represents a parsed SPARQL query or update body from an HTTP request.
+ */
 export interface IQueryBody {
   type: 'query' | 'void';
   value: string;
   context: Record<string, any> | undefined;
 }
 
+/**
+ * Arguments interface for {@link HttpServiceSparqlEndpoint}.
+ */
 export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptions {
   context?: any;
   timeout?: number;

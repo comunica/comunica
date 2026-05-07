@@ -6,4 +6,7 @@ if (typeof process === 'undefined') {
   globalThis.process = require('process/');
 }
 
+/**
+ * A comunica Query Init Actor that is safe for use in browser environments.
+ */
 export class ActorInitQuery extends ActorInitQueryBase {}
