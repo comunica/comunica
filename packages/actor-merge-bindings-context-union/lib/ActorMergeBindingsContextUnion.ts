@@ -32,6 +32,9 @@ export class ActorMergeBindingsContextUnion extends ActorMergeBindingsContext {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorMergeBindingsContextUnion}.
+ */
 export interface IActorMergeBindingsContextUnionArgs extends IActorMergeBindingsContextArgs {
   /**
    * The context key name to merge over.
