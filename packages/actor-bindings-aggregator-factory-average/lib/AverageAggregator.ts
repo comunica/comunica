@@ -10,6 +10,10 @@ interface IAverageState {
   count: number;
 }
 
+/**
+ * Implements the SPARQL AVG aggregate by maintaining a running sum and count,
+ * then dividing to produce the final average.
+ */
 export class AverageAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: IAverageState | undefined = undefined;
 

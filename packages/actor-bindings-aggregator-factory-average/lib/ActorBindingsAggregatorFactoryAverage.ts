@@ -12,6 +12,9 @@ import { failTest, passTestVoid } from '@comunica/core';
 import { SparqlOperator } from '@comunica/utils-expression-evaluator';
 import { AverageAggregator } from './AverageAggregator';
 
+/**
+ * Arguments interface for {@link ActorBindingsAggregatorFactoryAverage}.
+ */
 export interface IActorBindingsAggregatorFactoryAverageArgs extends IActorBindingsAggregatorFactoryArgs {
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }
