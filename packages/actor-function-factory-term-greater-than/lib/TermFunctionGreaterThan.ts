@@ -6,6 +6,9 @@ import {
   SparqlOperator,
 } from '@comunica/utils-expression-evaluator';
 
+/**
+ * https://www.w3.org/TR/sparql11-query/#OperatorMapping
+ */
 export class TermFunctionGreaterThan extends TermFunctionBase {
   public constructor(private readonly lessThanFunction: ITermFunction) {
     super({
