@@ -21,6 +21,9 @@ IActorQuerySourceIdentifyHypermediaTest,
 IActorQuerySourceIdentifyHypermediaOutput,
 TS
 > {
+  /**
+   * The source type identifier this actor handles.
+   */
   protected readonly sourceType: string;
 
   /* eslint-disable max-len */
@@ -36,6 +39,12 @@ TS
     this.sourceType = sourceType;
   }
 
+  /**
+   * Tests whether this actor can handle the given action.
+   * Rejects if the forced source type does not match.
+   * @param action The action to test.
+   * @return The test result with a filter factor estimate.
+   */
   public async test(
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest, TS>> {
@@ -45,6 +54,11 @@ TS
     return this.testMetadata(action);
   }
 
+  /**
+   * Tests whether this actor can handle the given metadata.
+   * @param action The action containing metadata to test.
+   * @return The test result with a filter factor estimate.
+   */
   public abstract testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest, TS>>;
@@ -95,6 +109,9 @@ export interface IActorQuerySourceIdentifyHypermediaOutput extends IActorOutput 
   dataset?: string;
 }
 
+/**
+ * Constructor arguments for {@link ActorQuerySourceIdentifyHypermedia}.
+ */
 export type IActorQuerySourceIdentifyHypermediaArgs<TS = undefined> = IActorArgs<
 IActionQuerySourceIdentifyHypermedia,
 IActorQuerySourceIdentifyHypermediaTest,
@@ -102,6 +119,9 @@ IActorQuerySourceIdentifyHypermediaOutput,
 TS
 >;
 
+/**
+ * A mediator type for query source identify hypermedia actors.
+ */
 export type MediatorQuerySourceIdentifyHypermedia = Mediate<
 IActionQuerySourceIdentifyHypermedia,
 IActorQuerySourceIdentifyHypermediaOutput,
