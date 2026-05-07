@@ -63,6 +63,9 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorContextPreprocessSetDefaults}.
+ */
 export interface IActorContextPreprocessSetDefaultsArgs extends IActorContextPreprocessArgs {
   /**
    * The logger of this actor
