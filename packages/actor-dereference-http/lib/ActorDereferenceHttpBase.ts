@@ -15,6 +15,12 @@ import { DereferenceCachePolicyHttpWrapper } from './DereferenceCachePolicyHttpW
 const REGEX_MEDIATYPE = /^[^ ;]*/u;
 const REGEX_VERSION_HEADER = /version=([^ ;]*)/u;
 
+/**
+ * Converts a record of media types with their priorities into an HTTP Accept header string.
+ * @param mediaTypes A record mapping media type strings to their quality priorities (0 to 1).
+ * @param maxLength The maximum allowed length of the resulting Accept header value.
+ * @return A formatted Accept header string, potentially truncated with a wildcard if exceeding maxLength.
+ */
 export function mediaTypesToAcceptString(mediaTypes: Record<string, number>, maxLength: number): string {
   const wildcard = '*/*;q=0.1';
   const parts: string[] = [];
@@ -120,8 +126,17 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
     };
   }
 
+  /**
+   * Returns the maximum allowed Accept header length for the current environment.
+   */
   protected abstract getMaxAcceptHeaderLength(): number;
 
+  /**
+   * Builds HTTP request headers including an Accept header derived from the action's media types.
+   * @param action The dereference action containing media types and custom headers.
+   * @param maxAcceptHeaderLength The maximum allowed length of the Accept header value.
+   * @return The constructed HTTP headers.
+   */
   public static async establishAcceptHeader(
     action: IActionDereference,
     maxAcceptHeaderLength: number,
@@ -139,6 +154,9 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
   }
 }
 
+/**
+ * Arguments interface for {@link ActorDereferenceHttpBase}.
+ */
 export interface IActorDereferenceHttpArgs extends IActorDereferenceArgs {
   /**
    * The HTTP mediator.
