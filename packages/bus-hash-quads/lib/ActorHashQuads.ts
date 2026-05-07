@@ -25,6 +25,9 @@ export abstract class ActorHashQuads<TS = undefined>
   }
 }
 
+/**
+ * The action input for selecting a quad hash function.
+ */
 export interface IActionHashQuads extends IAction {
 }
 
@@ -41,8 +44,14 @@ export interface IActorHashQuadsOutput extends IActorOutput {
   hashFunction: HashFunction;
 }
 
+/**
+ * A function that hashes a quad to a number.
+ */
 export type HashFunction = (quad: Quad) => number;
 
+/**
+ * Constructor arguments for {@link ActorHashQuads}.
+ */
 export type IActorHashQuadsArgs<TS = undefined> = IActorArgs<
 IActionHashQuads,
 IActorTest,
@@ -50,4 +59,7 @@ IActorHashQuadsOutput,
 TS
 >;
 
+/**
+ * A mediator type for hash quads actors.
+ */
 export type MediatorHashQuads = Mediate<IActionHashQuads, IActorHashQuadsOutput>;
