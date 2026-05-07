@@ -4,6 +4,9 @@ import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
+/**
+ * Implements the SPARQL MIN aggregate by tracking the smallest literal value using a term comparator.
+ */
 export class MinAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: RDF.Term | undefined = undefined;
 

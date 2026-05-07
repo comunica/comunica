@@ -11,6 +11,9 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import { MinAggregator } from './MinAggregator';
 
+/**
+ * Arguments interface for {@link ActorBindingsAggregatorFactoryMin}.
+ */
 export interface IActorBindingsAggregatorFactoryMinArgs extends IActorBindingsAggregatorFactoryArgs {
   mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 }
