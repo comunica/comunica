@@ -14,16 +14,29 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
   // Calculated as sum of unbound join type costs times 2 (best-case)
   public static MAX_PAIRWISE_COST = 41 * 2;
 
+  /**
+   * @param args Arguments for this actor.
+   */
   public constructor(
     args: IActorArgs<IActionRdfJoinSelectivity, IMediatorTypeAccuracy, IActorRdfJoinSelectivityOutput>,
   ) {
     super(args);
   }
 
+  /**
+   * Tests whether this actor can handle the given selectivity action.
+   * @param _action The selectivity action.
+   * @return A promise resolving to a test result with accuracy 0.5.
+   */
   public async test(_action: IActionRdfJoinSelectivity): Promise<TestResult<IMediatorTypeAccuracy>> {
     return passTest({ accuracy: 0.5 });
   }
 
+  /**
+   * Computes a normalized cost for a single pattern or path based on its variable positions.
+   * @param pattern The pattern or path to evaluate.
+   * @return A normalized cost value between 0 and 1.
+   */
   public static getPatternCost(pattern: Algebra.Pattern | Algebra.Path): number {
     let cost = 1;
     if (pattern.subject.termType === 'Variable') {
@@ -42,6 +55,12 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
     return cost / 9;
   }
 
+  /**
+   * Determines all join types between two patterns or paths based on shared terms.
+   * @param operation1 The first pattern or path.
+   * @param operation2 The second pattern or path.
+   * @return An array of join types representing the shared term positions.
+   */
   public static getJoinTypes(
     operation1: Algebra.Pattern | Algebra.Path,
     operation2: Algebra.Pattern | Algebra.Path,
@@ -169,6 +188,12 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
     return joinTypes;
   }
 
+  /**
+   * Computes a normalized pairwise join cost between two patterns or paths.
+   * @param operation1 The first pattern or path.
+   * @param operation2 The second pattern or path.
+   * @return A normalized cost value between 0 and 1.
+   */
   public static getOperationsPairwiseJoinCost(
     operation1: Algebra.Pattern | Algebra.Path,
     operation2: Algebra.Pattern | Algebra.Path,
@@ -279,6 +304,11 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
     return cost / ActorRdfJoinSelectivityVariableCounting.MAX_PAIRWISE_COST;
   }
 
+  /**
+   * Computes the overall join cost across multiple operations using pairwise comparisons.
+   * @param operations The algebra operations to evaluate.
+   * @return A combined selectivity cost value.
+   */
   public static getOperationsJoinCost(operations: Algebra.Operation[]): number {
     // Determine all operations that select values (patterns and paths)
     const patterns: (Algebra.Pattern | Algebra.Path)[] = [];
@@ -317,6 +347,11 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
       .reduce((factor, pattern) => factor * ActorRdfJoinSelectivityVariableCounting.getPatternCost(pattern), 1);
   }
 
+  /**
+   * Runs the selectivity estimation for the given join entries using variable counting.
+   * @param action The selectivity action containing the join entries.
+   * @return A promise resolving to the estimated selectivity value.
+   */
   public async run(action: IActionRdfJoinSelectivity): Promise<IActorRdfJoinSelectivityOutput> {
     if (action.entries.length <= 1) {
       return { selectivity: 1 };
@@ -328,6 +363,12 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
   }
 }
 
+/**
+ * Enumerates pairwise join types between two quad pattern positions.
+ *
+ * Each member encodes whether the shared term is bound or unbound
+ * and which positions (Subject, Predicate, Object, Graph) are joined.
+ */
 export enum JoinTypes {
   boundSS,
   boundSP,
