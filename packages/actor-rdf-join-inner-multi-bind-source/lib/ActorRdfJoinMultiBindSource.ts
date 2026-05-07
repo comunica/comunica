@@ -33,6 +33,9 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
   public readonly blockSize: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
 
+  /**
+   * @param args Arguments for this actor.
+   */
   public constructor(args: IActorRdfJoinInnerMultiBindSourceArgs) {
     super(args, {
       logicalType: 'inner',
@@ -44,6 +47,12 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
   }
 
+  /**
+   * Produces the join output by passing bindings from the smallest stream to the source.
+   * @param action The join action containing entries and context.
+   * @param sideData Side data containing sorted and unsorted join entries.
+   * @return A promise resolving to the inner join output.
+   */
   public async getOutput(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinMultiBindSourceTestSideData,
@@ -109,6 +118,12 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     };
   }
 
+  /**
+   * Sorts join entries, prioritizing entries with modified operations.
+   * @param entries The join entries with metadata to sort.
+   * @param context The action context.
+   * @return A promise resolving to the sorted entries or a failure.
+   */
   protected async sortJoinEntries(
     entries: IJoinEntryWithMetadata[],
     context: IActionContext,
@@ -130,6 +145,12 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     return passTest(entries);
   }
 
+  /**
+   * Calculates the join coefficients for the bind-source join strategy.
+   * @param action The join action containing entries and context.
+   * @param sideData Side data containing entry metadata.
+   * @return A promise resolving to the join coefficients or a failure message.
+   */
   public async getJoinCoefficients(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
@@ -203,6 +224,12 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     }, { ...sideData, entriesUnsorted, entriesSorted });
   }
 
+  /**
+   * Creates a single algebra operation from the remaining join entries.
+   * @param algebraFactory The algebra factory for creating join operations.
+   * @param remainingEntries The remaining join entries to combine.
+   * @return The resulting algebra operation.
+   */
   public createOperationFromEntries(
     algebraFactory: AlgebraFactory,
     remainingEntries: IJoinEntryWithMetadata[],
@@ -214,6 +241,9 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
   }
 }
 
+/**
+ * Arguments for {@link ActorRdfJoinMultiBindSource}.
+ */
 export interface IActorRdfJoinInnerMultiBindSourceArgs
   extends IActorRdfJoinArgs<IActorRdfJoinMultiBindSourceTestSideData> {
   /**
@@ -233,7 +263,12 @@ export interface IActorRdfJoinInnerMultiBindSourceArgs
   mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
 }
 
+/**
+ * Side data produced during the bind-source join test phase.
+ */
 export interface IActorRdfJoinMultiBindSourceTestSideData extends IActorRdfJoinTestSideData {
+  /** The join entries in their original unsorted order. */
   entriesUnsorted: IJoinEntryWithMetadata[];
+  /** The join entries sorted by the join entries sort mediator. */
   entriesSorted: IJoinEntryWithMetadata[];
 }
