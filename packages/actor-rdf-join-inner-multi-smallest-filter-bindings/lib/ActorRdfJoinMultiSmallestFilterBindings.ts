@@ -36,6 +36,10 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorJoin: MediatorRdfJoin;
 
+  /**
+   * Creates an instance of {@link ActorRdfJoinMultiSmallestFilterBindings}.
+   * @param args The arguments for this actor.
+   */
   public constructor(args: IActorRdfJoinMultiSmallestFilterBindingsArgs) {
     super(args, {
       logicalType: 'inner',
@@ -106,6 +110,12 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     return passTest({ first, second: second!, remaining });
   }
 
+  /**
+   * Produces the join output by pushing filtered bindings from the smallest stream into the second source
+   * and joining the result with remaining entries.
+   * @param action The join action to execute.
+   * @return The inner join output containing the resulting bindings stream and physical plan metadata.
+   */
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
@@ -191,6 +201,12 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     };
   }
 
+  /**
+   * Calculates the join cost coefficients for the multi-smallest-filter-bindings join strategy.
+   * @param action The join action to evaluate.
+   * @param sideData Pre-computed side data including entry metadata.
+   * @return A test result containing the estimated join coefficients, or a failure if preconditions are not met.
+   */
   public async getJoinCoefficients(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
@@ -248,6 +264,9 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
   }
 }
 
+/**
+ * Configuration arguments for {@link ActorRdfJoinMultiSmallestFilterBindings}.
+ */
 export interface IActorRdfJoinMultiSmallestFilterBindingsArgs extends IActorRdfJoinArgs {
   /**
    * Multiplier for selectivity values
