@@ -161,6 +161,9 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryOperationPathOneOrMore}.
+ */
 export interface IActorQueryOperationPathOneOrMoreArgs extends IActorQueryOperationTypedMediatedArgs {
   /**
    * A mediator for creating binding context merge handlers
