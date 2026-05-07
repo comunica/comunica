@@ -4,6 +4,9 @@ import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
+/**
+ * Implements the SPARQL MAX aggregate by tracking the largest literal value using a term comparator.
+ */
 export class MaxAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: RDF.Term | undefined = undefined;
   public constructor(

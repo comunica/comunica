@@ -11,6 +11,9 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import { MaxAggregator } from './MaxAggregator';
 
+/**
+ * Arguments interface for {@link ActorBindingsAggregatorFactoryMax}.
+ */
 export interface IActorBindingsAggregatorFactoryMaxArgs extends IActorBindingsAggregatorFactoryArgs {
   mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 }
