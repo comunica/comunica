@@ -5,6 +5,11 @@ import type { Argv } from 'yargs';
  * CLI arguments handler that handles options for HTTP servers.
  */
 export class CliArgsHandlerHttp implements ICliArgsHandler {
+  /**
+   * Populates the yargs argument builder with HTTP-server-specific CLI options.
+   * @param argumentsBuilder The yargs builder to extend with options.
+   * @return The extended yargs builder.
+   */
   public populateYargs(argumentsBuilder: Argv<any>): Argv<any> {
     return argumentsBuilder
       .usage('$0 exposes a SPARQL endpoint')
@@ -73,6 +78,11 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
       });
   }
 
+  /**
+   * Handles parsed arguments for HTTP mode. This implementation is a no-op.
+   * @param _args The parsed CLI arguments.
+   * @param _context The context object to populate.
+   */
   public async handleArgs(_args: Record<string, any>, _context: Record<string, any>): Promise<void> {
     // Do nothing
   }

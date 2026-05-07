@@ -29,15 +29,24 @@ export class VoidMetadataEmitter {
     'valid',
   ]);
 
+  /** The query context used for executing VoID statistics queries. */
   public readonly context: any;
+  /** Cached VoID statistics quads, populated after the first statistics fetch. */
   public cachedStatistics: RDF.Quad[] = [];
 
+  /**
+   * Creates a new VoID metadata emitter.
+   * @param context The query execution context for retrieving dataset statistics.
+   */
   public constructor(
     context: any,
   ) {
     this.context = context;
   }
 
+  /**
+   * Clears the cached VoID statistics, forcing a fresh fetch on the next request.
+   */
   public invalidateCache(): void {
     this.cachedStatistics = [];
   }

@@ -17,10 +17,20 @@ const process: NodeJS.Process = require('process/');
 export class CliArgsHandlerBase implements ICliArgsHandler {
   private readonly initialContext?: IActionContext;
 
+  /**
+   * Creates a new base CLI arguments handler.
+   * @param initialContext An optional initial action context to merge into the output context.
+   */
   public constructor(initialContext?: IActionContext) {
     this.initialContext = initialContext;
   }
 
+  /**
+   * Executes a shell command and returns its output, falling back to a default value on error.
+   * @param command The shell command to execute.
+   * @param fallback The fallback string to return if the command fails.
+   * @return A promise resolving to the trimmed command output or the fallback value.
+   */
   public static getScriptOutput(command: string, fallback: string): Promise<string> {
     return new Promise((resolve) => {
       exec(command, (error, stdout, stderr) => {
@@ -32,6 +42,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     });
   }
 
+  /**
+   * Checks whether the current environment is a development build by looking for a test directory.
+   * @return True if a test directory exists adjacent to the build output.
+   */
   public static isDevelopmentEnvironment(): boolean {
     return existsSync(Path.join(__dirname, `../../test`));
   }
@@ -63,6 +77,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     return source;
   }
 
+  /**
+   * Populates the yargs argument builder with common CLI options.
+   * @param argumentsBuilder The yargs builder to extend with options.
+   * @return The extended yargs builder.
+   */
   public populateYargs(argumentsBuilder: Argv<any>): Argv<any> {
     return argumentsBuilder
       .command(
@@ -188,6 +207,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
       .help(false);
   }
 
+  /**
+   * Processes parsed CLI arguments and populates the query execution context.
+   * @param args The parsed CLI arguments.
+   * @param context The context object to populate with configuration values.
+   */
   public async handleArgs(args: Record<string, any>, context: Record<string, any>): Promise<void> {
     // Print version information
     if (args.version) {

@@ -17,6 +17,13 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
   private readonly context: string | undefined;
   private readonly allowNoSources: boolean | undefined;
 
+  /**
+   * Creates a new query CLI arguments handler.
+   * @param defaultQueryInputFormat The default query input format.
+   * @param queryString An optional default query string.
+   * @param context An optional default JSON context string.
+   * @param allowNoSources Whether the user is allowed to pass no sources.
+   */
   public constructor(
     defaultQueryInputFormat: string | undefined,
     queryString: string | undefined,
@@ -29,6 +36,11 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
     this.allowNoSources = allowNoSources;
   }
 
+  /**
+   * Populates the yargs argument builder with query-execution-specific CLI options.
+   * @param argumentsBuilder The yargs builder to extend with options.
+   * @return The extended yargs builder.
+   */
   public populateYargs(argumentsBuilder: Argv<any>): Argv<any> {
     return argumentsBuilder
       .usage('$0 evaluates SPARQL queries')
@@ -113,6 +125,11 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
       });
   }
 
+  /**
+   * Processes parsed CLI arguments and populates the query context with query-specific settings.
+   * @param args The parsed CLI arguments.
+   * @param context The context object to populate with query configuration.
+   */
   public async handleArgs(args: Record<string, any>, context: Record<string, any>): Promise<void> {
     // Define the query format
     context[KeysInitQuery.queryFormat.name] = { language: args.inputType, version: '1.1' };

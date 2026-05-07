@@ -37,25 +37,42 @@ const cluster: Cluster = clusterUntyped;
  * An HTTP service that exposes a Comunica engine as a SPARQL endpoint.
  */
 export class HttpServiceSparqlEndpoint {
+  /** MIME type constant for plain text responses. */
   public static readonly MIME_PLAIN = 'text/plain';
+  /** MIME type constant for JSON responses. */
   public static readonly MIME_JSON = 'application/json';
+  /** MIME type constant for HTML responses. */
   public static readonly MIME_HTML = 'text/html';
 
+  /** A promise resolving to the initialized query engine. */
   public readonly engine: Promise<QueryEngineBase>;
 
+  /** The query execution context. */
   public readonly context: any;
+  /** The query execution timeout in milliseconds. */
   public readonly timeout: number;
+  /** The HTTP port the service listens on. */
   public readonly port: number;
+  /** The number of cluster worker processes to spawn. */
   public readonly workers: number;
 
+  /** Whether to spawn a fresh worker for each query. */
   public readonly freshWorkerPerQuery: boolean;
+  /** Whether the query context can be overridden via POST body. */
   public readonly contextOverride: boolean;
+  /** Whether to emit VoID metadata in service descriptions. */
   public readonly emitVoid: boolean;
 
+  /** The VoID metadata emitter for generating dataset descriptions. */
   public readonly voidMetadataEmitter: VoidMetadataEmitter;
 
+  /** A monotonically increasing counter for assigning unique query identifiers. */
   public lastQueryId = 0;
 
+  /**
+   * Creates a new HTTP SPARQL endpoint service.
+   * @param args The endpoint configuration arguments.
+   */
   public constructor(args: IHttpServiceSparqlEndpointArgs) {
     this.context = args.context || {};
     this.timeout = args.timeout ?? 60_000;
@@ -761,8 +778,11 @@ export class HttpServiceSparqlEndpoint {
  * Represents a parsed SPARQL query or update body from an HTTP request.
  */
 export interface IQueryBody {
+  /** The type of the query: 'query' for SELECT/CONSTRUCT/ASK, 'void' for UPDATE. */
   type: 'query' | 'void';
+  /** The raw SPARQL query or update string. */
   value: string;
+  /** An optional context object parsed from the request body. */
   context: Record<string, any> | undefined;
 }
 
@@ -770,14 +790,23 @@ export interface IQueryBody {
  * Arguments interface for {@link HttpServiceSparqlEndpoint}.
  */
 export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptions {
+  /** The optional query execution context. */
   context?: any;
+  /** The query execution timeout in milliseconds. */
   timeout?: number;
+  /** The HTTP port to listen on. */
   port?: number;
+  /** The number of cluster worker processes. */
   workers?: number;
+  /** Whether to terminate and respawn a worker after each query. */
   freshWorkerPerQuery?: boolean;
+  /** Whether the query context can be overridden via POST body. */
   contextOverride?: boolean;
+  /** Whether to generate VoID descriptions in service descriptions. */
   emitVoid?: boolean;
+  /** The path to the invoking module root. */
   moduleRootPath: string;
+  /** The path to the default Components.js configuration file. */
   defaultConfigPath: string;
 }
 /* eslint-enable import/no-nodejs-modules */

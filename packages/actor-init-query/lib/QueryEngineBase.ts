@@ -33,10 +33,21 @@ export class QueryEngineBase<
 implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
   private readonly actorInitQuery: ActorInitQueryBase;
 
+  /**
+   * Creates a new query engine wrapping the given initialization actor.
+   * @param actorInitQuery The query initialization actor to delegate operations to.
+   */
   public constructor(actorInitQuery: ActorInitQueryBase) {
     this.actorInitQuery = actorInitQuery;
   }
 
+  /**
+   * Evaluates a SPARQL query and returns a bindings stream.
+   * @param query A query string or algebra object.
+   * @param context An optional query context.
+   * @return A promise resolving to a stream of bindings.
+   * @template QueryFormatTypeInner The query format type.
+   */
   public async queryBindings<QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
     context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
@@ -44,6 +55,13 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     return this.queryOfType<QueryFormatTypeInner, IQueryBindingsEnhanced>(query, context, 'bindings');
   }
 
+  /**
+   * Evaluates a SPARQL CONSTRUCT/DESCRIBE query and returns a quad stream.
+   * @param query A query string or algebra object.
+   * @param context An optional query context.
+   * @return A promise resolving to a stream of RDF quads.
+   * @template QueryFormatTypeInner The query format type.
+   */
   public async queryQuads<QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
     context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
@@ -51,6 +69,13 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     return this.queryOfType<QueryFormatTypeInner, IQueryQuadsEnhanced>(query, context, 'quads');
   }
 
+  /**
+   * Evaluates a SPARQL ASK query and returns a boolean result.
+   * @param query A query string or algebra object.
+   * @param context An optional query context.
+   * @return A promise resolving to the boolean answer.
+   * @template QueryFormatTypeInner The query format type.
+   */
   public async queryBoolean<QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
     context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
@@ -58,6 +83,13 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     return this.queryOfType<QueryFormatTypeInner, RDF.QueryBoolean>(query, context, 'boolean');
   }
 
+  /**
+   * Evaluates a SPARQL UPDATE query.
+   * @param query A query string or algebra object.
+   * @param context An optional query context.
+   * @return A promise that resolves when the update has been applied.
+   * @template QueryFormatTypeInner The query format type.
+   */
   public async queryVoid<QueryFormatTypeInner extends QueryFormatType>(
     query: QueryFormatTypeInner,
     context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
@@ -65,6 +97,15 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     return this.queryOfType<QueryFormatTypeInner, RDF.QueryVoid>(query, context, 'void');
   }
 
+  /**
+   * Evaluates a query and validates that its result type matches the expected type.
+   * @param query A query string or algebra object.
+   * @param context An optional query context.
+   * @param expectedType The expected result type.
+   * @return A promise resolving to the executed result of the expected type.
+   * @template QueryFormatTypeInner The query format type.
+   * @template QueryTypeOut The expected query result type.
+   */
   protected async queryOfType<QueryFormatTypeInner extends QueryFormatType, QueryTypeOut extends QueryEnhanced>(
     query: QueryFormatTypeInner,
     context: undefined | (QueryFormatTypeInner extends string ?

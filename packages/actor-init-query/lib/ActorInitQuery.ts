@@ -15,10 +15,19 @@ import { QueryEngineBase } from './QueryEngineBase';
  * A comunica Query Init Actor.
  */
 export class ActorInitQuery<QueryContext extends IQueryContextCommon = IQueryContextCommon> extends ActorInitQueryBase {
+  /**
+   * Creates a new query initialization actor for Node.js environments.
+   * @param args The actor configuration arguments.
+   */
   public constructor(args: IActorInitQueryBaseArgs) {
     super(args);
   }
 
+  /**
+   * Runs the CLI-based query initialization, parsing arguments, executing the query, and serializing results.
+   * @param action The initialization action containing CLI arguments and context.
+   * @return A promise resolving to the output containing stdout and/or stderr streams.
+   */
   public override async run(action: IActionInit): Promise<IActorOutputInit> {
     // Wrap this actor in a query engine so we can conveniently execute queries
     const queryEngine = new QueryEngineBase<QueryContext>(this);
