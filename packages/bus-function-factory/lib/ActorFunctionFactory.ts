@@ -28,11 +28,25 @@ export abstract class ActorFunctionFactory<TS = undefined> extends
     super(args);
   }
 
+  /**
+   * Runs the function factory action and produces the corresponding function implementation.
+   * @param action The function factory action to run.
+   * @return A promise resolving to a term function output when term expressions are required,
+   *         or a general function output otherwise.
+   */
   public abstract override run<T extends IActionFunctionFactory>(action: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput>;
 }
 
+/**
+ * Represents a SPARQL expression function implementation.
+ */
 export interface IExpressionFunction {
+  /**
+   * Applies the function in the given evaluation context.
+   * @param evalContext The expression evaluation context providing arguments and bindings.
+   * @return A promise resolving to the resulting term expression.
+   */
   apply: (evalContext: IEvalContext) => Promise<TermExpression>;
   /**
    * The arity of the function will be checked when parsing and preparing a function.
@@ -41,8 +55,20 @@ export interface IExpressionFunction {
   checkArity: (args: Expression[]) => boolean;
 }
 
+/**
+ * Represents a term-level SPARQL function that supports direct evaluation on term expressions.
+ */
 export interface ITermFunction extends IExpressionFunction {
+  /**
+   * Flag indicating that this function supports direct term expression evaluation.
+   */
   supportsTermExpressions: true;
+  /**
+   * Applies the function directly on an array of term expressions.
+   * @param args The term expression arguments to evaluate.
+   * @param exprEval The internal evaluator used during evaluation.
+   * @return The resulting term expression.
+   */
   applyOnTerms: (args: TermExpression[], exprEval: IInternalEvaluator) => TermExpression;
 }
 export interface IActionFunctionFactory extends IAction {
@@ -60,10 +86,20 @@ export interface IActionFunctionFactory extends IAction {
   requireTermExpression?: boolean;
 }
 
+/**
+ * Represents the output of a function factory actor, combining actor output with an expression function.
+ */
 export interface IActorFunctionFactoryOutput extends IActorOutput, IExpressionFunction {}
 
+/**
+ * Represents the output of a function factory actor that produces term-level functions.
+ */
 export interface IActorFunctionFactoryOutputTerm extends IActorOutput, ITermFunction {}
 
+/**
+ * Constructor arguments for {@link ActorFunctionFactory}.
+ * @template TS The type of the test side data.
+ */
 export type IActorFunctionFactoryArgs<TS = undefined> = IActorArgs<
 IActionFunctionFactory,
 IActorTest,
@@ -71,8 +107,17 @@ IActorFunctionFactoryOutput,
 TS
 >;
 
+/**
+ * Unsafe mediator type for function factory that does not distinguish between term and non-term outputs.
+ */
 export type MediatorFunctionFactoryUnsafe = Mediate<IActionFunctionFactory, IActorFunctionFactoryOutput>;
 
+/**
+ * Mediator for function factory actors providing type-safe overloaded mediation.
+ *
+ * Returns {@link IActorFunctionFactoryOutputTerm} when `requireTermExpression` is `true`,
+ * and {@link IActorFunctionFactoryOutput} otherwise.
+ */
 export abstract class MediatorFunctionFactory extends Mediator<
 Actor<IActionFunctionFactory, IActorTest, IActorFunctionFactoryOutput>,
 IActionFunctionFactory,

@@ -18,17 +18,40 @@ interface BaseFunctionDefinitionArgs {
   apply: (evalContext: IEvalContext) => Promise<TermExpression>;
 }
 
+/**
+ * Base implementation of an expression-level SPARQL function.
+ */
 export class ExpressionFunctionBase implements IExpressionFunction {
+  /**
+   * The number of arguments this function accepts.
+   * Can be a single number, an array of accepted arities, or `Infinity` for variadic functions.
+   */
   protected readonly arity: number | number[];
+  /**
+   * The operator identifier for this function.
+   */
   public readonly operator: GeneralOperator;
+  /**
+   * Applies the function in the given evaluation context.
+   * @param evalContext The expression evaluation context providing arguments and bindings.
+   * @return A promise resolving to the resulting term expression.
+   */
   public readonly apply: (evalContext: IEvalContext) => Promise<TermExpression>;
 
+  /**
+   * Constructs a new expression function base.
+   */
   public constructor({ arity, operator, apply }: BaseFunctionDefinitionArgs) {
     this.arity = arity;
     this.operator = operator;
     this.apply = apply;
   }
 
+  /**
+   * Checks whether the given arguments match the expected arity of this function.
+   * @param args The expressions to validate against the expected arity.
+   * @return `true` if the number of arguments is valid, `false` otherwise.
+   */
   public checkArity(args: Expression[]): boolean {
     if (Array.isArray(this.arity)) {
       return this.arity.includes(args.length);
@@ -67,9 +90,18 @@ interface TermSparqlFunctionArgs {
  * and https://www.w3.org/TR/sparql11-query/#OperatorMapping
  */
 export class TermFunctionBase extends ExpressionFunctionBase implements ITermFunction {
+  /**
+   * Flag indicating that this function supports direct term expression evaluation.
+   */
   public readonly supportsTermExpressions = true;
+  /**
+   * The overload tree for resolving type-specific function implementations.
+   */
   protected readonly overloads: OverloadTree;
 
+  /**
+   * Constructs a new term function base.
+   */
   public constructor({ arity, operator, overloads }: TermSparqlFunctionArgs) {
     super({
       arity,
@@ -83,6 +115,12 @@ export class TermFunctionBase extends ExpressionFunctionBase implements ITermFun
     this.overloads = overloads;
   }
 
+  /**
+   * Applies the function directly on an array of term expressions.
+   * @param args The term expression arguments to evaluate.
+   * @param exprEval The internal evaluator used during evaluation.
+   * @return The resulting term expression.
+   */
   public applyOnTerms(args: TermExpression[], exprEval: IInternalEvaluator): TermExpression {
     const concreteFunction =
       this.overloads.search(
@@ -93,6 +131,11 @@ export class TermFunctionBase extends ExpressionFunctionBase implements ITermFun
     return concreteFunction(exprEval)(args);
   }
 
+  /**
+   * Handles invalid argument types by throwing an error.
+   * @param args The term expressions with invalid types.
+   * @throws InvalidArgumentTypes Always thrown to indicate the arguments do not match any overload.
+   */
   protected handleInvalidTypes(args: TermExpression[]): never {
     throw new InvalidArgumentTypes(args, this.operator);
   }

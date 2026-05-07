@@ -10,6 +10,10 @@ import type { ActorFunctionFactory, IActionFunctionFactory, IActorFunctionFactor
  */
 export class BusFunctionFactory
   extends BusIndexed<ActorFunctionFactory, IActionFunctionFactory, IActorTest, IActorFunctionFactoryOutput> {
+  /**
+   * Creates a new function factory bus.
+   * @param args The bus arguments.
+   */
   public constructor(args: IBusArgs) {
     super({
       ...args,
