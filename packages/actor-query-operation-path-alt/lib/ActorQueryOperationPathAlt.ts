@@ -52,6 +52,9 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryOperationPathAlt}.
+ */
 export interface IActorQueryOperationPathAltArgs extends IActorQueryOperationTypedMediatedArgs {
   mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
 }
