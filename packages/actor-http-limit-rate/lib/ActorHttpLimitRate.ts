@@ -5,6 +5,9 @@ import type { TestResult } from '@comunica/core';
 import { ActionContextKey, failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 
+/**
+ * An HTTP actor that applies adaptive rate limiting per host based on response times.
+ */
 export class ActorHttpLimitRate extends ActorHttp {
   private readonly hostData: Map<string, IHostData>;
   private readonly correctionMultiplier: number;
@@ -134,6 +137,9 @@ interface IHostData {
   rateLimited: boolean;
 }
 
+/**
+ * Arguments interface for {@link ActorHttpLimitRate}.
+ */
 export interface IActorHttpLimitRateArgs extends IActorHttpArgs {
   /**
    * The HTTP mediator.
