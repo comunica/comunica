@@ -44,24 +44,39 @@ export abstract class ActorQueryResultSerialize
   }
 }
 
+/** Root action type for query result serialization. */
 export type IActionRootQueryResultSerialize = IActionAbstractMediaTyped<IActionSparqlSerialize>;
+/** Root test type for query result serialization. */
 export type IActorTestRootQueryResultSerialize = IActorTestAbstractMediaTyped<IActorTest>;
+/** Root output type for query result serialization. */
 export type IActorOutputRootQueryResultSerialize = IActorOutputAbstractMediaTyped<IActorQueryResultSerializeOutput>;
 
+/** Handle action type for query result serialization. */
 export type IActionQueryResultSerializeHandle = IActionAbstractMediaTypedHandle<IActionSparqlSerialize>;
+/** Handle test type for query result serialization. */
 export type IActorTestQueryResultSerializeHandle = IActorTestAbstractMediaTypedHandle<IActorTest>;
+/** Handle output type for query result serialization. */
 export type IActorOutputQueryResultSerializeHandle = IActorOutputAbstractMediaTypedHandle<
 IActorQueryResultSerializeOutput
 >;
 
+/** Media types action type for query result serialization. */
 export type IActionQueryResultSerializeMediaTypes = IActionAbstractMediaTypedMediaTypes;
+/** Media types test type for query result serialization. */
 export type IActorTestQueryResultSerializeMediaTypes = IActorTestAbstractMediaTypedMediaTypes;
+/** Media types output type for query result serialization. */
 export type IActorOutputQueryResultSerializeMediaTypes = IActorOutputAbstractMediaTypedMediaTypes;
 
+/** Media type formats action type for query result serialization. */
 export type IActionQueryResultSerializeMediaTypeFormats = IActionAbstractMediaTypedMediaTypeFormats;
+/** Media type formats test type for query result serialization. */
 export type IActorTestQueryResultSerializeMediaTypeFormats = IActorTestAbstractMediaTypedMediaTypeFormats;
+/** Media type formats output type for query result serialization. */
 export type IActorOutputQueryResultSerializeMediaTypeFormats = IActorOutputAbstractMediaTypedMediaTypeFormats;
 
+/**
+ * Action input for SPARQL query result serialization, combining the query context with result metadata.
+ */
 export interface IActionSparqlSerialize extends IAction, IQueryOperationResultBase {
   context: IActionContext;
 }
@@ -73,24 +88,36 @@ export interface IActorQueryResultSerializeOutput extends IActorOutput {
   data: NodeJS.ReadableStream;
 }
 
+/**
+ * Constructor arguments for {@link ActorQueryResultSerialize}.
+ */
 export type IActorQueryResultSerializeArgs = IActorArgsMediaTyped<
 IActionSparqlSerialize,
 IActorTest,
 IActorQueryResultSerializeOutput
 >;
 
+/**
+ * Mediator type for query result serialization handle actions.
+ */
 export type MediatorQueryResultSerializeHandle = Mediate<
 IActionQueryResultSerializeHandle,
 IActorOutputQueryResultSerializeHandle,
 IActorTestQueryResultSerializeHandle
 >;
 
+/**
+ * Mediator type for query result serialization media type queries.
+ */
 export type MediatorQueryResultSerializeMediaTypes = Mediate<
 IActionQueryResultSerializeMediaTypes,
 IActorOutputQueryResultSerializeMediaTypes,
 IActorTestQueryResultSerializeMediaTypes
 >;
 
+/**
+ * Mediator type for query result serialization media type format queries.
+ */
 export type MediatorQueryResultSerializeMediaTypeFormats = Mediate<
   IActionQueryResultSerializeMediaTypeFormats,
 IActorOutputQueryResultSerializeMediaTypeFormats,

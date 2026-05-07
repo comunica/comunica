@@ -37,6 +37,12 @@ IActorQueryResultSerializeOutput
   }
   /* eslint-enable max-len */
 
+  /**
+   * Tests whether this actor can handle the specific serialization action.
+   * @param _action The SPARQL serialization action.
+   * @param _context The action context.
+   * @return A test result that always passes.
+   */
   public async testHandleChecked(
     _action: IActionSparqlSerialize,
     _context: IActionContext,
@@ -45,5 +51,8 @@ IActorQueryResultSerializeOutput
   }
 }
 
+/**
+ * Constructor arguments for {@link ActorQueryResultSerializeFixedMediaTypes}.
+ */
 export interface IActorQueryResultSerializeFixedMediaTypesArgs
   extends IActorArgsMediaTypedFixed<IActionSparqlSerialize, IActorTest, IActorQueryResultSerializeOutput> {}
