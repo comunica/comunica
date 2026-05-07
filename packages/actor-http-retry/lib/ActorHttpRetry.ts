@@ -6,6 +6,9 @@ import { ActionContextKey, passTest, failTest } from '@comunica/core';
 import type { TestResult } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 
+/**
+ * An HTTP actor that retries failed requests based on status codes and Retry-After headers.
+ */
 export class ActorHttpRetry extends ActorHttp {
   private readonly activeDelays: Record<string, { date: Date; timeout: NodeJS.Timeout }>;
   private readonly httpInvalidator: ActorHttpInvalidateListenable;
@@ -196,7 +199,7 @@ export class ActorHttpRetry extends ActorHttp {
    * Parses a Retry-After HTTP header value following the specification:
    * https://httpwg.org/specs/rfc9110.html#field.retry-after
    * @param {string} retryAfter The raw header value as string
-   * @returns The parsed Date object, or undefined in case of invalid header value
+   * @return The parsed Date object, or undefined in case of invalid header value
    */
   public static parseRetryAfterHeader(retryAfter: string): Date | undefined {
     if (ActorHttpRetry.numberRegex.test(retryAfter)) {
@@ -222,6 +225,9 @@ export class ActorHttpRetry extends ActorHttp {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorHttpRetry}.
+ */
 export interface IActorHttpQueueArgs extends IActorHttpArgs {
   /**
    * The HTTP mediator.
