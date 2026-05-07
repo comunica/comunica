@@ -5,6 +5,9 @@ import { typedLiteral, TypeURL } from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 import * as RdfString from 'rdf-string';
 
+/**
+ * Implements the SPARQL COUNT(*) wildcard aggregate by counting entire bindings rather than individual terms.
+ */
 export class WildcardCountAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private readonly bindingValues: Map<string, Set<string>> = new Map();
   private state: number | undefined = undefined;
@@ -39,7 +42,7 @@ export class WildcardCountAggregator extends AggregateEvaluator implements IBind
 
   /**
    * Returns true if the given bindings should be skipped.
-   * @param bindings
+   * @param bindings The bindings to check for duplicate entries.
    * @private
    */
   private handleDistinct(bindings: RDF.Bindings): boolean {
