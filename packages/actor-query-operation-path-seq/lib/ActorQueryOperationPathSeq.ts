@@ -78,6 +78,9 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryOperationPathSeq}.
+ */
 export interface IActorQueryOperationPathSeq extends IActorQueryOperationTypedMediatedArgs {
   /**
    * A mediator for joining Bindings streams
