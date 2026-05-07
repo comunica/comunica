@@ -103,6 +103,9 @@ export class ActorOptimizeQueryOperationGroupFileSources extends ActorOptimizeQu
   }
 }
 
+/**
+ * Arguments interface for {@link ActorOptimizeQueryOperationGroupFileSources}.
+ */
 export interface IActorOptimizeQueryOperationGroupFileSourcesArgs extends IActorOptimizeQueryOperationArgs {
   /**
    * The query source identify mediator.
