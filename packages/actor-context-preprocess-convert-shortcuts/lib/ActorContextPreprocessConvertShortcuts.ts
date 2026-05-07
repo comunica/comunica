@@ -25,6 +25,12 @@ export class ActorContextPreprocessConvertShortcuts extends ActorContextPreproce
     };
   }
 
+  /**
+   * Expands shortcut context keys to their full canonical key names.
+   * @param context The action context containing shortcut keys.
+   * @param contextKeyShortcuts A mapping from shortcut key names to full key names.
+   * @return A new action context with all shortcut keys replaced by their full equivalents.
+   */
   public static expandShortcuts(context: IActionContext, contextKeyShortcuts: Record<string, string>): IActionContext {
     for (const key of context.keys()) {
       if (contextKeyShortcuts[key.name]) {
@@ -37,6 +43,9 @@ export class ActorContextPreprocessConvertShortcuts extends ActorContextPreproce
   }
 }
 
+/**
+ * Arguments interface for {@link ActorContextPreprocessConvertShortcuts}.
+ */
 export interface IActorContextPreprocessConvertShortcutsArgs extends IActorContextPreprocessArgs {
   /**
    * A record of context shortcuts to full context keys (as defined in @comunica/context-entries).
