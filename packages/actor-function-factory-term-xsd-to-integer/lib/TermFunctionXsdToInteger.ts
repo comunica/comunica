@@ -11,6 +11,9 @@ import type {
   Term,
 } from '@comunica/utils-expression-evaluator';
 
+/**
+ * https://www.w3.org/TR/sparql11-query/#FunctionMapping
+ */
 export class TermFunctionXsdToInteger extends TermFunctionBase {
   public constructor() {
     super({
