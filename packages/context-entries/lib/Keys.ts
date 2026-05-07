@@ -32,6 +32,9 @@ import type { IDocumentLoader } from 'jsonld-context-parser';
  * and possibly the CliArgsHandlers in @comunica/actor-init-query.
  */
 
+/**
+ * Context keys for core engine functionality.
+ */
 export const KeysCore = {
   // We create the core context keys in @comunica/core to avoid a cyclic dependency
   /**
@@ -40,6 +43,9 @@ export const KeysCore = {
   log: CONTEXT_KEY_LOGGER,
 };
 
+/**
+ * Context keys for HTTP request configuration.
+ */
 export const KeysHttp = {
   /**
    * Include credentials flags.
@@ -113,6 +119,9 @@ export const KeysHttp = {
   httpCache: new ActionContextKey<boolean>('@comunica/bus-http:httpCache'),
 };
 
+/**
+ * Context keys for WayBack machine link recovery.
+ */
 export const KeysHttpWayback = {
   /**
    * Use the WayBack machine to get the most recent representation of a file if a link is broken.
@@ -121,6 +130,9 @@ export const KeysHttpWayback = {
   recoverBrokenLinks: new ActionContextKey<boolean>('@comunica/bus-http:recover-broken-links'),
 };
 
+/**
+ * Context keys for Memento-based datetime negotiation.
+ */
 export const KeysHttpMemento = {
   /**
    * The desired datetime for Memento datetime-negotiation.
@@ -128,13 +140,19 @@ export const KeysHttpMemento = {
   datetime: new ActionContextKey<Date>('@comunica/actor-http-memento:datetime'),
 };
 
+/**
+ * Context keys for HTTP proxy configuration.
+ */
 export const KeysHttpProxy = {
   /**
-   * Interface.
+   * The proxy handler that intercepts and routes HTTP requests.
    */
   httpProxyHandler: new ActionContextKey<IProxyHandler>('@comunica/actor-http-proxy:httpProxyHandler'),
 };
 
+/**
+ * Context keys for query engine initialization and configuration.
+ */
 export const KeysInitQuery = {
   /**
    * The unidentified sources to query over.
@@ -264,17 +282,35 @@ export const KeysInitQuery = {
   distinctConstruct: new ActionContextKey<boolean>('@comunica/actor-init-query:distinctConstruct'),
 };
 
+/**
+ * Context keys for SPARQL expression evaluation settings.
+ */
 export const KeysExpressionEvaluator = {
+  /**
+   * A factory for creating asynchronous extension functions used during expression evaluation.
+   */
   extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator>(
     '@comunica/utils-expression-evaluator:extensionFunctionCreator',
   ),
+  /**
+   * Provides supertype relationships for custom RDF literal datatypes.
+   */
   superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/utils-expression-evaluator:superTypeProvider'),
+  /**
+   * The default timezone used when evaluating date/time expressions without explicit timezone.
+   */
   defaultTimeZone: new ActionContextKey<ITimeZoneRepresentation>(
     '@comunica/utils-expression-evaluator:defaultTimeZone',
   ),
+  /**
+   * The action context passed to expression evaluation for access to engine state.
+   */
   actionContext: new ActionContextKey<IActionContext>('@comunica/utils-expression-evaluator:actionContext'),
 };
 
+/**
+ * Context keys for query operation processing.
+ */
 export const KeysQueryOperation = {
   /**
    * Context entry for the current query operation.
@@ -322,21 +358,30 @@ export const KeysQueryOperation = {
   ),
 };
 
+/**
+ * Context keys for JSON-LD parsing configuration.
+ */
 export const KeysRdfParseJsonLd = {
   /**
+   * A custom JSON-LD document loader for resolving remote contexts.
    * @range {IDocumentLoader}
    */
   documentLoader: new ActionContextKey<IDocumentLoader>('@comunica/actor-rdf-parse-jsonld:documentLoader'),
   /**
+   * Whether strict value validation should be applied during JSON-LD parsing.
    * @range {boolean}
    */
   strictValues: new ActionContextKey<boolean>('@comunica/actor-rdf-parse-jsonld:strictValues'),
   /**
+   * Additional options passed to the JSON-LD parser.
    * @range {Record<string, any>}
    */
   parserOptions: new ActionContextKey<Record<string, any>>('@comunica/actor-rdf-parse-jsonld:parserOptions'),
 };
 
+/**
+ * Context keys for HTML script tag RDF parsing.
+ */
 export const KeysRdfParseHtmlScript = {
   /**
    * An internal context flag to determine if the engine is already processing an HTML script tag.
@@ -348,6 +393,9 @@ export const KeysRdfParseHtmlScript = {
   extractAllScripts: new ActionContextKey<boolean>('extractAllScripts'),
 };
 
+/**
+ * Context keys for RDF serialization settings.
+ */
 export const KeysRdfSerialize = {
   /**
    * Prefixes that will be used by RDF serializers.
@@ -357,6 +405,9 @@ export const KeysRdfSerialize = {
   ),
 };
 
+/**
+ * Context keys for query source identification and traversal.
+ */
 export const KeysQuerySourceIdentify = {
   /**
    * A map containing unique IDs for each source
@@ -371,6 +422,9 @@ export const KeysQuerySourceIdentify = {
   traverse: new ActionContextKey<boolean>('@comunica/bus-query-source-identify:traverse'),
 };
 
+/**
+ * Context keys for RDF quad update destinations.
+ */
 export const KeysRdfUpdateQuads = {
   /**
    * A data destination.
@@ -378,6 +432,9 @@ export const KeysRdfUpdateQuads = {
   destination: new ActionContextKey<IDataDestination>('@comunica/bus-rdf-update-quads:destination'),
 };
 
+/**
+ * Context keys for binding context merging and source tracking.
+ */
 export const KeysMergeBindingsContext = {
   /**
    * The data sources required to produce the binding
@@ -385,6 +442,9 @@ export const KeysMergeBindingsContext = {
   sourcesBinding: new ActionContextKey<string[]>('@comunica/bus-merge-bindings-context:sourcesBinding'),
 };
 
+/**
+ * Context keys for RDF join operation state.
+ */
 export const KeysRdfJoin = {
   /**
    * The last physical join actor that was executed.
@@ -392,6 +452,9 @@ export const KeysRdfJoin = {
   lastPhysicalJoin: new ActionContextKey<string>('@comunica/bus-rdf-join:lastPhysicalJoin'),
 };
 
+/**
+ * Context keys for query execution statistics collection.
+ */
 export const KeysStatistics = {
   /**
    * All discovered links during query execution. Not all of them will necessarily be dereferenced.
