@@ -27,14 +27,23 @@ export abstract class ActorRdfResolveHypermediaLinksQueue<TS = undefined> extend
   }
 }
 
+/**
+ * The action input for creating a link queue.
+ */
 export interface IActionRdfResolveHypermediaLinksQueue extends IAction {
 
 }
 
 export interface IActorRdfResolveHypermediaLinksQueueOutput extends IActorOutput {
+  /**
+   * The created link queue.
+   */
   linkQueue: ILinkQueue;
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfResolveHypermediaLinksQueue}.
+ */
 export type IActorRdfResolveHypermediaLinksQueueArgs<TS = undefined> = IActorArgs<
 IActionRdfResolveHypermediaLinksQueue,
 IActorTest,
@@ -42,6 +51,9 @@ IActorRdfResolveHypermediaLinksQueueOutput,
 TS
 >;
 
+/**
+ * A mediator type for rdf-resolve-hypermedia-links-queue actors.
+ */
 export type MediatorRdfResolveHypermediaLinksQueue = Mediate<
 IActionRdfResolveHypermediaLinksQueue,
 IActorRdfResolveHypermediaLinksQueueOutput
