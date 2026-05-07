@@ -8,7 +8,15 @@ import { TransformerSubTyped } from '@traqula/core';
 import type { KnownOperation, Operation } from './Algebra';
 import { TypesComunica } from './TypesComunica';
 
+/**
+ * Resolves a relative IRI against a base IRI.
+ * @see algebraUtils.resolveIRI
+ */
 export const resolveIRI = algebraUtils.resolveIRI;
+/**
+ * Converts a parsed SPARQL JSON object into an algebra operation.
+ * @see algebraUtils.objectify
+ */
 export const objectify = algebraUtils.objectify;
 
 /**
