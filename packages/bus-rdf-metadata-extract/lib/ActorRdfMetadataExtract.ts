@@ -54,6 +54,9 @@ export interface IActorRdfMetadataExtractOutput extends IActorOutput {
   metadata: Record<string, any>;
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfMetadataExtract}.
+ */
 export type IActorRdfMetadataExtractArgs<TS = undefined> = IActorArgs<
 IActionRdfMetadataExtract,
 IActorTest,
@@ -61,4 +64,7 @@ IActorRdfMetadataExtractOutput,
 TS
 >;
 
+/**
+ * A mediator type for RDF metadata extract actors.
+ */
 export type MediatorRdfMetadataExtract = Mediate<IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput>;
