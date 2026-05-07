@@ -10,10 +10,22 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   private readonly planNodes: Map<any, IPlanNode>;
   private rootNode: IPlanNode | undefined;
 
+  /**
+   * Creates a new in-memory physical query plan logger.
+   */
   public constructor() {
     this.planNodes = new Map();
   }
 
+  /**
+   * Logs a query plan operation node and attaches it to the plan tree.
+   * @param logicalOperator The logical operator name.
+   * @param physicalOperator The physical operator name, if any.
+   * @param node The raw algebra node.
+   * @param parentNode The parent algebra node, or undefined for the root.
+   * @param actor The name of the actor handling this operation.
+   * @param metadata Additional metadata for the plan node.
+   */
   public logOperation(
     logicalOperator: string,
     physicalOperator: string | undefined,
@@ -49,6 +61,11 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     }
   }
 
+  /**
+   * Removes or filters children of the plan node associated with the given algebra node.
+   * @param node The algebra node whose plan node children to stash.
+   * @param filter An optional predicate to select which children to keep.
+   */
   public stashChildren(node: any, filter?: (planNodeFilter: IPlanNode) => boolean): void {
     const planNode = this.planNodes.get(node);
     if (!planNode) {
@@ -57,6 +74,11 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     planNode.children = filter ? planNode.children.filter(filter) : [];
   }
 
+  /**
+   * Re-attaches a previously stashed plan node as a child of the given parent node.
+   * @param node The algebra node to unstash.
+   * @param parentNode The parent algebra node to attach it to.
+   */
   public unstashChild(
     node: any,
     parentNode: any,
@@ -71,6 +93,11 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     }
   }
 
+  /**
+   * Merges additional metadata into the plan node associated with the given algebra node.
+   * @param node The algebra node whose plan node metadata to update.
+   * @param metadata The metadata to merge.
+   */
   public appendMetadata(
     node: any,
     metadata: any,
@@ -84,6 +111,10 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     }
   }
 
+  /**
+   * Converts the query plan tree to a JSON representation.
+   * @return The root plan node as JSON, or an empty object if no plan exists.
+   */
   public toJson(): IPlanNodeJson | Record<string, never> {
     return this.rootNode ? this.planNodeToJson(this.rootNode) : {};
   }
@@ -179,6 +210,10 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     return `${termToString(quad.subject)} ${termToString(quad.predicate)} ${termToString(quad.object)}${quad.graph.termType === 'DefaultGraph' ? '' : ` ${termToString(quad.graph)}`}`;
   }
 
+  /**
+   * Converts the query plan tree to a compact human-readable string.
+   * @return A multi-line string representing the query plan.
+   */
   public toCompactString(): string {
     const node = this.toJson();
     const lines: string[] = [];
@@ -201,6 +236,14 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     return lines.join('\n');
   }
 
+  /**
+   * Recursively converts a plan node and its children into compact string lines.
+   * @param lines The accumulator array of output lines.
+   * @param sources A map tracking source URIs to numeric identifiers.
+   * @param indent The current indentation prefix.
+   * @param node The plan node to render.
+   * @param metadata Optional additional metadata string to append.
+   */
   public nodeToCompactString(
     lines: string[],
     sources: Map<string, number>,
@@ -239,6 +282,11 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   }
 }
 
+/**
+ * Formats a number as a locale-aware string with up to three decimal places.
+ * @param value The number to format.
+ * @return The formatted string.
+ */
 export function numberToString(value: number): string {
   return value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 3 });
 }

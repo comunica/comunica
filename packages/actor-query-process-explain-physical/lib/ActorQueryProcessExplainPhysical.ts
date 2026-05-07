@@ -18,11 +18,19 @@ import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
 export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
   public readonly queryProcessor: IQueryProcessSequential;
 
+  /**
+   * @param args Arguments for this actor.
+   */
   public constructor(args: IActorQueryProcessExplainPhysicalArgs) {
     super(args);
     this.queryProcessor = args.queryProcessor;
   }
 
+  /**
+   * Tests whether this actor can handle the given query process action.
+   * @param action The query process action to test.
+   * @return A test result that passes only for 'physical' or 'physical-json' explain modes.
+   */
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
     const mode = (action.context.get(KeysInitQuery.explain) ?? action.context.get(new ActionContextKey('explain')));
     if (mode !== 'physical' && mode !== 'physical-json') {
@@ -31,6 +39,11 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
     return passTestVoid();
   }
 
+  /**
+   * Runs the query, collects the physical query plan, and returns it as the result.
+   * @param action The query process action containing the query and context.
+   * @return The explain output containing the physical query plan.
+   */
   public async run(action: IActionQueryProcess): Promise<IActorQueryProcessOutput> {
     // Run all query processing steps in sequence
 
@@ -71,6 +84,10 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryProcessExplainPhysical}.
+ */
 export interface IActorQueryProcessExplainPhysicalArgs extends IActorQueryProcessArgs {
+  /** The sequential query processor used to parse, optimize, and evaluate queries. */
   queryProcessor: IQueryProcessSequential;
 }
