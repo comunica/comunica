@@ -12,6 +12,9 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { mapTermsNested } from 'rdf-terms';
 
+/**
+ * The URI prefix used for skolemized blank node identifiers scoped to a specific source.
+ */
 export const SKOLEM_PREFIX = 'urn:comunica_skolem:source_';
 
 /**
@@ -161,6 +164,13 @@ export function deskolemizeTerm(
   return term;
 }
 
+/**
+ * Deskolemizes a term, recursively handling nested quad terms, and throws if the term belongs to a different source.
+ * @param dataFactory The data factory.
+ * @param term Any RDF term, potentially a nested quad.
+ * @param sourceId A source identifier.
+ * @return The deskolemized term.
+ */
 export function deskolemizeTermNestedThrowing(
   dataFactory: ComunicaDataFactory,
   term: RDF.Term,
