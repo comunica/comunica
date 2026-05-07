@@ -21,6 +21,10 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
   public readonly mediatorJoin: MediatorRdfJoin;
   public readonly mediatorIteratorTransform: MediatorIteratorTransform;
 
+  /**
+   * Creates an instance of {@link ActorRdfJoinWrapStream}.
+   * @param args The arguments for this actor.
+   */
   public constructor(args: IActorRdfJoinWrapStreamArgs) {
     super(args, {
       logicalType: 'inner',
@@ -34,6 +38,11 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     this.mediatorIteratorTransform = args.mediatorIteratorTransform;
   }
 
+  /**
+   * Tests whether this actor can handle the given join action, rejecting if the join has already been wrapped.
+   * @param action The join action to test.
+   * @return A test result with join coefficients, or a failure if the action was already wrapped.
+   */
   public override async test(action: IActionRdfJoin):
   Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
     if (action.context.get(KEY_CONTEXT_WRAPPED_RDF_JOIN) === action.entries) {
@@ -44,6 +53,11 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     return await this.getJoinCoefficients(action, { metadatas });
   }
 
+  /**
+   * Produces the join output by delegating to the inner join mediator and applying stream transformations.
+   * @param action The join action to execute.
+   * @return The inner join output with the transformed bindings stream.
+   */
   public override async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     // Prevent infinite recursion. In consequent query operation calls this key is set to false
     // To allow the operation to wrap ALL rdf-join runs
@@ -67,6 +81,12 @@ export class ActorRdfJoinWrapStream extends ActorRdfJoin {
     return { result };
   }
 
+  /**
+   * Returns fixed negative join coefficients to ensure this actor receives the lowest priority during mediation.
+   * @param _action The join action to evaluate.
+   * @param sideData Pre-computed side data including entry metadata.
+   * @return A test result containing the fixed join coefficients.
+   */
   protected async getJoinCoefficients(
     _action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
