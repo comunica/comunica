@@ -55,7 +55,13 @@ export interface IActorRdfMetadataOutput extends IActorOutput {
   metadata: RDF.Stream;
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfMetadata}.
+ */
 export type IActorRdfMetadataArgs<TS = undefined> =
   IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput, TS>;
 
+/**
+ * A mediator type for RDF metadata actors.
+ */
 export type MediatorRdfMetadata = Mediate<IActionRdfMetadata, IActorRdfMetadataOutput>;
