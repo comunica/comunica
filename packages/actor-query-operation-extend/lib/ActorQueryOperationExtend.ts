@@ -78,6 +78,9 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryOperationExtend}.
+ */
 export interface IActorQueryOperationExtendArgs extends IActorQueryOperationTypedMediatedArgs {
   mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 }
