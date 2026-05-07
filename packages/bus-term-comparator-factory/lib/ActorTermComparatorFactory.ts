@@ -18,8 +18,17 @@ import type * as RDF from '@rdfjs/types';
  */
 export abstract class ActorTermComparatorFactory<TS = undefined> extends
   Actor<IActionTermComparatorFactory, IActorTest, IActorTermComparatorFactoryOutput, TS> {
+  /**
+   * The mediator for query operations.
+   */
   protected readonly mediatorQueryOperation: MediatorQueryOperation;
+  /**
+   * The mediator for function factories.
+   */
   protected readonly mediatorFunctionFactory: MediatorFunctionFactory;
+  /**
+   * The mediator for merging binding contexts.
+   */
   protected readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   /**
@@ -35,10 +44,16 @@ export abstract class ActorTermComparatorFactory<TS = undefined> extends
   }
 }
 
+/**
+ * The action input for creating a term comparator.
+ */
 export interface IActionTermComparatorFactory extends IAction {
 
 }
 
+/**
+ * Comparator for ordering RDF terms.
+ */
 export interface ITermComparator {
   /**
    * Orders two RDF terms according to: https://www.w3.org/TR/sparql11-query/#modOrderBy
@@ -48,15 +63,27 @@ export interface ITermComparator {
   orderTypes: (termA: RDF.Term | undefined, termB: RDF.Term | undefined) => -1 | 0 | 1;
 }
 
+/**
+ * Output of a term comparator factory actor.
+ */
 export interface IActorTermComparatorFactoryOutput extends IActorOutput, ITermComparator {}
 
+/**
+ * Constructor arguments for {@link ActorTermComparatorFactory}.
+ */
 export interface IActorTermComparatorFactoryArgs<TS = undefined> extends IActorArgs<
 IActionTermComparatorFactory,
 IActorTest,
 IActorTermComparatorFactoryOutput,
 TS
 > {
+  /**
+   * The mediator for query operations.
+   */
   mediatorQueryOperation: MediatorQueryOperation;
+  /**
+   * The mediator for function factories.
+   */
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
   /**
    * A mediator for creating binding context merge handlers
@@ -64,6 +91,9 @@ TS
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }
 
+/**
+ * A mediator type for term comparator factory actors.
+ */
 export type MediatorTermComparatorFactory = Mediate<
 IActionTermComparatorFactory,
 IActorTermComparatorFactoryOutput
