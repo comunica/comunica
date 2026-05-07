@@ -8,6 +8,9 @@ interface NamedExtensionArgs {
   functionDefinition: AsyncExtensionFunction;
 }
 
+/**
+ * SPARQL extension function implementation for named custom functions.
+ */
 export class NamedExtension extends ExpressionFunctionBase {
   public constructor({ operator, functionDefinition }: NamedExtensionArgs) {
     super({
