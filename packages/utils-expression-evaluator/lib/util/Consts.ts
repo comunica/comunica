@@ -1,8 +1,14 @@
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 
+/**
+ * Union type of all recognized literal type identifiers.
+ */
 export type KnownLiteralTypes = TypeAlias | TypeURL;
 
+/**
+ * Enum of type aliases used for grouping related XSD types in overload resolution.
+ */
 export enum TypeAlias {
   // Numeric is everything defined in https://www.w3.org/TR/sparql11-query/#operandDataTypes
   SPARQL_NUMERIC = 'SPARQL_NUMERIC',
@@ -22,6 +28,9 @@ export function typedLiteral(value: string, type: TypeURL): RDF.Literal {
   return DF.literal(value, DF.namedNode(type));
 }
 
+/**
+ * Enum of XSD and RDF datatype URIs used throughout the expression evaluator.
+ */
 export enum TypeURL {
   XSD_ANY_URI = 'http://www.w3.org/2001/XMLSchema#anyURI',
   XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string',
@@ -87,10 +96,19 @@ export enum TypeURL {
 // Operators
 // ----------------------------------------------------------------------------
 
+/**
+ * Union type of known operators and arbitrary extension function URIs.
+ */
 export type GeneralOperator = KnownOperator | string;
 
+/**
+ * Union type of all known SPARQL operators (built-in and named).
+ */
 export type KnownOperator = SparqlOperator | NamedOperator;
 
+/**
+ * Enum of built-in SPARQL operators and functions.
+ */
 export enum SparqlOperator {
   // Operator mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping

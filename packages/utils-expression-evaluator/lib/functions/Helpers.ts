@@ -27,19 +27,35 @@ import { OverloadTree } from './OverloadTree';
 
 type Term = TermExpression;
 
+/**
+ * Creates a new function overload builder for the given SPARQL function identifier.
+ * @param identifier The name of the SPARQL function to declare.
+ * @return A new Builder instance for registering overloads.
+ */
 export function declare(identifier: string): Builder {
   return new Builder(identifier);
 }
 
+/**
+ * DSL builder for declaring SPARQL function overloads with type-safe argument handling.
+ */
 export class Builder {
   private readonly overloadTree: OverloadTree;
   private collected: boolean;
 
+  /**
+   * Creates a new Builder.
+   * @param identifier The name of the SPARQL function being built.
+   */
   public constructor(identifier: string) {
     this.overloadTree = new OverloadTree(identifier);
     this.collected = false;
   }
 
+  /**
+   * Finalizes the builder and returns the constructed overload tree. Can only be called once.
+   * @return The completed overload tree.
+   */
   public collect(): OverloadTree {
     if (this.collected) {
       // Only 1 time allowed because we can't copy a tree. (And we don't need this).
@@ -62,6 +78,12 @@ export class Builder {
     };
   }
 
+  /**
+   * Registers a function overload for the given argument types.
+   * @param argTypes The expected argument types.
+   * @param func The implementation function.
+   * @param addInvalidHandling Whether to wrap with non-lexical literal protection.
+   */
   public set(
     argTypes: [],
     func: ImplementationFunctionTuple<[]>,
@@ -98,6 +120,9 @@ export class Builder {
     return this;
   }
 
+  /**
+   * Copies an existing overload implementation from one type signature to another.
+   */
   public copy({ from, to }: { from: ArgumentType[]; to: ArgumentType[] }): Builder {
     const impl = this.overloadTree.getImplementationExact(from);
     if (!impl) {
@@ -109,12 +134,24 @@ export class Builder {
     return this.set(to, impl);
   }
 
+  /**
+   * Registers a unary operator overload that receives the full term expression.
+   * @param type The expected argument type.
+   * @param op The unary operation.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onUnary<T extends Term>(type: ArgumentType, op: (expressionEvaluator: IInternalEvaluator) =>
   (val: T) => Term, addInvalidHandling = true): Builder {
     return this.set([ type ], expressionEvaluator =>
       ([ val ]: [T]) => op(expressionEvaluator)(val), addInvalidHandling);
   }
 
+  /**
+   * Registers a unary operator overload that receives the literal's typed value.
+   * @param type The expected argument type.
+   * @param op The unary operation on the typed value.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onUnaryTyped<T extends ISerializable>(
     type: ArgumentType,
     op: (expressionEvaluator: IInternalEvaluator) => (val: T) => Term,
@@ -124,6 +161,12 @@ addInvalidHandling = true,
       op(expressionEvaluator)(val.typedValue), addInvalidHandling);
   }
 
+  /**
+   * Registers a binary operator overload that receives full term expressions.
+   * @param types The expected argument types as a pair.
+   * @param op The binary operation.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onBinary<L extends Term, R extends Term>(
     types: [ArgumentType, ArgumentType],
     op: (expressionEvaluator: IInternalEvaluator) => (left: L, right: R) => Term,
@@ -134,6 +177,12 @@ addInvalidHandling = true,
       ([ left, right ]: [L, R]) => op(expressionEvaluator)(left, right), addInvalidHandling);
   }
 
+  /**
+   * Registers a binary operator overload that receives literal typed values.
+   * @param types The expected argument types as a pair.
+   * @param op The binary operation on typed values.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onBinaryTyped<L extends ISerializable, R extends ISerializable>(
     types: [ArgumentType, ArgumentType],
     op: (expressionEvaluator: IInternalEvaluator) => (left: L, right: R) => Term,
@@ -148,6 +197,12 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a ternary operator overload that receives literal typed values.
+   * @param types The expected argument types as a triple.
+   * @param op The ternary operation on typed values.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onTernaryTyped<A1 extends ISerializable, A2 extends ISerializable, A3 extends ISerializable>(
     types: [ArgumentType, ArgumentType, ArgumentType],
     op: (expressionEvaluator: IInternalEvaluator)
@@ -158,6 +213,12 @@ addInvalidHandling = true,
       op(expressionEvaluator)(a1.typedValue, a2.typedValue, a3.typedValue), addInvalidHandling);
   }
 
+  /**
+   * Registers a ternary operator overload that receives full term expressions.
+   * @param types The expected argument types as a triple.
+   * @param op The ternary operation.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onTernary<A1 extends Term, A2 extends Term, A3 extends Term>(
     types: [ArgumentType, ArgumentType, ArgumentType],
     op: (expressionEvaluator: IInternalEvaluator) =>
@@ -168,6 +229,12 @@ addInvalidHandling = true,
       ([ a1, a2, a3 ]: [A1, A2, A3]) => op(expressionEvaluator)(a1, a2, a3), addInvalidHandling);
   }
 
+  /**
+   * Registers a quaternary operator overload that receives literal typed values.
+   * @param types The expected argument types as a quadruple.
+   * @param op The quaternary operation on typed values.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onQuaternaryTyped<
     A1 extends ISerializable,
 A2 extends ISerializable,
@@ -183,6 +250,11 @@ addInvalidHandling = true,
         op(expressionEvaluator)(a1.typedValue, a2.typedValue, a3.typedValue, a4.typedValue), addInvalidHandling);
   }
 
+  /**
+   * Registers a unary overload that accepts any term type.
+   * @param op The unary operation on any term.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onTerm1<T extends Term>(
     op: (expressionEvaluator: IInternalEvaluator) =>
     (term: T) => Term,
@@ -195,6 +267,10 @@ addInvalidHandling = false,
     );
   }
 
+  /**
+   * Registers a ternary overload that accepts any term types.
+   * @param op The ternary operation on any terms.
+   */
   public onTerm3(op: (expressionEvaluator: IInternalEvaluator) => (t1: Term, t2: Term, t3: Term) => Term):
   Builder {
     return this.set(
@@ -203,10 +279,19 @@ addInvalidHandling = false,
     );
   }
 
+  /**
+   * Registers a unary overload that accepts a quad term.
+   * @param op The unary operation on a quad.
+   */
   public onQuad1(op: (expressionEvaluator: IInternalEvaluator) => (term: Term & Quad) => Term): Builder {
     return this.set([ 'quad' ], expressionEvaluator => ([ term ]: [Term & Quad]) => op(expressionEvaluator)(term));
   }
 
+  /**
+   * Registers a unary overload that accepts any literal.
+   * @param op The unary operation on a literal.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onLiteral1<T extends ISerializable>(
     op: (expressionEvaluator: IInternalEvaluator) =>
     (lit: E.Literal<T>) => Term,
@@ -219,6 +304,11 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a unary overload that accepts a boolean literal.
+   * @param op The unary operation on a boolean literal.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onBoolean1(
     op: (expressionEvaluator: IInternalEvaluator) => (lit: E.BooleanLiteral) => Term,
 addInvalidHandling = true,
@@ -230,6 +320,11 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a unary overload that receives a boolean typed value.
+   * @param op The unary operation on a boolean value.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onBoolean1Typed(
     op: (expressionEvaluator: IInternalEvaluator) => (lit: boolean) => Term,
 addInvalidHandling = true,
@@ -241,6 +336,11 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a unary overload that accepts a string literal.
+   * @param op The unary operation on a string literal.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onString1(
     op: (expressionEvaluator: IInternalEvaluator) => (lit: E.Literal<string>) => Term,
 addInvalidHandling = true,
@@ -252,6 +352,11 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a unary overload that receives a string typed value.
+   * @param op The unary operation on a string value.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onString1Typed(
     op: (expressionEvaluator: IInternalEvaluator) => (lit: string) => Term,
 addInvalidHandling = true,
@@ -263,6 +368,11 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a unary overload that accepts a language-tagged string literal.
+   * @param op The unary operation on a language-tagged string literal.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onLangString1(
     op: (expressionEvaluator: IInternalEvaluator) => (lit: E.LangStringLiteral) => Term,
 addInvalidHandling = true,
@@ -274,6 +384,11 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a unary overload that accepts a directional language-tagged string literal.
+   * @param op The unary operation on a directional language-tagged string literal.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onDirLangString1(
     op: (expressionEvaluator: IInternalEvaluator) => (lit: E.DirLangStringLiteral) => Term,
     addInvalidHandling = true,
@@ -285,6 +400,11 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a unary overload that accepts a SPARQL stringly typed literal.
+   * @param op The unary operation on a stringly literal.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onStringly1(
     op: (expressionEvaluator: IInternalEvaluator) => (lit: E.Literal<string>) => Term,
 addInvalidHandling = true,
@@ -296,6 +416,11 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a unary overload that receives a SPARQL stringly typed value.
+   * @param op The unary operation on the string value.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onStringly1Typed(
     op: (expressionEvaluator: IInternalEvaluator) => (lit: string) => Term,
 addInvalidHandling = true,
@@ -339,6 +464,11 @@ addInvalidHandling = true,
     }
   }
 
+  /**
+   * Registers a binary overload for compatible stringly literals with language/direction validation.
+   * @param op The binary operation on compatible string literals.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onCompatibleStringly2(
     op: (expressionEvaluator: IInternalEvaluator) => (litA: E.Literal<string>, litB: E.Literal<string>) => Term,
     addInvalidHandling = true,
@@ -356,6 +486,11 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a binary overload for compatible stringly typed values with language/direction validation.
+   * @param op The binary operation on compatible string values.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onCompatibleStringly2Typed(
     op: (expressionEvaluator: IInternalEvaluator) => (litA: string, litB: string) => Term,
     addInvalidHandling = true,
@@ -373,6 +508,11 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a unary overload that accepts a numeric literal.
+   * @param op The unary operation on a numeric literal.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onNumeric1(
     op: (expressionEvaluator: IInternalEvaluator) => (val: E.NumericLiteral) => Term,
 addInvalidHandling = true,
@@ -384,6 +524,11 @@ addInvalidHandling = true,
     );
   }
 
+  /**
+   * Registers a unary overload that accepts a dateTime literal.
+   * @param op The unary operation on a dateTime literal.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public onDateTime1(
     op: (expressionEvaluator: IInternalEvaluator) => (date: E.DateTimeLiteral) => Term,
 addInvalidHandling = true,
@@ -447,6 +592,10 @@ addInvalidHandling = true,
         double(evalHelper(expressionEvaluator)(left, right)), addInvalidHandling);
   }
 
+  /**
+   * Registers a binary numeric comparison test that returns a boolean literal.
+   * @param test The comparison function on two numbers.
+   */
   public numberTest(
     test: (expressionEvaluator: IInternalEvaluator) => (left: number, right: number) => boolean,
   ): Builder {
@@ -456,6 +605,11 @@ addInvalidHandling = true,
     });
   }
 
+  /**
+   * Registers a binary string comparison test that returns a boolean literal.
+   * @param test The comparison function on two strings.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public stringTest(
     test: (expressionEvaluator: IInternalEvaluator) => (left: string, right: string) => boolean,
 addInvalidHandling = true,
@@ -471,6 +625,11 @@ addInvalidHandling = true,
       );
   }
 
+  /**
+   * Registers a binary boolean comparison test that returns a boolean literal.
+   * @param test The comparison function on two booleans.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public booleanTest(
     test: (expressionEvaluator: IInternalEvaluator) => (left: boolean, right: boolean) => boolean,
 addInvalidHandling = true,
@@ -486,6 +645,11 @@ addInvalidHandling = true,
       );
   }
 
+  /**
+   * Registers a binary dateTime comparison test that returns a boolean literal.
+   * @param test The comparison function on two dateTime representations.
+   * @param addInvalidHandling Whether to add non-lexical literal protection.
+   */
   public dateTimeTest(test: (expressionEvaluator: IInternalEvaluator)
   => (left: IDateTimeRepresentation, right: IDateTimeRepresentation) => boolean, addInvalidHandling = true): Builder {
     return this
@@ -499,6 +663,10 @@ addInvalidHandling = true,
       );
   }
 
+  /**
+   * Registers a binary overload for two numeric arguments.
+   * @param op The binary numeric operation.
+   */
   public numeric<T extends TermExpression>(op: ImplementationFunctionTuple<[T, T]>): Builder {
     return this.set([ C.TypeAlias.SPARQL_NUMERIC, C.TypeAlias.SPARQL_NUMERIC ], op);
   }
@@ -508,42 +676,98 @@ addInvalidHandling = true,
 // Literal Construction helpers
 // ----------------------------------------------------------------------------
 
+/**
+ * Creates a boolean literal expression.
+ * @param val The boolean value.
+ * @return A new BooleanLiteral.
+ */
 export function bool(val: boolean): E.BooleanLiteral {
   return new E.BooleanLiteral(val);
 }
 
+/**
+ * Creates an integer literal expression.
+ * @param num The integer value.
+ * @return A new IntegerLiteral.
+ */
 export function integer(num: number): E.IntegerLiteral {
   return new E.IntegerLiteral(num);
 }
 
+/**
+ * Creates a decimal literal expression.
+ * @param num The decimal value.
+ * @return A new DecimalLiteral.
+ */
 export function decimal(num: number): E.DecimalLiteral {
   return new E.DecimalLiteral(num);
 }
 
+/**
+ * Creates a float literal expression.
+ * @param num The float value.
+ * @return A new FloatLiteral.
+ */
 export function float(num: number): E.FloatLiteral {
   return new E.FloatLiteral(num);
 }
 
+/**
+ * Creates a double literal expression.
+ * @param num The double value.
+ * @return A new DoubleLiteral.
+ */
 export function double(num: number): E.DoubleLiteral {
   return new E.DoubleLiteral(num);
 }
 
+/**
+ * Creates a string literal expression.
+ * @param str The string value.
+ * @param dataType Optional datatype URI (defaults to xsd:string).
+ * @return A new StringLiteral.
+ */
 export function string(str: string, dataType?: string): E.StringLiteral {
   return new E.StringLiteral(str, dataType);
 }
 
+/**
+ * Creates a language-tagged string literal expression.
+ * @param str The string value.
+ * @param lang The language tag.
+ * @return A new LangStringLiteral.
+ */
 export function langString(str: string, lang: string): E.LangStringLiteral {
   return new E.LangStringLiteral(str, lang);
 }
 
+/**
+ * Creates a directional language-tagged string literal expression.
+ * @param str The string value.
+ * @param lang The language tag.
+ * @param direction The base direction ('ltr' or 'rtl').
+ * @return A new DirLangStringLiteral.
+ */
 export function dirLangString(str: string, lang: string, direction: 'ltr' | 'rtl'): E.DirLangStringLiteral {
   return new E.DirLangStringLiteral(str, lang, direction);
 }
 
+/**
+ * Creates a dateTime literal expression.
+ * @param date The dateTime representation.
+ * @param str The original string value.
+ * @return A new DateTimeLiteral.
+ */
 export function dateTime(date: IDateTimeRepresentation, str: string): E.DateTimeLiteral {
   return new E.DateTimeLiteral(date, str);
 }
 
+/**
+ * Converts a variable expression to an RDF/JS variable term.
+ * @param dataFactory The data factory used to create the variable term.
+ * @param variableExpression The variable expression to convert.
+ * @return The corresponding RDF/JS variable.
+ */
 export function expressionToVar(
   dataFactory: ComunicaDataFactory,
   variableExpression: VariableExpression,

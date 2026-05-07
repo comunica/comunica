@@ -11,6 +11,11 @@ import type {
 // | Month | 0             | 1                      | 0                       |
 // | Day   | 1             | 1                      | 0                       |
 
+/**
+ * Creates a day-time duration representation with sensible defaults for missing fields.
+ * @param rep A partial duration representation.
+ * @return A full duration representation with day-time defaults applied.
+ */
 export function defaultedDayTimeDurationRepresentation(rep: Partial<IDayTimeDurationRepresentation>):
 IDayTimeDurationRepresentation {
   return {
@@ -21,6 +26,11 @@ IDayTimeDurationRepresentation {
   };
 }
 
+/**
+ * Creates a year-month duration representation with sensible defaults for missing fields.
+ * @param rep A partial year-month duration representation.
+ * @return A full year-month duration representation with defaults applied.
+ */
 export function defaultedYearMonthDurationRepresentation(rep: Partial<IYearMonthDurationRepresentation>):
 IYearMonthDurationRepresentation {
   return {
@@ -29,6 +39,11 @@ IYearMonthDurationRepresentation {
   };
 }
 
+/**
+ * Creates a full duration representation with sensible defaults for missing fields.
+ * @param rep A partial duration representation.
+ * @return A full duration representation with defaults applied.
+ */
 export function defaultedDurationRepresentation(
   rep: Partial<IDurationRepresentation>,
 ): IDurationRepresentation {
@@ -80,6 +95,11 @@ Partial<IDurationRepresentation> {
   return res;
 }
 
+/**
+ * Creates a dateTime representation with sensible defaults for missing fields.
+ * @param rep A partial dateTime representation.
+ * @return A full dateTime representation with defaults applied.
+ */
 export function defaultedDateTimeRepresentation(rep: Partial<IDateTimeRepresentation>): IDateTimeRepresentation {
   return {
     ...rep,
@@ -106,6 +126,11 @@ export function toDateTimeRepresentation({ date, timeZone }:
   };
 }
 
+/**
+ * Negates a duration representation by flipping the sign of all components.
+ * @param dur The duration representation to negate.
+ * @return A new duration with all components negated.
+ */
 export function negateDuration(dur: Partial<IDurationRepresentation>): Partial<IDurationRepresentation> {
   return {
     year: dur.year === undefined ? undefined : -1 * dur.year,
@@ -139,6 +164,12 @@ export function toJSDate(date: IDateTimeRepresentation): Date {
   return res;
 }
 
+/**
+ * Converts a dateTime representation to a UTC JavaScript Date.
+ * @param date The dateTime representation to convert.
+ * @param defaultTimezone The default timezone to use if none is specified.
+ * @return A Date object in UTC.
+ */
 export function toUTCDate(date: Partial<IDateTimeRepresentation>, defaultTimezone: ITimeZoneRepresentation): Date {
   const localTime = toJSDate(defaultedDateTimeRepresentation(date));
   // This date has been constructed in machine local time, now we alter it to become UTC and convert to correct timezone
@@ -170,6 +201,11 @@ export function trimToDayTimeDuration(dur: Partial<IDurationRepresentation>): Pa
   };
 }
 
+/**
+ * Converts a year-month duration to its total number of months.
+ * @param dur The year-month duration representation.
+ * @return The total number of months.
+ */
 export function yearMonthDurationsToMonths(dur: IYearMonthDurationRepresentation): number {
   return dur.year * 12 + dur.month;
 }

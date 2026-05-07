@@ -17,12 +17,22 @@ import {
 import * as P from '../util/Parsing';
 import { getSuperTypeDict } from '../util/TypeHandling';
 
+/**
+ * Interface for transforming RDF/JS terms to internal expression representations.
+ */
 export interface ITermTransformer {
   transformRDFTermUnsafe: (term: RDF.Term) => E.Term;
   transformLiteral: (lit: RDF.Literal) => E.Literal<any>;
 }
 
+/**
+ * Transforms RDF/JS terms into the internal expression representation used by the evaluator.
+ */
 export class TermTransformer implements ITermTransformer {
+  /**
+   * Creates a new TermTransformer.
+   * @param superTypeProvider Provider for resolving super type relationships of literal datatypes.
+   */
   public constructor(protected readonly superTypeProvider: ISuperTypeProvider) {}
 
   /**

@@ -4,6 +4,12 @@ import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { extractTimeZone } from './DateTimeHelpers';
 
+/**
+ * Prepares and normalizes a query context for use by the expression evaluator.
+ * Ensures required context entries such as the data factory and function arguments cache are present.
+ * @param orgContext The incoming action context.
+ * @return A context augmented with all required evaluation entries.
+ */
 export function prepareEvaluatorActionContext(orgContext: IActionContext): IActionContext {
   let context = orgContext;
 

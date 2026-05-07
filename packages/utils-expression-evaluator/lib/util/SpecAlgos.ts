@@ -10,6 +10,13 @@ function fDiv(arg: number, high: number, low = 0): { intDiv: number; remainder: 
   return { intDiv, remainder: arg - intDiv * second };
 }
 
+/**
+ * Computes the maximum number of days in the given month of the given year.
+ * @param yearValue The year.
+ * @param monthValue The month (1-12).
+ * @return The maximum day number for that month.
+ * @see https://www.w3.org/TR/xmlschema-2/#adding-durations-to-dateTimes
+ */
 export function maximumDayInMonthFor(yearValue: number, monthValue: number): number {
   const { intDiv: additionalYears, remainder: month } = fDiv(monthValue, 13, 1);
   const year = yearValue + additionalYears;
@@ -29,6 +36,13 @@ export function maximumDayInMonthFor(yearValue: number, monthValue: number): num
 }
 
 // https://www.w3.org/TR/xmlschema-2/#adding-durations-to-dateTimes
+/**
+ * Adds a duration to a dateTime following the XML Schema specification algorithm.
+ * @param date The base dateTime representation.
+ * @param duration The duration to add.
+ * @return A new dateTime representation with the duration applied.
+ * @see https://www.w3.org/TR/xmlschema-2/#adding-durations-to-dateTimes
+ */
 export function addDurationToDateTime(date: IDateTimeRepresentation, duration: IDurationRepresentation):
 IDateTimeRepresentation {
   // Used to cary over optional fields like timezone
@@ -71,6 +85,13 @@ IDateTimeRepresentation {
   return newDate;
 }
 
+/**
+ * Computes the elapsed duration between two dateTime representations.
+ * @param first The first dateTime.
+ * @param second The second dateTime.
+ * @param defaultTimeZone The default timezone for normalization.
+ * @return A partial duration representation of the elapsed time.
+ */
 export function elapsedDuration(
   first: IDateTimeRepresentation,
   second: IDateTimeRepresentation,

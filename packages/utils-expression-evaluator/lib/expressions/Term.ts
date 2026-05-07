@@ -16,6 +16,9 @@ import { TypeURL } from '../util/Consts';
 import * as Err from '../util/Errors';
 import { serializeDate, serializeDateTime, serializeDuration, serializeTime } from '../util/Serialization';
 
+/**
+ * Abstract base class for all RDF term expressions.
+ */
 export abstract class Term implements TermExpression {
   public expressionType: ExpressionType.Term = ExpressionType.Term;
   public abstract termType: TermType;
@@ -32,6 +35,9 @@ export abstract class Term implements TermExpression {
 }
 
 // NamedNodes -----------------------------------------------------------------
+/**
+ * Represents an RDF named node (IRI) term expression.
+ */
 export class NamedNode extends Term {
   public termType: TermType = 'namedNode';
   public constructor(public value: string) {
@@ -49,6 +55,9 @@ export class NamedNode extends Term {
 
 // BlankNodes -----------------------------------------------------------------
 
+/**
+ * Represents an RDF blank node term expression.
+ */
 export class BlankNode extends Term {
   public value: RDF.BlankNode | string;
   public termType: TermType = 'blankNode';
@@ -64,6 +73,9 @@ export class BlankNode extends Term {
 }
 
 // Quads -----------------------------------------------------------------
+/**
+ * Represents an RDF quad (statement) as a term expression.
+ */
 export class Quad extends Term {
   public termType: TermType = 'quad';
 
@@ -90,6 +102,9 @@ export class Quad extends Term {
   }
 }
 
+/**
+ * Represents the RDF default graph term expression.
+ */
 export class DefaultGraph extends Term {
   public termType: TermType = 'defaultGraph';
 
@@ -107,6 +122,11 @@ export class DefaultGraph extends Term {
 }
 
 // Literals-- -----------------------------------------------------------------
+/**
+ * Checks whether a term expression is a literal and returns it as such.
+ * @param expr The term expression to check.
+ * @return The expression as a Literal if it is one, or undefined otherwise.
+ */
 export function isLiteralTermExpression(expr: TermExpression): Literal<any> | undefined {
   if (expr.termType === 'literal') {
     return <Literal<any>> expr;
@@ -114,10 +134,17 @@ export function isLiteralTermExpression(expr: TermExpression): Literal<any> | un
   return undefined;
 }
 
+/**
+ * Interface for values that can be serialized to a string representation.
+ */
 export interface ISerializable {
   toString: () => string;
 }
 
+/**
+ * Represents an RDF literal term expression with a typed value.
+ * @template T The TypeScript type of the literal's internal value.
+ */
 export class Literal<T extends ISerializable> extends Term {
   public termType = <const> 'literal';
   /**
@@ -151,6 +178,9 @@ export class Literal<T extends ISerializable> extends Term {
   }
 }
 
+/**
+ * Abstract base class for numeric literal expressions (integer, decimal, float, double).
+ */
 export abstract class NumericLiteral extends Literal<number> {
   protected constructor(
     public override typedValue: number,
@@ -181,6 +211,9 @@ export abstract class NumericLiteral extends Literal<number> {
   }
 }
 
+/**
+ * Represents an XSD integer literal.
+ */
 export class IntegerLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -196,6 +229,9 @@ export class IntegerLiteral extends NumericLiteral {
   }
 }
 
+/**
+ * Represents an XSD decimal literal.
+ */
 export class DecimalLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -211,6 +247,9 @@ export class DecimalLiteral extends NumericLiteral {
   }
 }
 
+/**
+ * Represents an XSD float literal.
+ */
 export class FloatLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -226,6 +265,9 @@ export class FloatLiteral extends NumericLiteral {
   }
 }
 
+/**
+ * Represents an XSD double literal.
+ */
 export class DoubleLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -263,6 +305,9 @@ export class DoubleLiteral extends NumericLiteral {
   }
 }
 
+/**
+ * Represents an XSD boolean literal.
+ */
 export class BooleanLiteral extends Literal<boolean> {
   public constructor(public override typedValue: boolean, public override strValue?: string, dataType?: string) {
     super(typedValue, dataType ?? TypeURL.XSD_BOOLEAN, strValue);
@@ -273,6 +318,9 @@ export class BooleanLiteral extends Literal<boolean> {
   }
 }
 
+/**
+ * Represents an RDF language-tagged string literal.
+ */
 export class LangStringLiteral extends Literal<string> {
   public constructor(public override typedValue: string, public override language: string, dataType?: string) {
     super(typedValue, dataType ?? TypeURL.RDF_LANG_STRING, typedValue, language);
@@ -284,6 +332,9 @@ export class LangStringLiteral extends Literal<string> {
   }
 }
 
+/**
+ * Represents an RDF directional language-tagged string literal.
+ */
 export class DirLangStringLiteral extends Literal<string> {
   public constructor(
     public override typedValue: string,
@@ -299,6 +350,9 @@ export class DirLangStringLiteral extends Literal<string> {
 // https://www.w3.org/TR/sparql11-query/#defn_SimpleLiteral
 // https://www.w3.org/TR/sparql11-query/#func-strings
 // This does not include language tagged literals
+/**
+ * Represents an XSD string literal (simple literal without language tag).
+ */
 export class StringLiteral extends Literal<string> {
   /**
    * @param typedValue
@@ -313,6 +367,9 @@ export class StringLiteral extends Literal<string> {
   }
 }
 
+/**
+ * Represents an XSD dateTime literal.
+ */
 export class DateTimeLiteral extends Literal<IDateTimeRepresentation> {
   public constructor(
     public override typedValue: IDateTimeRepresentation,
@@ -327,6 +384,9 @@ export class DateTimeLiteral extends Literal<IDateTimeRepresentation> {
   }
 }
 
+/**
+ * Represents an XSD time literal.
+ */
 export class TimeLiteral extends Literal<ITimeRepresentation> {
   public constructor(
     public override typedValue: ITimeRepresentation,
@@ -341,6 +401,9 @@ export class TimeLiteral extends Literal<ITimeRepresentation> {
   }
 }
 
+/**
+ * Represents an XSD date literal.
+ */
 export class DateLiteral extends Literal<IDateRepresentation> {
   public constructor(
     public override typedValue: IDateRepresentation,
@@ -355,6 +418,9 @@ export class DateLiteral extends Literal<IDateRepresentation> {
   }
 }
 
+/**
+ * Represents an XSD duration literal.
+ */
 export class DurationLiteral extends Literal<Partial<IDurationRepresentation>> {
   public constructor(
     public override typedValue: Partial<IDurationRepresentation>,
@@ -369,6 +435,9 @@ export class DurationLiteral extends Literal<Partial<IDurationRepresentation>> {
   }
 }
 
+/**
+ * Represents an XSD dayTimeDuration literal.
+ */
 export class DayTimeDurationLiteral extends DurationLiteral {
   public constructor(
     public override typedValue: Partial<IDurationRepresentation>,
@@ -379,6 +448,9 @@ export class DayTimeDurationLiteral extends DurationLiteral {
   }
 }
 
+/**
+ * Represents an XSD yearMonthDuration literal.
+ */
 export class YearMonthDurationLiteral extends Literal<Partial<IYearMonthDurationRepresentation>> {
   public constructor(
     public override typedValue: Partial<IYearMonthDurationRepresentation>,
@@ -439,6 +511,11 @@ export class NonLexicalLiteral extends Literal<{ toString: () => 'undefined' }> 
   }
 }
 
+/**
+ * Checks whether a literal is a non-lexical literal.
+ * @param lit The literal to check.
+ * @return The literal as a NonLexicalLiteral if it is one, or undefined otherwise.
+ */
 export function isNonLexicalLiteral(lit: Literal<any>): NonLexicalLiteral | undefined {
   if (lit instanceof NonLexicalLiteral) {
     return lit;

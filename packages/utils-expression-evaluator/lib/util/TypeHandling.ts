@@ -6,6 +6,9 @@ import type { ArgumentType } from '../functions/OverloadTree';
 import type { KnownLiteralTypes } from './Consts';
 import { TypeAlias, TypeURL } from './Consts';
 
+/**
+ * Union type representing a type that can override argument matching in the overload tree.
+ */
 export type OverrideType = KnownLiteralTypes | 'term';
 
 /**
@@ -89,6 +92,10 @@ export const extensionTableInput: Record<KnownLiteralTypes, OverrideType> = {
 };
 type SuperTypeDict = Record<KnownLiteralTypes, number> & { __depth: number };
 type SuperTypeDictTable = Record<KnownLiteralTypes, SuperTypeDict>;
+/**
+ * Lookup table mapping each known literal type to its precomputed super type dictionary.
+ * Initialized at module load time by {@link extensionTableInit}.
+ */
 export const superTypeDictTable: SuperTypeDictTable = Object.create(null);
 
 /**
@@ -122,7 +129,10 @@ export function getSuperTypes(type: string, openWorldType: ISuperTypeProvider): 
   return subExtension;
 }
 
-// No circular structure allowed! & No other keys allowed!
+/**
+ * Initializes the super type dictionary table from the extension table input.
+ * Builds the DAG of type relationships for all known literal types.
+ */
 export function extensionTableInit(): void {
   for (const [ _key, value ] of Object.entries(extensionTableInput)) {
     const key = <KnownLiteralTypes>_key;
@@ -148,6 +158,9 @@ function extensionTableBuilderInitKey(key: KnownLiteralTypes, value: OverrideTyp
   res[key] = { ...res[value], [key]: res[value].__depth + 1, __depth: res[value].__depth + 1 };
 }
 
+/**
+ * Lookup table for quick TypeAlias membership checks.
+ */
 export const typeAliasCheck: Record<TypeAlias, boolean> = Object.create(null);
 function initTypeAliasCheck(): void {
   for (const val of Object.values(TypeAlias)) {
@@ -156,6 +169,11 @@ function initTypeAliasCheck(): void {
 }
 initTypeAliasCheck();
 
+/**
+ * Attempts to cast a string to a TypeAlias if it matches one.
+ * @param type The string to check.
+ * @return The string as a TypeAlias if valid, or undefined otherwise.
+ */
 export function asTypeAlias(type: string): TypeAlias | undefined {
   if (type in typeAliasCheck) {
     return <TypeAlias> type;
@@ -163,6 +181,11 @@ export function asTypeAlias(type: string): TypeAlias | undefined {
   return undefined;
 }
 
+/**
+ * Attempts to cast a string to a KnownLiteralTypes if it is a recognized literal type.
+ * @param type The string to check.
+ * @return The string as KnownLiteralTypes if recognized, or undefined otherwise.
+ */
 export function asKnownLiteralType(type: string): KnownLiteralTypes | undefined {
   if (type in superTypeDictTable) {
     return <KnownLiteralTypes> type;
@@ -170,6 +193,11 @@ export function asKnownLiteralType(type: string): KnownLiteralTypes | undefined 
   return undefined;
 }
 
+/**
+ * Attempts to cast a string to an OverrideType (known literal type or 'term').
+ * @param type The string to check.
+ * @return The string as an OverrideType if valid, or undefined otherwise.
+ */
 export function asOverrideType(type: string): OverrideType | undefined {
   if (asKnownLiteralType(type) ?? type === 'term') {
     return <OverrideType> type;
@@ -177,6 +205,11 @@ export function asOverrideType(type: string): OverrideType | undefined {
   return undefined;
 }
 
+/**
+ * Attempts to cast a string to a general type ('term' or a TermType).
+ * @param type The string to check.
+ * @return The string as a general type if valid, or undefined otherwise.
+ */
 export function asGeneralType(type: string): 'term' | TermType | undefined {
   if (type === 'term' || asTermType(type)) {
     return <'term' | TermType> type;
@@ -228,8 +261,11 @@ export function isSubTypeOf(
   return getSuperTypeDict(baseType, superTypeProvider)[argumentType] !== undefined;
 }
 
-// Defined by https://www.w3.org/TR/xpath-31/#promotion .
-// e.g. When a function takes a string, it can also accept a XSD_ANY_URI if it's cast first.
+/**
+ * Defines type promotion rules per the XPath 3.1 specification.
+ * Maps a target type to the types that can be promoted to it along with conversion functions.
+ * @see https://www.w3.org/TR/xpath-31/#promotion
+ */
 export const typePromotion: Partial<Record<ArgumentType, {
   typeToPromote: KnownLiteralTypes;
   conversionFunction: (arg: TermExpression) => TermExpression;

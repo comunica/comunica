@@ -21,13 +21,23 @@ import {
 
 // Function and operator arguments are 'flattened' in the SPARQL spec.
 // If the argument is a literal, the datatype often also matters.
+/**
+ * Union type representing the types that can appear as function arguments in the overload tree.
+ */
 export type ArgumentType = 'term' | TermType | C.TypeURL | C.TypeAlias;
 
+/**
+ * Stack of overload tree nodes used during argument matching.
+ */
 export type SearchStack = OverloadTree[];
 
 /**
  * Maps argument types on their specific implementation in a tree like structure.
  * When adding any functionality to this class, make sure you add it to SpecialFunctions as well.
+ */
+/**
+ * Tree structure for resolving SPARQL function overloads based on argument types.
+ * Each node represents one argument position and branches by argument type.
  */
 export class OverloadTree {
   private implementation?: ImplementationFunction | undefined;
@@ -38,6 +48,11 @@ export class OverloadTree {
   private readonly literalOverLoads: [OverrideType, OverloadTree][];
   private readonly depth: number;
 
+  /**
+   * Creates a new OverloadTree node.
+   * @param identifier The name of the function this tree resolves.
+   * @param depth The argument position depth of this node (defaults to 0).
+   */
   public constructor(private readonly identifier: string, depth?: number) {
     this.implementation = undefined;
     this.generalOverloads = Object.create(null);

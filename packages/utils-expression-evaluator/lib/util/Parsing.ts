@@ -48,6 +48,11 @@ export function parseXSDDecimal(value: string): number | undefined {
   return Number.isNaN(numb) ? undefined : numb;
 }
 
+/**
+ * Parses an XSD dateTime string into its component representation.
+ * @param dateTimeStr The dateTime string to parse.
+ * @return The parsed dateTime representation.
+ */
 export function parseDateTime(dateTimeStr: string): IDateTimeRepresentation {
   // https://www.w3.org/TR/xmlschema-2/#dateTime
   const [ date, time ] = dateTimeStr.split('T');
@@ -73,6 +78,11 @@ function parseTimeZone(timeZoneStr: string): Partial<ITimeZoneRepresentation> {
   };
 }
 
+/**
+ * Parses an XSD date string into its component representation.
+ * @param dateStr The date string to parse.
+ * @return The parsed date representation.
+ */
 export function parseDate(dateStr: string): IDateRepresentation {
   // https://www.w3.org/TR/xmlschema-2/#date-lexical-representation
   const formatted = dateStr.replaceAll(
@@ -122,6 +132,11 @@ function __parseTime(timeStr: string): ITimeRepresentation {
 
 // We make a separation in internal and external since dateTime will have hour-date rollover,
 // but time just does modulo the time.
+/**
+ * Parses an XSD time string into its component representation.
+ * @param timeStr The time string to parse.
+ * @return The parsed time representation.
+ */
 export function parseTime(timeStr: string): ITimeRepresentation {
   // https://www.w3.org/TR/xmlschema-2/#time-lexical-repr
   const res = __parseTime(timeStr);
@@ -129,6 +144,11 @@ export function parseTime(timeStr: string): ITimeRepresentation {
   return res;
 }
 
+/**
+ * Parses an XSD duration string into its component representation.
+ * @param durationStr The duration string to parse.
+ * @return The parsed duration representation.
+ */
 export function parseDuration(durationStr: string): Partial<IDurationRepresentation> {
   // https://www.w3.org/TR/xmlschema-2/#duration-lexical-repr
   const [ dayNotation, timeNotation ] = durationStr.split('T');
@@ -164,6 +184,11 @@ export function parseDuration(durationStr: string): Partial<IDurationRepresentat
   });
 }
 
+/**
+ * Parses an XSD yearMonthDuration string into its component representation.
+ * @param durationStr The yearMonthDuration string to parse.
+ * @return The parsed year-month duration representation.
+ */
 export function parseYearMonthDuration(durationStr: string): Partial<IYearMonthDurationRepresentation> {
   const res = parseDuration(durationStr);
   if ([ 'hours', 'minutes', 'seconds', 'day' ].some(key => Boolean((<any> res)[key]))) {
@@ -172,6 +197,11 @@ export function parseYearMonthDuration(durationStr: string): Partial<IYearMonthD
   return res;
 }
 
+/**
+ * Parses an XSD dayTimeDuration string into its component representation.
+ * @param durationStr The dayTimeDuration string to parse.
+ * @return The parsed day-time duration representation.
+ */
 export function parseDayTimeDuration(durationStr: string): Partial<IDayTimeDurationRepresentation> {
   const res = parseDuration(durationStr);
   if ([ 'year', 'month' ].some(key => Boolean((<any> res)[key]))) {

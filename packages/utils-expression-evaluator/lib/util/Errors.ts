@@ -112,12 +112,18 @@ export class CastError<T> extends ExpressionError {
   }
 }
 
+/**
+ * Error thrown when a timezone operation is called on a value without timezone information.
+ */
 export class InvalidTimezoneCall extends ExpressionError {
   public constructor(public dateString: string) {
     super(`TIMEZONE call on ${dateString} which has no timezone`);
   }
 }
 
+/**
+ * Error thrown when an operation is applied to literals with incompatible language tags.
+ */
 export class IncompatibleLanguageOperation extends ExpressionError {
   public constructor(
     public arg1: E.Literal<string>,
@@ -127,6 +133,9 @@ export class IncompatibleLanguageOperation extends ExpressionError {
   }
 }
 
+/**
+ * Error thrown when an aggregate function is applied to an empty set without a default value.
+ */
 export class EmptyAggregateError extends ExpressionError {
   public constructor() {
     super('Empty aggregate expression');
@@ -152,6 +161,9 @@ export class UnexpectedError<T> extends Error {
   }
 }
 
+/**
+ * Error thrown when a SPARQL function is called with the wrong number of arguments.
+ */
 export class InvalidArity extends Error {
   public constructor(public args: Expression[], public op: C.GeneralOperator) {
     super(`The number of args does not match the arity of the operator '${pp(op)}'.`);
