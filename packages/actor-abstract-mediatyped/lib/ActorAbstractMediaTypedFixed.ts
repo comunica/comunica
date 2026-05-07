@@ -4,6 +4,18 @@ import type { IActionContext } from '@comunica/types';
 import type { IActorArgsMediaTyped } from './ActorAbstractMediaTyped';
 import { ActorAbstractMediaTyped } from './ActorAbstractMediaTyped';
 
+/**
+ * An abstract actor that handles media-typed actions with a fixed set of media types.
+ *
+ * It extends {@link ActorAbstractMediaTyped} and pre-configures the available
+ * media types and their format IRIs at construction time.
+ *
+ * @template HI The handle action input type.
+ * @template HT The handle test output type.
+ * @template HO The handle action output type.
+ *
+ * @see ActorAbstractMediaTyped
+ */
 export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbstractMediaTyped<HI, HT, HO> {
   public readonly mediaTypePriorities: Record<string, number>;
   public readonly mediaTypeFormats: Record<string, string>;
@@ -57,6 +69,13 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
   }
 }
 
+/**
+ * Arguments interface for {@link ActorAbstractMediaTypedFixed}.
+ *
+ * @template HI The handle action input type.
+ * @template HT The handle test output type.
+ * @template HO The handle action output type.
+ */
 export interface IActorArgsMediaTypedFixed<HI, HT, HO> extends IActorArgsMediaTyped<HI, HT, HO> {
   /**
    * A record of media types, with media type name as key, and its priority as value.

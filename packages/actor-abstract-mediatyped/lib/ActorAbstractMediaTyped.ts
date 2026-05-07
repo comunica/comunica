@@ -109,14 +109,31 @@ undefined
   public abstract getMediaTypeFormats(context: IActionContext): Promise<Record<string, string>>;
 }
 
+/**
+ * Arguments interface for {@link ActorAbstractMediaTyped}.
+ *
+ * @template HI The handle action input type.
+ * @template HT The handle test output type.
+ * @template HO The handle action output type.
+ */
 export interface IActorArgsMediaTyped<HI, HT, HO> extends IActorArgs<
     IActionAbstractMediaTyped<HI>,
 IActorTestAbstractMediaTyped<HT>,
 IActorOutputAbstractMediaTyped<HO>
 > {}
 
+/**
+ * Represents a union of possible media-typed actions: handle, mediaTypes, or mediaTypeFormats.
+ *
+ * @template HI The handle action input type.
+ */
 export type IActionAbstractMediaTyped<HI> = IActionAbstractMediaTypedHandle<HI> | IActionAbstractMediaTypedMediaTypes
 | IActionAbstractMediaTypedMediaTypeFormats;
+/**
+ * Represents an action for handling a media-typed input.
+ *
+ * @template HI The handle action input type.
+ */
 export interface IActionAbstractMediaTypedHandle<HI> extends IAction {
   /**
    * The handle action input.
@@ -128,6 +145,9 @@ export interface IActionAbstractMediaTypedHandle<HI> extends IAction {
   handleMediaType?: string;
 }
 
+/**
+ * Represents an action for retrieving available media types.
+ */
 export interface IActionAbstractMediaTypedMediaTypes extends IAction {
   /**
    * True if media types should be retrieved.
@@ -135,6 +155,9 @@ export interface IActionAbstractMediaTypedMediaTypes extends IAction {
   mediaTypes: boolean;
 }
 
+/**
+ * Represents an action for retrieving available media type formats.
+ */
 export interface IActionAbstractMediaTypedMediaTypeFormats extends IAction {
   /**
    * True if media type formats should be retrieved.
@@ -148,18 +171,29 @@ export interface IActionAbstractMediaTypedMediaTypeFormats extends IAction {
  */
 export type IActorTestAbstractMediaTyped<HT> = IActorTestAbstractMediaTypedHandle<HT>
 | IActorTestAbstractMediaTypedMediaTypes | IActorTestAbstractMediaTypedMediaTypeFormats;
+/**
+ * Contains the test result for a handle action.
+ *
+ * @template HT The handle test output type.
+ */
 export interface IActorTestAbstractMediaTypedHandle<HT> extends IActorTest {
   /**
    * The handle test output.
    */
   handle: HT;
 }
+/**
+ * Contains the test result for a media types retrieval action.
+ */
 export interface IActorTestAbstractMediaTypedMediaTypes extends IActorTest {
   /**
    * True if media types can be retrieved.
    */
   mediaTypes: boolean;
 }
+/**
+ * Contains the test result for a media type formats retrieval action.
+ */
 export interface IActorTestAbstractMediaTypedMediaTypeFormats extends IActorTest {
   /**
    * True if media type formats can be retrieved.
@@ -173,12 +207,20 @@ export interface IActorTestAbstractMediaTypedMediaTypeFormats extends IActorTest
  */
 export type IActorOutputAbstractMediaTyped<HO> = IActorOutputAbstractMediaTypedHandle<HO>
 | IActorOutputAbstractMediaTypedMediaTypes | IActorOutputAbstractMediaTypedMediaTypeFormats;
+/**
+ * Contains the output for a handle action.
+ *
+ * @template HO The handle action output type.
+ */
 export interface IActorOutputAbstractMediaTypedHandle<HO> extends IActorOutput {
   /**
    * The handle action output.
    */
   handle: HO;
 }
+/**
+ * Contains the output for a media types retrieval action.
+ */
 export interface IActorOutputAbstractMediaTypedMediaTypes extends IActorOutput {
   /**
    * An object containing media types as keys,
@@ -186,6 +228,9 @@ export interface IActorOutputAbstractMediaTypedMediaTypes extends IActorOutput {
    */
   mediaTypes: Record<string, number>;
 }
+/**
+ * Contains the output for a media type formats retrieval action.
+ */
 export interface IActorOutputAbstractMediaTypedMediaTypeFormats extends IActorOutput {
   /**
    * An object containing media types as keys,
@@ -194,12 +239,22 @@ export interface IActorOutputAbstractMediaTypedMediaTypeFormats extends IActorOu
   mediaTypeFormats: Record<string, string>;
 }
 
+/**
+ * Represents a mediated media types action that resolves available media types and their priorities.
+ */
 export type MediateMediaTypes = Mediate<
 IActionAbstractMediaTypedMediaTypes,
 IActorOutputAbstractMediaTypedMediaTypes,
 IActorTestAbstractMediaTypedMediaTypes
 >;
 
+/**
+ * Represents a mediated media-typed handle action.
+ *
+ * @template I The action input type.
+ * @template T The test output type.
+ * @template O The action output type.
+ */
 export type MediateMediaTyped<I extends IAction, T extends IActorTest, O extends IActorOutput> = Mediate<
 IActionAbstractMediaTypedHandle<I>,
 IActorOutputAbstractMediaTypedHandle<O>,
