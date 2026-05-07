@@ -45,6 +45,9 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryOperationMinus}.
+ */
 export interface IActorQueryOperationMinusArgs extends IActorQueryOperationTypedMediatedArgs {
   /**
    * A mediator for joining Bindings streams
