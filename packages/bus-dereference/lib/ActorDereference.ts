@@ -126,6 +126,12 @@ export interface IActorDereferenceOutput extends IActorOutput {
   cachePolicy?: ICachePolicy<IActionDereference>;
 }
 
+/**
+ * Constructor arguments for {@link ActorDereference}.
+ */
 export type IActorDereferenceArgs = IActorArgs<IActionDereference, IActorTest, IActorDereferenceOutput>;
 
+/**
+ * Mediator type for dereference actors.
+ */
 export type MediatorDereference = Mediate<IActionDereference, IActorDereferenceOutput>;

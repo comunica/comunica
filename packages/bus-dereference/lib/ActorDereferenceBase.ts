@@ -5,6 +5,11 @@ import type { IActionContext } from '@comunica/types';
 import { Readable } from 'readable-stream';
 import type { IActorDereferenceOutput, IActionDereference } from './ActorDereference';
 
+/**
+ * Creates an empty readable stream that immediately ends.
+ * @template S The readable stream type.
+ * @return An empty readable stream.
+ */
 export function emptyReadable<S extends Readable>(): S {
   const data = new Readable();
   data.push(null);

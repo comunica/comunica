@@ -27,6 +27,12 @@ export function getMediaTypeFromExtension(path: string, mediaMappings?: Record<s
   return (dotIndex >= 0 && mediaMappings?.[path.slice(dotIndex + 1)]) || '';
 }
 
+/**
+ * Constructor arguments for {@link ActorDereferenceParse}.
+ * @template S The parsed stream element type.
+ * @template K The parse input metadata type.
+ * @template M The parse output metadata type.
+ */
 export interface IActorDereferenceParseArgs<
   S,
   K extends IParseMetadata = IParseMetadata,
@@ -56,9 +62,21 @@ export abstract class ActorDereferenceParse<
   K extends IParseMetadata = IParseMetadata,
   M extends IParseMetadata = IParseMetadata,
 > extends ActorDereferenceBase<IActionDereferenceParse<K>, IActorTest, IActorDereferenceParseOutput<S, M>> {
+  /**
+   * The mediator for dereference actions.
+   */
   public readonly mediatorDereference: MediatorDereference;
+  /**
+   * The mediator for parse actions, dispatching by media type.
+   */
   public readonly mediatorParse: MediateMediaTyped<IActionParse<K>, IActorTest, IActorParseOutput<S, M>>;
+  /**
+   * The mediator for retrieving supported media types.
+   */
   public readonly mediatorParseMediatypes: MediateMediaTypes;
+  /**
+   * Mappings from file extensions to their corresponding media types.
+   */
   public readonly mediaMappings: Record<string, string>;
 
   public constructor(args: IActorDereferenceParseArgs<S, K, M>) {
@@ -69,6 +87,11 @@ export abstract class ActorDereferenceParse<
     this.mediaMappings = args.mediaMappings;
   }
 
+  /**
+   * Tests whether this actor can handle the given dereference-parse action.
+   * @param _action The dereference action.
+   * @return A test result that always passes.
+   */
   public async test(_action: IActionDereference): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
@@ -97,8 +120,18 @@ export abstract class ActorDereferenceParse<
     return data;
   }
 
+  /**
+   * Retrieves parse metadata from a dereference output.
+   * @param dereference The dereference output to extract metadata from.
+   * @return The parse metadata, or undefined if not available.
+   */
   public abstract getMetadata(dereference: IActorDereferenceOutput): Promise<K | undefined>;
 
+  /**
+   * Dereferences the given URL, parses the result, and returns a combined output.
+   * @param action The dereference-parse action containing the URL and context.
+   * @return The combined dereference and parse output.
+   */
   public async run(action: IActionDereferenceParse<K>): Promise<IActorDereferenceParseOutput<S, M>> {
     const { context } = action;
     const mediaTypes: () => Promise<Record<string, number> | undefined> =
@@ -140,6 +173,11 @@ export abstract class ActorDereferenceParse<
   }
 }
 
+/**
+ * Action input for dereference-parse operations.
+ * Extends the base dereference action with optional media type and parse metadata.
+ * @template T The parse metadata type.
+ */
 export interface IActionDereferenceParse<T extends IParseMetadata = IParseMetadata> extends IActionDereference {
   /**
    * The mediatype of the source (if it can't be inferred from the source)
@@ -151,5 +189,10 @@ export interface IActionDereferenceParse<T extends IParseMetadata = IParseMetada
   metadata?: T;
 }
 
+/**
+ * Output type combining dereference output (without raw data) and parsed output.
+ * @template T The parsed stream element type.
+ * @template K The parse output metadata type.
+ */
 export type IActorDereferenceParseOutput<T, K extends IParseMetadata = IParseMetadata>
   = Omit<IActorDereferenceOutput, 'data'> & IActorParseOutput<T, K>;
