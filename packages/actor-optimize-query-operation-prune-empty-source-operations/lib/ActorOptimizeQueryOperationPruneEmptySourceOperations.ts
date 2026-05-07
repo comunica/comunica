@@ -140,6 +140,12 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     return emptyOperation;
   }
 
+  /**
+   * Collects source-annotated operations of the given type from the input array.
+   * @param inputs The child operations to inspect.
+   * @param collectedOperations The output array to push matching operations into.
+   * @param inputType The algebra operation type to filter for.
+   */
   protected collectMultiOperationInputs(
     inputs: Algebra.Operation[],
     collectedOperations: (Algebra.Pattern | Algebra.Link)[],
@@ -152,6 +158,14 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     }
   }
 
+  /**
+   * Rewrites a multi-input operation by removing children that are known to produce empty results.
+   * @param operationCopy The (potentially rewritten) copy of the operation.
+   * @param origOp The original operation, used to look up emptiness in the set.
+   * @param emptyOperations The set of operations known to be empty.
+   * @param multiOperationFactory A factory function to create the appropriate multi-input operation.
+   * @return The pruned operation.
+   */
   protected mapMultiOperation<O extends Algebra.Union | Algebra.Alt>(
     operationCopy: O,
     origOp: O,
@@ -242,6 +256,9 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
   }
 }
 
+/**
+ * Arguments interface for {@link ActorOptimizeQueryOperationPruneEmptySourceOperations}.
+ */
 export interface IActorOptimizeQueryOperationPruneEmptySourceOperationsArgs extends IActorOptimizeQueryOperationArgs {
   /**
    * If true, ASK queries will be sent to the source instead of COUNT queries to check emptiness for patterns.
