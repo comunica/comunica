@@ -32,11 +32,18 @@ IActorRdfSerializeOutput
   }
   /* eslint-enable max-len */
 
+  /**
+   * Tests whether this actor can handle the specific serialization action.
+   * @return A test result that always passes.
+   */
   public async testHandleChecked(): Promise<TestResult<boolean>> {
     return passTestVoid();
   }
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfSerializeFixedMediaTypes}.
+ */
 export type IActorRdfSerializeFixedMediaTypesArgs = IActorArgsMediaTypedFixed<
 IActionRdfSerialize,
 IActorTest,
