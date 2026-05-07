@@ -49,6 +49,9 @@ export class ActorHttpProxy extends ActorHttp {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorHttpProxy}.
+ */
 export interface IActorHttpProxyArgs extends IActorHttpArgs {
   /**
    * The HTTP mediator
