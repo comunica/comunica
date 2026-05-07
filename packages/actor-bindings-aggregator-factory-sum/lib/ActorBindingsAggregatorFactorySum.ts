@@ -13,6 +13,9 @@ import { failTest, passTestVoid } from '@comunica/core';
 import { SparqlOperator } from '@comunica/utils-expression-evaluator';
 import { SumAggregator } from './SumAggregator';
 
+/**
+ * Arguments interface for {@link ActorBindingsAggregatorFactorySum}.
+ */
 export interface IActorBindingsAggregatorFactorySumArgs extends IActorBindingsAggregatorFactoryArgs {
   mediatorFunctionFactory: MediatorFunctionFactoryUnsafe;
 }

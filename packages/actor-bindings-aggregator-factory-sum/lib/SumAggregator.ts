@@ -7,6 +7,9 @@ import type * as RDF from '@rdfjs/types';
 
 type SumState = NumericLiteral;
 
+/**
+ * Implements the SPARQL SUM aggregate by accumulating numeric values using an addition function.
+ */
 export class SumAggregator extends AggregateEvaluator {
   private state: SumState | undefined = undefined;
 
