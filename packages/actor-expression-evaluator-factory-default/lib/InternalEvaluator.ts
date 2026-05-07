@@ -38,6 +38,12 @@ export class InternalEvaluator {
     );
   }
 
+  /**
+   * Evaluates an expression against the given bindings by dispatching to the appropriate sub-evaluator.
+   * @param expr The expression to evaluate.
+   * @param mapping The variable bindings to evaluate the expression against.
+   * @return The resulting internal term expression.
+   */
   public async evaluatorExpressionEvaluation(expr: Expression, mapping: RDF.Bindings): Promise<TermExpression> {
     const evaluator = this.subEvaluators[expr.expressionType];
     return evaluator.bind(this)(expr, mapping);

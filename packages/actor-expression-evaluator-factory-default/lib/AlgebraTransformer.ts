@@ -4,6 +4,9 @@ import type { Expression, IActionContext, OperatorExpression } from '@comunica/t
 import { Algebra, AlgebraFactory, isKnownSubType } from '@comunica/utils-algebra';
 import * as ExprEval from '@comunica/utils-expression-evaluator';
 
+/**
+ * Transforms SPARQL algebra expressions into the internal expression representation used by the evaluator.
+ */
 export class AlgebraTransformer extends ExprEval.TermTransformer {
   private readonly AF = new AlgebraFactory();
   public constructor(
@@ -13,6 +16,11 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
     super(context.getSafe(KeysExpressionEvaluator.superTypeProvider));
   }
 
+  /**
+   * Transforms an algebra expression into the internal expression representation.
+   * @param expr The SPARQL algebra expression to transform.
+   * @return The transformed internal expression.
+   */
   public async transformAlgebra(expr: Algebra.Expression): Promise<Expression> {
     if (isKnownSubType(expr, Algebra.ExpressionTypes.TERM)) {
       // A triple term is actually not a term since it itself can contain
@@ -71,11 +79,21 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
     return this.getOperator(expr.name.value, expr);
   }
 
+  /**
+   * Transforms an aggregate algebra expression into an internal Aggregate expression.
+   * @param expr The aggregate algebra expression to transform.
+   * @return The transformed aggregate expression.
+   */
   public static transformAggregate(expr: Algebra.AggregateExpression): ExprEval.Aggregate {
     const name = expr.aggregator;
     return new ExprEval.Aggregate(name, expr);
   }
 
+  /**
+   * Transforms an existence algebra expression into an internal Existence expression.
+   * @param expr The existence algebra expression to transform.
+   * @return The transformed existence expression.
+   */
   public static transformExistence(expr: Algebra.ExistenceExpression): ExprEval.Existence {
     return new ExprEval.Existence(expr);
   }
