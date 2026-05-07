@@ -5,6 +5,9 @@ import {
   SparqlOperator,
 } from '@comunica/utils-expression-evaluator';
 
+/**
+ * https://www.w3.org/TR/sparql11-query/#OperatorMapping
+ */
 export class TermFunctionUnaryPlus extends TermFunctionBase {
   public constructor() {
     super({
