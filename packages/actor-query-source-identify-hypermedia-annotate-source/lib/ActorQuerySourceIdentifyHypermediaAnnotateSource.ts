@@ -15,15 +15,30 @@ import { QuerySourceAddSourceAttribution } from './QuerySourceAddSourceAttributi
  * A comunica None Query Source Identify Hypermedia Actor.
  */
 export class ActorQuerySourceIdentifyHypermediaAnnotateSource extends ActorQuerySourceIdentifyHypermedia {
+  /**
+   * The mediator for creating binding context merge handlers.
+   */
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  /**
+   * The mediator for identifying the underlying hypermedia query source.
+   */
   public readonly mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia;
 
+  /**
+   * Creates a new annotate source hypermedia actor.
+   * @param args The actor arguments.
+   */
   public constructor(args: IActorQuerySourceIdentifyHypermediaAnnotateSourceArgs) {
     super(args, 'file');
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
     this.mediatorQuerySourceIdentifyHypermedia = args.mediatorQuerySourceIdentifyHypermedia;
   }
 
+  /**
+   * Tests whether this source has not already been wrapped.
+   * @param action The hypermedia identification action.
+   * @return A test result with infinite filter factor or failure if already wrapped.
+   */
   public async testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
@@ -33,6 +48,11 @@ export class ActorQuerySourceIdentifyHypermediaAnnotateSource extends ActorQuery
     return passTest({ filterFactor: Number.POSITIVE_INFINITY });
   }
 
+  /**
+   * Wraps the identified hypermedia source with source attribution.
+   * @param action The hypermedia identification action.
+   * @return The identified source wrapped with attribution.
+   */
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {
     const context = action.context.set(KEY_CONTEXT_WRAPPED, true);
     action.context = context;
@@ -53,6 +73,9 @@ export interface IActorQuerySourceIdentifyHypermediaAnnotateSourceArgs extends I
   mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia;
 }
 
+/**
+ * Context key indicating the query source has already been wrapped with attribution.
+ */
 export const KEY_CONTEXT_WRAPPED = new ActionContextKey<boolean>(
   '@comunica/actor-query-source-identify-hypermedia-annotate-source:wrapped',
 );
