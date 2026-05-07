@@ -4,6 +4,12 @@ import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
  * Overrides things for fetch requests in browsers
  */
 export class FetchInitPreprocessor implements IFetchInitPreprocessor {
+  /**
+   * Preprocesses a fetch request init for browser environments.
+   * Converts ReadableStream bodies to strings for browser compatibility.
+   * @param init The request init object to preprocess.
+   * @return The preprocessed request init with browser-specific adjustments.
+   */
   public async handle(init: RequestInit): Promise<RequestInit> {
     // Browsers don't yet support passing ReadableStream as body to requests, see
     // https://bugs.chromium.org/p/chromium/issues/detail?id=688906

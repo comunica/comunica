@@ -24,15 +24,29 @@ export class ActorHttpFetch extends ActorHttp {
 
   private static readonly userAgent = ActorHttp.createUserAgent('ActorHttpFetch', actorVersion);
 
+  /**
+   * Creates a new HTTP fetch actor.
+   * @param args The actor arguments including cache and agent configuration.
+   */
   public constructor(args: IActorHttpFetchArgs) {
     super(args);
     this.fetchInitPreprocessor = new FetchInitPreprocessor(args);
   }
 
+  /**
+   * Tests whether this actor can handle the given HTTP action.
+   * @param _action The HTTP action to test.
+   * @return A test result indicating this actor always passes with infinite time.
+   */
   public async test(_action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     return passTest({ time: Number.POSITIVE_INFINITY });
   }
 
+  /**
+   * Executes an HTTP request using the Fetch API with caching, timeouts, and authentication.
+   * @param action The HTTP action containing the request input and context.
+   * @return The HTTP response with cache policy metadata.
+   */
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
     const headers = this.prepareRequestHeaders(action);
 

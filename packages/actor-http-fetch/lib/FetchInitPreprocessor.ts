@@ -26,6 +26,10 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
   private dispatcher!: Dispatcher;
   private cache!: CacheStore;
 
+  /**
+   * Creates a new Node.js fetch init preprocessor with HTTP agents and caching.
+   * @param args The actor arguments including agent options and cache configuration.
+   */
   public constructor(args: IActorHttpFetchArgs) {
     const httpAgent = new HttpAgent(args.agentOptions);
     const httpsAgent = new HttpsAgent(args.agentOptions);
@@ -44,6 +48,10 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
     );
   }
 
+  /**
+   * Creates or resets the in-memory HTTP cache and dispatcher.
+   * @param args The actor arguments containing cache size limits.
+   */
   protected createCache(args: IActorHttpFetchArgs): void {
     this.cache = new cacheStores.MemoryCacheStore({
       maxSize: args.cacheMaxSize,
@@ -56,6 +64,13 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
     }));
   }
 
+  /**
+   * Preprocesses a fetch request init for Node.js environments.
+   * Adds Accept-Encoding headers, configures HTTP agents, and attaches the cache dispatcher.
+   * @param init The request init object to preprocess.
+   * @param context The action context for resolving cache settings.
+   * @return The augmented request init with agent and optional dispatcher.
+   */
   public async handle(
     init: RequestInit,
     context: IActionContext,
