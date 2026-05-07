@@ -28,6 +28,10 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorJoin: MediatorRdfJoin;
 
+  /**
+   * Creates an instance of {@link ActorRdfJoinMultiSmallest}.
+   * @param args The arguments for this actor.
+   */
   public constructor(args: IActorRdfJoinMultiSmallestArgs) {
     super(args, {
       logicalType: 'inner',
@@ -59,6 +63,12 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
     return [ 0, 1 ];
   }
 
+  /**
+   * Checks whether two join entries share at least one common variable.
+   * @param entry1 The first join entry with metadata.
+   * @param entry2 The second join entry with metadata.
+   * @return `true` if the entries have at least one variable in common, `false` otherwise.
+   */
   public hasCommonVariables(entry1: IJoinEntryWithMetadata, entry2: IJoinEntryWithMetadata): boolean {
     const variableNames1 = entry1.metadata.variables.map(x => x.variable.value);
     const variableNames2 = new Set(entry2.metadata.variables.map(x => x.variable.value));
@@ -78,6 +88,13 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
     return (await this.mediatorJoinEntriesSort.mediate({ entries, context })).entries;
   }
 
+  /**
+   * Produces the join output by joining the two smallest streams
+   * and recursively joining the result with remaining entries.
+   * @param action The join action to execute.
+   * @param sideData Side data containing the sorted join entries.
+   * @return The inner join output containing the combined result.
+   */
   protected async getOutput(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinMultiSmallestTestSideData,
@@ -112,6 +129,12 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
     };
   }
 
+  /**
+   * Calculates the join cost coefficients for the multi-smallest join strategy.
+   * @param action The join action to evaluate.
+   * @param sideData Pre-computed side data including entry metadata.
+   * @return A test result containing the estimated join coefficients and sorted entries.
+   */
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
@@ -146,6 +169,10 @@ export interface IActorRdfJoinMultiSmallestArgs extends IActorRdfJoinArgs<IActor
   mediatorJoin: MediatorRdfJoin;
 }
 
+/**
+ * Side data produced during the test phase of {@link ActorRdfJoinMultiSmallest}.
+ */
 export interface IActorRdfJoinMultiSmallestTestSideData extends IActorRdfJoinTestSideData {
+  /** The join entries sorted by cardinality for use in the output phase. */
   sortedEntries: IJoinEntryWithMetadata[];
 }
