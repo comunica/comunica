@@ -54,6 +54,11 @@ export class TestResultPassed<T, TS> {
   protected readonly value: T;
   protected readonly sideData: TS;
 
+  /**
+   * Creates a passed test result containing a value and optional side data.
+   * @param passValue The value the test passed with.
+   * @param sideData Additional data to pass to the run phase.
+   */
   public constructor(passValue: T, sideData: TS) {
     this.value = passValue;
     this.sideData = sideData;
@@ -136,6 +141,10 @@ export class TestResultPassed<T, TS> {
 export class TestResultFailed {
   protected readonly failMessage: string;
 
+  /**
+   * Creates a failed test result with the given failure message.
+   * @param failMessage The error message that describes the failure.
+   */
   public constructor(failMessage: string) {
     this.failMessage = failMessage;
   }

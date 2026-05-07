@@ -98,12 +98,24 @@ implements IActorArgs<I, T, O, TS> {
 
   /* Proxy methods for the (optional) logger that is defined in the context */
 
+  /**
+   * Builds the default log data object, augmenting provided data with the actor name.
+   * @param context The action context.
+   * @param data An optional factory function that returns additional log data.
+   * @return The log data object with the actor name included.
+   */
   protected getDefaultLogData(context: IActionContext, data?: (() => any)): any {
     const dataActual = data ? data() : {};
     dataActual.actor = this.name;
     return dataActual;
   }
 
+  /**
+   * Logs a message at trace level via the context logger, if available.
+   * @param context The action context containing the logger.
+   * @param message The log message.
+   * @param data An optional factory function that returns additional log data.
+   */
   protected logTrace(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
@@ -111,6 +123,12 @@ implements IActorArgs<I, T, O, TS> {
     }
   }
 
+  /**
+   * Logs a message at debug level via the context logger, if available.
+   * @param context The action context containing the logger.
+   * @param message The log message.
+   * @param data An optional factory function that returns additional log data.
+   */
   protected logDebug(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
@@ -118,6 +136,12 @@ implements IActorArgs<I, T, O, TS> {
     }
   }
 
+  /**
+   * Logs a message at info level via the context logger, if available.
+   * @param context The action context containing the logger.
+   * @param message The log message.
+   * @param data An optional factory function that returns additional log data.
+   */
   protected logInfo(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
@@ -125,6 +149,12 @@ implements IActorArgs<I, T, O, TS> {
     }
   }
 
+  /**
+   * Logs a message at warn level via the context logger, if available.
+   * @param context The action context containing the logger.
+   * @param message The log message.
+   * @param data An optional factory function that returns additional log data.
+   */
   protected logWarn(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
@@ -132,6 +162,12 @@ implements IActorArgs<I, T, O, TS> {
     }
   }
 
+  /**
+   * Logs a message at error level via the context logger, if available.
+   * @param context The action context containing the logger.
+   * @param message The log message.
+   * @param data An optional factory function that returns additional log data.
+   */
   protected logError(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
@@ -139,6 +175,12 @@ implements IActorArgs<I, T, O, TS> {
     }
   }
 
+  /**
+   * Logs a message at fatal level via the context logger, if available.
+   * @param context The action context containing the logger.
+   * @param message The log message.
+   * @param data An optional factory function that returns additional log data.
+   */
   protected logFatal(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
@@ -147,6 +189,14 @@ implements IActorArgs<I, T, O, TS> {
   }
 }
 
+/**
+ * Arguments for constructing an Actor.
+ *
+ * @template I The input type of an actor.
+ * @template T The test type of an actor.
+ * @template O The output type of an actor.
+ * @template TS The test side data type.
+ */
 export interface IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput, TS = undefined> {
   /**
    * The name for this actor.

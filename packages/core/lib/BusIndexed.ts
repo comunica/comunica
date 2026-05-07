@@ -37,6 +37,10 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
     this.actionIdentifierFields = args.actionIdentifierFields;
   }
 
+  /**
+   * Subscribes an actor to this bus and registers it under its identifier(s).
+   * @param actor The actor to subscribe.
+   */
   public override subscribe(actor: A): void {
     const actorIds = this.getActorIdentifiers(actor) ?? [ '_undefined_' ];
     for (const actorId of actorIds) {
@@ -49,6 +53,11 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
     }
   }
 
+  /**
+   * Unsubscribes an actor from this bus and removes its identifier registrations.
+   * @param actor The actor to unsubscribe.
+   * @return True if the actor was found and removed.
+   */
   public override unsubscribe(actor: A): boolean {
     const actorIds = this.getActorIdentifiers(actor) ?? [ '_undefined_' ];
     let unsubscribed = false;
@@ -68,6 +77,12 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
     return unsubscribed;
   }
 
+  /**
+   * Publishes an action on this bus, targeting actors by their identifier when possible.
+   * Falls back to broadcasting.
+   * @param action The action to publish.
+   * @return An array of actor-reply pairs.
+   */
   public override publish(action: I): IActorReply<A, I, T, O>[] {
     const actionId = this.getActionIdentifier(action);
     if (actionId) {
@@ -77,6 +92,11 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
     return super.publish(action);
   }
 
+  /**
+   * Extracts identifier values from an actor by following the actor identifier field path.
+   * @param actor The actor whose identifiers to extract.
+   * @return The identifier values, or undefined if none are found.
+   */
   protected getActorIdentifiers(actor: A): string[] | undefined {
     const identifierValue = <string | string[] | undefined> this.actorIdentifierFields
       .reduce((object: any, field): A => object[field], actor);
@@ -86,6 +106,11 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
     return Array.isArray(identifierValue) ? identifierValue : [ identifierValue ];
   }
 
+  /**
+   * Extracts the identifier value from an action by following the action identifier field path.
+   * @param action The action whose identifier to extract.
+   * @return The identifier value.
+   */
   protected getActionIdentifier(action: I): string {
     return this.actionIdentifierFields.reduce((object: any, field): A => object[field], action);
   }

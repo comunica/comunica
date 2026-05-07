@@ -200,6 +200,9 @@ implements IBusArgs {
   }
 }
 
+/**
+ * Arguments for constructing a Bus.
+ */
 export interface IBusArgs {
   /**
    * The name for this bus.
@@ -222,6 +225,9 @@ TS = undefined,
   reply: Promise<TestResult<T, TS>>;
 }
 
+/**
+ * Convenience type alias for an IActorReply that uses the default Actor type.
+ */
 export type IReply<
   I extends IAction = IAction,
   O extends IActorOutput = IActorOutput,
@@ -229,6 +235,9 @@ export type IReply<
   TS = undefined,
 > = IActorReply<Actor<I, T, O, TS>, I, T, O, TS>;
 
+/**
+ * Convenience type alias for a Bus that uses the default Actor type.
+ */
 export type IBus<
   I extends IAction = IAction,
 O extends IActorOutput = IActorOutput,

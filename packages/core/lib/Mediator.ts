@@ -135,6 +135,12 @@ TS = undefined,
     return `${failMessage}\n    Error messages of failing actors:${prefix}${actorFailures.join(prefix)}`;
   }
 
+  /**
+   * Traverses a nested object along the given property path and returns the value at that path.
+   * @param obj The object to traverse.
+   * @param path The property path to follow.
+   * @return The value at the end of the path, or undefined if the path is invalid.
+   */
   protected static getObjectValue(obj: any, path: string[]): any {
     if (path.length === 0) {
       return obj;
@@ -146,6 +152,15 @@ TS = undefined,
   }
 }
 
+/**
+ * Arguments for constructing a Mediator.
+ *
+ * @template A The type of actor to mediate over.
+ * @template I The input type of an actor.
+ * @template T The test type of an actor.
+ * @template O The output type of an actor.
+ * @template TS The test side data type.
+ */
 export interface IMediatorArgs<
   A extends Actor<I, T, O, TS>,
 I extends IAction,
@@ -164,5 +179,8 @@ TS = undefined,
   bus: Bus<A, I, T, O, TS>;
 }
 
+/**
+ * Convenience type alias for a Mediator that uses the default Actor type.
+ */
 export type Mediate<I extends IAction, O extends IActorOutput, T extends IActorTest = IActorTest, TS = undefined> =
 Mediator<Actor<I, T, O, TS>, I, T, O, TS>;
