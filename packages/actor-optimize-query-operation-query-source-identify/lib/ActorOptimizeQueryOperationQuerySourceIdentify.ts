@@ -112,6 +112,11 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
     return { context, operation: action.operation };
   }
 
+  /**
+   * Expands a raw query source into its expanded form, preprocessing its context if present.
+   * @param querySource The unidentified query source to expand.
+   * @return The expanded query source.
+   */
   public async expandSource(querySource: QuerySourceUnidentified): Promise<QuerySourceUnidentifiedExpanded> {
     if (typeof querySource === 'string' || 'match' in querySource) {
       return { value: querySource };
@@ -124,6 +129,12 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
     };
   }
 
+  /**
+   * Identifies a query source, returning a cached result if available.
+   * @param querySourceUnidentified The expanded but unidentified query source.
+   * @param context The action context.
+   * @return A promise resolving to the identified query source wrapper.
+   */
   public identifySource(
     querySourceUnidentified: QuerySourceUnidentifiedExpanded,
     context: IActionContext,
