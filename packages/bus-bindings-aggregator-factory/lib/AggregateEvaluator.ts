@@ -11,9 +11,18 @@ import * as RdfString from 'rdf-string';
 export abstract class AggregateEvaluator {
   private errorOccurred = false;
 
+  /**
+   * Set of seen distinct variable values, used to enforce DISTINCT semantics.
+   */
   protected readonly variableValues: Set<string>;
 
+  /**
+   * Provider for RDF type hierarchy lookups.
+   */
   protected readonly superTypeProvider: ISuperTypeProvider;
+  /**
+   * Transformer for converting RDF terms to internal representations.
+   */
   protected readonly termTransformer: Eval.TermTransformer;
 
   protected constructor(
@@ -28,9 +37,21 @@ export abstract class AggregateEvaluator {
     this.variableValues = new Set();
   }
 
+  /**
+   * Processes a single term for aggregation.
+   * @param term The RDF term to aggregate.
+   */
   protected abstract putTerm(term: RDF.Term): void;
+  /**
+   * Returns the aggregated term result.
+   * @return The aggregated RDF term, or undefined if no result is available.
+   */
   protected abstract termResult(): RDF.Term | undefined;
 
+  /**
+   * Returns the term for an empty aggregation set.
+   * @return The default RDF term for an empty set, or undefined.
+   */
   public emptyValueTerm(): RDF.Term | undefined {
     return undefined;
   }
@@ -82,6 +103,10 @@ export abstract class AggregateEvaluator {
     }
   }
 
+  /**
+   * Returns the final aggregation result term.
+   * @return The aggregated RDF term, or undefined if an error occurred.
+   */
   public async result(): Promise<RDF.Term | undefined> {
     if (this.errorOccurred) {
       return undefined;
@@ -97,6 +122,11 @@ export abstract class AggregateEvaluator {
     }
   }
 
+  /**
+   * Converts a term to a numeric literal or throws an error if the term is not numeric.
+   * @param term The RDF term to convert.
+   * @return The numeric literal representation of the term.
+   */
   protected termToNumericOrError(term: RDF.Term): Eval.NumericLiteral {
     if (term.termType !== 'Literal') {
       throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a numeric literal`);

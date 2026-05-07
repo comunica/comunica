@@ -23,6 +23,9 @@ IActorTest,
 IActorBindingsAggregatorFactoryOutput,
 TS
 > {
+  /**
+   * The mediator for creating expression evaluators.
+   */
   protected readonly mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
   /* eslint-disable max-len */
   /**
@@ -38,6 +41,9 @@ TS
 }
 
 export interface IActionBindingsAggregatorFactory extends IAction {
+  /**
+   * The aggregate expression to create an aggregator for.
+   */
   expr: Algebra.AggregateExpression;
 }
 
@@ -58,17 +64,30 @@ export interface IBindingsAggregator {
   result: () => Promise<RDF.Term | undefined>;
 }
 
+/**
+ * Output of a bindings aggregator factory actor.
+ */
 export interface IActorBindingsAggregatorFactoryOutput extends IActorOutput, IBindingsAggregator {}
 
+/**
+ * Constructor arguments for {@link ActorBindingsAggregatorFactory}.
+ * @template TS The test side-data type.
+ */
 export interface IActorBindingsAggregatorFactoryArgs<TS = undefined> extends IActorArgs<
 IActionBindingsAggregatorFactory,
 IActorTest,
 IActorBindingsAggregatorFactoryOutput,
 TS
 > {
+  /**
+   * The mediator for creating expression evaluators.
+   */
   mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 }
 
+/**
+ * Mediator type for bindings aggregator factory actors.
+ */
 export type MediatorBindingsAggregatorFactory = Mediate<
 IActionBindingsAggregatorFactory,
 IActorBindingsAggregatorFactoryOutput
