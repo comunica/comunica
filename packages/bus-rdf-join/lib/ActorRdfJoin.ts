@@ -39,13 +39,22 @@ IMediatorTypeJoinCoefficients,
 IQueryOperationResultBindings,
 TS
 > {
+  /**
+   * The mediator for join selectivity estimation.
+   */
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 
   /**
    * If this actor will be logged in the debugger and physical query plan logger
    */
   public includeInLogs = true;
+  /**
+   * The logical join type this actor handles.
+   */
   public readonly logicalType: LogicalJoinType;
+  /**
+   * The physical name of this join implementation.
+   */
   public readonly physicalName: string;
   /**
    * Can be used by subclasses to indicate the max or min number of streams that can be joined.
@@ -493,12 +502,18 @@ TS
   ): Promise<TestResult<IMediatorTypeJoinCoefficients, TS>>;
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfJoin}.
+ */
 export interface IActorRdfJoinArgs<TS extends IActorRdfJoinTestSideData = IActorRdfJoinTestSideData> extends IActorArgs<
   IActionRdfJoin,
   IMediatorTypeJoinCoefficients,
   IQueryOperationResultBindings,
   TS
 > {
+  /**
+   * The mediator for join selectivity estimation.
+   */
   mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 }
 
@@ -561,6 +576,9 @@ export interface IActionRdfJoin extends IAction {
   graphVariableFromParentScope?: RDF.Variable;
 }
 
+/**
+ * Inner output of a join operation including optional plan metadata.
+ */
 export interface IActorRdfJoinOutputInner {
   /**
    * The join result.
@@ -572,8 +590,17 @@ export interface IActorRdfJoinOutputInner {
   physicalPlanMetadata?: any;
 }
 
+/**
+ * Side data passed from the test phase to the run phase of a join actor.
+ */
 export interface IActorRdfJoinTestSideData {
+  /**
+   * The metadata of each join entry.
+   */
   metadatas: MetadataBindings[];
 }
 
+/**
+ * A mediator type for RDF join actors.
+ */
 export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;
