@@ -63,6 +63,9 @@ export interface IActorRdfMetadataAccumulateOutput extends IActorOutput {
   metadata: Partial<MetadataBindings>;
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfMetadataAccumulate}.
+ */
 export type IActorRdfMetadataAccumulateArgs<TS = undefined> = IActorArgs<
 IActionRdfMetadataAccumulate,
 IActorTest,
@@ -70,6 +73,9 @@ IActorRdfMetadataAccumulateOutput,
 TS
 >;
 
+/**
+ * A mediator type for metadata accumulation actors.
+ */
 export type MediatorRdfMetadataAccumulate = Mediate<
 IActionRdfMetadataAccumulate,
 IActorRdfMetadataAccumulateOutput
