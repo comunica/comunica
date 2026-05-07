@@ -217,6 +217,12 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     return [ ...sources ];
   }
 
+  /**
+   * Categorizes the child operations of a union or join by their variable overlap with the given expression variables.
+   * @param operation A union or join operation.
+   * @param expressionVariables The variables referenced in the filter expression.
+   * @return An object containing fully, partially, and not overlapping child operations.
+   */
   protected getOverlappingOperations(
     operation: Algebra.Union | Algebra.Join,
     expressionVariables: RDF.Variable[],
@@ -568,6 +574,9 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   }
 }
 
+/**
+ * Arguments interface for {@link ActorOptimizeQueryOperationFilterPushdown}.
+ */
 export interface IActorOptimizeQueryOperationFilterPushdownArgs extends IActorOptimizeQueryOperationArgs {
   /**
    * If filters should be pushed down as deep as possible.
