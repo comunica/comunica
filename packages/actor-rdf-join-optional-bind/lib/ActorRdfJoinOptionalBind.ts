@@ -27,6 +27,10 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
+  /**
+   * Creates an instance of {@link ActorRdfJoinOptionalBind}.
+   * @param args The arguments for this actor.
+   */
   public constructor(args: IActorRdfJoinOptionalBindArgs) {
     super(args, {
       logicalType: 'optional',
@@ -43,6 +47,11 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
+  /**
+   * Produces the join output by binding each left-stream binding into the right pattern via recursive query evaluation.
+   * @param action The join action to execute.
+   * @return The inner join output containing the resulting bindings stream and metadata.
+   */
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
@@ -91,6 +100,13 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     };
   }
 
+  /**
+   * Calculates the join cost coefficients for the optional bind join strategy.
+   * @param action The join action to evaluate.
+   * @param sideData Pre-computed side data including entry metadata.
+   * @return A test result containing the estimated join coefficients,
+   *         or a failure if the operation type is unsupported.
+   */
   public async getJoinCoefficients(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
