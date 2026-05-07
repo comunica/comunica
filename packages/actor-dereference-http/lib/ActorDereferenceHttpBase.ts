@@ -58,6 +58,9 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
   public readonly maxAcceptHeaderLength: number;
   public readonly maxAcceptHeaderLengthBrowser: number;
 
+  /**
+   * @param args Arguments for this actor.
+   */
   public constructor(args: IActorDereferenceHttpArgs) {
     super(args);
     this.mediatorHttp = args.mediatorHttp;
@@ -65,6 +68,10 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
     this.maxAcceptHeaderLengthBrowser = args.maxAcceptHeaderLengthBrowser;
   }
 
+  /**
+   * Tests whether the given URL is an HTTP(S) URL.
+   * @return A test result that fails for non-HTTP URLs.
+   */
   public async test({ url }: IActionDereference): Promise<TestResult<IActorTest>> {
     if (!/^https?:/u.test(url)) {
       return failTest(`Cannot retrieve ${url} because it is not an HTTP(S) URL.`);
@@ -72,6 +79,11 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
     return passTestVoid();
   }
 
+  /**
+   * Dereferences the given URL via HTTP and returns the response data.
+   * @param action The dereference action containing the URL and options.
+   * @return The dereference output with data stream, headers, and metadata.
+   */
   public async run(action: IActionDereference): Promise<IActorDereferenceOutput> {
     let exists = true;
 
