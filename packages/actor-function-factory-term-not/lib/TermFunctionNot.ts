@@ -6,6 +6,9 @@ import {
   SparqlOperator,
 } from '@comunica/utils-expression-evaluator';
 
+/**
+ * https://www.w3.org/TR/sparql11-query/#func-not
+ */
 export class TermFunctionNot extends TermFunctionBase {
   public constructor() {
     super({
