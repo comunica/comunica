@@ -17,6 +17,16 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
   private readonly pendingOperations: { variable: RDF.Variable; operation: Algebra.Path }[] = [];
   private started = false;
 
+  /**
+   * @param algebraFactory The algebra factory for creating path operations.
+   * @param subject The starting subject term.
+   * @param predicate The path predicate operation.
+   * @param graph The graph term.
+   * @param context The action context.
+   * @param mediatorQueryOperation The query operation mediator.
+   * @param emitFirstSubject Whether to emit the initial subject as a result.
+   * @param maxRunningOperations The maximum number of concurrent path evaluations.
+   */
   public constructor(
     private readonly algebraFactory: AlgebraFactory,
     private readonly subject: RDF.Term,
@@ -33,6 +43,12 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     this._push(this.subject, emitFirstSubject);
   }
 
+  /**
+   * Returns a property value, kickstarting the iterator when metadata is first requested.
+   * @param propertyName The property name to retrieve.
+   * @param callback An optional callback to invoke with the property value.
+   * @return The property value, if available synchronously.
+   */
   public override getProperty<P>(propertyName: string, callback?: (value: P) => void): P | undefined {
     // Kickstart iterator when metadata is requested
     if (!this.started && propertyName === 'metadata') {
@@ -42,6 +58,10 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     return super.getProperty(propertyName, callback);
   }
 
+  /**
+   * Destroys all running sub-iterators and ends this iterator.
+   * @param destroy Whether to destroy the iterator.
+   */
   protected override _end(destroy?: boolean): void {
     // Close all running iterators
     for (const it of this.runningOperations) {
@@ -51,6 +71,12 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     super._end(destroy);
   }
 
+  /**
+   * Pushes an item, skipping duplicates and registering a new pending path operation.
+   * @param item The RDF term to push.
+   * @param pushAsResult Whether to emit the item as a result.
+   * @return True if the item was pushed, false if it was a duplicate.
+   */
   protected override _push(item: RDF.Term, pushAsResult = true): boolean {
     let termString;
     if (pushAsResult) {
@@ -76,6 +102,10 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     return true;
   }
 
+  /**
+   * Starts the next pending path operation and subscribes to its output.
+   * @param fillBuffer Whether to fill the buffer when results arrive.
+   */
   protected async startNextOperation(fillBuffer: boolean): Promise<void> {
     this.started = true;
 
@@ -108,6 +138,11 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     }
   }
 
+  /**
+   * Reads items from running operations, starting new operations as capacity allows.
+   * @param count The number of items to read.
+   * @param done A callback to invoke when reading is complete.
+   */
   protected override _read(count: number, done: () => void): void {
     // eslint-disable-next-line ts/no-this-alias
     const self = this;
@@ -147,6 +182,9 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     }, error => this.destroy(error));
   }
 
+  /**
+   * Closes this iterator if there are no more running or pending operations.
+   */
   protected closeIfNeeded(): void {
     if (this.runningOperations.length === 0 && this.pendingOperations.length === 0) {
       this.close();

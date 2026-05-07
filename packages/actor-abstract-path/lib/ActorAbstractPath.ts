@@ -36,11 +36,21 @@ import { PathVariableObjectIterator } from './PathVariableObjectIterator';
 export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated<Algebra.Path> {
   protected readonly predicateType: string;
 
+  /**
+   * @param args Arguments for this actor.
+   * @param predicateType The algebra type of the path predicate this actor handles.
+   */
   protected constructor(args: IActorQueryOperationTypedMediatedArgs, predicateType: string) {
     super(args, 'path');
     this.predicateType = predicateType;
   }
 
+  /**
+   * Tests whether this actor can handle the given path operation.
+   * @param operation The path operation to test.
+   * @param _context The action context.
+   * @return A test result that passes only if the predicate type matches.
+   */
   public async testOperation(operation: Algebra.Path, _context: IActionContext): Promise<TestResult<IActorTest>> {
     if (operation.predicate.type !== this.predicateType) {
       return failTest(`This Actor only supports ${this.predicateType} Path operations.`);
@@ -49,6 +59,13 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     return passTestVoid();
   }
 
+  /**
+   * Generates a variable that does not conflict with existing variables in the path.
+   * @param dataFactory The data factory used to create the variable.
+   * @param path An optional path operation to check for variable name conflicts.
+   * @param name An optional base name for the variable.
+   * @return A new variable term.
+   */
   // Generates a variable that does not yet occur in the path
   public generateVariable(dataFactory: ComunicaDataFactory, path?: Algebra.Path, name?: string): RDF.Variable {
     if (!name) {
@@ -63,6 +80,13 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     return dataFactory.variable(name);
   }
 
+  /**
+   * Handles deduplication for arbitrary-length path expressions (* and +).
+   * @param algebraFactory The algebra factory.
+   * @param context The action context.
+   * @param path The path operation to evaluate.
+   * @return The context and optional deduplicated bindings result.
+   */
   // Such connectivity matching does not introduce duplicates (it does not incorporate any count of the number
   // of ways the connection can be made) even if the repeated path itself would otherwise result in duplicates.
   // https://www.w3.org/TR/sparql11-query/#propertypaths
@@ -83,6 +107,14 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     return { context, operation: undefined };
   }
 
+  /**
+   * Retrieves all nodes from the given graph for the path subject variable.
+   * @param operation The path operation.
+   * @param context The action context.
+   * @param algebraFactory The algebra factory.
+   * @param sources The query source wrappers.
+   * @return The bindings result containing all graph nodes.
+   */
   public async getNodes(
     operation: Algebra.Path,
     context: IActionContext,
@@ -415,6 +447,13 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     throw new Error(`Can not extract path sources from operation of type ${operation.type}`);
   }
 
+  /**
+   * Assigns query sources to the given pattern operation, creating a union if multiple sources exist.
+   * @param algebraFactory The algebra factory.
+   * @param pattern The algebra operation to assign sources to.
+   * @param sources The query source wrappers to assign.
+   * @return The pattern with assigned sources.
+   */
   public assignPatternSources(
     algebraFactory: AlgebraFactory,
     pattern: Algebra.Operation,
@@ -435,6 +474,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
  * Contains the result streams produced by a property path evaluation.
  */
 export interface IPathResultStream {
+  /** The bindings stream produced by the path evaluation. */
   bindingsStream: AsyncIterator<Bindings>;
+  /** A function returning the metadata for the path evaluation result. */
   metadata: () => Promise<MetadataBindings>;
 }
