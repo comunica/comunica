@@ -15,6 +15,12 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
   private readonly hashFn: (term: RDF.Term | undefined) => string;
   private readonly allowDisjointDomains: boolean;
 
+  /**
+   * Creates a new tree-based bindings index that supports undefined values.
+   * @param keys The variables to index on.
+   * @param hashFn A hash function that produces a string key from a term.
+   * @param allowDisjointDomains Whether bindings with none of the expected keys should still be indexed.
+   */
   public constructor(
     keys: MetadataVariable[],
     hashFn: (term: RDF.Term | undefined) => string,
@@ -46,6 +52,11 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
     return value;
   }
 
+  /**
+   * Checks whether the given bindings contain at least one of the expected index keys.
+   * @param bindings The bindings to validate.
+   * @return True if the bindings contain at least one expected key.
+   */
   protected isBindingsValid(bindings: Bindings): boolean {
     let validKeys = false;
     for (const key of this.keys) {
@@ -71,6 +82,13 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
     return this.getRecursive(bindings, this.keys, [ this.data ]);
   }
 
+  /**
+   * Recursively traverses the tree index to collect all matching values.
+   * @param bindings The bindings to match against, or undefined to match all.
+   * @param keys The remaining variable keys to traverse.
+   * @param dataIndexes The current set of tree nodes to search.
+   * @return An array of all matching values.
+   */
   protected getRecursive(bindings: Bindings | undefined, keys: RDF.Variable[], dataIndexes: IDataIndex<V>[]): V[] {
     if (keys.length === 0) {
       return <V[]> dataIndexes;
@@ -118,6 +136,14 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
     return this.getRecursiveFirst(bindings, this.keys, [ this.data ], matchUndefsAsWildcard);
   }
 
+  /**
+   * Recursively traverses the tree index to find the first matching value.
+   * @param bindings The bindings to match against.
+   * @param keys The remaining variable keys to traverse.
+   * @param dataIndexes The current set of tree nodes to search.
+   * @param matchUndefsAsWildcard Whether undefined bindings should match any existing value.
+   * @return The first matching value, or undefined if none is found.
+   */
   protected getRecursiveFirst(
     bindings: Bindings,
     keys: RDF.Variable[],
@@ -159,11 +185,19 @@ export class BindingsIndexUndef<V> implements IBindingsIndex<V> {
     return undefined;
   }
 
+  /**
+   * Returns all values stored in the index.
+   * @return An array of all indexed values.
+   */
   public values(): V[] {
     return this.keys.length === 0 ? [] : this.getRecursive(undefined, this.keys, [ this.data ]);
   }
 }
 
+/**
+ * A recursive tree structure used internally to index bindings by hashed term keys.
+ * @template V The type of values stored at the leaves of the index.
+ */
 export interface IDataIndex<V> {
   [key: string]: IDataIndex<V> | V;
 }
