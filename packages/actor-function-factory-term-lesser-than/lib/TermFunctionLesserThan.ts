@@ -23,6 +23,9 @@ import {
   yearMonthDurationsToMonths,
 } from '@comunica/utils-expression-evaluator';
 
+/**
+ * https://www.w3.org/TR/sparql11-query/#OperatorMapping
+ */
 export class TermFunctionLesserThan extends TermFunctionBase {
   public constructor(private readonly equalityFunction: ITermFunction) {
     super({
