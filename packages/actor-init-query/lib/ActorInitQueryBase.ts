@@ -47,6 +47,9 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
   }
 }
 
+/**
+ * Arguments interface for {@link ActorInitQueryBase}.
+ */
 export interface IActorInitQueryBaseArgs extends IActorInitArgs {
   /**
    * The query process mediator

@@ -41,6 +41,9 @@ export class QueryEngineFactoryBase<Q extends QueryEngineBase> {
   }
 }
 
+/**
+ * Options for dynamically creating a query engine from a Components.js configuration.
+ */
 export interface IDynamicQueryEngineOptions extends ISetupProperties {
   /**
    * The path or URL to a Components.js config file.
