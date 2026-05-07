@@ -15,20 +15,42 @@ export class Bindings implements RDF.Bindings {
   private readonly entries: Map<string, RDF.Term>;
   private readonly contextHolder: IContextHolder | undefined;
 
+  /**
+   * Creates a new Bindings instance.
+   * @param dataFactory The data factory used to create RDF terms.
+   * @param entries An immutable map of variable name strings to RDF terms.
+   * @param contextHolder An optional holder for the action context and its merge handlers.
+   */
   public constructor(dataFactory: ComunicaDataFactory, entries: Map<string, RDF.Term>, contextHolder?: IContextHolder) {
     this.dataFactory = dataFactory;
     this.entries = entries;
     this.contextHolder = contextHolder;
   }
 
+  /**
+   * Checks whether a binding exists for the given variable.
+   * @param key An RDF variable or variable name string.
+   * @return True if a binding exists for the given variable, false otherwise.
+   */
   public has(key: RDF.Variable | string): boolean {
     return this.entries.has(typeof key === 'string' ? key : key.value);
   }
 
+  /**
+   * Retrieves the term bound to the given variable.
+   * @param key An RDF variable or variable name string.
+   * @return The RDF term bound to the variable, or undefined if no binding exists.
+   */
   public get(key: RDF.Variable | string): RDF.Term | undefined {
     return this.entries.get(typeof key === 'string' ? key : key.value);
   }
 
+  /**
+   * Returns a new Bindings with the given variable bound to the given term.
+   * @param key An RDF variable or variable name string.
+   * @param value The RDF term to bind to the variable.
+   * @return A new Bindings instance with the added or updated binding.
+   */
   public set(key: RDF.Variable | string, value: RDF.Term): Bindings {
     return new Bindings(
       this.dataFactory,
@@ -37,6 +59,11 @@ export class Bindings implements RDF.Bindings {
     );
   }
 
+  /**
+   * Returns a new Bindings with the binding for the given variable removed.
+   * @param key An RDF variable or variable name string.
+   * @return A new Bindings instance without the specified binding.
+   */
   public delete(key: RDF.Variable | string): Bindings {
     return new Bindings(
       this.dataFactory,
@@ -45,6 +72,10 @@ export class Bindings implements RDF.Bindings {
     );
   }
 
+  /**
+   * Returns an iterable of all variables in this Bindings.
+   * @return An iterable of RDF variables.
+   */
   public keys(): Iterable<RDF.Variable> {
     return this.mapIterable<string, RDF.Variable>(
       this.iteratorToIterable(this.entries.keys()),
@@ -52,20 +83,35 @@ export class Bindings implements RDF.Bindings {
     );
   }
 
+  /**
+   * Returns an iterable of all bound terms in this Bindings.
+   * @return An iterable of RDF terms.
+   */
   public values(): Iterable<RDF.Term> {
     return this.iteratorToIterable(this.entries.values());
   }
 
+  /**
+   * Invokes a callback for each variable-term binding in this Bindings.
+   * @param fn A function called with each term and its corresponding variable.
+   */
   public forEach(fn: (value: RDF.Term, key: RDF.Variable) => any): void {
     for (const [ key, value ] of this.entries.entries()) {
       fn(value, this.dataFactory.variable(key));
     }
   }
 
+  /**
+   * Returns the number of variable-term bindings.
+   */
   public get size(): number {
     return this.entries.size;
   }
 
+  /**
+   * Returns an iterator over [variable, term] pairs in this Bindings.
+   * @return An iterator of variable-term tuples.
+   */
   public [Symbol.iterator](): Iterator<[RDF.Variable, RDF.Term]> {
     return this.mapIterable<[string, RDF.Term], [RDF.Variable, RDF.Term]>(
       this.iteratorToIterable(<Iterator<[string, RDF.Term]>> this.entries.entries()),
@@ -73,6 +119,11 @@ export class Bindings implements RDF.Bindings {
     )[Symbol.iterator]();
   }
 
+  /**
+   * Checks whether this Bindings is equal to another Bindings.
+   * @param other The other Bindings to compare with, or null/undefined.
+   * @return True if both Bindings contain the same variable-term pairs, false otherwise.
+   */
   public equals(other: RDF.Bindings | null | undefined): boolean {
     if (!other) {
       return false;
@@ -96,16 +147,33 @@ export class Bindings implements RDF.Bindings {
     return true;
   }
 
+  /**
+   * Returns a new Bindings containing only the entries for which the predicate returns true.
+   * @param fn A predicate function called with each term and its variable.
+   * @return A new Bindings instance with only the entries that satisfy the predicate.
+   */
   public filter(fn: (value: RDF.Term, key: RDF.Variable) => boolean): Bindings {
     return new Bindings(this.dataFactory, Map<string, RDF.Term>(<any> this.entries
       .filter((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
   }
 
+  /**
+   * Returns a new Bindings with each term transformed by the given function.
+   * @param fn A mapping function called with each term and its variable.
+   * @return A new Bindings instance with the transformed terms.
+   */
   public map(fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term): Bindings {
     return new Bindings(this.dataFactory, Map<string, RDF.Term>(<any> this.entries
       .map((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
   }
 
+  /**
+   * Merges this Bindings with another if they are compatible.
+   *
+   * Two bindings are compatible when they share no variables with conflicting term values.
+   * @param other The other Bindings to merge with.
+   * @return A new merged Bindings, or undefined if the bindings are incompatible.
+   */
   public merge(other: RDF.Bindings | Bindings): Bindings | undefined {
     if (this.size < other.size && other instanceof Bindings) {
       return other.merge(this);
@@ -135,6 +203,12 @@ export class Bindings implements RDF.Bindings {
     return this.createBindingsWithContexts(entries, other);
   }
 
+  /**
+   * Merges this Bindings with another, using a custom merger function to resolve conflicts.
+   * @param merger A function that resolves conflicting terms for the same variable.
+   * @param other The other Bindings to merge with.
+   * @return A new merged Bindings with conflicts resolved by the merger function.
+   */
   public mergeWith(
     merger: (self: RDF.Term, other: RDF.Term, key: RDF.Variable) => RDF.Term,
     other: RDF.Bindings | Bindings,
@@ -172,6 +246,12 @@ export class Bindings implements RDF.Bindings {
     return this.createBindingsWithContexts(entries, other);
   }
 
+  /**
+   * Creates a new Bindings with merged context entries from this and another Bindings.
+   * @param entries The immutable map of variable-term entries for the new Bindings.
+   * @param other The other Bindings whose context is merged into the result.
+   * @return A new Bindings instance with merged contexts.
+   */
   protected createBindingsWithContexts(entries: Map<string, RDF.Term>, other: RDF.Bindings | Bindings): Bindings {
     // If any context is empty, we skip merging contexts
     if (this.contextHolder && this.contextHolder.context) {
@@ -243,10 +323,26 @@ export class Bindings implements RDF.Bindings {
     return new ActionContext(newContextData);
   }
 
+  /**
+   * Returns a new Bindings with a context entry set for the given key.
+   * @template V The type of the context value.
+   * @param key The context key to set.
+   * @param value The context value to associate with the key.
+   * @return A new Bindings instance with the updated context entry.
+   */
   public setContextEntry<V>(key: IActionContextKey<V>, value: any): Bindings {
     return this.setContextEntryRaw(key, value);
   }
 
+  /**
+   * Returns a new Bindings with a raw context entry set for the given key.
+   *
+   * Creates a new context if none exists yet.
+   * @template V The type of the context value.
+   * @param key The context key to set.
+   * @param value The context value to associate with the key.
+   * @return A new Bindings instance with the updated context entry.
+   */
   public setContextEntryRaw<V>(key: IActionContextKey<V>, value: any): Bindings {
     if (this.contextHolder && this.contextHolder.context) {
       return new Bindings(
@@ -268,10 +364,22 @@ export class Bindings implements RDF.Bindings {
     );
   }
 
+  /**
+   * Returns a new Bindings with the context entry for the given key removed.
+   * @template V The type of the context value.
+   * @param key The context key to delete.
+   * @return A new Bindings instance without the specified context entry.
+   */
   public deleteContextEntry<V>(key: IActionContextKey<V>): Bindings {
     return this.deleteContextEntryRaw(key);
   }
 
+  /**
+   * Returns a new Bindings with the raw context entry for the given key removed.
+   * @template V The type of the context value.
+   * @param key The context key to delete.
+   * @return A new Bindings instance without the specified context entry.
+   */
   public deleteContextEntryRaw<V>(key: IActionContextKey<V>): Bindings {
     if (this.contextHolder) {
       return new Bindings(
@@ -286,24 +394,52 @@ export class Bindings implements RDF.Bindings {
     return new Bindings(this.dataFactory, this.entries);
   }
 
+  /**
+   * Returns the action context associated with this Bindings, if any.
+   * @return The action context, or undefined if no context is set.
+   */
   public getContext(): IActionContext | undefined {
     return this.contextHolder?.context;
   }
 
+  /**
+   * Retrieves a specific entry from the action context.
+   * @template V The type of the context value.
+   * @param key The context key to look up.
+   * @return The context value, or undefined if the key is not present.
+   */
   public getContextEntry<V>(key: IActionContextKey<V>): V | undefined {
     return this.getContext()?.get(key);
   }
 
+  /**
+   * Returns a string representation of this Bindings.
+   * @return A human-readable string of the variable-term bindings.
+   */
   public toString(): string {
     return bindingsToString(this);
   }
 
+  /**
+   * Lazily maps each element of an iterable using a callback function.
+   * @template T The type of elements in the source iterable.
+   * @template U The type of elements in the resulting iterable.
+   * @param iterable The source iterable to transform.
+   * @param callback A function applied to each element to produce the mapped value.
+   * @return An iterable of transformed elements.
+   */
   protected* mapIterable<T, U>(iterable: Iterable<T>, callback: (value: T) => U): Iterable<U> {
     for (const x of iterable) {
       yield callback(x);
     }
   }
 
+  /**
+   * Wraps an iterator as an iterable so it can be used in for-of loops.
+   * @template T The type of elements produced by the iterator.
+   * @param iterator The iterator to wrap.
+   * @return An iterable that delegates to the given iterator.
+   */
   protected iteratorToIterable<T>(iterator: Iterator<T>): Iterable<T> {
     return {
       [Symbol.iterator]: () => iterator,
@@ -311,6 +447,9 @@ export class Bindings implements RDF.Bindings {
   }
 }
 
+/**
+ * Holds the action context and its associated merge handlers for a Bindings instance.
+ */
 export interface IContextHolder {
   contextMergeHandlers: Record<string, IBindingsContextMergeHandler<any>>;
   context?: IActionContext;
