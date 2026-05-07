@@ -47,6 +47,9 @@ export class ActorQueryOperationNop extends ActorQueryOperationTypedMediated<Alg
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryOperationNop}.
+ */
 export interface IActorQueryOperationNopArgs extends IActorQueryOperationTypedMediatedArgs {
   /**
    * A mediator for creating binding context merge handlers
