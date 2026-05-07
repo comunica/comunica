@@ -4,6 +4,9 @@ import type { ComunicaDataFactory, IExpressionEvaluator } from '@comunica/types'
 import * as Eval from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 
+/**
+ * Implements the SPARQL GROUP_CONCAT aggregate by concatenating string values with a configurable separator.
+ */
 export class GroupConcatAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: string | undefined = undefined;
   private readonly separator: string;
