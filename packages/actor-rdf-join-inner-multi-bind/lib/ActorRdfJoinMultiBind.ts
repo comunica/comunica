@@ -35,6 +35,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
+  /**
+   * @param args Arguments for this actor.
+   */
   public constructor(args: IActorRdfJoinMultiBindArgs) {
     super(args, {
       logicalType: 'inner',
@@ -59,6 +62,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
    * @param operations The operations to bind with each binding of the base stream.
    * @param operationBinder A callback to retrieve the bindings stream of bound operations.
    * @param optional If the original bindings should be emitted when the resulting bindings stream is empty.
+   * @param algebraFactory The algebra factory for creating algebra operations.
+   * @param bindingsFactory The bindings factory for creating bindings.
    * @return {BindingsStream}
    */
   public static createBindStream(
@@ -106,6 +111,12 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     }
   }
 
+  /**
+   * Produces the join output by binding the smallest stream against remaining operations.
+   * @param action The join action containing entries and context.
+   * @param sideData Side data containing sorted and unsorted join entries.
+   * @return A promise resolving to the inner join output.
+   */
   public async getOutput(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinMultiBindTestSideData,
@@ -181,6 +192,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     };
   }
 
+  /**
+   * Checks whether the given operation is compatible with bind join evaluation.
+   * @param operation The algebra operation to check.
+   * @return True if the operation can be used in a bind join, false otherwise.
+   */
   public canBindWithOperation(operation: Algebra.Operation): boolean {
     let valid = true;
     algebraUtils.visitOperation(operation, {
@@ -197,6 +213,12 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     return valid;
   }
 
+  /**
+   * Calculates the join coefficients for the bind join strategy.
+   * @param action The join action containing entries and context.
+   * @param sideData Side data containing entry metadata.
+   * @return A promise resolving to the join coefficients or a failure message.
+   */
   public async getJoinCoefficients(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
@@ -307,9 +329,17 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs<IActorRdfJ
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }
 
+/**
+ * Defines the traversal order used when binding join entries.
+ */
 export type BindOrder = 'depth-first' | 'breadth-first';
 
+/**
+ * Side data produced during the bind join test phase.
+ */
 export interface IActorRdfJoinMultiBindTestSideData extends IActorRdfJoinTestSideData {
+  /** The join entries in their original unsorted order. */
   entriesUnsorted: IJoinEntryWithMetadata[];
+  /** The join entries sorted by the join entries sort mediator. */
   entriesSorted: IJoinEntryWithMetadata[];
 }
