@@ -20,11 +20,20 @@ import { LRUCache } from 'lru-cache';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSourcesAsyncRdfIterator';
 
+/**
+ * A query source that follows hypermedia links to resolve queries across linked RDF sources.
+ * It caches resolved sources and delegates query execution to the underlying sources.
+ */
 export class QuerySourceHypermedia implements IQuerySource {
+  /** The URL string used as reference value for this source. */
   public readonly referenceValue: string;
+  /** The initial link used to seed source discovery. */
   public readonly firstLink: ILink;
+  /** The mediators used for metadata accumulation, source dereferencing, and link resolution. */
   public readonly mediators: IMediatorArgs;
+  /** The RDF data factory used to create RDF terms. */
   public readonly dataFactory: ComunicaDataFactory;
+  /** The factory for creating bindings instances. */
   public readonly bindingsFactory: BindingsFactory;
 
   /**
@@ -32,9 +41,20 @@ export class QuerySourceHypermedia implements IQuerySource {
    */
   public sourcesState: LRUCache<string, Promise<ISourceState>>;
 
+  /** Maximum number of entries in the LRU source cache. */
   private readonly cacheSize: number;
+  /** Maximum number of links that can be followed in parallel. */
   private readonly maxIterators: number;
 
+  /**
+   * Creates a new hypermedia query source.
+   * @param cacheSize Maximum number of entries in the LRU source cache.
+   * @param firstUrl The initial link to start source discovery from.
+   * @param maxIterators Maximum number of links that can be followed in parallel.
+   * @param mediators The mediators for metadata, dereferencing, and link resolution.
+   * @param dataFactory The RDF data factory.
+   * @param bindingsFactory The bindings factory.
+   */
   public constructor(
     cacheSize: number,
     firstUrl: ILink,
@@ -53,16 +73,34 @@ export class QuerySourceHypermedia implements IQuerySource {
     this.sourcesState = new LRUCache<string, Promise<ISourceState>>({ max: this.cacheSize });
   }
 
+  /**
+   * Delegates selector shape retrieval to the cached first source.
+   * @param context The action context.
+   * @return The fragment selector shape supported by this source.
+   */
   public async getSelectorShape(context: IActionContext): Promise<FragmentSelectorShape> {
     const source = await this.getSourceCached(this.firstLink, {}, context);
     return source.source.getSelectorShape(context);
   }
 
+  /**
+   * Delegates filter factor retrieval to the cached first source.
+   * @param context The action context.
+   * @return The filter factor indicating source selectivity.
+   */
   public async getFilterFactor(context: IActionContext): Promise<number> {
     const source = await this.getSourceCached(this.firstLink, {}, context);
     return source.source.getFilterFactor(context);
   }
 
+  /**
+   * Creates a {@link MediatedLinkedRdfSourcesAsyncRdfIterator} that lazily follows
+   * hypermedia links to produce bindings.
+   * @param operation The algebra operation to evaluate.
+   * @param context The action context.
+   * @param options Optional bindings query options.
+   * @return A bindings stream that iterates across linked RDF sources.
+   */
   public queryBindings(
     operation: Algebra.Operation,
     context: IActionContext,
@@ -89,6 +127,12 @@ export class QuerySourceHypermedia implements IQuerySource {
     return it;
   }
 
+  /**
+   * Delegates quad pattern query execution to the cached first source.
+   * @param operation The algebra operation to evaluate.
+   * @param context The action context.
+   * @return An async iterator over matching quads.
+   */
   public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
     return new TransformIterator(async() => {
       const source = await this.getSourceCached(this.firstLink, {}, context);
@@ -96,11 +140,22 @@ export class QuerySourceHypermedia implements IQuerySource {
     }, { autoStart: false });
   }
 
+  /**
+   * Delegates a boolean (ASK) query to the cached first source.
+   * @param operation The ASK algebra operation to evaluate.
+   * @param context The action context.
+   * @return The boolean result of the ASK query.
+   */
   public async queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
     const source = await this.getSourceCached(this.firstLink, {}, context);
     return await source.source.queryBoolean(operation, context);
   }
 
+  /**
+   * Delegates a void (update) operation to the cached first source.
+   * @param operation The algebra operation to evaluate.
+   * @param context The action context.
+   */
   public async queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
     const source = await this.getSourceCached(this.firstLink, {}, context);
     return await source.source.queryVoid(operation, context);
@@ -160,11 +215,18 @@ export class QuerySourceHypermedia implements IQuerySource {
     return source;
   }
 
+  /**
+   * Returns a string representation of this hypermedia query source.
+   * @return A string in the form `QuerySourceHypermedia(url)`.
+   */
   public toString(): string {
     return `QuerySourceHypermedia(${this.firstLink.url})`;
   }
 }
 
+/**
+ * Holds the mediators required by {@link QuerySourceHypermedia} for source resolution and metadata handling.
+ */
 export interface IMediatorArgs {
   mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   mediatorQuerySourceDereferenceLink: MediatorQuerySourceDereferenceLink;

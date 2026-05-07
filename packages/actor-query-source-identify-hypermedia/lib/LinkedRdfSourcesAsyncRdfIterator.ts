@@ -16,23 +16,49 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator, BufferedIteratorOptions } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
 
+/**
+ * An abstract buffered iterator that lazily traverses linked RDF sources by following links discovered in metadata.
+ * Subclasses provide concrete strategies for link queue management, link discovery, and metadata accumulation.
+ */
 export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<RDF.Bindings> {
+  /** The algebra operation to evaluate against each source. */
   protected readonly operation: Algebra.Operation;
+  /** Optional bindings query options forwarded to each sub-source. */
   protected readonly queryBindingsOptions: IQueryBindingsOptions | undefined;
+  /** The action context propagated to each source. */
   protected readonly context: IActionContext;
 
+  /** The initial link used to seed source traversal. */
   protected readonly firstLink: ILink;
+  /** Maximum number of sub-iterators that may run concurrently. */
   private readonly maxIterators: number;
+  /** Function that resolves a link and dataset info into a source state. */
   private readonly sourceStateGetter: SourceStateGetter;
 
+  /** Whether the first read has been initiated. */
   protected started = false;
+  /** The currently active sub-iterators producing bindings. */
   private readonly currentIterators: AsyncIterator<RDF.Bindings>[] = [];
+  /** Number of sub-iterators currently being created. */
   private iteratorsPendingCreation = 0;
+  /** Number of sub-iterators that have ended but are still flushing next-links. */
   private iteratorsPendingTermination = 0;
+  /** Promise resolving to the accumulated metadata across all visited sources. */
   // eslint-disable-next-line unicorn/no-useless-undefined
   private accumulatedMetadata: Promise<MetadataBindings | undefined> = Promise.resolve(undefined);
+  /** Lazily fetched metadata obtained before the iterator has started reading. */
   private preflightMetadata: Promise<MetadataBindings> | undefined;
 
+  /**
+   * Creates a new linked RDF sources async iterator.
+   * @param operation The algebra operation to evaluate.
+   * @param queryBindingsOptions Optional bindings query options.
+   * @param context The action context.
+   * @param firstLink The initial link to start traversal from.
+   * @param maxIterators Maximum number of concurrent sub-iterators.
+   * @param sourceStateGetter Function to resolve a link into a source state.
+   * @param options Optional buffered iterator options.
+   */
   public constructor(
     operation: Algebra.Operation,
     queryBindingsOptions: IQueryBindingsOptions | undefined,
@@ -65,6 +91,15 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     }
   }
 
+  /**
+   * Overrides property retrieval to lazily fetch metadata before iteration starts.
+   * When `metadata` is requested and the iterator has not yet started, a preflight
+   * metadata fetch is initiated without consuming any bindings.
+   * @template P The type of the property value.
+   * @param propertyName The name of the property to retrieve.
+   * @param callback Optional callback invoked with the property value.
+   * @return The property value, or undefined if not yet available.
+   */
   public override getProperty<P>(propertyName: string, callback?: (value: P) => void): P | undefined {
     if (propertyName === 'metadata' && !this.started) {
       // If the iterator has not started yet, forcefully fetch the metadata from the source without starting the
@@ -102,6 +137,10 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     return super.getProperty(propertyName, callback);
   }
 
+  /**
+   * Closes all running sub-iterators and ends this iterator.
+   * @param destroy Whether to forcefully destroy the iterator.
+   */
   protected override _end(destroy?: boolean): void {
     // Close all running iterators
     for (const it of this.currentIterators) {
@@ -123,6 +162,12 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    */
   protected abstract getSourceLinks(metadata: Record<string, any>, startSource: ISourceState): Promise<ILink[]>;
 
+  /**
+   * Reads bindings from active sub-iterators and schedules new ones when capacity allows.
+   * On the first call, initializes traversal by resolving the first source.
+   * @param count The maximum number of items to read.
+   * @param done Callback to signal reading is complete.
+   */
   public override _read(count: number, done: () => void): void {
     if (this.started) {
       // Read from all current iterators
@@ -167,15 +212,27 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     }
   }
 
+  /**
+   * Checks whether a new sub-iterator can be started within the maximum iterators limit.
+   * @return True if the number of active and pending iterators is below the maximum.
+   */
   protected canStartNewIterator(): boolean {
     return (this.currentIterators.length + this.iteratorsPendingCreation + this.iteratorsPendingTermination) <
       this.maxIterators && (!this.canStartNewIteratorConsiderReadable() || !this.readable);
   }
 
+  /**
+   * Hook for subclasses to control whether the readable state should prevent starting new iterators.
+   * @return True if the readable state should be considered when deciding to start new iterators.
+   */
   protected canStartNewIteratorConsiderReadable(): boolean {
     return true;
   }
 
+  /**
+   * Checks whether any sub-iterators are currently active, pending creation, or pending termination.
+   * @return True if at least one sub-iterator is running or pending.
+   */
   protected areIteratorsRunning(): boolean {
     return (this.currentIterators.length + this.iteratorsPendingCreation + this.iteratorsPendingTermination) > 0;
   }
@@ -283,12 +340,20 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     }
   }
 
+  /**
+   * Sets new accumulated metadata on this iterator and invalidates the previous metadata state.
+   * @param metadataNew The new metadata to set.
+   */
   protected updateMetadata(metadataNew: MetadataBindings): void {
     const metadataToInvalidate = this.getProperty<MetadataBindings>('metadata');
     this.setProperty('metadata', metadataNew);
     metadataToInvalidate?.state.invalidate();
   }
 
+  /**
+   * Checks whether this iterator is still running (not done).
+   * @return True if the iterator has not yet ended.
+   */
   protected isRunning(): boolean {
     return !this.done;
   }
@@ -341,6 +406,12 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       .catch(error => this.destroy(error));
   }
 
+  /**
+   * Checks whether this iterator can be closed based on the link queue state and running iterators.
+   * @param linkQueue The link queue to check.
+   * @param _requireQueueEmpty Whether the queue must be empty to allow closing.
+   * @return True if the link queue is empty and no iterators are running.
+   */
   protected isCloseable(linkQueue: ILinkQueue, _requireQueueEmpty: boolean): boolean {
     return linkQueue.isEmpty() && !this.areIteratorsRunning();
   }
@@ -373,4 +444,7 @@ export interface ISourceState {
   cachePolicy?: ICachePolicy<IActionQuerySourceDereferenceLink>;
 }
 
+/**
+ * Function type that resolves a link and handled dataset identifiers into a source state.
+ */
 export type SourceStateGetter = (link: ILink, handledDatasets: Record<string, boolean>) => Promise<ISourceState>;

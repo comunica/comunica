@@ -20,14 +20,25 @@ import { QuerySourceHypermedia } from './QuerySourceHypermedia';
  * A comunica Hypermedia Query Source Identify Actor.
  */
 export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify {
+  /** Mediator for accumulating RDF metadata across sources. */
   public readonly mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
+  /** Mediator for dereferencing a query source link. */
   public readonly mediatorQuerySourceDereferenceLink: MediatorQuerySourceDereferenceLink;
+  /** Mediator for resolving hypermedia links from source metadata. */
   public readonly mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
+  /** Mediator for resolving a hypermedia links queue. */
   public readonly mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
+  /** Mediator for creating binding context merge handlers. */
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  /** Maximum number of entries in the LRU source cache. */
   public readonly cacheSize: number;
+  /** Maximum number of links that can be followed in parallel. */
   public readonly maxIterators: number;
 
+  /**
+   * Creates a new hypermedia query source identify actor.
+   * @param args Actor arguments including mediators, cache size, and iterator limits.
+   */
   public constructor(args: IActorQuerySourceIdentifyHypermediaArgs) {
     super(args);
     this.mediatorMetadataAccumulate = args.mediatorMetadataAccumulate;
@@ -39,6 +50,11 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
     this.maxIterators = args.maxIterators;
   }
 
+  /**
+   * Tests whether the given query source has a string URL value.
+   * @param action The query source identify action.
+   * @return A test result that passes when the source value is a string URL.
+   */
   public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest>> {
     if (typeof action.querySourceUnidentified.value !== 'string') {
       return failTest(`${this.name} requires a single query source with a URL value to be present in the context.`);
@@ -46,6 +62,11 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
     return passTestVoid();
   }
 
+  /**
+   * Creates a {@link QuerySourceHypermedia} for the identified source URL.
+   * @param action The query source identify action.
+   * @return The identified query source wrapped in a hypermedia query source.
+   */
   public async run(action: IActionQuerySourceIdentify): Promise<IActorQuerySourceIdentifyOutput> {
     const querySourceContext = action.querySourceUnidentified.context ?? new ActionContext();
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
