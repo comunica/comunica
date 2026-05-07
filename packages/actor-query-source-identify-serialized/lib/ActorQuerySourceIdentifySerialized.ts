@@ -21,15 +21,30 @@ import { Readable } from 'readable-stream';
  * A comunica Serialized Query Source Identify Actor.
  */
 export class ActorQuerySourceIdentifySerialized extends ActorQuerySourceIdentify {
+  /**
+   * The mediator for parsing RDF serializations.
+   */
   public readonly mediatorRdfParse: MediatorRdfParseHandle;
+  /**
+   * The mediator for identifying the parsed source as an RDF/JS source.
+   */
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
 
+  /**
+   * Creates a new serialized query source identify actor.
+   * @param args The actor arguments.
+   */
   public constructor(args: IActorQuerySourceIdentifySerializedArgs) {
     super(args);
     this.mediatorRdfParse = args.mediatorRdfParse;
     this.mediatorQuerySourceIdentify = args.mediatorQuerySourceIdentify;
   }
 
+  /**
+   * Tests whether the source is a serialized string source.
+   * @param action The query source identification action.
+   * @return A test result indicating success or failure.
+   */
   public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest>> {
     if (!this.isStringSource(action.querySourceUnidentified)) {
       return failTest(`${this.name} requires a single query source with serialized type to be present in the context.`);
@@ -37,6 +52,11 @@ export class ActorQuerySourceIdentifySerialized extends ActorQuerySourceIdentify
     return passTestVoid();
   }
 
+  /**
+   * Parses the serialized source and delegates identification to the query source identify bus.
+   * @param action The query source identification action.
+   * @return The identified query source output.
+   */
   public async run(action: IActionQuerySourceIdentify): Promise<IActorQuerySourceIdentifyOutput> {
     // Delegate source identification to the same bus again, by converting the string into an RDF/JS source
     return await this.mediatorQuerySourceIdentify.mediate({
@@ -78,6 +98,11 @@ export class ActorQuerySourceIdentifySerialized extends ActorQuerySourceIdentify
     return await storeStream(parseResult.handle.data);
   }
 
+  /**
+   * Checks whether the given source is a serialized string source with a media type.
+   * @param source The query source to check.
+   * @return Whether the source is a serialized string source.
+   */
   private isStringSource(source: QuerySourceUnidentifiedExpanded): source is IQuerySourceSerialized {
     if (!('type' in source)) {
       if (!(typeof source.value === 'string')) {
