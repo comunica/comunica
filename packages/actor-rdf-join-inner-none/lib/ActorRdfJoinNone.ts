@@ -22,6 +22,10 @@ import { ArrayIterator } from 'asynciterator';
 export class ActorRdfJoinNone extends ActorRdfJoin {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
+  /**
+   * Creates an instance of {@link ActorRdfJoinNone}.
+   * @param args The arguments for this actor.
+   */
   public constructor(args: IActorRdfJoinNoneArgs) {
     super(args, {
       logicalType: 'inner',
@@ -31,6 +35,11 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
+  /**
+   * Tests whether this actor can handle the given join action, accepting only actions with zero entries.
+   * @param action The join action to test.
+   * @return A test result with join coefficients, or a failure if entries are present.
+   */
   public override async test(
     action: IActionRdfJoin,
   ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
@@ -41,6 +50,11 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
     return await this.getJoinCoefficients(action, undefined!);
   }
 
+  /**
+   * Produces a join output consisting of a single empty bindings entry.
+   * @param action The join action to execute.
+   * @return The inner join output with a single-element bindings stream and exact cardinality of one.
+   */
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const bindingsFactory = await BindingsFactory.create(
@@ -61,6 +75,12 @@ export class ActorRdfJoinNone extends ActorRdfJoin {
     };
   }
 
+  /**
+   * Returns zero-cost join coefficients for the empty join.
+   * @param action The join action to evaluate.
+   * @param sideData Pre-computed side data including entry metadata.
+   * @return A test result containing zero-valued join coefficients.
+   */
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
