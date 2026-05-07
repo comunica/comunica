@@ -41,6 +41,9 @@ export interface IActorRdfResolveHypermediaLinksOutput extends IActorOutput {
   links: ILink[];
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfResolveHypermediaLinks}.
+ */
 export type IActorRdfResolveHypermediaLinksArgs<TS = undefined> = IActorArgs<
 IActionRdfResolveHypermediaLinks,
 IActorTest,
@@ -48,6 +51,9 @@ IActorRdfResolveHypermediaLinksOutput,
 TS
 >;
 
+/**
+ * A mediator type for RDF resolve hypermedia links actors.
+ */
 export type MediatorRdfResolveHypermediaLinks = Mediate<
 IActionRdfResolveHypermediaLinks,
 IActorRdfResolveHypermediaLinksOutput
