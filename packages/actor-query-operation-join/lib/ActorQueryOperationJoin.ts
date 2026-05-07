@@ -64,6 +64,9 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryOperationJoin}.
+ */
 export interface IActorQueryOperationJoinArgs extends IActorQueryOperationTypedMediatedArgs {
   /**
    * A mediator for joining Bindings streams
