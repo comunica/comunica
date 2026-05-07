@@ -23,13 +23,35 @@ import { QuerySourceCachePolicyDereferenceWrapper } from './QuerySourceCachePoli
  * A comunica Dereference Query Source Hypermedia Resolve Actor.
  */
 export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceDereferenceLink {
+  /**
+   * The mediator for dereferencing RDF resources.
+   */
   public readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
+  /**
+   * The mediator for splitting metadata from data streams.
+   */
   public readonly mediatorMetadata: MediatorRdfMetadata;
+  /**
+   * The mediator for extracting metadata from RDF streams.
+   */
   public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  /**
+   * The mediator for accumulating metadata across sources.
+   */
   public readonly mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
+  /**
+   * The mediator for identifying the hypermedia source type.
+   */
   public readonly mediatorQuerySourceIdentifyHypermedia: MediatorQuerySourceIdentifyHypermedia;
+  /**
+   * The timeout in milliseconds for dereferencing SPARQL service descriptions.
+   */
   public readonly sparqlServiceDescriptionTimeout: number;
 
+  /**
+   * Creates a new hypermedia dereference link actor.
+   * @param args The actor arguments.
+   */
   public constructor(args: IActorQuerySourceDereferenceLinkHypermediaArgs) {
     super(args);
     this.mediatorDereferenceRdf = args.mediatorDereferenceRdf;
@@ -40,10 +62,22 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     this.sparqlServiceDescriptionTimeout = args.sparqlServiceDescriptionTimeout ?? 3000;
   }
 
+  /**
+   * Always passes, as this actor handles all dereference link actions.
+   * @param _action The query source dereference link action.
+   * @return A passing test result.
+   */
   public async test(_action: IActionQuerySourceDereferenceLink): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 
+  /**
+   * Builds the context for RDF dereferencing, applying a timeout for SPARQL endpoint URLs.
+   * @param context The action context.
+   * @param url The URL to dereference.
+   * @param forceSourceType An optional forced source type.
+   * @return The context with timeout applied if needed.
+   */
   protected getDereferenceRdfContext(
     context: IActionContext,
     url: string,
@@ -67,6 +101,11 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     return context;
   }
 
+  /**
+   * Dereferences a URL, extracts metadata, identifies the source type, and returns the source.
+   * @param action The query source dereference link action.
+   * @return The identified source with metadata and optional cache policy.
+   */
   public async run(action: IActionQuerySourceDereferenceLink): Promise<IActorQuerySourceDereferenceLinkOutput> {
     const context = action.link.context ? action.context.merge(action.link.context) : action.context;
     let url = action.link.url;
