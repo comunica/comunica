@@ -98,6 +98,9 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryOperationGroup}.
+ */
 export interface IActorQueryOperationGroupArgs extends IActorQueryOperationTypedMediatedArgs {
   /**
    * A mediator for creating binding context merge handlers
