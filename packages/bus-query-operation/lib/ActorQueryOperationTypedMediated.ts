@@ -10,6 +10,9 @@ export abstract class ActorQueryOperationTypedMediated<
 TS = undefined,
 > extends ActorQueryOperationTyped<O, TS>
   implements IActorQueryOperationTypedMediatedArgs<TS> {
+  /**
+   * The mediator for delegating sub-operations to other query operation actors.
+   */
   public readonly mediatorQueryOperation: MediatorQueryOperation;
 
   public constructor(args: IActorQueryOperationTypedMediatedArgs<TS>, operationName: string) {
@@ -18,6 +21,13 @@ TS = undefined,
   }
 }
 
+/**
+ * Constructor arguments for {@link ActorQueryOperationTypedMediated}.
+ * @template TS The test side-data type.
+ */
 export interface IActorQueryOperationTypedMediatedArgs<TS = undefined> extends IActorQueryOperationArgs<TS> {
+  /**
+   * The mediator for delegating sub-operations to other query operation actors.
+   */
   mediatorQueryOperation: MediatorQueryOperation;
 }

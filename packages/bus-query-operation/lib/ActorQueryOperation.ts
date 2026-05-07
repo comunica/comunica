@@ -41,6 +41,10 @@ export interface IActionQueryOperation extends IAction {
   operation: Algebra.Operation;
 }
 
+/**
+ * Constructor arguments for {@link ActorQueryOperation}.
+ * @template TS The test side-data type.
+ */
 export type IActorQueryOperationArgs<TS = undefined> = IActorArgs<
   IActionQueryOperation,
 IActorTest,
@@ -48,27 +52,72 @@ IQueryOperationResult,
 TS
 >;
 
+/**
+ * Mediator type for query operation actors.
+ */
 export type MediatorQueryOperation = Mediate<IActionQueryOperation, IQueryOperationResult>;
 
+/**
+ * Base context for SPARQL expression evaluation.
+ */
 export interface IBaseExpressionContext {
+  /**
+   * The current date/time for evaluation.
+   */
   now?: Date;
+  /**
+   * The base IRI for resolving relative IRIs.
+   */
   baseIRI?: string;
+  /**
+   * Factory for creating custom extension functions from named nodes.
+   */
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode) =>
   ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
+  /**
+   * Cache for function argument types.
+   */
   functionArgumentsCache?: FunctionArgumentsCache;
+  /**
+   * The action context for the current query.
+   */
   actionContext: IActionContext;
 }
 
+/**
+ * Synchronous expression evaluation context.
+ */
 export interface ISyncExpressionContext extends IBaseExpressionContext {
+  /**
+   * Creates a blank node synchronously.
+   */
   bnode: (input?: string | undefined) => RDF.BlankNode;
 }
 
+/**
+ * Asynchronous expression evaluation context.
+ */
 export interface IAsyncExpressionContext extends IBaseExpressionContext {
+  /**
+   * Creates a blank node asynchronously.
+   */
   bnode: (input?: string | undefined) => Promise<RDF.BlankNode>;
+  /**
+   * Evaluates an EXISTS expression against bindings.
+   */
   exists?: (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean>;
 }
 
+/**
+ * Flags for fragment selector shape testing.
+ */
 export type FragmentSelectorShapeTestFlags = {
+  /**
+   * Whether join bindings are requested.
+   */
   joinBindings?: boolean;
+  /**
+   * Whether filter bindings are requested.
+   */
   filterBindings?: boolean;
 };

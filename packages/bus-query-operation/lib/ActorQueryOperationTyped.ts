@@ -20,6 +20,9 @@ export abstract class ActorQueryOperationTyped<
   O extends Algebra.Operation,
 TS = undefined,
 > extends ActorQueryOperation<TS> {
+  /**
+   * The SPARQL algebra operation type this actor handles.
+   */
   public readonly operationName: string;
 
   protected constructor(args: IActorQueryOperationArgs<TS>, operationName: string) {
@@ -30,6 +33,11 @@ TS = undefined,
     }
   }
 
+  /**
+   * Tests whether this actor can handle the given query operation action.
+   * @param action The query operation action.
+   * @return A test result indicating whether this actor can handle the operation.
+   */
   public async test(action: IActionQueryOperation): Promise<TestResult<IActorTest, TS>> {
     if (!action.operation) {
       return failTest('Missing field \'operation\' in a query operation action.');
@@ -42,6 +50,12 @@ TS = undefined,
     return this.testOperation(operation, action.context);
   }
 
+  /**
+   * Runs the query operation with physical plan logging and metadata caching.
+   * @param action The query operation action.
+   * @param sideData Side data from the test phase.
+   * @return The query operation result.
+   */
   public async run(action: IActionQueryOperation, sideData: TS): Promise<IQueryOperationResult> {
     // Log to physical plan
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context
@@ -68,8 +82,21 @@ TS = undefined,
     return output;
   }
 
+  /**
+   * Tests whether this actor can handle the specific operation type.
+   * @param operation The typed algebra operation.
+   * @param context The action context.
+   * @return A test result for the specific operation.
+   */
   protected abstract testOperation(operation: O, context: IActionContext): Promise<TestResult<IActorTest, TS>>;
 
+  /**
+   * Executes the specific operation type.
+   * @param operation The typed algebra operation.
+   * @param context The action context.
+   * @param sideData Side data from the test phase.
+   * @return The query operation result.
+   */
   protected abstract runOperation(operation: O, context: IActionContext, sideData: TS):
   Promise<IQueryOperationResult>;
 }
