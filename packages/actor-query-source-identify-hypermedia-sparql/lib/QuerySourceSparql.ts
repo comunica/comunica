@@ -28,31 +28,117 @@ import { LRUCache } from 'lru-cache';
 import { uniqTerms } from 'rdf-terms';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
+/**
+ * A query source that evaluates queries against a remote SPARQL endpoint.
+ */
 export class QuerySourceSparql implements IQuerySource {
+  /**
+   * The reference value identifying this source.
+   */
   public readonly referenceValue: string;
+  /**
+   * The current endpoint URL, which may change on 404 fallback.
+   */
   private url: string;
+  /**
+   * The backup endpoint URL used when the primary URL returns 404.
+   */
   private readonly urlBackup: string;
+  /**
+   * The action context.
+   */
   private readonly context: IActionContext;
+  /**
+   * The mediator for HTTP requests.
+   */
   private readonly mediatorHttp: MediatorHttp;
+  /**
+   * The mediator for serializing SPARQL queries.
+   */
   private readonly mediatorQuerySerialize: MediatorQuerySerialize;
+  /**
+   * The method used to communicate bindings to the endpoint.
+   */
   private readonly bindMethod: BindMethod;
+  /**
+   * The timeout in milliseconds for COUNT queries.
+   */
   private readonly countTimeout: number;
+  /**
+   * Whether COUNT queries should be sent for cardinality estimation.
+   */
   private readonly cardinalityCountQueries: boolean;
+  /**
+   * Whether local cardinality estimation is attempted before COUNT queries.
+   */
   private readonly cardinalityEstimateConstruction: boolean;
+  /**
+   * The default graph IRI to apply, if specified.
+   */
   private readonly defaultGraph?: string;
+  /**
+   * Whether the union of all named graphs acts as the default graph.
+   */
   private readonly unionDefaultGraph: boolean;
+  /**
+   * The set of property path features supported by this endpoint.
+   */
   private readonly propertyFeatures?: Set<string>;
+  /**
+   * The FROM/FROM NAMED dataset clauses for this endpoint.
+   */
   private readonly datasets?: IDataset[];
+  /**
+   * The extension function IRIs supported by this endpoint.
+   */
   public readonly extensionFunctions?: string[];
+  /**
+   * The RDF data factory.
+   */
   private readonly dataFactory: ComunicaDataFactory;
+  /**
+   * The SPARQL algebra factory.
+   */
   private readonly algebraFactory: AlgebraFactory;
+  /**
+   * The bindings factory.
+   */
   private readonly bindingsFactory: BindingsFactory;
 
+  /**
+   * The fetcher for SPARQL endpoint communication.
+   */
   private readonly endpointFetcher: SparqlEndpointFetcher;
+  /**
+   * An LRU cache for COUNT query results.
+   */
   private readonly cache: LRUCache<string, QueryResultCardinality> | undefined;
 
+  /**
+   * The context from the most recent source query, used for HTTP mediation.
+   */
   private lastSourceContext: IActionContext | undefined;
 
+  /**
+   * Creates a new SPARQL endpoint query source.
+   * @param url The primary endpoint URL.
+   * @param urlBackup The backup endpoint URL for 404 fallback.
+   * @param context The action context.
+   * @param mediatorHttp The mediator for HTTP requests.
+   * @param mediatorQuerySerialize The mediator for serializing SPARQL queries.
+   * @param bindMethod The method for communicating bindings.
+   * @param dataFactory The RDF data factory.
+   * @param algebraFactory The SPARQL algebra factory.
+   * @param bindingsFactory The bindings factory.
+   * @param forceHttpGet Whether to force HTTP GET for non-update queries.
+   * @param cacheSize The maximum number of entries in the COUNT query cache.
+   * @param countTimeout The timeout in milliseconds for COUNT queries.
+   * @param cardinalityCountQueries Whether COUNT queries are used for cardinality estimation.
+   * @param cardinalityEstimateConstruction Whether local cardinality estimation is tried first.
+   * @param forceGetIfUrlLengthBelow Force GET when URL length is below this threshold.
+   * @param parseUnsupportedVersions Whether to parse results from unsupported SPARQL versions.
+   * @param metadata The endpoint metadata record.
+   */
   public constructor(
     url: string,
     urlBackup: string,
@@ -119,10 +205,18 @@ export class QuerySourceSparql implements IQuerySource {
     this.propertyFeatures = metadata.propertyFeatures ? new Set(metadata.propertyFeatures) : undefined;
   }
 
+  /**
+   * Returns the filter factor, always 1 for SPARQL endpoints since filtering is server-side.
+   * @return The filter factor.
+   */
   public async getFilterFactor(): Promise<number> {
     return 1;
   }
 
+  /**
+   * Returns the selector shape describing the operations this SPARQL source handles.
+   * @return The fragment selector shape.
+   */
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
     const innerDisjunction: FragmentSelectorShape = {
       type: 'disjunction',
@@ -174,6 +268,13 @@ export class QuerySourceSparql implements IQuerySource {
     };
   }
 
+  /**
+   * Queries bindings from the SPARQL endpoint.
+   * @param operationIn The algebra operation to evaluate.
+   * @param context The action context.
+   * @param options Optional query bindings options.
+   * @return A stream of bindings.
+   */
   public queryBindings(
     operationIn: Algebra.Operation,
     context: IActionContext,
@@ -210,6 +311,12 @@ export class QuerySourceSparql implements IQuerySource {
     return bindings;
   }
 
+  /**
+   * Queries quads from the SPARQL endpoint via a CONSTRUCT query.
+   * @param operation The algebra operation to evaluate.
+   * @param context The action context.
+   * @return An async iterator of quads.
+   */
   public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
     const quads = wrap<any>((async() => {
       this.lastSourceContext = this.context.merge(context);
@@ -221,6 +328,12 @@ export class QuerySourceSparql implements IQuerySource {
     return quads;
   }
 
+  /**
+   * Queries a boolean result from the SPARQL endpoint via an ASK query.
+   * @param operation The ASK algebra operation.
+   * @param context The action context.
+   * @return The boolean query result.
+   */
   public async queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
     // Shortcut the ASK query to return true when supported propertyFeature predicates are used in it.
     if (this.operationUsesPropertyFeatures(operation)) {
@@ -233,6 +346,11 @@ export class QuerySourceSparql implements IQuerySource {
     return promise;
   }
 
+  /**
+   * Executes an update operation against the SPARQL endpoint.
+   * @param operation The algebra operation.
+   * @param context The action context.
+   */
   public async queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
     this.lastSourceContext = this.context.merge(context);
     const query: string = context.get(KeysInitQuery.queryString) ?? await this.operationToQuery(operation);
@@ -240,6 +358,12 @@ export class QuerySourceSparql implements IQuerySource {
     return promise;
   }
 
+  /**
+   * Attaches cardinality and variable metadata to the given iterator.
+   * @param target The iterator to attach metadata to.
+   * @param context The action context.
+   * @param operationPromise A promise resolving to the algebra operation.
+   */
   protected attachMetadata(
     target: AsyncIterator<any>,
     context: IActionContext,
@@ -598,6 +722,10 @@ export class QuerySourceSparql implements IQuerySource {
     });
   }
 
+  /**
+   * Returns a string representation of this SPARQL source.
+   * @return The string representation.
+   */
   public toString(): string {
     return `QuerySourceSparql(${this.url})`;
   }

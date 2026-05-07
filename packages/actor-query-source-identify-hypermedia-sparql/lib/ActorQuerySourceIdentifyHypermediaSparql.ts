@@ -22,20 +22,63 @@ import { QuerySourceSparql } from './QuerySourceSparql';
  * A comunica SPARQL Query Source Identify Hypermedia Actor.
  */
 export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceIdentifyHypermedia {
+  /**
+   * The mediator for HTTP requests.
+   */
   public readonly mediatorHttp: MediatorHttp;
+  /**
+   * The mediator for creating binding context merge handlers.
+   */
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  /**
+   * The mediator for serializing SPARQL queries.
+   */
   public readonly mediatorQuerySerialize: MediatorQuerySerialize;
+  /**
+   * Whether URLs ending with '/sparql' should be considered SPARQL endpoints.
+   */
   public readonly checkUrlSuffix: boolean;
+  /**
+   * Whether non-update queries should be sent via HTTP GET.
+   */
   public readonly forceHttpGet: boolean;
+  /**
+   * The maximum number of entries in the COUNT query cache.
+   */
   public readonly cacheSize: number;
+  /**
+   * Whether the source type is forced regardless of metadata detection.
+   */
   public readonly forceSourceType: boolean;
+  /**
+   * The method used to communicate bindings to the endpoint.
+   */
   public readonly bindMethod: BindMethod;
+  /**
+   * The timeout in milliseconds for COUNT queries.
+   */
   public readonly countTimeout: number;
+  /**
+   * Whether COUNT queries should be sent for cardinality estimation.
+   */
   public readonly cardinalityCountQueries: boolean;
+  /**
+   * Whether local cardinality estimation is attempted before COUNT queries.
+   */
   public readonly cardinalityEstimateConstruction: boolean;
+  /**
+   * Force GET when the URL length (including query) is below this threshold.
+   */
   public readonly forceGetIfUrlLengthBelow: number;
+  /**
+   * Regular expression patterns to match against the server header for endpoint detection.
+   */
   public readonly sparqlServerSoftwarePatterns: RegExp[];
 
+  /**
+   * Creates a new SPARQL query source identify hypermedia actor.
+   * @param args The actor arguments.
+   */
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
     this.mediatorHttp = args.mediatorHttp;
@@ -55,6 +98,11 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     ).map(pattern => new RegExp(pattern, 'u'));
   }
 
+  /**
+   * Checks whether the server software string matches any configured SPARQL server pattern.
+   * @param serverSoftware The server software header value.
+   * @return Whether the server software matches a known pattern.
+   */
   public checkServerSoftware(serverSoftware?: string): boolean {
     if (!serverSoftware) {
       return false;
@@ -67,6 +115,11 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     return false;
   }
 
+  /**
+   * Tests whether the action metadata indicates a SPARQL endpoint.
+   * @param action The hypermedia identification action.
+   * @return A test result with filter factor or failure.
+   */
   public async testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
@@ -78,6 +131,11 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     return passTest({ filterFactor: 1 });
   }
 
+  /**
+   * Creates a QuerySourceSparql for the identified SPARQL endpoint.
+   * @param action The hypermedia identification action.
+   * @return The identified query source output.
+   */
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {
     this.logInfo(action.context, `Identified ${action.url} as sparql source with service URL: ${action.metadata.sparqlService || action.url}`);
 
@@ -178,4 +236,7 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
   sparqlServerSoftwarePatterns?: string[];
 }
 
+/**
+ * The method used to communicate bindings to a SPARQL endpoint.
+ */
 export type BindMethod = 'values' | 'union' | 'filter';
