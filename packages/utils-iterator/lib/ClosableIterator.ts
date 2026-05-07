@@ -11,6 +11,12 @@ export class ClosableIterator<S> extends AsyncIterator<S> {
   protected readonly _source: InternalSource<S>;
   private readonly onClose: () => void;
 
+  /**
+   * Creates a new closable iterator wrapping the given source.
+   * @param source The source iterator to wrap.
+   * @param options Configuration options containing the close callback.
+   * @param options.onClose Callback invoked when this iterator is closed.
+   */
   public constructor(source: AsyncIterator<S>, options: { onClose: () => void }) {
     super();
     this.onClose = options.onClose;
@@ -24,6 +30,10 @@ export class ClosableIterator<S> extends AsyncIterator<S> {
     this.readable = this._source.readable;
   }
 
+  /**
+   * Reads the next item from the source iterator, closing this iterator when the source is done.
+   * @return The next item, or null if no item is available.
+   */
   public override read(): S | null {
     const ret = this._source.read();
     if (!ret) {
@@ -38,6 +48,10 @@ export class ClosableIterator<S> extends AsyncIterator<S> {
     return ret;
   }
 
+  /**
+   * Ends this iterator by invoking the close callback and cleaning up source listeners.
+   * @param destroy Whether the iterator is being destroyed.
+   */
   protected override _end(destroy: boolean): void {
     this.onClose();
 

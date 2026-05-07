@@ -16,8 +16,9 @@ export type IteratorCounters = {
 };
 
 /**
- * Profile an iterator by monkey-patching its `_read` and `read` methods.
- * @param iterator
+ * Profiles an iterator by monkey-patching its `_read` and `read` methods.
+ * @param iterator The iterator to instrument for performance profiling.
+ * @return A promise that resolves with the collected performance counters when the iterator ends.
  */
 export function instrumentIterator(iterator: AsyncIterator<any>): Promise<IteratorCounters> {
   const counters: IteratorCounters = {
