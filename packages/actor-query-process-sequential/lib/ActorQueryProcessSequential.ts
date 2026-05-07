@@ -38,6 +38,9 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
+  /**
+   * @param args Arguments for this actor.
+   */
   public constructor(args: IActorQueryProcessSequentialArgs) {
     super(args);
     this.mediatorContextPreprocess = args.mediatorContextPreprocess;
@@ -47,6 +50,11 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
+  /**
+   * Tests whether this actor can handle the given query process action.
+   * @param action The query process action to test.
+   * @return A test result that fails when an explain mode is requested.
+   */
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
     if (action.context.get(KeysInitQuery.explain) ?? action.context.get(new ActionContextKey('explain'))) {
       return failTest(`${this.name} is not able to explain queries.`);
@@ -54,6 +62,11 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     return passTestVoid();
   }
 
+  /**
+   * Runs the full query processing pipeline: parse, optimize, and evaluate.
+   * @param action The query process action containing the query and context.
+   * @return The query operation result.
+   */
   public async run(action: IActionQueryProcess): Promise<IActorQueryProcessOutput> {
     // Run all query processing steps in sequence
     let { operation, context } = await this.parse(action.query, action.context);
@@ -63,6 +76,12 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     return { result: output };
   }
 
+  /**
+   * Parses the query string or algebra into an operation and preprocesses the context.
+   * @param query The query string or algebra operation.
+   * @param context The action context.
+   * @return The parsed operation and updated context.
+   */
   public async parse(query: QueryFormatType, context: IActionContext): Promise<IQueryProcessSequentialOutput> {
     // Pre-processing the context
     context = (await this.mediatorContextPreprocess.mediate({ context, initialize: true })).context;
@@ -106,6 +125,12 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     return { operation, context };
   }
 
+  /**
+   * Optimizes the given algebra operation via the optimize query operation mediator.
+   * @param operation The algebra operation to optimize.
+   * @param context The action context.
+   * @return The optimized operation and updated context.
+   */
   public async optimize(operation: Algebra.Operation, context: IActionContext): Promise<IQueryProcessSequentialOutput> {
     // Save initial query in context
     context = context.set(KeysInitQuery.query, operation);
@@ -118,6 +143,12 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     return { operation, context };
   }
 
+  /**
+   * Evaluates the given algebra operation and returns the query result.
+   * @param operation The algebra operation to evaluate.
+   * @param context The action context.
+   * @return The query operation result.
+   */
   public async evaluate(operation: Algebra.Operation, context: IActionContext): Promise<IQueryOperationResult> {
     const output = await this.mediatorQueryOperation.mediate({ context, operation });
     output.context = context;
