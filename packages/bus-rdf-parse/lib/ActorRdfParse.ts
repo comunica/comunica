@@ -37,20 +37,32 @@ export abstract class ActorRdfParse extends ActorAbstractMediaTyped<IActionRdfPa
   }
 }
 
+/** Root action type for RDF parsing. */
 export type IActionRootRdfParse = IActionAbstractMediaTyped<IActionRdfParse>;
+/** Root test type for RDF parsing. */
 export type IActorTestRootRdfParse = IActorTestAbstractMediaTyped<IActorTest>;
+/** Root output type for RDF parsing. */
 export type IActorOutputRootRdfParse = IActorOutputAbstractMediaTyped<IActorRdfParseOutput>;
 
+/** Handle action type for RDF parsing. */
 export type IActionRdfParseHandle = IActionAbstractMediaTypedHandle<IActionRdfParse>;
+/** Handle test type for RDF parsing. */
 export type IActorTestRdfParseHandle = IActorTestAbstractMediaTypedHandle<IActorTest>;
+/** Handle output type for RDF parsing. */
 export type IActorOutputRdfParseHandle = IActorOutputAbstractMediaTypedHandle<IActorRdfParseOutput>;
 
+/** Media types action type for RDF parsing. */
 export type IActionRdfParseMediaTypes = IActionAbstractMediaTypedMediaTypes;
+/** Media types test type for RDF parsing. */
 export type IActorTestRdfParseMediaTypes = IActorTestAbstractMediaTypedMediaTypes;
+/** Media types output type for RDF parsing. */
 export type IActorOutputRdfParseMediaTypes = IActorOutputAbstractMediaTypedMediaTypes;
 
+/** Media type formats action type for RDF parsing. */
 export type IActionRdfParseMediaTypeFormats = IActionAbstractMediaTypedMediaTypeFormats;
+/** Media type formats test type for RDF parsing. */
 export type IActorTestRdfParseMediaTypeFormats = IActorTestAbstractMediaTypedMediaTypeFormats;
+/** Media type formats output type for RDF parsing. */
 export type IActorOutputRdfParseMediaTypeFormats = IActorOutputAbstractMediaTypedMediaTypeFormats;
 
 export interface IActionRdfParseMetadata {
@@ -79,22 +91,37 @@ export interface IActorRdfParseOutputMetadata {
   triples?: boolean;
 }
 
+/**
+ * Output type combining the parsed RDF quad stream and associated metadata.
+ */
 export type IActorRdfParseOutput = IActorParseOutput<RDF.Stream, IActorRdfParseOutputMetadata>;
 
+/**
+ * Constructor arguments for {@link ActorRdfParse}.
+ */
 export type IActorRdfParseArgs = IActorArgsMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput>;
 
+/**
+ * Mediator type for RDF parse handle actions.
+ */
 export type MediatorRdfParseHandle = Mediate<
 IActionRdfParseHandle,
 IActorOutputRdfParseHandle,
 IActorTestRdfParseHandle
 >;
 
+/**
+ * Mediator type for RDF parse media type queries.
+ */
 export type MediatorRdfParseMediaTypes = Mediate<
 IActionRdfParseMediaTypes,
 IActorOutputRdfParseMediaTypes,
 IActorTestRdfParseMediaTypes
 >;
 
+/**
+ * Mediator type for RDF parse media type format queries.
+ */
 export type MediatorRdfParseMediaTypeFormats = Mediate<
 IActionRdfParseMediaTypeFormats,
 IActorOutputRdfParseMediaTypeFormats,

@@ -28,11 +28,19 @@ export abstract class ActorRdfParseFixedMediaTypes extends
   }
   /* eslint-enable max-len */
 
+  /**
+   * Tests whether this actor can handle the specific parse action.
+   * @param _action The RDF parse action.
+   * @return A test result that always passes.
+   */
   public async testHandleChecked(_action: IActionRdfParse): Promise<TestResult<boolean>> {
     return passTestVoid();
   }
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfParseFixedMediaTypes}.
+ */
 export type IActorRdfParseFixedMediaTypesArgs = IActorArgsMediaTypedFixed<
 IActionRdfParse,
 IActorTest,
