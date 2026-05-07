@@ -162,6 +162,9 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   }
 }
 
+/**
+ * Arguments interface for {@link ActorOptimizeQueryOperationQuerySourceIdentify}.
+ */
 export interface IActorOptimizeQueryOperationQuerySourceIdentifyArgs extends IActorOptimizeQueryOperationArgs {
   /**
    * If the SERVICE target should be assumed to be a SPARQL endpoint.
