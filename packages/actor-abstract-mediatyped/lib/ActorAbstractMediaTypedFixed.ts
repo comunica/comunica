@@ -21,6 +21,9 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
   public readonly mediaTypeFormats: Record<string, string>;
   public readonly priorityScale: number | undefined;
 
+  /**
+   * @param args Arguments for this actor, including fixed media type priorities and formats.
+   */
   public constructor(args: IActorArgsMediaTypedFixed<HI, HT, HO>) {
     super(args);
     this.mediaTypePriorities = args.mediaTypePriorities;
@@ -36,6 +39,13 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     this.mediaTypeFormats = Object.freeze(this.mediaTypeFormats);
   }
 
+  /**
+   * Tests whether this actor can handle the given action for the specified media type.
+   * @param action The handle action input.
+   * @param mediaType The media type to test, must be among the configured priorities.
+   * @param context The action context.
+   * @return A test result that fails for unrecognized media types.
+   */
   public async testHandle(action: HI, mediaType: string | undefined, context: IActionContext): Promise<TestResult<HT>> {
     if (!mediaType || !(mediaType in this.mediaTypePriorities)) {
       return failTest(`Unrecognized media type: ${mediaType}`);
@@ -52,18 +62,38 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
    */
   public abstract testHandleChecked(action: HI, context: IActionContext): Promise<TestResult<HT>>;
 
+  /**
+   * Tests whether this actor can report its supported media types.
+   * @param _context The action context.
+   * @return A passing test result.
+   */
   public async testMediaType(_context: IActionContext): Promise<TestResult<boolean>> {
     return passTestVoid();
   }
 
+  /**
+   * Returns the fixed set of media type priorities.
+   * @param _context The action context.
+   * @return The configured media type priorities.
+   */
   public async getMediaTypes(_context: IActionContext): Promise<Record<string, number>> {
     return this.mediaTypePriorities;
   }
 
+  /**
+   * Tests whether this actor can report its media type format mappings.
+   * @param _context The action context.
+   * @return A passing test result.
+   */
   public async testMediaTypeFormats(_context: IActionContext): Promise<TestResult<boolean>> {
     return passTestVoid();
   }
 
+  /**
+   * Returns the fixed set of media type to format IRI mappings.
+   * @param _context The action context.
+   * @return The configured media type formats.
+   */
   public async getMediaTypeFormats(_context: IActionContext): Promise<Record<string, string>> {
     return this.mediaTypeFormats;
   }

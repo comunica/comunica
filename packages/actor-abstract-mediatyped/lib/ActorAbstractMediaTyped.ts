@@ -19,10 +19,18 @@ IActorTestAbstractMediaTyped<HT>,
 IActorOutputAbstractMediaTyped<HO>,
 undefined
 > {
+  /**
+   * @param args Arguments for this actor.
+   */
   public constructor(args: IActorArgsMediaTyped<HI, HT, HO>) {
     super(args);
   }
 
+  /**
+   * Dispatches the action to the appropriate handler based on the action type.
+   * @param action The media-typed action to run.
+   * @return The output containing either the handle result, media types, or media type formats.
+   */
   public async run(action: IActionAbstractMediaTyped<HI>): Promise<IActorOutputAbstractMediaTyped<HO>> {
     if ('handle' in action) {
       const typedAction: IActionAbstractMediaTypedHandle<HI> = action;
@@ -37,6 +45,11 @@ undefined
     throw new Error('Either a handle, mediaTypes or mediaTypeFormats action needs to be provided');
   }
 
+  /**
+   * Tests whether this actor can handle the given media-typed action.
+   * @param action The media-typed action to test.
+   * @return The test result for the appropriate action type.
+   */
   public async test(action: IActionAbstractMediaTyped<HI>): Promise<TestResult<IActorTestAbstractMediaTyped<HT>>> {
     if ('handle' in action) {
       const typedAction: IActionAbstractMediaTypedHandle<HI> = action;
