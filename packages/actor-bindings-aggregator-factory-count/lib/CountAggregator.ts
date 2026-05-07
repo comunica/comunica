@@ -4,6 +4,9 @@ import type { IExpressionEvaluator } from '@comunica/types';
 import { typedLiteral, TypeURL } from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 
+/**
+ * Implements the SPARQL COUNT aggregate by incrementing a counter for each binding.
+ */
 export class CountAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: number | undefined = undefined;
   public constructor(evaluator: IExpressionEvaluator, distinct: boolean, throwError?: boolean) {
