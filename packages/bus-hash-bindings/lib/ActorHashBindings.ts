@@ -27,6 +27,9 @@ export abstract class ActorHashBindings<TS = undefined>
   }
 }
 
+/**
+ * The action input for selecting a bindings hash function.
+ */
 export interface IActionHashBindings extends IAction {
 }
 
@@ -43,9 +46,18 @@ export interface IActorHashBindingsOutput extends IActorOutput {
   hashFunction: HashFunction;
 }
 
+/**
+ * A function that hashes bindings to a number.
+ */
 export type HashFunction = (bindings: Bindings, variables: Iterable<RDF.Variable>) => number;
 
+/**
+ * Constructor arguments for {@link ActorHashBindings}.
+ */
 export type IActorHashBindingsArgs<TS = undefined> =
   IActorArgs<IActionHashBindings, IActorTest, IActorHashBindingsOutput, TS>;
 
+/**
+ * A mediator type for hash bindings actors.
+ */
 export type MediatorHashBindings = Mediate<IActionHashBindings, IActorHashBindingsOutput>;
