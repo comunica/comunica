@@ -66,6 +66,9 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryOperationFilter}.
+ */
 export interface IActorQueryOperationFilterSparqleeArgs extends IActorQueryOperationTypedMediatedArgs {
   mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
 }
