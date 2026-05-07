@@ -1,7 +1,11 @@
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
 
-// Based on https://github.com/LinkedDataFragments/Client.js/blob/master/lib/sparql/SortIterator.js
+/**
+ * Sorts items from a source iterator using a sliding window and binary insertion sort.
+ *
+ * Based on https://github.com/LinkedDataFragments/Client.js/blob/master/lib/sparql/SortIterator.js
+ */
 export class SortIterator<T> extends TransformIterator<T, T> {
   private readonly windowLength: number;
   private readonly sort: (left: T, right: T) => number;
