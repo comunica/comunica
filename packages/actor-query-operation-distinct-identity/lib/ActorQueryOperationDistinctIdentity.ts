@@ -91,5 +91,8 @@ export class ActorQueryOperationDistinctIdentity extends ActorQueryOperationType
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryOperationDistinctIdentity}.
+ */
 export interface IActorQueryOperationDistinctIdentityArgs extends IActorQueryOperationTypedMediatedArgs {
 }
