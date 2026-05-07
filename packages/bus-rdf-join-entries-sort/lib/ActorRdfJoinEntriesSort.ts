@@ -48,6 +48,9 @@ export interface IActorRdfJoinEntriesSortOutput extends IActorOutput {
   entries: IJoinEntryWithMetadata[];
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfJoinEntriesSort}.
+ */
 export type IActorRdfJoinEntriesSortArgs<TS = undefined> = IActorArgs<
 IActionRdfJoinEntriesSort,
 IActorRdfJoinEntriesSortTest,
@@ -55,6 +58,9 @@ IActorRdfJoinEntriesSortOutput,
 TS
 >;
 
+/**
+ * A mediator type for join entries sort actors.
+ */
 export type MediatorRdfJoinEntriesSort = Mediate<
 IActionRdfJoinEntriesSort,
 IActorRdfJoinEntriesSortOutput
