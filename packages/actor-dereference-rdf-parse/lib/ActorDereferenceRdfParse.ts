@@ -8,7 +8,7 @@ import type { IActionRdfParseMetadata } from '@comunica/bus-rdf-parse';
  */
 export class ActorDereferenceRdfParse extends ActorDereferenceRdf {
   /**
-   * @param args - @defaultNested {{
+   * @param args @defaultNested {{
    *   "ttl":      "text/turtle",
    *   "turtle":   "text/turtle",
    *   "shaclc":   "text/shaclc",
@@ -44,6 +44,9 @@ export class ActorDereferenceRdfParse extends ActorDereferenceRdf {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorDereferenceRdfParse}.
+ */
 export interface IActorDereferenceRdfParseArgs extends IActorDereferenceRdfArgs {
 
 }
