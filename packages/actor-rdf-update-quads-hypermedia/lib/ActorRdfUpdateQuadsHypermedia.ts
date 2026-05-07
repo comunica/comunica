@@ -31,6 +31,9 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
     cachePolicy: ICachePolicy<IActionDereference> | undefined;
   }>>;
 
+  /**
+   * @param args Arguments for this actor.
+   */
   public constructor(args: IActorRdfUpdateQuadsHypermediaArgs) {
     super(args);
     this.mediatorDereferenceRdf = args.mediatorDereferenceRdf;
@@ -48,6 +51,11 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
     }
   }
 
+  /**
+   * Tests whether a single destination URL is available in the context.
+   * @param action The RDF update quads action.
+   * @return A test result that fails when no destination URL is found.
+   */
   public override async test(action: IActionRdfUpdateQuads): Promise<TestResult<IActorTest>> {
     const url = getContextDestinationUrl(getContextDestination(action.context));
     if (!url) {
@@ -56,6 +64,11 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
     return passTestVoid();
   }
 
+  /**
+   * Resolves the quad destination for the given context, using caching when available.
+   * @param context The action context containing the data destination.
+   * @return The resolved quad destination.
+   */
   public getDestination(context: IActionContext): Promise<IQuadDestination> {
     const dataDestination: IDataDestination = getContextDestination(context)!;
     let url: string = getContextDestinationUrl(dataDestination)!;
