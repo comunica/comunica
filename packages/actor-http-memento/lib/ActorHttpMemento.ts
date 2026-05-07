@@ -59,6 +59,9 @@ export class ActorHttpMemento extends ActorHttp {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorHttpMemento}.
+ */
 export interface IActorHttpMementoArgs extends IActorHttpArgs {
   /**
    * The HTTP mediator
