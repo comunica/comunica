@@ -101,6 +101,9 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
   }
 }
 
+/**
+ * Arguments interface for {@link ActorQueryOperationDistinctHash}.
+ */
 export interface IActorQueryOperationDistinctHashArgs extends IActorQueryOperationTypedMediatedArgs {
   mediatorHashBindings: MediatorHashBindings;
   mediatorHashQuads: MediatorHashQuads;
