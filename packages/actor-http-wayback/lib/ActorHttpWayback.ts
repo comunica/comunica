@@ -71,6 +71,12 @@ export class ActorHttpWayback extends ActorHttp {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorHttpWayback}.
+ */
 export interface IActorHttpWaybackArgs extends IActorHttpArgs {
+  /**
+   * The HTTP mediator.
+   */
   mediatorHttp: MediatorHttp;
 }
