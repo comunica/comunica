@@ -10,6 +10,9 @@ import { parse } from 'http-link-header';
 // Headers we cannot send (see https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader()-method)
 const UNSAFE_REQUEST_HEADERS = { 'accept-encoding': true, 'user-agent': true, referer: true };
 
+/**
+ * An HTTP requester for browsers that performs requests using XMLHttpRequest.
+ */
 export default class Requester {
   // Resources that were already time-negotiated
   private negotiatedResources: Record<string, boolean>;

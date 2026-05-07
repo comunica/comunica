@@ -122,6 +122,9 @@ export class ActorHttpNative extends ActorHttp {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorHttpNative}.
+ */
 export interface IActorHttpNativeArgs extends IActorHttpArgs {
   /**
    * The agent options for the HTTP agent

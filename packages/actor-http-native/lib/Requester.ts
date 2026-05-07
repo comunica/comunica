@@ -14,6 +14,9 @@ const { https } = require('follow-redirects');
 // Decode encoded streams with these decoders
 const DECODERS = { gzip: zlib.createGunzip, deflate: zlib.createInflate };
 
+/**
+ * An HTTP requester for Node.js that performs requests using the built-in http/https modules with redirect following.
+ */
 export default class Requester {
   private readonly agents: any;
 
