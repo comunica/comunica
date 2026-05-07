@@ -18,6 +18,9 @@ export class ActorRdfUpdateHypermediaPutLdp extends ActorRdfUpdateHypermedia {
   public readonly mediatorRdfSerializeMediatypes: MediatorRdfSerializeMediaTypes;
   public readonly mediatorRdfSerialize: MediatorRdfSerializeHandle;
 
+  /**
+   * @param args Arguments for this actor.
+   */
   public constructor(args: IActorRdfUpdateHypermediaPostLdpArgs) {
     super(args, 'putLdp');
     this.mediatorHttp = args.mediatorHttp;
@@ -25,6 +28,11 @@ export class ActorRdfUpdateHypermediaPutLdp extends ActorRdfUpdateHypermedia {
     this.mediatorRdfSerialize = args.mediatorRdfSerialize;
   }
 
+  /**
+   * Tests whether the destination supports HTTP PUT and does not already exist.
+   * @param action The RDF update hypermedia action to test.
+   * @return A test result that passes when PUT is allowed and the destination does not exist.
+   */
   public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest>> {
     if (!action.forceDestinationType) {
       if (!action.metadata.allowHttpMethods || !action.metadata.allowHttpMethods.includes('PUT')) {
@@ -37,6 +45,11 @@ export class ActorRdfUpdateHypermediaPutLdp extends ActorRdfUpdateHypermedia {
     return passTestVoid();
   }
 
+  /**
+   * Creates a PUT-based LDP quad destination for the given URL.
+   * @param action The RDF update hypermedia action.
+   * @return The output containing the quad destination.
+   */
   public async run(action: IActionRdfUpdateHypermedia): Promise<IActorRdfUpdateHypermediaOutput> {
     this.logInfo(action.context, `Identified as putLdp destination: ${action.url}`);
     return {

@@ -20,6 +20,14 @@ export class QuadDestinationPutLdp implements IQuadDestination {
 
   private readonly mediatorRdfSerialize: MediatorRdfSerialize;
 
+  /**
+   * @param url The URL of the LDP resource to PUT to.
+   * @param context The action context.
+   * @param mediaTypes The accepted media types for serialization.
+   * @param mediatorHttp The HTTP mediator.
+   * @param mediatorRdfSerializeMediatypes The media types mediator for RDF serialization.
+   * @param mediatorRdfSerialize The RDF serialization mediator.
+   */
   public constructor(
     url: string,
     context: IActionContext,
@@ -36,6 +44,12 @@ export class QuadDestinationPutLdp implements IQuadDestination {
     this.mediatorRdfSerialize = mediatorRdfSerialize;
   }
 
+  /**
+   * Applies insert quad streams to the LDP resource via HTTP PUT.
+   * @param quadStreams The quad streams to insert or delete.
+   * @param quadStreams.insert Optional stream of quads to insert.
+   * @param quadStreams.delete Optional stream of quads to delete.
+   */
   public async update(
     quadStreams: { insert?: AsyncIterator<RDF.Quad>; delete?: AsyncIterator<RDF.Quad> },
   ): Promise<void> {
@@ -47,6 +61,11 @@ export class QuadDestinationPutLdp implements IQuadDestination {
     }
   }
 
+  /**
+   * Serializes the given quads and sends them as an HTTP PUT request.
+   * @param type The type of RDF update operation.
+   * @param quads The quad stream to serialize and send.
+   */
   public async wrapRdfUpdateRequest(type: 'INSERT' | 'DELETE', quads: AsyncIterator<RDF.Quad>): Promise<void> {
     // Determine media type for serialization
     const { mediaTypes } = await this.mediatorRdfSerializeMediatypes.mediate(
@@ -81,6 +100,12 @@ export class QuadDestinationPutLdp implements IQuadDestination {
     await validateAndCloseHttpResponse(this.url, httpResponse);
   }
 
+  /**
+   * Throws an error because PUT-based LDP destinations do not support graph deletion.
+   * @param _graphs The graphs to delete.
+   * @param _requireExistence Whether the graphs must exist.
+   * @param _dropGraphs Whether to drop the graphs entirely.
+   */
   public async deleteGraphs(
     _graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[],
     _requireExistence: boolean,
@@ -89,6 +114,11 @@ export class QuadDestinationPutLdp implements IQuadDestination {
     throw new Error(`Put-based LDP destinations don't support named graphs`);
   }
 
+  /**
+   * Throws an error because PUT-based LDP destinations do not support graph creation.
+   * @param _graphs The graphs to create.
+   * @param _requireNonExistence Whether the graphs must not already exist.
+   */
   public async createGraphs(_graphs: RDF.NamedNode[], _requireNonExistence: boolean): Promise<void> {
     throw new Error(`Put-based LDP destinations don't support named graphs`);
   }
