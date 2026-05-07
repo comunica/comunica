@@ -11,6 +11,9 @@ import {
   YearMonthDurationLiteral,
 } from '@comunica/utils-expression-evaluator';
 
+/**
+ * https://www.w3.org/TR/xpath-functions/#casting-to-durations
+ */
 export class TermFunctionXsdToYearMonthDuration extends TermFunctionBase {
   public constructor() {
     super({
