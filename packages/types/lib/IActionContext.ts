@@ -15,17 +15,59 @@
  * For instance, this context can contain a list of datasources over which operators should query.
  */
 export interface IActionContext {
+  /**
+   * Sets the value for the given typed context key.
+   * @param key The context key to set.
+   * @param value The value to associate with the key.
+   * @return A new context with the updated entry.
+   */
   set: <V>(key: IActionContextKey<V>, value: V) => IActionContext;
   /**
-   * Will only set the value if the key is not already set.
+   * Sets the value only if the key is not already present in the context.
+   * @param key The context key to set.
+   * @param value The default value to associate with the key.
+   * @return A new context with the entry set, or the original context if the key was already present.
    */
   setDefault: <V>(key: IActionContextKey<V>, value: V) => IActionContext;
+  /**
+   * Removes the entry for the given context key.
+   * @param key The context key to remove.
+   * @return A new context without the given entry.
+   */
   delete: <V>(key: IActionContextKey<V>) => IActionContext;
+  /**
+   * Retrieves the value for the given typed context key.
+   * @param key The context key to look up.
+   * @return The value associated with the key, or undefined if not present.
+   */
   get: <V>(key: IActionContextKey<V>) => V | undefined;
+  /**
+   * Retrieves the value for the given typed context key, throwing an error if not present.
+   * @param key The context key to look up.
+   * @return The value associated with the key.
+   */
   getSafe: <V>(key: IActionContextKey<V>) => V;
+  /**
+   * Checks whether the given key is present in the context.
+   * @param key The context key to check.
+   * @return True if the key is present, false otherwise.
+   */
   has: <V>(key: IActionContextKey<V>) => boolean;
+  /**
+   * Merges one or more contexts into this context.
+   * @param contexts The contexts to merge into this one.
+   * @return A new context containing entries from all provided contexts.
+   */
   merge: (...contexts: IActionContext[]) => IActionContext;
+  /**
+   * Returns all context keys present in this context.
+   * @return An array of all context keys.
+   */
   keys: () => IActionContextKey<any>[];
+  /**
+   * Converts this context to a plain JavaScript object.
+   * @return A plain object representation of this context.
+   */
   toJS: () => any;
 }
 
@@ -38,6 +80,9 @@ export interface IActionContext {
  * which should be named as `@comunica/bus-query-operation:operation`.
  */
 export interface IActionContextKey<V> {
+  /**
+   * The unique string name of this context key.
+   */
   readonly name: string;
   /**
    * A dummy field that we must define to make TypeScript bind the type `V`, otherwise it would always be `any`.

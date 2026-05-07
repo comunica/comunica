@@ -80,6 +80,9 @@ export interface IRevalidationPolicy<I> {
    * the new resource.
    */
   modified: boolean;
+  /**
+   * Whether the revalidated response matches the original request.
+   */
   matches: boolean;
 }
 

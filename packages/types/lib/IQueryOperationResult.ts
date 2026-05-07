@@ -4,6 +4,9 @@ import type { BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
 import type { IMetadata, MetadataQuads, MetadataBindings } from './IMetadata';
 
+/**
+ * Base interface for all query operation results.
+ */
 export interface IQueryOperationResultBase {
   /**
    * The type of output.
@@ -130,7 +133,13 @@ export interface IQueryQuadsEnhanced extends QueryQuads {
   => Promise<AsyncIterator<RDF.Quad> & RDF.ResultStream<RDF.Quad>>;
 }
 
+/**
+ * A query bindings result type supporting all metadata.
+ */
 export type QueryBindings = RDF.QueryBindings<RDF.AllMetadataSupport>;
+/**
+ * A query quads result type supporting all metadata.
+ */
 export type QueryQuads = RDF.QueryQuads<RDF.AllMetadataSupport>;
 
 /**

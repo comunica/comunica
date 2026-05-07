@@ -6,6 +6,9 @@ import type { IActionContext } from './IActionContext';
 import type { ILink } from './ILink';
 import type { MetadataBindings } from './IMetadata';
 
+/**
+ * A serialized query source with media type and optional version information.
+ */
 export interface IQuerySourceSerialized extends IQuerySourceUnidentifiedExpanded {
   type?: 'serialized';
   value: string;
@@ -14,18 +17,27 @@ export interface IQuerySourceSerialized extends IQuerySourceUnidentifiedExpanded
   version?: string;
 }
 
+/**
+ * An expanded but unidentified query source with type, value, and optional context.
+ */
 export interface IQuerySourceUnidentifiedExpanded {
   type?: string;
   value: string | RDF.Source | RDF.Store | RDF.DatasetCore;
   context?: IActionContext;
 }
 
+/**
+ * An expanded but unidentified query source with a raw context record instead of an action context.
+ */
 export interface IQuerySourceUnidentifiedExpandedRawContext {
   type?: string;
   value: string | RDF.Source | RDF.Store | RDF.DatasetCore;
   context?: Record<string, any>;
 }
 
+/**
+ * A traversal-based query source containing links to follow.
+ */
 export interface IQuerySourceTraverse {
   type: 'traverse';
   value: ILink[];
@@ -42,8 +54,14 @@ export interface IQuerySourceCompositeFile {
   context?: IActionContext;
 }
 
+/**
+ * A union of all expanded query source types.
+ */
 export type QuerySourceUnidentifiedExpanded =
   IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized | IQuerySourceCompositeFile;
+/**
+ * A union of all possible query source representations, including strings, RDF sources, and expanded objects.
+ */
 export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | RDF.DatasetCore |
 QuerySourceUnidentifiedExpanded | IQuerySourceUnidentifiedExpandedRawContext | IQuerySourceTraverse;
 
@@ -55,6 +73,9 @@ export interface IQuerySourceWrapper<Q extends IQuerySource = IQuerySource> {
   context?: IActionContext;
 }
 
+/**
+ * A reference to a concrete query source value.
+ */
 export type QuerySourceReference = string | RDF.Source | RDF.DatasetCore;
 
 /**

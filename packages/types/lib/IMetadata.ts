@@ -49,13 +49,22 @@ export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermNam
   availableOrders?: RDF.QueryOperationOrder<OrderItemsType>[];
 }
 
+/**
+ * The ordering specification for result terms.
+ */
 export type TermsOrder<OrderItemsType> = { term: OrderItemsType; direction: 'asc' | 'desc' }[];
+/**
+ * Metadata specific to bindings streams.
+ */
 export type MetadataBindings = IMetadata<RDF.Variable> & {
   /**
    * The list of variables for which bindings are provided in the bindings stream.
    */
   variables: MetadataVariable[];
 };
+/**
+ * An entry describing a single variable in a bindings stream.
+ */
 export type MetadataVariable = {
   /**
    * The variable.
@@ -67,8 +76,14 @@ export type MetadataVariable = {
    */
   canBeUndef: boolean;
 };
+/**
+ * Metadata specific to quad streams.
+ */
 export type MetadataQuads = IMetadata<RDF.QuadTermName>;
 
+/**
+ * The estimated cardinality of a query result.
+ */
 export type QueryResultCardinality = RDF.QueryResultCardinality & {
   /**
    * If this field is set, this means that the cardinality is defined across this whole dataset.

@@ -7,8 +7,17 @@ import type { QueryAlgebraContext, QueryStringContext } from './IQueryContext';
 import type { IQueryExplained, QueryEnhanced, QueryExplainMode } from './IQueryOperationResult';
 import type { QuerySourceUnidentified } from './IQuerySource';
 
+/**
+ * The format type of a query, either a string or an algebra operation.
+ */
 export type QueryFormatType = string | Algebra.Operation;
+/**
+ * The type used to identify query sources.
+ */
 export type SourceType = QuerySourceUnidentified;
+/**
+ * A query result type augmented with an optional action context.
+ */
 export type QueryType = QueryEnhanced & { context?: IActionContext };
 
 /**

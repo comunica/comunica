@@ -36,11 +36,41 @@ export abstract class Logger {
 
   protected readonly groupedLogLimit = 5;
 
+  /**
+   * Logs a message at trace level.
+   * @param message The log message.
+   * @param data Optional structured data.
+   */
   public abstract trace(message: string, data?: any): void;
+  /**
+   * Logs a message at debug level.
+   * @param message The log message.
+   * @param data Optional structured data.
+   */
   public abstract debug(message: string, data?: any): void;
+  /**
+   * Logs a message at info level.
+   * @param message The log message.
+   * @param data Optional structured data.
+   */
   public abstract info(message: string, data?: any): void;
+  /**
+   * Logs a message at warn level.
+   * @param message The log message.
+   * @param data Optional structured data.
+   */
   public abstract warn(message: string, data?: any): void;
+  /**
+   * Logs a message at error level.
+   * @param message The log message.
+   * @param data Optional structured data.
+   */
   public abstract error(message: string, data?: any): void;
+  /**
+   * Logs a message at fatal level.
+   * @param message The log message.
+   * @param data Optional structured data.
+   */
   public abstract fatal(message: string, data?: any): void;
 
   /**

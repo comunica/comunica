@@ -62,11 +62,32 @@ export interface IPhysicalQueryPlanLogger {
   toJson: () => any;
 }
 
+/**
+ * Represents a node in the physical query plan tree.
+ */
 export interface IPlanNode {
+  /**
+   * The name of the actor that produced this plan node.
+   */
   actor: string;
+  /**
+   * The logical query operator for this node.
+   */
   logicalOperator: string;
+  /**
+   * The physical query operator for this node, if applicable.
+   */
   physicalOperator?: string;
+  /**
+   * The raw operation node reference.
+   */
   rawNode: any;
+  /**
+   * The child plan nodes of this node.
+   */
   children: IPlanNode[];
+  /**
+   * Additional metadata associated with this plan node.
+   */
   metadata: any;
 }
