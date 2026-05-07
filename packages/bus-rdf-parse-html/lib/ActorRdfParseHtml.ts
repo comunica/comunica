@@ -92,7 +92,13 @@ export interface IHtmlParseListener {
   onEnd: () => void;
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfParseHtml}.
+ */
 export type IActorRdfParseHtmlArgs<TS = undefined> =
   IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput, TS>;
 
+/**
+ * A mediator type for RDF HTML parse actors.
+ */
 export type MediatorRdfParseHtml = Mediate<IActionRdfParseHtml, IActorRdfParseHtmlOutput>;
