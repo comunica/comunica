@@ -28,28 +28,99 @@ import {
   matchPattern,
 } from 'rdf-terms';
 
+/**
+ * A query source that evaluates queries against a Quad Pattern Fragments (QPF) or brTPF endpoint.
+ */
 export class QuerySourceQpf implements IQuerySource {
+  /**
+   * The fragment selector shape describing the operations this source handles.
+   */
   protected readonly selectorShape: FragmentSelectorShape;
 
+  /**
+   * The hydra search form used for constructing fragment requests.
+   */
   public readonly searchForm: ISearchForm;
 
+  /**
+   * The mediator for splitting metadata from data streams.
+   */
   private readonly mediatorMetadata: MediatorRdfMetadata;
+  /**
+   * The mediator for extracting metadata from RDF streams.
+   */
   private readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  /**
+   * The mediator for dereferencing RDF resources.
+   */
   private readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
+  /**
+   * The RDF data factory.
+   */
   private readonly dataFactory: ComunicaDataFactory;
+  /**
+   * The SPARQL algebra factory.
+   */
   private readonly algebraFactory: AlgebraFactory;
+  /**
+   * The bindings factory.
+   */
   private readonly bindingsFactory: BindingsFactory;
 
+  /**
+   * The reference value identifying this source.
+   */
   public readonly referenceValue: string;
+  /**
+   * The URI of the subject component in the search form.
+   */
   private readonly subjectUri: string;
+  /**
+   * The URI of the predicate component in the search form.
+   */
   private readonly predicateUri: string;
+  /**
+   * The URI of the object component in the search form.
+   */
   private readonly objectUri: string;
+  /**
+   * The URI of the graph component in the search form.
+   */
   private readonly graphUri?: string;
+  /**
+   * The URL of the QPF endpoint.
+   */
   private readonly url: string;
+  /**
+   * The default graph to use when mapping quads.
+   */
   private readonly defaultGraph?: RDF.NamedNode;
+  /**
+   * Whether this source supports bindings-restricted (brTPF) requests.
+   */
   private readonly bindingsRestricted: boolean;
+  /**
+   * A cache of quad iterators keyed by pattern identifier.
+   */
   private readonly cachedQuads: Record<string, AsyncIterator<RDF.Quad>>;
 
+  /**
+   * Creates a new QPF query source.
+   * @param mediatorMetadata The mediator for splitting metadata from data.
+   * @param mediatorMetadataExtract The mediator for extracting metadata.
+   * @param mediatorDereferenceRdf The mediator for dereferencing RDF.
+   * @param dataFactory The RDF data factory.
+   * @param algebraFactory The SPARQL algebra factory.
+   * @param bindingsFactory The bindings factory.
+   * @param subjectUri The subject component URI.
+   * @param predicateUri The predicate component URI.
+   * @param objectUri The object component URI.
+   * @param graphUri The graph component URI.
+   * @param url The QPF endpoint URL.
+   * @param metadata The initial metadata record.
+   * @param bindingsRestricted Whether brTPF mode is enabled.
+   * @param initialQuads An optional initial quad stream.
+   */
   public constructor(
     mediatorMetadata: MediatorRdfMetadata,
     mediatorMetadataExtract: MediatorRdfMetadataExtract,
@@ -138,14 +209,29 @@ export class QuerySourceQpf implements IQuerySource {
         };
   }
 
+  /**
+   * Returns the filter factor, always 1 for QPF sources since filtering is server-side.
+   * @return The filter factor.
+   */
   public async getFilterFactor(): Promise<number> {
     return 1;
   }
 
+  /**
+   * Returns the selector shape describing the operations this source handles.
+   * @return The fragment selector shape.
+   */
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
     return this.selectorShape;
   }
 
+  /**
+   * Queries bindings from the QPF source for quad patterns.
+   * @param operation The algebra operation to evaluate.
+   * @param context The action context.
+   * @param options Optional query bindings options.
+   * @return A stream of bindings.
+   */
   public queryBindings(
     operation: Algebra.Operation,
     context: IActionContext,
@@ -234,6 +320,16 @@ export class QuerySourceQpf implements IQuerySource {
     return searchForm.getUri(entries);
   }
 
+  /**
+   * Performs a QPF match request for the given quad pattern and optional bindings.
+   * @param subject The subject term or variable.
+   * @param predicate The predicate term or variable.
+   * @param object The object term or variable.
+   * @param graph The graph term or variable.
+   * @param unionDefaultGraph Whether union default graph semantics are used.
+   * @param context The action context.
+   * @param options Optional query bindings options.
+   */
   protected match(
     subject: RDF.Term,
     predicate: RDF.Term,
@@ -409,6 +505,11 @@ export class QuerySourceQpf implements IQuerySource {
     return `${url}&values=${valuesUrl}`;
   }
 
+  /**
+   * Remaps quads from the source-specific default graph back to the actual default graph.
+   * @param quads The quad iterator.
+   * @return An async iterator of quads with graph terms remapped.
+   */
   protected reverseMapQuadsToDefaultGraph(quads: AsyncIterator<RDF.Quad>): AsyncIterator<RDF.Quad> {
     const actualDefaultGraph = this.dataFactory.defaultGraph();
     return quads.map(
@@ -419,6 +520,14 @@ export class QuerySourceQpf implements IQuerySource {
     );
   }
 
+  /**
+   * Computes a cache key for the given quad pattern.
+   * @param subject The subject term.
+   * @param predicate The predicate term.
+   * @param object The object term.
+   * @param graph The graph term.
+   * @return A unique string identifier for the pattern.
+   */
   public getPatternId(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): string {
     return JSON.stringify({
       s: subject.termType === 'Variable' ? '' : _termToString(subject),
@@ -428,6 +537,14 @@ export class QuerySourceQpf implements IQuerySource {
     });
   }
 
+  /**
+   * Stores a quad iterator in the cache for the given quad pattern.
+   * @param quads The quad iterator to cache.
+   * @param subject The subject term.
+   * @param predicate The predicate term.
+   * @param object The object term.
+   * @param graph The graph term.
+   */
   protected cacheQuads(
     quads: AsyncIterator<RDF.Quad>,
     subject: RDF.Term,
@@ -439,6 +556,14 @@ export class QuerySourceQpf implements IQuerySource {
     this.cachedQuads[patternId] = quads.clone();
   }
 
+  /**
+   * Retrieves a cached quad iterator for the given quad pattern.
+   * @param subject The subject term.
+   * @param predicate The predicate term.
+   * @param object The object term.
+   * @param graph The graph term.
+   * @return The cached quad iterator or undefined if not cached.
+   */
   protected getCachedQuads(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term):
   AsyncIterator<RDF.Quad> | undefined {
     const patternId = this.getPatternId(subject, predicate, object, graph);
@@ -448,6 +573,11 @@ export class QuerySourceQpf implements IQuerySource {
     }
   }
 
+  /**
+   * Not implemented for QPF sources, always throws an error.
+   * @param _operation The algebra operation.
+   * @param _context The action context.
+   */
   public queryQuads(
     _operation: Algebra.Operation,
     _context: IActionContext,
@@ -455,6 +585,11 @@ export class QuerySourceQpf implements IQuerySource {
     throw new Error('queryQuads is not implemented in QuerySourceQpf');
   }
 
+  /**
+   * Not implemented for QPF sources, always throws an error.
+   * @param _operation The ASK algebra operation.
+   * @param _context The action context.
+   */
   public queryBoolean(
     _operation: Algebra.Ask,
     _context: IActionContext,
@@ -462,6 +597,11 @@ export class QuerySourceQpf implements IQuerySource {
     throw new Error('queryBoolean is not implemented in QuerySourceQpf');
   }
 
+  /**
+   * Not implemented for QPF sources, always throws an error.
+   * @param _operation The algebra operation.
+   * @param _context The action context.
+   */
   public queryVoid(
     _operation: Algebra.Operation,
     _context: IActionContext,

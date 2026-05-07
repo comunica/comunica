@@ -25,15 +25,43 @@ import { QuerySourceQpf } from './QuerySourceQpf';
  */
 export class ActorQuerySourceIdentifyHypermediaQpf extends ActorQuerySourceIdentifyHypermedia
   implements IActorQuerySourceIdentifyHypermediaQpfArgs {
+  /**
+   * The mediator for splitting metadata from data streams.
+   */
   public readonly mediatorMetadata: MediatorRdfMetadata;
+  /**
+   * The mediator for extracting metadata from RDF streams.
+   */
   public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
+  /**
+   * The mediator for dereferencing RDF resources.
+   */
   public readonly mediatorDereferenceRdf: MediatorDereferenceRdf;
+  /**
+   * The mediator for creating binding context merge handlers.
+   */
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  /**
+   * The URI interpreted as the subject component in a QPF search form.
+   */
   public readonly subjectUri: string;
+  /**
+   * The URI interpreted as the predicate component in a QPF search form.
+   */
   public readonly predicateUri: string;
+  /**
+   * The URI interpreted as the object component in a QPF search form.
+   */
   public readonly objectUri: string;
+  /**
+   * The URI interpreted as the graph component in a QPF search form.
+   */
   public readonly graphUri?: string;
 
+  /**
+   * Creates a new QPF query source identify hypermedia actor.
+   * @param args The actor arguments.
+   */
   public constructor(args: IActorQuerySourceIdentifyHypermediaQpfArgs) {
     super(args, 'qpf');
     this.mediatorMetadata = args.mediatorMetadata;
@@ -46,6 +74,11 @@ export class ActorQuerySourceIdentifyHypermediaQpf extends ActorQuerySourceIdent
     this.graphUri = args.graphUri;
   }
 
+  /**
+   * Tests whether the source type is compatible with QPF or brTPF.
+   * @param action The hypermedia identification action.
+   * @return A test result with filter factor or failure.
+   */
   public override async test(
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
@@ -55,6 +88,11 @@ export class ActorQuerySourceIdentifyHypermediaQpf extends ActorQuerySourceIdent
     return this.testMetadata(action);
   }
 
+  /**
+   * Tests whether a QPF search form exists in the metadata.
+   * @param action The hypermedia identification action.
+   * @return A test result with filter factor or failure.
+   */
   public async testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
@@ -90,6 +128,15 @@ export class ActorQuerySourceIdentifyHypermediaQpf extends ActorQuerySourceIdent
     return { source, dataset: source.searchForm.dataset };
   }
 
+  /**
+   * Creates a new QuerySourceQpf from the given parameters.
+   * @param url The URL of the QPF source.
+   * @param metadata The metadata record containing search forms.
+   * @param context The action context.
+   * @param bindingsRestricted Whether bindings-restricted (brTPF) mode is enabled.
+   * @param quads An optional initial quad stream.
+   * @return A new QPF query source.
+   */
   protected async createSource(
     url: string,
     metadata: Record<string, any>,
