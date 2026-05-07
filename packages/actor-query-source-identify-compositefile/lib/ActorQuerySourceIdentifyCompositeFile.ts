@@ -20,15 +20,30 @@ import { RdfStore } from 'rdf-stores';
  * A comunica Composite File Query Source Identify Actor.
  */
 export class ActorQuerySourceIdentifyCompositeFile extends ActorQuerySourceIdentify {
+  /**
+   * The mediator for identifying individual file sources.
+   */
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
+  /**
+   * The mediator for creating binding context merge handlers.
+   */
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
+  /**
+   * Creates a new composite file query source identify actor.
+   * @param args The actor arguments.
+   */
   public constructor(args: IActorQuerySourceIdentifyCompositeFileArgs) {
     super(args);
     this.mediatorQuerySourceIdentify = args.mediatorQuerySourceIdentify;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
+  /**
+   * Tests whether the source type is 'compositefile' with an array value.
+   * @param action The query source identification action.
+   * @return A test result indicating success or failure.
+   */
   public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest>> {
     if (action.querySourceUnidentified.type !== 'compositefile') {
       return failTest(
@@ -41,6 +56,11 @@ export class ActorQuerySourceIdentifyCompositeFile extends ActorQuerySourceIdent
     return passTestVoid();
   }
 
+  /**
+   * Combines quads from all file sources into a single in-memory RDF store.
+   * @param action The query source identification action.
+   * @return The identified query source output.
+   */
   public async run(action: IActionQuerySourceIdentify): Promise<IActorQuerySourceIdentifyOutput> {
     const compositeSource = <IQuerySourceCompositeFile> action.querySourceUnidentified;
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
