@@ -3,6 +3,9 @@ import { AggregateEvaluator } from '@comunica/bus-bindings-aggregator-factory';
 import type { IExpressionEvaluator } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 
+/**
+ * Implements the SPARQL SAMPLE aggregate by retaining the first encountered term value.
+ */
 export class SampleAggregator extends AggregateEvaluator implements IBindingsAggregator {
   private state: RDF.Term | undefined = undefined;
 
