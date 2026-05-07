@@ -3,6 +3,10 @@ import type { EventEmitter } from 'node:events';
 import type * as RDF from '@rdfjs/types';
 import type { QuadTermName } from 'rdf-terms';
 
+/**
+ * An extended RDF/JS source interface supporting optional features such as
+ * quoted triple filtering, node indexing, distinct term indexing, and direct bindings matching.
+ */
 export interface IRdfJsSourceExtended extends RDF.Source {
   /**
    * A record indicating supported features of this source.

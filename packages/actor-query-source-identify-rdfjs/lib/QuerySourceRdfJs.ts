@@ -16,14 +16,41 @@ import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asyncit
 import { filterTermsNested, someTerms, someTermsNested, uniqTerms } from 'rdf-terms';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
+/**
+ * A query source that evaluates queries against an in-memory RDF/JS source or dataset.
+ */
 export class QuerySourceRdfJs implements IQuerySource {
+  /**
+   * The fragment selector shape describing the operations this source handles.
+   */
   protected readonly selectorShape: FragmentSelectorShape;
+  /**
+   * The reference value identifying this source.
+   */
   public referenceValue: QuerySourceReference;
+  /**
+   * The underlying RDF/JS source or dataset.
+   */
   protected readonly source: IRdfJsSourceExtended | RDF.DatasetCore;
+  /**
+   * The RDF data factory.
+   */
   private readonly dataFactory: ComunicaDataFactory;
+  /**
+   * The bindings factory.
+   */
   private readonly bindingsFactory: BindingsFactory;
+  /**
+   * A dummy variable used to represent the default graph in union default graph mode.
+   */
   private readonly dummyDefaultGraph: RDF.Variable;
 
+  /**
+   * Creates a new RDF/JS query source.
+   * @param source The RDF/JS source or dataset to query.
+   * @param dataFactory The RDF data factory.
+   * @param bindingsFactory The bindings factory.
+   */
   public constructor(
     source: RDF.Source | RDF.DatasetCore,
     dataFactory: ComunicaDataFactory,
@@ -82,6 +109,12 @@ export class QuerySourceRdfJs implements IQuerySource {
     this.dummyDefaultGraph = this.dataFactory.variable('__comunica:defaultGraph');
   }
 
+  /**
+   * Converts variable terms and unfiltered quoted triples to undefined for source matching.
+   * @param term The term to check.
+   * @param quotedTripleFiltering Whether the source supports quoted triple filtering.
+   * @return The original term or undefined if it should be nullified.
+   */
   public static nullifyVariables(term: RDF.Term | undefined, quotedTripleFiltering: boolean): RDF.Term | undefined {
     return !term || term.termType === 'Variable' || (!quotedTripleFiltering &&
       term.termType === 'Quad' && someTermsNested(term, value => value.termType === 'Variable')) ?
@@ -89,19 +122,38 @@ export class QuerySourceRdfJs implements IQuerySource {
       term;
   }
 
+  /**
+   * Checks whether a quad pattern contains duplicate variable names.
+   * @param pattern The quad pattern to check.
+   * @return Whether the pattern has duplicate variables.
+   */
   public static hasDuplicateVariables(pattern: RDF.BaseQuad): boolean {
     const variables = filterTermsNested(pattern, term => term.termType === 'Variable');
     return variables.length > 1 && uniqTerms(variables).length < variables.length;
   }
 
+  /**
+   * Returns the selector shape describing the operations this source handles.
+   * @return The fragment selector shape.
+   */
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
     return this.selectorShape;
   }
 
+  /**
+   * Returns the filter factor for this source, always 0 for fully indexed sources.
+   * @return The filter factor.
+   */
   public async getFilterFactor(): Promise<number> {
     return 0;
   }
 
+  /**
+   * Queries bindings from the RDF/JS source by matching quad patterns.
+   * @param operation The algebra operation to evaluate.
+   * @param context The action context.
+   * @return A stream of bindings.
+   */
   public queryBindings(operation: Algebra.Operation, context: IActionContext): BindingsStream {
     if (isKnownOperation(operation, TypesComunica.NODES) &&
       'matchNodes' in this.source && this.source.matchNodes) {
@@ -245,6 +297,14 @@ export class QuerySourceRdfJs implements IQuerySource {
     );
   }
 
+  /**
+   * Determines and sets cardinality metadata on the given iterator.
+   * @param it The iterator to set metadata on.
+   * @param operation The quad pattern operation.
+   * @param context The action context.
+   * @param forceEstimateCardinality Whether to force the cardinality type to estimate.
+   * @param extraMetadata Additional metadata fields to include.
+   */
   protected async setMetadata(
     it: AsyncIterator<any>,
     operation: Algebra.Pattern,
@@ -311,6 +371,12 @@ export class QuerySourceRdfJs implements IQuerySource {
     });
   }
 
+  /**
+   * Queries quads from the RDF/JS source for pattern operations.
+   * @param operation The algebra operation to evaluate.
+   * @param _context The action context.
+   * @return An async iterator of quads.
+   */
   public queryQuads(
     operation: Algebra.Operation,
     _context: IActionContext,
@@ -324,6 +390,11 @@ export class QuerySourceRdfJs implements IQuerySource {
     throw new Error('queryQuads is not implemented in QuerySourceRdfJs');
   }
 
+  /**
+   * Not implemented for RDF/JS sources, always throws an error.
+   * @param _operation The ASK algebra operation.
+   * @param _context The action context.
+   */
   public queryBoolean(
     _operation: Algebra.Ask,
     _context: IActionContext,
@@ -331,6 +402,11 @@ export class QuerySourceRdfJs implements IQuerySource {
     throw new Error('queryBoolean is not implemented in QuerySourceRdfJs');
   }
 
+  /**
+   * Not implemented for RDF/JS sources, always throws an error.
+   * @param _operation The algebra operation.
+   * @param _context The action context.
+   */
   public queryVoid(
     _operation: Algebra.Operation,
     _context: IActionContext,
@@ -338,6 +414,10 @@ export class QuerySourceRdfJs implements IQuerySource {
     throw new Error('queryVoid is not implemented in QuerySourceRdfJs');
   }
 
+  /**
+   * Returns a string representation of this RDF/JS source.
+   * @return The string representation.
+   */
   public toString(): string {
     return `QuerySourceRdfJs(${this.source.constructor.name})`;
   }
