@@ -15,6 +15,9 @@ import { failTest, Actor } from '@comunica/core';
  */
 export abstract class ActorRdfUpdateHypermedia<TS = undefined>
   extends Actor<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput, TS> {
+  /**
+   * The destination type identifier this actor handles.
+   */
   protected readonly destinationType: string;
 
   /* eslint-disable max-len */
@@ -30,6 +33,12 @@ export abstract class ActorRdfUpdateHypermedia<TS = undefined>
     this.destinationType = destinationType;
   }
 
+  /**
+   * Tests whether this actor can handle the given action.
+   * Rejects if the forced destination type does not match.
+   * @param action The action to test.
+   * @return The test result.
+   */
   public async test(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest, TS>> {
     if (action.forceDestinationType && this.destinationType !== action.forceDestinationType) {
       return failTest(`Actor ${this.name} is not able to handle destination type ${action.forceDestinationType}.`);
@@ -37,6 +46,11 @@ export abstract class ActorRdfUpdateHypermedia<TS = undefined>
     return this.testMetadata(action);
   }
 
+  /**
+   * Tests whether this actor can handle the given metadata.
+   * @param action The action containing metadata to test.
+   * @return The test result.
+   */
   public abstract testMetadata(action: IActionRdfUpdateHypermedia): Promise<TestResult<IActorTest, TS>>;
 }
 
@@ -67,6 +81,9 @@ export interface IActorRdfUpdateHypermediaOutput extends IActorOutput {
   destination: IQuadDestination;
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfUpdateHypermedia}.
+ */
 export type IActorRdfUpdateHypermediaArgs<TS = undefined> = IActorArgs<
 IActionRdfUpdateHypermedia,
 IActorTest,
@@ -74,4 +91,7 @@ IActorRdfUpdateHypermediaOutput,
 TS
 >;
 
+/**
+ * A mediator type for RDF update hypermedia actors.
+ */
 export type MediatorRdfUpdateHypermedia = Mediate<IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput>;
