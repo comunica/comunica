@@ -7,6 +7,9 @@ import {
   TypeURL,
 } from '@comunica/utils-expression-evaluator';
 
+/**
+ * https://www.w3.org/TR/xpath-functions/#casting-to-durations
+ */
 export class TermFunctionXsdToDuration extends TermFunctionBase {
   public constructor() {
     super({
