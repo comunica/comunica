@@ -41,14 +41,27 @@ import type {
  * A comunica Void RDF Metadata Extract Actor.
  */
 export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
+  /**
+   * @param args Arguments for this actor.
+   */
   public constructor(args: IActorRdfMetadataExtractArgs) {
     super(args);
   }
 
+  /**
+   * Tests whether this actor can handle the given metadata extraction action.
+   * @param _action The metadata extraction action.
+   * @return A promise resolving to a passing test result.
+   */
   public async test(_action: IActionRdfMetadataExtract): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 
+  /**
+   * Extracts VoID dataset descriptions from an RDF metadata stream.
+   * @param action The metadata extraction action containing the metadata quad stream.
+   * @return A promise resolving to the extracted VoID dataset metadata.
+   */
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
     return new Promise<IActorRdfMetadataExtractOutput>((resolve, reject) => {
       // Track the URIs of identified datasets to extract or ignore
