@@ -9,6 +9,13 @@ import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from './ActorR
 import { ActorRdfUpdateQuads } from './ActorRdfUpdateQuads';
 import type { IQuadDestination } from './IQuadDestination';
 
+/**
+ * Deskolemizes quads in a stream using the given source ID.
+ * @param dataFactory The data factory for creating deskolemized quads.
+ * @param stream The optional quad stream to deskolemize.
+ * @param id The source identifier used for deskolemization.
+ * @return The deskolemized quad stream, or `undefined` if no stream was provided.
+ */
 export function deskolemizeStream(
   dataFactory: ComunicaDataFactory,
   stream: AsyncIterator<RDF.Quad> | undefined,
@@ -18,6 +25,11 @@ AsyncIterator<RDF.Quad> | undefined {
   return stream?.map(quad => deskolemizeQuad(dataFactory, quad, id));
 }
 
+/**
+ * Deskolemizes insert and delete streams in an update action.
+ * @param action The update quads action whose streams should be deskolemized.
+ * @return The action with deskolemized insert and delete streams.
+ */
 export function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuads {
   const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
   const destination = action.context.get(KeysRdfUpdateQuads.destination);
@@ -39,10 +51,21 @@ export function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuad
  * @see IQuadDestination
  */
 export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads {
+  /**
+   * Tests whether this actor can handle the given action.
+   * Always passes, as all update actions are accepted.
+   * @param _action The action to test.
+   * @return A passing test result.
+   */
   public async test(_action: IActionRdfUpdateQuads): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
 
+  /**
+   * Runs the update action on the destination.
+   * @param action The update quads action to execute.
+   * @return The output containing an execute function.
+   */
   public async run(action: IActionRdfUpdateQuads): Promise<IActorRdfUpdateQuadsOutput> {
     const destination = await this.getDestination(action.context);
     return await this.getOutput(destination, deskolemize(action));

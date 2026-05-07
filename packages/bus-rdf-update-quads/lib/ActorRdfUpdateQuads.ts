@@ -84,7 +84,13 @@ export interface IActorRdfUpdateQuadsOutput extends IActorOutput {
   execute: () => Promise<void>;
 }
 
+/**
+ * Constructor arguments for {@link ActorRdfUpdateQuads}.
+ */
 export type IActorRdfUpdateQuadsArgs<TS = undefined> =
   IActorArgs<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput, TS>;
 
+/**
+ * A mediator type for RDF update quads actors.
+ */
 export type MediatorRdfUpdateQuads = Mediate<IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput>;
