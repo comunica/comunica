@@ -16,6 +16,9 @@ import { CachePolicyHttpCacheSemanticsWrapper } from './CachePolicyHttpCacheSema
 import { FetchInitPreprocessor } from './FetchInitPreprocessor';
 import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
+/**
+ * An HTTP actor that performs requests using the Fetch API.
+ */
 export class ActorHttpFetch extends ActorHttp {
   private readonly fetchInitPreprocessor: IFetchInitPreprocessor;
 
@@ -101,7 +104,7 @@ export class ActorHttpFetch extends ActorHttp {
   /**
    * Prepares the request headers, taking into account the environment.
    * @param {IActionHttp} action The HTTP action
-   * @returns {Headers} Headers
+   * @return {Headers} Headers
    */
   public prepareRequestHeaders(action: IActionHttp): Headers {
     const headers = new Headers(action.init?.headers);
@@ -127,7 +130,7 @@ export class ActorHttpFetch extends ActorHttp {
    * This function was adapted from the MDN example function here:
    * https://developer.mozilla.org/en-US/docs/Glossary/Base64#the_unicode_problem
    * @param {string} value The string value to encode
-   * @returns {string} The Base64-encoded value
+   * @return {string} The Base64-encoded value
    */
   public static stringToBase64(value: string): string {
     const bytes = new TextEncoder().encode(value);
@@ -136,6 +139,9 @@ export class ActorHttpFetch extends ActorHttp {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorHttpFetch}.
+ */
 export interface IActorHttpFetchArgs extends IActorHttpArgs {
   /**
    * Maximum size of the cache (in bytes).
