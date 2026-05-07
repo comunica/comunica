@@ -11,6 +11,9 @@ import {
   TypeURL,
 } from '@comunica/utils-expression-evaluator';
 
+/**
+ * https://www.w3.org/TR/xpath-functions/#casting-to-durations
+ */
 export class TermFunctionXsdToDayTimeDuration extends TermFunctionBase {
   public constructor() {
     super({
