@@ -431,6 +431,9 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   }
 }
 
+/**
+ * Contains the result streams produced by a property path evaluation.
+ */
 export interface IPathResultStream {
   bindingsStream: AsyncIterator<Bindings>;
   metadata: () => Promise<MetadataBindings>;
