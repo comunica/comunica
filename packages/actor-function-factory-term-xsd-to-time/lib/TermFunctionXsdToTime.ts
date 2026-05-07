@@ -10,6 +10,9 @@ import {
   TypeURL,
 } from '@comunica/utils-expression-evaluator';
 
+/**
+ * https://www.w3.org/TR/sparql11-query/#FunctionMapping
+ */
 export class TermFunctionXsdToTime extends TermFunctionBase {
   public constructor() {
     super({
