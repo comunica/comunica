@@ -26,6 +26,12 @@ export class ActionObserverHttp extends ActionObserver<IActionHttp, IActorHttpOu
   }
   /* eslint-enable max-len */
 
+  /**
+   * Increments the HTTP request counter when the acting actor is among the observed actors.
+   * @param actor The actor that performed the HTTP action.
+   * @param _action The HTTP action that was executed.
+   * @param _output The promise resolving to the HTTP action output.
+   */
   public onRun(
     actor: Actor<IActionHttp, IActorTest, IActorHttpOutput, undefined>,
     _action: IActionHttp,
