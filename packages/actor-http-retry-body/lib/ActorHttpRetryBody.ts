@@ -6,6 +6,9 @@ import { failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import { PassThrough } from 'readable-stream';
 
+/**
+ * An HTTP actor that retries requests when the response body stream errors or closes prematurely.
+ */
 export class ActorHttpRetryBody extends ActorHttp {
   private readonly mediatorHttp: MediatorHttp;
 
@@ -383,6 +386,9 @@ export class ActorHttpRetryBody extends ActorHttp {
   }
 }
 
+/**
+ * Arguments interface for {@link ActorHttpRetryBody}.
+ */
 export interface IActorHttpRetryBodyArgs extends IActorHttpArgs {
   /**
    * The HTTP mediator.
