@@ -32,6 +32,12 @@ export class ActorOptimizeQueryOperationQuadSubstitution extends ActorOptimizeQu
     const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.GRAPH]: {
         transform: (graphOp: Algebra.Graph) => {
+          // Only substitute if there are default-graph patterns to push the graph into.
+          // Without such patterns (e.g., empty BGP), the GRAPH wrapper provides graph
+          // existence/enumeration semantics that would be lost by substitution.
+          if (!ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(graphOp.input)) {
+            return graphOp;
+          }
           if (graphOp.name.termType === 'NamedNode' ||
             ActorOptimizeQueryOperationQuadSubstitution
               .isSafeForQuadSubstitution(graphOp.input, graphOp.name)) {
@@ -54,7 +60,9 @@ export class ActorOptimizeQueryOperationQuadSubstitution extends ActorOptimizeQu
   public static isSafeForQuadSubstitution(operation: Algebra.Operation, graphVariable: RDF.Variable): boolean {
     let safe = true;
     algebraUtils.visitOperation(operation, {
+      // The inner graph would cause rescoping, so no new info for us here.
       [Algebra.Types.GRAPH]: { preVisitor: () => ({ continue: false }) },
+      // The remote service executes the data against it's own dataset
       [Algebra.Types.SERVICE]: { preVisitor: () => ({ continue: false }) },
       [Algebra.Types.MINUS]: {
         preVisitor: () => {
@@ -91,6 +99,38 @@ export class ActorOptimizeQueryOperationQuadSubstitution extends ActorOptimizeQu
   }
 
   /**
+   * Check if an operation tree contains any patterns or paths using the default graph.
+   * These are the targets for pushDownGraph — if none exist, graph substitution is a no-op
+   * and the GRAPH wrapper must be preserved for existence/enumeration semantics.
+   */
+  public static hasDefaultGraphPatterns(operation: Algebra.Operation): boolean {
+    let found = false;
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.PATTERN]: {
+        preVisitor: (pattern: Algebra.Pattern) => {
+          if (pattern.graph.termType === 'DefaultGraph') {
+            found = true;
+            return { shortcut: true };
+          }
+          return { continue: false };
+        },
+      },
+      [Algebra.Types.PATH]: {
+        preVisitor: (path: Algebra.Path) => {
+          if (path.graph.termType === 'DefaultGraph') {
+            found = true;
+            return { shortcut: true };
+          }
+          return { continue: false };
+        },
+      },
+      [Algebra.Types.GRAPH]: { preVisitor: () => ({ continue: false }) },
+      [Algebra.Types.SERVICE]: { preVisitor: () => ({ continue: false }) },
+    });
+    return found;
+  }
+
+  /**
    * Push a graph term into all patterns and paths that use the default graph.
    * Does not recurse into nested GRAPH or SERVICE operations.
    */
@@ -100,18 +140,15 @@ export class ActorOptimizeQueryOperationQuadSubstitution extends ActorOptimizeQu
     graph: RDF.NamedNode | RDF.Variable,
   ): Algebra.Operation {
     return algebraUtils.mapOperation(operation, {
-      [Algebra.Types.PATTERN]: {
-        preVisitor: () => ({ continue: false }),
-        transform: (pattern: Algebra.Pattern) => {
-          if (pattern.graph.termType === 'DefaultGraph') {
-            return Object.assign(
-              algebraFactory.createPattern(pattern.subject, pattern.predicate, pattern.object, graph),
-              { metadata: pattern.metadata },
-            );
-          }
-          return pattern;
-        },
-      },
+      [Algebra.Types.PATTERN]: { transform: (pattern: Algebra.Pattern) => {
+        if (pattern.graph.termType === 'DefaultGraph') {
+          return Object.assign(
+            algebraFactory.createPattern(pattern.subject, pattern.predicate, pattern.object, graph),
+            { metadata: pattern.metadata },
+          );
+        }
+        return pattern;
+      } },
       [Algebra.Types.PATH]: {
         preVisitor: () => ({ continue: false }),
         transform: (path: Algebra.Path) => {

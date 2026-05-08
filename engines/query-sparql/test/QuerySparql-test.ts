@@ -3134,4 +3134,69 @@ sources:
       });
     });
   });
+
+  describe('GRAPH existence checking', () => {
+    it('should return one binding for GRAPH <iri> { } when graph exists', async() => {
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+
+      const bindingsStream = await engine.queryBindings(
+        `SELECT * WHERE { GRAPH <ex:g1> { } }`,
+        { sources: [ store ]},
+      );
+      const bindings = await bindingsStream.toArray();
+      expect(bindings).toHaveLength(1);
+    });
+
+    it('should return no bindings for GRAPH <iri> { } when graph is absent', async() => {
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+
+      const bindingsStream = await engine.queryBindings(
+        `SELECT * WHERE { GRAPH <ex:g2> { } }`,
+        { sources: [ store ]},
+      );
+      const bindings = await bindingsStream.toArray();
+      expect(bindings).toHaveLength(0);
+    });
+
+    it('should work with VALUES join as graph-existence check', async() => {
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+
+      // Existing graph: should return one binding with ?hasG1 = true
+      const r1 = await engine.queryBindings(
+        `SELECT * WHERE { VALUES ?hasG1 { true } . GRAPH <ex:g1> { } }`,
+        { sources: [ store ]},
+      );
+      await expect(r1).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('hasG1'), DF.literal('true', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean')) ],
+        ]),
+      ]);
+
+      // Non-existing graph: should return no bindings
+      const r2 = await engine.queryBindings(
+        `SELECT * WHERE { VALUES ?hasG2 { true } . GRAPH <ex:g2> { } }`,
+        { sources: [ store ]},
+      );
+      const bindings2 = await r2.toArray();
+      expect(bindings2).toHaveLength(0);
+    });
+  });
 });

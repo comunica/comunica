@@ -99,6 +99,28 @@ describe('ActorOptimizeQueryOperationQuadSubstitution', () => {
         const result = await actor.run({ operation, context });
         expect(result.context).toBe(context);
       });
+
+      it('should not substitute GRAPH <iri> when inner has no default-graph patterns', async() => {
+        const operation = AF.createGraph(
+          AF.createBgp([]),
+          DF.namedNode('g1'),
+        );
+        const result = await actor.run({ operation, context });
+        // GRAPH wrapper preserved — empty BGP has no patterns to push into
+        expect(result.operation.type).toBe(Algebra.Types.GRAPH);
+        expect((<Algebra.Graph>result.operation).name).toEqual(DF.namedNode('g1'));
+      });
+
+      it('should not substitute GRAPH ?var when inner has no default-graph patterns', async() => {
+        const operation = AF.createGraph(
+          AF.createBgp([]),
+          DF.variable('g'),
+        );
+        const result = await actor.run({ operation, context });
+        // GRAPH wrapper preserved — variable case with no patterns
+        expect(result.operation.type).toBe(Algebra.Types.GRAPH);
+        expect((<Algebra.Graph>result.operation).name).toEqual(DF.variable('g'));
+      });
     });
   });
 
@@ -348,6 +370,67 @@ describe('ActorOptimizeQueryOperationQuadSubstitution', () => {
         DF.namedNode('g1'),
       );
       expect((<any>result).metadata).toEqual({ scopedSource: 'test' });
+    });
+  });
+
+  describe('hasDefaultGraphPatterns', () => {
+    it('should return true for a pattern with default graph', () => {
+      const op = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
+      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(true);
+    });
+
+    it('should return false for a pattern with a named graph', () => {
+      const op = AF.createPattern(
+        DF.namedNode('s'),
+        DF.namedNode('p'),
+        DF.namedNode('o'),
+        DF.namedNode('g'),
+      );
+      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(false);
+    });
+
+    it('should return false for an empty BGP', () => {
+      const op = AF.createBgp([]);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(false);
+    });
+
+    it('should return true for a path with default graph', () => {
+      const op = AF.createPath(
+        DF.namedNode('s'),
+        AF.createLink(DF.namedNode('p')),
+        DF.namedNode('o'),
+      );
+      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(true);
+    });
+
+    it('should return false for a path with a named graph', () => {
+      const op = AF.createPath(
+        DF.namedNode('s'),
+        AF.createLink(DF.namedNode('p')),
+        DF.namedNode('o'),
+        DF.namedNode('g'),
+      );
+      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(false);
+    });
+
+    it('should not recurse into nested GRAPH operations', () => {
+      const inner = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
+      const op = AF.createGraph(inner, DF.namedNode('g'));
+      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(false);
+    });
+
+    it('should not recurse into SERVICE operations', () => {
+      const inner = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
+      const op = AF.createService(inner, DF.namedNode('endpoint'));
+      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(false);
+    });
+
+    it('should return true when nested in a join', () => {
+      const op = AF.createJoin([
+        AF.createBgp([]),
+        AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+      ]);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(true);
     });
   });
 });

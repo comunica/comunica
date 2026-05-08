@@ -652,6 +652,138 @@ describe('ActorQueryOperationGraph', () => {
         expect(bindings).toHaveLength(1);
       });
 
+      it('should return empty for GRAPH <iri> { } when graph is absent via datasetNamedGraphs', async() => {
+        const customActor = new ActorQueryOperationGraph(<any>{
+          name: 'actor',
+          bus,
+          mediatorQueryOperation,
+          mediatorRdfMetadataAccumulate,
+        });
+
+        const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
+          AF.createBgp([]),
+          DF.namedNode('ex:absent'),
+        );
+
+        const ctxWithGraphs = context.set(
+          KeysQueryOperation.datasetNamedGraphs,
+          [ DF.namedNode('ex:g1') ],
+        );
+        const result = getSafeBindings(
+          await customActor.runOperation(operation, ctxWithGraphs),
+        );
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(0);
+      });
+
+      it('should return empty for GRAPH <iri> { } when no sources are available', async() => {
+        const customActor = new ActorQueryOperationGraph(<any>{
+          name: 'actor',
+          bus,
+          mediatorQueryOperation,
+          mediatorRdfMetadataAccumulate,
+        });
+
+        const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
+          AF.createBgp([]),
+          DF.namedNode('ex:g1'),
+        );
+
+        // No datasetNamedGraphs and no querySources
+        const result = getSafeBindings(
+          await customActor.runOperation(operation, context),
+        );
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(0);
+        const metadata = await result.metadata();
+        expect(metadata.cardinality.value).toBe(0);
+      });
+
+      it('should check graph existence via querySources when datasetNamedGraphs not set', async() => {
+        // GraphExists falls back to querying sources
+        const customMediator = {
+          async mediate(_arg: any) {
+            // Source has data in the graph
+            return {
+              bindingsStream: new ArrayIterator([
+                BF.bindings(),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [],
+              }),
+              type: 'bindings',
+            };
+          },
+        };
+
+        const customActor = new ActorQueryOperationGraph(<any>{
+          name: 'actor',
+          bus,
+          mediatorQueryOperation: customMediator,
+          mediatorRdfMetadataAccumulate,
+        });
+
+        const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
+          AF.createBgp([]),
+          DF.namedNode('ex:g1'),
+        );
+
+        const ctxWithSources = context.set(
+          KeysQueryOperation.querySources,
+          <any>[{ source: { referenceValue: 'http://example.org' }}],
+        );
+        const result = getSafeBindings(
+          await customActor.runOperation(operation, ctxWithSources),
+        );
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(1);
+      });
+
+      it('should check graph existence via multiple querySources', async() => {
+        const customMediator = {
+          async mediate(_arg: any) {
+            return {
+              bindingsStream: new ArrayIterator([
+                BF.bindings(),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [],
+              }),
+              type: 'bindings',
+            };
+          },
+        };
+
+        const customActor = new ActorQueryOperationGraph(<any>{
+          name: 'actor',
+          bus,
+          mediatorQueryOperation: customMediator,
+          mediatorRdfMetadataAccumulate,
+        });
+
+        const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
+          AF.createBgp([]),
+          DF.namedNode('ex:g1'),
+        );
+
+        const ctxWithSources = context.set(
+          KeysQueryOperation.querySources,
+          <any>[
+            { source: { referenceValue: 'http://source1.org' }},
+            { source: { referenceValue: 'http://source2.org' }},
+          ],
+        );
+        const result = getSafeBindings(
+          await customActor.runOperation(operation, ctxWithSources),
+        );
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(1);
+      });
+
       it('should return empty for GRAPH <iri> when graph has no data', async() => {
         // When GRAPH <iri> { ?s ?p ?o } is evaluated and the graph has no triples,
         // the mediator returns no bindings — effectively a graph-existence check.
@@ -721,10 +853,9 @@ describe('ActorQueryOperationGraph', () => {
       });
 
       it('should handle GRAPH <iri> with compound inner pattern like { {} UNION {} }', async() => {
-        // GRAPH <iri> { {} UNION {} } should push the graph IRI into the inner patterns
-        // and delegate. Since both branches of the UNION are empty BGPs, the mediator
-        // should produce results depending on the inner evaluation.
-        // This tests that pushDownGraph correctly handles nested structures.
+        // GRAPH <iri> { {} UNION {} } should verify graph existence and delegate.
+        // Since both branches of the UNION are empty BGPs (no default-graph patterns),
+        // the actor performs a graph existence check first.
         const mediatedArgs: any[] = [];
         const customMediator = {
           async mediate(arg: any) {
@@ -757,8 +888,13 @@ describe('ActorQueryOperationGraph', () => {
           DF.namedNode('ex:g1'),
         );
 
+        // Must provide datasetNamedGraphs for existence check
+        const ctxWithGraphs = context.set(
+          KeysQueryOperation.datasetNamedGraphs,
+          [ DF.namedNode('ex:g1') ],
+        );
         const result = getSafeBindings(
-          await customActor.runOperation(operation, context),
+          await customActor.runOperation(operation, ctxWithGraphs),
         );
         const bindings = await result.bindingsStream.toArray();
         expect(bindings).toHaveLength(1);
@@ -1107,6 +1243,58 @@ describe('ActorQueryOperationGraph', () => {
 
       metadatas[1].state.invalidate();
       expect(result.state.valid).toBeFalsy();
+    });
+  });
+
+  describe('hasDefaultGraphPatterns', () => {
+    it('should return true for a pattern with default graph', () => {
+      const op = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
+      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(true);
+    });
+
+    it('should return false for a pattern with named graph', () => {
+      const op = AF.createPattern(
+        DF.namedNode('s'),
+        DF.namedNode('p'),
+        DF.namedNode('o'),
+        DF.namedNode('g'),
+      );
+      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(false);
+    });
+
+    it('should return false for an empty BGP', () => {
+      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(AF.createBgp([]))).toBe(false);
+    });
+
+    it('should return true for a path with default graph', () => {
+      const op = AF.createPath(
+        DF.namedNode('s'),
+        AF.createLink(DF.namedNode('p')),
+        DF.namedNode('o'),
+      );
+      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(true);
+    });
+
+    it('should return false for a path with named graph', () => {
+      const op = AF.createPath(
+        DF.namedNode('s'),
+        AF.createLink(DF.namedNode('p')),
+        DF.namedNode('o'),
+        DF.namedNode('g'),
+      );
+      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(false);
+    });
+
+    it('should not recurse into nested GRAPH operations', () => {
+      const inner = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
+      const op = AF.createGraph(inner, DF.namedNode('g'));
+      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(false);
+    });
+
+    it('should not recurse into SERVICE operations', () => {
+      const inner = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
+      const op = AF.createService(inner, DF.namedNode('endpoint'));
+      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(false);
     });
   });
 });

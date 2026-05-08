@@ -6,13 +6,17 @@ A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bu
 
 This actor implements the `evalGraph` semantics from the SPARQL specification:
 
-- **`GRAPH <iri> { ... }`**: Pushes the IRI into all triple patterns and property paths as the graph component, then delegates evaluation to the query operation mediator.
+- **`GRAPH <iri> { ... }`**: Pushes the IRI into all triple patterns and property paths as the graph component, then delegates evaluation to the query operation mediator. When the inner operation has no default-graph patterns (e.g., empty BGP), the actor first verifies that the graph exists in the dataset before delegating.
 - **`GRAPH ?var { ... }`**: Enumerates all named graphs in the dataset, evaluates the inner pattern once per graph (with the graph IRI pushed into patterns), and unions the results. Each result binding is augmented with the graph variable bound to the corresponding graph IRI.
 
 ### Graph existence checking
 
-The SPARQL spec allows `GRAPH` to act as a graph-existence check.
-For example, the query `SELECT * { GRAPH <ex:g1> { } }` will produce one empty binding
+Per the SPARQL spec, if a graph IRI is not a named graph in the dataset, `GRAPH <iri> { P }` returns the
+empty multiset. When the inner operation has no default-graph patterns, the data source cannot implicitly
+enforce this. In such cases, the actor performs an explicit graph-existence check by querying sources for
+at least one triple in the graph before evaluating the inner operation.
+
+For example, `SELECT * { GRAPH <ex:g1> { } }` will produce one empty binding
 if `<ex:g1>` is a named graph in the dataset, and zero bindings otherwise.
 Similarly, `GRAPH ?g { }` enumerates all named graphs, producing one binding per graph with `?g` bound.
 

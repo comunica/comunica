@@ -7,9 +7,12 @@ that pushes GRAPH operations into quad patterns when it is safe to do so.
 
 ### Safety checks
 
-`GRAPH <iri> { ... }` is always safe to push down since concrete IRIs do not affect variable scoping.
+`GRAPH <iri> { ... }` is pushed down when the inner operation contains default-graph patterns or paths.
+If the inner operation has no default-graph patterns (e.g., `GRAPH <iri> { }` — an empty BGP used as a
+graph-existence check), the `GRAPH` wrapper is preserved so the runtime actor can verify graph existence.
 
-`GRAPH ?var { ... }` is only pushed down when the subtree does **not** contain:
+`GRAPH ?var { ... }` is only pushed down when the inner operation contains default-graph patterns **and**
+the subtree does **not** contain:
 - **MINUS** — pushing the graph variable into both sides of MINUS would change variable disjointness semantics.
 - **PROJECT** (subquery boundary) — pushing the graph variable into a subquery can change implicit grouping behavior.
 - **VALUES** that binds the graph variable — would conflict with the pushed-down variable.
