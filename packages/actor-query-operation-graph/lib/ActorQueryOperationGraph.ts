@@ -18,7 +18,7 @@ import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { assignOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { EmptyIterator, UnionIterator } from 'asynciterator';
+import { ArrayIterator, UnionIterator } from 'asynciterator';
 
 /**
  * A comunica Graph Query Operation Actor.
@@ -61,7 +61,7 @@ export class ActorQueryOperationGraph extends ActorQueryOperationTypedMediated<A
     if (graphNames.length === 0) {
       return {
         type: 'bindings',
-        bindingsStream: new EmptyIterator(),
+        bindingsStream: new ArrayIterator<Bindings>([], { autoStart: false }),
         metadata: () => Promise.resolve({
           state: new MetadataValidationState(),
           cardinality: { type: 'exact', value: 0 },
