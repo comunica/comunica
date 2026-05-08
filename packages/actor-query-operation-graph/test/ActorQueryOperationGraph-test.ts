@@ -811,6 +811,89 @@ describe('ActorQueryOperationGraph', () => {
         expect(bindings[0].get(DF.variable('g'))).toEqual(DF.namedNode('ex:g1'));
         expect(bindings[1].get(DF.variable('g'))).toEqual(DF.namedNode('ex:g2'));
       });
+
+      it('should return empty for GRAPH ?var { FILTER(FALSE) }', async() => {
+        // FILTER(FALSE) eliminates all solutions from the inner pattern,
+        // so GRAPH ?g { FILTER(FALSE) } should produce no bindings
+        // even when named graphs exist in the dataset.
+        const customMediator = {
+          async mediate(_arg: any) {
+            // FILTER(FALSE) eliminates everything — inner evaluation yields no bindings
+            return {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 0 },
+                variables: [],
+              }),
+              type: 'bindings',
+            };
+          },
+        };
+
+        const customActor = new ActorQueryOperationGraph(<any>{
+          name: 'actor',
+          bus,
+          mediatorQueryOperation: customMediator,
+          mediatorRdfMetadataAccumulate,
+        });
+
+        const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
+          AF.createFilter(
+            AF.createBgp([]),
+            AF.createTermExpression(DF.literal('false', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean'))),
+          ),
+          DF.variable('g'),
+        );
+
+        const ctxWithGraphs = context.set(
+          KeysQueryOperation.datasetNamedGraphs,
+          [ DF.namedNode('ex:g1'), DF.namedNode('ex:g2') ],
+        );
+        const result = getSafeBindings(
+          await customActor.runOperation(operation, ctxWithGraphs),
+        );
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(0);
+      });
+
+      it('should return empty for GRAPH <iri> { FILTER(FALSE) }', async() => {
+        // Same as above but with a named node graph — the filter eliminates all results.
+        const customMediator = {
+          async mediate(_arg: any) {
+            return {
+              bindingsStream: new ArrayIterator([], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 0 },
+                variables: [],
+              }),
+              type: 'bindings',
+            };
+          },
+        };
+
+        const customActor = new ActorQueryOperationGraph(<any>{
+          name: 'actor',
+          bus,
+          mediatorQueryOperation: customMediator,
+          mediatorRdfMetadataAccumulate,
+        });
+
+        const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
+          AF.createFilter(
+            AF.createBgp([]),
+            AF.createTermExpression(DF.literal('false', DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean'))),
+          ),
+          DF.namedNode('ex:g1'),
+        );
+
+        const result = getSafeBindings(
+          await customActor.runOperation(operation, context),
+        );
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(0);
+      });
     });
   });
 
