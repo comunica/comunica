@@ -320,6 +320,14 @@ export const KeysQueryOperation = {
   serviceSources: new ActionContextKey<Record<string, IQuerySourceWrapper>>(
     '@comunica/bus-query-operation:serviceSources',
   ),
+  /**
+   * The named graphs in the dataset, used for GRAPH ?var enumeration.
+   * When set, the GRAPH actor will iterate over these named graph IRIs
+   * instead of discovering them by querying for distinct graph terms.
+   */
+  datasetNamedGraphs: new ActionContextKey<RDF.NamedNode[]>(
+    '@comunica/bus-query-operation:datasetNamedGraphs',
+  ),
 };
 
 export const KeysRdfParseJsonLd = {

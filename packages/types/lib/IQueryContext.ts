@@ -63,6 +63,7 @@ export interface IQueryContextCommon {
   functionArgumentsCache?: FunctionArgumentsCache;
   explain?: QueryExplainMode;
   unionDefaultGraph?: boolean;
+  datasetNamedGraphs?: RDF.NamedNode[];
   traverse?: boolean;
   invalidateCache?: boolean;
   dataFactory?: ComunicaDataFactory;

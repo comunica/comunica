@@ -49,7 +49,7 @@ export class ActorQueryParseSparql extends ActorQueryParse {
     return {
       baseIRI,
       operation: toAlgebra(parsedSyntax, {
-        quads: true,
+        quads: false,
         prefixes: this.prefixes,
         blankToVariable: true,
         baseIRI: action.baseIRI,

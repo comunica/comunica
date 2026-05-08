@@ -4,6 +4,18 @@ const { ActionContext } = require('@comunica/core');
 const RdfStore = require('rdf-stores').RdfStore;
 const RdfTestSuite = require('rdf-test-suite');
 
+// Patch TestCaseQueryEvaluation to pass dataset named graph URIs to the engine.
+// The rdf-test-suite handler API only passes quads, which loses information about
+// empty named graphs (graphs defined via qt:graphData but containing no triples).
+const TestCaseQueryEvaluation = RdfTestSuite.TestCaseQueryEvaluation;
+const origTest = TestCaseQueryEvaluation.prototype.test;
+TestCaseQueryEvaluation.prototype.test = function(engine, injectArguments) {
+  const namedGraphs = this.queryDataLinks
+    .filter(link => link.dataGraph)
+    .map(link => link.dataGraph);
+  return origTest.call(this, engine, { ...injectArguments, datasetNamedGraphs: namedGraphs });
+};
+
 module.exports = function(engine) {
   return {
     parse(query, options) {
@@ -19,14 +31,18 @@ module.exports = function(engine) {
         }
         return source;
       });
-      const result = await engine.query(queryString, {
+      const context = {
         baseIRI: options.baseIRI,
         sources,
         httpProxyHandler: proxyUrl ? new ProxyHandlerStatic(proxyUrl) : null,
         httpRetryCount: 3,
         httpRetryDelayFallback: 10,
         httpRetryDelayLimit: 100,
-      });
+      };
+      if (options.datasetNamedGraphs) {
+        context.datasetNamedGraphs = options.datasetNamedGraphs;
+      }
+      const result = await engine.query(queryString, context);
       if (result.resultType === 'boolean') {
         return new RdfTestSuite.QueryResultBoolean(await result.execute());
       }
