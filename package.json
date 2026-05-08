@@ -6,8 +6,8 @@
     "engines/*",
     "packages/*",
     "performance/*",
-    "../../../PhD/code/traqula/engines/*",
-    "../../../PhD/code/traqula/packages/*"
+    "./traqula/engines/*",
+    "./traqula/packages/*"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",

@@ -31,18 +31,15 @@ module.exports = function(engine) {
         }
         return source;
       });
-      const context = {
+      const result = await engine.query(queryString, {
         baseIRI: options.baseIRI,
         sources,
         httpProxyHandler: proxyUrl ? new ProxyHandlerStatic(proxyUrl) : null,
         httpRetryCount: 3,
         httpRetryDelayFallback: 10,
         httpRetryDelayLimit: 100,
-      };
-      if (options.datasetNamedGraphs) {
-        context.datasetNamedGraphs = options.datasetNamedGraphs;
-      }
-      const result = await engine.query(queryString, context);
+        datasetNamedGraphs: options.datasetNamedGraphs,
+      });
       if (result.resultType === 'boolean') {
         return new RdfTestSuite.QueryResultBoolean(await result.execute());
       }

@@ -7,6 +7,7 @@ const config: Config.InitialOptions = {
     '/node_modules/',
     'engine-default.js',
     'index.js',
+    'traqula'
   ],
   coverageProvider: 'babel',
   coverageThreshold: {

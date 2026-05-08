@@ -32,3 +32,5 @@ componentsjs-error-state.json
 engines/*/components
 packages/*/components
 *.tgz
+.devcontainer
+traqula
