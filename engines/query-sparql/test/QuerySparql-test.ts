@@ -3170,6 +3170,26 @@ sources:
       expect(bindings).toHaveLength(0);
     });
 
+    it('should return no bindings for GRAPH <absent> with partially covered UNION', async() => {
+      // GRAPH <g2> { { <s1> ?p ?o } UNION {} } — g2 doesn't exist.
+      // Even though the first UNION branch has patterns, the second (empty BGP)
+      // has none. Pushdown alone loses existence semantics for the uncovered branch.
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+
+      const bindingsStream = await engine.queryBindings(
+        `SELECT * WHERE { GRAPH <ex:g2> { { <ex:s1> ?p ?o } UNION { } } }`,
+        { sources: [ store ]},
+      );
+      const bindings = await bindingsStream.toArray();
+      expect(bindings).toHaveLength(0);
+    });
+
     it('should work with VALUES join as graph-existence check', async() => {
       const store = RdfStore.createDefault();
       store.addQuad(DF.quad(

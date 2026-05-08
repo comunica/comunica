@@ -32,10 +32,11 @@ export class ActorOptimizeQueryOperationQuadSubstitution extends ActorOptimizeQu
     const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.GRAPH]: {
         transform: (graphOp: Algebra.Graph) => {
-          // Only substitute if there are default-graph patterns to push the graph into.
-          // Without such patterns (e.g., empty BGP), the GRAPH wrapper provides graph
-          // existence/enumeration semantics that would be lost by substitution.
-          if (!ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(graphOp.input)) {
+          // Only substitute if every solution-producing leaf is a default-graph
+          // pattern/path. This ensures pushdown scopes every leaf to the target graph,
+          // implicitly enforcing existence semantics. Uncovered leaves (empty BGPs,
+          // VALUES, etc.) would produce results regardless of graph existence.
+          if (!ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(graphOp.input)) {
             return graphOp;
           }
           if (graphOp.name.termType === 'NamedNode' ||
@@ -99,17 +100,28 @@ export class ActorOptimizeQueryOperationQuadSubstitution extends ActorOptimizeQu
   }
 
   /**
-   * Check if an operation tree contains any patterns or paths using the default graph.
-   * These are the targets for pushDownGraph — if none exist, graph substitution is a no-op
-   * and the GRAPH wrapper must be preserved for existence/enumeration semantics.
+   * Check if every solution-producing leaf in the operation tree is a default-graph
+   * pattern or path. When true, pushDownGraph will scope every leaf to the target graph,
+   * implicitly enforcing graph-existence semantics. When false (e.g., an empty BGP branch
+   * in a UNION, or a VALUES), some leaves would remain unscoped and produce results
+   * regardless of whether the graph exists.
    */
-  public static hasDefaultGraphPatterns(operation: Algebra.Operation): boolean {
-    let found = false;
+  public static isFullyCoveredByDefaultGraphPatterns(operation: Algebra.Operation): boolean {
+    let hasUncoveredLeaf = false;
     algebraUtils.visitOperation(operation, {
+      [Algebra.Types.BGP]: {
+        preVisitor: (bgp: Algebra.Bgp) => {
+          if (!bgp.patterns.some(p => p.graph.termType === 'DefaultGraph')) {
+            hasUncoveredLeaf = true;
+            return { shortcut: true };
+          }
+          return { continue: false };
+        },
+      },
       [Algebra.Types.PATTERN]: {
         preVisitor: (pattern: Algebra.Pattern) => {
-          if (pattern.graph.termType === 'DefaultGraph') {
-            found = true;
+          if (pattern.graph.termType !== 'DefaultGraph') {
+            hasUncoveredLeaf = true;
             return { shortcut: true };
           }
           return { continue: false };
@@ -117,17 +129,35 @@ export class ActorOptimizeQueryOperationQuadSubstitution extends ActorOptimizeQu
       },
       [Algebra.Types.PATH]: {
         preVisitor: (path: Algebra.Path) => {
-          if (path.graph.termType === 'DefaultGraph') {
-            found = true;
+          if (path.graph.termType !== 'DefaultGraph') {
+            hasUncoveredLeaf = true;
             return { shortcut: true };
           }
           return { continue: false };
         },
       },
-      [Algebra.Types.GRAPH]: { preVisitor: () => ({ continue: false }) },
-      [Algebra.Types.SERVICE]: { preVisitor: () => ({ continue: false }) },
+      [Algebra.Types.VALUES]: {
+        preVisitor: () => {
+          hasUncoveredLeaf = true;
+          return { shortcut: true };
+        },
+      },
+      // Nested GRAPH/SERVICE create their own scope — they produce results
+      // independently of the parent graph, so they are uncovered leaves.
+      [Algebra.Types.GRAPH]: {
+        preVisitor: () => {
+          hasUncoveredLeaf = true;
+          return { shortcut: true };
+        },
+      },
+      [Algebra.Types.SERVICE]: {
+        preVisitor: () => {
+          hasUncoveredLeaf = true;
+          return { shortcut: true };
+        },
+      },
     });
-    return found;
+    return !hasUncoveredLeaf;
   }
 
   /**

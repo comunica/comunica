@@ -48,24 +48,21 @@ export class ActorQueryOperationGraph extends ActorQueryOperationTypedMediated<A
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 
-    // For named nodes, push down into patterns and delegate.
-    // If the inner operation has no default-graph patterns, we must verify graph
-    // existence first (per the SPARQL spec: if the IRI is not a graph name in D,
-    // eval(D(G), Graph(IRI,P)) = the empty multiset).
+    // For named nodes, verify graph existence first, then push down into patterns.
+    // Per the SPARQL spec: if IRI is not a graph name in D,
+    // eval(D(G), Graph(IRI,P)) = the empty multiset.
     if (operation.name.termType === 'NamedNode') {
-      if (!ActorQueryOperationGraph.hasDefaultGraphPatterns(operation.input)) {
-        const exists = await this.graphExists(algebraFactory, dataFactory, operation.name, context);
-        if (!exists) {
-          return {
-            type: 'bindings',
-            bindingsStream: new ArrayIterator<Bindings>([], { autoStart: false }),
-            metadata: () => Promise.resolve({
-              state: new MetadataValidationState(),
-              cardinality: { type: 'exact', value: 0 },
-              variables: [],
-            }),
-          };
-        }
+      const exists = await this.graphExists(algebraFactory, dataFactory, operation.name, context);
+      if (!exists) {
+        return {
+          type: 'bindings',
+          bindingsStream: new ArrayIterator<Bindings>([], { autoStart: false }),
+          metadata: () => Promise.resolve({
+            state: new MetadataValidationState(),
+            cardinality: { type: 'exact', value: 0 },
+            variables: [],
+          }),
+        };
       }
       const rewritten = ActorQueryOperationGraph.pushDownGraph(algebraFactory, operation.input, operation.name);
       return this.mediatorQueryOperation.mediate({ operation: rewritten, context });
@@ -225,38 +222,6 @@ export class ActorQueryOperationGraph extends ActorQueryOperationTypedMediated<A
 
     const firstBinding = await result.bindingsStream.take(1).toArray();
     return firstBinding.length > 0;
-  }
-
-  /**
-   * Check if an operation tree contains any patterns or paths using the default graph.
-   * If none exist, the GRAPH wrapper provides existence/enumeration semantics
-   * that must be checked explicitly rather than relying on data source filtering.
-   */
-  public static hasDefaultGraphPatterns(operation: Algebra.Operation): boolean {
-    let found = false;
-    algebraUtils.visitOperation(operation, {
-      [Algebra.Types.PATTERN]: {
-        preVisitor: (pattern: Algebra.Pattern) => {
-          if (pattern.graph.termType === 'DefaultGraph') {
-            found = true;
-            return { shortcut: true };
-          }
-          return { continue: false };
-        },
-      },
-      [Algebra.Types.PATH]: {
-        preVisitor: (path: Algebra.Path) => {
-          if (path.graph.termType === 'DefaultGraph') {
-            found = true;
-            return { shortcut: true };
-          }
-          return { continue: false };
-        },
-      },
-      [Algebra.Types.GRAPH]: { preVisitor: () => ({ continue: false }) },
-      [Algebra.Types.SERVICE]: { preVisitor: () => ({ continue: false }) },
-    });
-    return found;
   }
 
   /**

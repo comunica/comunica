@@ -127,14 +127,19 @@ describe('ActorQueryOperationGraph', () => {
           DF.namedNode('g1'),
         );
 
+        // Provide datasetNamedGraphs so existence check passes without querying
+        const ctxWithGraphs = context.set(
+          KeysQueryOperation.datasetNamedGraphs,
+          [ DF.namedNode('g1') ],
+        );
         const result = getSafeBindings(
-          await customActor.runOperation(operation, context),
+          await customActor.runOperation(operation, ctxWithGraphs),
         );
         expect(result.type).toBe('bindings');
         await expect(result.bindingsStream).toEqualBindingsStream([
           BF.bindings([[ DF.variable('s'), DF.namedNode('s1') ]]),
         ]);
-        // Should have pushed graph into the pattern
+        // Existence check uses datasetNamedGraphs (no mediator call), then pushes down
         expect(mediatedArgs).toHaveLength(1);
         const rewrittenOp = mediatedArgs[0].operation;
         expect(rewrittenOp.type).toBe(Algebra.Types.PATTERN);
@@ -785,8 +790,8 @@ describe('ActorQueryOperationGraph', () => {
       });
 
       it('should return empty for GRAPH <iri> when graph has no data', async() => {
-        // When GRAPH <iri> { ?s ?p ?o } is evaluated and the graph has no triples,
-        // the mediator returns no bindings — effectively a graph-existence check.
+        // Without datasetNamedGraphs or querySources, graphExists returns false,
+        // so the actor returns empty immediately.
         const customActor = new ActorQueryOperationGraph(<any>{
           name: 'actor',
           bus,
@@ -803,7 +808,6 @@ describe('ActorQueryOperationGraph', () => {
           await customActor.runOperation(operation, context),
         );
         const bindings = await result.bindingsStream.toArray();
-        // The default mediator returns empty results — no data in that graph
         expect(bindings).toHaveLength(0);
       });
 
@@ -1243,58 +1247,6 @@ describe('ActorQueryOperationGraph', () => {
 
       metadatas[1].state.invalidate();
       expect(result.state.valid).toBeFalsy();
-    });
-  });
-
-  describe('hasDefaultGraphPatterns', () => {
-    it('should return true for a pattern with default graph', () => {
-      const op = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
-      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(true);
-    });
-
-    it('should return false for a pattern with named graph', () => {
-      const op = AF.createPattern(
-        DF.namedNode('s'),
-        DF.namedNode('p'),
-        DF.namedNode('o'),
-        DF.namedNode('g'),
-      );
-      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(false);
-    });
-
-    it('should return false for an empty BGP', () => {
-      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(AF.createBgp([]))).toBe(false);
-    });
-
-    it('should return true for a path with default graph', () => {
-      const op = AF.createPath(
-        DF.namedNode('s'),
-        AF.createLink(DF.namedNode('p')),
-        DF.namedNode('o'),
-      );
-      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(true);
-    });
-
-    it('should return false for a path with named graph', () => {
-      const op = AF.createPath(
-        DF.namedNode('s'),
-        AF.createLink(DF.namedNode('p')),
-        DF.namedNode('o'),
-        DF.namedNode('g'),
-      );
-      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(false);
-    });
-
-    it('should not recurse into nested GRAPH operations', () => {
-      const inner = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
-      const op = AF.createGraph(inner, DF.namedNode('g'));
-      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(false);
-    });
-
-    it('should not recurse into SERVICE operations', () => {
-      const inner = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
-      const op = AF.createService(inner, DF.namedNode('endpoint'));
-      expect(ActorQueryOperationGraph.hasDefaultGraphPatterns(op)).toBe(false);
     });
   });
 });

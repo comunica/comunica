@@ -111,6 +111,20 @@ describe('ActorOptimizeQueryOperationQuadSubstitution', () => {
         expect((<Algebra.Graph>result.operation).name).toEqual(DF.namedNode('g1'));
       });
 
+      it('should not substitute GRAPH <iri> when UNION has an uncovered branch', async() => {
+        // { <s> ?p ?o } UNION {} — second branch (empty BGP) is uncovered
+        const operation = AF.createGraph(
+          AF.createUnion([
+            AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+            AF.createBgp([]),
+          ]),
+          DF.namedNode('g1'),
+        );
+        const result = await actor.run({ operation, context });
+        expect(result.operation.type).toBe(Algebra.Types.GRAPH);
+        expect((<Algebra.Graph>result.operation).name).toEqual(DF.namedNode('g1'));
+      });
+
       it('should not substitute GRAPH ?var when inner has no default-graph patterns', async() => {
         const operation = AF.createGraph(
           AF.createBgp([]),
@@ -373,10 +387,10 @@ describe('ActorOptimizeQueryOperationQuadSubstitution', () => {
     });
   });
 
-  describe('hasDefaultGraphPatterns', () => {
+  describe('isFullyCoveredByDefaultGraphPatterns', () => {
     it('should return true for a pattern with default graph', () => {
       const op = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
-      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(true);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(true);
     });
 
     it('should return false for a pattern with a named graph', () => {
@@ -386,12 +400,19 @@ describe('ActorOptimizeQueryOperationQuadSubstitution', () => {
         DF.namedNode('o'),
         DF.namedNode('g'),
       );
-      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(false);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(false);
     });
 
     it('should return false for an empty BGP', () => {
       const op = AF.createBgp([]);
-      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(false);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(false);
+    });
+
+    it('should return true for a BGP with a default-graph pattern', () => {
+      const op = AF.createBgp([
+        AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+      ]);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(true);
     });
 
     it('should return true for a path with default graph', () => {
@@ -400,7 +421,7 @@ describe('ActorOptimizeQueryOperationQuadSubstitution', () => {
         AF.createLink(DF.namedNode('p')),
         DF.namedNode('o'),
       );
-      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(true);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(true);
     });
 
     it('should return false for a path with a named graph', () => {
@@ -410,27 +431,59 @@ describe('ActorOptimizeQueryOperationQuadSubstitution', () => {
         DF.namedNode('o'),
         DF.namedNode('g'),
       );
-      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(false);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(false);
     });
 
     it('should not recurse into nested GRAPH operations', () => {
       const inner = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
       const op = AF.createGraph(inner, DF.namedNode('g'));
-      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(false);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(false);
     });
 
     it('should not recurse into SERVICE operations', () => {
       const inner = AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'));
       const op = AF.createService(inner, DF.namedNode('endpoint'));
-      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(false);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(false);
     });
 
-    it('should return true when nested in a join', () => {
+    it('should return false when join has an uncovered leaf', () => {
       const op = AF.createJoin([
         AF.createBgp([]),
         AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
       ]);
-      expect(ActorOptimizeQueryOperationQuadSubstitution.hasDefaultGraphPatterns(op)).toBe(true);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(false);
+    });
+
+    it('should return true when join has all leaves covered', () => {
+      const op = AF.createJoin([
+        AF.createPattern(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
+        AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+      ]);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(true);
+    });
+
+    it('should return false when union has an uncovered branch', () => {
+      const op = AF.createUnion([
+        AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+        AF.createBgp([]),
+      ]);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(false);
+    });
+
+    it('should return true when union has all branches covered', () => {
+      const op = AF.createUnion([
+        AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+        AF.createPattern(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('c')),
+      ]);
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(true);
+    });
+
+    it('should return false for VALUES', () => {
+      const op = AF.createValues(
+        [ DF.variable('x') ],
+        [{ '?x': DF.namedNode('v1') }],
+      );
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isFullyCoveredByDefaultGraphPatterns(op)).toBe(false);
     });
   });
 });
