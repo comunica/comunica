@@ -612,7 +612,7 @@ describe('ActorQueryOperationGraph', () => {
         // E.g. SELECT * { VALUES ?hasG1 { true } . GRAPH <ex:g1> { } }
         const customMediator = {
           async mediate(_arg: any) {
-            // An empty graph pattern (NOP) produces one empty binding
+            // An empty BGP produces one empty binding
             return {
               bindingsStream: new ArrayIterator([
                 BF.bindings(),
@@ -634,9 +634,9 @@ describe('ActorQueryOperationGraph', () => {
           mediatorRdfMetadataAccumulate,
         });
 
-        // GRAPH <ex:g1> { } — named node with an empty inner pattern
+        // GRAPH <ex:g1> { } — named node with an empty BGP
         const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
-          AF.createNop(),
+          AF.createBgp([]),
           DF.namedNode('ex:g1'),
         );
 
@@ -701,7 +701,7 @@ describe('ActorQueryOperationGraph', () => {
         });
 
         const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
-          AF.createNop(),
+          AF.createBgp([]),
           DF.variable('g'),
         );
 
@@ -722,7 +722,7 @@ describe('ActorQueryOperationGraph', () => {
 
       it('should handle GRAPH <iri> with compound inner pattern like { {} UNION {} }', async() => {
         // GRAPH <iri> { {} UNION {} } should push the graph IRI into the inner patterns
-        // and delegate. Since both branches of the UNION are empty (NOP), the mediator
+        // and delegate. Since both branches of the UNION are empty BGPs, the mediator
         // should produce results depending on the inner evaluation.
         // This tests that pushDownGraph correctly handles nested structures.
         const mediatedArgs: any[] = [];
@@ -753,7 +753,7 @@ describe('ActorQueryOperationGraph', () => {
 
         // GRAPH <ex:g1> { {} UNION {} }
         const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
-          AF.createUnion([ AF.createNop(), AF.createNop() ]),
+          AF.createUnion([ AF.createBgp([]), AF.createBgp([]) ]),
           DF.namedNode('ex:g1'),
         );
 
@@ -794,7 +794,7 @@ describe('ActorQueryOperationGraph', () => {
         });
 
         const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
-          AF.createUnion([ AF.createNop(), AF.createNop() ]),
+          AF.createUnion([ AF.createBgp([]), AF.createBgp([]) ]),
           DF.variable('g'),
         );
 
@@ -806,7 +806,7 @@ describe('ActorQueryOperationGraph', () => {
           await customActor.runOperation(operation, ctxWithGraphs),
         );
         const bindings = await result.bindingsStream.toArray();
-        // Each graph produces one binding from the union of empty patterns
+        // Each graph produces one binding from the union of empty BGPs
         expect(bindings).toHaveLength(2);
         expect(bindings[0].get(DF.variable('g'))).toEqual(DF.namedNode('ex:g1'));
         expect(bindings[1].get(DF.variable('g'))).toEqual(DF.namedNode('ex:g2'));
