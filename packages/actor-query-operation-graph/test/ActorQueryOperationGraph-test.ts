@@ -719,6 +719,98 @@ describe('ActorQueryOperationGraph', () => {
         expect(bindings[1].get(DF.variable('g'))).toEqual(DF.namedNode('ex:g2'));
         expect(bindings[2].get(DF.variable('g'))).toEqual(DF.namedNode('ex:g3'));
       });
+
+      it('should handle GRAPH <iri> with compound inner pattern like { {} UNION {} }', async() => {
+        // GRAPH <iri> { {} UNION {} } should push the graph IRI into the inner patterns
+        // and delegate. Since both branches of the UNION are empty (NOP), the mediator
+        // should produce results depending on the inner evaluation.
+        // This tests that pushDownGraph correctly handles nested structures.
+        const mediatedArgs: any[] = [];
+        const customMediator = {
+          async mediate(arg: any) {
+            mediatedArgs.push(arg);
+            // The union of two empty patterns yields one empty binding
+            return {
+              bindingsStream: new ArrayIterator([
+                BF.bindings(),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [],
+              }),
+              type: 'bindings',
+            };
+          },
+        };
+
+        const customActor = new ActorQueryOperationGraph(<any>{
+          name: 'actor',
+          bus,
+          mediatorQueryOperation: customMediator,
+          mediatorRdfMetadataAccumulate,
+        });
+
+        // GRAPH <ex:g1> { {} UNION {} }
+        const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
+          AF.createUnion([ AF.createNop(), AF.createNop() ]),
+          DF.namedNode('ex:g1'),
+        );
+
+        const result = getSafeBindings(
+          await customActor.runOperation(operation, context),
+        );
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(1);
+
+        // The rewritten operation should be a UNION (graph pushed into children)
+        expect(mediatedArgs).toHaveLength(1);
+        expect(mediatedArgs[0].operation.type).toBe(Algebra.Types.UNION);
+      });
+
+      it('should handle GRAPH ?var with compound inner pattern like { {} UNION {} }', async() => {
+        // GRAPH ?g { {} UNION {} } should evaluate per-graph and bind ?g
+        const customMediator = {
+          async mediate(_arg: any) {
+            return {
+              bindingsStream: new ArrayIterator([
+                BF.bindings(),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [],
+              }),
+              type: 'bindings',
+            };
+          },
+        };
+
+        const customActor = new ActorQueryOperationGraph(<any>{
+          name: 'actor',
+          bus,
+          mediatorQueryOperation: customMediator,
+          mediatorRdfMetadataAccumulate,
+        });
+
+        const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
+          AF.createUnion([ AF.createNop(), AF.createNop() ]),
+          DF.variable('g'),
+        );
+
+        const ctxWithGraphs = context.set(
+          KeysQueryOperation.datasetNamedGraphs,
+          [ DF.namedNode('ex:g1'), DF.namedNode('ex:g2') ],
+        );
+        const result = getSafeBindings(
+          await customActor.runOperation(operation, ctxWithGraphs),
+        );
+        const bindings = await result.bindingsStream.toArray();
+        // Each graph produces one binding from the union of empty patterns
+        expect(bindings).toHaveLength(2);
+        expect(bindings[0].get(DF.variable('g'))).toEqual(DF.namedNode('ex:g1'));
+        expect(bindings[1].get(DF.variable('g'))).toEqual(DF.namedNode('ex:g2'));
+      });
     });
   });
 
