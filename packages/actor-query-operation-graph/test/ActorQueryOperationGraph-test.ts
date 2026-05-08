@@ -604,6 +604,121 @@ describe('ActorQueryOperationGraph', () => {
         expect(bindings).toHaveLength(1);
         expect(bindings[0].get(DF.variable('g'))).toEqual(DF.namedNode('http://good'));
       });
+
+      it('should support GRAPH as a graph-existence check with empty inner pattern', async() => {
+        // Per the SPARQL spec, GRAPH <iri> { } can be used to test whether a named graph exists
+        // in the dataset. If the graph exists, it should produce a single empty binding.
+        // If not, it should produce no bindings.
+        // E.g. SELECT * { VALUES ?hasG1 { true } . GRAPH <ex:g1> { } }
+        const customMediator = {
+          async mediate(_arg: any) {
+            // An empty graph pattern (NOP) produces one empty binding
+            return {
+              bindingsStream: new ArrayIterator([
+                BF.bindings(),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [],
+              }),
+              type: 'bindings',
+            };
+          },
+        };
+
+        const customActor = new ActorQueryOperationGraph(<any>{
+          name: 'actor',
+          bus,
+          mediatorQueryOperation: customMediator,
+          mediatorRdfMetadataAccumulate,
+        });
+
+        // GRAPH <ex:g1> { } — named node with an empty inner pattern
+        const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
+          AF.createNop(),
+          DF.namedNode('ex:g1'),
+        );
+
+        const ctxWithGraphs = context.set(
+          KeysQueryOperation.datasetNamedGraphs,
+          [ DF.namedNode('ex:g1') ],
+        );
+        const result = getSafeBindings(
+          await customActor.runOperation(operation, ctxWithGraphs),
+        );
+        const bindings = await result.bindingsStream.toArray();
+        // The graph exists, so we should get one result
+        expect(bindings).toHaveLength(1);
+      });
+
+      it('should return empty for GRAPH <iri> when graph has no data', async() => {
+        // When GRAPH <iri> { ?s ?p ?o } is evaluated and the graph has no triples,
+        // the mediator returns no bindings — effectively a graph-existence check.
+        const customActor = new ActorQueryOperationGraph(<any>{
+          name: 'actor',
+          bus,
+          mediatorQueryOperation,
+          mediatorRdfMetadataAccumulate,
+        });
+
+        const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
+          AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+          DF.namedNode('ex:absent'),
+        );
+
+        const result = getSafeBindings(
+          await customActor.runOperation(operation, context),
+        );
+        const bindings = await result.bindingsStream.toArray();
+        // The default mediator returns empty results — no data in that graph
+        expect(bindings).toHaveLength(0);
+      });
+
+      it('should support GRAPH ?var existence check across multiple graphs', async() => {
+        // GRAPH ?g { } should enumerate all named graphs, producing one binding per graph
+        const customMediator = {
+          async mediate(_arg: any) {
+            return {
+              bindingsStream: new ArrayIterator([
+                BF.bindings(),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [],
+              }),
+              type: 'bindings',
+            };
+          },
+        };
+
+        const customActor = new ActorQueryOperationGraph(<any>{
+          name: 'actor',
+          bus,
+          mediatorQueryOperation: customMediator,
+          mediatorRdfMetadataAccumulate,
+        });
+
+        const operation: Algebra.Graph = <Algebra.Graph><unknown>AF.createGraph(
+          AF.createNop(),
+          DF.variable('g'),
+        );
+
+        const ctxWithGraphs = context.set(
+          KeysQueryOperation.datasetNamedGraphs,
+          [ DF.namedNode('ex:g1'), DF.namedNode('ex:g2'), DF.namedNode('ex:g3') ],
+        );
+        const result = getSafeBindings(
+          await customActor.runOperation(operation, ctxWithGraphs),
+        );
+        const bindings = await result.bindingsStream.toArray();
+        // One binding per named graph, each with ?g bound
+        expect(bindings).toHaveLength(3);
+        expect(bindings[0].get(DF.variable('g'))).toEqual(DF.namedNode('ex:g1'));
+        expect(bindings[1].get(DF.variable('g'))).toEqual(DF.namedNode('ex:g2'));
+        expect(bindings[2].get(DF.variable('g'))).toEqual(DF.namedNode('ex:g3'));
+      });
     });
   });
 
