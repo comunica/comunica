@@ -18,7 +18,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-construct-distinct/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-query-source-identify/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-query-source-skolemize/^5.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-group-file-sources/^5.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-group-file-sources/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-quad-substitution/^5.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
@@ -58,6 +59,13 @@
     {
       "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-skolemize",
       "@type": "ActorOptimizeQueryOperationQuerySourceSkolemize",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#quad-substitution" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#quad-substitution",
+      "@type": "ActorOptimizeQueryOperationQuadSubstitution",
       "beforeActors": [
         { "@id": "urn:comunica:default:optimize-query-operation/actors#assign-sources-exhaustive" }
       ]
