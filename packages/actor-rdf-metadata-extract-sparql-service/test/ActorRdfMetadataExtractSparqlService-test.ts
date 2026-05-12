@@ -39,7 +39,13 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
 
     const sparqlResultsJson = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_JSON');
     const sparqlResultsXml = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_XML');
+    const sparql10Query = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}SPARQL10Query`);
     const sparql11Query = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}SPARQL11Query`);
+    const sparqlQuery = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}SPARQLQuery`);
+    const sparqlVersion10 = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SPARQL}version-1.0`);
+    const sparqlVersion11 = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SPARQL}version-1.1`);
+    const sparqlVersion12 = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SPARQL}version-1.2`);
+    const sparqlVersion12Basic = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SPARQL}version-1.2-basic`);
 
     const propertyFeature = DF.namedNode('ex:propertyFeatureExample');
 
@@ -49,6 +55,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     const serviceDescriptionResultFormat = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}resultFormat`);
     const serviceDescriptionPropertyFeature = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}propertyFeature`);
     const serviceDescriptionSupportedLanguage = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}supportedLanguage`);
+    const serviceDescriptionSupportedVersion = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}supportedVersion`);
     const serviceDescriptionDefaultDataset = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}defaultDataset`);
     const serviceDescriptionDefaultGraph = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}defaultGraph`);
     const serviceDescriptionBasicFederatedQuery = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}BasicFederatedQuery`);
@@ -85,9 +92,24 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
           defaultGraph: endpointDefaultGraph.value,
           inputFormats: [ sparqlResultsJson.value ],
           resultFormats: [ sparqlResultsXml.value ],
-          supportedLanguages: [ sparql11Query.value ],
+          supportedLanguages: [ sparql11Query.value, sparqlQuery.value ],
+          supportedVersions: [ sparqlVersion11.value ],
           extensionFunctions: [ endpointExtensionFunction.value ],
           propertyFeatures: [ propertyFeature.value ],
+        },
+      });
+    });
+
+    it('should derive language and version metadata in a backward-compatible way', async() => {
+      const input = streamifyArray([
+        DF.quad(endpointIri, serviceDescriptionSupportedLanguage, sparql10Query),
+        DF.quad(endpointIri, serviceDescriptionSupportedVersion, sparqlVersion12),
+        DF.quad(endpointIri, serviceDescriptionSupportedVersion, sparqlVersion12Basic),
+      ]);
+      await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
+        metadata: {
+          supportedLanguages: [ sparql10Query.value, sparqlQuery.value, sparql11Query.value ],
+          supportedVersions: [ sparqlVersion10.value, sparqlVersion12.value, sparqlVersion12Basic.value ],
         },
       });
     });

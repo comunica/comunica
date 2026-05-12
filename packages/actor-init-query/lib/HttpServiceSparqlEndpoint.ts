@@ -567,6 +567,7 @@ export class HttpServiceSparqlEndpoint {
 
     const s = request.url;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
+    const sparql = 'http://www.w3.org/ns/sparql#';
     const quads: RDF.Quad[] = [
       // Basic metadata
       quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Service`),
@@ -575,6 +576,9 @@ export class HttpServiceSparqlEndpoint {
 
       // Features
       quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
+      quad(s, `${sd}supportedLanguage`, `${sd}SPARQLQuery`),
+      quad(s, `${sd}supportedVersion`, `${sparql}version-1.2`),
+      quad(s, `${sd}supportedVersion`, `${sparql}version-1.2-basic`),
       quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
       quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
     ];

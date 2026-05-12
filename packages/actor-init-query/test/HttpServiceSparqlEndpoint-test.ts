@@ -1271,6 +1271,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       const s = '/sparql';
       const sd = 'http://www.w3.org/ns/sparql-service-description#';
+      const sparql = 'http://www.w3.org/ns/sparql#';
 
       beforeEach(() => {
         response = new ServerResponseMock();
@@ -1289,6 +1290,9 @@ describe('HttpServiceSparqlEndpoint', () => {
           quad(s, `${sd}endpoint`, s),
           quad(s, `${sd}url`, s),
           quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
+          quad(s, `${sd}supportedLanguage`, `${sd}SPARQLQuery`),
+          quad(s, `${sd}supportedVersion`, `${sparql}version-1.2`),
+          quad(s, `${sd}supportedVersion`, `${sparql}version-1.2-basic`),
           quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
           quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
           quad(s, `${sd}resultFormat`, 'ONE'),
