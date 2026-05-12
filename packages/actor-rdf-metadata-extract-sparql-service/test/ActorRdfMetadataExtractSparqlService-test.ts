@@ -111,7 +111,12 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
       await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
         metadata: {
           supportedLanguages: [ sparql10Query.value, sparqlQuery.value, sparql11Query.value ],
-          supportedVersions: [ sparqlVersion10.value, sparqlVersion11.value, sparqlVersion12.value, sparqlVersion12Basic.value ],
+          supportedVersions: [
+            sparqlVersion10.value,
+            sparqlVersion11.value,
+            sparqlVersion12.value,
+            sparqlVersion12Basic.value,
+          ],
         },
       });
     });

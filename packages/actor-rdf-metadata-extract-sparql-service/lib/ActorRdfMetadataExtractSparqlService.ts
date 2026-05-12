@@ -74,6 +74,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
           case sparqlVersion11:
           case sparqlVersion12:
           case sparqlVersion12Basic:
+            // Legacy alias for compatibility with existing consumers expecting SPARQL11Query.
             supportedLanguages.add(sparql11Query);
             break;
         }

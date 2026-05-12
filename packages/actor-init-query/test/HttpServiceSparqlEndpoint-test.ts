@@ -1293,6 +1293,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           quad(s, `${sd}supportedLanguage`, `${sd}SPARQLQuery`),
           quad(s, `${sd}supportedVersion`, `${sparql}version-1.2`),
           quad(s, `${sd}supportedVersion`, `${sparql}version-1.2-basic`),
+          quad(s, `${sd}supportedVersion`, `${sparql}version-1.1`),
+          quad(s, `${sd}supportedVersion`, `${sparql}version-1.0`),
           quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
           quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
           quad(s, `${sd}resultFormat`, 'ONE'),
