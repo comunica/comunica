@@ -103,13 +103,27 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     it('should derive language and version metadata in a backward-compatible way', async() => {
       const input = streamifyArray([
         DF.quad(endpointIri, serviceDescriptionSupportedLanguage, sparql10Query),
+        DF.quad(endpointIri, serviceDescriptionSupportedVersion, sparqlVersion10),
+        DF.quad(endpointIri, serviceDescriptionSupportedVersion, sparqlVersion11),
         DF.quad(endpointIri, serviceDescriptionSupportedVersion, sparqlVersion12),
         DF.quad(endpointIri, serviceDescriptionSupportedVersion, sparqlVersion12Basic),
       ]);
       await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
         metadata: {
           supportedLanguages: [ sparql10Query.value, sparqlQuery.value, sparql11Query.value ],
-          supportedVersions: [ sparqlVersion10.value, sparqlVersion12.value, sparqlVersion12Basic.value ],
+          supportedVersions: [ sparqlVersion10.value, sparqlVersion11.value, sparqlVersion12.value, sparqlVersion12Basic.value ],
+        },
+      });
+    });
+
+    it('should expose unknown supported versions without adding legacy language aliases', async() => {
+      const unknownVersion = DF.namedNode('http://example.org/unknown-version');
+      const input = streamifyArray([
+        DF.quad(endpointIri, serviceDescriptionSupportedVersion, unknownVersion),
+      ]);
+      await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
+        metadata: {
+          supportedVersions: [ unknownVersion.value ],
         },
       });
     });
