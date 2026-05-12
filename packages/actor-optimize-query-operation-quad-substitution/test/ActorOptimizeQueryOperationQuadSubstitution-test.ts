@@ -336,6 +336,22 @@ describe('ActorOptimizeQueryOperationQuadSubstitution', () => {
       expect(ActorOptimizeQueryOperationQuadSubstitution.isSafeToSubstitute(graphOp)).toBe(true);
     });
 
+    it('should return true for NPS operations', () => {
+      const graphOp = AF.createGraph(
+        AF.createNps([ DF.namedNode('p') ]),
+        DF.namedNode('http://example.org/g'),
+      );
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isSafeToSubstitute(graphOp)).toBe(true);
+    });
+
+    it('should return true for LINK operations', () => {
+      const graphOp = AF.createGraph(
+        AF.createLink(DF.namedNode('p')),
+        DF.namedNode('http://example.org/g'),
+      );
+      expect(ActorOptimizeQueryOperationQuadSubstitution.isSafeToSubstitute(graphOp)).toBe(true);
+    });
+
     it('should return false for variable graph with only subquery patterns', () => {
       // GRAPH ?g { SELECT ?x WHERE { ?x ?p ?g } }
       // Patterns are only inside the PROJECT (subquery) - not safe for variable graphs
@@ -475,6 +491,21 @@ describe('ActorOptimizeQueryOperationQuadSubstitution', () => {
       );
       const project = <Algebra.Project>result;
       expect((<Algebra.Pattern>project.input).graph).toEqual(DF.namedNode('http://example.org/g'));
+    });
+
+    it('should not substitute path with non-default graph', () => {
+      const path = AF.createPath(
+        DF.variable('s'),
+        AF.createLink(DF.namedNode('p')),
+        DF.variable('o'),
+        DF.namedNode('http://example.org/existing'),
+      );
+      const result = ActorOptimizeQueryOperationQuadSubstitution.substituteGraphInOperation(
+        AF,
+        path,
+        DF.namedNode('http://example.org/g'),
+      );
+      expect((<Algebra.Path>result).graph).toEqual(DF.namedNode('http://example.org/existing'));
     });
   });
 });

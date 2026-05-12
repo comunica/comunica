@@ -5,6 +5,7 @@ import type { IQueryOperationResultBindings, IQuerySourceWrapper } from '@comuni
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationGraph } from '../lib/ActorQueryOperationGraph';
@@ -22,6 +23,16 @@ describe('ActorQueryOperationGraph', () => {
   const source1: IQuerySourceWrapper = <any>{
     source: {
       referenceValue: 'source1',
+      getSelectorShape: () => ({
+        type: 'operation',
+        operation: { operationType: 'wildcard' },
+      }),
+    },
+  };
+
+  const source2: IQuerySourceWrapper = <any>{
+    source: {
+      referenceValue: 'source2',
       getSelectorShape: () => ({
         type: 'operation',
         operation: { operationType: 'wildcard' },
@@ -216,6 +227,76 @@ describe('ActorQueryOperationGraph', () => {
 
         expect(result.type).toBe('bindings');
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
+      });
+
+      it('should return empty for IRI graph with no patterns and no sources', async() => {
+        const graphOp = AF.createGraph(
+          AF.createValues([ DF.variable('x') ], [{ x: DF.literal('1') }]),
+          DF.namedNode('http://example.org/g'),
+        );
+
+        const result = <IQueryOperationResultBindings> await actor.runOperation(
+          graphOp,
+          new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+          }),
+        );
+
+        expect(result.type).toBe('bindings');
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(0);
+      });
+
+      it('should handle graph existence check with multiple sources', async() => {
+        let callCount = 0;
+        mediatorQueryOperation.mediate.mockImplementation(() => {
+          callCount++;
+          if (callCount === 1) {
+            return Promise.resolve({
+              bindingsStream: new ArrayIterator([
+                BF.bindings([]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 1 },
+                variables: [],
+              }),
+              type: 'bindings',
+            });
+          }
+          return Promise.resolve({
+            bindingsStream: new ArrayIterator([
+              BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+            ], { autoStart: false }),
+            metadata: () => Promise.resolve({
+              state: new MetadataValidationState(),
+              cardinality: { type: 'exact', value: 1 },
+              variables: [{ variable: DF.variable('x'), canBeUndef: false }],
+            }),
+            type: 'bindings',
+          });
+        });
+
+        const graphOp = AF.createGraph(
+          AF.createValues([ DF.variable('x') ], [{ x: DF.literal('1') }]),
+          DF.namedNode('http://example.org/existing'),
+        );
+
+        const result = <IQueryOperationResultBindings> await actor.runOperation(
+          graphOp,
+          new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+            [KeysQueryOperation.querySources.name]: [ source1, source2 ],
+          }),
+        );
+
+        expect(result.type).toBe('bindings');
+        // Should have called mediator: once for existence check (union of 2 sources), once for inner eval
+        expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
+        // The existence check should use a UNION for multiple sources
+        const existenceOp = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+        // Slice wraps the union/pattern
+        expect(existenceOp.type).toBe(Algebra.Types.SLICE);
       });
     });
 
@@ -423,6 +504,340 @@ describe('ActorQueryOperationGraph', () => {
         expect(bindings[0].get(DF.variable('x'))?.value).toBe('http://example.org/x1');
         expect(bindings[0].get(DF.variable('g'))?.value).toBe('http://example.org/g1');
       });
+
+      it('should handle variable GRAPH with no patterns (VALUES)', async() => {
+        let callCount = 0;
+        mediatorQueryOperation.mediate.mockImplementation(() => {
+          callCount++;
+          if (callCount === 1) {
+            // Graph discovery returns one named graph
+            return Promise.resolve({
+              bindingsStream: new ArrayIterator([
+                BF.bindings([[ DF.variable('g'), DF.namedNode('http://example.org/g1') ]]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [{ variable: DF.variable('g'), canBeUndef: false }],
+              }),
+              type: 'bindings',
+            });
+          }
+          // Inner VALUES evaluation
+          return Promise.resolve({
+            bindingsStream: new ArrayIterator([
+              BF.bindings([[ DF.variable('x'), DF.literal('val') ]]),
+            ], { autoStart: false }),
+            metadata: () => Promise.resolve({
+              state: new MetadataValidationState(),
+              cardinality: { type: 'exact', value: 1 },
+              variables: [{ variable: DF.variable('x'), canBeUndef: false }],
+            }),
+            type: 'bindings',
+          });
+        });
+
+        const graphOp = AF.createGraph(
+          AF.createValues([ DF.variable('x') ], [{ x: DF.literal('val') }]),
+          DF.variable('g'),
+        );
+
+        const result = <IQueryOperationResultBindings> await actor.runOperation(
+          graphOp,
+          new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+            [KeysQueryOperation.querySources.name]: [ source1 ],
+          }),
+        );
+
+        expect(result.type).toBe('bindings');
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(1);
+        expect(bindings[0].get(DF.variable('g'))?.value).toBe('http://example.org/g1');
+        expect(bindings[0].get(DF.variable('x'))?.value).toBe('val');
+      });
+
+      it('should return empty when no sources are available for variable graph', async() => {
+        const graphOp = AF.createGraph(
+          AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+          DF.variable('g'),
+        );
+
+        const result = <IQueryOperationResultBindings> await actor.runOperation(
+          graphOp,
+          new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+          }),
+        );
+
+        expect(result.type).toBe('bindings');
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(0);
+      });
+
+      it('should handle graph enumeration with multiple sources', async() => {
+        let callCount = 0;
+        mediatorQueryOperation.mediate.mockImplementation(() => {
+          callCount++;
+          if (callCount === 1) {
+            return Promise.resolve({
+              bindingsStream: new ArrayIterator([
+                BF.bindings([[ DF.variable('g'), DF.namedNode('http://example.org/g1') ]]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [{ variable: DF.variable('g'), canBeUndef: false }],
+              }),
+              type: 'bindings',
+            });
+          }
+          return Promise.resolve({
+            bindingsStream: new ArrayIterator([
+              BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/s1') ]]),
+            ], { autoStart: false }),
+            metadata: () => Promise.resolve({
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 1 },
+              variables: [{ variable: DF.variable('s'), canBeUndef: false }],
+            }),
+            type: 'bindings',
+          });
+        });
+
+        const graphOp = AF.createGraph(
+          AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+          DF.variable('g'),
+        );
+
+        const result = <IQueryOperationResultBindings> await actor.runOperation(
+          graphOp,
+          new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+            [KeysQueryOperation.querySources.name]: [ source1, source2 ],
+          }),
+        );
+
+        expect(result.type).toBe('bindings');
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(1);
+        // The discovery operation should have been a DISTINCT of a PROJECT
+        const discoveryOp = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+        expect(discoveryOp.type).toBe(Algebra.Types.DISTINCT);
+      });
+
+      it('should not duplicate graph variable in metadata when already present', async() => {
+        let callCount = 0;
+        mediatorQueryOperation.mediate.mockImplementation(() => {
+          callCount++;
+          if (callCount === 1) {
+            return Promise.resolve({
+              bindingsStream: new ArrayIterator([
+                BF.bindings([[ DF.variable('g'), DF.namedNode('http://example.org/g1') ]]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [{ variable: DF.variable('g'), canBeUndef: false }],
+              }),
+              type: 'bindings',
+            });
+          }
+          // Inner result already has ?g in its variables
+          return Promise.resolve({
+            bindingsStream: new ArrayIterator([
+              BF.bindings([
+                [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+                [ DF.variable('g'), DF.namedNode('http://example.org/g1') ],
+              ]),
+            ], { autoStart: false }),
+            metadata: () => Promise.resolve({
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 1 },
+              variables: [
+                { variable: DF.variable('s'), canBeUndef: false },
+                { variable: DF.variable('g'), canBeUndef: false },
+              ],
+            }),
+            type: 'bindings',
+          });
+        });
+
+        const graphOp = AF.createGraph(
+          AF.createProject(
+            AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('g')),
+            [ DF.variable('s'), DF.variable('g') ],
+          ),
+          DF.variable('g'),
+        );
+
+        const result = <IQueryOperationResultBindings> await actor.runOperation(
+          graphOp,
+          new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+            [KeysQueryOperation.querySources.name]: [ source1 ],
+          }),
+        );
+
+        const metadata = await result.metadata();
+        const gVars = metadata.variables.filter(v => v.variable.value === 'g');
+        expect(gVars).toHaveLength(1);
+      });
+
+      it('should extract sources from inner patterns with source annotations', async() => {
+        let callCount = 0;
+        mediatorQueryOperation.mediate.mockImplementation(() => {
+          callCount++;
+          if (callCount === 1) {
+            return Promise.resolve({
+              bindingsStream: new ArrayIterator([
+                BF.bindings([[ DF.variable('g'), DF.namedNode('http://example.org/g1') ]]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [{ variable: DF.variable('g'), canBeUndef: false }],
+              }),
+              type: 'bindings',
+            });
+          }
+          return Promise.resolve({
+            bindingsStream: new ArrayIterator([
+              BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/s1') ]]),
+            ], { autoStart: false }),
+            metadata: () => Promise.resolve({
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 1 },
+              variables: [{ variable: DF.variable('s'), canBeUndef: false }],
+            }),
+            type: 'bindings',
+          });
+        });
+
+        // Create a pattern with source annotation
+        const annotatedPattern = assignOperationSource(
+          AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+          source1,
+        );
+
+        const graphOp = AF.createGraph(annotatedPattern, DF.variable('g'));
+
+        const result = <IQueryOperationResultBindings> await actor.runOperation(
+          graphOp,
+          new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+          }),
+        );
+
+        expect(result.type).toBe('bindings');
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(1);
+      });
+
+      it('should extract sources from inner PATH with source annotations', async() => {
+        let callCount = 0;
+        mediatorQueryOperation.mediate.mockImplementation(() => {
+          callCount++;
+          if (callCount === 1) {
+            return Promise.resolve({
+              bindingsStream: new ArrayIterator([
+                BF.bindings([[ DF.variable('g'), DF.namedNode('http://example.org/g1') ]]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [{ variable: DF.variable('g'), canBeUndef: false }],
+              }),
+              type: 'bindings',
+            });
+          }
+          return Promise.resolve({
+            bindingsStream: new ArrayIterator([
+              BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/s1') ]]),
+            ], { autoStart: false }),
+            metadata: () => Promise.resolve({
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 1 },
+              variables: [{ variable: DF.variable('s'), canBeUndef: false }],
+            }),
+            type: 'bindings',
+          });
+        });
+
+        // Create a path with source annotation
+        const annotatedPath = assignOperationSource(
+          AF.createPath(DF.variable('s'), AF.createLink(DF.namedNode('p')), DF.variable('o')),
+          source1,
+        );
+
+        const graphOp = AF.createGraph(annotatedPath, DF.variable('g'));
+
+        const result = <IQueryOperationResultBindings> await actor.runOperation(
+          graphOp,
+          new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+          }),
+        );
+
+        expect(result.type).toBe('bindings');
+        const bindings = await result.bindingsStream.toArray();
+        expect(bindings).toHaveLength(1);
+      });
+
+      it('should deduplicate sources from inner patterns', async() => {
+        let callCount = 0;
+        mediatorQueryOperation.mediate.mockImplementation(() => {
+          callCount++;
+          if (callCount === 1) {
+            return Promise.resolve({
+              bindingsStream: new ArrayIterator([
+                BF.bindings([[ DF.variable('g'), DF.namedNode('http://example.org/g1') ]]),
+              ], { autoStart: false }),
+              metadata: () => Promise.resolve({
+                state: new MetadataValidationState(),
+                cardinality: { type: 'exact', value: 1 },
+                variables: [{ variable: DF.variable('g'), canBeUndef: false }],
+              }),
+              type: 'bindings',
+            });
+          }
+          return Promise.resolve({
+            bindingsStream: new ArrayIterator([
+              BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/s1') ]]),
+            ], { autoStart: false }),
+            metadata: () => Promise.resolve({
+              state: new MetadataValidationState(),
+              cardinality: { type: 'estimate', value: 1 },
+              variables: [{ variable: DF.variable('s'), canBeUndef: false }],
+            }),
+            type: 'bindings',
+          });
+        });
+
+        // Two patterns with the same source - should deduplicate
+        const pat1 = assignOperationSource(
+          AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.variable('o1')),
+          source1,
+        );
+        const pat2 = assignOperationSource(
+          AF.createPattern(DF.variable('s'), DF.namedNode('p2'), DF.variable('o2')),
+          source1,
+        );
+
+        const graphOp = AF.createGraph(AF.createJoin([ pat1, pat2 ]), DF.variable('g'));
+
+        const result = <IQueryOperationResultBindings> await actor.runOperation(
+          graphOp,
+          new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+          }),
+        );
+
+        expect(result.type).toBe('bindings');
+        // Graph discovery should use a single source (deduplicated), not a union
+        const discoveryOp = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+        expect(discoveryOp.type).toBe(Algebra.Types.DISTINCT);
+      });
     });
   });
 
@@ -451,6 +866,18 @@ describe('ActorQueryOperationGraph', () => {
           AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
           AF.createValues([ DF.variable('x') ], [{ x: DF.literal('1') }]),
         ]),
+      )).toBe(true);
+    });
+
+    it('should return true for LINK operations', () => {
+      expect(ActorQueryOperationGraph.hasPatterns(
+        AF.createLink(DF.namedNode('p')),
+      )).toBe(true);
+    });
+
+    it('should return true for NPS operations', () => {
+      expect(ActorQueryOperationGraph.hasPatterns(
+        AF.createNps([ DF.namedNode('p') ]),
       )).toBe(true);
     });
   });
@@ -490,6 +917,74 @@ describe('ActorQueryOperationGraph', () => {
         DF.namedNode('http://example.org/g'),
       );
       expect((<Algebra.Pattern>result).graph).toEqual(DF.namedNode('http://example.org/existing'));
+    });
+
+    it('should not recurse into nested GRAPH operations', () => {
+      const nestedGraph = AF.createGraph(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        DF.namedNode('http://example.org/inner'),
+      );
+      const join = AF.createJoin([
+        AF.createPattern(DF.variable('a'), DF.namedNode('q'), DF.variable('b')),
+        nestedGraph,
+      ]);
+      const result = ActorQueryOperationGraph.substituteGraphInOperation(
+        AF,
+        join,
+        DF.namedNode('http://example.org/outer'),
+      );
+      const joinResult = <Algebra.Join>result;
+      // Outer pattern should be substituted
+      expect((<Algebra.Pattern>joinResult.input[0]).graph)
+        .toEqual(DF.namedNode('http://example.org/outer'));
+      // Nested GRAPH should be untouched
+      const innerGraph = <Algebra.Graph>joinResult.input[1];
+      expect(innerGraph.type).toBe(Algebra.Types.GRAPH);
+      expect((<Algebra.Pattern>innerGraph.input).graph.termType).toBe('DefaultGraph');
+    });
+
+    it('should substitute default graph in paths', () => {
+      const path = AF.createPath(
+        DF.variable('s'),
+        AF.createLink(DF.namedNode('p')),
+        DF.variable('o'),
+      );
+      const result = ActorQueryOperationGraph.substituteGraphInOperation(
+        AF,
+        path,
+        DF.namedNode('http://example.org/g'),
+      );
+      expect((<Algebra.Path>result).graph).toEqual(DF.namedNode('http://example.org/g'));
+    });
+
+    it('should preserve path metadata during substitution', () => {
+      const path = AF.createPath(
+        DF.variable('s'),
+        AF.createLink(DF.namedNode('p')),
+        DF.variable('o'),
+      );
+      Object.assign(path, { metadata: { scopedSource: { source: 'test' }}});
+      const result = ActorQueryOperationGraph.substituteGraphInOperation(
+        AF,
+        path,
+        DF.namedNode('http://example.org/g'),
+      );
+      expect((<Algebra.Path>result).metadata).toEqual({ scopedSource: { source: 'test' }});
+    });
+
+    it('should not substitute path with non-default graph', () => {
+      const path = AF.createPath(
+        DF.variable('s'),
+        AF.createLink(DF.namedNode('p')),
+        DF.variable('o'),
+        DF.namedNode('http://example.org/existing'),
+      );
+      const result = ActorQueryOperationGraph.substituteGraphInOperation(
+        AF,
+        path,
+        DF.namedNode('http://example.org/g'),
+      );
+      expect((<Algebra.Path>result).graph).toEqual(DF.namedNode('http://example.org/existing'));
     });
   });
 
