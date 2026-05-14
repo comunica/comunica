@@ -222,6 +222,27 @@ describe('ActorHttpRetryBody', () => {
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
     });
 
+    it('should wrap when content-length is within maxBytes', async() => {
+      const context = new ActionContext({
+        [KeysHttp.httpRetryBodyCount.name]: 1,
+        [KeysHttp.httpRetryBodyMaxBytes.name]: 10,
+      });
+      const body = Readable.from([ 'abcdef' ]);
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+        ok: true,
+        status: 200,
+        body,
+        headers: new Headers({ 'content-length': '6' }),
+      });
+
+      const response = await actor.run({ input, context });
+      expect(response.body).not.toBe(body);
+      const chunks = await arrayifyStream(ActorHttp.toNodeReadable(<any> response.body));
+      const buffer = Buffer.concat(chunks.map((chunk: any) => Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+      expect(buffer.toString()).toBe('abcdef');
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+    });
+
     it('should ignore invalid content-length header values', async() => {
       const context = new ActionContext({
         [KeysHttp.httpRetryBodyCount.name]: 1,
@@ -436,6 +457,25 @@ describe('ActorHttpRetryBody', () => {
       expect(writeSpy).toHaveBeenCalledTimes(0);
     });
 
+    it('should skip pause and pipe when missing during maxBytes overflow', async() => {
+      const url = new URL(input);
+      const body = new Readable({ read() {} });
+      (<any> body).pause = undefined;
+      (<any> body).pipe = undefined;
+      (<any> actor).logWarn.mockClear();
+      const output: Readable = (<any> actor).createRetryingBody(body, { input, context }, 1, 0, url, 1);
+
+      body.emit('data', 'abc');
+      await new Promise(resolve => process.nextTick(resolve));
+
+      expect((<any> actor).logWarn).toHaveBeenCalledWith(
+        expect.anything(),
+        'Max bytes exceeded, disabling body retry and switching to streaming',
+        expect.any(Function),
+      );
+      output.destroy();
+    });
+
     it('should destroy output with a non-Error value emitted after switching to streaming due to maxBytes', async() => {
       const url = new URL(input);
       const body = new Readable({ read() {} });
@@ -487,6 +527,27 @@ describe('ActorHttpRetryBody', () => {
       await new Promise(resolve => process.nextTick(resolve));
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(0);
       output.destroy();
+    });
+
+    it('should skip destroying the current body when destroy is unavailable', async() => {
+      const url = new URL(input);
+      const body = new Readable({ read() {} });
+      (<any> body).destroy = undefined;
+      const secondBody = Readable.from([ 'abcdef' ]);
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+        ok: true,
+        status: 200,
+        body: secondBody,
+        headers: new Headers(),
+      });
+
+      const output: Readable = (<any> actor).createRetryingBody(body, { input, context }, 2, 0, url, undefined);
+      const outputPromise = arrayifyStream(output);
+      body.emit('error', new Error('Body stream error'));
+
+      const chunks = await outputPromise;
+      const buffer = Buffer.concat(chunks.map((chunk: any) => Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)));
+      expect(buffer.toString()).toBe('abcdef');
     });
 
     it('should destroy output when error retry handling fails', async() => {
@@ -728,6 +789,37 @@ describe('ActorHttpRetryBody', () => {
       expect(secondBodyDestroySpy).toHaveBeenCalledWith();
     });
 
+    it('should skip destroying retry response body when output is closed and body lacks destroy', async() => {
+      const url = new URL(input);
+      const body = new Readable({ read() {} });
+
+      class BodyWithoutDestroy {
+        public pipe() {
+          return this;
+        }
+      }
+
+      let resolveMediate: ((value: IActorHttpOutput) => void) | undefined;
+      jest.spyOn(mediatorHttp, 'mediate').mockImplementation(async() => await new Promise((resolve) => {
+        resolveMediate = resolve;
+      }));
+
+      const output: Readable = (<any> actor).createRetryingBody(body, { input, context }, 2, 0, url, undefined);
+      body.emit('error', new Error('Body stream error'));
+      await new Promise(resolve => process.nextTick(resolve));
+
+      output.destroy();
+      resolveMediate!(<any> {
+        ok: true,
+        status: 200,
+        body: new BodyWithoutDestroy(),
+        headers: new Headers(),
+      });
+
+      await new Promise(resolve => setImmediate(resolve));
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+    });
+
     it('should error if the HTTP mediator throws during a body retry', async() => {
       const url = new URL(input);
       const body = new Readable({ read() {} });
@@ -774,6 +866,10 @@ describe('ActorHttpRetryBody', () => {
       expect(ActorHttpRetryBody.isReplayableBody(new Uint8Array([ 1, 2, 3 ]))).toBe(true);
       expect(ActorHttpRetryBody.isReplayableBody(new Blob([ 'a' ]))).toBe(true);
       expect(ActorHttpRetryBody.isReplayableBody({})).toBe(false);
+    });
+
+    it('sleep should resolve immediately for zero delay', async() => {
+      await expect(ActorHttpRetryBody.sleep(0)).resolves.toBeUndefined();
     });
   });
 });
