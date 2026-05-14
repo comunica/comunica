@@ -74,6 +74,15 @@ describe('Logger', () => {
       expect(emit).toHaveBeenNthCalledWith(2, 2);
     });
 
+    it('should not emit when flushing a group without buffered messages', () => {
+      const emit = jest.fn();
+      logger.logGrouped('warn', emit);
+      expect(emit).toHaveBeenCalledTimes(1);
+
+      logger.flush();
+      expect(emit).toHaveBeenCalledTimes(1);
+    });
+
     it('should handle interleaving messages within limit', () => {
       const emitA = jest.fn();
       const emitB = jest.fn();
