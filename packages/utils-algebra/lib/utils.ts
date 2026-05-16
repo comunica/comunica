@@ -1,15 +1,12 @@
 import type * as RDF from '@rdfjs/types';
 import type { Algebra as TraqulaAlgebra } from '@traqula/algebra-transformations-1-2';
 import { algebraUtils, Types } from '@traqula/algebra-transformations-1-2';
-
-// eslint-disable-next-line unused-imports/no-unused-imports,unused-imports/no-unused-imports-ts
-import type { TransformContext, VisitContext } from '@traqula/core';
 import { TransformerSubTyped } from '@traqula/core';
 import type { KnownOperation, Operation } from './Algebra';
 import { TypesComunica } from './TypesComunica';
 
-export const resolveIRI = algebraUtils.resolveIRI;
-export const objectify = algebraUtils.objectify;
+export const resolveIRI: typeof algebraUtils.resolveIRI = algebraUtils.resolveIRI;
+export const objectify: typeof algebraUtils.objectify = algebraUtils.objectify;
 
 /**
  * Type guard that checks if an operation is of a certain type and subType known by Comunica.
