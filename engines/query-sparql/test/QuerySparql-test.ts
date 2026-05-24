@@ -1249,6 +1249,92 @@ SELECT ?value WHERE {
         ]);
       });
 
+      it('with a custom SERVICE executor from context using a variable SERVICE', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT ?value WHERE {
+  VALUES ?service { <https://example.org/service> }
+  SERVICE ?service {
+    <urn:s> <urn:p> ?value .
+  }
+}`, {
+          sources: [],
+          serviceExecutors: {
+            'https://example.org/service': async(serviceOperation) => {
+              expect(serviceOperation.name.value).toBe('https://example.org/service');
+              const serviceBindings = new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('value'), DF.literal('works') ],
+                ]),
+              ], { autoStart: false });
+              serviceBindings.setProperty('metadata', {
+                cardinality: { type: 'exact', value: 1 },
+                variables: [
+                  { variable: DF.variable('value'), canBeUndef: false },
+                ],
+              });
+              return serviceBindings;
+            },
+          },
+        });
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('value'), DF.literal('works') ],
+          ]),
+        ]);
+      });
+
+      it('with a custom SERVICE executor creator using a variable SERVICE', async() => {
+        const addXtoLiterals = 'https://example.com/addXtoLiterals';
+        const createdServices: string[] = [];
+        const bindingsStream = await engine.queryBindings(`
+SELECT ?value WHERE {
+  VALUES ?service {
+    <https://example.com/addXtoLiterals?x=5>
+    <https://example.com/addXtoLiterals?x=10>
+  }
+  SERVICE ?service {
+    <urn:s> <urn:p> ?value .
+  }
+}`, {
+          sources: [],
+          serviceExecutorCreator: async(serviceNamedNode) => {
+            const serviceUrl = new URL(serviceNamedNode.value);
+            if (`${serviceUrl.origin}${serviceUrl.pathname}` !== addXtoLiterals) {
+              return undefined;
+            }
+            createdServices.push(serviceNamedNode.value);
+            const x = Number(serviceUrl.searchParams.get('x'));
+            return async(serviceOperation) => {
+              expect(serviceOperation.name.value).toBe(serviceNamedNode.value);
+              const serviceBindings = new ArrayIterator<RDF.Bindings>([
+                BF.bindings([
+                  [ DF.variable('value'), DF.literal(`${x}`) ],
+                ]),
+              ], { autoStart: false });
+              serviceBindings.setProperty('metadata', {
+                cardinality: { type: 'exact', value: 1 },
+                variables: [
+                  { variable: DF.variable('value'), canBeUndef: false },
+                ],
+              });
+              return serviceBindings;
+            };
+          },
+        });
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('value'), DF.literal('5') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('value'), DF.literal('10') ],
+          ]),
+        ], true);
+        expect(createdServices).toEqual([
+          'https://example.com/addXtoLiterals?x=5',
+          'https://example.com/addXtoLiterals?x=10',
+        ]);
+      });
+
       it('with a silent custom SERVICE executor failure should preserve outer bindings', async() => {
         const bindingsStream = await engine.queryBindings(`
 SELECT ?value WHERE {

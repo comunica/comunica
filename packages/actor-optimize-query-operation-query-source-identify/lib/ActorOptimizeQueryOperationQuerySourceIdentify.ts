@@ -86,27 +86,24 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
         .set(KeysQueryOperation.querySources, querySources);
     }
 
-    const services: Set<string> = new Set();
-    algebraUtils.visitOperation(action.operation, {
-      [Algebra.Types.SERVICE]: {
-        preVisitor: () => ({ continue: false }),
-        visitor: (serviceOperation) => {
-          if (serviceOperation.name.termType === 'NamedNode') {
-            services.add(serviceOperation.name.value);
-          }
-        },
-      },
-    });
-
     // Identify sources of SERVICE targets, unless the whole query is passed to the source (e.g. for SPARQL endpoints).
-    // If service sources were already registered by a previous actor, complete the remaining SERVICE targets.
     const existingServiceSources = context.get(KeysQueryOperation.serviceSources);
+    const hasServiceSources = existingServiceSources ?
+      Object.keys(existingServiceSources).length > 0 :
+      false;
+    if (!hasServiceSources) {
+      const canPassFullOperation = await passFullOperationToSource(action.operation, querySources ?? [], context);
+      if (canPassFullOperation) {
+        return { context, operation: action.operation };
+      }
+    }
+
     const serviceSources: Record<string, IQuerySourceWrapper> = existingServiceSources ?
         { ...existingServiceSources } :
         {};
-    const hasServiceSources = Object.keys(serviceSources).length > 0;
-    if (services.size > 0 &&
-      (hasServiceSources || !await passFullOperationToSource(action.operation, querySources ?? [], context))) {
+    const services = ActorOptimizeQueryOperationQuerySourceIdentify.getServices(action.operation);
+
+    if (services.size > 0) {
       for (const service of services) {
         serviceSources[service] ??= await this.identifySource({
           type: this.serviceForceSparqlEndpoint ? 'sparql' : undefined,
@@ -117,6 +114,43 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
     }
 
     return { context, operation: action.operation };
+  }
+
+  private static getServices(operation: Algebra.Operation): Set<string> {
+    const services: Set<string> = new Set();
+    const variables: Set<string> = new Set();
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.SERVICE]: {
+        preVisitor: () => ({ continue: false }),
+        visitor: (serviceOperation) => {
+          if (serviceOperation.name.termType === 'NamedNode') {
+            services.add(serviceOperation.name.value);
+          } else if (serviceOperation.name.termType === 'Variable') {
+            variables.add(serviceOperation.name.value);
+          }
+        },
+      },
+    });
+    if (variables.size > 0) {
+      algebraUtils.visitOperation(operation, {
+        [Algebra.Types.SERVICE]: {
+          preVisitor: () => ({ continue: false }),
+        },
+        [Algebra.Types.VALUES]: {
+          visitor: (valuesOperation) => {
+            for (const bindings of valuesOperation.bindings) {
+              for (const variable of variables) {
+                const term = bindings[variable];
+                if (term?.termType === 'NamedNode') {
+                  services.add(term.value);
+                }
+              }
+            }
+          },
+        },
+      });
+    }
+    return services;
   }
 
   public async expandSource(querySource: QuerySourceUnidentified): Promise<QuerySourceUnidentifiedExpanded> {

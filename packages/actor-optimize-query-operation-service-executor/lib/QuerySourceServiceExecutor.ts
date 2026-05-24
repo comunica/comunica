@@ -13,7 +13,7 @@ import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
-import { BufferedIterator } from 'asynciterator';
+import { QuerySourceServiceExecutorBindingsIterator } from './QuerySourceServiceExecutorBindingsIterator';
 
 /**
  * A query source wrapper for custom SERVICE executors.
@@ -50,66 +50,17 @@ export class QuerySourceServiceExecutor implements IQuerySource {
     const lenient = Boolean(context.get(KeysInitQuery.lenient));
     const silentFallback = lenient ? QuerySourceServiceExecutor.createSilentFallbackBinding(context) : undefined;
     const serviceBindingsPromise = Promise.resolve()
-      .then(async() => this.serviceExecutor(
+      .then(() => this.serviceExecutor(
         { ...serviceOperation, input: operation },
         context.get(KeysQueryOperation.joinBindings),
         context,
         options,
       ));
-    const bindings = new class extends BufferedIterator<Bindings> {
-      private started = false;
-      private emittedBindings = false;
-      private usedSilentFallback = false;
-
-      public constructor() {
-        super({ autoStart: false });
-      }
-
-      public override _read(_count: number, done: () => void): void {
-        if (this.started) {
-          done();
-          return;
-        }
-        this.started = true;
-
-        serviceBindingsPromise
-          .then((serviceBindings) => {
-            serviceBindings.on('data', (binding: Bindings) => {
-              this.emittedBindings = true;
-              this._push(binding);
-            });
-            serviceBindings.on('end', () => this.close());
-            serviceBindings.on('error', (error) => {
-              if (lenient && !this.emittedBindings) {
-                this.emitSilentFallback();
-              } else if (lenient) {
-                this.close();
-              } else {
-                this.destroy(error);
-              }
-            });
-          })
-          .catch((error) => {
-            if (lenient) {
-              this.emitSilentFallback();
-            } else {
-              this.destroy(error);
-            }
-          })
-          .finally(done);
-      }
-
-      private emitSilentFallback(): void {
-        if (this.usedSilentFallback) {
-          return;
-        }
-        this.usedSilentFallback = true;
-        this.setProperty('metadata', silentFallback!.metadata);
-        this.emittedBindings = true;
-        this._push(silentFallback!.binding);
-        this.close();
-      }
-    }();
+    const bindings = new QuerySourceServiceExecutorBindingsIterator({
+      serviceBindingsPromise,
+      lenient,
+      silentFallback,
+    });
     serviceBindingsPromise
       .then((serviceBindings) => {
         const metadata: Record<string, any> | undefined = serviceBindings.getProperty('metadata');

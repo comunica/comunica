@@ -25,17 +25,19 @@ export class ActorOptimizeQueryOperationServiceExecutor extends ActorOptimizeQue
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    const services = ActorOptimizeQueryOperationServiceExecutor.getServices(action.operation);
-    if (services.size === 0) {
+    const namedServices = ActorOptimizeQueryOperationServiceExecutor.getNamedServices(action.operation);
+    const hasVariableServices = ActorOptimizeQueryOperationServiceExecutor.hasVariableServices(action.operation);
+    if (namedServices.size === 0 && !hasVariableServices) {
       return { context: action.context, operation: action.operation };
     }
+    ActorOptimizeQueryOperationServiceExecutor.validateServiceExecutorContext(action.context);
 
     let modified = false;
     const existingServiceSources = action.context.get(KeysQueryOperation.serviceSources);
     const serviceSources: Record<string, IQuerySourceWrapper> = existingServiceSources ?
         { ...existingServiceSources } :
         {};
-    for (const [ service, serviceNamedNode ] of services) {
+    for (const [ service, serviceNamedNode ] of namedServices) {
       const serviceExecutor = await this.getServiceExecutor(serviceNamedNode, action.context);
       if (serviceExecutor) {
         serviceSources[service] = {
@@ -45,6 +47,29 @@ export class ActorOptimizeQueryOperationServiceExecutor extends ActorOptimizeQue
         modified = true;
       }
     }
+    if (hasVariableServices && action.context.has(KeysInitQuery.serviceExecutors)) {
+      const serviceExecutors = action.context.getSafe(KeysInitQuery.serviceExecutors);
+      for (const [ service, serviceExecutor ] of Object.entries(serviceExecutors)) {
+        serviceSources[service] = {
+          ...serviceSources[service],
+          source: new QuerySourceServiceExecutor(service, serviceExecutor),
+        };
+        modified = true;
+      }
+    }
+    if (hasVariableServices && action.context.has(KeysInitQuery.serviceExecutorCreator)) {
+      for (const serviceNamedNode of ActorOptimizeQueryOperationServiceExecutor
+        .getVariableServiceValues(action.operation).values()) {
+        const serviceExecutor = await this.getServiceExecutor(serviceNamedNode, action.context);
+        if (serviceExecutor) {
+          serviceSources[serviceNamedNode.value] = {
+            ...serviceSources[serviceNamedNode.value],
+            source: new QuerySourceServiceExecutor(serviceNamedNode.value, serviceExecutor),
+          };
+          modified = true;
+        }
+      }
+    }
 
     return {
       context: modified ? action.context.set(KeysQueryOperation.serviceSources, serviceSources) : action.context,
@@ -52,10 +77,11 @@ export class ActorOptimizeQueryOperationServiceExecutor extends ActorOptimizeQue
     };
   }
 
-  public static getServices(operation: Algebra.Operation): Map<string, RDF.NamedNode> {
+  public static getNamedServices(operation: Algebra.Operation): Map<string, RDF.NamedNode> {
     const services: Map<string, RDF.NamedNode> = new Map();
     algebraUtils.visitOperation(operation, {
       [Algebra.Types.SERVICE]: {
+        // SERVICE inputs are delegated to that service, so nested SERVICE clauses must remain inside the input.
         preVisitor: () => ({ continue: false }),
         visitor: (serviceOperation) => {
           if (serviceOperation.name.termType === 'NamedNode') {
@@ -67,13 +93,66 @@ export class ActorOptimizeQueryOperationServiceExecutor extends ActorOptimizeQue
     return services;
   }
 
+  public static hasVariableServices(operation: Algebra.Operation): boolean {
+    let hasVariableServices = false;
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.SERVICE]: {
+        preVisitor: () => ({ continue: false }),
+        visitor: (serviceOperation) => {
+          if (serviceOperation.name.termType === 'Variable') {
+            hasVariableServices = true;
+            return false;
+          }
+          return true;
+        },
+      },
+    });
+    return hasVariableServices;
+  }
+
+  public static getVariableServiceValues(operation: Algebra.Operation): Map<string, RDF.NamedNode> {
+    const variables = new Set<string>();
+    const services: Map<string, RDF.NamedNode> = new Map();
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.SERVICE]: {
+        preVisitor: () => ({ continue: false }),
+        visitor: (serviceOperation) => {
+          if (serviceOperation.name.termType === 'Variable') {
+            variables.add(serviceOperation.name.value);
+          }
+        },
+      },
+    });
+    if (variables.size > 0) {
+      algebraUtils.visitOperation(operation, {
+        [Algebra.Types.VALUES]: {
+          visitor: (valuesOperation) => {
+            for (const bindings of valuesOperation.bindings) {
+              for (const variable of variables) {
+                const term = bindings[variable];
+                if (term?.termType === 'NamedNode') {
+                  services.set(term.value, term);
+                }
+              }
+            }
+          },
+        },
+      });
+    }
+    return services;
+  }
+
+  private static validateServiceExecutorContext(context: IActionContext): void {
+    if (context.has(KeysInitQuery.serviceExecutorCreator) && context.has(KeysInitQuery.serviceExecutors)) {
+      throw new Error('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
+    }
+  }
+
   public async getServiceExecutor(
     serviceNamedNode: RDF.NamedNode,
     context: IActionContext,
   ): Promise<AsyncServiceExecutor | undefined> {
-    if (context.has(KeysInitQuery.serviceExecutorCreator) && context.has(KeysInitQuery.serviceExecutors)) {
-      throw new Error('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
-    }
+    ActorOptimizeQueryOperationServiceExecutor.validateServiceExecutorContext(context);
     if (context.has(KeysInitQuery.serviceExecutorCreator)) {
       return context.getSafe(KeysInitQuery.serviceExecutorCreator)(serviceNamedNode);
     }

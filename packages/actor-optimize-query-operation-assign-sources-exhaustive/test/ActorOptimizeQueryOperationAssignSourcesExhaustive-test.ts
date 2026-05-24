@@ -277,6 +277,13 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource(operationOut)).toBeUndefined();
       });
 
+      it('for service with a non-named and non-variable source should not assign', async() => {
+        const operationIn = AF.createService(AF.createNop(), <any> DF.blankNode('source1'));
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ], { source1 });
+        expect(operationOut).toEqual(operationIn);
+        expect(getOperationSource(operationOut)).toBeUndefined();
+      });
+
       it('for service with a known source should assign', async() => {
         const operationIn = AF.createService(
           AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
@@ -300,6 +307,26 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource(operationOut)).toEqual({
           source: sourceServiceExecutor.source,
           context: new ActionContext({ [KeysQueryOperation.serviceOperation.name]: operationIn }),
+        });
+      });
+
+      it('for service with silent and a custom executor source should inject the SERVICE operation', async() => {
+        const operationIn = AF.createService(
+          AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.namedNode('source1'),
+          true,
+        );
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ sourceServiceExecutor ], {
+          source1: sourceServiceExecutor,
+        });
+        expect(operationOut.type).toEqual(Algebra.Types.PATTERN);
+        expect(getOperationSource(operationOut)).not.toBe(sourceServiceExecutor);
+        expect(getOperationSource(operationOut)).toEqual({
+          source: sourceServiceExecutor.source,
+          context: new ActionContext({
+            [KeysQueryOperation.serviceOperation.name]: operationIn,
+            [KeysInitQuery.lenient.name]: true,
+          }),
         });
       });
 
@@ -351,16 +378,49 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect((<any> operationOut).input[1].type).toEqual(Algebra.Types.SERVICE);
       });
 
-      it('for service with variable should not assign', async() => {
+      it('for service with variable and no known source should not assign', async() => {
+        const operationIn = AF.createService(
+          AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.variable('source1'),
+          true,
+        );
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ], {});
+        expect(operationOut.type).toEqual(Algebra.Types.SERVICE);
+        expect(getOperationSource(operationOut)).toBeUndefined();
+      });
+
+      it('for service with variable and known source should assign', async() => {
         source1.context = new ActionContext({ a: 'b' });
         const operationIn = AF.createService(
           AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
           DF.variable('source1'),
           true,
         );
-        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ], { source1 });
-        expect(operationOut.type).toEqual(Algebra.Types.SERVICE);
-        expect(getOperationSource(operationOut)).toBeUndefined();
+        const operationOut = <Algebra.Join> actor.assignExhaustive(AF, operationIn, [ source1 ], { source1 });
+        expect(operationOut.type).toEqual(Algebra.Types.JOIN);
+        expect(operationOut.input[0]).toEqual(AF.createValues([ DF.variable('source1') ], [
+          { source1: DF.namedNode('source1') },
+        ]));
+        expect(operationOut.input[1].type).toEqual(Algebra.Types.PATTERN);
+        expect(getOperationSource(operationOut.input[1])).toEqual({
+          source: source1.source,
+          context: new ActionContext({ [KeysInitQuery.lenient.name]: true, a: 'b' }),
+        });
+      });
+
+      it('for service with variable and multiple known sources should assign as a union', async() => {
+        const operationIn = AF.createService(
+          AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.variable('source1'),
+        );
+        const operationOut = <Algebra.Union> actor.assignExhaustive(AF, operationIn, [ source1 ], {
+          source1,
+          source2: sourcePattern,
+        });
+        expect(operationOut.type).toEqual(Algebra.Types.UNION);
+        expect(operationOut.input).toHaveLength(2);
+        expect(operationOut.input[0].type).toEqual(Algebra.Types.JOIN);
+        expect(operationOut.input[1].type).toEqual(Algebra.Types.JOIN);
       });
 
       it('for a construct query', async() => {
@@ -392,6 +452,22 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource(operationOut.delete![0])).not.toBe(source1);
         expect(getOperationSource(operationOut.insert![0])).not.toBe(source1);
         expect(getOperationSource(operationOut.where!)).toBe(source1);
+      });
+
+      it('for a delete-insert query without where', async() => {
+        const operationIn = AF.createDeleteInsert(
+          [
+            AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          ],
+          [
+            AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          ],
+        );
+        const operationOut = <Algebra.DeleteInsert> actor.assignExhaustive(AF, operationIn, [ source1 ], {});
+        expect(operationOut.type).toEqual(Algebra.Types.DELETE_INSERT);
+        expect(operationOut.where).toBeUndefined();
+        expect(getOperationSource(operationOut.delete![0])).not.toBe(source1);
+        expect(getOperationSource(operationOut.insert![0])).not.toBe(source1);
       });
     });
   });

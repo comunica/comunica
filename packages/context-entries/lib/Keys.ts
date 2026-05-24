@@ -223,10 +223,9 @@ export const KeysInitQuery = {
   Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>
     >('@comunica/actor-init-query:extensionFunctions'),
   /**
-   * @range {(serviceNamedNode: RDF.NamedNode) => Promise<AsyncServiceExecutor | undefined> |
-   * AsyncServiceExecutor | undefined}
+   * @range {(serviceNamedNode: RDF.NamedNode) => Promise<AsyncServiceExecutor | undefined>}
    * Service executor creator for a given SERVICE IRI.
-   * Returned value should be a custom SERVICE executor implementation.
+   * Returned promise should resolve to a custom SERVICE executor implementation.
    * Undefined may be returned if no implementation exists for the given SERVICE IRI.
    *
    * The dictionary-based serviceExecutors context entry may be used instead, but not simultaneously.

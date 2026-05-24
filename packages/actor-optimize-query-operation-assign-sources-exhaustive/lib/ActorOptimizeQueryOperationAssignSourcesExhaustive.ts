@@ -36,6 +36,8 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
     if (sources.length === 0 && !hasServiceSources) {
       return { operation: action.operation, context: action.context };
     }
+    // When custom SERVICE sources are registered, avoid assigning the full operation to a regular query source.
+    // SERVICE clauses need to be assigned selectively below so their custom behavior is preserved.
     if (!hasServiceSources && (await passFullOperationToSource(action.operation, sources, action.context))) {
       return {
         operation: assignOperationSource(action.operation, sources[0]),
@@ -79,34 +81,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       },
       [Algebra.Types.SERVICE]: {
         preVisitor: () => ({ continue: false }),
-        transform: (serviceOp) => {
-          if (serviceOp.name.termType === 'NamedNode') {
-            let source = serviceSources[serviceOp.name.value];
-            if (source) {
-              if (ActorOptimizeQueryOperationAssignSourcesExhaustive.supportsServiceOperationInjection(source.source)) {
-                let context = (source.context ?? new ActionContext())
-                  .set(KeysQueryOperation.serviceOperation, serviceOp);
-                if (serviceOp.silent) {
-                  context = context.set(KeysInitQuery.lenient, true);
-                }
-                source = { ...source, context };
-              } else if (serviceOp.silent) {
-                source = {
-                  ...source,
-                  context: (source.context ?? new ActionContext()).set(KeysInitQuery.lenient, true),
-                };
-              }
-              return this.assignExhaustive(
-                factory,
-                serviceOp.input,
-                [ source ],
-                // Pass empty serviceSources to ensure nested SERVICE clauses are not transformed.
-                {},
-              );
-            }
-          }
-          return serviceOp;
-        },
+        transform: serviceOp => this.assignService(factory, serviceOp, serviceSources),
       },
       [Algebra.Types.CONSTRUCT]: {
         preVisitor: () => ({ continue: false }),
@@ -144,6 +119,68 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
         ),
       },
     });
+  }
+
+  private assignService(
+    factory: AlgebraFactory,
+    serviceOp: Algebra.Service,
+    serviceSources: Record<string, IQuerySourceWrapper>,
+  ): Algebra.Operation {
+    if (serviceOp.name.termType === 'NamedNode') {
+      // Only SERVICE IRIs that were registered in serviceSources are assigned here.
+      const source = serviceSources[serviceOp.name.value];
+      return source ? this.assignServiceSource(factory, serviceOp, source) : serviceOp;
+    }
+    if (serviceOp.name.termType === 'Variable') {
+      // SERVICE ?var can only be assigned for the registered services we know about at optimization time.
+      const serviceVariable = serviceOp.name;
+      const operations = Object.entries(serviceSources)
+        .map(([ service, source ]) => {
+          const serviceNamedNode = factory.dataFactory.namedNode(service);
+          return factory.createJoin([
+            factory.createValues([ serviceVariable ], [{ [serviceVariable.value]: serviceNamedNode }]),
+            this.assignServiceSource(
+              factory,
+              factory.createService(serviceOp.input, serviceNamedNode, serviceOp.silent),
+              source,
+            ),
+          ]);
+        });
+      if (operations.length === 0) {
+        return serviceOp;
+      }
+      return operations.length === 1 ? operations[0] : factory.createUnion(operations);
+    }
+    return serviceOp;
+  }
+
+  private assignServiceSource(
+    factory: AlgebraFactory,
+    serviceOp: Algebra.Service,
+    serviceSource: IQuerySourceWrapper,
+  ): Algebra.Operation {
+    let source = serviceSource;
+    if (ActorOptimizeQueryOperationAssignSourcesExhaustive.supportsServiceOperationInjection(source.source)) {
+      // Custom SERVICE executors need the original SERVICE operation, not just the inner operation assigned to them.
+      let context = (source.context ?? new ActionContext())
+        .set(KeysQueryOperation.serviceOperation, serviceOp);
+      if (serviceOp.silent) {
+        context = context.set(KeysInitQuery.lenient, true);
+      }
+      source = { ...source, context };
+    } else if (serviceOp.silent) {
+      source = {
+        ...source,
+        context: (source.context ?? new ActionContext()).set(KeysInitQuery.lenient, true),
+      };
+    }
+    return this.assignExhaustive(
+      factory,
+      serviceOp.input,
+      [ source ],
+      // Nested SERVICE clauses belong to this delegated SERVICE input and should not be transformed locally.
+      {},
+    );
   }
 
   public static supportsServiceOperationInjection(source: unknown): boolean {

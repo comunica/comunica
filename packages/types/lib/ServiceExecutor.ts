@@ -9,7 +9,7 @@ export type AsyncServiceExecutor = (
   binding: RDF.Bindings | undefined,
   context: IActionContext,
   options?: IQueryBindingsOptions,
-) => BindingsStream | Promise<BindingsStream>;
+) => Promise<BindingsStream>;
 
 export type AsyncServiceExecutorCreator = (serviceNamedNode: RDF.NamedNode) =>
-Promise<AsyncServiceExecutor | undefined> | AsyncServiceExecutor | undefined;
+Promise<AsyncServiceExecutor | undefined>;

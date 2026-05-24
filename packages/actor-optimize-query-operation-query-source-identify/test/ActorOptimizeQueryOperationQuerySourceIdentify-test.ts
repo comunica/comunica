@@ -129,6 +129,26 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           .toHaveBeenCalledWith({ querySourceUnidentified: { value: 'source2' }, context: expect.anything() });
       });
 
+      it('with a variable SERVICE clause bound by VALUES', async() => {
+        const operationVariableService = AF.createJoin([
+          AF.createValues([ DF.variable('service') ], [
+            { service: DF.namedNode('source1') },
+          ]),
+          AF.createService(<any> {}, DF.variable('service')),
+        ]);
+        const { context: contextOut } = await actor.run({
+          context: contextIn,
+          operation: operationVariableService,
+        });
+        expect(contextOut).not.toBe(contextIn);
+        expect(contextOut.get(KeysQueryOperation.serviceSources)).toEqual({
+          source1: { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
+        });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(1);
+        expect(mediatorQuerySourceIdentify.mediate)
+          .toHaveBeenCalledWith({ querySourceUnidentified: { value: 'source1' }, context: expect.anything() });
+      });
+
       it('with SERVICE clauses but the single source accepts the full query', async() => {
         contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
           'sourceSparql',
