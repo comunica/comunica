@@ -14,6 +14,7 @@ import { resolve as resolveIri } from 'relative-to-absolute-iri';
  */
 export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtract {
   public static SD = 'http://www.w3.org/ns/sparql-service-description#';
+  public static SPARQL = 'http://www.w3.org/ns/sparql#';
 
   private readonly inferHttpsEndpoint: boolean;
 
@@ -38,8 +39,16 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
       const inputFormats = new Set<string>();
       const resultFormats = new Set<string>();
       const supportedLanguages = new Set<string>();
+      const supportedVersions = new Set<string>();
       const extensionFunctions = new Set<string>();
       const propertyFeatures = new Set<string>();
+      const sparql10Query = `${ActorRdfMetadataExtractSparqlService.SD}SPARQL10Query`;
+      const sparql11Query = `${ActorRdfMetadataExtractSparqlService.SD}SPARQL11Query`;
+      const sparqlQuery = `${ActorRdfMetadataExtractSparqlService.SD}SPARQLQuery`;
+      const sparqlVersion10 = `${ActorRdfMetadataExtractSparqlService.SPARQL}version-1.0`;
+      const sparqlVersion11 = `${ActorRdfMetadataExtractSparqlService.SPARQL}version-1.1`;
+      const sparqlVersion12 = `${ActorRdfMetadataExtractSparqlService.SPARQL}version-1.2`;
+      const sparqlVersion12Basic = `${ActorRdfMetadataExtractSparqlService.SPARQL}version-1.2-basic`;
 
       action.metadata.on('data', (quad: RDF.Quad) => {
         if (quad.predicate.value === 'http://rdfs.org/ns/void#subset' && quad.object.value === action.url) {
@@ -79,6 +88,31 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
               break;
             case `${ActorRdfMetadataExtractSparqlService.SD}supportedLanguage`:
               supportedLanguages.add(quad.object.value);
+              switch (quad.object.value) {
+                case sparql10Query:
+                  supportedLanguages.add(sparqlQuery);
+                  supportedVersions.add(sparqlVersion10);
+                  break;
+                case sparql11Query:
+                  supportedLanguages.add(sparqlQuery);
+                  supportedVersions.add(sparqlVersion11);
+                  break;
+              }
+              break;
+            case `${ActorRdfMetadataExtractSparqlService.SD}supportedVersion`:
+              supportedVersions.add(quad.object.value);
+              // TODO: change in next major: stop emitting sd:SPARQL10Query/sd:SPARQL11Query in supportedLanguages.
+              switch (quad.object.value) {
+                case sparqlVersion10:
+                  supportedLanguages.add(sparql10Query);
+                  break;
+                case sparqlVersion11:
+                case sparqlVersion12:
+                case sparqlVersion12Basic:
+                  // Legacy alias for compatibility with existing consumers expecting SPARQL11Query.
+                  supportedLanguages.add(sparql11Query);
+                  break;
+              }
               break;
             case `${ActorRdfMetadataExtractSparqlService.SD}propertyFeature`:
               propertyFeatures.add(quad.object.value);
@@ -104,6 +138,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
           ...inputFormats.size > 0 ? { inputFormats: [ ...inputFormats.values() ]} : {},
           ...resultFormats.size > 0 ? { resultFormats: [ ...resultFormats.values() ]} : {},
           ...supportedLanguages.size > 0 ? { supportedLanguages: [ ...supportedLanguages.values() ]} : {},
+          ...supportedVersions.size > 0 ? { supportedVersions: [ ...supportedVersions.values() ]} : {},
           ...extensionFunctions.size > 0 ? { extensionFunctions: [ ...extensionFunctions.values() ]} : {},
           ...propertyFeatures.size > 0 ? { propertyFeatures: [ ...propertyFeatures.values() ]} : {},
         }});

@@ -243,7 +243,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
             context,
           }, handleMediaType: 'text/tab-separated-values', context },
         ))).handle.data)).resolves.toBe(
-          `k1\tk2
+          `?k1\t?k2
 <v1>\t
 \t<v2>
 `,
@@ -277,7 +277,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
             context,
           }, handleMediaType: 'text/tab-separated-values', context },
         ))).handle.data)).resolves.toBe(
-          `k3
+          `?k3
 
 
 
@@ -297,7 +297,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
         handleMediaType: 'text/tab-separated-values',
         context,
       }))).handle.data)).resolves.toBe(
-        `k1\tk2
+        `?k1\t?k2
 "v\\""\t
 \t<v\\n\\r,>
 \t
@@ -311,7 +311,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
         handleMediaType: 'text/tab-separated-values',
         context,
       }))).handle.data)).resolves.toBe(
-        `k1\tk2
+        `?k1\t?k2
 `,
       );
     });
@@ -333,7 +333,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           context,
         }, handleMediaType: 'text/tab-separated-values', context },
       ))).handle.data)).resolves.toBe(
-        `k1\tk2
+        `?k1\t?k2
 <<<s1> <p1> <o1>>>\t
 \t<<<s2> <p2> <o2>>>
 `,
