@@ -38,7 +38,7 @@ export async function fetch(...args: Parameters<typeof fetchFn>): ReturnType<typ
     fs.writeFileSync(pth, JSON.stringify({
       ...res,
       content: await res.text(),
-      headers: [ ...res.headers.entries() ],
+      headers: [ ...res.headers ],
     }));
   }
   const { content, ...init } = JSON.parse(fs.readFileSync(pth).toString());

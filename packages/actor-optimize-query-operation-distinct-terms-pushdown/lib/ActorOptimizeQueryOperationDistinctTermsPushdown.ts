@@ -27,8 +27,12 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
     const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 
-    // Collect selector shapes of all operations
-    const sources = this.getSources(action.operation);
+    // Collect selector shapes only for operations that can be optimized.
+    const sources = this.getDistinctTermsPushdownSources(action.operation);
+    if (sources.length === 0) {
+      return { operation: action.operation, context: action.context };
+    }
+
     // eslint-disable-next-line ts/no-unnecessary-type-assertion
     const sourceShapes = new Map(<[IQuerySourceWrapper, FragmentSelectorShape][]> await Promise.all(sources
       .map(async source => [
@@ -95,6 +99,45 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
     };
     algebraUtils.visitOperation(operation, {
       [Algebra.Types.PATTERN]: { visitor: sourceAdder },
+    });
+    return [ ...sources ];
+  }
+
+  /**
+   * Collect all sources that can potentially be optimized to DistinctTerms.
+   * @param operation An operation.
+   */
+  public getDistinctTermsPushdownSources(operation: Algebra.Operation): IQuerySourceWrapper[] {
+    const sources = new Set<IQuerySourceWrapper>();
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.DISTINCT]: {
+        preVisitor: () => ({ continue: false }),
+        visitor: (distinctOperation: Algebra.Distinct) => {
+          if (!isKnownOperation(distinctOperation.input, Algebra.Types.PROJECT)) {
+            return;
+          }
+
+          let distinctInput = distinctOperation.input.input;
+          if (isKnownOperation(distinctInput, Algebra.Types.JOIN) && distinctInput.input.length === 1) {
+            distinctInput = distinctInput.input[0];
+          }
+          if (!isKnownOperation(distinctInput, Algebra.Types.PATTERN)) {
+            return;
+          }
+
+          const source = getOperationSource(distinctInput);
+          if (!source) {
+            return;
+          }
+
+          // Check if the projected variables can be mapped to quad terms
+          if (!this.mapVariablesToTerms(distinctOperation.input.variables, distinctInput)) {
+            return;
+          }
+
+          sources.add(source);
+        },
+      },
     });
     return [ ...sources ];
   }

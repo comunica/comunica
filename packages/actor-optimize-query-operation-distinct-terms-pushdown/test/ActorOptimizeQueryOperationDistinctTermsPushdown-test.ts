@@ -32,12 +32,24 @@ describe('ActorOptimizeQueryOperationDistinctTermsPushdown', () => {
 
     describe('run', () => {
       it('should not optimize a non-distinct operation', async() => {
+        const source: IQuerySourceWrapper = <any> {
+          source: {
+            getSelectorShape: jest.fn(async() => ({
+              type: 'operation',
+              operation: { operationType: 'type', type: 'distinctterms' },
+            })),
+          },
+        };
         const operation = AF.createProject(
-          AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+          assignOperationSource(
+            AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            source,
+          ),
           [ DF.variable('s') ],
         );
         const { operation: operationOut } = await actor.run({ operation, context });
         expect(operationOut).toEqual(operation);
+        expect(source.source.getSelectorShape).not.toHaveBeenCalled();
       });
 
       it('should not optimize a distinct without project', async() => {
@@ -123,8 +135,7 @@ describe('ActorOptimizeQueryOperationDistinctTermsPushdown', () => {
 
         const { operation: operationOut } = await actor.run({ operation, context });
         expect(operationOut).toEqual(operation);
-        // GetSelectorShape is called during source collection, but optimization fails at variable mapping
-        expect(source.source.getSelectorShape).toHaveBeenCalledWith(expect.anything());
+        expect(source.source.getSelectorShape).not.toHaveBeenCalled();
       });
 
       it('should optimize DISTINCT(PROJECT(PATTERN)) with supporting source', async() => {
@@ -320,6 +331,30 @@ describe('ActorOptimizeQueryOperationDistinctTermsPushdown', () => {
         expect(operationOut.type).toBe(Algebra.Types.SLICE);
         expect((<any>operationOut).input.type).toBe('distinctterms');
       });
+
+      it('should not call getSelectorShape for DISTINCT over non-pattern input', async() => {
+        const source: IQuerySourceWrapper = <any> {
+          source: {
+            getSelectorShape: jest.fn(async() => ({
+              type: 'operation',
+              operation: { operationType: 'type', type: 'distinctterms' },
+            })),
+          },
+        };
+        const pattern = assignOperationSource(
+          AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+          source,
+        );
+        const operation = AF.createDistinct(
+          AF.createConstruct(pattern, [
+            AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+          ]),
+        );
+
+        const { operation: operationOut } = await actor.run({ operation, context });
+        expect(operationOut).toEqual(operation);
+        expect(source.source.getSelectorShape).not.toHaveBeenCalled();
+      });
     });
 
     describe('getSources', () => {
@@ -413,6 +448,28 @@ describe('ActorOptimizeQueryOperationDistinctTermsPushdown', () => {
         const sources = actor.getSources(operation);
         expect(sources).toHaveLength(1);
         expect(sources[0]).toBe(source);
+      });
+
+      describe('getDistinctTermsPushdownSources', () => {
+        it('should return empty array for non-distinct operations', () => {
+          const source: IQuerySourceWrapper = <any> { source: {}};
+          const operation = AF.createProject(
+            assignOperationSource(AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')), source),
+            [ DF.variable('s') ],
+          );
+          expect(actor.getDistinctTermsPushdownSources(operation)).toEqual([]);
+        });
+
+        it('should collect source for optimizable distinct operation', () => {
+          const source: IQuerySourceWrapper = <any> { source: {}};
+          const operation = AF.createDistinct(
+            AF.createProject(
+              assignOperationSource(AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')), source),
+              [ DF.variable('s') ],
+            ),
+          );
+          expect(actor.getDistinctTermsPushdownSources(operation)).toEqual([ source ]);
+        });
       });
     });
   });
