@@ -1,6 +1,6 @@
 {
   "name": "@comunica/types",
-  "version": "5.2.0",
+  "version": "5.2.3",
   "description": "Typings module for Comunica",
   "lsd:module": true,
   "license": "MIT",

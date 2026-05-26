@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.2.3"></a>
+## [v5.2.3](https://github.com/comunica/comunica/compare/v5.2.2...v5.2.3) - 2026-05-26
+
+### Changed
+* [Add SPARQL 1.2 service-description compatibility while preserving SPARQL 1.1 behavior (#1709)](https://github.com/comunica/comunica/commit/91d763c425da4ea3e00b6f019fd570c5e72f2b39)
+
+### Fixed
+* [Fix performance issue for complex queries in doesShapeAcceptOperation](https://github.com/comunica/comunica/commit/b56114e839b84fbab574141c17ad43864a24f91c)
+* [Make SPARQL TSV header serialization spec-compliant by prefixing variables with `?` (#1713)](https://github.com/comunica/comunica/commit/f487e2ec2e8fa2978399b1d0644b689bb8e92df2)
+
 <a name="v5.2.2"></a>
 ## [v5.2.2](https://github.com/comunica/comunica/compare/v5.2.1...v5.2.2) - 2026-05-03
 
