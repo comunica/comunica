@@ -1,5 +1,5 @@
 import type { FragmentSelectorShape } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { doesShapeAcceptOperation } from '../lib/FragmentSelectorShapes';
 
@@ -38,6 +38,37 @@ const SHAPE_SPARQL_1_1: FragmentSelectorShape = {
           },
         ],
       },
+    },
+  ],
+};
+
+// Shape for QuerySourceRdfJs (with all disjunctions enabled: indexNodes=true, indexDistinctTerms=true)
+const SHAPE_RDFJS: FragmentSelectorShape = {
+  type: 'disjunction',
+  children: [
+    {
+      type: 'operation',
+      operation: {
+        operationType: 'pattern',
+        pattern: AF.createPattern(
+          AF.dataFactory.variable!('s'),
+          AF.dataFactory.variable!('p'),
+          AF.dataFactory.variable!('o'),
+        ),
+      },
+      variablesOptional: [
+        AF.dataFactory.variable!('s'),
+        AF.dataFactory.variable!('p'),
+        AF.dataFactory.variable!('o'),
+      ],
+    },
+    {
+      type: 'operation',
+      operation: { operationType: 'type', type: TypesComunica.NODES },
+    },
+    {
+      type: 'operation',
+      operation: { operationType: 'type', type: TypesComunica.DISTINCT_TERMS },
     },
   ],
 };
@@ -890,6 +921,214 @@ describe('FragmentSelectorShapes', () => {
             joinBindings: true,
           },
         }, extensionFunctionExpression)).toBeTruthy();
+      });
+    });
+
+    describe('for QuerySourceRdfJs shape (all disjunctions enabled)', () => {
+      it('should not accept a complex CONSTRUCT query', () => {
+        const DF = AF.dataFactory;
+
+        // Variables
+        const vS = DF.variable!('s');
+        const vP = DF.variable!('p');
+        const vO = DF.variable!('o');
+        const vDataset = DF.variable!('dataset');
+        const vPublisher = DF.variable!('publisher');
+        const vLic = DF.variable!('lic');
+        const vLicense = DF.variable!('license');
+        const vFoafType = DF.variable!('foafType');
+        const vPublisherName = DF.variable!('publisher_name');
+        const vN1 = DF.variable!('n1');
+        const vN2 = DF.variable!('n2');
+        const vN3 = DF.variable!('n3');
+        const vCreator = DF.variable!('creator');
+        const vCreatorName = DF.variable!('creator_name');
+        const vAr = DF.variable!('ar');
+        const vAccessRights = DF.variable!('accessRights');
+        const vAp = DF.variable!('ap');
+        const vThemeDefault = DF.variable!('themeDefault');
+        const vUnbound = DF.variable!('unbound');
+
+        // Named nodes (prefixes: dcat, dct, foaf, ex)
+        const RDF_TYPE = DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type');
+        const DCAT_DATASET = DF.namedNode('http://www.w3.org/ns/dcat#Dataset');
+        const DCT_PUBLISHER = DF.namedNode('http://purl.org/dc/terms/publisher');
+        const DCT_LICENSE = DF.namedNode('http://purl.org/dc/terms/license');
+        const FOAF_NAME = DF.namedNode('http://xmlns.com/foaf/0.1/name');
+        const FOAF_NICK = DF.namedNode('http://xmlns.com/foaf/0.1/nick');
+        const DCT_IDENTIFIER = DF.namedNode('http://purl.org/dc/terms/identifier');
+        const DCT_DESCRIPTION = DF.namedNode('http://purl.org/dc/terms/description');
+        const FOAF_ORGANIZATION = DF.namedNode('http://xmlns.com/foaf/0.1/Organization');
+        const FOAF_PERSON = DF.namedNode('http://xmlns.com/foaf/0.1/Person');
+        const DCT_ACCESS_RIGHTS = DF.namedNode('http://purl.org/dc/terms/accessRights');
+        const DCT_ACCRUAL_PERIODICITY = DF.namedNode('http://purl.org/dc/terms/accrualPeriodicity');
+        const EX_PUBLIC = DF.namedNode('http://example.com/public');
+        const EX_THEME = DF.namedNode('http://example.com/theme');
+
+        /**
+         * Algebra for:
+         *   PREFIX dcat: <http://www.w3.org/ns/dcat#>
+         *   PREFIX dct:  <http://purl.org/dc/terms/>
+         *   PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+         *
+         *   CONSTRUCT { ?s ?p ?o } WHERE {
+         *     SELECT * WHERE {
+         *       {
+         *         ?dataset a dcat:Dataset ;
+         *           dct:publisher ?publisher .
+         *
+         *         OPTIONAL { ?dataset dct:license ?lic }
+         *         BIND(COALESCE(?lic, ?unbound) AS ?license)
+         *
+         *         ?publisher a ?foafType ;
+         *           foaf:name ?publisher_name .
+         *         OPTIONAL { ?publisher foaf:nick       ?n1 }
+         *         OPTIONAL { ?publisher dct:identifier  ?n2 }
+         *         OPTIONAL { ?publisher dct:description ?n3 }
+         *
+         *         OPTIONAL {
+         *           ?creator a ?foafType ;
+         *             foaf:name ?creator_name .
+         *         }
+         *
+         *         VALUES ?foafType { foaf:Organization foaf:Person }
+         *
+         *         OPTIONAL { ?dataset dct:accessRights ?ar }
+         *         BIND(COALESCE(?ar, <http://example.com/public>) AS ?accessRights)
+         *         OPTIONAL { ?dataset dct:accrualPeriodicity ?ap }
+         *         BIND(<http://example.com/theme> AS ?themeDefault)
+         *       }
+         *     }
+         *     LIMIT 1
+         *   }
+         */
+
+        // Step 1: ?dataset a dcat:Dataset ; dct:publisher ?publisher .
+        const step1 = AF.createBgp([
+          AF.createPattern(vDataset, RDF_TYPE, DCAT_DATASET),
+          AF.createPattern(vDataset, DCT_PUBLISHER, vPublisher),
+        ]);
+
+        // Step 2: OPTIONAL { ?dataset dct:license ?lic }
+        const step2 = AF.createLeftJoin(
+          step1,
+          AF.createBgp([ AF.createPattern(vDataset, DCT_LICENSE, vLic) ]),
+        );
+
+        // Step 3: BIND(COALESCE(?lic, ?unbound) AS ?license)
+        const step3 = AF.createExtend(
+          step2,
+          vLicense,
+          AF.createOperatorExpression('coalesce', [
+            AF.createTermExpression(vLic),
+            AF.createTermExpression(vUnbound),
+          ]),
+        );
+
+        // Step 4: ?publisher a ?foafType ; foaf:name ?publisher_name .
+        const step4 = AF.createJoin([
+          step3,
+          AF.createBgp([
+            AF.createPattern(vPublisher, RDF_TYPE, vFoafType),
+            AF.createPattern(vPublisher, FOAF_NAME, vPublisherName),
+          ]),
+        ]);
+
+        // Step 5: OPTIONAL { ?publisher foaf:nick ?n1 }
+        const step5 = AF.createLeftJoin(
+          step4,
+          AF.createBgp([ AF.createPattern(vPublisher, FOAF_NICK, vN1) ]),
+        );
+
+        // Step 6: OPTIONAL { ?publisher dct:identifier ?n2 }
+        const step6 = AF.createLeftJoin(
+          step5,
+          AF.createBgp([ AF.createPattern(vPublisher, DCT_IDENTIFIER, vN2) ]),
+        );
+
+        // Step 7: OPTIONAL { ?publisher dct:description ?n3 }
+        const step7 = AF.createLeftJoin(
+          step6,
+          AF.createBgp([ AF.createPattern(vPublisher, DCT_DESCRIPTION, vN3) ]),
+        );
+
+        // Step 8: OPTIONAL { ?creator a ?foafType ; foaf:name ?creator_name . }
+        const step8 = AF.createLeftJoin(
+          step7,
+          AF.createBgp([
+            AF.createPattern(vCreator, RDF_TYPE, vFoafType),
+            AF.createPattern(vCreator, FOAF_NAME, vCreatorName),
+          ]),
+        );
+
+        // Step 9: VALUES ?foafType { foaf:Organization foaf:Person }
+        const step9 = AF.createJoin([
+          step8,
+          AF.createValues(
+            [ vFoafType ],
+            [{ foafType: FOAF_ORGANIZATION }, { foafType: FOAF_PERSON }],
+          ),
+        ]);
+
+        // Step 10: OPTIONAL { ?dataset dct:accessRights ?ar }
+        const step10 = AF.createLeftJoin(
+          step9,
+          AF.createBgp([ AF.createPattern(vDataset, DCT_ACCESS_RIGHTS, vAr) ]),
+        );
+
+        // Step 11: BIND(COALESCE(?ar, <http://example.com/public>) AS ?accessRights)
+        const step11 = AF.createExtend(
+          step10,
+          vAccessRights,
+          AF.createOperatorExpression('coalesce', [
+            AF.createTermExpression(vAr),
+            AF.createTermExpression(EX_PUBLIC),
+          ]),
+        );
+
+        // Step 12: OPTIONAL { ?dataset dct:accrualPeriodicity ?ap }
+        const step12 = AF.createLeftJoin(
+          step11,
+          AF.createBgp([ AF.createPattern(vDataset, DCT_ACCRUAL_PERIODICITY, vAp) ]),
+        );
+
+        // Step 13: BIND(<http://example.com/theme> AS ?themeDefault)
+        const step13 = AF.createExtend(
+          step12,
+          vThemeDefault,
+          AF.createTermExpression(EX_THEME),
+        );
+
+        // SELECT * WHERE { ... } LIMIT 1
+        const innerSelect = AF.createSlice(
+          AF.createProject(step13, [
+            vDataset,
+            vPublisher,
+            vLic,
+            vLicense,
+            vFoafType,
+            vPublisherName,
+            vN1,
+            vN2,
+            vN3,
+            vCreator,
+            vCreatorName,
+            vAr,
+            vAccessRights,
+            vAp,
+            vThemeDefault,
+          ]),
+          0,
+          1,
+        );
+
+        // CONSTRUCT { ?s ?p ?o } WHERE { SELECT * ... LIMIT 1 }
+        const construct = AF.createConstruct(
+          innerSelect,
+          [ AF.createPattern(vS, vP, vO) ],
+        );
+
+        expect(doesShapeAcceptOperation(SHAPE_RDFJS, construct)).toBeFalsy();
       });
     });
   });
