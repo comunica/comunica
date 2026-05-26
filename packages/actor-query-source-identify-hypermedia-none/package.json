@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-source-identify-hypermedia-none",
-  "version": "5.2.2",
+  "version": "5.2.3",
   "description": "A none query-source-identify-hypermedia actor",
   "lsd:module": true,
   "license": "MIT",
@@ -41,12 +41,12 @@
     "build:components": "componentsjs-generator"
   },
   "dependencies": {
-    "@comunica/actor-query-source-identify-rdfjs": "^5.2.2",
-    "@comunica/bus-merge-bindings-context": "^5.2.2",
-    "@comunica/bus-query-source-identify-hypermedia": "^5.2.2",
-    "@comunica/context-entries": "^5.2.2",
-    "@comunica/core": "^5.2.2",
-    "@comunica/utils-bindings-factory": "^5.2.2",
+    "@comunica/actor-query-source-identify-rdfjs": "^5.2.3",
+    "@comunica/bus-merge-bindings-context": "^5.2.3",
+    "@comunica/bus-query-source-identify-hypermedia": "^5.2.3",
+    "@comunica/context-entries": "^5.2.3",
+    "@comunica/core": "^5.2.3",
+    "@comunica/utils-bindings-factory": "^5.2.3",
     "@rdfjs/types": "*",
     "rdf-stores": "^2.2.0"
   }
