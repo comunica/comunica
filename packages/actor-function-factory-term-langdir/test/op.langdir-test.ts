@@ -1,6 +1,6 @@
 import { ActorFunctionFactoryTermLangdir } from '@comunica/actor-function-factory-term-langdir';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import { Notation } from '@comunica/utils-jest';
 
 describe('like \'langdir\' receiving', () => {
   runFuncTestTable({

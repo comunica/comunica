@@ -1,6 +1,6 @@
 import { ActorFunctionFactoryTermTriple } from '@comunica/actor-function-factory-term-triple';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import { Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermIsTriple } from '../lib';
 
 describe('evaluation of \'ISTRIPLE\'', () => {

@@ -1,7 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
-import { int } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  int,
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { ActorFunctionFactoryTermHours } from '../lib';
 
 /**

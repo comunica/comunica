@@ -1,10 +1,16 @@
-import { getMockSuperTypeProvider } from '@comunica/utils-expression-evaluator/test/util/helpers';
+import {
+  getMockSuperTypeProvider,
+  bool,
+  Notation,
+  runTestTable,
+} from '@comunica/utils-jest';
+
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { TermTransformer, TypeURL } from '../../../lib';
-import { bool } from '../../util/Aliases';
-import { Notation } from '../../util/TestTable';
-import { runTestTable } from '../../util/utils';
+
+
+
 
 const DF = new DataFactory();
 

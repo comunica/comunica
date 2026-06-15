@@ -1,6 +1,10 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  bool,
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { ActorFunctionFactoryTermStrBefore } from '../lib';
 
 describe('evaluations of \'strbefore\' like', () => {

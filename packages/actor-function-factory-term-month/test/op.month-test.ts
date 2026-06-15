@@ -1,6 +1,11 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { dateTyped, int } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  dateTyped,
+  int,
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { ActorFunctionFactoryTermMonth } from '../lib';
 
 describe('evaluation of \'MONTH\'', () => {

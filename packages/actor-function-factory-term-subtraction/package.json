@@ -41,5 +41,8 @@
     "@comunica/context-entries": "^5.2.3",
     "@comunica/utils-expression-evaluator": "^5.2.3",
     "bignumber.js": "^11.0.0"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

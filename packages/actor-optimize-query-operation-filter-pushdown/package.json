@@ -49,5 +49,8 @@
     "@comunica/utils-query-operation": "^5.2.3",
     "@rdfjs/types": "*",
     "rdf-terms": "^2.0.0"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

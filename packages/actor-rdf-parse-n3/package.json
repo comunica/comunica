@@ -39,5 +39,8 @@
     "@comunica/context-entries": "^5.2.3",
     "@comunica/types": "^5.2.3",
     "n3": "^2.0.0"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

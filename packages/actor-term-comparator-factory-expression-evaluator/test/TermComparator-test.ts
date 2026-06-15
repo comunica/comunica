@@ -9,7 +9,7 @@ import * as Eval from '@comunica/utils-expression-evaluator';
 import {
   getMockEEActionContext,
   getMockInternalEvaluator,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';

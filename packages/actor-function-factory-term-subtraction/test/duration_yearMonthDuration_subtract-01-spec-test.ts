@@ -5,8 +5,10 @@ import {
   dayTimeDurationTyped,
   dateTimeTyped,
   yearMonthDurationTyped,
-} from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { ActorFunctionFactoryTermSubtraction } from '../lib';
 
 describe('subtract duration and dayTimeDuration 01', () => {

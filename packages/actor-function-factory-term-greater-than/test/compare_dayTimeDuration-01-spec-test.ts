@@ -1,8 +1,13 @@
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool, dayTimeDurationTyped } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  bool,
+  dayTimeDurationTyped,
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { ActorFunctionFactoryTermGreaterThan } from '../lib';
 
 describe('compare dayTimeDuration 01', () => {

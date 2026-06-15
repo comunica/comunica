@@ -50,5 +50,8 @@
     "@comunica/utils-bindings-factory": "^5.2.3",
     "@comunica/utils-metadata": "^5.2.3",
     "asynciterator": "^3.10.0"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

@@ -6,7 +6,7 @@ import {
   getMockEEActionContext,
   getMockMediatorMergeBindingsContext,
   getMockMediatorQueryOperation,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import {
   ActorTermComparatorFactoryExpressionEvaluator,
 } from '../lib';

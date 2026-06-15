@@ -46,5 +46,8 @@
     "@comunica/core": "^5.2.3",
     "@types/http-link-header": "^1.0.7",
     "http-link-header": "^1.1.3"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

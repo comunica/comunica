@@ -6,7 +6,7 @@ import { Bus } from '@comunica/core';
 import {
   getMockMediatorMergeBindingsContext,
   getMockMediatorQueryOperation,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import { ActorTermComparatorFactoryExpressionEvaluator } from '../lib';
 
 export function createTermCompMediator() {

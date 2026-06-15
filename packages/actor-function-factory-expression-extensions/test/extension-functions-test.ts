@@ -2,8 +2,15 @@ import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
-import { bool, compactTermString, merge, numeric } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  bool,
+  compactTermString,
+  merge,
+  numeric,
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorFunctionFactoryExpressionExtensions } from '../lib';

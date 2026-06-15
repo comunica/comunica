@@ -1,6 +1,12 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool, merge, numeric } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  bool,
+  merge,
+  numeric,
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { ActorFunctionFactoryExpressionSameTerm } from '../lib';
 
 describe('evaluation of \'sameTerm\'', () => {

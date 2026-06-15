@@ -51,5 +51,8 @@
   },
   "browser": {
     "./lib/FetchInitPreprocessor.js": "./lib/FetchInitPreprocessor-browser.js"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

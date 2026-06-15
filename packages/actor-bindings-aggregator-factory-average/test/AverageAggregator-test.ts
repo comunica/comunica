@@ -17,7 +17,7 @@ import {
   getMockEEFactory,
   int,
   makeAggregate,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { AverageAggregator } from '../lib/AverageAggregator';
 

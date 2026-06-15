@@ -1,7 +1,13 @@
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool, error, merge } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  bool,
+  error,
+  merge,
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { ActorFunctionFactoryExpressionLogicalAnd } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

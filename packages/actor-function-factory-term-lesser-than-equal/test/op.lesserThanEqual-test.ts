@@ -15,8 +15,10 @@ import {
   str,
   timeTyped,
   yearMonthDurationTyped,
-} from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { ActorFunctionFactoryTermLesserThanEqual } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

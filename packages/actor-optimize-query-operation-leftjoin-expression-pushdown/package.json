@@ -48,5 +48,8 @@
     "@comunica/utils-algebra": "^5.2.0",
     "@comunica/utils-query-operation": "^5.2.3",
     "@rdfjs/types": "*"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

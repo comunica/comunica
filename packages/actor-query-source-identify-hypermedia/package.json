@@ -56,5 +56,8 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.10.0",
     "lru-cache": "^11.2.2"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

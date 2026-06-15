@@ -43,5 +43,8 @@
   "dependencies": {
     "@comunica/core": "^5.2.3",
     "@comunica/types": "^5.2.3"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

@@ -19,7 +19,7 @@ import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import {
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { Parser } from '@traqula/parser-sparql-1-2';
 import { ArrayIterator } from 'asynciterator';

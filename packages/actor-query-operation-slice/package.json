@@ -46,5 +46,8 @@
     "@comunica/core": "^5.2.3",
     "@comunica/types": "^5.2.3",
     "@comunica/utils-algebra": "^5.2.0"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

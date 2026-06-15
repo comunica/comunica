@@ -50,5 +50,8 @@
   },
   "browser": {
     "./lib/ActorDereferenceHttp.js": "./lib/ActorDereferenceHttp-browser.js"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

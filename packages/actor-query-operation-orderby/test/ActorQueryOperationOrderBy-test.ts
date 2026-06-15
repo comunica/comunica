@@ -13,7 +13,7 @@ import * as sparqlee from '@comunica/utils-expression-evaluator';
 import {
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';

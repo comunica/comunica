@@ -8,8 +8,10 @@ import {
   dayTimeDurationTyped,
   int,
   numeric,
-} from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { LRUCache } from 'lru-cache';
 import { ActorFunctionFactoryTermAddition } from '../lib';
 

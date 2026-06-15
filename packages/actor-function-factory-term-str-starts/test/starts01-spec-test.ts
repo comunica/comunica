@@ -1,8 +1,12 @@
 import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
-import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  bool,
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { ActorFunctionFactoryTermStrStarts } from '../lib';
 
 /**

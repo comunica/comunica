@@ -52,5 +52,8 @@
     "@comunica/utils-iterator": "^5.0.0",
     "@comunica/utils-query-operation": "^5.2.3",
     "asynciterator": "^3.10.0"
+  },
+  "devDependencies": {
+    "@comunica/utils-jest": "^5.2.3"
   }
 }

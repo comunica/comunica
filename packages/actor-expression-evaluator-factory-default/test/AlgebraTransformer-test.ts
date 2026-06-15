@@ -10,7 +10,7 @@ import { ActorFunctionFactoryTermUnaryMinus } from '@comunica/actor-function-fac
 import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import * as Eval from '@comunica/utils-expression-evaluator';
-import { getMockEEActionContext } from '@comunica/utils-expression-evaluator/test/util/helpers';
+import { getMockEEActionContext } from '@comunica/utils-jest';
 import { DataFactory } from 'rdf-data-factory';
 import { AlgebraTransformer } from '../lib/AlgebraTransformer';
 

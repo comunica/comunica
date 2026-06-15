@@ -16,7 +16,7 @@ import {
   int,
   makeAggregate,
   nonLiteral,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { SumAggregator } from '../lib';
 

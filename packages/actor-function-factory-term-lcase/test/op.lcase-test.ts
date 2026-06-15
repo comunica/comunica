@@ -1,5 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import { Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermLcase } from '../lib';
 
 describe('like \'lcase\' receiving', () => {

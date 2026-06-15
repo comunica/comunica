@@ -15,7 +15,7 @@ import {
   makeAggregate,
   nonLiteral,
   string,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { MinAggregator } from '../lib/MinAggregator';
 

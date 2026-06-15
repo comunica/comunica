@@ -5,8 +5,10 @@ import {
   dayTimeDurationTyped,
   dateTimeTyped,
   timeTyped,
-} from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { ActorFunctionFactoryTermAddition } from '../lib';
 
 describe('Add duration and dayTimeDuration 01', () => {

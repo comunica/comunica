@@ -2,8 +2,12 @@ import { ActorFunctionFactoryExpressionIn } from '@comunica/actor-function-facto
 import { ActorFunctionFactoryTermDivision } from '@comunica/actor-function-factory-term-division';
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  bool,
+  Notation,
+} from '@comunica/utils-jest';
+
+
 import { ActorFunctionFactoryExpressionNotIn } from '../lib';
 
 /**
