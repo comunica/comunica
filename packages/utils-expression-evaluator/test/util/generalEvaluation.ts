@@ -21,6 +21,7 @@ export interface IGeneralEvaluationArg {
    * The factory that will create the evaluator used for this evaluation.
    */
   exprEvalFactory?: ActorExpressionEvaluatorFactory;
+  toAlgebraParse?: (query: string) => Algebra.Operation;
 }
 
 export async function generalEvaluate(arg: IGeneralEvaluationArg):
@@ -35,6 +36,7 @@ Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
       [KeysInitQuery.dataFactory.name]: DF,
     }).merge(arg.generalEvaluationConfig ?? new ActionContext()),
     arg.exprEvalFactory,
+    arg.toAlgebraParse,
   );
   return { asyncResult };
 }
@@ -48,6 +50,7 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
       bindings,
       getMockEEActionContext(arg.generalEvaluationConfig),
       arg.exprEvalFactory,
+      arg.toAlgebraParse,
     );
     return undefined;
   } catch (error: unknown) {
@@ -56,9 +59,14 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
 }
 
 const parser = new SparqlParser();
-function parse(query: string) {
-  const parsedSyntax = parser.parse(query);
-  const sparqlQuery = <Algebra.Project> toAlgebra(parsedSyntax);
+function parse(query: string, toAlgebraParse?: (query: string) => Algebra.Operation) {
+  let sparqlQuery: Algebra.Project;
+  if (toAlgebraParse === undefined) {
+    const parsedSyntax = parser.parse(query);
+    sparqlQuery = <Algebra.Project> toAlgebra(parsedSyntax);
+  } else {
+    sparqlQuery = <Algebra.Project> toAlgebraParse(query);
+  }
   // Extract filter expression from complete query
   return (<Algebra.Filter> sparqlQuery.input).expression;
 }
@@ -68,8 +76,9 @@ async function evaluateAsync(
   bindings: RDF.Bindings,
   actionContext: IActionContext,
   exprEvalFactory?: ActorExpressionEvaluatorFactory,
+  toAlgebraParse?: (query: string) => Algebra.Operation,
 ): Promise<RDF.Term> {
   const evaluator = await (exprEvalFactory ?? getMockEEFactory())
-    .run({ algExpr: parse(expr), context: actionContext }, undefined);
+    .run({ algExpr: parse(expr, toAlgebraParse), context: actionContext }, undefined);
   return evaluator.evaluate(bindings);
 }

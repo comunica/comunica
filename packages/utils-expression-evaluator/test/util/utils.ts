@@ -59,6 +59,7 @@ export type TestTableConfig = ITestTableConfigBase & {
    * Result can be '' if the message doesn't need to be checked.
    */
   errorArray?: string[][];
+  toAlgebraParse?: (query: string) => Algebra.Operation;
 };
 
 export function runTestTable(arg: TestTableConfig): void {
