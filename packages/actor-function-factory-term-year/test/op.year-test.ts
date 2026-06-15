@@ -6,7 +6,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermYear } from '../lib';
 
 describe('evaluation of \'YEAR\'', () => {

@@ -9,7 +9,6 @@ import {
   getMockEEFactory,
 } from '@comunica/utils-jest';
 
-
 import { DataFactory } from 'rdf-data-factory';
 import { ActorFunctionFactoryExpressionBound } from '../lib';
 

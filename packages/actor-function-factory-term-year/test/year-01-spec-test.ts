@@ -1,10 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import {
-  int,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { EvalTestData as Data, int, Notation } from '@comunica/utils-jest';
 
 import { ActorFunctionFactoryTermYear } from '../lib';
 
@@ -33,7 +28,7 @@ describe('Year', () => {
    */
 
   describe('We should respect the year-01 spec', () => {
-    const { d1, d2, d3, d4 } = Data.data();
+    const { d1, d2, d3, d4 } = Data.data;
     runFuncTestTable({
       registeredActors: [
         args => new ActorFunctionFactoryTermYear(args),
@@ -81,7 +76,7 @@ describe('Year', () => {
    */
 
   describe('We should allow YEAR on xsd:dateTime', () => {
-    const { d1, d2, d3, d4 } = Data.data();
+    const { d1, d2, d3, d4 } = Data.data;
     runFuncTestTable({
       registeredActors: [
         args => new ActorFunctionFactoryTermYear(args),

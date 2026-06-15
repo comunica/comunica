@@ -6,7 +6,7 @@ import {
   DF,
   getMockEEActionContext,
   getMockEEFactory,
-  int,
+  termInt,
   makeAggregate,
 } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
@@ -52,17 +52,17 @@ describe('WildcardCountAggregator', () => {
 
     it('a list of bindings', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('y'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('3') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('y'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('3') ]]),
         BF.bindings([]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('4'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('4'));
     });
 
     it('with respect to empty input', async() => {
-      await expect(runAggregator(aggregator, [])).resolves.toEqual(int('0'));
+      await expect(runAggregator(aggregator, [])).resolves.toEqual(termInt('0'));
     });
 
     it('extends the AggregateEvaluator', () => {
@@ -82,54 +82,54 @@ describe('WildcardCountAggregator', () => {
 
     it('a list of bindings', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ], [ DF.variable('y'), termInt('1') ]]),
         BF.bindings([]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('4'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('4'));
     });
 
     it('a list of bindings containing 2 empty', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('y'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('3') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('y'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('3') ]]),
         BF.bindings([]),
         BF.bindings([]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('4'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('4'));
     });
 
     it('a list of bindings 2', async() => {
       const input = [
         BF.bindings([]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ], [ DF.variable('y'), termInt('1') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('4'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('4'));
     });
 
     it('a list of bindings 3', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ], [ DF.variable('y'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
         BF.bindings([]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('4'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('4'));
     });
 
     it('with respect to empty input', async() => {
-      await expect(runAggregator(aggregator, [])).resolves.toEqual(int('0'));
+      await expect(runAggregator(aggregator, [])).resolves.toEqual(termInt('0'));
     });
   });
 });

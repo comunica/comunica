@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-export,jest/no-standalone-expect,jest/require-top-level-describe,jest/prefer-each */
 import { stringToTermPrefix, template } from './Aliases';
 import { generalErrorEvaluation, generalEvaluate } from './generalEvaluation';
 import type { TestTableConfig } from './utils';
@@ -35,7 +34,7 @@ abstract class Table<RowType extends Row> {
 
   public abstract test(): void;
 
-  protected async testExpression(expr: string, result: string) {
+  protected async testExpression(expr: string, result: string): Promise<void> {
     const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const aliases = this.def.aliases ?? {};
     result = aliases[result] || result;
@@ -48,7 +47,7 @@ abstract class Table<RowType extends Row> {
     expect(evaluated.asyncResult).toEqual(stringToTermPrefix(result, additionalPrefixes));
   }
 
-  protected async testErrorExpression(expr: string, error: string) {
+  protected async testErrorExpression(expr: string, error: string): Promise<void> {
     const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const result = await generalErrorEvaluation({
       ...this.def,
@@ -295,4 +294,3 @@ class UnaryTableParser extends TableParser<[string, string]> {
     return [ arg, result ];
   }
 }
-/* eslint-enable jest/no-export */

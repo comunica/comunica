@@ -8,7 +8,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermSubtraction } from '../lib';
 
 describe('subtract duration and dayTimeDuration 01', () => {

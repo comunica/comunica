@@ -6,7 +6,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryExpressionSameTerm } from '../lib';
 
 describe('evaluation of \'sameTerm\'', () => {

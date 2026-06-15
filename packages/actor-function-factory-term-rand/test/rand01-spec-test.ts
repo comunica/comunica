@@ -14,7 +14,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermRand } from '../lib';
 
 describe('We should respect the rand01 spec', () => {

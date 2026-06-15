@@ -4,7 +4,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermXsdToDuration } from '../lib';
 
 describe('to duration', () => {

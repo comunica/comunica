@@ -10,7 +10,6 @@ import {
 import {
   ActorTermComparatorFactoryExpressionEvaluator,
 } from '../lib';
-import '@comunica/utils-jest';
 
 describe('ActorTermComparatorFactoryExpressionEvaluator', () => {
   let bus: any;

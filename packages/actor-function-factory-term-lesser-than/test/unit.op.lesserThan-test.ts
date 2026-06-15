@@ -8,7 +8,6 @@ import {
   getMockExpression,
 } from '@comunica/utils-jest';
 
-
 import { TermFunctionLesserThan } from '../lib/TermFunctionLesserThan';
 
 describe('lesser than', () => {

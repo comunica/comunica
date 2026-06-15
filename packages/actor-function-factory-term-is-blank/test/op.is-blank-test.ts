@@ -7,7 +7,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermIsBlank } from '../lib';
 
 describe('like \'isBlank\' receiving', () => {

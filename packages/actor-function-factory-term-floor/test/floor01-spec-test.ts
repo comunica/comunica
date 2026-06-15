@@ -1,11 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import {
-  int,
-  decimal,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { EvalTestData as Data, int, decimal, Notation } from '@comunica/utils-jest';
 
 import { ActorFunctionFactoryTermFloor } from '../lib';
 
@@ -34,7 +28,7 @@ import { ActorFunctionFactoryTermFloor } from '../lib';
  */
 
 describe('We should respect the floor01 spec', () => {
-  const { n1, n2, n3, n4, n5 } = Data.data();
+  const { n1, n2, n3, n4, n5 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermFloor(args),

@@ -10,7 +10,6 @@ import {
 } from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryGroupConcat } from '../lib';
-import '@comunica/utils-jest';
 
 describe('ActorBindingsAggregatorFactoryGroupConcat', () => {
   let bus: any;

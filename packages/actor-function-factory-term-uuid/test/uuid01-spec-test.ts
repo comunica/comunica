@@ -10,7 +10,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermUuid } from '../lib';
 
 /**

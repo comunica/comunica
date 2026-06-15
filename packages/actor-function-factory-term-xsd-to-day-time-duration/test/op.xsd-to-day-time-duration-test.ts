@@ -6,7 +6,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermXsdToDayTimeDuration } from '../lib';
 
 describe('to dayTimeDuration', () => {

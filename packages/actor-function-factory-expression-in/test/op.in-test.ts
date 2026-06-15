@@ -10,7 +10,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryExpressionIn } from '../lib';
 
 describe('evaluations of \'IN\'', () => {

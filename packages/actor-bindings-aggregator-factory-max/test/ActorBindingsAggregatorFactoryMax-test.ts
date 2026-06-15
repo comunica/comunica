@@ -13,7 +13,6 @@ import {
 } from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryMax } from '../lib';
-import '@comunica/utils-jest';
 
 describe('ActorBindingsAggregatorFactoryMax', () => {
   let bus: any;

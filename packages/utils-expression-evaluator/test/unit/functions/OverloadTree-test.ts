@@ -20,7 +20,6 @@ import {
 } from '../../../lib/expressions';
 import type { ISerializable } from '../../../lib/expressions';
 
-
 describe('OverloadTree', () => {
   let emptyTree: OverloadTree;
   const emptyID = 'Non cacheable';

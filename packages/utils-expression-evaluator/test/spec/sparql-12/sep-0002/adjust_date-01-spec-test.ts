@@ -6,8 +6,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
-
 describe('adjust date duration', () => {
   /**
    * PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>

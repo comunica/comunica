@@ -27,33 +27,31 @@ import { dateTyped, dateTimeTyped, decimal, int } from './Aliases';
 // :d4 :date "2011-02-01T01:02:03"^^xsd:dateTime .
 
 // https://raw.githubusercontent.com/w3c/rdf-tests/gh-pages/sparql11/data-sparql11/functions/data.ttl
-export function data() {
-  return {
-    n1: int('-1'),
-    n2: decimal('-1.6'),
-    n3: decimal('1.1'),
-    n4: int('-2'),
-    n5: decimal('2.5'),
+export const data = {
+  n1: int('-1'),
+  n2: decimal('-1.6'),
+  n3: decimal('1.1'),
+  n4: int('-2'),
+  n5: decimal('2.5'),
 
-    s1: '"foo"',
-    s2: '"bar"@en',
-    s3: '"BAZ"',
-    s4: '"食べ物"',
-    s5: '"100%"',
-    s6: '"abc"^^xsd:string',
-    s7: '"DEF"^^xsd:string',
+  s1: '"foo"',
+  s2: '"bar"@en',
+  s3: '"BAZ"',
+  s4: '"食べ物"',
+  s5: '"100%"',
+  s6: '"abc"^^xsd:string',
+  s7: '"DEF"^^xsd:string',
 
-    d1: dateTimeTyped('2010-06-21T11:28:01Z'),
-    d2: dateTimeTyped('2010-12-21T15:38:02-08:00'),
-    d3: dateTimeTyped('2008-06-20T23:59:00Z'),
-    d4: dateTimeTyped('2011-02-01T01:02:03'),
+  d1: dateTimeTyped('2010-06-21T11:28:01Z'),
+  d2: dateTimeTyped('2010-12-21T15:38:02-08:00'),
+  d3: dateTimeTyped('2008-06-20T23:59:00Z'),
+  d4: dateTimeTyped('2011-02-01T01:02:03'),
 
-    dr1: dateTyped('2010-06-21'),
-    dr2: dateTyped('2010-12-21'),
-    dr3: dateTyped('2008-06-20'),
-    dr4: dateTyped('2011-02-01'),
-  };
-}
+  dr1: dateTyped('2010-06-21'),
+  dr2: dateTyped('2010-12-21'),
+  dr3: dateTyped('2008-06-20'),
+  dr4: dateTyped('2011-02-01'),
+};
 
 // Data 2 ----------------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -71,17 +69,15 @@ export function data() {
 // :s7 :str 7 .
 
 // https://raw.githubusercontent.com/w3c/rdf-tests/gh-pages/sparql11/data-sparql11/functions/data2.ttl
-export function data2() {
-  return {
-    s1: '"123"',
-    s2: '"日本語"@ja',
-    s3: '"english"@en',
-    s4: '"français"@fr',
-    s5: '"abc"^^xsd:string',
-    s6: '"def"^^xsd:string',
-    s7: int('7'),
-  };
-}
+export const data2 = {
+  s1: '"123"',
+  s2: '"日本語"@ja',
+  s3: '"english"@en',
+  s4: '"français"@fr',
+  s5: '"abc"^^xsd:string',
+  s6: '"def"^^xsd:string',
+  s7: int('7'),
+};
 
 // Data 3 ----------------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -98,20 +94,17 @@ export function data2() {
 // :s9 :str "abcd" .
 
 // https://raw.githubusercontent.com/w3c/rdf-tests/gh-pages/sparql11/data-sparql11/functions/data3.ttl
-
-export function data3() {
-  return {
-    s1: '"123"',
-    s2: '"日本語"@ja',
-    s3: '"English"@en',
-    s4: '"Français"@fr',
-    s5: '"abc"^^xsd:string',
-    s6: '"def"^^xsd:string',
-    s7: int('7'),
-    s8: '"banana"',
-    s9: '"abcd"',
-  };
-}
+export const data3 = {
+  s1: '"123"',
+  s2: '"日本語"@ja',
+  s3: '"English"@en',
+  s4: '"Français"@fr',
+  s5: '"abc"^^xsd:string',
+  s6: '"def"^^xsd:string',
+  s7: int('7'),
+  s8: '"banana"',
+  s9: '"abcd"',
+};
 
 // Data 4 ----------------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -122,14 +115,11 @@ export function data3() {
 // :s3 :str "abc"^^xsd:string .
 
 // https://github.com/w3c/rdf-tests/blob/gh-pages/sparql11/data-sparql11/functions/data4.ttl
-
-export function data4() {
-  return {
-    s1: '"abc"',
-    s2: '"abc"@en',
-    s3: '"abc"^^xsd:string',
-  };
-}
+export const data4 = {
+  s1: '"abc"',
+  s2: '"abc"@en',
+  s3: '"abc"^^xsd:string',
+};
 
 // Data builtin ----------------------------------------------------------------
 // @prefix : <http://example/> .
@@ -144,26 +134,24 @@ export function data4() {
 // :x7 :p  "1"^^xsd:string ; :q "2" .
 // :x8 :p "1"^^xsd:string ; :q 2 .
 
-export function dataBuiltin3() {
-  return {
-    x1p: '"a"',
-    x1q: '1',
-    // X2p: '"1"',
-    x2q: '"1"',
-    // X3p: '',
-    x3q: '"1"',
-    x4p: '1',
-    x4q: '2',
-    x5p: '1.0',
-    x5q: '2',
-    x6p: '"1"',
-    x6q: '"2"',
-    x7p: '"1"^^xsd:string',
-    x7q: '"2"',
-    x8p: '"1"^^xsd:string',
-    x8q: '2',
-  };
-}
+export const dataBuiltin3 = {
+  x1p: '"a"',
+  x1q: '1',
+  // X2p: '"1"',
+  x2q: '"1"',
+  // X3p: '',
+  x3q: '"1"',
+  x4p: '1',
+  x4q: '2',
+  x5p: '1.0',
+  x5q: '2',
+  x6p: '"1"',
+  x6q: '"2"',
+  x7p: '"1"^^xsd:string',
+  x7q: '"2"',
+  x8p: '"1"^^xsd:string',
+  x8q: '2',
+};
 
 // Regex data Quantifiers ----------------------------------------------------------------------
 // @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -172,21 +160,18 @@ export function dataBuiltin3() {
 // ex:foo rdf:value "ac" , "abc" , "abbc" , "abbbc" , "a\nc", "a\nb\nc" , "a.c" , "ABC" , "a?+*.{}()[]c" , "b" .
 
 // https://github.com/w3c/rdf-tests/sparql/sparql10/regex/regex-data-quantifiers.ttl
-
-export function dataRegexQuantifiers() {
-  return {
-    s1: '"ac"',
-    s2: '"abc"',
-    s3: '"abbc"',
-    s4: '"abbbc"',
-    s5: '"a\\nc"',
-    s6: '"a\\nb\\nc"',
-    s7: '"a.c"',
-    s8: '"ABC"',
-    s9: '"a?+*.{}()[]c"',
-    s10: '"b"',
-  };
-}
+export const dataRegexQuantifiers = {
+  s1: '"ac"',
+  s2: '"abc"',
+  s3: '"abbc"',
+  s4: '"abbbc"',
+  s5: '"a\\nc"',
+  s6: '"a\\nb\\nc"',
+  s7: '"a.c"',
+  s8: '"ABC"',
+  s9: '"a?+*.{}()[]c"',
+  s10: '"b"',
+};
 
 // Hash unicode ----------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -195,8 +180,6 @@ export function dataRegexQuantifiers() {
 // # string data
 // :s8 :str "\u98DF" .
 
-export function hashUnicode() {
-  return {
-    s8: '"\u98DF"',
-  };
-}
+export const hashUnicode = {
+  s8: '"\u98DF"',
+};

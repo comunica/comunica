@@ -1,6 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import { Notation } from '@comunica/utils-jest';
+import { EvalTestData as Data, Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermSha256 } from '../lib';
 
 /**
@@ -33,7 +32,7 @@ import { ActorFunctionFactoryTermSha256 } from '../lib';
  */
 
 describe('We should respect the sha256-01 spec', () => {
-  const { s1 } = Data.data();
+  const { s1 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermSha256(args),

@@ -4,7 +4,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermStrAfter } from '../lib';
 
 describe('evaluations of \'strafter\' like', () => {

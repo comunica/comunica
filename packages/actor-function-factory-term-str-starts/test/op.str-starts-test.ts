@@ -4,7 +4,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermStrStarts } from '../lib';
 
 describe('evaluation of \'strstarts\' like', () => {

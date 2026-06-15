@@ -16,10 +16,10 @@ import type { GeneralSuperTypeDict, IActionContext, ISuperTypeProvider } from '@
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import * as Eval from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
-import * as Eval from '@comunica/utils-expression-evaluator';
 
 export const DF = new DataFactory();
 export const BF = new BindingsFactory(DF);
@@ -115,7 +115,7 @@ export function getMockMediatorExpressionEvaluatorFactory(
 ): MediatorExpressionEvaluatorFactory {
   return <any>{
     async mediate(arg: any) {
-      return getMockEEFactory(args).run(arg, undefined);
+      return getMockEEFactory(args).run(arg, <any> undefined);
     },
   };
 }

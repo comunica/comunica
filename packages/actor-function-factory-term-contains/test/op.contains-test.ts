@@ -4,7 +4,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermContains } from '../lib';
 
 describe('evaluation of \'contains\' like', () => {

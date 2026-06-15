@@ -5,7 +5,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermTz } from '../lib';
 
 describe('evaluation of \'TZ\'', () => {

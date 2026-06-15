@@ -4,7 +4,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermStrEnds } from '../lib';
 
 describe('evaluation of \'strends\' like', () => {

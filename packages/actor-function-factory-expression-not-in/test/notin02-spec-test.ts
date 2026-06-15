@@ -7,7 +7,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryExpressionNotIn } from '../lib';
 
 /**

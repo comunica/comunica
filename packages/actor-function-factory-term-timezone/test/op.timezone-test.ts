@@ -5,7 +5,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermTimezone } from '../lib';
 
 describe('evaluation of \'timezone\'', () => {

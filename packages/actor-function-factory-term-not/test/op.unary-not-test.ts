@@ -5,7 +5,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermNot } from '../lib';
 
 describe('evaluation of \'! (unary)\' like', () => {

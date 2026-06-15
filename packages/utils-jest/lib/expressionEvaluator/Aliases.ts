@@ -53,7 +53,7 @@ export function stringToTermPrefix(str: string, additionalPrefixes?: Record<stri
   }
 }
 
-export function template(expr: string, additionalPrefixes?: Record<string, string>) {
+export function template(expr: string, additionalPrefixes?: Record<string, string>): string {
   const prefixRecord = additionalPrefixes ? { ...defaultPrefixes, ...additionalPrefixes } : defaultPrefixes;
   const prefix = Object.entries(prefixRecord).map(([ pref, full ]) =>
     `PREFIX ${pref.endsWith(':') ? pref : `${pref}:`} <${full}>`).join('\n');

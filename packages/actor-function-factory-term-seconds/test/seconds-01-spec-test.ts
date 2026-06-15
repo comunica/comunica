@@ -1,10 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import {
-  decimal,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { EvalTestData as Data, decimal, Notation } from '@comunica/utils-jest';
 
 import { ActorFunctionFactoryTermSeconds } from '../lib';
 
@@ -32,7 +27,7 @@ import { ActorFunctionFactoryTermSeconds } from '../lib';
  */
 
 describe('We should respect the seconds-01 spec', () => {
-  const { d1, d2, d3, d4 } = Data.data();
+  const { d1, d2, d3, d4 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermSeconds(args),

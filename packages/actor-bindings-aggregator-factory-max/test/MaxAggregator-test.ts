@@ -7,11 +7,11 @@ import {
   BF,
   date,
   DF,
-  double,
+  termDouble,
   float,
   getMockEEActionContext,
   getMockEEFactory,
-  int,
+  termInt,
   makeAggregate,
   nonLiteral,
   string,
@@ -76,13 +76,13 @@ describe('MaxAggregator', () => {
 
     it('a list of bindings', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('3') ]]),
-        BF.bindings([[ DF.variable('x'), int('4') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('3') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('4') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('4'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('4'));
     });
 
     it('a list of string bindings', async() => {
@@ -109,28 +109,28 @@ describe('MaxAggregator', () => {
 
     it('should work with different types', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), double('11.0') ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), termDouble('11.0') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
         BF.bindings([[ DF.variable('x'), float('3') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(double('11.0'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termDouble('11.0'));
     });
 
     it('passing a non-literal should not be accepted', async() => {
       const input = [
         BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('3') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('3') ]]),
       ];
       await expect(runAggregator(aggregator, input)).resolves.toBeUndefined();
     });
 
     it('passing a non-literal should not be accepted even in non-first place', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
         BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
-        BF.bindings([[ DF.variable('x'), int('3') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('3') ]]),
       ];
       await expect(runAggregator(aggregator, input)).resolves.toBeUndefined();
     });
@@ -154,13 +154,13 @@ describe('MaxAggregator', () => {
 
     it('a list of bindings', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ], [ DF.variable('y'), termInt('1') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('2'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('2'));
     });
 
     it('with respect to empty input', async() => {
@@ -189,7 +189,7 @@ describe('MaxAggregator', () => {
     it('and the first value errors', async() => {
       const input = [
         BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
       ];
       await expect(runAggregator(aggregator, input)).rejects
         .toThrow('Term with value http://example.org/ has type NamedNode and is not a literal');
@@ -197,7 +197,7 @@ describe('MaxAggregator', () => {
 
     it('and any value in the stream errors', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
         BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
       ];
       await expect(runAggregator(aggregator, input)).rejects

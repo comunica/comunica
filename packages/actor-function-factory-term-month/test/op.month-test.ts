@@ -5,7 +5,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermMonth } from '../lib';
 
 describe('evaluation of \'MONTH\'', () => {

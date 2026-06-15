@@ -9,9 +9,6 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { TermTransformer, TypeURL } from '../../../lib';
 
-
-
-
 const DF = new DataFactory();
 
 // https://www.w3.org/TR/sparql11-query/#ebv

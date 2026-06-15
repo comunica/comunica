@@ -12,8 +12,6 @@ import {
   runTestTable,
 } from '@comunica/utils-jest';
 
-
-
 import type { ActorFunctionFactory } from '../lib';
 
 interface RunFuncTestTableArgs extends IActorFunctionFactoryArgs {

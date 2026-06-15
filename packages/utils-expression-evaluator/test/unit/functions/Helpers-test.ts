@@ -10,7 +10,6 @@ import {
 import type { Builder } from '../../../lib';
 import { TypeURL, bool, declare } from '../../../lib';
 
-
 import fn = jest.fn;
 
 describe('The function helper file', () => {

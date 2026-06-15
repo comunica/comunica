@@ -5,7 +5,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermSeconds } from '../lib';
 
 describe('evaluation of \'SECONDS\'', () => {

@@ -5,9 +5,6 @@ import {
   getMockExpression,
 } from '@comunica/utils-jest';
 
-
-import '@comunica/utils-jest';
-
 describe('ActorExpressionEvaluatorFactoryDefault', () => {
   describe('An ActorExpressionEvaluatorFactoryDefault instance', () => {
     let actor: ActorExpressionEvaluatorFactory;

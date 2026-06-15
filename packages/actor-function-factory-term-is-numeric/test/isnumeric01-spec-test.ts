@@ -1,10 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import {
-  bool,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { EvalTestData as Data, bool, Notation } from '@comunica/utils-jest';
 
 import { ActorFunctionFactoryTermIsNumeric } from '../lib';
 
@@ -33,7 +28,7 @@ import { ActorFunctionFactoryTermIsNumeric } from '../lib';
  */
 
 describe('We should respect the isnumeric01 spec', () => {
-  const { n1, n2, n3, n4, n5, s1, s2, s3, s4, s5, s6, s7, d1, d2, d3, d4 } = Data.data();
+  const { n1, n2, n3, n4, n5, s1, s2, s3, s4, s5, s6, s7, d1, d2, d3, d4 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermIsNumeric(args),

@@ -12,7 +12,6 @@ import {
 } from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryMin } from '../lib';
-import '@comunica/utils-jest';
 
 describe('ActorBindingsAggregatorFactoryMin', () => {
   let bus: any;

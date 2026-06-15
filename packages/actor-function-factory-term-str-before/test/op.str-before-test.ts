@@ -4,7 +4,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermStrBefore } from '../lib';
 
 describe('evaluations of \'strbefore\' like', () => {

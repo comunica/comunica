@@ -6,7 +6,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryExpressionCoalesce } from '../lib';
 
 /**

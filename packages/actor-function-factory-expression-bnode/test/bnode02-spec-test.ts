@@ -6,7 +6,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryExpressionBnode } from '../lib';
 
 /**

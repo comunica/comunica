@@ -7,7 +7,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermMultiplication } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

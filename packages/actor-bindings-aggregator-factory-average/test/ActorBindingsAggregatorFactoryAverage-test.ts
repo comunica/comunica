@@ -11,7 +11,6 @@ import {
   makeAggregate,
 } from '@comunica/utils-jest';
 import { ActorBindingsAggregatorFactoryAverage } from '../lib';
-import '@comunica/utils-jest';
 
 describe('ActorBindingsAggregatorFactoryAverage', () => {
   let bus: any;

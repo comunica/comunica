@@ -1,10 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import {
-  int,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { EvalTestData as Data, int, Notation } from '@comunica/utils-jest';
 
 import { ActorFunctionFactoryTermDay } from '../lib';
 
@@ -32,7 +27,7 @@ import { ActorFunctionFactoryTermDay } from '../lib';
  */
 
 describe('We should respect the day-01 spec', () => {
-  const { d1, d2, d3, d4 } = Data.data();
+  const { d1, d2, d3, d4 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermDay(args),

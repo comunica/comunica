@@ -4,7 +4,6 @@ import {
   getMockExpression,
 } from '@comunica/utils-jest';
 
-
 import { AlgebraTransformer } from '../lib/AlgebraTransformer';
 
 // https://www.w3.org/TR/sparql11-query/#ebv

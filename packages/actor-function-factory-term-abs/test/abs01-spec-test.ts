@@ -7,12 +7,7 @@ import {
   ActorFunctionFactoryTermLesserThanEqual,
 } from '@comunica/actor-function-factory-term-lesser-than-equal';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import {
-  bool,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { EvalTestData as Data, bool, Notation } from '@comunica/utils-jest';
 
 import { ActorFunctionFactoryTermAbs } from '../lib';
 
@@ -41,7 +36,7 @@ import { ActorFunctionFactoryTermAbs } from '../lib';
  */
 
 describe('We should respect the abs01 spec', () => {
-  const { n1, n2, n3, n4, n5 } = Data.data();
+  const { n1, n2, n3, n4, n5 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermGreaterThanEqual(args),

@@ -1,6 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import { Notation } from '@comunica/utils-jest';
+import { EvalTestData as Data, Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermStrAfter } from '../lib';
 
 /**
@@ -38,7 +37,7 @@ import { ActorFunctionFactoryTermStrAfter } from '../lib';
  */
 
 describe('We should respect the strafter02 spec', () => {
-  const { s1, s2, s3 } = Data.data4();
+  const { s1, s2, s3 } = Data.data4;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermStrAfter(args),

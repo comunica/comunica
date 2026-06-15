@@ -6,8 +6,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
-
 describe('compare duration 01', () => {
   /**
    * PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>

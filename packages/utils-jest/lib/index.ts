@@ -8,6 +8,7 @@ export * from './expressionEvaluator/utils';
 export * as EvalTestData from './expressionEvaluator/data';
 // Explicit re-export from helpers to avoid name conflicts with Aliases
 // (int, decimal, double in helpers return RDF.Term; in Aliases they return strings)
+// termInt/termDecimal/termDouble are the RDF.Term-returning versions from helpers
 export {
   BF,
   DF,
@@ -24,6 +25,9 @@ export {
   makeAggregate,
   nonLiteral,
   string,
+  int as termInt,
+  decimal as termDecimal,
+  double as termDouble,
 } from './expressionEvaluator/helpers';
 
 declare global {

@@ -12,7 +12,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { LRUCache } from 'lru-cache';
 import { ActorFunctionFactoryTermStrLen } from '../lib';
 

@@ -4,11 +4,11 @@ import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getMockEEActionContext, getMockEEFactory } from './helpers';
 import type * as RDF from '@rdfjs/types';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import { DataFactory } from 'rdf-data-factory';
+import { getMockEEActionContext, getMockEEFactory } from './helpers';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -59,7 +59,7 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
 }
 
 const parser = new SparqlParser();
-function parse(query: string, toAlgebraParse?: (query: string) => Algebra.Operation) {
+function parse(query: string, toAlgebraParse?: (query: string) => Algebra.Operation): Algebra.BaseExpression {
   let sparqlQuery: Algebra.Project;
   if (toAlgebraParse === undefined) {
     const parsedSyntax = parser.parse(query);
@@ -79,6 +79,6 @@ async function evaluateAsync(
   toAlgebraParse?: (query: string) => Algebra.Operation,
 ): Promise<RDF.Term> {
   const evaluator = await (exprEvalFactory ?? getMockEEFactory())
-    .run({ algExpr: parse(expr, toAlgebraParse), context: actionContext }, undefined);
+    .run({ algExpr: parse(expr, toAlgebraParse), context: actionContext }, <any> undefined);
   return evaluator.evaluate(bindings);
 }

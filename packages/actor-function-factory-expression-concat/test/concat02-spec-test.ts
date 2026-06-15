@@ -1,6 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import { Notation } from '@comunica/utils-jest';
+import { EvalTestData as Data, Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryExpressionConcat } from '../lib';
 
 /**
@@ -28,7 +27,7 @@ import { ActorFunctionFactoryExpressionConcat } from '../lib';
  */
 
 describe('We should respect the concat02 spec', () => {
-  const { s1, s2, s3, s4, s5, s6, s7 } = Data.data2();
+  const { s1, s2, s3, s4, s5, s6, s7 } = Data.data2;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryExpressionConcat(args),

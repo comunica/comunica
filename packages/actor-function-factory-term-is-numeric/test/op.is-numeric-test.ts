@@ -7,7 +7,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermIsNumeric } from '../lib';
 
 describe('like \'isNumeric\' receiving', () => {

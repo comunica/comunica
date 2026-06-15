@@ -14,7 +14,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-
 import { ActorFunctionFactoryTermGreaterThan } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

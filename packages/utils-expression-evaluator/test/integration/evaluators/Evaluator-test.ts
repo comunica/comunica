@@ -4,17 +4,15 @@ import type { ITermFunction, MediatorFunctionFactory } from '@comunica/bus-funct
 import { Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { DataFactory } from 'rdf-data-factory';
-import { IntegerLiteral, SparqlOperator } from '../../../lib';
-import { TypeURL as DT } from '../../../lib/util/Consts';
-import * as Err from '../../../lib/util/Errors';
 import {
   getMockEEActionContext,
   getMockEEFactory,
   getMockExpression,
 } from '@comunica/utils-jest';
-
-
+import { DataFactory } from 'rdf-data-factory';
+import { IntegerLiteral, SparqlOperator } from '../../../lib';
+import { TypeURL as DT } from '../../../lib/util/Consts';
+import * as Err from '../../../lib/util/Errors';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

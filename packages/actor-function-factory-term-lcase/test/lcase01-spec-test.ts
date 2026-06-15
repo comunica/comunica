@@ -1,6 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import { Notation } from '@comunica/utils-jest';
+import { EvalTestData as Data, Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermLcase } from '../lib';
 
 /**
@@ -27,7 +26,7 @@ import { ActorFunctionFactoryTermLcase } from '../lib';
  */
 
 describe('We should respect the lcase01 spec', () => {
-  const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
+  const { s1, s2, s3, s4, s5, s6, s7 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermLcase(args),

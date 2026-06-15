@@ -1,6 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import { Notation } from '@comunica/utils-jest';
+import { EvalTestData as Data, Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermMd5 } from '../lib';
 
 /**
@@ -27,7 +26,7 @@ import { ActorFunctionFactoryTermMd5 } from '../lib';
  */
 
 describe('We should respect the md5-02 spec', () => {
-  const { s4 } = Data.data();
+  const { s4 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermMd5(args),

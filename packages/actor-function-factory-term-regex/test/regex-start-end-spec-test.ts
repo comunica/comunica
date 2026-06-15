@@ -1,10 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data } from '@comunica/utils-jest';
-import {
-  bool,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { EvalTestData as Data, bool, Notation } from '@comunica/utils-jest';
 
 import { ActorFunctionFactoryTermRegex } from '../lib';
 
@@ -32,7 +27,7 @@ import { ActorFunctionFactoryTermRegex } from '../lib';
  */
 
 describe('We should respect the regex-start-end spec', () => {
-  const { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10 } = Data.dataRegexQuantifiers();
+  const { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10 } = Data.dataRegexQuantifiers;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermRegex(args),
