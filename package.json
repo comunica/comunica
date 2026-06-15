@@ -13,7 +13,7 @@
     "build:browser": "lerna run browser",
     "build:changed": "lerna run build --since HEAD",
     "build:components": "componentsjs-generator engines/* packages/*",
-    "build:engines": "lerna run prepare",
+    "build:engines": "yarn workspace @comunica/query-sparql run prepare && yarn workspace @comunica/query-sparql-file run prepare && yarn workspace @comunica/query-sparql-rdfjs run prepare && yarn workspace @comunica/query-sparql-rdfjs-lite run prepare",
     "build:ts": "tsc",
     "build-watch": "nodemon -e ts --ignore '*.d.ts' --exec yarn run build",
     "build-watch:components": "nodemon -e d.ts --exec yarn run build:components",
