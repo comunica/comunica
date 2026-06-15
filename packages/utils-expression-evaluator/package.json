@@ -26,6 +26,19 @@
   "sideEffects": false,
   "main": "lib/index.js",
   "typings": "lib/index",
+  "exports": {
+    ".": "./lib/index.js",
+    "./test-util/Aliases": "./lib/test-util/Aliases.js",
+    "./test-util/TestTable": "./lib/test-util/TestTable.js",
+    "./test-util/generalEvaluation": "./lib/test-util/generalEvaluation.js",
+    "./test-util/helpers": "./lib/test-util/helpers.js",
+    "./test-util/utils": "./lib/test-util/utils.js"
+  },
+  "typesVersions": {
+    "*": {
+      "test-util/*": [ "lib/test-util/*" ]
+    }
+  },
   "publishConfig": {
     "access": "public"
   },
