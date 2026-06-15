@@ -5,6 +5,7 @@ export * from './expressionEvaluator/Aliases';
 export * from './expressionEvaluator/TestTable';
 export * from './expressionEvaluator/generalEvaluation';
 export * from './expressionEvaluator/utils';
+export * as EvalTestData from './expressionEvaluator/data';
 // Explicit re-export from helpers to avoid name conflicts with Aliases
 // (int, decimal, double in helpers return RDF.Term; in Aliases they return strings)
 export {

@@ -51,8 +51,5 @@
     "@comunica/utils-metadata": "^5.2.3",
     "@rdfjs/types": "*",
     "asynciterator": "^3.10.0"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

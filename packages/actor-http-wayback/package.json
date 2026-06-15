@@ -45,8 +45,5 @@
     "@comunica/context-entries": "^5.2.3",
     "@comunica/core": "^5.2.3",
     "@jeswr/stream-to-string": "^2.0.0"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

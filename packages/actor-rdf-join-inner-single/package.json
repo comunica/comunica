@@ -44,8 +44,5 @@
     "@comunica/bus-rdf-join": "^5.2.3",
     "@comunica/core": "^5.2.3",
     "@comunica/mediatortype-join-coefficients": "^5.2.3"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

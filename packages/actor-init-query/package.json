@@ -67,8 +67,5 @@
   },
   "browser": {
     "./lib/index.js": "./lib/index-browser.js"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

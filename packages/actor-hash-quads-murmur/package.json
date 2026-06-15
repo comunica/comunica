@@ -45,8 +45,5 @@
     "@comunica/core": "^5.2.3",
     "@types/imurmurhash": "^0.1.4",
     "imurmurhash": "^0.1.4"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

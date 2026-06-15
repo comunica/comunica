@@ -43,8 +43,5 @@
   "dependencies": {
     "@comunica/bus-merge-bindings-context": "^5.2.3",
     "@comunica/core": "^5.2.3"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

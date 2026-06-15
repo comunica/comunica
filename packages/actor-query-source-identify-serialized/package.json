@@ -48,8 +48,5 @@
     "@rdfjs/types": "*",
     "rdf-store-stream": "^3.0.0",
     "readable-stream": "^4.7.0"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

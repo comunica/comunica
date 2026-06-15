@@ -47,8 +47,5 @@
     "@comunica/types": "^5.2.3",
     "readable-stream": "^4.7.0",
     "sparqljson-to-tree": "^3.0.1"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

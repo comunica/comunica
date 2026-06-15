@@ -50,8 +50,5 @@
     "asynciterator": "^3.10.0",
     "rdf-string-ttl": "^2.0.1",
     "readable-stream": "^4.7.0"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

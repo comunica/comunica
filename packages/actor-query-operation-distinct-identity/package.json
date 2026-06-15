@@ -49,8 +49,5 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.10.0",
     "rdf-string": "^2.0.1"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

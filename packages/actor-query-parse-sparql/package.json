@@ -48,8 +48,5 @@
     "@traqula/algebra-sparql-1-2": "^1.0.1",
     "@traqula/parser-sparql-1-2": "^1.0.1",
     "@traqula/rules-sparql-1-2": "^1.0.1"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

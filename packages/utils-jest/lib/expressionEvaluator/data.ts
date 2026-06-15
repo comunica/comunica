@@ -1,4 +1,4 @@
-import { dateTyped, dateTimeTyped, decimal, int } from '@comunica/utils-jest';
+import { dateTyped, dateTimeTyped, decimal, int } from './Aliases';
 
 // Data ------------------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .

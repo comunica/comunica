@@ -1,6 +1,6 @@
 import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
+import { EvalTestData as Data } from '@comunica/utils-jest';
 import { Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermStrLang } from '../lib/ActorFunctionFactoryTermStrLang';
 

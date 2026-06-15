@@ -44,8 +44,5 @@
     "@comunica/bus-rdf-parse": "^5.2.3",
     "@comunica/context-entries": "^5.2.3",
     "rdfxml-streaming-parser": "^3.2.0"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

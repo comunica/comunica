@@ -48,8 +48,5 @@
     "@comunica/utils-algebra": "^5.2.0",
     "@rdfjs/types": "*",
     "rdf-data-factory": "^2.0.0"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }
