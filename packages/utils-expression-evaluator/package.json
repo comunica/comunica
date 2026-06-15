@@ -26,19 +26,6 @@
   "sideEffects": false,
   "main": "lib/index.js",
   "typings": "lib/index",
-  "exports": {
-    ".": "./lib/index.js",
-    "./test-util/Aliases": "./lib/test-util/Aliases.js",
-    "./test-util/TestTable": "./lib/test-util/TestTable.js",
-    "./test-util/generalEvaluation": "./lib/test-util/generalEvaluation.js",
-    "./test-util/helpers": "./lib/test-util/helpers.js",
-    "./test-util/utils": "./lib/test-util/utils.js"
-  },
-  "typesVersions": {
-    "*": {
-      "test-util/*": [ "lib/test-util/*" ]
-    }
-  },
   "publishConfig": {
     "access": "public"
   },
@@ -51,15 +38,7 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "devDependencies": {
-    "@comunica/actor-expression-evaluator-factory-default": "^5.2.3",
-    "@comunica/bus-expression-evaluator-factory": "^5.2.3",
-    "@comunica/bus-function-factory": "^5.2.3",
-    "@comunica/bus-merge-bindings-context": "^5.2.3",
-    "@comunica/bus-query-operation": "^5.2.3",
-    "@comunica/core": "^5.2.3",
-    "@comunica/utils-bindings-factory": "^5.2.3",
-    "@traqula/algebra-sparql-1-2": "^1.0.1",
-    "@traqula/parser-sparql-1-2": "^1.0.1"
+    "@comunica/utils-jest": "^5.2.3"
   },
   "dependencies": {
     "@comunica/context-entries": "^5.2.3",

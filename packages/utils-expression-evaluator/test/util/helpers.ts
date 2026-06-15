@@ -1,1 +1,1 @@
-export * from '../../lib/test-util/helpers';
+export * from '@comunica/utils-jest';

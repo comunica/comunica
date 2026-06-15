@@ -19,7 +19,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
-import * as Eval from '../index';
+import * as Eval from '@comunica/utils-expression-evaluator';
 
 export const DF = new DataFactory();
 export const BF = new BindingsFactory(DF);

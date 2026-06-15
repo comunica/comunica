@@ -1,1 +1,1 @@
-export * from '../../lib/test-util/Aliases';
+export * from '@comunica/utils-jest';
