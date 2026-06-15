@@ -112,7 +112,7 @@ export abstract class ActorDereferenceHttpBase extends ActorDereference implemen
       requestTime,
       status: httpResponse.status,
       headers: httpResponse.headers,
-      mediaType: mediaType === 'text/plain' ? undefined : mediaType,
+      mediaType: mediaType === 'text/plain' || mediaType === 'application/octet-stream' ? undefined : mediaType,
       version,
       cachePolicy: httpResponse.cachePolicy ?
         new DereferenceCachePolicyHttpWrapper(httpResponse.cachePolicy, maxAcceptHeaderLength) :
