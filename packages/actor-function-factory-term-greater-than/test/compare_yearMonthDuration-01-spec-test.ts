@@ -6,7 +6,6 @@ import {
   yearMonthDurationTyped,
   Notation,
 } from '@comunica/utils-jest';
-
 import { ActorFunctionFactoryTermGreaterThan } from '../lib';
 
 describe('compare yearMonthDuration 01', () => {

@@ -18,7 +18,6 @@ import {
   yearMonthDurationTyped,
   Notation,
 } from '@comunica/utils-jest';
-
 import { ActorFunctionFactoryTermGreaterThanEqual } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

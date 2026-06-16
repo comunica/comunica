@@ -8,7 +8,6 @@ import {
 } from '@comunica/actor-function-factory-term-lesser-than-equal';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { EvalTestData as Data, bool, Notation } from '@comunica/utils-jest';
-
 import { ActorFunctionFactoryTermAbs } from '../lib';
 
 /**

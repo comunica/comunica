@@ -5,7 +5,6 @@ import {
   yearMonthDurationTyped,
   Notation,
 } from '@comunica/utils-jest';
-
 import { ActorFunctionFactoryTermXsdToYearMonthDuration } from '../lib';
 
 describe('to yearMonthDuration', () => {

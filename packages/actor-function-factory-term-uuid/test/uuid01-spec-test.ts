@@ -4,12 +4,7 @@ import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-te
 import { ActorFunctionFactoryTermStrLen } from '@comunica/actor-function-factory-term-str-len';
 import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import {
-  bool,
-  int,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { bool, int, Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermUuid } from '../lib';
 
 /**

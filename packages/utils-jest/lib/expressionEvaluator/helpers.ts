@@ -115,7 +115,7 @@ export function getMockMediatorExpressionEvaluatorFactory(
 ): MediatorExpressionEvaluatorFactory {
   return <any>{
     async mediate(arg: any) {
-      return getMockEEFactory(args).run(arg, <any> undefined);
+      return getMockEEFactory(args).run(arg);
     },
   };
 }

@@ -1,6 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { EvalTestData as Data, bool, Notation } from '@comunica/utils-jest';
-
 import { ActorFunctionFactoryTermIsNumeric } from '../lib';
 
 /**

@@ -6,7 +6,6 @@ import {
   bool,
   Notation,
 } from '@comunica/utils-jest';
-
 import { ActorFunctionFactoryTermIsIri } from '../lib';
 
 describe('like \'isIRI\' receiving', () => {

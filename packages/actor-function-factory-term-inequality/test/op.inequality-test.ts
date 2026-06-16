@@ -13,7 +13,6 @@ import {
   timeTyped,
   Notation,
 } from '@comunica/utils-jest';
-
 import { ActorFunctionFactoryTermInequality } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

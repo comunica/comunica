@@ -10,7 +10,6 @@ import {
   numeric,
   Notation,
 } from '@comunica/utils-jest';
-
 import { LRUCache } from 'lru-cache';
 import { ActorFunctionFactoryTermAddition } from '../lib';
 

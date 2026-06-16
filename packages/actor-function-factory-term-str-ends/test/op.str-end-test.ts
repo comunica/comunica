@@ -1,9 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import {
-  bool,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { bool, Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermStrEnds } from '../lib';
 
 describe('evaluation of \'strends\' like', () => {

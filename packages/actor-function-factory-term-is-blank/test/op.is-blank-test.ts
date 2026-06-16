@@ -2,11 +2,7 @@ import {
   ActorFunctionFactoryExpressionBnode,
 } from '@comunica/actor-function-factory-expression-bnode';
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import {
-  bool,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { bool, Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermIsBlank } from '../lib';
 
 describe('like \'isBlank\' receiving', () => {

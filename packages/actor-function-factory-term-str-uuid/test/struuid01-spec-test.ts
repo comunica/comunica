@@ -8,7 +8,6 @@ import {
   int,
   Notation,
 } from '@comunica/utils-jest';
-
 import { ActorFunctionFactoryTermStrUuid } from '../lib';
 
 /**

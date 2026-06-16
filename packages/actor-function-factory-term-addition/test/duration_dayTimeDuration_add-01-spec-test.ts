@@ -7,7 +7,6 @@ import {
   timeTyped,
   Notation,
 } from '@comunica/utils-jest';
-
 import { ActorFunctionFactoryTermAddition } from '../lib';
 
 describe('Add duration and dayTimeDuration 01', () => {

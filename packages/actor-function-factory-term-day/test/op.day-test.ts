@@ -4,7 +4,6 @@ import {
   int,
   Notation,
 } from '@comunica/utils-jest';
-
 import { ActorFunctionFactoryTermDay } from '../lib';
 
 describe('evaluation of \'DAY\'', () => {

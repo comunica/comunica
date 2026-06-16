@@ -6,7 +6,6 @@ import {
   dayTimeDurationTyped,
   Notation,
 } from '@comunica/utils-jest';
-
 import { ActorFunctionFactoryTermGreaterThan } from '../lib';
 
 describe('compare dayTimeDuration 01', () => {

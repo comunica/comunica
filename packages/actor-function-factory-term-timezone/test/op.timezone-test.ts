@@ -1,10 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import {
-  dateTyped,
-  timeTyped,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { dateTyped, timeTyped, Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermTimezone } from '../lib';
 
 describe('evaluation of \'timezone\'', () => {

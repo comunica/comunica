@@ -39,7 +39,6 @@ abstract class Table<RowType extends Row> {
     const aliases = this.def.aliases ?? {};
     result = aliases[result] || result;
     const evaluated = await generalEvaluate({
-      ...this.def,
       expression: template(expr, additionalPrefixes),
       generalEvaluationConfig: config,
       exprEvalFactory,
@@ -50,7 +49,6 @@ abstract class Table<RowType extends Row> {
   protected async testErrorExpression(expr: string, error: string): Promise<void> {
     const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const result = await generalErrorEvaluation({
-      ...this.def,
       expression: template(expr, additionalPrefixes),
       generalEvaluationConfig: config,
       exprEvalFactory,

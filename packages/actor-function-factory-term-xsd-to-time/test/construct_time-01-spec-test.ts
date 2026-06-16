@@ -1,10 +1,6 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { TypeURL } from '@comunica/utils-expression-evaluator';
-import {
-  compactTermString,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { compactTermString, Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermXsdToTime } from '../lib';
 
 describe('construct time', () => {

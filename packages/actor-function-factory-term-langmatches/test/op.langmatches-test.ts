@@ -1,9 +1,5 @@
 import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import {
-  bool,
-  Notation,
-} from '@comunica/utils-jest';
-
+import { bool, Notation } from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermLangmatches } from '../lib';
 
 // TODO: Add errors for when non BCP47 strings are passed

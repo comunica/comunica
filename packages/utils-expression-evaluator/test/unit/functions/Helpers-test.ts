@@ -1,12 +1,7 @@
 import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { FunctionArgumentsCache, ISuperTypeProvider } from '@comunica/types';
-import {
-  getMockEEActionContext,
-  getMockEEFactory,
-  getMockExpression,
-} from '@comunica/utils-jest';
-
+import { getMockEEActionContext, getMockEEFactory, getMockExpression } from '@comunica/utils-jest';
 import type { Builder } from '../../../lib';
 import { TypeURL, bool, declare } from '../../../lib';
 

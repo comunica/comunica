@@ -2,10 +2,8 @@
 import { getMockSuperTypeProvider } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-
+import { isNonLexicalLiteral, TermTransformer } from '../../../lib';
 import * as E from '../../../lib/expressions';
-import { isNonLexicalLiteral } from '../../../lib/expressions';
-import { TermTransformer } from '../../../lib/transformers/TermTransformer';
 import { TypeURL as DT } from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';
 
