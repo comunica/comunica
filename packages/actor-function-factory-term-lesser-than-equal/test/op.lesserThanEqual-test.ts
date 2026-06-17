@@ -1,11 +1,11 @@
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
 import { ActorFunctionFactoryTermTriple } from '@comunica/actor-function-factory-term-triple';
-import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import type { FuncTestTableConfig } from '@comunica/utils-jest';
 import {
+  runFuncTestTable,
   bool,
   dateTime,
   dateTyped,

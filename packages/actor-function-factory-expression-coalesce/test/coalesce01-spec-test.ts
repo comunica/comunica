@@ -1,6 +1,6 @@
 import { ActorFunctionFactoryTermDivision } from '@comunica/actor-function-factory-term-division';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
+  runFuncTestTable,
   int,
   decimal,
   Notation,

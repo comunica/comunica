@@ -1,5 +1,8 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { durationTyped, Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  durationTyped,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermXsdToDuration } from '../lib';
 
 describe('to duration', () => {

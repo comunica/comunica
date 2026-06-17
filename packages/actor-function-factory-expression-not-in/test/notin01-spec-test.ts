@@ -1,7 +1,10 @@
 import { ActorFunctionFactoryExpressionIn } from '@comunica/actor-function-factory-expression-in';
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool, Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  bool,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryExpressionNotIn } from '../lib';
 
 /**

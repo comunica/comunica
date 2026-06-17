@@ -1,6 +1,6 @@
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
+  runFuncTestTable,
   bool,
   durationTyped,
   Notation,

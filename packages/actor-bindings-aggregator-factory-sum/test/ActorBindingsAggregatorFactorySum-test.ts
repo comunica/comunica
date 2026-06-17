@@ -3,10 +3,10 @@ import type {
   MediatorExpressionEvaluatorFactory,
 } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
-import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import {
+  createFuncMediator,
   BF,
   DF,
   getMockEEActionContext,

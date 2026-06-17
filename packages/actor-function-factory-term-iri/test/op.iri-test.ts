@@ -1,5 +1,7 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermIri } from '../lib';
 
 describe('like \'iri\' receiving', () => {

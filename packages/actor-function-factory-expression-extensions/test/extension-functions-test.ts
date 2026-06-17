@@ -1,8 +1,8 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { AsyncExtensionFunctionCreator } from '@comunica/types';
 import {
+  runFuncTestTable,
   bool,
   compactTermString,
   merge,

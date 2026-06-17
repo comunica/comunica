@@ -1,6 +1,6 @@
-import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
+import type { FuncTestTableConfig } from '@comunica/utils-jest';
 import {
+  runFuncTestTable,
   error,
   merge,
   numeric,

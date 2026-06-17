@@ -1,6 +1,9 @@
 /* eslint max-len: 0 */
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data, Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermSha512 } from '../lib';
 
 /**

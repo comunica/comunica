@@ -1,5 +1,9 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data, bool, Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  bool,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermRegex } from '../lib';
 
 /**

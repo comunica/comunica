@@ -1,6 +1,9 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { TypeURL } from '@comunica/utils-expression-evaluator';
-import { compactTermString, Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  compactTermString,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermXsdToDate } from '../lib';
 
 describe('Construct date', () => {

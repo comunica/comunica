@@ -1,5 +1,5 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
+  runFuncTestTable,
   dateTyped,
   int,
   Notation,

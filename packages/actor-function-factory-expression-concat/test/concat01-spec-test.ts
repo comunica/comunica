@@ -1,5 +1,8 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data, Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryExpressionConcat } from '../lib';
 
 /**

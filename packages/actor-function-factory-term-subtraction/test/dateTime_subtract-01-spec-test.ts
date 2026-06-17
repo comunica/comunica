@@ -1,6 +1,6 @@
 /* eslint max-len: 0 */
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
+  runFuncTestTable,
   dateTyped,
   dayTimeDurationTyped,
   dateTimeTyped,

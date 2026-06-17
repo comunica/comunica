@@ -3,8 +3,11 @@ import {
 } from '@comunica/actor-function-factory-expression-bnode';
 
 import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data, Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermAddition } from '../lib';
 
 /**

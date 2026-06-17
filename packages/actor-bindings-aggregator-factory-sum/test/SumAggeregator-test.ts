@@ -2,11 +2,11 @@ import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-facto
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
-import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActionContext } from '@comunica/types';
 import { SparqlOperator } from '@comunica/utils-expression-evaluator';
 import {
+  createFuncMediator,
   BF,
   termDecimal,
   DF,

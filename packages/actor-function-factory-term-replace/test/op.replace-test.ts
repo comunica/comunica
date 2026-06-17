@@ -1,5 +1,7 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermReplace } from '../lib';
 
 // Eventually, it might be nice to have a spec compliant regex engine

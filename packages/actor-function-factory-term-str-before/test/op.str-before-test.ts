@@ -1,5 +1,8 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool, Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  bool,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermStrBefore } from '../lib';
 
 describe('evaluations of \'strbefore\' like', () => {

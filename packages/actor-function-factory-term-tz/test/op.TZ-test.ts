@@ -1,5 +1,9 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { dateTyped, timeTyped, Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  dateTyped,
+  timeTyped,
+  Notation,
+} from '@comunica/utils-jest';
 
 import { ActorFunctionFactoryTermTz } from '../lib';
 

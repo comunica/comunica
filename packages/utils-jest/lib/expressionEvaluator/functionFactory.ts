@@ -1,12 +1,13 @@
 import type {
+  ActorFunctionFactory,
   IActorFunctionFactoryArgs,
   MediatorFunctionFactory,
 } from '@comunica/bus-function-factory';
 import { BusFunctionFactory } from '@comunica/bus-function-factory';
 import { MediatorRace } from '@comunica/mediator-race';
-import type { TestTableConfig } from '@comunica/utils-jest';
-import { getMockEEFactory, runTestTable } from '@comunica/utils-jest';
-import type { ActorFunctionFactory } from '../lib';
+import { getMockEEFactory } from './helpers';
+import type { TestTableConfig } from './utils';
+import { runTestTable } from './utils';
 
 interface RunFuncTestTableArgs extends IActorFunctionFactoryArgs {
   mediatorFunctionFactory: MediatorFunctionFactory;

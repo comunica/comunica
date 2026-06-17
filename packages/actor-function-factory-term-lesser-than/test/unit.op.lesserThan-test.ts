@@ -1,8 +1,8 @@
 import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
 import { TermFunctionEquality } from '@comunica/actor-function-factory-term-equality/lib/TermFunctionEquality';
-import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import {
+  createFuncMediator,
   getMockEEActionContext,
   getMockEEFactory,
   getMockExpression,

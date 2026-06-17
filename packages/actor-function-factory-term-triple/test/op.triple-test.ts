@@ -1,5 +1,7 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermTriple } from '../lib';
 
 describe('evaluation of \'TRIPLE\'', () => {

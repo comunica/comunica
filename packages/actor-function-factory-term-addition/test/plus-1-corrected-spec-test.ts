@@ -1,8 +1,13 @@
 import {
   ActorFunctionFactoryExpressionBnode,
 } from '@comunica/actor-function-factory-expression-bnode';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { EvalTestData as Data, int, decimal, Notation } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  int,
+  decimal,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermAddition } from '../lib';
 
 /**

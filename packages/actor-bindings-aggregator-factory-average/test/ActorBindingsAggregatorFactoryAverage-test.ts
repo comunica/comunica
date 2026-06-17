@@ -2,10 +2,10 @@ import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-facto
 import { ActorFunctionFactoryTermDivision } from '@comunica/actor-function-factory-term-division';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
-import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import {
+  createFuncMediator,
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,

@@ -2,8 +2,8 @@ import {
   ActorFunctionFactoryExpressionNotIn,
 } from '@comunica/actor-function-factory-expression-not-in';
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
+  runFuncTestTable,
   bool,
   merge,
   numeric,

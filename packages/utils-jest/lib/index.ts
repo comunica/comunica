@@ -3,6 +3,7 @@ import matchers from './matchers';
 
 export * from './expressionEvaluator/Aliases';
 export * from './expressionEvaluator/TestTable';
+export * from './expressionEvaluator/functionFactory';
 export * from './expressionEvaluator/generalEvaluation';
 export * from './expressionEvaluator/utils';
 export * as EvalTestData from './expressionEvaluator/data';

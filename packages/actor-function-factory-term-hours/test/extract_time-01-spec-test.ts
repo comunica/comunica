@@ -1,7 +1,7 @@
 import { ActorFunctionFactoryTermMinutes } from '@comunica/actor-function-factory-term-minutes';
 import { ActorFunctionFactoryTermSeconds } from '@comunica/actor-function-factory-term-seconds';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
+  runFuncTestTable,
   int,
   timeTyped,
   Notation,
