@@ -115,7 +115,8 @@ export function getMockMediatorExpressionEvaluatorFactory(
 ): MediatorExpressionEvaluatorFactory {
   return <any>{
     async mediate(arg: any) {
-      return getMockEEFactory(args).run(arg);
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      return getMockEEFactory(args).run(arg, undefined);
     },
   };
 }

@@ -79,6 +79,7 @@ async function evaluateAsync(
   toAlgebraParse?: (query: string) => Algebra.Operation,
 ): Promise<RDF.Term> {
   const evaluator = await (exprEvalFactory ?? getMockEEFactory())
-    .run({ algExpr: parse(expr, toAlgebraParse), context: actionContext });
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    .run({ algExpr: parse(expr, toAlgebraParse), context: actionContext }, undefined);
   return evaluator.evaluate(bindings);
 }
