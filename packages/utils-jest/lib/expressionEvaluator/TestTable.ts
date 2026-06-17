@@ -42,6 +42,7 @@ abstract class Table<RowType extends Row> {
       expression: template(expr, additionalPrefixes),
       generalEvaluationConfig: config,
       exprEvalFactory,
+      toAlgebraParse: this.def.toAlgebraParse,
     });
     expect(evaluated.asyncResult).toEqual(stringToTermPrefix(result, additionalPrefixes));
   }
@@ -52,11 +53,13 @@ abstract class Table<RowType extends Row> {
       expression: template(expr, additionalPrefixes),
       generalEvaluationConfig: config,
       exprEvalFactory,
+      toAlgebraParse: this.def.toAlgebraParse,
     });
     expect(result).toBeDefined();
     expect(() => {
       throw result?.asyncError;
     }).toThrow(error);
+    // istanbul ignore next
     if (result?.syncError) {
       expect(() => {
         throw result?.syncError;
@@ -143,6 +146,7 @@ export class UnaryTable extends Table<[string, string]> {
       case Notation.Function: return `${operation}(${arg})`;
       case Notation.Prefix: return `${operation}${arg}`;
       case Notation.Infix: throw new Error('Cant format a unary operator as infix.');
+      // istanbul ignore next
       default: throw new Error('Unreachable');
     }
   }
@@ -185,6 +189,7 @@ export class BinaryTable extends Table<[string, string, string]> {
       case Notation.Function: return `${operation}(${fst}, ${snd})`;
       case Notation.Prefix: return `${operation} ${fst} ${snd}`;
       case Notation.Infix: return `${fst} ${operation} ${snd}`;
+      // istanbul ignore next
       default: throw new Error('Unreachable');
     }
   }
@@ -227,6 +232,7 @@ export class ArrayTable extends Table<string[]> {
       case Notation.Function: return `${operation}(${row.slice(0, -1).join(', ')})`;
       case Notation.Prefix: return `${operation} ${fst} ${snd}`;
       case Notation.Infix: return `${fst} ${operation} ${snd}`;
+      // istanbul ignore next
       default: throw new Error('Unreachable');
     }
   }

@@ -110,6 +110,28 @@ describe('ActorOptimizeQueryOperationQuerySourceSkolemize', () => {
           ],
         }));
       });
+      it('with service sources', async() => {
+        const source1: any = {
+          source: { referenceValue: 'S0' },
+        };
+        const contextIn = new ActionContext({
+          [KeysQueryOperation.serviceSources.name]: {
+            service1: source1,
+          },
+        });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+
+        expect(contextOut).toEqual(new ActionContext({
+          [KeysQuerySourceIdentify.sourceIds.name]: new Map([
+            [ 'S0', '0' ],
+          ]),
+          [KeysQueryOperation.serviceSources.name]: {
+            service1: {
+              source: new QuerySourceSkolemized(source1.source, '0'),
+            },
+          },
+        }));
+      });
     });
   });
 });

@@ -38,6 +38,8 @@ const config: Config.InitialOptions = {
   },
   // The default test timeout is not enough for engine tests, but is enough for packages
   testTimeout: 20_000,
+  // Limit workers to avoid resource contention in engine tests
+  maxWorkers: '50%',
 };
 
 export default config;
