@@ -5,8 +5,7 @@
   "workspaces": [
     "engines/*",
     "packages/*",
-    "performance/*",
-    "../traqula"
+    "performance/*"
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
