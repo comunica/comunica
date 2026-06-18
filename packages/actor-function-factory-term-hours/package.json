@@ -39,8 +39,5 @@
   "dependencies": {
     "@comunica/bus-function-factory": "^5.2.3",
     "@comunica/utils-expression-evaluator": "^5.2.3"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

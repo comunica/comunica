@@ -41,8 +41,5 @@
     "@comunica/utils-expression-evaluator": "^5.2.3",
     "@types/uuid": "^10.0.0",
     "uuid": "^11.0.0"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

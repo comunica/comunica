@@ -41,8 +41,5 @@
     "@comunica/context-entries": "^5.2.3",
     "@comunica/utils-expression-evaluator": "^5.2.3",
     "relative-to-absolute-iri": "^1.0.7"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }

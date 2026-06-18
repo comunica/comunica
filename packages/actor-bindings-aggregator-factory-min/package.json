@@ -43,7 +43,6 @@
     "@rdfjs/types": "*"
   },
   "devDependencies": {
-    "@comunica/bus-term-comparator-factory": "^5.2.3",
-    "@comunica/utils-jest": "^5.2.3"
+    "@comunica/bus-term-comparator-factory": "^5.2.3"
   }
 }

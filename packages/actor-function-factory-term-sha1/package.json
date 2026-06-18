@@ -40,8 +40,5 @@
     "@comunica/bus-function-factory": "^5.2.3",
     "@comunica/utils-expression-evaluator": "^5.2.3",
     "hash.js": "^1.1.7"
-  },
-  "devDependencies": {
-    "@comunica/utils-jest": "^5.2.3"
   }
 }
