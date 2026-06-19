@@ -129,21 +129,6 @@ describe('Aliases', () => {
       expect(term.value).toBe('hello');
     });
 
-    it('returns term early when the literal has no datatype', () => {
-      const fakeLiteral = <RDF.Term> <unknown> { termType: 'Literal', value: 'hello', datatype: undefined };
-      const spy = jest.spyOn(rdfString, 'stringToTerm').mockReturnValueOnce(fakeLiteral);
-      const result = stringToTermPrefix('"hello"');
-      expect(result).toBe(fakeLiteral);
-      spy.mockRestore();
-    });
-
-    it('handles a datatype URL with no colon (covers matched-null branch)', () => {
-      // A datatype like "nocolon" has no `:`, so matched is null and prefix falls back to ''
-      const term = <RDF.Literal> stringToTermPrefix('"hello"^^nocolon');
-      expect(term.termType).toBe('Literal');
-      expect(term.value).toBe('hello');
-    });
-
     it('catches exception when assigning to a frozen datatype value', () => {
       const frozenDatatype = Object.freeze({ termType: 'NamedNode', value: 'xsd:integer', equals: () => false });
       const fakeLiteral = <RDF.Term> <unknown> {

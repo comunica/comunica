@@ -42,7 +42,7 @@ Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
 }
 
 export async function generalErrorEvaluation(arg: IGeneralEvaluationArg):
-Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
+Promise<{ asyncError: unknown } | undefined> {
   const bindings: RDF.Bindings = arg.bindings ? arg.bindings : BF.bindings();
   try {
     await evaluateAsync(

@@ -33,14 +33,11 @@ export function stringToTermPrefix(str: string, additionalPrefixes?: Record<stri
   if (term.termType !== 'Literal') {
     return term;
   }
-  if (!term.datatype) {
-    return term;
-  }
 
   const url = term.datatype.value;
   try {
-    const matched = url.match(/.*:/ug);
-    const prefix = matched ? matched[0].slice(0, -1) : '';
+    const matched = url.match(/.*:/ug)!;
+    const prefix = matched[0].slice(0, -1);
     const prefixes: Record<string, string> = additionalPrefixes ?
         { ...defaultPrefixes, ...additionalPrefixes } :
       defaultPrefixes;
