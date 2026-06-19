@@ -41,10 +41,7 @@ export class ActorQueryResultSerializeSparqlCsv extends ActorQueryResultSerializ
 
     let stringValue = value.value;
 
-    if (value.termType === 'Literal') {
-      // This is a lossy representation, since language and datatype are not encoded in here.
-      stringValue = `${stringValue}`;
-    } else if (value.termType === 'BlankNode') {
+    if (value.termType === 'BlankNode') {
       stringValue = `_:${stringValue}`;
     } else if (value.termType === 'Quad') {
       let object = ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(value.object);
@@ -53,8 +50,6 @@ export class ActorQueryResultSerializeSparqlCsv extends ActorQueryResultSerializ
         object = `"${object.replaceAll('"', '""')}"`;
       }
       stringValue = `<<( ${ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(value.subject)} ${ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(value.predicate)} ${object} )>>`;
-    } else {
-      stringValue = `<${stringValue}>`;
     }
 
     // If a value contains certain characters, put it between double quotes
