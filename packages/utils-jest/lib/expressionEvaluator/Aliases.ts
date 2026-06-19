@@ -33,7 +33,6 @@ export function stringToTermPrefix(str: string, additionalPrefixes?: Record<stri
   if (term.termType !== 'Literal') {
     return term;
   }
-  // istanbul ignore next
   if (!term.datatype) {
     return term;
   }
@@ -41,7 +40,6 @@ export function stringToTermPrefix(str: string, additionalPrefixes?: Record<stri
   const url = term.datatype.value;
   try {
     const matched = url.match(/.*:/ug);
-    // istanbul ignore next
     const prefix = matched ? matched[0].slice(0, -1) : '';
     const prefixes: Record<string, string> = additionalPrefixes ?
         { ...defaultPrefixes, ...additionalPrefixes } :
@@ -51,7 +49,6 @@ export function stringToTermPrefix(str: string, additionalPrefixes?: Record<stri
     }
     return term;
   } catch {
-    // istanbul ignore next
     return term;
   }
 }

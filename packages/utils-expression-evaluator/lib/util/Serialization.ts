@@ -21,9 +21,7 @@ export function serializeTimeZone(tz: Partial<ITimeZoneRepresentation>): string 
   if (tz.zoneHours === undefined && tz.zoneMinutes === undefined) {
     return '';
   }
-  // istanbul ignore next
   const hours = tz.zoneHours ?? 0;
-  // istanbul ignore next
   const minutes = tz.zoneMinutes ?? 0;
   if (hours === 0 && minutes === 0) {
     return 'Z';

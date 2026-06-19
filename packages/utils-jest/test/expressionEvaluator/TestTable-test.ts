@@ -3,7 +3,7 @@ import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { generalErrorEvaluation } from '../../lib/expressionEvaluator/generalEvaluation';
-import { Notation, UnaryTable, VariableTable } from '../../lib/expressionEvaluator/TestTable';
+import { BinaryTable, Notation, UnaryTable, VariableTable } from '../../lib/expressionEvaluator/TestTable';
 import { runTestTable } from '../../lib/expressionEvaluator/utils';
 
 const DF = new DataFactory();
@@ -78,6 +78,16 @@ describe('TestTable', () => {
       expect(() => table.test()).toThrow('Cant format a unary operator as infix.');
     });
 
+    it('throws when format is called with an unrecognized notation (default case)', () => {
+      const table = new UnaryTable({
+        operation: 'op',
+        arity: 1,
+        notation: <Notation> <unknown> 99,
+        testTable: '"1"^^xsd:integer = "1"^^xsd:integer',
+      });
+      expect(() => table.test()).toThrow('Unreachable');
+    });
+
     describe('with Prefix notation', () => {
       runTestTable({
         operation: '',
@@ -92,6 +102,16 @@ describe('TestTable', () => {
   });
 
   describe('BinaryTable', () => {
+    it('throws when format is called with an unrecognized notation (default case)', () => {
+      const table = new BinaryTable({
+        operation: 'op',
+        arity: 2,
+        notation: <Notation> <unknown> 99,
+        testTable: '"1"^^xsd:integer "2"^^xsd:integer = "1"^^xsd:integer',
+      });
+      expect(() => table.test()).toThrow('Unreachable');
+    });
+
     describe('with Prefix notation', () => {
       runTestTable({
         operation: 'op',
