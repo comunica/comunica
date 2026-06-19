@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-dereference-http",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "description": "A http dereference actor",
   "lsd:module": true,
   "license": "MIT",
