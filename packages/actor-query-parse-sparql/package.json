@@ -45,8 +45,8 @@
     "@comunica/context-entries": "^5.2.3",
     "@comunica/core": "^5.2.3",
     "@comunica/types": "^5.2.3",
-    "@traqula/algebra-sparql-1-2": "^1.0.1",
-    "@traqula/parser-sparql-1-2": "^1.0.1",
-    "@traqula/rules-sparql-1-2": "^1.0.1"
+    "@traqula/algebra-sparql-1-2": "^1.1.6",
+    "@traqula/parser-sparql-1-2": "^1.1.6",
+    "@traqula/rules-sparql-1-2": "^1.1.6"
   }
 }
