@@ -16,9 +16,6 @@ module.exports = function(engine) {
       const result = await engine.query(queryString, {
         baseIRI: options.baseIRI,
         sources: [{ type: 'rdfjs', value: source(data) }],
-        httpRetryCount: 3,
-        httpRetryDelayFallback: 10,
-        httpRetryDelayLimit: 100,
       });
       return (await engine.resultToString(result, mediaType)).data;
     },
