@@ -8,8 +8,8 @@ import { TransformerSubTyped } from '@traqula/core';
 import type { KnownOperation, Operation } from './Algebra';
 import { TypesComunica } from './TypesComunica';
 
-export const resolveIRI: typeof algebraUtils.resolveIRI = algebraUtils.resolveIRI;
-export const objectify: typeof algebraUtils.objectify = algebraUtils.objectify;
+export const resolveIRI = algebraUtils.resolveIRI;
+export const objectify = algebraUtils.objectify;
 
 /**
  * Type guard that checks if an operation is of a certain type and subType known by Comunica.
