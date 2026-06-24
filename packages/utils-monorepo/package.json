@@ -29,6 +29,7 @@
   },
   "files": [
     "bin/**/*.js",
+    "config/**/*.yaml",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "lib/**/*.js.map",
