@@ -36,6 +36,7 @@
     "test:spec": "lerna run spec --concurrency 1",
     "test:docker": "lerna run test:docker --concurrency 1",
     "test:bins": "./packages/utils-monorepo/sh/test-bins.sh",
+    "test:config-compat": "node packages/utils-monorepo/bin/test-config-compat.js",
     "version": "manual-git-changelog onversion && packages/utils-monorepo/sh/update-publiccode.sh"
   },
   "devDependencies": {
