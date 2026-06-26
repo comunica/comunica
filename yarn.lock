@@ -10469,6 +10469,14 @@ n3@^2.0.0:
     buffer "^6.0.3"
     readable-stream "^4.0.0"
 
+n3@^2.0.3:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/n3/-/n3-2.1.0.tgz#cebe207fe8a5d8c339582ff242bd5c7e657dac87"
+  integrity sha512-+05H/h40wRyROglcVGrNZAwBu0Nc87luKhiTV95aGBGX1YyITtpwftHwyhT5YoZr4soXJWrzxqC1CHPdGqV63g==
+  dependencies:
+    buffer "^6.0.3"
+    readable-stream "^4.0.0"
+
 nan@^2.14.0, nan@^2.17.0, nan@^2.18.0:
   version "2.19.0"
   resolved "https://registry.npmjs.org/nan/-/nan-2.19.0.tgz"
@@ -11315,6 +11323,11 @@ pako@~0.2.0:
   resolved "https://registry.yarnpkg.com/pako/-/pako-0.2.9.tgz#f3f7522f4ef782348da8161bad9ecfd51bf83a75"
   integrity sha512-NUcwaKxUxWrZLpDG+z/xZaCgQITkA/Dv4V/T6bw7VON6l1Xz/VnrBqrYjZQ12TamKHzITTfOEIYUj48y2KXImA==
 
+papaparse@^5.5.3:
+  version "5.5.4"
+  resolved "https://registry.yarnpkg.com/papaparse/-/papaparse-5.5.4.tgz#7923f375a5d43850fd313160371c9567e5608c11"
+  integrity sha512-SwzWD9gl/ElwYLCI0nUja1mFJzjq2D8ziShfNBa7zCHzkOozeOGDwHWQ+tvCzEZcewecWZ5U7kUopDnG+DFYEQ==
+
 parent-module@^1.0.0:
   version "1.0.1"
   resolved "https://registry.npmjs.org/parent-module/-/parent-module-1.0.1.tgz"
@@ -12145,7 +12158,7 @@ rdf-test-suite-ldf@^2.0.1:
     tcp-port-used "^1.0.1"
     winston "^3.2.1"
 
-rdf-test-suite@^2.1.4, rdf-test-suite@^2.1.5:
+rdf-test-suite@^2.1.4:
   version "2.1.5"
   resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-2.1.5.tgz#0abc23477fb23bb5cd29cab4f7c78b430bef4580"
   integrity sha512-88jzb4xgsQPNMWcMINWkrfkkWQ50miP381O9L00A32oes+Y21zRtDhiL3NlbYz2i4y/rgmwr04DNwg8xIuAliQ==
@@ -12168,6 +12181,40 @@ rdf-test-suite@^2.1.4, rdf-test-suite@^2.1.5:
     rdf-object "^3.0.0"
     rdf-quad "^2.0.0"
     rdf-string "^2.0.0"
+    rdf-terms "^2.0.0"
+    rdfxml-streaming-parser "^3.0.0"
+    readable-web-to-node-stream "^3.0.2"
+    relative-to-absolute-iri "^1.0.7"
+    sparqljson-parse "^3.0.0"
+    sparqlxml-parse "^3.0.0"
+    stream-to-string "^1.1.0"
+    streamify-string "^1.0.1"
+
+rdf-test-suite@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-2.2.0.tgz#49bfd899d7ba9a866d4ab23ec8736a2ad43af1c3"
+  integrity sha512-s3U7uaOcwRadM+s43KqKU0NXh2N0teUT42353K/JHmbxZydDIFdqEk7dEpdrieiqCZVZTc+8vc4gIw8tBnt61w==
+  dependencies:
+    "@types/json-stable-stringify" "^1.0.32"
+    "@types/minimist" "^1.2.0"
+    "@types/n3" "^1.10.3"
+    "@types/sax" "^1.0.1"
+    arrayify-stream "^3.0.0"
+    cross-fetch "^4.0.0"
+    is-stream "^2.0.0"
+    json-stable-stringify "^1.0.1"
+    jsonld-streaming-parser "^5.0.0"
+    log-symbols "^4.0.0"
+    minimist "^1.2.0"
+    n3 "^2.0.3"
+    papaparse "^5.5.3"
+    rdf-data-factory "^2.0.0"
+    rdf-isomorphic "^2.0.0"
+    rdf-literal "^2.0.0"
+    rdf-object "^3.0.0"
+    rdf-quad "^2.0.0"
+    rdf-string "^2.0.1"
+    rdf-string-ttl "^2.0.1"
     rdf-terms "^2.0.0"
     rdfxml-streaming-parser "^3.0.0"
     readable-web-to-node-stream "^3.0.2"
