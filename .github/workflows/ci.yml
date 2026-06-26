@@ -105,7 +105,7 @@ jobs:
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile --network-timeout 36000
       - name: Load RDF test suite cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             .rdf-test-suite-cache
@@ -148,6 +148,42 @@ jobs:
       - name: Run browser tests
         run: yarn run test:browser
 
+  bintest:
+    name: Binary tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION_LOWEST }}
+          cache: yarn
+      - name: Install dependencies and build monorepo
+        run: yarn install --frozen-lockfile
+      - name: Test binaries
+        run: yarn run test:bins
+
+  configtest:
+    name: Config backwards-compat tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION_LOWEST }}
+          cache: yarn
+      - name: Install dependencies and build monorepo
+        run: yarn install --frozen-lockfile
+      - name: Test current configs in previous versions of Comunica from npm
+        run: yarn run test:config-compat
+
   coveralls:
     name: Coverage check
     needs: test
@@ -167,6 +203,8 @@ jobs:
       - test
       - spectest
       - browsertest
+      - bintest
+      - configtest
     runs-on: ubuntu-latest
     steps:
       - name: Ensure line endings are consistent
@@ -195,6 +233,8 @@ jobs:
       - test
       - spectest
       - browsertest
+      - bintest
+      - configtest
     runs-on: ubuntu-latest
     steps:
       - name: Ensure line endings are consistent
@@ -268,6 +308,8 @@ jobs:
       - test
       - spectest
       - browsertest
+      - bintest
+      - configtest
       - performance
     runs-on: ubuntu-latest
     steps:
@@ -374,6 +416,8 @@ jobs:
       - test
       - spectest
       - browsertest
+      - bintest
+      - configtest
       - documentation
     runs-on: ubuntu-latest
     # The documentation is only published for master branch

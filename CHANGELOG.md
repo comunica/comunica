@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.2.4"></a>
+## [v5.2.4](https://github.com/comunica/comunica/compare/v5.2.3...v5.2.4) - 2026-06-19
+
+### Fixed
+* [Consider application/octet-stream as unknown media type](https://github.com/comunica/comunica/commit/b7e62bec4fb0093cdeecc7e8b1145e03ff6b2181)
+
 <a name="v5.2.3"></a>
 ## [v5.2.3](https://github.com/comunica/comunica/compare/v5.2.2...v5.2.3) - 2026-05-26
 

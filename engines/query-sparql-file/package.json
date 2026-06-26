@@ -1,6 +1,6 @@
 {
   "name": "@comunica/query-sparql-file",
-  "version": "5.2.3",
+  "version": "5.2.4",
   "description": "A SPARQL query engine for querying over local and remote RDF files",
   "license": "MIT",
   "funding": {
@@ -73,7 +73,7 @@
     "@comunica/actor-context-preprocess-source-to-destination": "^5.2.3",
     "@comunica/actor-dereference-fallback": "^5.2.3",
     "@comunica/actor-dereference-file": "^5.2.3",
-    "@comunica/actor-dereference-http": "^5.2.3",
+    "@comunica/actor-dereference-http": "^5.2.4",
     "@comunica/actor-dereference-rdf-parse": "^5.2.3",
     "@comunica/actor-expression-evaluator-factory-default": "^5.2.3",
     "@comunica/actor-function-factory-expression-bnode": "^5.2.3",
