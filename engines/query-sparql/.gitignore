@@ -1,4 +1,5 @@
 comunica-browser.js*
+comunica-browser-vite.js*
 engine-default.js
 *.sparql
 dist

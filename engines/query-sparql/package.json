@@ -55,6 +55,7 @@
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "prepare": "comunica-compile-config config/config-default.json > engine-default.js",
     "browser": "node \"../../node_modules/webpack/bin/webpack.js\" --mode production",
+    "browser:vite": "node \"../../node_modules/vite/bin/vite.js\" build",
     "browser-profile": "node \"../../node_modules/webpack/bin/webpack.js\" --mode production --profile --json > stats.json && node \"../../node_modules/.bin/webpack-bundle-analyzer\" stats.json && rm stats.json",
     "spec:base-1-1": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js http://w3c.github.io/rdf-tests/sparql/sparql11/manifest-all.ttl -c ../../.rdf-test-suite-cache/",
     "spec:base-1-2": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js https://w3c.github.io/rdf-tests/sparql/sparql12/manifest.ttl -c ../../.rdf-test-suite-cache/",

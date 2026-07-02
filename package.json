@@ -10,6 +10,7 @@
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
     "build:browser": "lerna run browser",
+    "build:browser:vite": "lerna run browser:vite",
     "build:changed": "lerna run build --since HEAD",
     "build:components": "componentsjs-generator engines/* packages/*",
     "build:engines": "lerna run prepare",
@@ -80,6 +81,9 @@
     "typedoc": "^0.28.0",
     "typescript": "^6.0.0",
     "verdaccio": "^6.7.4",
+    "vite": "^7.0.0",
+    "vite-plugin-node-polyfills": "^0.24.0",
+    "vite-tsconfig-paths": "^5.1.4",
     "webpack": "^5.0.0",
     "webpack-bundle-analyzer": "^5.0.0",
     "webpack-cli": "^7.0.0"
