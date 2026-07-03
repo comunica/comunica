@@ -1,0 +1,16 @@
+diff --git a/node_modules/http-link-header/lib/link.js b/node_modules/http-link-header/lib/link.js
+index a1585eb..58d7f11 100644
+--- a/node_modules/http-link-header/lib/link.js
++++ b/node_modules/http-link-header/lib/link.js
+@@ -356,9 +356,9 @@ Link.formatExtendedAttribute = function( attr, data ) {
+ 
+   var encodedValue = ''
+ 
+-  if( Buffer.isBuffer( data.value ) && Link.isCompatibleEncoding( encoding ) ) {
++  if( typeof Buffer !== 'undefined' && Buffer.isBuffer( data.value ) && Link.isCompatibleEncoding( encoding ) ) {
+     encodedValue = data.value.toString( encoding )
+-  } else if( Buffer.isBuffer( data.value ) ) {
++  } else if( typeof Buffer !== 'undefined' && Buffer.isBuffer( data.value ) ) {
+     encodedValue = data.value.toString( 'hex' )
+       .replace( /[0-9a-f]{2}/gi, '%$1' )
+   } else {

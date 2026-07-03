@@ -1,0 +1,123 @@
+diff --git a/node_modules/readable-stream/lib/internal/shims/process.js b/node_modules/readable-stream/lib/internal/shims/process.js
+new file mode 100644
+index 0000000..6505007
+--- /dev/null
++++ b/node_modules/readable-stream/lib/internal/shims/process.js
+@@ -0,0 +1,28 @@
++/* wraps the internal process module, circumventing issues with some polyfills (see #539) */
++
++/** @type {import('node:process')} */
++const process = ((base, esmKey, keys, isValid) => {
++  // check if top-level es module, in which case it may have a default export
++  if (esmKey in base && base[esmKey] === true) {
++    let candidate
++    for (const key of keys) {
++      if (!(key in base)) {
++        continue
++      }
++      candidate = base[key]
++      // sanity check
++      if (isValid(candidate)) {
++        return candidate
++      }
++    }
++  }
++  return base
++})(
++  require('process/'),
++  '__esModule',
++  ['default', 'process'],
++  (candidate) => 'nextTick' in candidate
++)
++
++module.exports = process
++
+diff --git a/node_modules/readable-stream/lib/internal/streams/destroy.js b/node_modules/readable-stream/lib/internal/streams/destroy.js
+index 3829231..fe96518 100644
+--- a/node_modules/readable-stream/lib/internal/streams/destroy.js
++++ b/node_modules/readable-stream/lib/internal/streams/destroy.js
+@@ -2,7 +2,7 @@
+ 
+ /* replacement start */
+ 
+-const process = require('process/')
++const process = require('../shims/process')
+ 
+ /* replacement end */
+ 
+diff --git a/node_modules/readable-stream/lib/internal/streams/duplexify.js b/node_modules/readable-stream/lib/internal/streams/duplexify.js
+index 05740d7..bb1e251 100644
+--- a/node_modules/readable-stream/lib/internal/streams/duplexify.js
++++ b/node_modules/readable-stream/lib/internal/streams/duplexify.js
+@@ -1,6 +1,6 @@
+ /* replacement start */
+ 
+-const process = require('process/')
++const process = require('../shims/process')
+ 
+ /* replacement end */
+ 
+diff --git a/node_modules/readable-stream/lib/internal/streams/end-of-stream.js b/node_modules/readable-stream/lib/internal/streams/end-of-stream.js
+index 94d1832..35a4926 100644
+--- a/node_modules/readable-stream/lib/internal/streams/end-of-stream.js
++++ b/node_modules/readable-stream/lib/internal/streams/end-of-stream.js
+@@ -5,7 +5,7 @@
+ 
+ /* replacement start */
+ 
+-const process = require('process/')
++const process = require('../shims/process')
+ 
+ /* replacement end */
+ 
+diff --git a/node_modules/readable-stream/lib/internal/streams/from.js b/node_modules/readable-stream/lib/internal/streams/from.js
+index c7e7531..5cd8142 100644
+--- a/node_modules/readable-stream/lib/internal/streams/from.js
++++ b/node_modules/readable-stream/lib/internal/streams/from.js
+@@ -2,7 +2,7 @@
+ 
+ /* replacement start */
+ 
+-const process = require('process/')
++const process = require('../shims/process')
+ 
+ /* replacement end */
+ 
+diff --git a/node_modules/readable-stream/lib/internal/streams/pipeline.js b/node_modules/readable-stream/lib/internal/streams/pipeline.js
+index a2bab88..cafe9aa 100644
+--- a/node_modules/readable-stream/lib/internal/streams/pipeline.js
++++ b/node_modules/readable-stream/lib/internal/streams/pipeline.js
+@@ -1,6 +1,6 @@
+ /* replacement start */
+ 
+-const process = require('process/')
++const process = require('../shims/process')
+ 
+ /* replacement end */
+ // Ported from https://github.com/mafintosh/pump with
+diff --git a/node_modules/readable-stream/lib/internal/streams/readable.js b/node_modules/readable-stream/lib/internal/streams/readable.js
+index 90c7316..9c7b15d 100644
+--- a/node_modules/readable-stream/lib/internal/streams/readable.js
++++ b/node_modules/readable-stream/lib/internal/streams/readable.js
+@@ -23,7 +23,7 @@
+ 
+ /* replacement start */
+ 
+-const process = require('process/')
++const process = require('../shims/process')
+ 
+ /* replacement end */
+ 
+diff --git a/node_modules/readable-stream/lib/internal/streams/writable.js b/node_modules/readable-stream/lib/internal/streams/writable.js
+index b4ecf0e..f80e8c5 100644
+--- a/node_modules/readable-stream/lib/internal/streams/writable.js
++++ b/node_modules/readable-stream/lib/internal/streams/writable.js
+@@ -27,7 +27,7 @@
+ 
+ /* replacement start */
+ 
+-const process = require('process/')
++const process = require('../shims/process')
+ 
+ /* replacement end */
+ 
