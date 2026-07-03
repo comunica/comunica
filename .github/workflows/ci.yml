@@ -136,7 +136,7 @@ jobs:
           - vite
         include:
           - bundler: webpack
-            build-script: build:browser
+            build-script: build:browser:webpack
             bundle-path: engines/query-sparql/comunica-browser.js
           - bundler: vite
             build-script: build:browser:vite
@@ -228,7 +228,7 @@ jobs:
           - vite
         include:
           - bundler: webpack
-            build-script: build:browser
+            build-script: build:browser:webpack
           - bundler: vite
             build-script: build:browser:vite
     runs-on: ubuntu-latest

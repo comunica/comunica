@@ -22,15 +22,18 @@ export default function createConfig(packagePath: string): UserConfig {
     plugins: [
       tsconfigPaths(),
       nodePolyfills({
+        // TODO: Remove this as soon as the readable-stream issue has been resolved:
+        // https://github.com/nodejs/readable-stream/issues/540
         globals: {
           process: true,
         },
-        protocolImports: true,
       }),
     ],
     resolve: {
       alias: {
         // Needed to resolve "TypeError: process.nextTick is not a function" in comunica dependency.
+        // TODO: Remove this as soon as the readable-stream issue has been resolved:
+        // https://github.com/nodejs/readable-stream/issues/540
         'process/': 'process/browser',
       },
     },

@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
-    "build:browser": "lerna run browser",
+    "build:browser:webpack": "lerna run browser:webpack",
     "build:browser:vite": "lerna run browser:vite",
     "build:changed": "lerna run build --since HEAD",
     "build:components": "componentsjs-generator engines/* packages/*",
