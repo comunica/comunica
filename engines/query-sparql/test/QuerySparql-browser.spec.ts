@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 declare const Comunica: any;
 
-const browserBundlePath = 'engines/query-sparql/comunica-browser.js';
+const browserBundlePath = process.env.COMUNICA_BROWSER_BUNDLE ?? 'engines/query-sparql/comunica-browser.js';
 
 test.describe('System test: QuerySparql', () => {
   test.beforeEach(async({ page }) => {

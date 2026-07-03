@@ -141,6 +141,20 @@ module.exports = config([
     },
   },
   {
+    // Vite configurations
+    files: [
+      '**/vite.config.ts',
+      '**/vite.config.base.ts',
+    ],
+    rules: {
+      'import/extensions': 'off',
+      'import/no-extraneous-dependencies': 'off',
+      'import/no-nodejs-modules': 'off',
+      'import/no-default-export': 'off',
+      'import/no-anonymous-default-export': 'off',
+    },
+  },
+  {
     files: [
       'eslint.config.js',
     ],
@@ -155,6 +169,7 @@ module.exports = config([
       'engines/*/engine-default.js',
       'engines/*/engine-browser.js',
       'engines/*/comunica-browser.js',
+      'engines/*/comunica-browser-vite.js',
       // The performance combination files are auto-generated
       'performance/*/combinations/**',
       // TODO: Remove this once solid-client-authn supports node 18.
