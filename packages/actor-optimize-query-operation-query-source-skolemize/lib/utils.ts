@@ -8,6 +8,7 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
+import { deferMetadata } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { mapTermsNested } from 'rdf-terms';
@@ -102,7 +103,8 @@ export function skolemizeQuadStream(
       metadata.state.addInvalidateListener(inheritMetadata);
     });
   }
-  inheritMetadata();
+  // Inherit lazily upon the first request, so that sources can avoid computing unrequested metadata.
+  deferMetadata(ret, inheritMetadata);
   return ret;
 }
 
@@ -125,7 +127,8 @@ export function skolemizeBindingsStream(
       metadata.state.addInvalidateListener(inheritMetadata);
     });
   }
-  inheritMetadata();
+  // Inherit lazily upon the first request, so that sources can avoid computing unrequested metadata.
+  deferMetadata(ret, inheritMetadata);
   return ret;
 }
 

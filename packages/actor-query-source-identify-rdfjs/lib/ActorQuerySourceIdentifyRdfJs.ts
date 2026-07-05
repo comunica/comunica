@@ -18,10 +18,12 @@ import { QuerySourceRdfJs } from './QuerySourceRdfJs';
  */
 export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  public readonly cacheSize: number;
 
   public constructor(args: IActorQuerySourceIdentifyRdfJsArgs) {
     super(args);
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
+    this.cacheSize = args.cacheSize;
   }
 
   public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest>> {
@@ -43,6 +45,7 @@ export class ActorQuerySourceIdentifyRdfJs extends ActorQuerySourceIdentify {
           <RDF.Source | RDF.DatasetCore> action.querySourceUnidentified.value,
           dataFactory,
           await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
+          this.cacheSize,
         ),
         context: action.querySourceUnidentified.context ?? new ActionContext(),
       },
@@ -55,4 +58,10 @@ export interface IActorQuerySourceIdentifyRdfJsArgs extends IActorQuerySourceIde
    * A mediator for creating binding context merge handlers
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  /**
+   * The maximum number of entries in the pattern cardinality cache, set to 0 to disable.
+   * @range {integer}
+   * @default {1024}
+   */
+  cacheSize: number;
 }
