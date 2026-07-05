@@ -165,11 +165,12 @@ describe('QuerySourceSparql', () => {
 
   describe('queryBindings', () => {
     it('should return data', async() => {
-      await expect(source.queryBindings(AF.createPattern(
+      const stream = source.queryBindings(AF.createPattern(
         iriS,
         DF.variable('p'),
         iriO,
-      ), ctx))
+      ), ctx);
+      await expect(stream)
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
@@ -181,6 +182,7 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
+      await new Promise(resolve => stream.getProperty('metadata', resolve));
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
@@ -194,13 +196,13 @@ describe('QuerySourceSparql', () => {
       });
     });
 
-    it('should return data with local cardinality estimation', async() => {
-      jest.spyOn(source, 'estimateOperationCardinality').mockResolvedValue({
-        type: 'estimate',
-        value: 1,
-        dataset: url,
-      });
-      await expect(source.queryBindings(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), ctx))
+    it('should not send a count query when the metadata is never requested', async() => {
+      const stream = source.queryBindings(AF.createPattern(
+        iriS,
+        DF.variable('p'),
+        iriO,
+      ), ctx);
+      await expect(stream)
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
@@ -212,6 +214,37 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+      expect(lastQuery).toBe(`query=${encodeURIComponent(`SELECT ?p WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }`).replaceAll('%20', '+')}`);
+    });
+
+    it('should return data with local cardinality estimation', async() => {
+      jest.spyOn(source, 'estimateOperationCardinality').mockResolvedValue({
+        type: 'estimate',
+        value: 1,
+        dataset: url,
+      });
+      const stream = source.queryBindings(
+        AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+        ctx,
+      );
+      await expect(stream)
+        .toEqualBindingsStream([
+          BF.fromRecord({
+            p: DF.namedNode('p1'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p2'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p3'),
+          }),
+        ]);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
+        .toEqual(expect.objectContaining({
+          cardinality: { type: 'estimate', value: 1, dataset: url },
+        }));
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
     });
@@ -1020,6 +1053,79 @@ describe('QuerySourceSparql', () => {
         .rejects.toThrow(new Error('Some stream error'));
     });
 
+    it('should emit metadata for non-pattern operations', async() => {
+      const stream = source.queryBindings(AF.createJoin([
+        AF.createPattern(iriS, DF.variable('p'), iriO),
+        AF.createPattern(iriS, DF.variable('p2'), iriO),
+      ]), ctx);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
+        .toEqual(expect.objectContaining({
+          cardinality: { type: 'exact', value: 3, dataset: url },
+        }));
+      expect(lastQuery).toContain('COUNT');
+    });
+
+    it('should emit metadata for patterns with non-variable terms', async() => {
+      const stream = source.queryBindings(AF.createPattern(
+        iriS,
+        iriP,
+        DF.variable('o'),
+      ), ctx);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
+        .toEqual(expect.objectContaining({
+          cardinality: { type: 'exact', value: 3, dataset: url },
+        }));
+      expect(lastQuery).toContain('COUNT');
+      expect(lastQuery).toContain(encodeURIComponent(`<${testUrl('p')}>`));
+    });
+
+    it('should emit metadata with infinity count for erroring count results', async() => {
+      const thisMediator: any = {
+        mediate: jest.fn((action: any) => {
+          const query: string = action.init.method === 'GET' ? action.input : action.init.body.toString();
+          if (isCountQuery(query)) {
+            const errorBody = new Readable();
+            errorBody._read = () => setImmediate(() => errorBody.emit('error', new Error('Count stream error')));
+            return {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: errorBody,
+              ok: true,
+            };
+          }
+          return mediatorHttp.mediate(action);
+        }),
+      };
+      const thisSource = new QuerySourceSparql(
+        url,
+        url,
+        ctx,
+        thisMediator,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        true,
+        0,
+        false,
+
+        {},
+      );
+      const stream = thisSource.queryBindings(AF.createPattern(
+        iriS,
+        DF.variable('p'),
+        iriO,
+      ), ctx);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
+        .toEqual(expect.objectContaining({
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: url },
+        }));
+    });
+
     it('should emit metadata with infinity count for invalid count results', async() => {
       const thisMediator: any = {
         mediate(action: any) {
@@ -1275,7 +1381,11 @@ describe('QuerySourceSparql', () => {
         {},
       );
 
-      await expect(source.queryBindings(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), ctx))
+      const stream = source.queryBindings(
+        AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+        ctx,
+      );
+      await expect(stream)
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
@@ -1287,6 +1397,7 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
+      await new Promise(resolve => stream.getProperty('metadata', resolve));
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
@@ -1342,7 +1453,9 @@ describe('QuerySourceSparql', () => {
       it('should perform an url encoded HTTP POST request when acceptPost includes the url-encoded type', async() => {
         source = getSource([ 'application/x-www-form-urlencoded', 'application/sparql-query' ]);
 
-        await expect(source.queryBindings(operationIn, ctx)).toEqualBindingsStream(expectedResult);
+        const stream = source.queryBindings(operationIn, ctx);
+        await expect(stream).toEqualBindingsStream(expectedResult);
+        await new Promise(resolve => stream.getProperty('metadata', resolve));
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
@@ -1359,7 +1472,9 @@ describe('QuerySourceSparql', () => {
       it('should perform a direct HTTP POST request when acceptPost doesn\'t include the url-encoded type', async() => {
         source = getSource([ 'application/sparql-query' ]);
 
-        await expect(source.queryBindings(operationIn, ctx)).toEqualBindingsStream(expectedResult);
+        const stream = source.queryBindings(operationIn, ctx);
+        await expect(stream).toEqualBindingsStream(expectedResult);
+        await new Promise(resolve => stream.getProperty('metadata', resolve));
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
@@ -1375,7 +1490,7 @@ describe('QuerySourceSparql', () => {
     });
 
     it('should return data when joining bindings', async() => {
-      await expect(source.queryBindings(
+      const stream = source.queryBindings(
         AF.createPattern(iriS, DF.variable('p'), iriO),
         ctx,
         {
@@ -1384,7 +1499,8 @@ describe('QuerySourceSparql', () => {
             metadata: <any> { variables: []},
           },
         },
-      ))
+      );
+      await expect(stream)
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
@@ -1396,12 +1512,17 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
-      expect(lastQuery).toBe(`query=SELECT+%28+COUNT%28+*+%29+AS+%3Fcount+%29+WHERE+%7B+VALUES%28+%29%7B+%7D%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
+      // Bound operations don't send count queries, so their metadata cardinality is an estimate.
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
+        .toEqual(expect.objectContaining({
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: url },
+        }));
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context: ctx,
         init: {
-          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { VALUES( ){ }<${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
+          body: new URLSearchParams({ query: `SELECT ?p WHERE { VALUES( ){ }<${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
           method: 'POST',
         },
@@ -1410,7 +1531,7 @@ describe('QuerySourceSparql', () => {
     });
 
     it('ignores queryString for joinBindings', async() => {
-      await expect(source.queryBindings(
+      const stream = source.queryBindings(
         AF.createPattern(iriS, DF.variable('p'), iriO),
         ctx.set(KeysInitQuery.queryString, 'abc'), // This must be ignored
         {
@@ -1419,7 +1540,8 @@ describe('QuerySourceSparql', () => {
             metadata: <any> { variables: []},
           },
         },
-      ))
+      );
+      await expect(stream)
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
@@ -1431,12 +1553,13 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
-      expect(lastQuery).toBe(`query=SELECT+%28+COUNT%28+*+%29+AS+%3Fcount+%29+WHERE+%7B+VALUES%28+%29%7B+%7D%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
+      await new Promise(resolve => stream.getProperty('metadata', resolve));
+      expect(lastQuery).toBe(`query=SELECT+%3Fp+WHERE+%7B+VALUES%28+%29%7B+%7D%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context: ctx.set(KeysInitQuery.queryString, 'abc'),
         init: {
-          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { VALUES( ){ }<${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
+          body: new URLSearchParams({ query: `SELECT ?p WHERE { VALUES( ){ }<${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
           method: 'POST',
         },
@@ -1562,12 +1685,13 @@ describe('QuerySourceSparql', () => {
     });
 
     it('should not pass the original queryString if queryFormat is not sparql', async() => {
-      await expect(source.queryBindings(
+      const stream = source.queryBindings(
         AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
         ctx
           .set(KeysInitQuery.queryString, 'abc')
           .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }),
-      ))
+      );
+      await expect(stream)
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
@@ -1579,6 +1703,7 @@ describe('QuerySourceSparql', () => {
             p: DF.namedNode('p3'),
           }),
         ]);
+      await new Promise(resolve => stream.getProperty('metadata', resolve));
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context: ctx
