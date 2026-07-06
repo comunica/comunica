@@ -82,7 +82,7 @@
     "typescript": "^6.0.0",
     "verdaccio": "^6.7.4",
     "vite": "^8.0.0",
-    "vite-plugin-node-polyfills": "^0.24.0",
+    "vite-plugin-node-polyfills": "^0.28.0",
     "vite-tsconfig-paths": "^5.1.4",
     "webpack": "^5.0.0",
     "webpack-bundle-analyzer": "^5.0.0",

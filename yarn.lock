@@ -11192,7 +11192,7 @@ node-releases@^2.0.27:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.27.tgz#eedca519205cf20f650f61d56b070db111231e4e"
   integrity sha512-nmh3lCkYZ3grZvqcCH+fjmQ7X+H0OeZgP40OierEaAptX4XofMh5kwNbWh7lBduUzCcV/8kZ+NDLCwm2iorIlA==
 
-node-stdlib-browser@^1.2.0:
+node-stdlib-browser@^1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/node-stdlib-browser/-/node-stdlib-browser-1.3.1.tgz#f41fa554f720a3df951e40339f4d92ac512222ac"
   integrity sha512-X75ZN8DCLftGM5iKwoYLA3rjnrAEs97MkzvSd4q2746Tgpg8b8XWiBGiBG4ZpgcAqBgtgPHTiAc8ZMCvZuikDw==
@@ -15330,13 +15330,13 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-vite-plugin-node-polyfills@^0.24.0:
-  version "0.24.0"
-  resolved "https://registry.yarnpkg.com/vite-plugin-node-polyfills/-/vite-plugin-node-polyfills-0.24.0.tgz#4a2e984bba134017fc88cace0149cf8afdb50b54"
-  integrity sha512-GA9QKLH+vIM8NPaGA+o2t8PDfFUl32J8rUp1zQfMKVJQiNkOX4unE51tR6ppl6iKw5yOrDAdSH7r/UIFLCVhLw==
+vite-plugin-node-polyfills@^0.28.0:
+  version "0.28.0"
+  resolved "https://registry.yarnpkg.com/vite-plugin-node-polyfills/-/vite-plugin-node-polyfills-0.28.0.tgz#f4864700500741318060cde4610ce97a15c09ca3"
+  integrity sha512-NXct/ci2ef4fRyCfTb8fk2HmR80Rv7icLd+cRH41TnUugDzdKMFKqFPpZYCFUInZMMem9bkLv5pkq02+7Xu7+w==
   dependencies:
     "@rollup/plugin-inject" "^5.0.5"
-    node-stdlib-browser "^1.2.0"
+    node-stdlib-browser "^1.3.1"
 
 vite-tsconfig-paths@^5.1.4:
   version "5.1.4"
