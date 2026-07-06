@@ -1,0 +1,44 @@
+{
+  "name": "@comunica/actor-rdf-serialize-rdf-writer-ts",
+  "version": "5.2.3",
+  "description": "An rdf-writer.ts RDF Serialize actor",
+  "lsd:module": true,
+  "license": "MIT",
+  "homepage": "https://github.com/comunica/actor-rdf-serialize-rdf-writer-ts#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-rdf-serialize-rdf-writer-ts"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/actor-rdf-serialize-rdf-writer-ts/issues"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-serialize",
+    "rdf-writer-ts"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/bus-rdf-serialize": "^5.2.3",
+    "@comunica/context-entries": "^5.2.3",
+    "rdf-writer-ts": "^0.1.0"
+  }
+}
