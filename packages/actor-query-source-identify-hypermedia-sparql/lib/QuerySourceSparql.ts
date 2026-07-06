@@ -18,7 +18,7 @@ import type {
 import type { AlgebraFactory } from '@comunica/utils-algebra';
 import { Algebra, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { MetadataValidationState } from '@comunica/utils-metadata';
+import { deferMetadata, MetadataValidationState } from '@comunica/utils-metadata';
 import { estimateCardinality } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -205,7 +205,12 @@ export class QuerySourceSparql implements IQuerySource {
 
       return this.queryBindingsRemote(this.url, selectQuery, variables, context, undefVariables);
     }, { autoStart: false });
-    this.attachMetadata(bindings, context, operationPromise);
+    // Only attach metadata upon the first request,
+    // so that count queries are avoided when the metadata is never consumed.
+    deferMetadata(
+      bindings,
+      () => this.attachMetadata(bindings, context, operationPromise, Boolean(options?.joinBindings)),
+    );
 
     return bindings;
   }
@@ -217,7 +222,12 @@ export class QuerySourceSparql implements IQuerySource {
       const rawStream = await this.endpointFetcher.fetchTriples(this.url, query);
       return rawStream;
     })(), { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
-    this.attachMetadata(quads, context, Promise.resolve((<Algebra.Operation & { input: any }>operation).input));
+    // Only attach metadata upon the first request,
+    // so that count queries are avoided when the metadata is never consumed.
+    deferMetadata(
+      quads,
+      () => this.attachMetadata(quads, context, Promise.resolve((<Algebra.Operation & { input: any }>operation).input)),
+    );
     return quads;
   }
 
@@ -244,6 +254,7 @@ export class QuerySourceSparql implements IQuerySource {
     target: AsyncIterator<any>,
     context: IActionContext,
     operationPromise: Promise<Algebra.Operation>,
+    boundOperation = false,
   ): void {
     // Emit metadata containing the estimated count
     let variablesCount: MetadataVariable[] = [];
@@ -252,13 +263,21 @@ export class QuerySourceSparql implements IQuerySource {
       try {
         const operation = await operationPromise;
         const variablesScoped = algebraUtils.inScopeVariables(operation);
-        const countQuery = await this.operationToNormalizedCountQuery(operation);
 
         const undefVariables = QuerySourceSparql.getOperationUndefs(operation);
         variablesCount = variablesScoped.map(variable => ({
           variable,
           canBeUndef: undefVariables.some(undefVariable => undefVariable.equals(variable)),
         }));
+
+        // Don't send count queries for operations bound within a join,
+        // as the join has already been planned based on the unbound operation's cardinality,
+        // and an exact per-chunk count would cost an additional endpoint request per bound chunk.
+        if (boundOperation) {
+          return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
+        }
+
+        const countQuery = await this.operationToNormalizedCountQuery(operation);
 
         const cachedCardinality = this.cache?.get(countQuery);
         if (cachedCardinality) {
