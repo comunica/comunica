@@ -25,7 +25,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v6
         with:
@@ -60,7 +60,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
@@ -96,7 +96,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
@@ -105,7 +105,7 @@ jobs:
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile --network-timeout 36000
       - name: Load RDF test suite cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             .rdf-test-suite-cache
@@ -128,12 +128,25 @@ jobs:
 
   browsertest:
     name: Browser tests
+    strategy:
+      fail-fast: false
+      matrix:
+        bundler:
+          - webpack
+          - vite
+        include:
+          - bundler: webpack
+            build-script: build:browser:webpack
+            bundle-path: engines/query-sparql/comunica-browser.js
+          - bundler: vite
+            build-script: build:browser:vite
+            bundle-path: engines/query-sparql/comunica-browser-vite.js
     runs-on: ubuntu-latest
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v6
         with:
@@ -142,11 +155,49 @@ jobs:
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile
       - name: Build browser bundles
-        run: yarn run build:browser
+        run: yarn run ${{ matrix.build-script }}
       - name: Install Playwright browsers
         run: yarn playwright install --with-deps
       - name: Run browser tests
         run: yarn run test:browser
+        env:
+          COMUNICA_BROWSER_BUNDLE: ${{ matrix.bundle-path }}
+
+  bintest:
+    name: Binary tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION_LOWEST }}
+          cache: yarn
+      - name: Install dependencies and build monorepo
+        run: yarn install --frozen-lockfile
+      - name: Test binaries
+        run: yarn run test:bins
+
+  configtest:
+    name: Config backwards-compat tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION_LOWEST }}
+          cache: yarn
+      - name: Install dependencies and build monorepo
+        run: yarn install --frozen-lockfile
+      - name: Test current configs in previous versions of Comunica from npm
+        run: yarn run test:config-compat
 
   coveralls:
     name: Coverage check
@@ -167,12 +218,25 @@ jobs:
       - test
       - spectest
       - browsertest
+      - bintest
+      - configtest
+    strategy:
+      fail-fast: false
+      matrix:
+        bundler:
+          - webpack
+          - vite
+        include:
+          - bundler: webpack
+            build-script: build:browser:webpack
+          - bundler: vite
+            build-script: build:browser:vite
     runs-on: ubuntu-latest
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v6
         with:
@@ -181,9 +245,10 @@ jobs:
       - name: Install dependencies and build
         run: yarn install --frozen-lockfile
       - name: Build browser bundles
-        run: yarn run build:browser
+        run: yarn run ${{ matrix.build-script }}
       - name: Deploy browser builds
-        if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/')
+        # Only the webpack bundles are deployed; the vite build is currently CI-only.
+        if: matrix.bundler == 'webpack' && (startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/'))
         run: ./.github/deploy_browser.sh
         env:
           GH_TOKEN: ${{ secrets.PAT }}
@@ -195,12 +260,14 @@ jobs:
       - test
       - spectest
       - browsertest
+      - bintest
+      - configtest
     runs-on: ubuntu-latest
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v6
         with:
@@ -244,7 +311,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
         uses: actions/setup-node@v6
         with:
@@ -268,13 +335,15 @@ jobs:
       - test
       - spectest
       - browsertest
+      - bintest
+      - configtest
       - performance
     runs-on: ubuntu-latest
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
         uses: actions/setup-node@v6
         with:
@@ -351,7 +420,7 @@ jobs:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
         uses: actions/setup-node@v6
         with:
@@ -374,6 +443,8 @@ jobs:
       - test
       - spectest
       - browsertest
+      - bintest
+      - configtest
       - documentation
     runs-on: ubuntu-latest
     # The documentation is only published for master branch

@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "build": "yarn run build:ts && yarn run build:components",
-    "build:browser": "lerna run browser",
+    "build:browser:webpack": "lerna run browser:webpack",
+    "build:browser:vite": "lerna run browser:vite",
     "build:changed": "lerna run build --since HEAD",
     "build:components": "componentsjs-generator engines/* packages/*",
     "build:engines": "lerna run prepare",
@@ -36,6 +37,8 @@
     "test:node": "jest",
     "test:spec": "lerna run spec --concurrency 1",
     "test:docker": "lerna run test:docker --concurrency 1",
+    "test:bins": "./packages/utils-monorepo/sh/test-bins.sh",
+    "test:config-compat": "node packages/utils-monorepo/bin/test-config-compat.js",
     "version": "manual-git-changelog onversion && packages/utils-monorepo/sh/update-publiccode.sh"
   },
   "devDependencies": {
@@ -64,10 +67,12 @@
     "manual-git-changelog": "^1.0.2",
     "nodemon": "^3.0.0",
     "npm-check-updates": "^22.0.0",
+    "npm-cli-adduser": "^1.1.4",
+    "npm-cli-login": "^1.0.0",
     "rdf-data-factory": "^2.0.1",
     "rdf-quad": "^2.0.0",
     "rdf-stores": "^2.1.1",
-    "rdf-test-suite": "^2.1.5",
+    "rdf-test-suite": "^2.2.0",
     "rdf-test-suite-ldf": "^2.0.1",
     "setup-polly-jest": "^0.11.0",
     "streamify-array": "^2.0.0",
@@ -76,6 +81,10 @@
     "ts-node": "^10.0.0",
     "typedoc": "^0.28.0",
     "typescript": "^6.0.0",
+    "verdaccio": "^6.7.4",
+    "vite": "^8.0.0",
+    "vite-plugin-node-polyfills": "^0.28.0",
+    "vite-tsconfig-paths": "^6.0.0",
     "webpack": "^5.0.0",
     "webpack-bundle-analyzer": "^5.0.0",
     "webpack-cli": "^7.0.0"

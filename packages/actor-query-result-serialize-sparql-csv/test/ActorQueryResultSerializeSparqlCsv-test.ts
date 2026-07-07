@@ -41,12 +41,12 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
   describe('#bindingToCsvBindings', () => {
     it('should convert named nodes', () => {
       expect(ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(DF.namedNode('http://ex.org')))
-        .toBe('<http://ex.org>');
+        .toBe('http://ex.org');
     });
 
     it('should convert default graphs', () => {
       expect(ActorQueryResultSerializeSparqlCsv.bindingToCsvBindings(DF.defaultGraph()))
-        .toBe('<>');
+        .toBe('');
     });
 
     it('should convert blank nodes', () => {
@@ -107,7 +107,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
         DF.namedNode('ex:p'),
         DF.namedNode('ex:o'),
       )))
-        .toBe('<<( <ex:s> <ex:p> <ex:o> )>>');
+        .toBe('<<( ex:s ex:p ex:o )>>');
     });
 
     it('should convert triple terms with a character that needs escaping', () => {
@@ -116,7 +116,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
         DF.namedNode('ex:p,'),
         DF.namedNode('ex:o'),
       )))
-        .toBe('"<<( <ex:s> ""<ex:p,>"" <ex:o> )>>"');
+        .toBe('"<<( ex:s ""ex:p,"" ex:o )>>"');
     });
 
     it('should convert triple terms with literals', () => {
@@ -125,7 +125,7 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
         DF.namedNode('ex:p'),
         DF.literal('abc'),
       )))
-        .toBe('"<<( <ex:s> <ex:p> ""abc"" )>>"');
+        .toBe('"<<( ex:s ex:p ""abc"" )>>"');
     });
   });
 
@@ -250,8 +250,8 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
           },
         ))).handle.data)).resolves.toBe(
           `k1,k2\r
-<v1>,\r
-,<v2>\r
+v1,\r
+,v2\r
 `,
         );
       });
@@ -299,8 +299,8 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
         },
       ))).handle.data)).resolves.toBe(
         `k1,k2\r
-"v""",<>\r
-,"<v\n\r,>"\r
+"v""",\r
+,"v\n\r,"\r
 ,\r
 `,
       );
@@ -338,8 +338,8 @@ describe('ActorQueryResultSerializeSparqlCsv', () => {
         },
       ))).handle.data)).resolves.toBe(
         `k1,k2\r
-<<( <s1> <p1> <o1> )>>,\r
-,<<( <s2> <p2> <o2> )>>\r
+<<( s1 p1 o1 )>>,\r
+,<<( s2 p2 o2 )>>\r
 `,
       );
     });

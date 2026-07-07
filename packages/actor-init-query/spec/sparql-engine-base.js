@@ -12,6 +12,13 @@ module.exports = function(engine) {
     query(data, queryString, options) {
       return this.queryLdf([{ type: 'rdfjs', value: source(data) }], null, queryString, options);
     },
+    async queryResultFormat(data, queryString, mediaType, options) {
+      const result = await engine.query(queryString, {
+        baseIRI: options.baseIRI,
+        sources: [{ type: 'rdfjs', value: source(data) }],
+      });
+      return (await engine.resultToString(result, mediaType)).data;
+    },
     async queryLdf(sources, proxyUrl, queryString, options) {
       sources = sources.map((source) => {
         if (source.type === 'rdfjsSource') {

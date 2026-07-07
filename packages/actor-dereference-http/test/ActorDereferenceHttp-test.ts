@@ -98,6 +98,9 @@ describe('ActorDereferenceHttp', () => {
         if (action.input.includes('plaincontenttype')) {
           headers.set('content-type', 'text/plain');
         }
+        if (action.input.includes('octetcontenttype')) {
+          headers.set('content-type', 'application/octet-stream');
+        }
         if (action.input.includes('missingcontenttype')) {
           headers.delete('content-type');
         }
@@ -177,6 +180,13 @@ describe('ActorDereferenceHttp', () => {
       const output = await actor.run({ url: 'https://www.google.com/plaincontenttype', context });
       expect(output.url).toBe('https://www.google.com/index.html');
       expect(output.headers).toEqual(new Headers({ 'content-type': 'text/plain' }));
+      expect(output.mediaType).toBeUndefined();
+    });
+
+    it('should run with an application/octet-stream content type', async() => {
+      const output = await actor.run({ url: 'https://www.google.com/octetcontenttype', context });
+      expect(output.url).toBe('https://www.google.com/index.html');
+      expect(output.headers).toEqual(new Headers({ 'content-type': 'application/octet-stream' }));
       expect(output.mediaType).toBeUndefined();
     });
 
