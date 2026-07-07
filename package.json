@@ -79,5 +79,22 @@
     "webpack": "^5.0.0",
     "webpack-bundle-analyzer": "^5.0.0",
     "webpack-cli": "^7.0.0"
+  },
+  "resolutions": {
+    "**/@traqula/algebra-sparql-1-1": "1.1.7-alpha.0",
+    "**/@traqula/algebra-sparql-1-2": "1.1.7-alpha.0",
+    "**/@traqula/generator-sparql-1-1":  "1.1.7-alpha.0",
+    "**/@traqula/generator-sparql-1-2": "1.1.7-alpha.0",
+    "**/@traqula/parser-sparql-1-1":  "1.1.7-alpha.0",
+    "**/@traqula/parser-sparql-1-1-adjust": "1.1.7-alpha.0",
+    "**/@traqula/parser-sparql-1-2":  "1.1.7-alpha.0",
+    "**/@traqula/algebra-transformations-1-1": "1.1.7-alpha.0",
+    "**/@traqula/algebra-transformations-1-2":  "1.1.7-alpha.0",
+    "**/@traqula/chevrotain": "1.1.7-alpha.0",
+    "**/@traqula/core":  "1.1.7-alpha.0",
+    "**/@traqula/rules-sparql-1-1": "1.1.7-alpha.0",
+    "**/@traqula/rules-sparql-1-1-adjust":  "1.1.7-alpha.0",
+    "**/@traqula/rules-sparql-1-2": "1.1.7-alpha.0",
+    "**/@traqula/test-utils":  "1.1.7-alpha.0"
   }
 }
