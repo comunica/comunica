@@ -12814,10 +12814,10 @@ rdf-parse@^4.0.0:
     readable-stream "^4.5.2"
     stream-to-string "^1.2.1"
 
-rdf-parser-ts@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/rdf-parser-ts/-/rdf-parser-ts-0.3.0.tgz#3b7bac0f411b95153b18ce038f38388d2cf4c04b"
-  integrity sha512-ME5k7u9CNoOEOnPra/3Wcy7XUpjLFJb/yAdjRESQ+d6wDl2ICMMxWqjrywSFig/gELbr9ByGtWFGHEdRHOuCxw==
+rdf-parser-ts@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/rdf-parser-ts/-/rdf-parser-ts-0.3.1.tgz#2727856694ef7a845fa2764f5693437d7cdfeff6"
+  integrity sha512-hIul0LAVc2LgMCnkjEZmdjLwmgfXs94AMU7ZmMgouCQU9fakALVR8nA7fwp7ExWuaS2+ao1+3wPplE7y+p4yRQ==
   dependencies:
     "@rdfjs/types" "^2.0.1"
     n3 "^2.0.1"
@@ -12979,10 +12979,10 @@ rdf-test-suite@^2.2.0:
     stream-to-string "^1.1.0"
     streamify-string "^1.0.1"
 
-rdf-writer-ts@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/rdf-writer-ts/-/rdf-writer-ts-0.1.0.tgz#1e9045650222ab98bb10aec027255be3f90ebd72"
-  integrity sha512-Tvvn8BTFrPuUb9ml8reSR1VIUBMfBdv4Wyh1KMHGIDv2Qb7mtha7OgOrK/AqgGpzTPge0uAkqw6/IWSoFdvCXA==
+rdf-writer-ts@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/rdf-writer-ts/-/rdf-writer-ts-0.1.1.tgz#f6e7702a1ac8bc781f3ba16e55e57dfd281f0c72"
+  integrity sha512-eHQ2aSKmWum+9y91hxtY3Tbyb70uZGqFRMYP6RX94fGC9dcglIlUSqWJpwd3FCmBB1ILyayfIB65pBIxpSaSwg==
   dependencies:
     "@rdfjs/types" "^2.0.1"
 

@@ -39,6 +39,6 @@
   "dependencies": {
     "@comunica/bus-rdf-serialize": "^5.2.3",
     "@comunica/context-entries": "^5.2.3",
-    "rdf-writer-ts": "^0.1.0"
+    "rdf-writer-ts": "^0.1.1"
   }
 }
