@@ -1,7 +1,9 @@
 /* eslint max-len: 0 */
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermSha512 } from '../lib';
 
 /**
@@ -28,7 +30,7 @@ import { ActorFunctionFactoryTermSha512 } from '../lib';
  */
 
 describe('We should respect the sha512-02 spec', () => {
-  const { s8 } = Data.hashUnicode();
+  const { s8 } = Data.hashUnicode;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermSha512(args),

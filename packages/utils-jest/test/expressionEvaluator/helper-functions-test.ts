@@ -12,7 +12,7 @@ import {
   makeAggregate,
   nonLiteral,
   string,
-} from './helpers';
+} from '../../lib/expressionEvaluator/helpers';
 
 const AF = new AlgebraFactory();
 

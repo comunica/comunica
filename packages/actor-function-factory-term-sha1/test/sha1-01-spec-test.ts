@@ -1,6 +1,8 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermSha1 } from '../lib';
 
 /**
@@ -33,7 +35,7 @@ import { ActorFunctionFactoryTermSha1 } from '../lib';
  */
 
 describe('We should respect the sha1-01 spec', () => {
-  const { s1 } = Data.data();
+  const { s1 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermSha1(args),

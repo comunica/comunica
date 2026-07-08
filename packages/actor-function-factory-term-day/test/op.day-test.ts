@@ -1,6 +1,9 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { dateTyped, int } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  dateTyped,
+  int,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermDay } from '../lib';
 
 describe('evaluation of \'DAY\'', () => {

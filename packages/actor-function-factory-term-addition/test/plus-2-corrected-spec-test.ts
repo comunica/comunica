@@ -3,9 +3,11 @@ import {
 } from '@comunica/actor-function-factory-expression-bnode';
 
 import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermAddition } from '../lib';
 
 /**
@@ -48,7 +50,7 @@ describe('We should respect the plus-2-corrected spec', () => {
     x7q,
     x8p,
     x8q,
-  } = Data.dataBuiltin3();
+  } = Data.dataBuiltin3;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermAddition(args),

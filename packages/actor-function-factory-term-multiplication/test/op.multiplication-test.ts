@@ -1,7 +1,11 @@
-import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { error, merge, numeric } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import type { FuncTestTableConfig } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  error,
+  merge,
+  numeric,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermMultiplication } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

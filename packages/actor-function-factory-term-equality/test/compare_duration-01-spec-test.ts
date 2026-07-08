@@ -1,7 +1,10 @@
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool, durationTyped } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  bool,
+  durationTyped,
+  Notation,
+} from '@comunica/utils-jest';
 
 describe('compare duration 01', () => {
   /**

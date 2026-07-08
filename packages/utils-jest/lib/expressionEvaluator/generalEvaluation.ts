@@ -4,11 +4,11 @@ import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
 import type * as RDF from '@rdfjs/types';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import { DataFactory } from 'rdf-data-factory';
+import { getMockEEActionContext, getMockEEFactory } from './helpers';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -21,6 +21,7 @@ export interface IGeneralEvaluationArg {
    * The factory that will create the evaluator used for this evaluation.
    */
   exprEvalFactory?: ActorExpressionEvaluatorFactory;
+  toAlgebraParse?: (query: string) => Algebra.Operation;
 }
 
 export async function generalEvaluate(arg: IGeneralEvaluationArg):
@@ -35,12 +36,13 @@ Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
       [KeysInitQuery.dataFactory.name]: DF,
     }).merge(arg.generalEvaluationConfig ?? new ActionContext()),
     arg.exprEvalFactory,
+    arg.toAlgebraParse,
   );
   return { asyncResult };
 }
 
 export async function generalErrorEvaluation(arg: IGeneralEvaluationArg):
-Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
+Promise<{ asyncError: unknown } | undefined> {
   const bindings: RDF.Bindings = arg.bindings ? arg.bindings : BF.bindings();
   try {
     await evaluateAsync(
@@ -48,6 +50,7 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
       bindings,
       getMockEEActionContext(arg.generalEvaluationConfig),
       arg.exprEvalFactory,
+      arg.toAlgebraParse,
     );
     return undefined;
   } catch (error: unknown) {
@@ -56,9 +59,14 @@ Promise<{ asyncError: unknown; syncError?: unknown } | undefined> {
 }
 
 const parser = new SparqlParser();
-function parse(query: string) {
-  const parsedSyntax = parser.parse(query);
-  const sparqlQuery = <Algebra.Project> toAlgebra(parsedSyntax);
+function parse(query: string, toAlgebraParse?: (query: string) => Algebra.Operation): Algebra.BaseExpression {
+  let sparqlQuery: Algebra.Project;
+  if (toAlgebraParse === undefined) {
+    const parsedSyntax = parser.parse(query);
+    sparqlQuery = <Algebra.Project> toAlgebra(parsedSyntax);
+  } else {
+    sparqlQuery = <Algebra.Project> toAlgebraParse(query);
+  }
   // Extract filter expression from complete query
   return (<Algebra.Filter> sparqlQuery.input).expression;
 }
@@ -68,8 +76,10 @@ async function evaluateAsync(
   bindings: RDF.Bindings,
   actionContext: IActionContext,
   exprEvalFactory?: ActorExpressionEvaluatorFactory,
+  toAlgebraParse?: (query: string) => Algebra.Operation,
 ): Promise<RDF.Term> {
   const evaluator = await (exprEvalFactory ?? getMockEEFactory())
-    .run({ algExpr: parse(expr), context: actionContext }, undefined);
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    .run({ algExpr: parse(expr, toAlgebraParse), context: actionContext }, undefined);
   return evaluator.evaluate(bindings);
 }

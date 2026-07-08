@@ -1,7 +1,11 @@
 import { ActorFunctionFactoryTermDivision } from '@comunica/actor-function-factory-term-division';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { int, decimal } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  int,
+  decimal,
+  Notation,
+} from '@comunica/utils-jest';
+
 import { ActorFunctionFactoryExpressionCoalesce } from '../lib';
 
 /**

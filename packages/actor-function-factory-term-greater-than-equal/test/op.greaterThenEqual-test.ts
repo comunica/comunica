@@ -4,9 +4,9 @@ import {
   ActorFunctionFactoryTermLesserThanEqual,
 } from '@comunica/actor-function-factory-term-lesser-than-equal';
 import { ActorFunctionFactoryTermTriple } from '@comunica/actor-function-factory-term-triple';
-import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
+import type { FuncTestTableConfig } from '@comunica/utils-jest';
 import {
+  runFuncTestTable,
   bool,
   dateTime,
   dateTyped,
@@ -16,8 +16,8 @@ import {
   str,
   timeTyped,
   yearMonthDurationTyped,
-} from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermGreaterThanEqual } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

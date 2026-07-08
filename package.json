@@ -19,6 +19,7 @@
     "build-watch:components": "nodemon -e d.ts --exec yarn run build:components",
     "build-watch:ts": "tsc --watch",
     "clean": "git clean -dfx",
+    "dedupe": "npx yarn-deduplicate yarn.lock --scopes",
     "depcheck": "depcheckTask @comunica/config-query-sparql",
     "doc": "packages/utils-monorepo/sh/typedoc-json.sh create && typedoc && packages/utils-monorepo/sh/typedoc-json.sh remove",
     "lint": "eslint . --cache",

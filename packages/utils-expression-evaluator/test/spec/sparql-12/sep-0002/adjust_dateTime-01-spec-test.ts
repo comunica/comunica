@@ -1,7 +1,10 @@
 /* eslint max-len: 0 */
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { dayTimeDurationTyped, dateTimeTyped } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  dayTimeDurationTyped,
+  dateTimeTyped,
+  Notation,
+} from '@comunica/utils-jest';
 
 describe('adjust dateTime duration', () => {
   /**

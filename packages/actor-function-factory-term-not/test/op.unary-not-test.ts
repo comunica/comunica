@@ -1,7 +1,9 @@
-import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import type { FuncTestTableConfig } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  bool,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermNot } from '../lib';
 
 describe('evaluation of \'! (unary)\' like', () => {

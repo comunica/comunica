@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-export,jest/no-standalone-expect,jest/require-top-level-describe,jest/prefer-each */
 import { stringToTermPrefix, template } from './Aliases';
 import { generalErrorEvaluation, generalEvaluate } from './generalEvaluation';
 import type { TestTableConfig } from './utils';
@@ -35,7 +34,7 @@ abstract class Table<RowType extends Row> {
 
   public abstract test(): void;
 
-  protected async testExpression(expr: string, result: string) {
+  protected async testExpression(expr: string, result: string): Promise<void> {
     const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const aliases = this.def.aliases ?? {};
     result = aliases[result] || result;
@@ -43,26 +42,23 @@ abstract class Table<RowType extends Row> {
       expression: template(expr, additionalPrefixes),
       generalEvaluationConfig: config,
       exprEvalFactory,
+      toAlgebraParse: this.def.toAlgebraParse,
     });
     expect(evaluated.asyncResult).toEqual(stringToTermPrefix(result, additionalPrefixes));
   }
 
-  protected async testErrorExpression(expr: string, error: string) {
+  protected async testErrorExpression(expr: string, error: string): Promise<void> {
     const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const result = await generalErrorEvaluation({
       expression: template(expr, additionalPrefixes),
       generalEvaluationConfig: config,
       exprEvalFactory,
+      toAlgebraParse: this.def.toAlgebraParse,
     });
     expect(result).toBeDefined();
     expect(() => {
       throw result?.asyncError;
     }).toThrow(error);
-    if (result?.syncError) {
-      expect(() => {
-        throw result?.syncError;
-      }).toThrow(error);
-    }
   }
 
   protected abstract format(operation: string, row: RowType): string;
@@ -293,4 +289,3 @@ class UnaryTableParser extends TableParser<[string, string]> {
     return [ arg, result ];
   }
 }
-/* eslint-enable jest/no-export */

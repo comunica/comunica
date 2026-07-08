@@ -1,8 +1,10 @@
 import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
-import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  bool,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermStrStarts } from '../lib';
 
 /**
@@ -31,7 +33,7 @@ import { ActorFunctionFactoryTermStrStarts } from '../lib';
  */
 
 describe('We should respect the starts01 spec', () => {
-  const { n1, n2, n3, n4, s1, s2, s3, s4, s5, s6, s7, d1, d2, d3, d4 } = Data.data();
+  const { n1, n2, n3, n4, s1, s2, s3, s4, s5, s6, s7, d1, d2, d3, d4 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermStrStarts(args),

@@ -10,10 +10,9 @@ import {
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryMax } from '../lib';
-import '@comunica/utils-jest';
 
 describe('ActorBindingsAggregatorFactoryMax', () => {
   let bus: any;

@@ -2,21 +2,21 @@ import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-facto
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
-import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActionContext } from '@comunica/types';
 import { SparqlOperator } from '@comunica/utils-expression-evaluator';
 import {
+  createFuncMediator,
   BF,
-  decimal,
+  termDecimal,
   DF,
   float,
   getMockEEActionContext,
   getMockEEFactory,
-  int,
+  termInt,
   makeAggregate,
   nonLiteral,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { SumAggregator } from '../lib';
 
@@ -76,18 +76,18 @@ describe('SumAggregator', () => {
 
     it('a list of bindings', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('3') ]]),
-        BF.bindings([[ DF.variable('x'), int('4') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('3') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('4') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('10'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('10'));
     });
 
     it('undefined when sum is undefined', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
       ];
 
@@ -97,7 +97,7 @@ describe('SumAggregator', () => {
     it('with respect to type promotion', async() => {
       const input = [
         BF.bindings([[ DF.variable('x'), DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
         BF.bindings([[ DF.variable('x'), float('3') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
       ];
@@ -106,28 +106,28 @@ describe('SumAggregator', () => {
 
     it('with accurate results', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), decimal('1.0') ]]),
-        BF.bindings([[ DF.variable('x'), decimal('2.2') ]]),
-        BF.bindings([[ DF.variable('x'), decimal('2.2') ]]),
-        BF.bindings([[ DF.variable('x'), decimal('2.2') ]]),
-        BF.bindings([[ DF.variable('x'), decimal('3.5') ]]),
+        BF.bindings([[ DF.variable('x'), termDecimal('1.0') ]]),
+        BF.bindings([[ DF.variable('x'), termDecimal('2.2') ]]),
+        BF.bindings([[ DF.variable('x'), termDecimal('2.2') ]]),
+        BF.bindings([[ DF.variable('x'), termDecimal('2.2') ]]),
+        BF.bindings([[ DF.variable('x'), termDecimal('3.5') ]]),
       ];
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(decimal('11.1'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termDecimal('11.1'));
     });
 
     it('passing a non-literal should not be accepted', async() => {
       const input = [
         BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('3') ]]),
-        BF.bindings([[ DF.variable('x'), int('4') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('3') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('4') ]]),
       ];
 
       await expect(runAggregator(aggregator, input)).resolves.toBeUndefined();
     });
 
     it('with respect to empty input', async() => {
-      await expect(runAggregator(aggregator, [])).resolves.toEqual(int('0'));
+      await expect(runAggregator(aggregator, [])).resolves.toEqual(termInt('0'));
     });
   });
 
@@ -145,17 +145,17 @@ describe('SumAggregator', () => {
 
     it('a list of bindings', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ], [ DF.variable('y'), termInt('1') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('3'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('3'));
     });
 
     it('with respect to empty input', async() => {
-      await expect(runAggregator(aggregator, [])).resolves.toEqual(int('0'));
+      await expect(runAggregator(aggregator, [])).resolves.toEqual(termInt('0'));
     });
   });
 });

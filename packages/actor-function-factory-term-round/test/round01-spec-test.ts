@@ -1,7 +1,10 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
-import { int, decimal } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  int,
+  decimal,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermRound } from '../lib';
 
 /**
@@ -29,7 +32,7 @@ import { ActorFunctionFactoryTermRound } from '../lib';
  */
 
 describe('We should respect the round01 spec', () => {
-  const { n1, n2, n3, n4, n5 } = Data.data();
+  const { n1, n2, n3, n4, n5 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermRound(args),

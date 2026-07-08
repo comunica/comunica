@@ -41,13 +41,27 @@
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
+    "@comunica/actor-expression-evaluator-factory-default": "^5.2.3",
+    "@comunica/bus-expression-evaluator-factory": "^5.2.3",
+    "@comunica/bus-function-factory": "^5.2.3",
+    "@comunica/bus-merge-bindings-context": "^5.2.3",
+    "@comunica/bus-query-operation": "^5.2.3",
+    "@comunica/context-entries": "^5.2.3",
     "@comunica/core": "^5.2.3",
+    "@comunica/mediator-race": "^5.2.3",
     "@comunica/types": "^5.2.3",
+    "@comunica/utils-algebra": "^5.2.0",
     "@comunica/utils-bindings-factory": "^5.2.3",
+    "@comunica/utils-expression-evaluator": "^5.2.3",
     "@jest/expect-utils": "^30.2.0",
     "@rdfjs/types": "*",
+    "@traqula/algebra-sparql-1-2": "^1.1.7",
+    "@traqula/parser-sparql-1-2": "^1.1.6",
     "@types/object-inspect": "^1.13.0",
     "arrayify-stream": "^2.0.1",
-    "object-inspect": "^1.13.2"
+    "lru-cache": "^11.2.2",
+    "object-inspect": "^1.13.2",
+    "rdf-data-factory": "^2.0.0",
+    "rdf-string": "^2.0.1"
   }
 }
