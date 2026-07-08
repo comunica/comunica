@@ -3,7 +3,7 @@ import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
 import { generalErrorEvaluation } from '../../lib/expressionEvaluator/generalEvaluation';
-import { BinaryTable, Notation, UnaryTable, VariableTable } from '../../lib/expressionEvaluator/TestTable';
+import { ArrayTable, BinaryTable, Notation, UnaryTable, VariableTable } from '../../lib/expressionEvaluator/TestTable';
 import { runTestTable } from '../../lib/expressionEvaluator/utils';
 
 const DF = new DataFactory();
@@ -154,6 +154,18 @@ describe('TestTable', () => {
         ],
         toAlgebraParse: constantAlgebraParser,
       });
+    });
+
+    it('throws when format is called with a non-existing notation', () => {
+      const table = new ArrayTable({
+        operation: 'op',
+        arity: 2,
+        notation: <Notation> <unknown> 'I don\'t exist right? This is NOT a valid notation',
+        testArray: [
+          [ '"1"^^xsd:integer', '"2"^^xsd:integer', '"1"^^xsd:integer' ],
+        ],
+      });
+      expect(() => table.test()).toThrow('Unreachable');
     });
 
     describe('with errorArray and Prefix notation', () => {

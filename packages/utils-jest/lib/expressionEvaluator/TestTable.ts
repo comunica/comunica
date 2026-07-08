@@ -223,7 +223,7 @@ export class ArrayTable extends Table<string[]> {
     switch (this.def.notation) {
       case Notation.Function: return `${operation}(${row.slice(0, -1).join(', ')})`;
       case Notation.Prefix: return `${operation} ${fst} ${snd}`;
-      case Notation.Infix: return `${fst} ${operation} ${snd}`;// istanbul ignore next
+      case Notation.Infix: return `${fst} ${operation} ${snd}`;
       default: throw new Error('Unreachable');
     }
   }
