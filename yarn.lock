@@ -2490,7 +2490,7 @@
     qs "^6.10.1"
     url-parse "^1.5.3"
 
-"@rdfjs/types@*", "@rdfjs/types@^2.0.0":
+"@rdfjs/types@*", "@rdfjs/types@^2.0.0", "@rdfjs/types@^2.0.1":
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@rdfjs/types/-/types-2.0.1.tgz#f10b50ceffff00b961c4265e60ac9f74550251da"
   integrity sha512-uyAzpugX7KekAXAHq26m3JlUIZJOC0uSBhpnefGV5i15bevDyyejoB7I+9MKeUrzXD8OOUI3+4FeV1wwQr5ihA==
@@ -11065,6 +11065,14 @@ n3@^2.0.0:
     buffer "^6.0.3"
     readable-stream "^4.0.0"
 
+n3@^2.0.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/n3/-/n3-2.1.1.tgz#448bce3bf952685ca9f3949b2623b71e4876b153"
+  integrity sha512-kqg8ers6Lc+uAmHeS+ycd3b8mC4x8wr8V8Fi6+w7l4hX6b0KZ5bT05Tf49qM2mujwaqZT3+08zcgtXgfxivbVQ==
+  dependencies:
+    buffer "^6.0.3"
+    readable-stream "^4.0.0"
+
 n3@^2.0.3:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/n3/-/n3-2.1.0.tgz#cebe207fe8a5d8c339582ff242bd5c7e657dac87"
@@ -12806,6 +12814,14 @@ rdf-parse@^4.0.0:
     readable-stream "^4.5.2"
     stream-to-string "^1.2.1"
 
+rdf-parser-ts@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/rdf-parser-ts/-/rdf-parser-ts-0.3.1.tgz#2727856694ef7a845fa2764f5693437d7cdfeff6"
+  integrity sha512-hIul0LAVc2LgMCnkjEZmdjLwmgfXs94AMU7ZmMgouCQU9fakALVR8nA7fwp7ExWuaS2+ao1+3wPplE7y+p4yRQ==
+  dependencies:
+    "@rdfjs/types" "^2.0.1"
+    n3 "^2.0.1"
+
 rdf-quad@^1.5.0:
   version "1.5.0"
   resolved "https://registry.npmjs.org/rdf-quad/-/rdf-quad-1.5.0.tgz"
@@ -12962,6 +12978,13 @@ rdf-test-suite@^2.2.0:
     sparqlxml-parse "^3.0.0"
     stream-to-string "^1.1.0"
     streamify-string "^1.0.1"
+
+rdf-writer-ts@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/rdf-writer-ts/-/rdf-writer-ts-0.1.1.tgz#f6e7702a1ac8bc781f3ba16e55e57dfd281f0c72"
+  integrity sha512-eHQ2aSKmWum+9y91hxtY3Tbyb70uZGqFRMYP6RX94fGC9dcglIlUSqWJpwd3FCmBB1ILyayfIB65pBIxpSaSwg==
+  dependencies:
+    "@rdfjs/types" "^2.0.1"
 
 rdfa-streaming-parser@^2.0.1:
   version "2.0.1"

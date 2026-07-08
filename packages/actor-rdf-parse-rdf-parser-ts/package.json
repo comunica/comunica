@@ -1,0 +1,43 @@
+{
+  "name": "@comunica/actor-rdf-parse-rdf-parser-ts",
+  "version": "5.2.3",
+  "description": "An rdf-parser.ts RDF Parse actor",
+  "lsd:module": true,
+  "license": "MIT",
+  "homepage": "https://github.com/comunica/actor-rdf-parse-rdf-parser-ts#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-rdf-parse-rdf-parser-ts"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/actor-rdf-parse-rdf-parser-ts/issues"
+  },
+  "keywords": [
+    "comunica",
+    "runner"
+  ],
+  "sideEffects": false,
+  "main": "lib/index.js",
+  "typings": "lib/index",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "lib/**/*.js.map"
+  ],
+  "scripts": {
+    "build": "yarn run build:ts && yarn run build:components",
+    "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
+    "build:components": "componentsjs-generator"
+  },
+  "dependencies": {
+    "@comunica/bus-rdf-parse": "^5.2.3",
+    "@comunica/context-entries": "^5.2.3",
+    "@comunica/types": "^5.2.3",
+    "rdf-parser-ts": "^0.3.1"
+  }
+}
