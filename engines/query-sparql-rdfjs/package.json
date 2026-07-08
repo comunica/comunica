@@ -174,6 +174,7 @@
     "@comunica/actor-optimize-query-operation-rewrite-add": "^5.2.3",
     "@comunica/actor-optimize-query-operation-rewrite-copy": "^5.2.3",
     "@comunica/actor-optimize-query-operation-rewrite-move": "^5.2.3",
+    "@comunica/actor-optimize-query-operation-service-executor": "^5.2.3",
     "@comunica/actor-query-operation-ask": "^5.2.3",
     "@comunica/actor-query-operation-bgp-join": "^5.2.3",
     "@comunica/actor-query-operation-construct": "^5.2.3",

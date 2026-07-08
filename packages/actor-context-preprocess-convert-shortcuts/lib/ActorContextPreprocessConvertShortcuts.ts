@@ -77,6 +77,8 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "extensionFunctions": "@comunica/actor-init-query:extensionFunctions",
    *   "extensionFunctionsAlwaysPushdown": "@comunica/actor-init-query:extensionFunctionsAlwaysPushdown",
    *   "extensionFunctionCreator": "@comunica/actor-init-query:extensionFunctionCreator",
+   *   "serviceExecutors": "@comunica/actor-init-query:serviceExecutors",
+   *   "serviceExecutorCreator": "@comunica/actor-init-query:serviceExecutorCreator",
    *   "functionArgumentsCache": "@comunica/actor-init-query:functionArgumentsCache",
    *   "explain": "@comunica/actor-init-query:explain",
    *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph",
