@@ -1,6 +1,6 @@
 {
   "name": "@comunica/config-query-sparql",
-  "version": "5.2.1",
+  "version": "5.3.0",
   "description": "default configuration files for Comunica SPARQL",
   "lsd:module": true,
   "license": "MIT",

@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.3.0"></a>
+## [v5.3.0](https://github.com/comunica/comunica/compare/v5.2.4...v5.3.0) - 2026-07-10
+
+### Changed
+* [Update dependency undici to v8 (#1690)](https://github.com/comunica/comunica/commit/8102ad7e951a30bd899a88c854264a677f7580c7)
+* [Export expression evaluation helpers from utils-jest package](https://github.com/comunica/comunica/commit/9c7ab45a9a07b8d5483dd50b501c328d50429b0f)
+
+### Fixed
+* [Align CSV serialization with spec and enable spec tests (#1721)](https://github.com/comunica/comunica/commit/99e20ce1f3ca57e4554dce1cba51dabd99344fd3)
+
 <a name="v5.2.4"></a>
 ## [v5.2.4](https://github.com/comunica/comunica/compare/v5.2.3...v5.2.4) - 2026-06-19
 

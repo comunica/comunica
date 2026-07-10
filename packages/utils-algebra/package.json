@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-algebra",
-  "version": "5.2.0",
+  "version": "5.3.0",
   "description": "Query algebra definitions and utilities",
   "license": "MIT",
   "funding": {
