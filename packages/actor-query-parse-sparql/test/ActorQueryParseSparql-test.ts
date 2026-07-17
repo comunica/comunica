@@ -112,5 +112,54 @@ describe('ActorQueryParseSparql', () => {
         ) ]), [ DF.variable('a'), DF.variable('b') ]),
       });
     });
+
+    it('should provide a clear error message by default on invalid query', async() => {
+      const invalidQuery = [
+        'SELECT ?movie ?title ?name',
+        'WHERE {',
+        '  FILTER LANGMATCHES(LANG(?title), "EN"',
+        '  FILTER LANGMATCHES(LANG(?name),  "EN")',
+        '}',
+      ].join('\n');
+      await expect(actor.run({
+        query: invalidQuery,
+        context,
+      })).rejects.toThrow(/on line \d+/u);
+    });
+
+    it('should provide a less detailed error message when disableClearErrorMessages is set', async() => {
+      const actorOptimized = new ActorQueryParseSparql({
+        name: 'actor',
+        bus,
+        disableClearErrorMessages: true,
+      });
+      const invalidQuery = [
+        'SELECT ?movie ?title ?name',
+        'WHERE {',
+        '  FILTER LANGMATCHES(LANG(?title), "EN"',
+        '  FILTER LANGMATCHES(LANG(?name),  "EN")',
+        '}',
+      ].join('\n');
+      await expect(actorOptimized.run({
+        query: invalidQuery,
+        context,
+      })).rejects.not.toThrow(/on line \d+/u);
+    });
+
+    it('should run with disableClearErrorMessages flag', async() => {
+      const actorOptimized = new ActorQueryParseSparql({
+        name: 'actor',
+        bus,
+        disableClearErrorMessages: true,
+      });
+      const result = await actorOptimized.run({ query: 'SELECT * WHERE { ?a a ?b }', context });
+      expect(result).toMatchObject({
+        operation: AF.createProject(AF.createBgp([ AF.createPattern(
+          DF.variable('a'),
+          DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
+          DF.variable('b'),
+        ) ]), [ DF.variable('a'), DF.variable('b') ]),
+      });
+    });
   });
 });

@@ -58,7 +58,11 @@ Promise<{ asyncError: unknown } | undefined> {
   }
 }
 
-const parser = new SparqlParser();
+const parser = new SparqlParser({
+  lexerConfig: {
+    positionTracking: 'full',
+  },
+});
 function parse(query: string, toAlgebraParse?: (query: string) => Algebra.Operation): Algebra.BaseExpression {
   let sparqlQuery: Algebra.Project;
   if (toAlgebraParse === undefined) {
