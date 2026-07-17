@@ -13,15 +13,15 @@ import { AstFactory } from '@traqula/rules-sparql-1-2';
  */
 export class ActorQueryParseSparql extends ActorQueryParse {
   public readonly prefixes: Record<string, string> | undefined;
-  public readonly disableClearErrorMessages: boolean;
+  public readonly minimalErrorMessages: boolean;
   private readonly parser: SparqlParser;
 
   public constructor(args: IActorQueryParseSparqlArgs) {
     super(args);
     this.prefixes = Object.freeze(args.prefixes);
-    this.disableClearErrorMessages = args.disableClearErrorMessages ?? false;
+    this.minimalErrorMessages = args.minimalErrorMessages ?? false;
     this.parser = new SparqlParser({ lexerConfig: {
-      positionTracking: this.disableClearErrorMessages ? 'onlyOffset' : 'full',
+      positionTracking: this.minimalErrorMessages ? 'onlyOffset' : 'full',
     }});
   }
 
@@ -84,9 +84,9 @@ export interface IActorQueryParseSparqlArgs extends IActorQueryParseArgs {
    */
   prefixes?: Record<string, string>;
   /**
-   * If true, the parser will use an optimized lexer config that disables clear error messages.
+   * If true, the parser will use an optimized lexer config that produces minimal error messages.
    * Enabling this can improve performance at the cost of less informative parse error messages.
    * @default {false}
    */
-  disableClearErrorMessages?: boolean;
+  minimalErrorMessages?: boolean;
 }

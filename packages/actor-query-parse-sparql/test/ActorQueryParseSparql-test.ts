@@ -127,11 +127,11 @@ describe('ActorQueryParseSparql', () => {
       })).rejects.toThrow(/on line \d+/u);
     });
 
-    it('should provide a less detailed error message when disableClearErrorMessages is set', async() => {
+    it('should provide a less detailed error message when minimalErrorMessages is set', async() => {
       const actorOptimized = new ActorQueryParseSparql({
         name: 'actor',
         bus,
-        disableClearErrorMessages: true,
+        minimalErrorMessages: true,
       });
       const invalidQuery = [
         'SELECT ?movie ?title ?name',
@@ -146,11 +146,11 @@ describe('ActorQueryParseSparql', () => {
       })).rejects.not.toThrow(/on line \d+/u);
     });
 
-    it('should run with disableClearErrorMessages flag', async() => {
+    it('should run with minimalErrorMessages flag', async() => {
       const actorOptimized = new ActorQueryParseSparql({
         name: 'actor',
         bus,
-        disableClearErrorMessages: true,
+        minimalErrorMessages: true,
       });
       const result = await actorOptimized.run({ query: 'SELECT * WHERE { ?a a ?b }', context });
       expect(result).toMatchObject({
