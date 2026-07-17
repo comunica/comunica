@@ -1,6 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import { cachifyMetadata, getMetadataBindings, getMetadataQuads, MetadataValidationState } from '../lib';
+import { cachifyMetadata, deferMetadata, getMetadataBindings, getMetadataQuads, MetadataValidationState } from '../lib';
 
 describe('Utils', () => {
   describe('getMetadataQuads', () => {
@@ -86,6 +86,42 @@ describe('Utils', () => {
       const it = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
       setImmediate(() => it.setProperty('metadata', {}));
       await expect(getMetadataBindings(it)()).rejects.toThrow(`Invalid metadata: missing cardinality in {}`);
+    });
+  });
+
+  describe('deferMetadata', () => {
+    let iterator: ArrayIterator<number>;
+    beforeEach(() => {
+      iterator = new ArrayIterator([ 1, 2, 3 ], { autoStart: false });
+    });
+
+    it('should not compute if the metadata property is never requested', () => {
+      const compute = jest.fn();
+      deferMetadata(iterator, compute);
+      iterator.setProperty('other', 123);
+      expect(iterator.getProperty('other')).toBe(123);
+      expect(compute).not.toHaveBeenCalled();
+    });
+
+    it('should compute once upon the first metadata request', () => {
+      const compute = jest.fn(() => iterator.setProperty('metadata', 'META'));
+      deferMetadata(iterator, compute);
+      expect(iterator.getProperty('metadata')).toBe('META');
+      expect(iterator.getProperty('metadata')).toBe('META');
+      expect(compute).toHaveBeenCalledTimes(1);
+    });
+
+    it('should compute once upon the first metadata request with a listener', async() => {
+      const compute = jest.fn();
+      deferMetadata(iterator, compute);
+      const listener = jest.fn();
+      iterator.getProperty('metadata', listener);
+      iterator.getProperty('metadata', listener);
+      expect(compute).toHaveBeenCalledTimes(1);
+      iterator.setProperty('metadata', 'META');
+      await new Promise(resolve => setImmediate(resolve));
+      expect(listener).toHaveBeenCalledTimes(2);
+      expect(listener).toHaveBeenCalledWith('META');
     });
   });
 
