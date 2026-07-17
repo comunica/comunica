@@ -80,7 +80,7 @@
     "ts-loader": "^9.5.4",
     "ts-node": "^10.0.0",
     "typedoc": "^0.28.0",
-    "typescript": "^6.0.0",
+    "typescript": "^7.0.0",
     "verdaccio": "^6.7.4",
     "vite": "^8.0.0",
     "vite-plugin-node-polyfills": "^0.28.0",
