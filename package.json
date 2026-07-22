@@ -75,6 +75,7 @@
     "rdf-test-suite": "^2.2.0",
     "rdf-test-suite-ldf": "^2.0.1",
     "setup-polly-jest": "^0.11.0",
+    "start-server-and-test": "^3.0.11",
     "streamify-array": "^2.0.0",
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.5.4",
