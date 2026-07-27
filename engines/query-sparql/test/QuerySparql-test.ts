@@ -937,6 +937,90 @@ SELECT ?person ?personName WHERE {
 }
 `, context)))).resolves.toHaveLength(1);
       });
+
+      describe('correlation of a shared variable produced by a rename under the optional branch', () => {
+        // Regression test for a bug where the join-optional(bind) physical actor produced a
+        // cross join instead of a correlated left join,
+        // whenever the shared OPTIONAL-side variable was not literally present in a leaf triple pattern,
+        // but produced by an Extend (BIND/AS) wrapped in a Project (i.e. any sub-SELECT that renames a variable).
+        let store: Store;
+
+        beforeEach(() => {
+          store = new Store();
+          store.addQuads([
+            DF.quad(DF.namedNode('ex:t1'), DF.namedNode('ex:p1'), DF.namedNode('ex:alice')),
+            DF.quad(DF.namedNode('ex:t2'), DF.namedNode('ex:p1'), DF.namedNode('ex:bob')),
+            DF.quad(DF.namedNode('ex:t1'), DF.namedNode('ex:statedBy'), DF.namedNode('ex:wiki')),
+            DF.quad(DF.namedNode('ex:t2'), DF.namedNode('ex:statedBy'), DF.namedNode('ex:survey')),
+          ]);
+        });
+
+        const expectedCorrelatedResult: Bindings[] = [
+          BF.bindings([
+            [ DF.variable('t'), DF.namedNode('ex:t1') ],
+            [ DF.variable('s'), DF.namedNode('ex:alice') ],
+            [ DF.variable('agent'), DF.namedNode('ex:wiki') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('t'), DF.namedNode('ex:t2') ],
+            [ DF.variable('s'), DF.namedNode('ex:bob') ],
+            [ DF.variable('agent'), DF.namedNode('ex:survey') ],
+          ]),
+        ];
+
+        it('control: no rename on the OPTIONAL side', async() => {
+          const result = <QueryBindings> await engine.query(`
+            SELECT * WHERE {
+              { SELECT ?t ?s WHERE { ?t <ex:p1> ?s } }
+              OPTIONAL {
+                SELECT ?t ?agent WHERE { ?t <ex:statedBy> ?agent }
+              }
+            }
+          `, { sources: [ store ]});
+          await expect(result.execute()).resolves.toEqualBindingsStream(expectedCorrelatedResult);
+        });
+
+        it('OPTIONAL side exposes the shared variable via a SELECT ... AS rename', async() => {
+          const result = <QueryBindings> await engine.query(`
+            SELECT * WHERE {
+              { SELECT ?t ?s WHERE { ?t <ex:p1> ?s } }
+              OPTIONAL {
+                SELECT ( ?tOrig AS ?t ) ?agent WHERE { ?tOrig <ex:statedBy> ?agent }
+              }
+            }
+          `, { sources: [ store ]});
+          await expect(result.execute()).resolves.toEqualBindingsStream(expectedCorrelatedResult);
+        });
+
+        it('OPTIONAL side exposes the shared variable via BIND', async() => {
+          const result = <QueryBindings> await engine.query(`
+            SELECT * WHERE {
+              { SELECT ?t ?s WHERE { ?t <ex:p1> ?s } }
+              OPTIONAL {
+                SELECT ?t ?agent WHERE {
+                  ?tOrig <ex:statedBy> ?agent .
+                  BIND(?tOrig AS ?t)
+                }
+              }
+            }
+          `, { sources: [ store ]});
+          await expect(result.execute()).resolves.toEqualBindingsStream(expectedCorrelatedResult);
+        });
+
+        it('OPTIONAL side exposes the shared variable via an extra layer of subquery nesting', async() => {
+          const result = <QueryBindings> await engine.query(`
+            SELECT * WHERE {
+              { SELECT ?t ?s WHERE { ?t <ex:p1> ?s } }
+              OPTIONAL {
+                SELECT ?t ?agent WHERE {
+                  { SELECT ( ?tOrig AS ?t ) ?agent WHERE { ?tOrig <ex:statedBy> ?agent } }
+                }
+              }
+            }
+          `, { sources: [ store ]});
+          await expect(result.execute()).resolves.toEqualBindingsStream(expectedCorrelatedResult);
+        });
+      });
     });
 
     describe('with a throwing fetch function', () => {
