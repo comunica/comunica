@@ -11246,10 +11246,10 @@ npm-bundled@^4.0.0:
   dependencies:
     npm-normalize-package-bin "^4.0.0"
 
-npm-check-updates@^22.0.0:
-  version "22.0.1"
-  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-22.0.1.tgz#c4d55d0e8508e494fdbc643b9c82fefb47daac2b"
-  integrity sha512-K8PDu7l9v7UKIwDSxLnqA9LHT76Mu4eCjGjp0JwSeSsyKWmX/YZY+AoBxw4oVdKwQLthWbzg1g+OKysHYGQCjQ==
+npm-check-updates@^23.0.0:
+  version "23.0.0"
+  resolved "https://registry.yarnpkg.com/npm-check-updates/-/npm-check-updates-23.0.0.tgz#ffbd4f0da69f88f1a9601a6088df1a452e3b26f8"
+  integrity sha512-B7dvnnS4Tm/4YQghXjBgGBDuHsk88hqCmr4ZuCr0nscsPzf/QVMls5mT8ZUcHrcrFRBP1afB2KNuJo8Px55DrA==
 
 npm-cli-adduser@^1.1.4:
   version "1.1.4"

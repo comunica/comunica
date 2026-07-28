@@ -66,7 +66,7 @@
     "lerna": "^9.0.0",
     "manual-git-changelog": "^1.0.2",
     "nodemon": "^3.0.0",
-    "npm-check-updates": "^22.0.0",
+    "npm-check-updates": "^23.0.0",
     "npm-cli-adduser": "^1.1.4",
     "npm-cli-login": "^1.0.0",
     "rdf-data-factory": "^2.0.1",
