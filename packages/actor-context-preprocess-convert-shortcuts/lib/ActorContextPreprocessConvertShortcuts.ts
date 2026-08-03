@@ -84,7 +84,7 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "invalidateCache": "@comunica/actor-init-query:invalidateCache",
    *   "dataFactory": "@comunica/actor-init-query:dataFactory",
    *   "distinctConstruct": "@comunica/actor-init-query:distinctConstruct",
-   *   "nonLiteralExpressionComparison": "@comunica/utils-expression-evaluator:nonLiteralExpressionComparison"
+   *   "nonLiteralExpressionComparison": "@comunica/utils-expression-evaluator:nonLiteralExpressionComparison",
    *   "rdfSerializationPrefixes": "@comunica/bus-rdf-serialize:rdfSerializationPrefixes"
    * }}
    */
