@@ -129,7 +129,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
   }
 
   /**
-   * Compare the value of two literals, given a comparator, comparator default to JS `<`.
+   * Compare the value of two literals, given a comparator, comparator defaults to JS `<`.
    */
   private compareLiterals<LiteralType extends Literal<ISerializable>>(
     exprEval: IInternalEvaluator,
