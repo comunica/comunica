@@ -1,8 +1,8 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationBgpToJoin } from '../lib/ActorOptimizeQueryOperationBgpToJoin';
 import '@comunica/utils-jest';
 
@@ -10,11 +10,11 @@ const DF = new DataFactory();
 
 describe('ActorOptimizeQueryOperationBgpToJoin', () => {
   let bus: any;
-  let factory: Factory;
+  let factory: AlgebraFactory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    factory = new Factory();
+    factory = new AlgebraFactory();
   });
 
   describe('An ActorOptimizeQueryOperationBgpToJoin instance', () => {

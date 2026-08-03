@@ -1,4 +1,4 @@
-FROM nginx:1.23.2
+FROM nginx:1.29.1
 
 # Disabled due to https://github.com/apocas/dockerode/issues/553
 # ADD ./input/nginx-default /etc/nginx/sites-enabled/default

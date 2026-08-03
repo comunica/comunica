@@ -1,6 +1,6 @@
 {
   "name": "benchmark-watdiv-tpf",
-  "version": "4.0.1",
+  "version": "4.4.0",
   "private": true,
   "scripts": {
     "jbr": "cross-env NODE_OPTIONS=--max-old-space-size=8192 jbr",
@@ -10,11 +10,11 @@
     "performance:ci": "npm run fetch-assets && jbr prepare && jbr run -c 0"
   },
   "dependencies": {
-    "@jbr-experiment/watdiv": "^5.3.0",
-    "@jbr-hook/cli": "^5.2.0",
-    "@jbr-hook/sparql-endpoint-comunica": "^5.2.0",
-    "@jbr-hook/sparql-endpoint-ldf": "^5.2.0",
+    "@jbr-experiment/watdiv": "^6.0.0",
+    "@jbr-hook/cli": "^6.0.0",
+    "@jbr-hook/sparql-endpoint-comunica": "^6.0.0",
+    "@jbr-hook/sparql-endpoint-ldf": "^6.0.0",
     "cross-env": "^7.0.3",
-    "jbr": "^5.2.0"
+    "jbr": "^6.0.0"
   }
 }

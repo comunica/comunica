@@ -100,6 +100,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'string',
           describe: 'base IRI for the query (e.g., http://example.org/)',
         },
+        fileBaseIRI: {
+          type: 'string',
+          describe: 'base IRI for the file (e.g., http://example.org/), useful when using comunica-sparql-file',
+        },
         dateTime: {
           alias: 'd',
           type: 'string',
@@ -160,6 +164,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'When true, compares non literals using their string values in expressions. ' +
             'Throws an error otherwise.',
+        },
+        extensionFunctionsAlwaysPushdown: {
+          type: 'boolean',
+          describe: 'If extension functions must always be pushed down',
         },
       })
       .exitProcess(false)
@@ -229,6 +237,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
       context[KeysInitQuery.baseIRI.name] = args.baseIRI;
     }
 
+    // Define the file base IRI
+    if (args.fileBaseIRI) {
+      context[KeysInitQuery.fileBaseIRI.name] = args.fileBaseIRI;
+    }
+
     // Define lenient-mode
     if (args.lenient) {
       context[KeysInitQuery.lenient.name] = true;
@@ -286,6 +299,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define if non literals should be string compared
     if (args.nonLiteralExpressionComparison) {
       context[KeysExpressionEvaluator.nonLiteralExpressionComparison.name] = true;
+    }
+
+    // Pushing down of extension functions
+    if (args.extensionFunctionsAlwaysPushdown) {
+      context[KeysInitQuery.extensionFunctionsAlwaysPushdown.name] = true;
     }
   }
 }

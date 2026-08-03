@@ -3,8 +3,8 @@ import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation'
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { IActionContext, IQueryOperationResult } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { testReadOnly } from '@comunica/utils-query-operation';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that
@@ -14,7 +14,7 @@ export class ActorQueryOperationCreate extends ActorQueryOperationTypedMediated<
   public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
 
   public constructor(args: IActorQueryOperationCreateArgs) {
-    super(args, 'create');
+    super(args, Algebra.Types.CREATE);
   }
 
   public async testOperation(operation: Algebra.Create, context: IActionContext): Promise<TestResult<IActorTest>> {

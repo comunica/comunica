@@ -14,7 +14,6 @@ import type {
 } from '@comunica/bus-expression-evaluator-factory';
 import type { IActionFunctionFactory, IActorFunctionFactoryOutput } from '@comunica/bus-function-factory';
 import type { IActionHashBindings, IActorHashBindingsOutput } from '@comunica/bus-hash-bindings';
-import type { IActionHashQuads, IActorHashQuadsOutput } from '@comunica/bus-hash-quads';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import type {
   IActionOptimizeQueryOperation,
@@ -68,12 +67,13 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type { Runner } from '@comunica/runner';
 import { instantiateComponent } from '@comunica/runner';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra } from 'sparqlalgebrajs';
 import { QueryEngineFactory } from '../lib';
 
 const queryEngineFactory = new QueryEngineFactory();
 const DF = new DataFactory();
+const AF = new AlgebraFactory(DF);
 
 describe('System test: mediators', () => {
   let runner: Runner;
@@ -90,17 +90,7 @@ describe('System test: mediators', () => {
     'bindings-aggregator-factory',
     ':query-operation/actors#group',
     'mediatorBindingsAggregatorFactory',
-    { expr: {
-      type: Algebra.types.EXPRESSION,
-      expressionType: Algebra.expressionTypes.AGGREGATE,
-      aggregator: 'avg',
-      distinct: false,
-      expression: {
-        type: Algebra.types.EXPRESSION,
-        expressionType: Algebra.expressionTypes.TERM,
-        term: DF.variable('x'),
-      },
-    }},
+    { expr: AF.createAggregateExpression('avg', AF.createTermExpression(DF.variable('x')), false) },
       `Creation of Aggregator failed: none of the configured actors were able to handle avg`,
   );
   addTest<IActionContextPreprocess, IActorContextPreprocessOutput>(
@@ -129,8 +119,8 @@ describe('System test: mediators', () => {
     ':query-operation/actors#extend',
     'mediatorExpressionEvaluatorFactory',
     { algExpr: <any> {
-      type: Algebra.types.EXPRESSION,
-      expressionType: Algebra.expressionTypes.TERM,
+      type: Algebra.Types.EXPRESSION,
+      expressionType: Algebra.ExpressionTypes.TERM,
       term: DF.variable('x'),
     }},
       `Creation of Expression Evaluator failed`,
@@ -147,17 +137,10 @@ describe('System test: mediators', () => {
   );
   addTest<IActionHashBindings, IActorHashBindingsOutput>(
     'hash-bindings',
-    ':query-operation/actors#distinct',
+    ':rdf-join/actors#inner-hash-def',
     'mediatorHashBindings',
     { allowHashCollisions: false },
     `Failed to obtaining hash functions for bindings`,
-  );
-  addTest<IActionHashQuads, IActorHashQuadsOutput>(
-    'hash-quads',
-    ':query-operation/actors#distinct',
-    'mediatorHashQuads',
-    { allowHashCollisions: false },
-    `Failed to obtaining hash functions for quads`,
   );
   addTest<IActionHttp, IActorHttpOutput>(
     'http',

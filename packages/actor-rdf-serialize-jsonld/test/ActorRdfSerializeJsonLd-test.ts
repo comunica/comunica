@@ -3,11 +3,11 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { ArrayIterator } from 'asynciterator';
+import { streamifyArray } from 'streamify-array';
 import { ActorRdfSerializeJsonLd } from '../lib/ActorRdfSerializeJsonLd';
 import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
-const streamifyArray = require('streamify-array');
 
 describe('ActorRdfSerializeJsonLd', () => {
   let bus: any;

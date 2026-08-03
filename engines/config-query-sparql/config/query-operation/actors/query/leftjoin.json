@@ -11,8 +11,7 @@
       "@id": "urn:comunica:default:query-operation/actors#leftjoin",
       "@type": "ActorQueryOperationLeftJoin",
       "mediatorQueryOperation": { "@id": "urn:comunica:default:query-operation/mediators#main" },
-      "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" },
-      "mediatorExpressionEvaluatorFactory": { "@id": "urn:comunica:default:expression-evaluator-factory/mediators#main" }
+      "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" }
     }
   ]
 }

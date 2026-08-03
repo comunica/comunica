@@ -1,10 +1,10 @@
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import {
   filterMatchingQuotedQuads,
   getDuplicateElementLinks,
@@ -21,7 +21,7 @@ const quad = require('rdf-quad');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('Utils', () => {
   describe('quadsToBindings', () => {

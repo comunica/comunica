@@ -5,13 +5,13 @@ import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
 import type { ILink, IActionContext, IQueryBindingsOptions, MetadataBindings } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import type { Algebra } from 'sparqlalgebrajs';
-import { Factory } from 'sparqlalgebrajs';
 import type { ISourceState, SourceStateGetter } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import '@comunica/utils-jest';
@@ -20,7 +20,7 @@ import '@comunica/utils-jest';
 const EventEmitter = require('node:events');
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 const v = DF.variable('v');
 
@@ -214,9 +214,12 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       jest.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       const spy = jest.fn();
+      const spyError = jest.fn();
+      it.on('error', spyError);
       it.getProperty('metadata', spy);
       await new Promise(setImmediate);
       expect(spy).not.toHaveBeenCalled();
+      expect(spyError).toHaveBeenCalledWith(new Error(`sourceStateGetter error`));
 
       await expect(it).toEqualBindingsStream(data.flat());
     });
@@ -678,6 +681,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         });
       })).rejects.toThrow(new Error('accumulateMetadata error'));
     });
+
     it('records dereference events when passed a dereference statistic', async() => {
       const cb = jest.fn(() => {});
       jest.useFakeTimers();
@@ -704,6 +708,38 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
           type: 'Object',
         },
       });
+    });
+
+    it('handles kickstarts before consuming data', async() => {
+      data = toBindings([[
+        [ 'a', 'b', 'c' ],
+        [ 'd', 'e', 'f' ],
+        [ 'g', 'h', 'i' ],
+      ]]);
+      const it = new DummyIterator(operation, queryBindingsOptions, context, 'first', sourceStateGetter);
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+
+      const spy = jest.spyOn(<any> it, '_fillBufferAsync');
+      it.kickstart();
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('handles kickstarts only once', async() => {
+      data = toBindings([[
+        [ 'a', 'b', 'c' ],
+        [ 'd', 'e', 'f' ],
+        [ 'g', 'h', 'i' ],
+      ]]);
+      const it = new DummyIterator(operation, queryBindingsOptions, context, 'first', sourceStateGetter);
+      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+
+      const spy = jest.spyOn(<any> it, '_fillBufferAsync');
+      it.kickstart();
+      await new Promise(setImmediate);
+      it.kickstart();
+      await new Promise(setImmediate);
+      it.kickstart();
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 });

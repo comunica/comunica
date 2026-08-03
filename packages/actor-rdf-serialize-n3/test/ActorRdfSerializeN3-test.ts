@@ -5,11 +5,11 @@ import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import type { AsyncIterator } from 'asynciterator';
+import { streamifyArray } from 'streamify-array';
 import { ActorRdfSerializeN3 } from '../lib/ActorRdfSerializeN3';
 import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
-const streamifyArray = require('streamify-array');
 
 describe('ActorRdfSerializeN3', () => {
   let bus: any;

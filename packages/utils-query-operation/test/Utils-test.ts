@@ -1,4 +1,5 @@
-import { Factory } from 'sparqlalgebrajs';
+import type { Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
   getOperationSource,
@@ -9,7 +10,7 @@ import {
   validateQueryOutput,
 } from '../lib/Utils';
 
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 describe('utils', () => {
   describe('#getSafeBindings', () => {
@@ -62,13 +63,13 @@ describe('utils', () => {
     });
 
     it('should return undefined for an operation with metadata but without source', () => {
-      const op = AF.createNop();
+      const op: Algebra.Nop = AF.createNop();
       op.metadata = {};
       expect(getOperationSource(op)).toBeUndefined();
     });
 
     it('should return for an operation with source', () => {
-      const op = AF.createNop();
+      const op: Algebra.Nop = AF.createNop();
       op.metadata = { scopedSource: { source: 'abc' }};
       expect(getOperationSource(op)).toEqual({ source: 'abc' });
     });
@@ -111,10 +112,10 @@ describe('utils', () => {
 
     it('should modify an operation with source and other metadata', () => {
       const source1 = <any> 'abc';
-      const opIn = assignOperationSource(AF.createNop(), source1);
+      const opIn: Algebra.Nop = assignOperationSource(AF.createNop(), source1);
       opIn.metadata!.other = true;
       removeOperationSource(opIn);
-      const opOut = AF.createNop();
+      const opOut: Algebra.Nop = AF.createNop();
       opOut.metadata = { other: true };
       expect(opIn).toEqual(opOut);
     });

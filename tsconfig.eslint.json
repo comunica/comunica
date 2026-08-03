@@ -6,8 +6,7 @@
     "karma.conf.ts",
     "karma.setup.ts",
     "packages/**/*.ts",
-    "performance/**/*.ts",
-    "webpack.config.ts"
+    "performance/**/*.ts"
   ],
   "exclude": [
     "**/node_modules"

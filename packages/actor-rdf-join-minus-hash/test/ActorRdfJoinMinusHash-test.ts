@@ -354,6 +354,70 @@ IActorRdfJoinSelectivityOutput
           BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
         ]);
       });
+
+      it('should handle entries with common variables but exclude graphVariableFromParentScope', async() => {
+        const action: IActionRdfJoin = {
+          type: 'minus',
+          graphVariableFromParentScope: DF.variable('g'),
+          entries: [
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+                  BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+                  BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 3,
+
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('g'), canBeUndef: false },
+                  ],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
+            },
+            {
+              output: <any> {
+                bindingsStream: new ArrayIterator([
+                  BF.bindings([[ DF.variable('b'), DF.literal('1') ]]),
+                  BF.bindings([[ DF.variable('b'), DF.literal('2') ]]),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  cardinality: 2,
+
+                  variables: [
+                    { variable: DF.variable('b'), canBeUndef: false },
+                    { variable: DF.variable('g'), canBeUndef: false },
+                  ],
+                }),
+                type: 'bindings',
+              },
+              operation: <any> {},
+            },
+          ],
+          context,
+        };
+        const { result } = await actor.getOutput(action);
+
+        // Validate output
+        expect(result.type).toBe('bindings');
+        await expect(result.metadata()).resolves
+          .toEqual({
+            cardinality: 3,
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('g'), canBeUndef: false },
+            ],
+          });
+        await expect(result.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+          BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
+        ]);
+      });
     });
   });
 

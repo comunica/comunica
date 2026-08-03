@@ -51,6 +51,12 @@ export class ActorContextPreprocessSetDefaults extends ActorContextPreprocess {
       } else {
         context = context.set(KeysInitQuery.queryFormat, queryFormat);
       }
+
+      // If extensionFunctions is not set, default extensionFunctionsAlwaysPushdown to true.
+      if (!context.has(KeysInitQuery.extensionFunctionsAlwaysPushdown) &&
+        !context.has(KeysInitQuery.extensionFunctions)) {
+        context = context.set(KeysInitQuery.extensionFunctionsAlwaysPushdown, true);
+      }
     }
 
     return { context };

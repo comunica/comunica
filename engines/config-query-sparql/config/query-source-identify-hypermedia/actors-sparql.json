@@ -8,7 +8,7 @@
   "@type": "Runner",
   "actors": [
     {
-      "@id": "urn:comunica:default:rdf-resolve-quad-pattern/actors#sparql",
+      "@id": "urn:comunica:default:query-source-identify-hypermedia/actors#sparql",
       "@type": "ActorQuerySourceIdentifyHypermediaSparql",
       "mediatorHttp": { "@id": "urn:comunica:default:http/mediators#main" },
       "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }

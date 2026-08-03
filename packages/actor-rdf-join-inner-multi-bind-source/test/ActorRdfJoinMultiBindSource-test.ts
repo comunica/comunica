@@ -4,13 +4,13 @@ import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectiv
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper, IActionContext } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 import type {
   IActorRdfJoinMultiBindSourceTestSideData,
 } from '../lib/ActorRdfJoinMultiBindSource';
@@ -19,7 +19,7 @@ import {
 } from '../lib/ActorRdfJoinMultiBindSource';
 import '@comunica/utils-jest';
 
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
@@ -99,7 +99,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
           getSelectorShape() {
             return {
               type: 'operation',
-              operation: { operationType: 'type', type: Algebra.types.PATTERN },
+              operation: { operationType: 'type', type: Algebra.Types.PATTERN },
               joinBindings: true,
             };
           },
@@ -232,14 +232,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join Source: ', expect.any(Function));
         expect(logSpy.mock.calls[0][2]()).toEqual({
           entry: action.entries[1].operation,
-          metadata: {
-            state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 3 },
-
-            variables: [
-              { variable: DF.variable('a'), canBeUndef: false },
-            ],
-          },
+          cardinality: { type: 'estimate', value: 3 },
         });
         expect(source1.source.queryBindings).toHaveBeenCalledTimes(2);
         expect(source1.source.queryBindings).toHaveBeenNthCalledWith(
@@ -356,14 +349,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         expect(logSpy).toHaveBeenCalledWith(context, 'First entry for Bind Join Source: ', expect.any(Function));
         expect(logSpy.mock.calls[0][2]()).toEqual({
           entry: action.entries[1].operation,
-          metadata: {
-            state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 3 },
-
-            variables: [
-              { variable: DF.variable('a'), canBeUndef: false },
-            ],
-          },
+          cardinality: { type: 'estimate', value: 3 },
         });
         expect(source4Context.source.queryBindings).toHaveBeenCalledTimes(2);
         expect(source4Context.source.queryBindings).toHaveBeenNthCalledWith(

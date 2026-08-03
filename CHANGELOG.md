@@ -1,6 +1,126 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v4.4.1"></a>
+## [v4.4.1](https://github.com/comunica/comunica/compare/v4.4.0...v4.4.1) - 2025-09-25
+
+### Fixed
+* [Fix unsupported extension functions always being pushed to endpoints](https://github.com/comunica/comunica/commit/b24c9372172337b500adcfe0eb61e0e777c746fc)
+    * [Add option to always push down extension functions](https://github.com/comunica/comunica/commit/fbbf7d03bef75c451e38ab6731464ff8570cc117)
+    * [If extension functions are undefined, always push them down](https://github.com/comunica/comunica/commit/b1863b2d3bfd854737fd752b72b1a29b0e9b9b25)
+
+<a name="v4.4.0"></a>
+## [v4.4.0](https://github.com/comunica/comunica/compare/v4.3.0...v4.4.0) - 2025-09-17
+
+### Added
+* [Accept RDF/JS datasets as sources](https://github.com/comunica/comunica/commit/c1d626779a8a91900d8907788875db1aee3948c6)
+* [Include VoID metadata in SPARQL endpoint, Closes #1545](https://github.com/comunica/comunica/commit/a601c5f67f47dd8a3c29b24703cf36286eb127ce)
+* [Add automatic type casting for xs:untypedAtomic](https://github.com/comunica/comunica/commit/ffd96bdedea8ff40c589136bfa92b44bb106e3a9)
+* [Vary requests to SPARQL endpoints using Accept-Post header](https://github.com/comunica/comunica/commit/e38903387b11d25626eb3c4f1a5c28250bd116c5)
+* [Allow fileBaseIRI to be set, Closes #1540](https://github.com/comunica/comunica/commit/3c6498ce65634f8294a0aa4418c1947e91ff945e)
+* Send extension functions to remote SPARQL endpoints if supported.
+  * [Only push down extension functions to sources if allowed](https://github.com/comunica/comunica/commit/3b0f16a79ba799661fb110c30fa839bf6ec388b9)
+  * [List and detect extension functions in service descriptions](https://github.com/comunica/comunica/commit/51c6569bdc9e72b5bd923fea3a081e0a85386d9a)
+
+### Changed
+* [Make sources field type in context less strict, Closes #1615](https://github.com/comunica/comunica/commit/8d954feaab0d395be559be7879896a3475495797)
+* [Make partial cardinality emission optional (#1618)](https://github.com/comunica/comunica/commit/c03294cec8e8138436d146906def6353752afcd3)
+* [Cache identified sources in service operation actor](https://github.com/comunica/comunica/commit/0b8fa6fa11a2eceb11fedcf9b43ca5fd44a1318f)
+* [Send short SPARQL endpoint requests as GET](https://github.com/comunica/comunica/commit/66532fd2bbb2f22493b8388cc578a6ed7dba9a50)
+* [Update to immutable v5](https://github.com/comunica/comunica/commit/184894894a299188f201e623b474ec5e834a6960)
+* Optimizations:
+  * [Optimize OPTIONALs with expressions applying to only left or right](https://github.com/comunica/comunica/commit/9d23aa6457a1f28363ce8f4c801b785595d26dd6)
+  * [Avoid cartesian products in actor-rdf-join-inner-multi-smallest](https://github.com/comunica/comunica/commit/24962de0ce971a002896e19a99767013d6d930a7)
+
+### Fixed
+* [Fix wrong handling of FILTER in OPTIONAL](https://github.com/comunica/comunica/commit/6050c078ccae6ba16968dd087ab60e2b90ab2e54)
+* [Fix distinctConstruct not working when over a single SPARQL endpoint](https://github.com/comunica/comunica/commit/e1248f3edc2a59cd9f36ba4c854cee805b9e6d42)
+* [Skip ActorIteratorTransformRecordIntermediateResults if context entry is missing](https://github.com/comunica/comunica/commit/c4cb33a896700f01105fb739a7f080508feaa404)
+* [Fix incorrect context being used during empty source pruning](https://github.com/comunica/comunica/commit/3c36924689b861c31d6910d82bd4796713e8b0c4)
+* [Use ASK to verify cardinality estimate-based source assignments (#1587)](https://github.com/comunica/comunica/commit/021887f27f5dcb0d83cdd7f99ff3c221d9655964)
+
+<a name="v4.3.0"></a>
+## [v4.3.0](https://github.com/comunica/comunica/compare/v4.2.0...v4.3.0) - 2025-06-17
+
+### Added
+* [Add identity based distinct actor, Closes #52](https://github.com/comunica/comunica/commit/e6f67b1fc798bffc9f6f9050f32c3dbcad7cd5dc)
+
+### Changed
+* [Optimize property path iterators with sync mappings](https://github.com/comunica/comunica/commit/82b5a080bef2dbcbcd2abd41592c010201743f7a)
+* [Revert Webpack config files to JavaScript](https://github.com/comunica/comunica/commit/b858f0ff9c348db49cb8a416ddf9eb9f5007b659)
+* [Move primary Webpack config back to actor-init-query](https://github.com/comunica/comunica/commit/c64be854f9d5e9835b74d637622f8bbc7ab94c50)
+
+### Fixed
+* [Fix property paths without variables over empty dataset not terminating](https://github.com/comunica/comunica/commit/66d7d74360fde39e13164e4649cac0ef0308d917)
+* [Fix property paths with one variable over empty dataset not terminating](https://github.com/comunica/comunica/commit/c55623f82cf5fdf6c9a8b29d131a8eb4c2b42dd7)
+* [Fix zero-or-more property paths over empty dataset not terminating](https://github.com/comunica/comunica/commit/178858efda0101a28846eb2f753e041e4adbe861)
+* [Fix property paths not selecting all list elements, Closes #1562](https://github.com/comunica/comunica/commit/0f4c905facacb97f3e15ddc4e2f95a29d981a866)
+* [Fix unionDefaultGraph not working on RDFJS sources, Closes #1565](https://github.com/comunica/comunica/commit/be40294fb139d5b6b84fe5f5ea3b29e31580b4d7)
+* [Fix preflight metadata not getting propagated](https://github.com/comunica/comunica/commit/4285a4bc3badb13f127738578e0468314c40608f)
+
+<a name="v4.2.0"></a>
+## [v4.2.0](https://github.com/comunica/comunica/compare/v4.1.0...v4.2.0) - 2025-04-29
+
+### Added
+* [Add HTTP rate limit actor](https://github.com/comunica/comunica/commit/fb5962c885938f47165f40c31187441bccfe2d56)
+* [Add workaround for DBPedia SPARQL HTTP status 405 with Retry-After](https://github.com/comunica/comunica/commit/8f58dd45a3ba72b72aa030242faebd6bb46fd370)
+* [Add VoID metadata extract actor and cardinality estimation for SPARQL sources](https://github.com/comunica/comunica/commit/2e259e739b6664a932bd3f5020509730b4d600e8)
+* [Allow SPARQL source actor to skip COUNTs for large queries](https://github.com/comunica/comunica/commit/9ddfa59b34561465aac4421f1d767af61b8d4325)
+* [Allow sending COUNT queries to be disabled for SPARQL endpoints](https://github.com/comunica/comunica/commit/1eef7d48c4100aaf261793aaceb299cc8877983b)
+* [Allow forcing SPARQL source type from config](https://github.com/comunica/comunica/commit/582dfcc6ea0c69d15d43f4e3847a75e5b04cad8e)
+* [Add join sorter based on join selectivities](https://github.com/comunica/comunica/commit/577fd93aa7d0f8288040d859b73133ceb8dac056)
+* [Report the url when a fetch fails](https://github.com/comunica/comunica/commit/a7f9285af770a7bad699af615939a1ea5f213636)
+* [Add distinctConstruct key to IQueryContextCommon](https://github.com/comunica/comunica/commit/932eb93f068bd8a7cf4f65f32cf5199d991f31f8)
+
+### Changed
+* [Detect SPARQL endpoints with trailing slashes, Closes #1529](https://github.com/comunica/comunica/commit/dad8bad0ef121cfe3142bf9725c15cdddb72fdfe)
+* [Skip COUNT queries to singular SPARQL source](https://github.com/comunica/comunica/commit/2dbe28b7c2275ad45e963f353df4e6ecaeb7582d)
+* [Skip unnecessary SPARQL SD requests for a single source](https://github.com/comunica/comunica/commit/c5529ac2e01addeb1b1a5afbdbf9e29983ce1a93)
+* [Update to rdf-streaming-store v2](https://github.com/comunica/comunica/commit/c1054e2ca2db1a5aebd06f1160a05ac1b94e30ba)
+* [Try action.mediaType before doing heuristics for media type](https://github.com/comunica/comunica/commit/35bd4bdbafd5ce0c1bae1ad6c31bf55682cfa4f7)
+* [Avoid unnecessary parse attempts after dereferencing fails](https://github.com/comunica/comunica/commit/883e2c913d2c57765162e5dc6c23ca13ac426299)
+* [Avoid printing all metadata in join logging (#1509)](https://github.com/comunica/comunica/commit/c2772816b281c40cd59cee080aa11814dc24e79e)
+* [Avoid creation of intermediary triple objects for in-memory stores](https://github.com/comunica/comunica/commit/513e55a61639902de3c0dceda0c3c4c29cb617bd)
+
+### Fixed
+* [Fix variable names in ActorOptimizeQueryOperationPruneEmptySourceOperations](https://github.com/comunica/comunica/commit/e1c41f5c29b60e40e7756da3bdc42e24819af470)
+* [Fix incorrect id of actor-query-source-hypermedia-identify-sparql](https://github.com/comunica/comunica/commit/278774283d3eabddbc6374acdcd5677ccc8fd465)
+* [Fix GraphQL queries being sent to SPARQL endpoints, Closes #1525](https://github.com/comunica/comunica/commit/c443e04bb7efafe15957e10fd165a9dcb7d3afba)
+* [Fix HTTP request count tracking, Closes #1526](https://github.com/comunica/comunica/commit/d75d966121c42ff755e6f32cd7897dd4b5a30699)
+* [Fix bad plans sometimes being chosen due to requestTime in files](https://github.com/comunica/comunica/commit/cdae8eed46848e6c84eba5d5e2b7144abce444fc)
+* [Fix regressions of initialBindings with BIND clauses](https://github.com/comunica/comunica/commit/0227f236be392992c77e872201623257e6080f60)
+* [Fix queries with complex property paths not terminating](https://github.com/comunica/comunica/commit/b3aa99882ff34809c2d7a24b575bc1764474a39d)
+* [Avoid flattening joins with input-specific metadata (#1522)](https://github.com/comunica/comunica/commit/dcd7862ac6c3e350372a4afdfb80468f3c13a7dd)
+* [Fix broken Dockerfile for query-sparql](https://github.com/comunica/comunica/commit/1e89df54431a6343845db1bf12b1c1ac26b0d93e)
+
+<a name="v4.1.0"></a>
+## [v4.1.0](https://github.com/comunica/comunica/compare/v4.0.2...v4.1.0) - 2025-02-11
+
+<a name="v4.1.0"></a>
+## [v4.1.0](https://github.com/comunica/comunica/compare/v4.0.2...v4.1.0) - 2025-02-11
+
+### Added
+* [Add support for x and q regex flags, Closes #1254](https://github.com/comunica/comunica/commit/76f174d8fc7ccd275a367a2043cbe6ee1ecbce12)
+* [Add ignoreOrder param to toEqualBindings jest helpers](https://github.com/comunica/comunica/commit/9e8a92b945cac6a87e85d7c70d3d945bcd382056)
+* [Add bus to transform intermediary streams](https://github.com/comunica/comunica/commit/d03d62fd21d940a3387a8f9497d1951c2103011b)
+* [Extend SPARQL Service Description parsing](https://github.com/comunica/comunica/commit/2c0af9eb76b7763afe39d07900f3320a061d94a4)
+
+### Changed
+* Performance improvements:
+  * [Allow Bind Join more for local data sources](https://github.com/comunica/comunica/commit/db38811ab069aefd5a055e5f192d83ab887527dd)
+  * [Shorten code path on empty join operations](https://github.com/comunica/comunica/commit/a7ae2e7ff44def29914347b53a73909e5858229d)
+  * [Remove uncommon variables handling in join entry sort](https://github.com/comunica/comunica/commit/24aa68239dde047201935c189736fb7313b9bec5)
+* [Improve warning message on expressions error in left join](https://github.com/comunica/comunica/commit/45975ad9d8cc2c17e6a3e4801a5b29ea671d145e)
+* [Update dependency htmlparser2 to v10 (#1472)](https://github.com/comunica/comunica/commit/22d63135de676e83745848ac78349a3647594fcd)
+* [Update dependency uuid to v11](https://github.com/comunica/comunica/commit/b19fe21e804944880290255204a898dd65a00112)
+
+### Fixed
+* [Fix link traversal with multiple sources not always working](https://github.com/comunica/comunica/commit/3bd4e0a3a6d7c607a594331bf3abfcb8a8f4cdd6)
+* [Fix floating point error for very low cardinalities](https://github.com/comunica/comunica/commit/748f4d46fab3843210c2b03f025fc4ed2d3dbce4)
+* [Fix sd:defaultGraph parsing with QPF endpoints](https://github.com/comunica/comunica/commit/c2fafd403e2f4bfe0e0ae62abec335b196b1e920)
+* [Fix query stopping when a triple pattern has estimated cardinality zero](https://github.com/comunica/comunica/commit/0f088b57d67d3bf104f5ff81d965050886ab74c8)
+* [Fix incorrect test method of ActorQuerySourceIdentifyHypermediaAnnotateSource](https://github.com/comunica/comunica/commit/8ee33a080f3955f0d254282909b1bf4204bd653b)
+
 <a name="v4.0.2"></a>
 ## [v4.0.2](https://github.com/comunica/comunica/compare/v4.0.1...v4.0.2) - 2024-10-16
 

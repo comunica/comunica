@@ -10,10 +10,10 @@ import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
 } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Reduced Hash Query Operation Actor.
@@ -23,7 +23,7 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
   public readonly cacheSize: number;
 
   public constructor(args: IActorQueryOperationReducedHashArgs) {
-    super(args, 'reduced');
+    super(args, Algebra.Types.REDUCED);
   }
 
   public async testOperation(_operation: Algebra.Reduced, _context: IActionContext): Promise<TestResult<IActorTest>> {

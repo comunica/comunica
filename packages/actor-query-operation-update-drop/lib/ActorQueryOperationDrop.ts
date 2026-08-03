@@ -4,9 +4,9 @@ import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { testReadOnly } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor
@@ -16,7 +16,7 @@ export class ActorQueryOperationDrop extends ActorQueryOperationTypedMediated<Al
   public readonly mediatorUpdateQuads: MediatorRdfUpdateQuads;
 
   public constructor(args: IActorQueryOperationDropArgs) {
-    super(args, 'drop');
+    super(args, Algebra.Types.DROP);
   }
 
   public async testOperation(operation: Algebra.Drop, context: IActionContext): Promise<TestResult<IActorTest>> {

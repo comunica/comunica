@@ -40,6 +40,8 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
+* `cacheSize`: The number of service clause targets to cache, to avoid repetitive source identification. Defaults to `32`.
+* `httpInvalidator`: A mediator over the [HTTP invalidate bus](https://github.com/comunica/comunica/tree/master/packages/bus-http-invalidate).
 * `mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
 * `forceSparqlEndpoint`: Optional flag indicating if the SERVICE target should be assumed to be a SPARQL endpoint, defaults to `false`.
 * `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).

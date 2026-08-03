@@ -1,6 +1,6 @@
+import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { Algebra } from 'sparqlalgebrajs';
 import type { BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
 import type { MetadataBindings } from './IMetadata';
@@ -14,19 +14,19 @@ export interface IQuerySourceSerialized extends IQuerySourceUnidentifiedExpanded
 
 export interface IQuerySourceUnidentifiedExpanded {
   type?: string;
-  value: string | RDF.Source | RDF.Store;
+  value: string | RDF.Source | RDF.Store | RDF.DatasetCore;
   context?: IActionContext;
 }
 
 export interface IQuerySourceUnidentifiedExpandedRawContext {
   type?: string;
-  value: string | RDF.Source | RDF.Store;
+  value: string | RDF.Source | RDF.Store | RDF.DatasetCore;
   context?: Record<string, any>;
 }
 
 export type QuerySourceUnidentifiedExpanded = IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized;
-export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | QuerySourceUnidentifiedExpanded |
-IQuerySourceUnidentifiedExpandedRawContext;
+export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | RDF.DatasetCore |
+QuerySourceUnidentifiedExpanded | IQuerySourceUnidentifiedExpandedRawContext;
 
 /**
  * Attaches a context to a query target.
@@ -36,7 +36,7 @@ export interface IQuerySourceWrapper<Q extends IQuerySource = IQuerySource> {
   context?: IActionContext;
 }
 
-export type QuerySourceReference = string | RDF.Source;
+export type QuerySourceReference = string | RDF.Source | RDF.DatasetCore;
 
 /**
  * A lazy query source.
@@ -119,7 +119,7 @@ export interface IQuerySource {
    * @return {Promise<boolean>}           The void response.
    */
   queryVoid: (
-    operation: Algebra.Update,
+    operation: Algebra.Operation,
     context: IActionContext,
   ) => Promise<void>;
 
@@ -160,13 +160,22 @@ export type FragmentSelectorShape = {
    */
   operation: {
     operationType: 'type';
-    type: Algebra.types;
+    type: Algebra.Types;
   } | {
     operationType: 'pattern';
     pattern: Algebra.Operation;
   } | {
+    operationType: 'type';
+    type: Algebra.Types.EXPRESSION;
+    /**
+     * The extension functions this source supports.
+     */
+    extensionFunctions?: string[];
+  } | {
     /**
      * All possible operations are accepted by this shape.
+     * As exception, extension functions are not accepted through wildcards, and must be
+     * explicitly listed via `extensionFunctions`.
      */
     operationType: 'wildcard';
   };
@@ -200,6 +209,9 @@ export type FragmentSelectorShape = {
 } | {
   type: 'disjunction';
   children: FragmentSelectorShape[];
+} | {
+  type: 'negation';
+  child: FragmentSelectorShape;
 } | {
   type: 'arity';
   min?: number;
@@ -247,23 +259,23 @@ export type FragmentSelectorShape = {
 //   children: [
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.PROJECT },
+//       operation: { type: Algebra.Types.PROJECT },
 //     },
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.CONSTRUCT },
+//       operation: { type: Algebra.Types.CONSTRUCT },
 //     },
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.DESCRIBE },
+//       operation: { type: Algebra.Types.DESCRIBE },
 //     },
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.ASK },
+//       operation: { type: Algebra.Types.ASK },
 //     },
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.COMPOSITE_UPDATE },
+//       operation: { type: Algebra.Types.COMPOSITE_UPDATE },
 //     },
 //   ],
 // };
@@ -272,7 +284,7 @@ export type FragmentSelectorShape = {
 // //   Find ?s matching "?s dbo:country dbr:norway. ?s dbo:award ?o2. ?s dbo:birthDate ?o3."
 // const shapeSpf: FragmentSelectorShape = {
 //   type: 'operation',
-//   operation: { type: Algebra.types.BGP },
+//   operation: { type: Algebra.Types.BGP },
 //   scopedVariables: [
 //     DF.variable('s'),
 //   ],
@@ -312,7 +324,7 @@ export type FragmentSelectorShape = {
 //     },
 //     {
 //       type: 'operation',
-//       operation: { type: Algebra.types.BGP },
+//       operation: { type: Algebra.Types.BGP },
 //       children: [
 //         {
 //           type: 'arity',

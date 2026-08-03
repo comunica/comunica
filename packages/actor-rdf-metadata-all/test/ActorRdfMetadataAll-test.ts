@@ -4,11 +4,11 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
+import { streamifyArray } from 'streamify-array';
 import { ActorRdfMetadataAll } from '../lib/ActorRdfMetadataAll';
 import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
-const stream = require('streamify-array');
 
 describe('ActorRdfMetadataAll', () => {
   let bus: any;
@@ -45,14 +45,14 @@ describe('ActorRdfMetadataAll', () => {
 
     beforeEach(() => {
       actor = new ActorRdfMetadataAll({ name: 'actor', bus });
-      input = stream([
+      input = streamifyArray([
         quad('s1', 'p1', 'o1', ''),
         quad('o1', 'http://rdfs.org/ns/void#subset', 'o1?param', 'g1'),
         quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o1', 'g1'),
         quad('s2', 'p2', 'o2', 'g1'),
         quad('s3', 'p3', 'o3', ''),
       ]);
-      inputDifferent = stream([
+      inputDifferent = streamifyArray([
         quad('s1', 'p1', 'o1', ''),
         quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o2', 'g1'),
         quad('o2', 'http://rdfs.org/ns/void#subset', 'o2?param', 'g1'),

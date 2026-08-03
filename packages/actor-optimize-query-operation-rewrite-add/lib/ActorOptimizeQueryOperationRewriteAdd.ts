@@ -8,9 +8,9 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
 const DF = new DataFactory<RDF.BaseQuad>();
 
@@ -28,26 +28,24 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const factory = new AlgebraFactory(dataFactory);
 
-    const operation = Util.mapOperation(action.operation, {
-      [Algebra.types.ADD](operationOriginal, factory) {
-        // CONSTRUCT all quads from the source, and INSERT them into the destination
-        const destination = operationOriginal.destination === 'DEFAULT' ?
-          DF.defaultGraph() :
-          operationOriginal.destination;
-        const source = operationOriginal.source === 'DEFAULT' ? DF.defaultGraph() : operationOriginal.source;
+    const operation = algebraUtils.mapOperation(action.operation, {
+      [Algebra.Types.ADD]: {
+        preVisitor: () => ({ shortcut: true }),
+        transform: (operationOriginal) => {
+          // CONSTRUCT all quads from the source, and INSERT them into the destination
+          const destination = operationOriginal.destination === 'DEFAULT' ?
+            DF.defaultGraph() :
+            operationOriginal.destination;
+          const source = operationOriginal.source === 'DEFAULT' ? DF.defaultGraph() : operationOriginal.source;
 
-        const result = factory.createDeleteInsert(undefined, [
-          factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), destination),
-        ], factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), source));
-
-        return {
-          result,
-          recurse: false,
-        };
+          return factory.createDeleteInsert(undefined, [
+            factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), destination),
+          ], factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), source));
+        },
       },
-    }, algebraFactory);
+    });
 
     return { operation, context: action.context };
   }

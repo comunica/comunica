@@ -19,7 +19,7 @@ export class ActorBindingsAggregatorFactoryWildcardCount extends ActorBindingsAg
   }
 
   public async test(action: IActionBindingsAggregatorFactory): Promise<TestResult<IActorTest>> {
-    if (action.expr.aggregator !== 'count' || action.expr.expression.expressionType !== 'wildcard') {
+    if (action.expr.aggregator !== 'count' || action.expr.expression.subType !== 'wildcard') {
       return failTest('This actor only supports the \'count\' aggregator with wildcard.');
     }
     return passTestVoid();

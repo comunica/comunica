@@ -7,14 +7,14 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import { Algebra, AlgebraFactory, isKnownOperation, isKnownSubType } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
   doesShapeAcceptOperation,
   getOperationSource,
   removeOperationSource,
 } from '@comunica/utils-query-operation';
-import { Algebra, Factory } from 'sparqlalgebrajs';
 
 /**
  * A comunica Group Sources Optimize Query Operation Actor.
@@ -44,7 +44,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
    */
   public async groupOperation(operation: Algebra.Operation, context: IActionContext): Promise<Algebra.Operation> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new Factory(dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Return operation as-is if the operation already has a single source, or if the operation has no children.
     if (getOperationSource(operation) ?? !('input' in operation)) {
@@ -53,14 +53,10 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
 
     // If operation has a single input, move source annotation upwards if the source can handle it.
     if (!Array.isArray(operation.input)) {
-      const groupedInput = await this.groupOperation(operation.input, context);
+      const groupedInput = await this.groupOperation(<Algebra.Operation> operation.input, context);
       if (groupedInput.metadata?.scopedSource) {
         const source: IQuerySourceWrapper = <IQuerySourceWrapper> getOperationSource(groupedInput);
-        if (doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
-          this.logDebug(context, `Hoist 1 source-specific operation into a single ${operation.type} operation for ${source.source.toString()}`);
-          removeOperationSource(groupedInput);
-          operation = assignOperationSource(operation, source);
-        }
+        operation = await this.moveSourceAnnotationUpwardsIfPossible(operation, [ groupedInput ], source, context);
       }
       return <Algebra.Operation> { ...operation, input: groupedInput };
     }
@@ -82,32 +78,28 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
 
     // If the number of clusters is equal to the number of original inputs, do nothing.
     if (clusters.length === inputs.length) {
-      return <Algebra.Operation> { ...operation, input: inputs };
+      const result: Algebra.Multi = { ...operation, input: inputs };
+      return result;
     }
 
     // If we have multiple clusters, created nested multi-operations
     let multiFactoryMethod: (children: Algebra.Operation[], flatten: boolean) => Algebra.Operation;
-    switch (operation.type) {
-      case Algebra.types.JOIN:
-        multiFactoryMethod = algebraFactory.createJoin.bind(algebraFactory);
-        break;
-      case Algebra.types.UNION:
-        multiFactoryMethod = algebraFactory.createUnion.bind(algebraFactory);
-        break;
-      case Algebra.types.ALT:
-        multiFactoryMethod = <any> algebraFactory.createAlt.bind(algebraFactory);
-        break;
-      case Algebra.types.SEQ:
-        multiFactoryMethod = <any> algebraFactory.createSeq.bind(algebraFactory);
-        break;
-      default:
-        // While LeftJoin and Minus are also multi-operations,
-        // these can never occur because they only have 2 inputs,
-        // so these cases will always be captured by one of the 2 if-cases above
-        // (clusters.length === 1 or clusters.length === input.length)
+    if (isKnownOperation(operation, Algebra.Types.JOIN)) {
+      multiFactoryMethod = algebraFactory.createJoin.bind(algebraFactory);
+    } else if (isKnownOperation(operation, Algebra.Types.UNION)) {
+      multiFactoryMethod = algebraFactory.createUnion.bind(algebraFactory);
+    } else if (isKnownOperation(operation, Algebra.Types.ALT)) {
+      multiFactoryMethod = <any> algebraFactory.createAlt.bind(algebraFactory);
+    } else if (isKnownOperation(operation, Algebra.Types.SEQ)) {
+      multiFactoryMethod = <any> algebraFactory.createSeq.bind(algebraFactory);
+    } else {
+      // While LeftJoin and Minus are also multi-operations,
+      // these can never occur because they only have 2 inputs,
+      // so these cases will always be captured by one of the 2 if-cases above
+      // (clusters.length === 1 or clusters.length === input.length)
 
-        // In all other cases, error
-        throw new Error(`Unsupported operation '${operation.type}' detected while grouping sources`);
+      // In all other cases, error
+      throw new Error(`Unsupported operation '${operation.type}' detected while grouping sources`);
     }
     return await this.groupOperationMulti(clusters, multiFactoryMethod, context);
   }
@@ -179,7 +171,11 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     source: IQuerySourceWrapper | undefined,
     context: IActionContext,
   ): Promise<O> {
-    if (source && doesShapeAcceptOperation(await source.source.getSelectorShape(context), operation)) {
+    if (source && this.isPossibleToMoveSourceAnnotationUpwards(
+      operation,
+      await source.source.getSelectorShape(context),
+      context,
+    )) {
       this.logDebug(context, `Hoist ${inputs.length} source-specific operations into a single ${operation.type} operation for ${source.source.toString()}`);
       operation = assignOperationSource(operation, source);
       for (const input of inputs) {
@@ -187,5 +183,32 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
       }
     }
     return operation;
+  }
+
+  /**
+   * Checks if it's possible to move the source annotation upwards using the following rules:
+   * - If the shape doesn't accept the operation, then it's not possible.
+   * - If it does and the operation does not contain extension functions or
+   *   comunica doesn't support them, then it's possible.
+   * - If comunica does support them, then it's possible only if the shape accepts the extension function expressions.
+   * @param operation A grouped operation consisting of all given input operations.
+   * @param shape The common source's shape.
+   * @param context The action context.
+   */
+  public isPossibleToMoveSourceAnnotationUpwards<O extends Algebra.Operation>(
+    operation: O,
+    shape: FragmentSelectorShape,
+    context: IActionContext,
+  ): boolean {
+    const wildcardAcceptAllExtensionFunctions = context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
+    if (doesShapeAcceptOperation(shape, operation, { wildcardAcceptAllExtensionFunctions })) {
+      const extensionFunctions = context.get(KeysInitQuery.extensionFunctions);
+      const expression: Algebra.Expression | undefined = (<any> operation).expression;
+      return !extensionFunctions ||
+        !(expression && isKnownSubType(expression, Algebra.ExpressionTypes.NAMED)) ||
+        !(expression?.name.value in extensionFunctions) ||
+        doesShapeAcceptOperation(shape, expression, { wildcardAcceptAllExtensionFunctions });
+    }
+    return false;
   }
 }

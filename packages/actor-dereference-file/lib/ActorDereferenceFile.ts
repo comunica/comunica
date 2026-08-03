@@ -2,6 +2,7 @@ import { accessSync, createReadStream, constants } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import type { IActionDereference, IActorDereferenceArgs, IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference } from '@comunica/bus-dereference';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 
@@ -28,7 +29,7 @@ export class ActorDereferenceFile extends ActorDereference {
     return URIRegex.exec(str) !== null;
   }
 
-  public async run({ url }: IActionDereference): Promise<IActorDereferenceOutput> {
+  public async run({ url, context }: IActionDereference): Promise<IActorDereferenceOutput> {
     const requestTimeStart = Date.now();
     return {
       data: createReadStream(getPath(url)),
@@ -36,6 +37,7 @@ export class ActorDereferenceFile extends ActorDereference {
       requestTime: Date.now() - requestTimeStart,
       exists: true,
       url: ActorDereferenceFile.isURI(url) ? url : pathToFileURL(url).href,
+      baseIRI: context.get(KeysInitQuery.fileBaseIRI),
     };
   }
 }

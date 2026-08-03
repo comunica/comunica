@@ -39,6 +39,8 @@ describe('to decimal', () => {
         "-7.875"^^xsd:float = "-7.875"^^xsd:decimal
         "2.5"^^xsd:decimal = "2.5"^^xsd:decimal
         "-2.5"^^xsd:decimal = "-2.5"^^xsd:decimal
+        "42"^^xsd:untypedAtomic = "42"^^xsd:decimal
+        "37.5"^^xsd:untypedAtomic = "37.5"^^xsd:decimal
       `,
     errorTable: `
         "http://example.org/z"^^xsd:string = 'Invalid cast'
@@ -54,6 +56,7 @@ describe('to decimal', () => {
         "NaN"^^xsd:double = 'Invalid cast'
         "+INF"^^xsd:double = 'Invalid cast'
         "-INF"^^xsd:double = 'Invalid cast'
+        "invalid"^^xsd:untypedAtomic = 'Invalid cast'
       `,
   });
 });

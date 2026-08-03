@@ -20,8 +20,31 @@ describe('ActorRdfJoinEntriesSortCardinality', () => {
     });
 
     describe('test', () => {
-      it('should return true', async() => {
-        await expect(actor.test(<any> {})).resolves.toPassTestVoid();
+      it('should return for empty entries', async() => {
+        await expect(actor.test({
+          entries: [],
+          context,
+        })).resolves.toPassTest({ accuracy: 1 });
+      });
+
+      it('should return for non-empty entries', async() => {
+        await expect(actor.test({
+          entries: [
+            <any> { metadata: { cardinality: { value: 10 }}},
+            <any> { metadata: { cardinality: { value: 100 }}},
+          ],
+          context,
+        })).resolves.toPassTest({ accuracy: 1 });
+      });
+
+      it('should return for non-empty entries with infinity', async() => {
+        await expect(actor.test({
+          entries: [
+            <any> { metadata: { cardinality: { value: 10 }}},
+            <any> { metadata: { cardinality: { value: Number.POSITIVE_INFINITY }}},
+          ],
+          context,
+        })).resolves.toPassTest({ accuracy: 0.5 });
       });
     });
 

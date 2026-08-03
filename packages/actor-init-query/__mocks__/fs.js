@@ -31,7 +31,7 @@ const testFileContentDict = {
 };
 const testArgumentDict = { sources: [{ type: 'file', value: 'example' }]};
 
-const fs = jest.genMockFromModule('fs');
+const fs = jest.createMockFromModule('fs');
 // eslint-disable-next-line no-sync
 fs.existsSync = jest.fn(() => true);
 // eslint-disable-next-line no-sync

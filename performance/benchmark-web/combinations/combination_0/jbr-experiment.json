@@ -1,9 +1,9 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^5.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/sparql-custom/^5.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/sparql-endpoint-comunica/^5.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^5.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/sparql-custom/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/sparql-endpoint-comunica/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^6.0.0/components/context.jsonld"
   ],
   "@id": "urn:jbr:benchmark-web:combination_0",
   "@type": "ExperimentSparqlCustom",
@@ -14,5 +14,5 @@
   "queryRunnerRequestDelay": 0,
   "queryRunnerEndpointAvailabilityCheckTimeout": 1000,
   "queryRunnerUrlParams": {},
-  "hookSparqlEndpoint": {"@id": "urn:jbr:benchmark-web:combination_0:hookSparqlEndpoint","@type": "HookCli","entrypoint": [  "node",  "../../engines/query-sparql-file/bin/http.js",  "http://localhost/dummy",  "-p",  "3001",  "-t",  "60", "--contextOverride", "-i"],"statsFilePath": "output/stats.csv"  }
+  "hookSparqlEndpoint": {"@id": "urn:jbr:benchmark-web:combination_0:hookSparqlEndpoint","@type": "HookCli","entrypoint": [  "node",  "../../engines/query-sparql/bin/http.js",  "http://localhost/dummy",  "-p",  "3001",  "-t",  "60", "--contextOverride", "-i"],"statsFilePath": "output/stats.csv"  }
 }

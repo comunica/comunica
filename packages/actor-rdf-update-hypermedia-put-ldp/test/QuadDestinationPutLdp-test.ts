@@ -147,6 +147,10 @@ describe('QuadDestinationPutLdp', () => {
       await expect(destination.update({ delete: <any> 'QUADS', insert: <any> 'QUADS' }))
         .rejects.toThrow(`Put-based LDP destinations don't support deletions`);
     });
+
+    it('should do nothing for no changes', async() => {
+      await destination.update({});
+    });
   });
 
   describe('deleteGraphs', () => {

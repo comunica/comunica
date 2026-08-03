@@ -1,12 +1,12 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
 import { ActorOptimizeQueryOperationJoinConnected } from '../lib/ActorOptimizeQueryOperationJoinConnected';
 import '@comunica/utils-jest';
 
-const factory = new Factory();
+const factory = new AlgebraFactory();
 const DF = new DataFactory();
 
 describe('ActorOptimizeQueryOperationJoinConnected', () => {

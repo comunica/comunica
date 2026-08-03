@@ -18,29 +18,29 @@ import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extr
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IQuerySource } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { wrap } from 'asynciterator';
-import 'jest-rdf';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
+import { streamifyArray } from 'streamify-array';
+import 'jest-rdf';
 
 const quad = require('rdf-quad');
-const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
-const AF = new Factory();
+const AF = new AlgebraFactory();
 
 // @ts-expect-error
 const mediatorDereferenceRdf: MediatorDereferenceRdf = {
   async mediate({ url }: IActionDereferenceRdf): Promise<IActorDereferenceRdfOutput> {
     return {
       data: url === 'firstUrl' ?
-        streamifyArray([
+        <any> streamifyArray([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
         ]) :
-        streamifyArray([
+        <any> streamifyArray([
           quad('s3', 'p3', 'o3'),
           quad('s4', 'p4', 'o4'),
         ]),

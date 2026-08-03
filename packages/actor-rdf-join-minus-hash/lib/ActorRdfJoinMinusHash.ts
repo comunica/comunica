@@ -46,7 +46,13 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
     const output = action.entries[0].output;
 
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
-    const commonVariables = ActorRdfJoin.overlappingVariables(metadatas);
+    let commonVariables = ActorRdfJoin.overlappingVariables(metadatas);
+
+    // If MINUS is within the scope of GRAPH ?g, do not consider ?g when checking variable disjointness.
+    if (action.graphVariableFromParentScope) {
+      commonVariables = commonVariables
+        .filter(metadataVar => !metadataVar.variable.equals(action.graphVariableFromParentScope));
+    }
 
     // Destroy the buffer stream since it is not needed when
     // there are no common variables.

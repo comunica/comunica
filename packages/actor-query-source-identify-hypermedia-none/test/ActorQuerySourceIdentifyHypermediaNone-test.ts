@@ -2,20 +2,20 @@ import { Readable } from 'node:stream';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { DataFactory } from 'rdf-data-factory';
-import { Factory } from 'sparqlalgebrajs';
+import { streamifyArray } from 'streamify-array';
 import {
   ActorQuerySourceIdentifyHypermediaNone,
 } from '../lib/ActorQuerySourceIdentifyHypermediaNone';
 import '@comunica/utils-jest';
 
 const quad = require('rdf-quad');
-const streamifyArray = require('streamify-array');
 
 const DF = new DataFactory();
-const AF = new Factory();
+const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 const v1 = DF.variable('v1');
 const v2 = DF.variable('v2');
@@ -68,6 +68,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
           { variable: v2, canBeUndef: false },
           { variable: v3, canBeUndef: false },
         ],
+        requestTime: 0,
       });
       await expect(stream).toEqualBindingsStream([
         BF.fromRecord({
@@ -103,6 +104,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
           { variable: v1, canBeUndef: false },
           { variable: v2, canBeUndef: false },
         ],
+        requestTime: 0,
       });
       await expect(stream).toEqualBindingsStream([
         BF.fromRecord({
@@ -120,7 +122,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
       await expect(new Promise(async(resolve, reject) => {
         const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
-        (<any> source).source.match = () => {
+        (<any> source).source.matchBindings = () => {
           const str = new Readable();
           str._read = () => {
             str.emit('error', new Error('Dummy error'));

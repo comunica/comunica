@@ -1,0 +1,9 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^4.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "ccqs:config/config-default-v4-2-0.json",
+    "ccqs:config/dereference/actors-file.json"
+  ]
+}

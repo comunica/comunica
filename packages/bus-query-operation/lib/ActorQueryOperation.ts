@@ -6,8 +6,8 @@ import type {
   IActionContext,
   FunctionArgumentsCache,
 } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica actor for query-operation events.

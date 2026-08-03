@@ -24,7 +24,7 @@ $ yarn add @comunica/utils-bindings-factory
 
 ```typescript
 import * as RDF from '@rdfjs/types';
-import { DataFactory } from '@comunica/utils-data-factory';
+import { DataFactory } from 'rdf-data-factory';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 
 const DF = new DataFactory();

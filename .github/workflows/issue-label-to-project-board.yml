@@ -8,14 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Maintenance Issues
-        uses: actions/add-to-project@v1.0.1
+        uses: actions/add-to-project@v1.0.2
         with:
           project-url: https://github.com/orgs/comunica/projects/12
           github-token: ${{ secrets.PAT }}
           labeled: bug 🐛, performance 🐌, question ❓
           label-operator: OR
       - name: Development Issues
-        uses: actions/add-to-project@v1.0.1
+        uses: actions/add-to-project@v1.0.2
         with:
           project-url: https://github.com/orgs/comunica/projects/11
           github-token: ${{ secrets.PAT }}

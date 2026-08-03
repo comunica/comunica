@@ -39,6 +39,14 @@ describe('StatisticLinkDiscovery', () => {
       );
     });
 
+    it('does nothing when removing a non-existing event listener', () => {
+      mockStatisticBase.on(cb);
+      mockStatisticBase.removeListener(() => {});
+      expect(mockStatisticBase.getListeners()).toEqual(
+        [ cb ],
+      );
+    });
+
     it ('detach multiple of the same listeners', () => {
       mockStatisticBase.on(cb);
       mockStatisticBase.on(cb);

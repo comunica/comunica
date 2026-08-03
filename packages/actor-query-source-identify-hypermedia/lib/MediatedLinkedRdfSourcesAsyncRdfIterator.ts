@@ -15,8 +15,8 @@ import type {
   IStatisticBase,
   IDiscoverEventData,
 } from '@comunica/types';
+import type { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
-import type { Algebra, Factory } from 'sparqlalgebrajs';
 import type { SourceStateGetter, ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
 
@@ -34,7 +34,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly handledUrls: Record<string, boolean>;
   private readonly aggregatedStore: IAggregatedStore | undefined;
   private readonly dataFactory: ComunicaDataFactory;
-  private readonly algebraFactory: Factory;
+  private readonly algebraFactory: AlgebraFactory;
   private linkQueue: Promise<ILinkQueue> | undefined;
   private wasForcefullyClosed = false;
 
@@ -52,7 +52,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks,
     mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue,
     dataFactory: ComunicaDataFactory,
-    algebraFactory: Factory,
+    algebraFactory: AlgebraFactory,
   ) {
     super(
       cacheSize,
@@ -90,9 +90,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       .then((linkQueue) => {
         if (this.isCloseable(linkQueue, false)) {
           // Wait a tick before ending the aggregatedStore, to ensure that pending match() calls to it have started.
-          if (this.aggregatedStore) {
-            setTimeout(() => this.aggregatedStore!.end());
-          }
+          setTimeout(() => this.aggregatedStore!.end());
           super.close();
         } else {
           this.wasForcefullyClosed = true;
@@ -111,9 +109,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       .then((linkQueue) => {
         if (cause ?? this.isCloseable(linkQueue, false)) {
           // Wait a tick before ending the aggregatedStore, to ensure that pending match() calls to it have started.
-          if (this.aggregatedStore) {
-            setTimeout(() => this.aggregatedStore!.end());
-          }
+          setTimeout(() => this.aggregatedStore!.end());
           super.destroy(cause);
         } else {
           this.wasForcefullyClosed = true;
@@ -130,9 +126,13 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   protected override canStartNewIterator(): boolean {
     // Also allow sub-iterators to be started if the aggregated store has at least one running iterator.
     // We need this because there are cases where these running iterators will be consumed before this linked iterator.
-    return (!this.wasForcefullyClosed &&
-      // eslint-disable-next-line ts/prefer-nullish-coalescing
-      (this.aggregatedStore && this.aggregatedStore.hasRunningIterators())) || super.canStartNewIterator();
+    // We can keep traversing if the iterator was forcefully closed and there are still running iterators on the
+    // aggregated store, as this might happen when sub-queries are spawned by the bind-join.
+    // Whenever the store is forcefully closed (like due to a limit being reached) and there are no iterators on the
+    // store, traversal should stop.
+    return (!this.wasForcefullyClosed ||
+      (this.aggregatedStore !== undefined && this.aggregatedStore.hasRunningIterators())) &&
+      super.canStartNewIterator();
   }
 
   protected override canStartNewIteratorConsiderReadable(): boolean {
