@@ -29,26 +29,14 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
     const myTermA: Eval.Term = this.internalEvaluator.transformer.transformRDFTermUnsafe(termA);
     const myTermB: Eval.Term = this.internalEvaluator.transformer.transformRDFTermUnsafe(termB);
 
-    try {
-      if ((<Eval.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myTermA, myTermB ], this.internalEvaluator))
-        .typedValue) {
-        return -1;
-      }
-      if ((<Eval.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myTermB, myTermA ], this.internalEvaluator))
-        .typedValue) {
-        return 1;
-      }
-      return 0;
-    } catch {
-      // Fallback to string-based comparison
-      // NonLexical operands could cause errors to be thrown
-      // when a datetime literal has a non-datetime string value for example
-      // Test example that covers this: invalid literals comparison on line 187 in TermComparator-test.ts
-      return this.comparePrimitives(myTermA.str(), myTermB.str());
+    if ((<Eval.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myTermA, myTermB ], this.internalEvaluator))
+      .typedValue) {
+      return -1;
     }
-  }
-
-  private comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
-    return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
+    if ((<Eval.BooleanLiteral> this.lessThanFunction.applyOnTerms([ myTermB, myTermA ], this.internalEvaluator))
+      .typedValue) {
+      return 1;
+    }
+    return 0;
   }
 }
