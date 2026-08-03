@@ -1,7 +1,7 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
-import { QuerySourceSkolemized } from '@comunica/actor-context-preprocess-query-source-skolemize';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { Logger } from '@comunica/types';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Bindings } from '@comunica/utils-bindings-factory';
@@ -122,7 +122,7 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
+          expect(result).toBeRdfIsomorphic(expectedResult);
         });
 
         it('should return the valid result with a json-ld data source', async() => {
@@ -132,7 +132,7 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
+          expect(result).toBeRdfIsomorphic(expectedResult);
         });
 
         it('should return the valid result with no base IRI', async() => {
@@ -160,7 +160,7 @@ describe('System test: QuerySparql', () => {
 
           const result = await arrayifyStream(await engine.queryQuads(query, context));
           expect(result).toHaveLength(expectedResult.length);
-          expect(result).toMatchObject(expectedResult);
+          expect(result).toBeRdfIsomorphic(expectedResult);
         });
 
         it('should return the valid result with multiple sources', async() => {
@@ -862,6 +862,53 @@ SELECT * WHERE {
         await expect(result.execute()).resolves.toEqualBindingsStream(expectedResult);
       });
 
+      it('should correctly handle leftJoin expression on targeting left', async() => {
+        const store = new Store();
+
+        store.addQuad(
+          DF.namedNode('http://ex.org/s'),
+          DF.namedNode('http://ex.org/p1'),
+          DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')),
+        );
+        store.addQuad(
+          DF.namedNode('http://ex.org/s'),
+          DF.namedNode('http://ex.org/p2'),
+          DF.literal('10', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')),
+        );
+
+        const result = <QueryBindings> await engine.query(`
+          SELECT * WHERE { 
+          ?s <http://ex.org/p1> ?v1 .
+          OPTIONAL {
+            ?s <http://ex.org/p2> ?v2 .
+            FILTER(?v1 < 3)
+          }
+        }`, { sources: [ store ]});
+
+        const expectedResult: Bindings[] = [
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://ex.org/s') ],
+            [ DF.variable('v1'), DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal')) ],
+          ]),
+        ];
+
+        await expect(result.execute()).resolves.toEqualBindingsStream(expectedResult);
+
+        // First filters are collected and a single filter wraps the group.
+        // Then that outer filter in the right is placed as and expression for the leftJoin:
+        // https://www.w3.org/TR/sparql12-query/#sparqlTranslateGraphPatterns
+        const resultWithExtraFilter = <QueryBindings> await engine.query(`
+          SELECT * WHERE { 
+          ?s <http://ex.org/p1> ?v1 .
+          OPTIONAL {
+            ?s <http://ex.org/p2> ?v2 .
+            FILTER(?v1 < 3) .
+            FILTER( true ) .
+          }
+        }`, { sources: [ store ]});
+        await expect(resultWithExtraFilter.execute()).resolves.toEqualBindingsStream(expectedResult);
+      });
+
       it('should handle join with empty estimate cardinality', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -941,7 +988,7 @@ SELECT * WHERE {
         expect(called).toBe(0);
       });
 
-      it('with two triple patterns over a paged collection (no browser)', async() => {
+      it('with two triple patterns over a paged collection', async() => {
         const bindingsStream = await engine.queryBindings(`
 SELECT *
 WHERE {
@@ -970,7 +1017,7 @@ SELECT * WHERE {
         expect((await bindingsStream.toArray()).length > 0).toBeTruthy();
       });*/
 
-      it('on the LOV SPARQL service description (no browser)', async() => {
+      it('on the LOV SPARQL service description', async() => {
         await expect(engine.queryBindings(`
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -984,7 +1031,7 @@ WHERE {
         })).rejects.toThrow('RDF parsing failed');
       });
 
-      it('on the LOV SPARQL service description with property paths (2) (no browser)', async() => {
+      it('on the LOV SPARQL service description with property paths (2)', async() => {
         await expect(engine.queryBindings(`
 PREFIX sh: <http://www.w3.org/ns/shacl#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -998,7 +1045,83 @@ WHERE {
         })).rejects.toThrow('RDF parsing failed');
       });
 
-      it('should not push distinct construct into a SPARQL endpoint (no browser)', async() => {
+      it('should time out slow SPARQL service description requests and continue processing', async() => {
+        await engine.invalidateHttpCache();
+
+        const endpoint = 'https://example.org/sparql';
+        const entity = 'http://example.org/entity/Q42';
+
+        let serviceDescriptionAbortedResolve!: () => void;
+        const serviceDescriptionAborted = new Promise<void>((resolve) => {
+          serviceDescriptionAbortedResolve = resolve;
+        });
+
+        let serviceDescriptionAbortReason: unknown;
+        let serviceDescriptionInitSignal: AbortSignal | undefined;
+        let queryRequested = false;
+        let queryInitSignal: AbortSignal | undefined;
+
+        const customFetch = (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+          const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+          const method = init?.method ?? (typeof input === 'string' || input instanceof URL ? 'GET' : input.method);
+
+          if (url === endpoint && method === 'GET') {
+            if (!init?.signal) {
+              return Promise.reject(new Error('Expected an AbortSignal for SPARQL service description request'));
+            }
+            serviceDescriptionInitSignal = init.signal;
+
+            if (init.signal.aborted) {
+              serviceDescriptionAbortReason = init.signal.reason;
+              serviceDescriptionAbortedResolve();
+              return Promise.reject(init.signal.reason);
+            }
+
+            return new Promise<Response>((_resolve, reject) => {
+              init.signal!.addEventListener('abort', () => {
+                serviceDescriptionAbortReason = init.signal!.reason;
+                serviceDescriptionAbortedResolve();
+                reject(init.signal!.reason);
+              }, { once: true });
+            });
+          }
+
+          if (url.startsWith(endpoint)) {
+            queryRequested = true;
+            queryInitSignal = init?.signal ?? undefined;
+            return Promise.resolve(new Response(JSON.stringify({
+              head: { vars: [ 's' ]},
+              results: { bindings: [
+                { s: { type: 'uri', value: entity }},
+              ]},
+            }), { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }}));
+          }
+
+          return Promise.reject(new Error(`Unexpected fetch call to ${url}`));
+        };
+
+        const bindingsStream = await engine.queryBindings(
+          `SELECT ?s WHERE { VALUES ?s { <${entity}> } }`,
+          { sources: [ endpoint ], fetch: customFetch },
+        );
+
+        const bindingsExpectationPromise = expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode(entity) ],
+          ]),
+        ]);
+
+        await serviceDescriptionAborted;
+        await bindingsExpectationPromise;
+
+        expect(serviceDescriptionAbortReason).toBeInstanceOf(Error);
+        expect((<Error> serviceDescriptionAbortReason).message)
+          .toContain(`Fetch timed out for ${endpoint} after 3000 ms`);
+        expect(queryRequested).toBeTruthy();
+        expect(queryInitSignal).not.toBe(serviceDescriptionInitSignal);
+      });
+
+      it('should not push distinct construct into a SPARQL endpoint', async() => {
         const quadsStream = await engine.queryQuads(`
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 construct { ?s a dcat:Dataset }
@@ -1012,7 +1135,7 @@ where {
         await expect((quadsStream.toArray())).resolves.toHaveLength(1);
       });
 
-      it('should not push unsupported extension functions into a SPARQL endpoint (no browser)', async() => {
+      it('should not push unsupported extension functions into a SPARQL endpoint', async() => {
         const bindingsStream = await engine.queryBindings(`
 PREFIX dbr: <http://dbpedia.org/resource/>
 PREFIX dbo: <http://dbpedia.org/ontology/>
@@ -1033,6 +1156,124 @@ WHERE {
           },
         });
         await expect((bindingsStream.toArray())).resolves.toHaveLength(1);
+      });
+
+      it('on a SPARQL endpoint detected via Server header', async() => {
+        const result = await engine.queryBindings(`
+        SELECT * WHERE {
+          ?s ?p ?o.
+        } LIMIT 1`, { sources: [ 'http://data.cervantesvirtual.com/openrdf-sesame/repositories/data' ]});
+
+        const expectedResult: Bindings[] = [
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://www.openlinksw.com/virtrdf-data-formats#default-iid') ],
+            [ DF.variable('p'), DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type') ],
+            [ DF.variable('o'), DF.namedNode('http://www.openlinksw.com/schemas/virtrdf#QuadMapFormat') ],
+          ]),
+        ];
+
+        await expect(result).toEqualBindingsStream(expectedResult);
+      });
+    });
+
+    describe('on multiple sources', () => {
+      it('with an explicit SERVICE clause without sources in context', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT ?movie ?title ?name
+WHERE {
+  SERVICE <https://fragments.dbpedia.org/2016-04/en> {
+    ?movie dbpedia-owl:starring [ rdfs:label "Brad Pitt"@en ];
+         rdfs:label ?title;
+         dbpedia-owl:director [ rdfs:label ?name ].
+    FILTER LANGMATCHES(LANG(?title), "EN")
+    FILTER LANGMATCHES(LANG(?name),  "EN")
+  }
+}`, {
+          sources: [],
+        });
+        await expect(bindingsStream.toArray()).resolves.toHaveLength(43);
+      });
+
+      it('with explicit SERVICE clauses without sources in context', async() => {
+        const bindingsStream = await engine.queryBindings(`
+SELECT ?person ?name ?book ?title {
+  SERVICE <https://fragments.dbpedia.org/2016-04/en> {
+    ?person dbpedia-owl:birthPlace [ rdfs:label "San Francisco"@en ].
+  }
+  SERVICE <https://data.linkeddatafragments.org/viaf> {
+    ?viafID schema:sameAs ?person;
+               schema:name ?name.
+  }
+  SERVICE <https://data.linkeddatafragments.org/harvard> {
+    ?book dc:contributor [ foaf:name ?name ];
+              dc:title ?title.
+  }
+} LIMIT 10
+`, {
+          sources: [],
+        });
+        await expect(bindingsStream.toArray()).resolves.toHaveLength(10);
+      });
+    });
+
+    describe('compositefile source', () => {
+      it('should query over a compositefile source with multiple file URLs', async() => {
+        const result = <QueryBindings> await engine.query(`SELECT * WHERE {
+      ?s ?p ?o.
+    }`, {
+          sources: [{
+            type: 'compositefile',
+            value: [
+              'https://www.rubensworks.net/',
+              'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/tests/valid/basic-shape-iri.ttl',
+            ],
+          }],
+        });
+        expect((await arrayifyStream(await result.execute())).length).toBeGreaterThan(0);
+      });
+
+      it('should produce the same results as individual file sources grouped by the optimizer', async() => {
+        const query = `SELECT * WHERE { ?s ?p ?o }`;
+        const compositeResult = await engine.queryBindings(query, {
+          sources: [{
+            type: 'compositefile',
+            value: [
+              'https://www.rubensworks.net/',
+              'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/tests/valid/basic-shape-iri.ttl',
+            ],
+          }],
+        });
+        const compositeBindings = await compositeResult.toArray();
+
+        // Two file-type sources will be grouped into a compositefile by the optimizer
+        const groupedResult = await engine.queryBindings(query, {
+          sources: [
+            { type: 'file', value: 'https://www.rubensworks.net/' },
+            { type: 'file', value: 'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/tests/valid/basic-shape-iri.ttl' },
+          ],
+        });
+        const groupedBindings = await groupedResult.toArray();
+
+        expect(compositeBindings).toHaveLength(groupedBindings.length);
+        expect(compositeBindings.length).toBeGreaterThan(0);
+      });
+
+      it('should internally use a single compositefile source when grouping file sources', async() => {
+        const url1 = 'https://www.rubensworks.net/';
+        const url2 = 'https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/shacl-compact-syntax/tests/valid/basic-shape-iri.ttl';
+
+        // Explain the physical plan for two individual file sources
+        const result = await engine.explain(`SELECT * WHERE { ?s ?p ?o }`, {
+          sources: [
+            { type: 'file', value: url1 },
+            { type: 'file', value: url2 },
+          ],
+        }, 'physical');
+
+        // The physical plan should show a single composite source, not two separate file sources
+        expect(result.data).toContain(`QuerySourceRdfJs(composite: ${url1},${url2})`);
+        // Only one source (SkolemID:0), not two (SkolemID:0 and SkolemID:1)
+        expect(result.data).not.toContain('SkolemID:1');
       });
     });
 
@@ -1315,6 +1556,39 @@ WHERE {
             ]),
           ]);
         });
+
+        it('should correctly terminate for an rdf-stores store with nodes index', async() => {
+          const store = RdfStore.createDefault(true);
+          const A = DF.namedNode('http://example.org/a');
+          const B = DF.namedNode('http://example.org/b');
+          const C = DF.namedNode('http://example.org/c');
+          const P = DF.namedNode('http://example.org/p');
+
+          store.addQuad(DF.quad(A, P, B));
+          store.addQuad(DF.quad(A, P, C));
+          store.addQuad(DF.quad(B, P, A));
+          store.addQuad(DF.quad(B, P, C));
+          store.addQuad(DF.quad(C, P, A));
+          store.addQuad(DF.quad(C, P, B));
+
+          const result = <QueryBindings> await engine.query(`
+        PREFIX : <http://example.org/>
+        SELECT * WHERE {
+            ?a (:p/:p)* :b .
+        }`, { sources: [ store ]});
+
+          await expect(result.execute()).resolves.toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/b') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/a') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('http://example.org/c') ],
+            ]),
+          ]);
+        });
       });
 
       describe('should handle zero-or-more paths with lists after a link', () => {
@@ -1390,6 +1664,102 @@ SELECT ?option WHERE {
 }
 `, { sources: [ store ]})))).resolves.toHaveLength(10);
         });
+      });
+
+      it('should handle zero-or-one path with variable subject and object', async() => {
+        const store = new Store([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:name'), DF.literal('s1')),
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:knows'), DF.namedNode('ex:s2')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:name'), DF.literal('s2')),
+        ]);
+        const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT ?s ?o WHERE {
+          ?s ex:knows? ?o .
+        }`, { sources: [ store ]});
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s1') ],
+            [ DF.variable('o'), DF.namedNode('ex:s2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s1') ],
+            [ DF.variable('o'), DF.namedNode('ex:s1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.literal('s1') ],
+            [ DF.variable('o'), DF.literal('s1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s2') ],
+            [ DF.variable('o'), DF.namedNode('ex:s2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.literal('s2') ],
+            [ DF.variable('o'), DF.literal('s2') ],
+          ]),
+        ]);
+      });
+
+      it('should handle zero-or-one path with variable subject and object with nodes index', async() => {
+        const store = RdfStore.createDefault(true);
+        store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:name'), DF.literal('s1')));
+        store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:knows'), DF.namedNode('ex:s2')));
+        store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:name'), DF.literal('s2')));
+        const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT ?s ?o WHERE {
+          ?s ex:knows? ?o .
+        }`, { sources: [ store ]});
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s1') ],
+            [ DF.variable('o'), DF.namedNode('ex:s1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s1') ],
+            [ DF.variable('o'), DF.namedNode('ex:s2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.literal('s1') ],
+            [ DF.variable('o'), DF.literal('s1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s2') ],
+            [ DF.variable('o'), DF.namedNode('ex:s2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.literal('s2') ],
+            [ DF.variable('o'), DF.literal('s2') ],
+          ]),
+        ]);
+      });
+
+      it('should handle zero-or-one and link path with variable subject and object', async() => {
+        const store = new Store([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:name'), DF.literal('s1')),
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:knows'), DF.namedNode('ex:s2')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:name'), DF.literal('s2')),
+        ]);
+        const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT ?s ?o WHERE {
+          ?s ex:knows?/ex:name ?o .
+        }`, { sources: [ store ]});
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s1') ],
+            [ DF.variable('o'), DF.literal('s1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s1') ],
+            [ DF.variable('o'), DF.literal('s2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:s2') ],
+            [ DF.variable('o'), DF.literal('s2') ],
+          ]),
+        ]);
       });
     });
 
@@ -1477,6 +1847,76 @@ WHERE { }
       }))).map(binding => [ ...binding ]);
 
       expect(bindings).toMatchObject(expectedResult);
+    });
+
+    describe('count distinct with UNION and partially unbound variables', () => {
+      it('should correctly count distinct values when a variable is only bound in one UNION branch', async() => {
+        // Regression test: COUNT(DISTINCT ?x) should ignore bindings where ?x is unbound
+        // (from a UNION branch that doesn't bind ?x), rather than treating the unbound
+        // case as an error that causes the aggregate to return undefined.
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+                @prefix ex: <https://example.org/> .
+                @prefix sh: <http://www.w3.org/ns/shacl#> .
+                @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+                ex:X a sh:NodeShape ;
+                    sh:targetClass ex:A ;
+                    sh:property [
+                        sh:path ex:version ;
+                        sh:datatype xsd:string ;
+                        sh:minCount 1 ;
+                        sh:maxCount 1
+                    ] .
+
+                ex:Y a sh:NodeShape ;
+                    sh:targetClass ex:B ;
+                    sh:property [
+                        sh:path ex:hasRelation ;
+                        sh:class ex:A ;
+                        sh:minCount 1 ;
+                        sh:maxCount 1
+                    ] .
+
+                ex:Z a sh:NodeShape ;
+                    sh:targetClass ex:C ;
+                    sh:property [
+                        sh:path ex:hasStatus ;
+                        sh:class ex:D ;
+                        sh:minCount 1 ;
+                        sh:maxCount 1
+                    ] .
+              `,
+              mediaType: 'text/turtle',
+              baseIRI: 'https://example.org/',
+            },
+          ],
+        };
+
+        const bindings = await arrayifyStream(await engine.queryBindings(`
+          PREFIX sh: <http://www.w3.org/ns/shacl#>
+          SELECT
+            (COUNT(DISTINCT ?nodeShape) AS ?n)
+            (COUNT(DISTINCT ?propertyShape) AS ?m)
+          WHERE {
+            { ?nodeShape a sh:NodeShape . }
+            UNION
+            { ?nodeShape sh:property ?propertyShape . }
+          }
+        `, context));
+
+        expect(bindings).toHaveLength(1);
+        const result = bindings[0];
+        expect(result.get(DF.variable('n'))).toEqual(
+          DF.literal('3', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
+        );
+        expect(result.get(DF.variable('m'))).toEqual(
+          DF.literal('3', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
+        );
+      });
     });
 
     describe('initialBindings', () => {
@@ -1841,6 +2281,138 @@ WHERE {
           ]),
         ]);
       });
+
+      it('with nested FILTER NOT EXISTS', async() => {
+        // Outer bindings must be substituted into FILTER NOT EXISTS subqueries to avoid matching unintended solutions.
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix : <urn:example:>.
+
+:i1 :p1 :o1.
+:i1 rdf:type :c1.
+:i1 rdf:type :c2.
+
+:c1 rdfs:subClassOf :c2.
+:c1 rdfs:subClassOf :c1.
+:c2 rdfs:subClassOf :c2.
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(engine.queryBindings(`
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX : <urn:example:>
+
+SELECT ?i ?o ?c
+WHERE {
+    ?i :p1 ?o.
+    ?i rdf:type ?c.
+    FILTER NOT EXISTS {
+        ?i rdf:type ?c_other.
+        ?c_other rdfs:subClassOf ?c.
+        FILTER NOT EXISTS {
+            ?c rdfs:subClassOf ?c_other
+        }
+    }
+}
+`, context)).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('i'), DF.namedNode('urn:example:i1') ],
+            [ DF.variable('o'), DF.namedNode('urn:example:o1') ],
+            [ DF.variable('c'), DF.namedNode('urn:example:c1') ],
+          ]),
+        ]);
+      });
+    });
+
+    describe('logger warning grouping', () => {
+      class TestLogger extends Logger {
+        public readonly warnings: string[] = [];
+
+        public warn(message: string, _data?: any): void {
+          this.logGrouped(message, (count) => {
+            const suffix = count > 1 ? ` (${count} times)` : '';
+            this.warnings.push(`${message}${suffix}`);
+          });
+        }
+
+        public trace(_message: string, _data?: any) {}
+        public debug(_message: string, _data?: any) {}
+        public info(_message: string, _data?: any) {}
+        public error(_message: string, _data?: any) {}
+        public fatal(_message: string, _data?: any) {}
+      }
+
+      it('should group repeated warnings', async() => {
+        const logger = new TestLogger();
+        const query = 'CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o FILTER(contains(?o, "Purpose")) }';
+        const context: QueryStringContext = {
+          sources: [ 'http://www.w3.org/ns/odrl/2/' ],
+          log: logger,
+        };
+
+        await arrayifyStream(await engine.queryQuads(query, context));
+
+        expect(logger.warnings[0]).toBe('Error occurred while filtering.');
+        expect(logger.warnings[1]).toMatch(/Error occurred while filtering\. \(\d+ times\)/u);
+      });
+    });
+
+    describe('HTTP retry body', () => {
+      it('should retry when the response body stream breaks', async() => {
+        const turtle = '<http://example.org/s> <http://example.org/p> <http://example.org/o> .\n';
+        let getRequests = 0;
+        const contentLength = String(Buffer.byteLength(turtle));
+        const url = 'http://example.org/data.ttl';
+        const fetch = async(_input: RequestInfo | URL, _init?: RequestInit): Promise<Response> => {
+          getRequests++;
+          if (getRequests === 1) {
+            return new Response(new ReadableStream({
+              start(controller) {
+                controller.enqueue(Buffer.from(turtle.slice(0, 20)));
+                setTimeout(() => controller.error(new Error('Body stream error')), 0);
+              },
+            }), {
+              status: 200,
+              headers: {
+                'Content-Type': 'text/turtle',
+                'Content-Length': contentLength,
+              },
+            });
+          }
+
+          return new Response(turtle, {
+            status: 200,
+            headers: {
+              'Content-Type': 'text/turtle',
+              'Content-Length': contentLength,
+            },
+          });
+        };
+
+        await expect(arrayifyStream(await engine.queryQuads('CONSTRUCT WHERE { ?s ?p ?o }', {
+          sources: [ url ],
+          fetch,
+          httpRetryBodyCount: 1,
+        }))).resolves.toBeRdfIsomorphic([
+          DF.quad(
+            DF.namedNode('http://example.org/s'),
+            DF.namedNode('http://example.org/p'),
+            DF.namedNode('http://example.org/o'),
+          ),
+        ]);
+        expect(getRequests).toBe(2);
+      });
     });
   });
 
@@ -1902,8 +2474,7 @@ CONSTRUCT {
       .toBeRdfIsomorphic(expectedResult);
   });
 
-  // We skip these tests in browsers due to CORS issues
-  describe('foaf ontology broken link (no browser)', () => {
+  describe('foaf ontology broken link', () => {
     it('returns results with link recovery on [using full key]', async() => {
       const result = <QueryBindings> await engine.query(`SELECT * WHERE {
     <http://xmlns.com/foaf/0.1/> a <http://www.w3.org/2002/07/owl#Ontology>.
@@ -2266,6 +2837,219 @@ CONSTRUCT {
     });
   });
 
+  describe('DistinctTerms optimization', () => {
+    it('should optimize SELECT DISTINCT with subject and graph variables', async() => {
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p2'),
+        DF.namedNode('ex:o2'),
+        DF.namedNode('ex:g1'),
+      ));
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s2'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g2'),
+      ));
+
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
+
+      const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT DISTINCT ?g ?s WHERE {
+          GRAPH ?g { ?s ?p ?o }
+        }
+      `, { sources: [ store ]});
+
+      await expect(bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('g'), DF.namedNode('ex:g1') ],
+          [ DF.variable('s'), DF.namedNode('ex:s1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('g'), DF.namedNode('ex:g1') ],
+          [ DF.variable('s'), DF.namedNode('ex:s2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('g'), DF.namedNode('ex:g2') ],
+          [ DF.variable('s'), DF.namedNode('ex:s1') ],
+        ]),
+      ]);
+
+      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should optimize SELECT DISTINCT with subject variable only', async() => {
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
+
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
+
+      const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT DISTINCT ?s WHERE {
+          ?s ?p ?o
+        }
+      `, { sources: [ store ]});
+
+      await expect(bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s2') ],
+        ]),
+      ]);
+
+      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should optimize SELECT DISTINCT with predicate and object variables', async() => {
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o2')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o1')));
+
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
+
+      const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT DISTINCT ?p ?o WHERE {
+          ?s ?p ?o
+        }
+      `, { sources: [ store ]});
+
+      await expect(bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode('ex:p1') ],
+          [ DF.variable('o'), DF.namedNode('ex:o1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode('ex:p1') ],
+          [ DF.variable('o'), DF.namedNode('ex:o2') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('p'), DF.namedNode('ex:p2') ],
+          [ DF.variable('o'), DF.namedNode('ex:o1') ],
+        ]),
+      ]);
+
+      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not optimize SELECT DISTINCT with multiple sources', async() => {
+      const store1 = RdfStore.createDefault();
+      store1.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
+
+      const store2 = RdfStore.createDefault();
+      store2.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')));
+
+      const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT DISTINCT ?s WHERE {
+          ?s ?p ?o
+        }
+      `, { sources: [ store1, store2 ]});
+
+      // Should still work but won't use DistinctTerms optimization
+      const bindings = await arrayifyStream(bindingsStream);
+      expect(bindings).toHaveLength(2);
+    });
+
+    it('should handle SELECT DISTINCT with fixed graph', async() => {
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p2'),
+        DF.namedNode('ex:o2'),
+        DF.namedNode('ex:g1'),
+      ));
+      store.addQuad(DF.quad(
+        DF.namedNode('ex:s2'),
+        DF.namedNode('ex:p1'),
+        DF.namedNode('ex:o1'),
+        DF.namedNode('ex:g1'),
+      ));
+
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
+
+      const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT DISTINCT ?s WHERE {
+          GRAPH ex:g1 { ?s ?p ?o }
+        }
+      `, { sources: [ store ]});
+
+      await expect(bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s2') ],
+        ]),
+      ]);
+
+      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle SELECT DISTINCT as inner query within another SELECT', async() => {
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p1'), DF.namedNode('ex:o3')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o4')));
+
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
+
+      const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT ?s ?o WHERE {
+          {
+            SELECT DISTINCT ?s WHERE {
+              ?s ?p ?o
+            }
+          }
+          ?s ex:p1 ?o
+        }
+      `, { sources: [ store ]});
+
+      await expect(bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s1') ],
+          [ DF.variable('o'), DF.namedNode('ex:o1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s2') ],
+          [ DF.variable('o'), DF.namedNode('ex:o3') ],
+        ]),
+      ]);
+
+      // The inner SELECT DISTINCT should have been optimized
+      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('explain', () => {
     describe('a simple SPO on a raw RDF document', () => {
       it('explaining parsing', async() => {
@@ -2317,7 +3101,7 @@ CONSTRUCT {
               {
                 metadata: {
                   scopedSource: {
-                    source: expect.any(QuerySourceSkolemized),
+                    source: expect.anything(),
                   },
                 },
               },

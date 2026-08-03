@@ -35,7 +35,10 @@ describe('ActorQueryOperationMinus', () => {
     };
     mediatorJoin = {
       mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new UnionIterator(arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream)),
+        bindingsStream: new UnionIterator(
+          arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream),
+          { autoStart: false },
+        ),
         metadata: () => Promise.resolve({
           cardinality: 100,
           variables: [

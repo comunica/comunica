@@ -1,5 +1,6 @@
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
+import type { MediatorQuerySerialize } from '@comunica/bus-query-serialize';
 import type {
   IActionQuerySourceIdentifyHypermedia,
   IActorQuerySourceIdentifyHypermediaOutput,
@@ -23,6 +24,7 @@ import { QuerySourceSparql } from './QuerySourceSparql';
 export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceIdentifyHypermedia {
   public readonly mediatorHttp: MediatorHttp;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  public readonly mediatorQuerySerialize: MediatorQuerySerialize;
   public readonly checkUrlSuffix: boolean;
   public readonly forceHttpGet: boolean;
   public readonly cacheSize: number;
@@ -32,16 +34,45 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly cardinalityCountQueries: boolean;
   public readonly cardinalityEstimateConstruction: boolean;
   public readonly forceGetIfUrlLengthBelow: number;
+  public readonly sparqlServerSoftwarePatterns: RegExp[];
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
+    this.mediatorHttp = args.mediatorHttp;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
+    this.mediatorQuerySerialize = args.mediatorQuerySerialize;
+    this.checkUrlSuffix = args.checkUrlSuffix;
+    this.forceHttpGet = args.forceHttpGet;
+    this.cacheSize = args.cacheSize;
+    this.forceSourceType = Boolean(args.forceSourceType);
+    this.bindMethod = args.bindMethod;
+    this.countTimeout = args.countTimeout;
+    this.cardinalityCountQueries = args.cardinalityCountQueries;
+    this.cardinalityEstimateConstruction = args.cardinalityEstimateConstruction;
+    this.forceGetIfUrlLengthBelow = args.forceGetIfUrlLengthBelow;
+    this.sparqlServerSoftwarePatterns = (
+      args.sparqlServerSoftwarePatterns ?? []
+    ).map(pattern => new RegExp(pattern, 'u'));
+  }
+
+  public checkServerSoftware(serverSoftware?: string): boolean {
+    if (!serverSoftware) {
+      return false;
+    }
+    for (const regex of this.sparqlServerSoftwarePatterns) {
+      if (regex.test(serverSoftware)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public async testMetadata(
     action: IActionQuerySourceIdentifyHypermedia,
   ): Promise<TestResult<IActorQuerySourceIdentifyHypermediaTest>> {
     if (!action.forceSourceType && !this.forceSourceType && !action.metadata.sparqlService &&
-      !(this.checkUrlSuffix && (action.url.endsWith('/sparql') || action.url.endsWith('/sparql/')))) {
+      !(this.checkUrlSuffix && (action.url.endsWith('/sparql') || action.url.endsWith('/sparql/'))) &&
+        !this.checkServerSoftware(action.metadata.serverSoftware)) {
       return failTest(`Actor ${this.name} could not detect a SPARQL service description or URL ending on /sparql.`);
     }
     return passTest({ filterFactor: 1 });
@@ -55,8 +86,11 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     const isSingularSource = action.context.get(KeysQueryOperation.querySources)?.length === 1;
     const source = new QuerySourceSparql(
       (action.forceSourceType ?? this.forceSourceType) ? action.url : action.metadata.sparqlService || action.url,
+      // Pass the original URL as backup, as some endpoints misconfigure their endpoint URL in the service description.
+      action.url,
       action.context,
       this.mediatorHttp,
+      this.mediatorQuerySerialize,
       this.bindMethod,
       dataFactory,
       algebraFactory,
@@ -68,6 +102,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.cardinalityCountQueries && !isSingularSource,
       this.cardinalityEstimateConstruction,
       this.forceGetIfUrlLengthBelow,
+      Boolean(action.context.get(KeysInitQuery.parseUnsupportedVersions)),
       action.metadata,
     );
     return { source };
@@ -84,6 +119,10 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   /**
+   * Mediator for serializing queries.
+   */
+  mediatorQuerySerialize: MediatorQuerySerialize;
+  /**
    * If URLs ending with '/sparql' should also be considered SPARQL endpoints.
    * @default {true}
    */
@@ -98,7 +137,7 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * @range {integer}
    * @default {1024}
    */
-  cacheSize?: number;
+  cacheSize: number;
   /**
    * If provided, forces the source type of a source.
    * @default {false}
@@ -132,7 +171,11 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * when the url length (including encoded query) is below this number.
    * @default {600}
    */
-  forceGetIfUrlLengthBelow?: number;
+  forceGetIfUrlLengthBelow: number;
+  /**
+   * Regexes to match against the server header to identify SPARQL endpoints.
+   */
+  sparqlServerSoftwarePatterns?: string[];
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';

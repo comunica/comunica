@@ -182,7 +182,7 @@ export class OverloadTree {
     nextTree._addOverload(_argumentTypes, func, promotionCount);
 
     if (typePromotion[argumentType]) {
-      for (const ret of typePromotion[argumentType]!) {
+      for (const ret of typePromotion[argumentType]) {
         this.addPromotedOverload(
           ret.typeToPromote,
           func,

@@ -169,6 +169,7 @@ describe('ActorRdfParseShaclc', () => {
           sh: 'http://www.w3.org/ns/shacl#',
           xsd: 'http://www.w3.org/2001/XMLSchema#',
           ex: 'http://example.org/ex#',
+          owl: 'http://www.w3.org/2002/07/owl#',
         });
       });
     });

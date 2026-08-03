@@ -4,7 +4,6 @@ import type {
   Bindings,
   FunctionArgumentsCache,
   IActionContext,
-  IAggregatedStore,
   ICliArgsHandler,
   IDataDestination,
   IPhysicalQueryPlanLogger,
@@ -28,8 +27,9 @@ import type { IDocumentLoader } from 'jsonld-context-parser';
 
 /**
  * When adding entries to this file, also add a shortcut for them in the contextKeyShortcuts TSDoc comment in
- * ActorInitQueryBase in @comunica/actor-init-query if it makes sense to use this entry externally.
- * Also, add this shortcut to IQueryContextCommon in @comunica/types.
+ * ActorContextPreprocessConvertShortcuts in @comunica/actor-init-query if it makes sense to use this entry externally.
+ * Also, add this shortcut to IQueryContextCommon in @comunica/types,
+ * and possibly the CliArgsHandlers in @comunica/actor-init-query.
  */
 
 export const KeysCore = {
@@ -82,6 +82,35 @@ export const KeysHttp = {
    * This can be used to, for example, force retries on server-side errors in the 500 range.
    */
   httpRetryStatusCodes: new ActionContextKey<number[]>('@comunica/bus-http:http-retry-status-codes'),
+  /**
+   * Number of retries to make when the response body stream errors mid-read.
+   * Response bodies are buffered per attempt (unless disabled by `httpRetryBodyMaxBytes`)
+   * to avoid emitting partial data to downstream parsers.
+   */
+  httpRetryBodyCount: new ActionContextKey<number>('@comunica/bus-http:http-retry-body-count'),
+  /**
+   * The fallback retry delay in milliseconds between body retries.
+   */
+  httpRetryBodyDelayFallback: new ActionContextKey<number>('@comunica/bus-http:http-retry-body-delay-fallback'),
+  /**
+   * Allow body retries for non-idempotent methods or non-replayable request bodies.
+   */
+  httpRetryBodyAllowUnsafe: new ActionContextKey<boolean>('@comunica/bus-http:http-retry-body-allow-unsafe'),
+  /**
+   * Maximum number of bytes to buffer when retrying response body streams.
+   * When exceeded, body retries are disabled and the response will continue streaming as-is.
+   */
+  httpRetryBodyMaxBytes: new ActionContextKey<number>('@comunica/bus-http:http-retry-body-max-bytes'),
+  /**
+   * An abort signal for aborting pending HTTP requests.
+   */
+  httpAbortSignal: new ActionContextKey<AbortSignal>('@comunica/bus-http:http-abort-controller'),
+  /**
+   * If the HTTP-level cache must be enabled.
+   * When enabled, HTTP responses will be stored within the cache, and/or responses can be read from the cache.
+   * This only will only do something outside a browser environment, as browsers take care of caching internally.
+   */
+  httpCache: new ActionContextKey<boolean>('@comunica/bus-http:httpCache'),
 };
 
 export const KeysHttpWayback = {
@@ -130,6 +159,12 @@ export const KeysInitQuery = {
    * If HTTP and parsing failures are ignored.
    */
   lenient: new ActionContextKey<boolean>('@comunica/actor-init-query:lenient'),
+  /**
+   * By default, errors will be emitted if parsers encounter unsupported versions.
+   * Setting this flag to true will silence those checks.
+   * Errors may still be emitted if unsupported grammar is encountered.
+   */
+  parseUnsupportedVersions: new ActionContextKey<boolean>('@comunica/actor-init-query:parseUnsupportedVersions'),
   /**
    * The original query string.
    */
@@ -197,7 +232,7 @@ export const KeysInitQuery = {
    */
   cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-query:cliArgsHandlers'),
   /**
-   * Explain mode of the query. Can be 'parsed', 'logical', 'physical', or 'physical-json'.
+   * Explain mode of the query. Can be 'parsed', 'logical', 'query', 'physical', or 'physical-json'.
    */
   explain: new ActionContextKey<QueryExplainMode>('@comunica/actor-init-query:explain'),
   /**
@@ -288,6 +323,12 @@ export const KeysQueryOperation = {
    * The sources to query over.
    */
   querySources: new ActionContextKey<IQuerySourceWrapper[]>('@comunica/bus-query-operation:querySources'),
+  /**
+   * A mapping of SERVICE targets to sources.
+   */
+  serviceSources: new ActionContextKey<Record<string, IQuerySourceWrapper>>(
+    '@comunica/bus-query-operation:serviceSources',
+  ),
 };
 
 export const KeysRdfParseJsonLd = {
@@ -316,18 +357,21 @@ export const KeysRdfParseHtmlScript = {
   extractAllScripts: new ActionContextKey<boolean>('extractAllScripts'),
 };
 
+export const KeysRdfSerialize = {
+  /**
+   * Prefixes that will be used by RDF serializers.
+   */
+  rdfSerializationPrefixes: new ActionContextKey<Record<string, string>>(
+    '@comunica/bus-rdf-serialize:rdfSerializationPrefixes',
+  ),
+};
+
 export const KeysQuerySourceIdentify = {
   /**
    * A map containing unique IDs for each source
    */
   sourceIds: new ActionContextKey<Map<QuerySourceReference, string>>(
     '@comunica/bus-query-source-identify:sourceIds',
-  ),
-  /**
-   * Hypermedia sources mapping to their aggregated store.
-   */
-  hypermediaSourcesAggregatedStores: new ActionContextKey<Map<string, IAggregatedStore>>(
-    '@comunica/bus-query-source-identify:hypermediaSourcesAggregatedStores',
   ),
   /**
    * If links may be traversed from this source.

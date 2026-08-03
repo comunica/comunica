@@ -24,6 +24,8 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
 
   public constructor(args: IActorQueryOperationReducedHashArgs) {
     super(args, Algebra.Types.REDUCED);
+    this.mediatorHashBindings = args.mediatorHashBindings;
+    this.cacheSize = args.cacheSize;
   }
 
   public async testOperation(_operation: Algebra.Reduced, _context: IActionContext): Promise<TestResult<IActorTest>> {

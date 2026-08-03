@@ -87,6 +87,7 @@ TS
   /* eslint-enable max-len */
   public constructor(args: IActorRdfJoinArgs<TS>, options: IActorRdfJoinInternalOptions) {
     super(args);
+    this.mediatorJoinSelectivity = args.mediatorJoinSelectivity;
     this.logicalType = options.logicalType;
     this.physicalName = options.physicalName;
     this.limitEntries = options.limitEntries ?? Number.POSITIVE_INFINITY;
@@ -576,6 +577,3 @@ export interface IActorRdfJoinTestSideData {
 }
 
 export type MediatorRdfJoin = Mediate<IActionRdfJoin, IQueryOperationResultBindings, IMediatorTypeJoinCoefficients>;
-
-// TODO remove this in next major version
-export { LogicalJoinType } from '@comunica/types';

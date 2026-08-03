@@ -37,6 +37,10 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       requiresVariableOverlap: true,
       canHandleOperationRequired: true,
     });
+    this.bindOrder = args.bindOrder;
+    this.selectivityModifier = args.selectivityModifier;
+    this.mediatorQueryOperation = args.mediatorQueryOperation;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

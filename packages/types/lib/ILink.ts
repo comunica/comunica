@@ -4,12 +4,15 @@ import type { IActionContext } from './IActionContext';
 /**
  * A link holder that can expose additional properties.
  */
-
 export interface ILink {
   /**
    * The URL identifying this link.
    */
   url: string;
+  /**
+   * If the source type must be set to something.
+   */
+  forceSourceType?: string;
   /**
    * An optional stream modifier.
    * This transformation will be applied on the stream of data quads that is obtained from dereferencing the given URL.

@@ -6,10 +6,11 @@ import type {
 } from '@comunica/actor-abstract-mediatyped';
 import type { IActionParse, IActorParseOutput } from '@comunica/actor-abstract-parse';
 import type { IActionDereference, IActorDereferenceOutput } from '@comunica/bus-dereference';
-import { emptyReadable } from '@comunica/bus-dereference';
+import { emptyReadable, DereferenceRdfCachePolicyDereferenceWrapper } from '@comunica/bus-dereference';
 import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
+import type { ICachePolicy } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorDereferenceRdfParse } from '../lib/ActorDereferenceRdfParse';
 
@@ -26,13 +27,18 @@ describe('ActorAbstractDereferenceParse', () => {
           const ext = (<any>action.context).hasRaw('extension') ?
               (<any>action.context).getRaw('extension') :
             'index.html';
-
+          let cachePolicy: ICachePolicy<IActionDereference> | undefined;
+          if ((<any>action.context).hasRaw('cachepolicy')) {
+            cachePolicy = <any> 'CACHEPOLICY';
+          }
           return {
             data: emptyReadable(),
             url: `${action.url}${ext}`,
             requestTime: 0,
+            status: 404,
             exists: !(<any>action.context).hasRaw('doesNotExist'),
             mediaType: (<any> action).mediaType,
+            cachePolicy,
           };
         }),
       },
@@ -44,6 +50,14 @@ describe('ActorAbstractDereferenceParse', () => {
           if ((<any>action.context).hasRaw('emitParseError')) {
             data._read = () => {
               data.emit('error', new Error('Parse error'));
+            };
+            return { handle: { data, metadata: { triples: true }}};
+          }
+          if ((<any>action.context).hasRaw('emitAbortError')) {
+            data._read = () => {
+              const abortError = new Error('Aborted');
+              abortError.name = 'AbortError';
+              data.emit('error', abortError);
             };
             return { handle: { data, metadata: { triples: true }}};
           }
@@ -145,6 +159,15 @@ describe('ActorAbstractDereferenceParse', () => {
     });
   });
 
+  it('should run and not log on an abort error', async() => {
+    context = new ActionContext({ emitAbortError: true, [KeysInitQuery.lenient.name]: true });
+    const spy = jest.spyOn(actor, <any> 'logWarn');
+    const output = await actor.run({ url: 'https://www.google.com/', context });
+    expect(output.url).toBe('https://www.google.com/index.html');
+    await expect(arrayifyStream(output.data)).resolves.toEqual([]);
+    expect(spy).not.toHaveBeenCalledWith();
+  });
+
   it('should run and ignore non-existing dereferenced urls', async() => {
     context = new ActionContext({ doesNotExist: true });
     const output = await actor.run({ url: 'https://www.google.com/', context });
@@ -181,5 +204,13 @@ describe('ActorAbstractDereferenceParse', () => {
       actor: 'actor',
       url,
     });
+  });
+
+  it('should wrap a cache policy', async() => {
+    context = new ActionContext({ cachepolicy: true });
+    const output = await actor.run({ url: 'https://www.google.com/', context });
+    expect(output.url).toBe('https://www.google.com/index.html');
+    expect(output.cachePolicy).toBeInstanceOf(DereferenceRdfCachePolicyDereferenceWrapper);
+    expect((<any> output.cachePolicy).cachePolicy).toBe('CACHEPOLICY');
   });
 });

@@ -1,5 +1,3 @@
-// TODO: Find a library for this, because this is basically an xsd datatypes parser
-
 import type {
   IDateRepresentation,
   IDateTimeRepresentation,
@@ -14,7 +12,6 @@ import { ParseError } from './Errors';
 import { maximumDayInMonthFor } from './SpecAlgos';
 
 /**
- * TODO: Fix decently
  * Parses float datatypes (double, float).
  *
  * All invalid lexical values return undefined.

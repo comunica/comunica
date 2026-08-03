@@ -12,6 +12,9 @@ module.exports = function createConfig(packagePath) {
           test: /\.ts$/u,
           loader: 'ts-loader',
           exclude: /node_modules/u,
+          options: {
+            transpileOnly: true,
+          },
         },
       ],
     },
@@ -23,9 +26,9 @@ module.exports = function createConfig(packagePath) {
     },
     performance: {
       hints: 'error',
-      // Bundle size limited to ~2.2 MB
-      maxAssetSize: 2_250_000,
-      maxEntrypointSize: 2_250_000,
+      // Bundle size limited to ~2.3 MB
+      maxAssetSize: 2_400_000,
+      maxEntrypointSize: 2_400_000,
     },
     plugins: [
       new webpack.ProgressPlugin(),

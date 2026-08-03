@@ -52,19 +52,7 @@ describe('ActorOptimizeQueryOperationLeftjoinExpressionPushdown', () => {
           context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
           operation: operationIn,
         });
-        expect(operationOut).toEqual(AF.createLeftJoin(
-          AF.createFilter(
-            AF.createProject(
-              AF.createBgp([]),
-              [ DF.variable('s1'), DF.variable('p1') ],
-            ),
-            AF.createTermExpression(DF.variable('s1')),
-          ),
-          AF.createProject(
-            AF.createBgp([]),
-            [ DF.variable('s2'), DF.variable('p2') ],
-          ),
-        ));
+        expect(operationOut).toEqual(operationIn);
       });
 
       it('for an operation with leftjoin that overlaps only right', async() => {

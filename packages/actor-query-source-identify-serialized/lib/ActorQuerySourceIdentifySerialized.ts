@@ -21,11 +21,13 @@ import { Readable } from 'readable-stream';
  * A comunica Serialized Query Source Identify Actor.
  */
 export class ActorQuerySourceIdentifySerialized extends ActorQuerySourceIdentify {
-  public readonly cacheSize: number;
   public readonly mediatorRdfParse: MediatorRdfParseHandle;
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
+
   public constructor(args: IActorQuerySourceIdentifySerializedArgs) {
     super(args);
+    this.mediatorRdfParse = args.mediatorRdfParse;
+    this.mediatorQuerySourceIdentify = args.mediatorQuerySourceIdentify;
   }
 
   public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest>> {
@@ -65,7 +67,7 @@ export class ActorQuerySourceIdentifySerialized extends ActorQuerySourceIdentify
     const parseAction: IActionRdfParseHandle = {
       context,
       handle: {
-        metadata: { baseIRI: source.baseIRI },
+        metadata: { baseIRI: source.baseIRI, version: source.version },
         data: textStream,
         context,
       },

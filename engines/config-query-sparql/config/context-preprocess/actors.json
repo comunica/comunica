@@ -1,12 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^4.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^5.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-convert-shortcuts/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-set-defaults/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-source-to-destination/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-identify/^4.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-query-source-skolemize/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-convert-shortcuts/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-set-defaults/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-source-to-destination/^5.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
@@ -22,17 +20,6 @@
     {
       "@id": "urn:comunica:default:context-preprocess/actors#source-to-destination",
       "@type": "ActorContextPreprocessSourceToDestination"
-    },
-    {
-      "@id": "urn:comunica:default:context-preprocess/actors#query-source-identify",
-      "@type": "ActorContextPreprocessQuerySourceIdentify",
-      "mediatorQuerySourceIdentify": { "@id": "urn:comunica:default:query-source-identify/mediators#main" },
-      "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
-      "beforeActors": { "@id": "urn:comunica:default:context-preprocess/actors#query-source-skolemize" }
-    },
-    {
-      "@id": "urn:comunica:default:context-preprocess/actors#query-source-skolemize",
-      "@type": "ActorContextPreprocessQuerySourceSkolemize"
     }
   ]
 }

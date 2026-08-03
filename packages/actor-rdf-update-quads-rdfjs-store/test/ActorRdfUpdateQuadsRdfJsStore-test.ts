@@ -130,7 +130,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         });
         const quadStreamInsert = new ArrayIterator([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
-        ]);
+        ], { autoStart: false });
         const { execute } = await actor.run({ quadStreamInsert, context });
         await expect(execute()).resolves.toBeUndefined();
         await expect(arrayifyStream(store.match())).resolves.toBeRdfIsomorphic([
@@ -146,7 +146,7 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         });
         const quadStreamDelete = new ArrayIterator([
           DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
-        ]);
+        ], { autoStart: false });
         const { execute } = await actor.run({ quadStreamDelete, context });
         await expect(execute()).resolves.toBeUndefined();
         await expect(arrayifyStream(store.match())).resolves.toBeRdfIsomorphic([]);
@@ -159,10 +159,10 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         });
         const quadStreamInsert = new ArrayIterator([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
-        ]);
+        ], { autoStart: false });
         const quadStreamDelete = new ArrayIterator([
           DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
-        ]);
+        ], { autoStart: false });
         const { execute } = await actor.run({ quadStreamInsert, quadStreamDelete, context });
         await expect(execute()).resolves.toBeUndefined();
         await expect(arrayifyStream(store.match())).resolves.toBeRdfIsomorphic([
@@ -178,10 +178,10 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         const quadStreamInsert = new ArrayIterator([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
           DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
-        ]);
+        ], { autoStart: false });
         const quadStreamDelete = new ArrayIterator([
           DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
-        ]);
+        ], { autoStart: false });
         const { execute } = await actor.run({ quadStreamInsert, quadStreamDelete, context });
         await expect(execute()).resolves.toBeUndefined();
         await expect(arrayifyStream(store.match())).resolves.toBeRdfIsomorphic([

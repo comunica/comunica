@@ -1,12 +1,12 @@
 /* eslint max-len: 0 */
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import {
+  runFuncTestTable,
   dateTyped,
   dayTimeDurationTyped,
   dateTimeTyped,
   timeTyped,
-} from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermSubtraction } from '../lib';
 
 describe('dateTime subtract', () => {

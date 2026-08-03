@@ -44,6 +44,10 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
       limitEntriesMin: true,
       isLeaf: false,
     });
+    this.selectivityModifier = args.selectivityModifier;
+    this.blockSize = args.blockSize;
+    this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
+    this.mediatorJoin = args.mediatorJoin;
   }
 
   /**
@@ -144,7 +148,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
       secondIn.operation,
       sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
       { filterBindings: { bindings: chunk, metadata: first.metadata }},
-    )));
+    )), { autoStart: false });
     const second: IJoinEntry = {
       output: {
         type: 'bindings',

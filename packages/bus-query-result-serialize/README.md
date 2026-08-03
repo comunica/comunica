@@ -17,7 +17,7 @@ $ yarn add @comunica/bus-query-result-serialize
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-result-serialize/^4.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-result-serialize/^5.0.0/components/context.jsonld"`
 * **Bus name**: `ActorQueryResultSerialize:_default_bus`
 
 ## Creating actors on this bus

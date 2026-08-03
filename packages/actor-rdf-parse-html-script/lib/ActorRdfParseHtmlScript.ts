@@ -21,6 +21,8 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseHtml {
 
   public constructor(args: IActorRdfParseHtmlScriptArgs) {
     super(args);
+    this.mediatorRdfParseMediatypes = args.mediatorRdfParseMediatypes;
+    this.mediatorRdfParseHandle = args.mediatorRdfParseHandle;
   }
 
   public async test(_action: IActionRdfParseHtml): Promise<TestResult<IActorTest>> {

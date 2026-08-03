@@ -7,11 +7,14 @@ import { ActorAbstractMediaTyped } from './ActorAbstractMediaTyped';
 export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbstractMediaTyped<HI, HT, HO> {
   public readonly mediaTypePriorities: Record<string, number>;
   public readonly mediaTypeFormats: Record<string, string>;
-  public readonly priorityScale: number;
+  public readonly priorityScale: number | undefined;
 
   public constructor(args: IActorArgsMediaTypedFixed<HI, HT, HO>) {
     super(args);
-    const scale: number = this.priorityScale || this.priorityScale === 0 ? this.priorityScale : 1;
+    this.mediaTypePriorities = args.mediaTypePriorities;
+    this.mediaTypeFormats = args.mediaTypeFormats;
+    this.priorityScale = args.priorityScale;
+    const scale: number = this.priorityScale ?? 1;
     if (this.mediaTypePriorities) {
       for (const [ _index, [ key, value ]] of Object.entries(this.mediaTypePriorities).entries()) {
         this.mediaTypePriorities[key] = scale * value;

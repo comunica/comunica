@@ -1,7 +1,9 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
-import { bool } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  bool,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermRegex } from '../lib';
 
 /**
@@ -28,7 +30,7 @@ import { ActorFunctionFactoryTermRegex } from '../lib';
  */
 
 describe('We should respect the regex-data-quantifier-optional spec', () => {
-  const { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10 } = Data.dataRegexQuantifiers();
+  const { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10 } = Data.dataRegexQuantifiers;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermRegex(args),

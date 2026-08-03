@@ -16,16 +16,18 @@ export function serializeDateTime(date: IDateTimeRepresentation): string {
   return `${serializeDate({ year: date.year, month: date.month, day: date.day })}T${serializeTime(date)}`;
 }
 
-function serializeTimeZone(tz: Partial<ITimeZoneRepresentation>): string {
+export function serializeTimeZone(tz: Partial<ITimeZoneRepresentation>): string {
   // https://www.w3.org/TR/xmlschema-2/#dateTime-timezones
-  if (tz.zoneHours === undefined || tz.zoneMinutes === undefined) {
+  if (tz.zoneHours === undefined && tz.zoneMinutes === undefined) {
     return '';
   }
-  if (tz.zoneHours === 0 && tz.zoneMinutes === 0) {
+  const hours = tz.zoneHours ?? 0;
+  const minutes = tz.zoneMinutes ?? 0;
+  if (hours === 0 && minutes === 0) {
     return 'Z';
   }
   // SerializeTimeZone({ zoneHours: 5, zoneMinutes: 4 }) returns +05:04
-  return `${tz.zoneHours >= 0 ? `+${numSerializer(tz.zoneHours)}` : numSerializer(tz.zoneHours)}:${numSerializer(Math.abs(tz.zoneMinutes))}`;
+  return `${hours >= 0 ? `+${numSerializer(hours)}` : numSerializer(hours)}:${numSerializer(Math.abs(minutes))}`;
 }
 
 export function serializeDate(date: IDateRepresentation): string {

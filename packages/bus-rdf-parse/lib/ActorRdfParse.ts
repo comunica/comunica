@@ -58,6 +58,10 @@ export interface IActionRdfParseMetadata {
    * The base IRI for parsed quads.
    */
   baseIRI?: string;
+  /**
+   * The version that was defined as media type parameter.
+   */
+  version?: string;
 }
 
 /**

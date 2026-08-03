@@ -1,0 +1,17 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^5.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-process-explain-query/^5.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:query-process/actors#explain-query",
+      "@type": "ActorQueryProcessExplainQuery",
+      "queryProcessor": { "@id": "urn:comunica:default:query-process/actors#sequential" },
+      "mediatorQuerySerialize": { "@id": "urn:comunica:default:query-serialize/mediators#main" }
+    }
+  ]
+}

@@ -1,11 +1,11 @@
 import { ActionContext } from '@comunica/core';
-import type * as RDF from '@rdfjs/types';
 import {
   getDataDestinationType,
   getDataDestinationValue,
   getDataDestinationContext,
   isDataDestinationRawType,
-} from '..';
+} from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
 
 describe('utils', () => {
   const rdfjsStore: RDF.Store = <any> { remove: true };

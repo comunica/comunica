@@ -1,6 +1,19 @@
 const config = require('@rubensworks/eslint-config');
+const requireAsyncIteratorAutostartFalse = require('./packages/utils-monorepo/lib/eslint/require-async-iterator-autostart-false');
 
 module.exports = config([
+  {
+    plugins: {
+      'comunica-rules': {
+        rules: {
+          'require-async-iterator-autostart-false': requireAsyncIteratorAutostartFalse,
+        },
+      },
+    },
+    rules: {
+      'comunica-rules/require-async-iterator-autostart-false': 'error',
+    },
+  },
   {
     files: [ '**/*.ts' ],
     languageOptions: {
@@ -128,23 +141,17 @@ module.exports = config([
     },
   },
   {
-    // Karma config and Lerna custom script because they have identical rules
+    // Vite configurations
     files: [
-      'lerna-custom-script.js',
+      '**/vite.config.ts',
+      '**/vite.config.base.ts',
     ],
     rules: {
-      'ts/no-var-requires': 'off',
-      'ts/no-require-imports': 'off',
-      'import/no-nodejs-modules': 'off',
-    },
-  },
-  {
-    // Karma setup script
-    files: [
-      'karma.setup.ts',
-    ],
-    rules: {
+      'import/extensions': 'off',
       'import/no-extraneous-dependencies': 'off',
+      'import/no-nodejs-modules': 'off',
+      'import/no-default-export': 'off',
+      'import/no-anonymous-default-export': 'off',
     },
   },
   {
@@ -162,6 +169,7 @@ module.exports = config([
       'engines/*/engine-default.js',
       'engines/*/engine-browser.js',
       'engines/*/comunica-browser.js',
+      'engines/*/comunica-browser-vite.js',
       // The performance combination files are auto-generated
       'performance/*/combinations/**',
       // TODO: Remove this once solid-client-authn supports node 18.
@@ -169,6 +177,7 @@ module.exports = config([
       // Dev-only files that are not checked in
       '**/bintest/**',
       '**/componentsjs-error-state.json',
+      'lerna.json',
     ],
   },
 ]);

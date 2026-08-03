@@ -29,13 +29,34 @@ const testFileContentDict = {
     },
   ],
 };
+
 const testArgumentDict = { sources: [{ type: 'file', value: 'example' }]};
 
 const fs = jest.createMockFromModule('fs');
+const actualFs = jest.requireActual('fs');
+
 // eslint-disable-next-line no-sync
 fs.existsSync = jest.fn(() => true);
 // eslint-disable-next-line no-sync
-fs.readFileSync = jest.fn(() => JSON.stringify(testFileContentDict));
+fs.readFileSync = jest.fn((path) => {
+  if (path.includes('sparql-endpoint.html')) {
+    // Use actual fs to read the real HTML file
+    // eslint-disable-next-line no-sync
+    return actualFs.readFileSync(path, 'utf8');
+  }
+  return JSON.stringify(testFileContentDict);
+});
+
+// Add promises support for async file reading
+fs.promises = {
+  readFile: jest.fn((path, _encoding) => {
+    if (path.includes('sparql-endpoint.html')) {
+      // Use actual fs to read the real HTML file
+      return actualFs.promises.readFile(path, 'utf8');
+    }
+    return Promise.resolve(JSON.stringify(testFileContentDict));
+  }),
+};
 
 module.exports = {
   fs,

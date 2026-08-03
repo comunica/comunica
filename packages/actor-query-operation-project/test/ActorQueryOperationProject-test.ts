@@ -150,7 +150,7 @@ describe('ActorQueryOperationProject', () => {
             [ DF.variable('a'), DF.blankNode('a') ],
             [ DF.variable('b'), DF.literal('b') ],
           ]),
-        ]),
+        ], { autoStart: false }),
         metadata: async() => ({ variables: [
           { variable: DF.variable('a'), canBeUndef: false },
         ]}),
@@ -198,7 +198,7 @@ describe('ActorQueryOperationProject', () => {
             [ DF.variable('a'), new BlankNodeScoped('a', DF.namedNode('C')) ],
             [ DF.variable('b'), DF.literal('b') ],
           ]),
-        ]),
+        ], { autoStart: false }),
         metadata: async() => ({ variables: [
           { variable: DF.variable('a'), canBeUndef: false },
         ]}),
@@ -246,7 +246,7 @@ describe('ActorQueryOperationProject', () => {
             [ DF.variable('a'), new BlankNodeBindingsScoped('a') ],
             [ DF.variable('b'), DF.literal('b') ],
           ]),
-        ]),
+        ], { autoStart: false }),
         metadata: async() => ({ variables: [
           { variable: DF.variable('a'), canBeUndef: true },
         ]}),
@@ -286,7 +286,7 @@ describe('ActorQueryOperationProject', () => {
             [ DF.variable('a'), new BlankNodeBindingsScoped('a') ],
             [ DF.variable('b'), new BlankNodeBindingsScoped('a') ],
           ]),
-        ]),
+        ], { autoStart: false }),
         metadata: async() => ({ variables: [
           { variable: DF.variable('a'), canBeUndef: false },
         ]}),

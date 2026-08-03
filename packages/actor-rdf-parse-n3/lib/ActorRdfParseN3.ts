@@ -41,6 +41,11 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
       baseIRI: action.metadata?.baseIRI,
       // Enable RDF-star-mode on all formats, except N3, where this is not supported.
       format: mediaType.endsWith('n3') ? mediaType : `${mediaType}*`,
+      // TODO: remove lines below once N3's types have been updated
+      // eslint-disable-next-line ts/ban-ts-comment
+      // @ts-expect-error
+      parseUnsupportedVersions: Boolean(action.context.get(KeysInitQuery.parseUnsupportedVersions)),
+      version: action.metadata?.version,
     }));
     return {
       data,

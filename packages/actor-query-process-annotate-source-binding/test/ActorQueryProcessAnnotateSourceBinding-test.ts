@@ -54,7 +54,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
 
       mediatorQueryProcess = {
         async mediate() {
-          return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
+          return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ], { autoStart: false }) }};
         },
       };
       const actorWithSource = new ActorQueryProcessAnnotateSourceBinding({ name: 'actor', bus, mediatorQueryProcess });
@@ -76,7 +76,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
 
       mediatorQueryProcess = {
         async mediate() {
-          return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
+          return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ], { autoStart: false }) }};
         },
       };
       const actorWithSource = new ActorQueryProcessAnnotateSourceBinding({ name: 'actor', bus, mediatorQueryProcess });
@@ -98,7 +98,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
 
       mediatorQueryProcess = {
         async mediate() {
-          return { result: { type: 'quads', quadStream: new ArrayIterator([]) }};
+          return { result: { type: 'quads', quadStream: new ArrayIterator([], { autoStart: false }) }};
         },
       };
       const actorWithSource = new ActorQueryProcessAnnotateSourceBinding({ name: 'actor', bus, mediatorQueryProcess });
@@ -112,7 +112,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
     it('should fail gracefully when binding does not have context', async() => {
       mediatorQueryProcess = {
         async mediate() {
-          return { result: { type: 'bindings', bindingsStream: new ArrayIterator([{}]) }};
+          return { result: { type: 'bindings', bindingsStream: new ArrayIterator([{}], { autoStart: false }) }};
         },
       };
       const actorWithSource = new ActorQueryProcessAnnotateSourceBinding({ name: 'actor', bus, mediatorQueryProcess });
@@ -126,7 +126,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
     it('should fail gracefully when binding are of incorrect type', async() => {
       mediatorQueryProcess = {
         async mediate() {
-          return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
+          return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ], { autoStart: false }) }};
         },
       };
       const actorWithSource = new ActorQueryProcessAnnotateSourceBinding({ name: 'actor', bus, mediatorQueryProcess });
@@ -148,7 +148,7 @@ describe('ActorQueryProcessAnnotateSourceBinding', () => {
 
       mediatorQueryProcess = {
         async mediate() {
-          return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ]) }};
+          return { result: { type: 'bindings', bindingsStream: new ArrayIterator([ bindings ], { autoStart: false }) }};
         },
       };
       const actorWithSource = new ActorQueryProcessAnnotateSourceBinding({ name: 'actor', bus, mediatorQueryProcess });

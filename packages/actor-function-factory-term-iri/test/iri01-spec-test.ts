@@ -1,8 +1,10 @@
-import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import type { FuncTestTableConfig } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermIri } from '../lib';
 
 describe('We should respect the iri01 spec', () => {

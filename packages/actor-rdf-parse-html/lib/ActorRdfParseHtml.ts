@@ -38,6 +38,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
    */
   public constructor(args: IActorRdfParseHtmlArgs) {
     super(args);
+    this.busRdfParseHtml = args.busRdfParseHtml;
   }
 
   public async runHandle(action: IActionRdfParse, mediaType: string, context: IActionContext):
@@ -157,7 +158,7 @@ export interface IActorRdfParseHtmlArgs extends IActorRdfParseFixedMediaTypesArg
   /* eslint-disable max-len */
   /**
    * The RDF Parse HTML bus for fetching HTML listeners
-   * @default {<npmd:@comunica/bus-rdf-parse-html/^4.0.0/components/ActorRdfParseHtml.jsonld#ActorRdfParseHtml_default_bus>}
+   * @default {<npmd:@comunica/bus-rdf-parse-html/^5.0.0/components/ActorRdfParseHtml.jsonld#ActorRdfParseHtml_default_bus>}
    */
   busRdfParseHtml: Bus<Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput, undefined>, IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>;
   /* eslint-enable max-len */

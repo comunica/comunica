@@ -1,6 +1,6 @@
 {
   "name": "@comunica/packager",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "A tool for packaging Comunica modules in a single NPM package",
   "license": "MIT",
   "funding": {

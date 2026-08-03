@@ -137,7 +137,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
         BF.bindings([
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
-      ]);
+      ], { autoStart: false });
       bindingsStreamPartial = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.namedNode('v1') ],
@@ -146,7 +146,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
         BF.bindings(),
-      ]);
+      ], { autoStart: false });
       bindingsStreamMixed = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.literal('v"') ],
@@ -156,7 +156,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           [ DF.variable('k2'), DF.namedNode('v\n\r,') ],
         ]),
         BF.bindings(),
-      ]);
+      ], { autoStart: false });
       bindingsStreamEmpty = <any> new PassThrough();
       (<any> bindingsStreamEmpty)._read = <any> (() => {
         bindingsStreamEmpty.emit('end');
@@ -243,7 +243,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
             context,
           }, handleMediaType: 'text/tab-separated-values', context },
         ))).handle.data)).resolves.toBe(
-          `k1\tk2
+          `?k1\t?k2
 <v1>\t
 \t<v2>
 `,
@@ -277,7 +277,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
             context,
           }, handleMediaType: 'text/tab-separated-values', context },
         ))).handle.data)).resolves.toBe(
-          `k3
+          `?k3
 
 
 
@@ -297,7 +297,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
         handleMediaType: 'text/tab-separated-values',
         context,
       }))).handle.data)).resolves.toBe(
-        `k1\tk2
+        `?k1\t?k2
 "v\\""\t
 \t<v\\n\\r,>
 \t
@@ -311,7 +311,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
         handleMediaType: 'text/tab-separated-values',
         context,
       }))).handle.data)).resolves.toBe(
-        `k1\tk2
+        `?k1\t?k2
 `,
       );
     });
@@ -333,7 +333,7 @@ describe('ActorQueryResultSerializeSparqlTsv', () => {
           context,
         }, handleMediaType: 'text/tab-separated-values', context },
       ))).handle.data)).resolves.toBe(
-        `k1\tk2
+        `?k1\t?k2
 <<<s1> <p1> <o1>>>\t
 \t<<<s2> <p2> <o2>>>
 `,

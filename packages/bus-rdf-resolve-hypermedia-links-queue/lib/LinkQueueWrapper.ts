@@ -1,5 +1,4 @@
-import type { ILink } from '@comunica/types';
-import type { ILinkQueue } from './ILinkQueue';
+import type { ILink, ILinkQueue } from '@comunica/types';
 
 /**
  * A link queue that wraps a given link queue.
@@ -11,7 +10,7 @@ export class LinkQueueWrapper<T extends ILinkQueue = ILinkQueue> implements ILin
     this.linkQueue = linkQueue;
   }
 
-  public push(link: ILink, parent: ILink): boolean {
+  public push(link: ILink, parent?: ILink): boolean {
     return this.linkQueue.push(link, parent);
   }
 

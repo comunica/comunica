@@ -17,6 +17,7 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
 
   public constructor(args: IActorQueryOperationMinusArgs) {
     super(args, Algebra.Types.MINUS);
+    this.mediatorJoin = args.mediatorJoin;
   }
 
   public async testOperation(_operation: Algebra.Minus, _context: IActionContext): Promise<TestResult<IActorTest>> {

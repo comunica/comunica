@@ -26,6 +26,8 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
 
   public constructor(args: IActorQueryOperationUpdateDeleteInsertArgs) {
     super(args, Algebra.Types.DELETE_INSERT);
+    this.mediatorUpdateQuads = args.mediatorUpdateQuads;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   public async testOperation(

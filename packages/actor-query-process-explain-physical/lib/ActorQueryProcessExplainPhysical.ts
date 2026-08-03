@@ -20,6 +20,7 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
 
   public constructor(args: IActorQueryProcessExplainPhysicalArgs) {
     super(args);
+    this.queryProcessor = args.queryProcessor;
   }
 
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
@@ -58,7 +59,7 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
         break;
     }
 
-    const mode: 'parsed' | 'logical' | 'physical' | 'physical-json' = (action.context.get(KeysInitQuery.explain) ??
+    const mode = (action.context.get(KeysInitQuery.explain) ??
       action.context.getSafe(new ActionContextKey('explain')));
     return {
       result: {

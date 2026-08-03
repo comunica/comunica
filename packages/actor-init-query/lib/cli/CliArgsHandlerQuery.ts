@@ -85,6 +85,7 @@ export class CliArgsHandlerQuery implements ICliArgsHandler {
           choices: [
             'parsed',
             'logical',
+            'query',
             'physical',
             'physical-json',
           ],

@@ -6,7 +6,7 @@ Comunica SPARQL is a SPARQL query engine for JavaScript for querying RDF/JS sour
 that implement the [Source interface](http://rdf.js.org/#source-interface).
 
 This package has been optimized for a small bundle size when it is used in Web applications.
-At the time of writing, the minified size of this package is 648,88 KB (145,79 KB when gzipped).
+At the time of writing, the minified size of this package is 1.09 MB (225.21 KB when gzipped).
 
 This package excludes the ability to query external SPARQL endpoints via the `SERVICE` keyword,
 and does not allow serialization of results to formats such as SPARQL/JSON and SPARQL/XML.

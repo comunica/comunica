@@ -26,6 +26,10 @@ export class QuerySourceAddSourceAttribution implements IQuerySource {
     this.innerSource = innerSource;
   }
 
+  public getFilterFactor(context: IActionContext): Promise<number> {
+    return this.innerSource.getFilterFactor(context);
+  }
+
   public async getSelectorShape(context: IActionContext): Promise<FragmentSelectorShape> {
     return this.innerSource.getSelectorShape(context);
   }

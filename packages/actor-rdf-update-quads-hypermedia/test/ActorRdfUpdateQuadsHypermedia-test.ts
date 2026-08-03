@@ -3,7 +3,7 @@ import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-
 import type { IActionRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, ICachePolicy } from '@comunica/types';
 import { ActorRdfUpdateQuadsHypermedia } from '../lib/ActorRdfUpdateQuadsHypermedia';
 import '@comunica/utils-jest';
 
@@ -29,12 +29,28 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
     beforeEach(() => {
       mediatorDereferenceRdf = {
         mediate: jest.fn(async({ url }: any) => {
+          let cachePolicy: ICachePolicy<IActionDereferenceRdf> | undefined;
+          if (url.includes('cachepolicytrue')) {
+            cachePolicy = <any> {
+              async satisfiesWithoutRevalidation() {
+                return true;
+              },
+            };
+          }
+          if (url.includes('cachepolicyfalse')) {
+            cachePolicy = <any> {
+              async satisfiesWithoutRevalidation() {
+                return false;
+              },
+            };
+          }
           const data = {
             data: 'QUADS',
             exists: true,
             metadata: { triples: true },
             url,
             headers: 'HEADERS',
+            cachePolicy,
           };
           return data;
         }),
@@ -151,13 +167,22 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
         });
       });
 
-      it('should cache the destination', async() => {
+      it('should cache the destination asynchronously', async() => {
         const context1 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest1' });
         const context2 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest2' });
         const destination1 = await actor.getDestination(context1);
         const destination2 = await actor.getDestination(context2);
         await expect(actor.getDestination(context1)).resolves.toEqual(destination1);
         await expect(actor.getDestination(context2)).resolves.toEqual(destination2);
+      });
+
+      it('should cache the destination synchronously', async() => {
+        const context1 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest1' });
+        const context2 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest2' });
+        const destination1 = actor.getDestination(context1);
+        const destination2 = actor.getDestination(context2);
+        await expect(actor.getDestination(context1)).resolves.toEqual(await destination1);
+        await expect(actor.getDestination(context2)).resolves.toEqual(await destination2);
       });
 
       it('should cache the destination and allow invalidation for a specific url', async() => {
@@ -203,6 +228,30 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
 
         await expect(actor.getDestination(context1)).resolves.not.toEqual(destination1);
         await expect(actor.getDestination(context2)).resolves.not.toEqual(destination2);
+      });
+
+      it('should cache asynchronously if destination has a cache policy that remains valid', async() => {
+        const context1 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest1.cachepolicytrue' });
+        const destination1 = await actor.getDestination(context1);
+        await expect(actor.getDestination(context1)).resolves.toBe(destination1);
+      });
+
+      it('should cache synchronously if destination has a cache policy that remains valid', async() => {
+        const context1 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest1.cachepolicytrue' });
+        const destination1 = actor.getDestination(context1);
+        await expect(actor.getDestination(context1)).resolves.toBe(await destination1);
+      });
+
+      it('should not cache asynchronously if destination has a cache policy that remains valid', async() => {
+        const context1 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest1.cachepolicyfalse' });
+        const destination1 = await actor.getDestination(context1);
+        await expect(actor.getDestination(context1)).resolves.not.toBe(destination1);
+      });
+
+      it('should not cache synchronously if destination has a cache policy that remains valid', async() => {
+        const context1 = new ActionContext({ [KeysRdfUpdateQuads.destination.name]: 'dest1.cachepolicyfalse' });
+        const destination1 = actor.getDestination(context1);
+        await expect(actor.getDestination(context1)).resolves.not.toBe(await destination1);
       });
 
       it('should delegate dereference errors to the destination', async() => {

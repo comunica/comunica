@@ -1,3 +1,4 @@
+import { ActionContext } from '@comunica/core';
 import { FetchInitPreprocessor } from '../lib/FetchInitPreprocessor-browser';
 import type { IFetchInitPreprocessor } from '../lib/IFetchInitPreprocessor';
 
@@ -16,7 +17,7 @@ describe('FetchInitPreprocessor-browser', () => {
 
   describe('handle', () => {
     it('should handle init without body', async() => {
-      await expect(preprocessor.handle({})).resolves.toEqual({ keepalive: true });
+      await expect(preprocessor.handle({}, new ActionContext())).resolves.toEqual({ keepalive: true });
     });
 
     it('should handle init with body', async() => {
@@ -26,7 +27,7 @@ describe('FetchInitPreprocessor-browser', () => {
           controller.close();
         },
       });
-      await expect(preprocessor.handle({ body })).resolves.toStrictEqual({
+      await expect(preprocessor.handle({ body }, new ActionContext())).resolves.toStrictEqual({
         body: 'abc',
         keepalive: false,
       });

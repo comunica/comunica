@@ -19,6 +19,7 @@ export class ActorQueryOperationClear extends ActorQueryOperationTypedMediated<A
 
   public constructor(args: IActorQueryOperationClearArgs) {
     super(args, Algebra.Types.CLEAR);
+    this.mediatorUpdateQuads = args.mediatorUpdateQuads;
   }
 
   public async testOperation(operation: Algebra.Clear, context: IActionContext): Promise<TestResult<IActorTest>> {

@@ -28,6 +28,8 @@ export class ActorRdfParseRdfXml extends ActorRdfParseFixedMediaTypes {
     const data = <Readable> <any> action.data.pipe(new RdfXmlParser({
       dataFactory,
       baseIRI: action.metadata?.baseIRI,
+      parseUnsupportedVersions: Boolean(action.context.get(KeysInitQuery.parseUnsupportedVersions)),
+      version: action.metadata?.version,
     }));
     return {
       data,

@@ -7,11 +7,11 @@ Comunica SPARQL is a SPARQL query engine for JavaScript for querying over decent
 
 It's main distinguishing features are the following:
 
-* Execute [SPARQL 1.1](https://www.w3.org/TR/sparql11-query/) or [GraphQL-LD](https://github.com/rubensworks/graphql-ld.js) queries.
+* Execute [SPARQL 1.2](https://www.w3.org/TR/sparql12-query/) or [GraphQL-LD](https://github.com/rubensworks/graphql-ld.js) queries.
 * Federated querying over [heterogeneous interfaces](https://comunica.dev/docs/query/advanced/source_types/), such as RDF files, SPARQL endpoints, [Triple Pattern Fragments](https://linkeddatafragments.org/), or [Solid data pods](https://inrupt.com/solid).
 * High modularity enabling [easy extensions and customization](https://comunica.dev/docs/modify/).
 * Runs in JavaScript using [Node.JS](http://nodejs.org/), in the browser, and via the command-line.
-* Update sources using [SPARQL 1.1 Update queries](https://www.w3.org/TR/sparql11-update/).
+* Update sources using [SPARQL 1.2 Update queries](https://www.w3.org/TR/sparql12-update/).
 
 **[Learn more about Comunica on our website](https://comunica.dev/).**
 

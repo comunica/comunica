@@ -12,6 +12,7 @@ export class ActorContextPreprocessConvertShortcuts extends ActorContextPreproce
 
   public constructor(args: IActorContextPreprocessConvertShortcutsArgs) {
     super(args);
+    this.contextKeyShortcuts = args.contextKeyShortcuts;
   }
 
   public async test(_action: IAction): Promise<TestResult<IActorTest>> {
@@ -39,6 +40,8 @@ export class ActorContextPreprocessConvertShortcuts extends ActorContextPreproce
 export interface IActorContextPreprocessConvertShortcutsArgs extends IActorContextPreprocessArgs {
   /**
    * A record of context shortcuts to full context keys (as defined in @comunica/context-entries).
+   * These should be aligned with to IQueryContextCommon in @comunica/types,
+   * and possibly the CliArgsHandlers in @comunica/actor-init-query.
    * @range {json}
    * @default {{
    *   "sources": "@comunica/actor-init-query:querySourcesUnidentified",
@@ -53,6 +56,7 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "queryTimestampHighResolution": "@comunica/actor-init-query:queryTimestampHighResolution",
    *   "httpProxyHandler": "@comunica/actor-http-proxy:httpProxyHandler",
    *   "lenient": "@comunica/actor-init-query:lenient",
+   *   "parseUnsupportedVersions": "@comunica/actor-init-query:parseUnsupportedVersions",
    *   "httpIncludeCredentials": "@comunica/bus-http:include-credentials",
    *   "httpAuth": "@comunica/bus-http:auth",
    *   "httpTimeout": "@comunica/bus-http:http-timeout",
@@ -60,6 +64,13 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "httpRetryCount": "@comunica/bus-http:http-retry-count",
    *   "httpRetryDelayFallback": "@comunica/bus-http:http-retry-delay-fallback",
    *   "httpRetryDelayLimit": "@comunica/bus-http:http-retry-delay-limit",
+   *   "httpRetryStatusCodes": "@comunica/bus-http:http-retry-status-codes",
+   *   "httpRetryBodyCount": "@comunica/bus-http:http-retry-body-count",
+   *   "httpRetryBodyDelayFallback": "@comunica/bus-http:http-retry-body-delay-fallback",
+   *   "httpRetryBodyAllowUnsafe": "@comunica/bus-http:http-retry-body-allow-unsafe",
+   *   "httpRetryBodyMaxBytes": "@comunica/bus-http:http-retry-body-max-bytes",
+   *   "httpAbortSignal": "@comunica/bus-http:http-abort-controller",
+   *   "httpCache": "@comunica/bus-http:httpCache",
    *   "fetch": "@comunica/bus-http:fetch",
    *   "recoverBrokenLinks": "@comunica/bus-http-wayback:recover-broken-links",
    *   "readOnly": "@comunica/bus-query-operation:readOnly",
@@ -74,6 +85,7 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "dataFactory": "@comunica/actor-init-query:dataFactory",
    *   "distinctConstruct": "@comunica/actor-init-query:distinctConstruct",
    *   "nonLiteralExpressionComparison": "@comunica/utils-expression-evaluator:nonLiteralExpressionComparison"
+   *   "rdfSerializationPrefixes": "@comunica/bus-rdf-serialize:rdfSerializationPrefixes"
    * }}
    */
   contextKeyShortcuts: Record<string, string>;

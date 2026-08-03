@@ -1,16 +1,15 @@
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
-import { createFuncMediator } from '@comunica/bus-function-factory/test/util';
 import { ActionContext, Bus } from '@comunica/core';
 import {
+  createFuncMediator,
   getMockEEActionContext,
   getMockMediatorMergeBindingsContext,
   getMockMediatorQueryOperation,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import {
   ActorTermComparatorFactoryExpressionEvaluator,
 } from '../lib';
-import '@comunica/utils-jest';
 
 describe('ActorTermComparatorFactoryExpressionEvaluator', () => {
   let bus: any;

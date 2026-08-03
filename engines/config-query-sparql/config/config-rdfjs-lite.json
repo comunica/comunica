@@ -1,6 +1,6 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^5.0.0/components/context.jsonld"
   ],
   "import": [
     "ccqs:config/bindings-aggregator-factory/actors.json",
@@ -30,11 +30,9 @@
     "ccqs:config/query-process/mediators.json",
 
     "ccqs:config/query-result-serialize/mediators.json",
+
     "ccqs:config/query-source-identify/actors-rdfjs-lite.json",
     "ccqs:config/query-source-identify/mediators.json",
-    "ccqs:config/query-source-identify-hypermedia/mediators.json",
-
-    "ccqs:config/dereference-rdf/mediators.json",
 
     "ccqs:config/rdf-join/actors.json",
     "ccqs:config/rdf-join/mediators.json",
@@ -43,17 +41,8 @@
     "ccqs:config/rdf-join-selectivity/actors.json",
     "ccqs:config/rdf-join-selectivity/mediators.json",
 
-    "ccqs:config/rdf-metadata/mediators.json",
     "ccqs:config/rdf-metadata-accumulate/actors.json",
     "ccqs:config/rdf-metadata-accumulate/mediators.json",
-
-    "ccqs:config/rdf-metadata-extract/mediators.json",
-
-    "ccqs:config/rdf-resolve-hypermedia-links/mediators.json",
-
-    "ccqs:config/rdf-resolve-hypermedia-links-queue/mediators.json",
-
-    "ccqs:config/rdf-serialize/mediators.json",
 
     "ccqs:config/rdf-update-quads/actors-rdfjs.json",
     "ccqs:config/rdf-update-quads/mediators.json",

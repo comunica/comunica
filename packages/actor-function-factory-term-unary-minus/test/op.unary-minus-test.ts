@@ -1,9 +1,10 @@
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermUnaryMinus } from '../lib';
 
 describe('evaluation of \'- (unary)\' like', () => {
-  // '- "0"^^xsd:float       = "-0."^^xsd:float   ' // TODO: Document
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermUnaryMinus(args),

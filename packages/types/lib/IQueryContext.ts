@@ -1,4 +1,5 @@
 import type * as RDF from '@rdfjs/types';
+import type { ComunicaDataFactory } from './ComunicaDataFactory';
 import type { FunctionArgumentsCache } from './ExpressionEvaluator';
 import type { IDataDestination } from './IDataDestination';
 import type { IProxyHandler } from './IProxyHandler';
@@ -22,8 +23,8 @@ export type QueryAlgebraContext = RDF.QueryAlgebraContext & IQueryContextCommon;
  * Common query context interface
  */
 export interface IQueryContextCommon {
-  // Types of these entries should be aligned with contextKeyShortcuts in ActorInitQueryBase
-  // and Keys in @comunica/context-entries
+  // Types of these entries should be aligned with contextKeyShortcuts in ActorContextPreprocessConvertShortcuts,
+  // Keys in @comunica/context-entries, and possibly the CliArgsHandlers in @comunica/actor-init-query.
 
   // Inherited from RDF.QueryStringContext: sources
   destination?: IDataDestination;
@@ -34,8 +35,10 @@ export interface IQueryContextCommon {
   log?: Logger;
   datetime?: Date;
   // Inherited from RDF.QueryStringContext: queryTimestamp?: Date;
+  queryTimestampHighResolution?: DOMHighResTimeStamp;
   httpProxyHandler?: IProxyHandler;
   lenient?: boolean;
+  parseUnsupportedVersions?: boolean;
   httpIncludeCredentials?: boolean;
   httpAuth?: string;
   httpTimeout?: number;
@@ -43,16 +46,29 @@ export interface IQueryContextCommon {
   httpRetryCount?: number;
   httpRetryDelayFallback?: number;
   httpRetryDelayLimit?: number;
+  httpRetryStatusCodes?: number[];
+  httpRetryBodyCount?: number;
+  httpRetryBodyDelayFallback?: number;
+  httpRetryBodyAllowUnsafe?: boolean;
+  httpRetryBodyMaxBytes?: number;
+  httpAbortSignal?: AbortSignal;
+  httpCache?: boolean;
   fetch?: typeof fetch;
+  recoverBrokenLinks?: boolean;
   readOnly?: boolean;
+  extensionFunctions?: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>;
+  extensionFunctionsAlwaysPushdown?: boolean;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode)
   => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
   functionArgumentsCache?: FunctionArgumentsCache;
-  extensionFunctions?: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>;
   explain?: QueryExplainMode;
-  recoverBrokenLinks?: boolean;
   nonLiteralExpressionComparison?: boolean;
+  unionDefaultGraph?: boolean;
+  traverse?: boolean;
+  invalidateCache?: boolean;
+  dataFactory?: ComunicaDataFactory;
   distinctConstruct?: boolean;
+  rdfSerializationPrefixes?: Record<string, string>;
 
   sources: SourceType[];
 }

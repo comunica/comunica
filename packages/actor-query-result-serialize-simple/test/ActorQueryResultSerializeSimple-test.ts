@@ -60,7 +60,7 @@ describe('ActorQueryResultSerializeSimple', () => {
         BF.bindings([
           [ DF.variable('k2'), DF.namedNode('v2') ],
         ]),
-      ]);
+      ], { autoStart: false });
       bindingsStreamQuoted = () => new ArrayIterator<RDF.Bindings>([
         BF.bindings([
           [ DF.variable('k1'), DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')) ],
@@ -72,7 +72,7 @@ describe('ActorQueryResultSerializeSimple', () => {
       quadStream = () => new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
-      ]);
+      ], { autoStart: false });
       quadStreamQuoted = () => new ArrayIterator([
         quad('<<ex:s1 ex:p1 ex:o1>>', 'http://example.org/b', 'http://example.org/c'),
         quad('<<ex:s2 ex:p2 ex:o2>>', 'http://example.org/d', 'http://example.org/e'),

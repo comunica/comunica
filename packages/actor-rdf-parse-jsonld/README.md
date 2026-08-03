@@ -22,7 +22,7 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^5.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
@@ -39,6 +39,8 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.
+* `httpInvalidator`: An optional actor that listens to HTTP invalidation events.
+* `cacheSize`: The maximum number of fetched remote JSON-LD documents (including contexts) in the LRU cache, set to 0 to disable, defaults to `128`.
 * `mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http), for fetching remote JSON-LD contexts.
 
 ### Passing custom options

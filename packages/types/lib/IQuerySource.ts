@@ -1,8 +1,9 @@
-import type { Algebra } from '@comunica/utils-algebra';
+import type { Algebra, TypesComunica } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
+import type { ILink } from './ILink';
 import type { MetadataBindings } from './IMetadata';
 
 export interface IQuerySourceSerialized extends IQuerySourceUnidentifiedExpanded {
@@ -10,6 +11,7 @@ export interface IQuerySourceSerialized extends IQuerySourceUnidentifiedExpanded
   value: string;
   mediaType: string;
   baseIRI?: string;
+  version?: string;
 }
 
 export interface IQuerySourceUnidentifiedExpanded {
@@ -24,9 +26,26 @@ export interface IQuerySourceUnidentifiedExpandedRawContext {
   context?: Record<string, any>;
 }
 
-export type QuerySourceUnidentifiedExpanded = IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized;
+export interface IQuerySourceTraverse {
+  type: 'traverse';
+  value: ILink[];
+  context?: IActionContext | Record<string, any>;
+}
+
+/**
+ * A composite file source that combines multiple file URLs or sources into a single queryable source.
+ * All files are loaded and merged into one in-memory RDF store before querying.
+ */
+export interface IQuerySourceCompositeFile {
+  type: 'compositefile';
+  value: (string | IQuerySourceWrapper)[];
+  context?: IActionContext;
+}
+
+export type QuerySourceUnidentifiedExpanded =
+  IQuerySourceUnidentifiedExpanded | IQuerySourceSerialized | IQuerySourceCompositeFile;
 export type QuerySourceUnidentified = string | RDF.Source | RDF.Store | RDF.DatasetCore |
-QuerySourceUnidentifiedExpanded | IQuerySourceUnidentifiedExpandedRawContext;
+QuerySourceUnidentifiedExpanded | IQuerySourceUnidentifiedExpandedRawContext | IQuerySourceTraverse;
 
 /**
  * Attaches a context to a query target.
@@ -46,6 +65,16 @@ export interface IQuerySource {
    * The URL of RDF source of this source.
    */
   referenceValue: QuerySourceReference;
+
+  /**
+   * @return A value from 0 to 1 indicating to what respect a source type is
+   * able to pre-filter the source based on the pattern.
+   * 1 indicates that the source can apply the whole pattern,
+   * and 0 indicates that the source can not apply the pattern at all (and local filtering must happen).
+   * Plain RDF documents for example have a filter factor of 0,
+   * while SPARQL endpoints have a filter factor of 1.
+   */
+  getFilterFactor: (context: IActionContext) => Promise<number>;
 
   /**
    * Get the selector type that is supported by this source.
@@ -160,7 +189,7 @@ export type FragmentSelectorShape = {
    */
   operation: {
     operationType: 'type';
-    type: Algebra.Types;
+    type: Algebra.Types | TypesComunica;
   } | {
     operationType: 'pattern';
     pattern: Algebra.Operation;
@@ -193,6 +222,7 @@ export type FragmentSelectorShape = {
   variablesOptional?: RDF.Variable[];
   /**
    * Children of this operation.
+   * If this field is not set, then all operations defined at the top level of the shape are allowed as children.
    */
   children?: FragmentSelectorShape[];
   /**

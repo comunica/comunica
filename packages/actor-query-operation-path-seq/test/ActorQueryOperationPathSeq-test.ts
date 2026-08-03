@@ -49,7 +49,7 @@ describe('ActorQueryOperationPathSeq', () => {
         }
 
         return Promise.resolve({
-          bindingsStream: new ArrayIterator(bindings),
+          bindingsStream: new ArrayIterator(bindings, { autoStart: false }),
           metadata: () => Promise.resolve({
             cardinality: 3,
             variables: vars.map(variable => ({ variable, canBeUndef: false })),
@@ -75,7 +75,7 @@ describe('ActorQueryOperationPathSeq', () => {
         }
 
         return {
-          bindingsStream: new ArrayIterator(bindings),
+          bindingsStream: new ArrayIterator(bindings, { autoStart: false }),
           metadata: async() => ({
             cardinality: 3,
             variables: [

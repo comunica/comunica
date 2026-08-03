@@ -18,6 +18,8 @@ export class ActorQueryOperationLoad extends ActorQueryOperationTypedMediated<Al
 
   public constructor(args: IActorQueryOperationLoadArgs) {
     super(args, Algebra.Types.LOAD);
+    this.mediatorUpdateQuads = args.mediatorUpdateQuads;
+    this.mediatorQuerySourceIdentify = args.mediatorQuerySourceIdentify;
   }
 
   public async testOperation(operation: Algebra.Load, context: IActionContext): Promise<TestResult<IActorTest>> {

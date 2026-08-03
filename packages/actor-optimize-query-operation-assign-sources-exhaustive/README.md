@@ -5,6 +5,10 @@
 An [Optimize Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation) actor
 that converts every quad pattern in the query to a union of quad patterns per source.
 It will similarly handle property paths.
+It assumes that sources are defined in the `KeysQueryOperation.querySources` context entry.
+
+If the `KeysQueryOperation.serviceSources` context entry exists,
+SERVICE clauses will be rewritten based on those service sources.
 
 If only a single source is being queried over, it will attempt to assign the whole query operation to the source
 if the source supports such operations. Otherwise, it will fallback to the union-based approach.

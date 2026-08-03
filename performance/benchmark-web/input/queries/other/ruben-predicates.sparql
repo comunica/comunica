@@ -1,0 +1,4 @@
+# Datasource: https://www.rubensworks.net/
+SELECT DISTINCT ?p WHERE {
+  ?s ?p ?o
+}

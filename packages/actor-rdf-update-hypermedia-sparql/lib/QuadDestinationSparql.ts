@@ -24,6 +24,7 @@ export class QuadDestinationSparql implements IQuadDestination {
     context: IActionContext,
     mediatorHttp: MediatorHttp,
     dataFactory: ComunicaDataFactory,
+    parseUnsupportedVersions: boolean,
   ) {
     this.url = url;
     this.context = context;
@@ -34,6 +35,7 @@ export class QuadDestinationSparql implements IQuadDestination {
       ),
       prefixVariableQuestionMark: true,
       dataFactory,
+      parseUnsupportedVersions,
     });
   }
 

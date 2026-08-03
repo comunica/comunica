@@ -171,6 +171,18 @@ describe('LoggerPretty', () => {
       expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
+    it('should buffer repeated warns and output count on flush', () => {
+      logger.warn('bla', {});
+      logger.warn('bla', {});
+      logger.warn('bla', {});
+      expect(process.stderr.write).toHaveBeenCalledTimes(1);
+      logger.flush();
+      expect(process.stderr.write).toHaveBeenCalledTimes(2);
+      expect(process.stderr.write).toHaveBeenLastCalledWith(
+        expect.stringContaining('(2 times)'),
+      );
+    });
+
     it('should log for error', () => {
       logger.error('bla', {});
       expect(process.stderr.write).toHaveBeenCalledTimes(1);

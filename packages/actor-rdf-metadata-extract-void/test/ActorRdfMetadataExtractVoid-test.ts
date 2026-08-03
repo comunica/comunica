@@ -167,12 +167,12 @@ describe('ActorRdfMetadataExtractVoid', () => {
         }))?.metadata?.datasets.at(0);
         expect(dataset).toBeDefined();
         const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-        expect(dataset!.getCardinality(pattern)).toEqual({
+        await expect(dataset!.getCardinality(pattern)).resolves.toEqual({
           type: 'estimate',
           value: tripleCount,
           dataset: sparqlEndpoint.value,
         });
-        expect(dataset!.getCardinality(AF.createNop())).toBeUndefined();
+        await expect(dataset!.getCardinality(AF.createNop())).resolves.toBeUndefined();
       });
 
       it('should parse datasets with void:propertyPartition', async() => {

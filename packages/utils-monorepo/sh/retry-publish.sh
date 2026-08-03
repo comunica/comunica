@@ -4,7 +4,11 @@
 # This script can be safely called multiple times.
 npx lerna list --toposort 2> /dev/null | while read package; do
   name=$(echo "$package" | sed "s/@comunica\///")
-  pushd packages/$name
+  if [[ $name == config-* ]] || [[ $name == query-* ]]; then
+    pushd engines/$name
+  else
+    pushd packages/$name
+  fi
   npm publish
   popd
 done

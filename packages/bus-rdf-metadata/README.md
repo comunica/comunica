@@ -17,7 +17,7 @@ $ yarn add @comunica/bus-rdf-metadata
 
 ## Bus usage
 
-* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^4.0.0/components/context.jsonld"`
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^5.0.0/components/context.jsonld"`
 * **Bus name**: `ActorRdfMetadata:_default_bus`
 
 ## Creating actors on this bus

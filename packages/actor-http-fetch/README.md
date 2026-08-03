@@ -5,6 +5,9 @@
 An [HTTP](https://github.com/comunica/comunica/tree/master/packages/bus-http) actor that
 uses [fetch](https://fetch.spec.whatwg.org/) to perform HTTP requests.
 
+When this actor is used in Node.js, a memory-based cache will be initialized.
+This cache is only used when the `httpCache` context flag is enabled.
+
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 
@@ -25,7 +28,7 @@ After installing, this package can be added to your engine's configuration as fo
 ```json
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-fetch/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-fetch/^5.0.0/components/context.jsonld"
   ],
   "actors": [
     {
@@ -38,4 +41,8 @@ After installing, this package can be added to your engine's configuration as fo
 
 ### Config Parameters
 
+* `cacheMaxSize`: Maximum size of the cache (in bytes). Defaults to `104857600` (100MB).
+* `cacheMaxCount`: Maximum number of documents to store in the cache. Defaults to `1000`.
+* `cacheMaxEntrySize`: Maximum size of an entry in the cache (in bytes). Defaults to `5242880` (5MB).
+* `httpInvalidator`: A mediator over the [HTTP invalidate bus](https://github.com/comunica/comunica/tree/master/packages/bus-http-invalidate).
 * `agentOptions`: The agent JSON options for the HTTP agent in Node.js environments. _(optional)_

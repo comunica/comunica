@@ -1,18 +1,19 @@
+import type { IActionDereference } from '@comunica/bus-dereference';
 import type { IActorDereferenceRdfOutput, MediatorDereferenceRdf } from '@comunica/bus-dereference-rdf';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { MediatorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
-import {
-  ActorRdfUpdateQuadsDestination,
-  getContextDestination,
-  getContextDestinationUrl,
-  getDataDestinationType,
-} from '@comunica/bus-rdf-update-quads';
+import { ActorRdfUpdateQuadsDestination } from '@comunica/bus-rdf-update-quads';
 import type { IActionRdfUpdateQuads, IQuadDestination, IActorRdfUpdateQuadsArgs } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import type { IActionContext, IDataDestination } from '@comunica/types';
+import type { IActionContext, ICachePolicy, IDataDestination } from '@comunica/types';
+import {
+  getContextDestination,
+  getContextDestinationUrl,
+  getDataDestinationType,
+} from '@comunica/utils-query-operation';
 import { LRUCache } from 'lru-cache';
 
 /**
@@ -24,11 +25,20 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
   public readonly mediatorMetadataExtract: MediatorRdfMetadataExtract;
   public readonly mediatorRdfUpdateHypermedia: MediatorRdfUpdateHypermedia;
   public readonly cacheSize: number;
-  public readonly cache?: LRUCache<string, Promise<IQuadDestination>>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
+  public readonly cache?: LRUCache<string, Promise<{
+    destination: IQuadDestination;
+    cachePolicy: ICachePolicy<IActionDereference> | undefined;
+  }>>;
 
   public constructor(args: IActorRdfUpdateQuadsHypermediaArgs) {
     super(args);
+    this.mediatorDereferenceRdf = args.mediatorDereferenceRdf;
+    this.mediatorMetadata = args.mediatorMetadata;
+    this.mediatorMetadataExtract = args.mediatorMetadataExtract;
+    this.mediatorRdfUpdateHypermedia = args.mediatorRdfUpdateHypermedia;
+    this.cacheSize = args.cacheSize;
+    this.httpInvalidator = args.httpInvalidator;
     this.cache = this.cacheSize ? new LRUCache<string, any>({ max: this.cacheSize }) : undefined;
     const cache = this.cache;
     if (cache) {
@@ -51,20 +61,37 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
     let url: string = getContextDestinationUrl(dataDestination)!;
 
     // Try to read from cache
-    if (this.cache && this.cache.has(url)) {
-      return this.cache.get(url)!;
+    if (this.cache) {
+      const ret = this.cache.get(url);
+      if (ret) {
+        return (async() => {
+          const retMaterialized = await ret;
+          if (retMaterialized.cachePolicy &&
+            !await retMaterialized.cachePolicy?.satisfiesWithoutRevalidation({ url, context })) {
+            // If it's not valid, delete cache entry, and re-fetch immediately
+            // LIMITATION: we're not sending re-validation requests. So if the server sends a 304, we will perform a new
+            // request and re-index the source. If an HTTP-level cache is active, the actual HTTP request will not be
+            // sent, so only local re-indexing will happen, which is negligible in most cases.
+            this.cache!.delete(url);
+            return this.getDestination(context);
+          }
+          return retMaterialized.destination;
+        })();
+      }
     }
 
     // Otherwise, call mediators
     const ret = (async() => {
       let metadata: Record<string, any>;
       let exists: boolean;
+      let cachePolicy: ICachePolicy<IActionDereference> | undefined;
       try {
         // Dereference destination URL
         const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediatorDereferenceRdf
           .mediate({ context, url, acceptErrors: true });
         exists = dereferenceRdfOutput.exists;
         url = dereferenceRdfOutput.url;
+        cachePolicy = dereferenceRdfOutput.cachePolicy;
 
         // Determine the metadata
         const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
@@ -90,12 +117,12 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
         exists,
         forceDestinationType: getDataDestinationType(dataDestination),
       });
-      return destination;
+      return { destination, cachePolicy };
     })();
     if (this.cache) {
       this.cache.set(url, ret);
     }
-    return ret;
+    return ret.then(({ destination }) => destination);
   }
 }
 
@@ -109,7 +136,7 @@ export interface IActorRdfUpdateQuadsHypermediaArgs extends IActorRdfUpdateQuads
   /* eslint-disable max-len */
   /**
    * An actor that listens to HTTP invalidation events
-   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^4.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
+   * @default {<default_invalidator> a <npmd:@comunica/bus-http-invalidate/^5.0.0/components/ActorHttpInvalidateListenable.jsonld#ActorHttpInvalidateListenable>}
    */
   httpInvalidator: ActorHttpInvalidateListenable;
   /* eslint-enable max-len */

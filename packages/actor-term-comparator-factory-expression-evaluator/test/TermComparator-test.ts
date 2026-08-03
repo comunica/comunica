@@ -6,10 +6,7 @@ import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { SuperTypeCallback } from '@comunica/types';
 import * as Eval from '@comunica/utils-expression-evaluator';
-import {
-  getMockEEActionContext,
-  getMockInternalEvaluator,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+import { getMockEEActionContext, getMockInternalEvaluator } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';

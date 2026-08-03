@@ -2,10 +2,13 @@ import { ActorFunctionFactoryTermIsIri } from '@comunica/actor-function-factory-
 import { ActorFunctionFactoryTermRegex } from '@comunica/actor-function-factory-term-regex';
 import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
 import { ActorFunctionFactoryTermStrLen } from '@comunica/actor-function-factory-term-str-len';
-import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import { bool, int } from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import type { FuncTestTableConfig } from '@comunica/utils-jest';
+import {
+  runFuncTestTable,
+  bool,
+  int,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermUuid } from '../lib';
 
 /**

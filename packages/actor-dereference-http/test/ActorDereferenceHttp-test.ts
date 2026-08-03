@@ -4,8 +4,9 @@ import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, ICachePolicy } from '@comunica/types';
 import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
+import { DereferenceCachePolicyHttpWrapper } from '../lib/DereferenceCachePolicyHttpWrapper';
 import '@comunica/utils-jest';
 
 describe('ActorDereferenceHttp', () => {
@@ -69,6 +70,11 @@ describe('ActorDereferenceHttp', () => {
             url: action.input,
           };
         }
+        if (action.input.includes('aborted')) {
+          const abortError = new Error('Aborted');
+          abortError.name = 'AbortError';
+          return Promise.reject(abortError);
+        }
 
         const status: number = action.input.startsWith('https://www.google.com/') ? 200 : 400;
         const extension = action.input.lastIndexOf('.') > action.input.lastIndexOf('/');
@@ -92,6 +98,9 @@ describe('ActorDereferenceHttp', () => {
         if (action.input.includes('plaincontenttype')) {
           headers.set('content-type', 'text/plain');
         }
+        if (action.input.includes('octetcontenttype')) {
+          headers.set('content-type', 'application/octet-stream');
+        }
         if (action.input.includes('missingcontenttype')) {
           headers.delete('content-type');
         }
@@ -104,11 +113,16 @@ describe('ActorDereferenceHttp', () => {
         if (action.input.includes('nobody')) {
           body = undefined;
         }
+        let cachePolicy: ICachePolicy<Request> | undefined;
+        if (action.input.includes('cachepolicy')) {
+          cachePolicy = <any> 'http-cache-policy';
+        }
         return {
           body,
           headers,
           status,
           url,
+          cachePolicy,
         };
       };
       actor = new ActorDereferenceHttp({
@@ -166,6 +180,13 @@ describe('ActorDereferenceHttp', () => {
       const output = await actor.run({ url: 'https://www.google.com/plaincontenttype', context });
       expect(output.url).toBe('https://www.google.com/index.html');
       expect(output.headers).toEqual(new Headers({ 'content-type': 'text/plain' }));
+      expect(output.mediaType).toBeUndefined();
+    });
+
+    it('should run with an application/octet-stream content type', async() => {
+      const output = await actor.run({ url: 'https://www.google.com/octetcontenttype', context });
+      expect(output.url).toBe('https://www.google.com/index.html');
+      expect(output.headers).toEqual(new Headers({ 'content-type': 'application/octet-stream' }));
       expect(output.mediaType).toBeUndefined();
     });
 
@@ -232,6 +253,14 @@ describe('ActorDereferenceHttp', () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
+    it('should run and not log on an abort error', async() => {
+      context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
+      const spy = jest.spyOn(actor, <any> 'logWarn');
+      const output = await actor.run({ url: 'https://www.nogoogle.com/aborted', context });
+      expect(output.url).toBe('https://www.nogoogle.com/aborted');
+      expect(spy).not.toHaveBeenCalledWith();
+    });
+
     it('should run with another method', async() => {
       const headers = new Headers({
         'content-type': 'a; charset=utf-8',
@@ -287,6 +316,13 @@ describe('ActorDereferenceHttp', () => {
         actor: 'actor',
         url,
       });
+    });
+
+    it('should run and return and wrap a cache policy', async() => {
+      const output = await actor.run({ url: 'https://www.google.com/cachepolicy', context });
+      expect(output.cachePolicy).toBeInstanceOf(DereferenceCachePolicyHttpWrapper);
+      expect((<any> output.cachePolicy).cachePolicy).toBe('http-cache-policy');
+      expect((<any> output.cachePolicy).maxAcceptHeaderLength).toBe(127);
     });
   });
 });

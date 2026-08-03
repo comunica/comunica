@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-iterator",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "Async iterator utilities",
   "license": "MIT",
   "funding": {
@@ -40,6 +40,6 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "asynciterator": "^3.9.0"
+    "asynciterator": "^3.10.0"
   }
 }

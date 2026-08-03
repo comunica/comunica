@@ -21,6 +21,14 @@ export function isHardError(context: IActionContext): boolean {
 }
 
 /**
+ * If a warning should be emitted for the given type of error.
+ * @param error An error.
+ */
+export function shouldLogWarning(error: Error): boolean {
+  return error.name !== 'AbortError';
+}
+
+/**
  * A base actor for dereferencing URLs to (generic) streams.
  *
  * Actor types:
@@ -57,7 +65,9 @@ TS = undefined,
     if (isHardError(action.context)) {
       throw error;
     }
-    this.logWarn(action.context, (<Error> error).message, () => ({ url: action.url }));
+    if (shouldLogWarning(<Error> error)) {
+      this.logWarn(action.context, (<Error>error).message, () => ({ url: action.url }));
+    }
     return { ...output, data: emptyReadable<M>() };
   }
 }

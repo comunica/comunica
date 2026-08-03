@@ -95,6 +95,71 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         expect(operationOut).toEqual(operationIn);
       });
 
+      it('for an operation with filter with source annotation without context', async() => {
+        const src1 = <any> {
+          source: {
+            getSelectorShape() {
+              return {};
+            },
+          },
+        };
+        const operationIn = AF.createFilter(
+          AF.createProject(
+            AF.createBgp([
+              assignOperationSource(AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')), src1),
+            ]),
+            [ DF.variable('s'), DF.variable('p') ],
+          ),
+          AF.createTermExpression(DF.variable('s')),
+        );
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
+        expect(operationOut).toEqual(AF.createProject(
+          AF.createFilter(
+            AF.createBgp([
+              assignOperationSource(AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')), src1),
+            ]),
+            AF.createTermExpression(DF.variable('s')),
+          ),
+          [ DF.variable('s'), DF.variable('p') ],
+        ));
+      });
+
+      it('for an operation with filter with source annotation with context', async() => {
+        const src1 = <any> {
+          source: {
+            getSelectorShape() {
+              return {};
+            },
+          },
+          context: new ActionContext({ a: 'b' }),
+        };
+        const operationIn = AF.createFilter(
+          AF.createProject(
+            AF.createBgp([
+              assignOperationSource(AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')), src1),
+            ]),
+            [ DF.variable('s'), DF.variable('p') ],
+          ),
+          AF.createTermExpression(DF.variable('s')),
+        );
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
+        expect(operationOut).toEqual(AF.createProject(
+          AF.createFilter(
+            AF.createBgp([
+              assignOperationSource(AF.createPattern(DF.variable('s1'), DF.namedNode('p'), DF.namedNode('o')), src1),
+            ]),
+            AF.createTermExpression(DF.variable('s')),
+          ),
+          [ DF.variable('s'), DF.variable('p') ],
+        ));
+      });
+
       it('for an operation with conjunctive filter', async() => {
         const operationIn = AF.createFilter(
           AF.createJoin([
@@ -306,7 +371,9 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         const src: IQuerySourceWrapper = {
           source: new QuerySourceSparql(
             'https://example.com/src',
+            'https://example.com/src',
             new ActionContext(),
+            <any> {},
             <any> {},
             'values',
             <any> {},
@@ -318,6 +385,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             true,
             true,
             0,
+            false,
             { extensionFunctions: [ 'https://example.com/functions#mock' ]},
           ),
         };
@@ -341,7 +409,9 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         const src1: IQuerySourceWrapper = {
           source: new QuerySourceSparql(
             'https://example.com/src',
+            'https://example.com/src',
             new ActionContext(),
+            <any> {},
             <any> {},
             'values',
             <any> {},
@@ -353,6 +423,7 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
             true,
             true,
             0,
+            false,
             { extensionFunctions: [ 'https://example.com/functions#mock' ]},
           ),
         };

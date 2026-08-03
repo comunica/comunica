@@ -514,7 +514,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('b'), DF.literal('b') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables0 = [
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('b'), canBeUndef: false },
@@ -524,7 +524,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('d') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables1 = [
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: false },
@@ -1303,7 +1303,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('a') ],
           [ DF.variable('b'), DF.literal('b') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables0 = [
         { variable: DF.variable('a'), canBeUndef: true },
         { variable: DF.variable('b'), canBeUndef: false },
@@ -1313,7 +1313,7 @@ IActorRdfJoinSelectivityOutput
           [ DF.variable('a'), DF.literal('d') ],
           [ DF.variable('c'), DF.literal('c') ],
         ]),
-      ]);
+      ], { autoStart: false });
       variables1 = [
         { variable: DF.variable('a'), canBeUndef: true },
         { variable: DF.variable('c'), canBeUndef: false },

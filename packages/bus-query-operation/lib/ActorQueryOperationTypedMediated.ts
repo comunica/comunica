@@ -14,6 +14,7 @@ TS = undefined,
 
   public constructor(args: IActorQueryOperationTypedMediatedArgs<TS>, operationName: string) {
     super(args, operationName);
+    this.mediatorQueryOperation = args.mediatorQueryOperation;
   }
 }
 

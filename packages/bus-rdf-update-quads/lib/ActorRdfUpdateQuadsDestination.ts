@@ -1,4 +1,4 @@
-import { deskolemizeQuad } from '@comunica/actor-context-preprocess-query-source-skolemize';
+import { deskolemizeQuad } from '@comunica/actor-optimize-query-operation-query-source-skolemize';
 import { KeysInitQuery, KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';

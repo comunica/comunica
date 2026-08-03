@@ -1,15 +1,15 @@
-import type { FuncTestTableConfig } from '@comunica/bus-function-factory/test/util';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import {
+  runFuncTestTable,
   dateTimeTyped,
   dayTimeDurationTyped,
   int,
   numeric,
-} from '@comunica/utils-expression-evaluator/test/util/Aliases';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+  Notation,
+} from '@comunica/utils-jest';
+import type { FuncTestTableConfig } from '@comunica/utils-jest';
 import { LRUCache } from 'lru-cache';
 import { ActorFunctionFactoryTermAddition } from '../lib';
 

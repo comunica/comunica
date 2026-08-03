@@ -31,6 +31,9 @@ TS,
 
   public constructor(args: IMediatorNumberArgs<A, I, T, O, TS>) {
     super(args);
+    this.field = args.field;
+    this.type = args.type;
+    this.ignoreFailures = Boolean(args.ignoreFailures);
     this.indexPicker = this.createIndexPicker();
   }
 

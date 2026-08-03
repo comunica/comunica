@@ -1,4 +1,3 @@
-// TODO: Create alias Term = TermExpression
 import type { TermType } from '@comunica/types';
 
 export function asTermType(type: string): TermType | undefined {

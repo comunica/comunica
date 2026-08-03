@@ -15,6 +15,8 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
 
   public constructor(args: IActorRdfMetadataPrimaryTopicArgs) {
     super(args);
+    this.metadataToData = args.metadataToData;
+    this.dataToMetadataOnInvalidMetadataGraph = args.dataToMetadataOnInvalidMetadataGraph;
   }
 
   public async test(action: IActionRdfMetadata): Promise<TestResult<IActorTest>> {

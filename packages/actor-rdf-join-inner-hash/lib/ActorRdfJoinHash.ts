@@ -33,6 +33,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin<IActorRdfJoinHashTestSideData
       requiresVariableOverlap: true,
       canHandleUndefs: args.canHandleUndefs,
     });
+    this.mediatorHashBindings = args.mediatorHashBindings;
   }
 
   public async getOutput(
@@ -70,7 +71,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin<IActorRdfJoinHashTestSideData
           output.bindingsStream,
           {
             multiTransform: (bindings: RDF.Bindings): AsyncIterator<RDF.Bindings> => new ArrayIterator<RDF.Bindings>(
-              <RDF.Bindings[]>(index.get(bindings).flat())
+              index.get(bindings).flat()
                 .map(indexBindings => ActorRdfJoin.joinBindings(bindings, indexBindings))
                 .filter(b => b !== null),
               { autoStart: false },

@@ -26,6 +26,11 @@ import type {
   IActorTestQueryResultSerializeHandle,
 } from '@comunica/bus-query-result-serialize';
 
+import type { IActionQuerySerialize, IActorQuerySerializeOutput } from '@comunica/bus-query-serialize';
+import type {
+  IActionQuerySourceDereferenceLink,
+  IActorQuerySourceDereferenceLinkOutput,
+} from '@comunica/bus-query-source-dereference-link';
 import type { IActionQuerySourceIdentify, IActorQuerySourceIdentifyOutput } from '@comunica/bus-query-source-identify';
 import type {
   IActionQuerySourceIdentifyHypermedia,
@@ -95,7 +100,7 @@ describe('System test: mediators', () => {
   );
   addTest<IActionContextPreprocess, IActorContextPreprocessOutput>(
     'context-preprocess',
-    ':context-preprocess/actors#query-source-identify',
+    ':optimize-query-operation/actors#query-source-identify',
     'mediatorContextPreprocess',
     {},
     `Context preprocessing failed`,
@@ -109,7 +114,7 @@ describe('System test: mediators', () => {
   );
   addTest<IActionDereferenceRdf, IActorDereferenceRdfOutput>(
     'dereference-rdf',
-    ':query-source-identify/actors#hypermedia',
+    ':query-source-dereference-link/actors#dereference',
     'mediatorDereferenceRdf',
     <any> { handle: <any> { data: <any> undefined, context, mediaType: 'text/css', url: 'http://example.org/' }},
     `RDF dereferencing failed: none of the configured parsers were able to handle the media type text/css for http://example.org/`,
@@ -185,9 +190,26 @@ IActorTestQueryResultSerializeHandle
   { handle: { type: 'abc', context }},
     `Query result serialization failed: none of the configured actors were able to serialize for type abc`,
 );
+  addTest<
+    IActionQuerySerialize,
+    IActorQuerySerializeOutput
+  >(
+    'query-serialize',
+    ':query-source-identify-hypermedia/actors#sparql',
+    'mediatorQuerySerialize',
+    { queryFormat: { language: 'sparql', version: '1.1' }, operation: <any> {}},
+    `Query serializing failed: none of the configured parsers were able to serialize for the query language "sparql" at version "1.1"`,
+  );
+  addTest<IActionQuerySourceDereferenceLink, IActorQuerySourceDereferenceLinkOutput>(
+    'query-source-dereference-link',
+    ':query-source-identify/actors#hypermedia',
+    'mediatorQuerySourceDereferenceLink',
+    { link: { url: 'abc' }},
+    `Query source dereference link failed: none of the configured actors were able to resolve abc`,
+  );
   addTest<IActionQuerySourceIdentify, IActorQuerySourceIdentifyOutput>(
     'query-source-identify',
-    ':query-operation/actors#service',
+    ':optimize-query-operation/actors#query-source-identify',
     'mediatorQuerySourceIdentify',
     { querySourceUnidentified: { value: 'abc' }},
     `Query source identification failed: none of the configured actors were able to identify abc`,
@@ -198,7 +220,7 @@ IActorQuerySourceIdentifyHypermediaOutput,
 IActorQuerySourceIdentifyHypermediaTest
 >(
   'query-source-identify-hypermedia',
-  ':query-source-identify/actors#hypermedia',
+  ':query-source-dereference-link/actors#dereference',
   'mediatorQuerySourceIdentifyHypermedia',
   { url: 'http://example.org/', metadata: {}, quads: <any> undefined },
     `Query source hypermedia identification failed: none of the configured actors were able to identify http://example.org/`,
@@ -263,7 +285,7 @@ IMediatorTypeJoinCoefficients
     ':query-source-identify/actors#hypermedia',
     'mediatorRdfResolveHypermediaLinksQueue',
     { firstUrl: 'http://example.org/' },
-    `Link queue creation failed: none of the configured actors were able to create a link queue starting from http://example.org/`,
+    `Link queue creation failed: none of the configured actors were able to create a link queue`,
   );
   addTest<IActionRdfSerializeHandle, IActorOutputRdfSerializeHandle, IActorTestRdfSerializeHandle>(
     'rdf-serialize',
@@ -329,6 +351,9 @@ IMediatorTypeJoinCoefficients
         });
 
         it('mediator rejects', async() => {
+          if (!mediator) {
+            throw new Error(`Could not find the mediator in '${mediatorAccessorActorName}' through '${mediatorAccessorActorMediatorField}'`);
+          }
           await expect(mediator.mediate(<I> { ...action, context })).rejects.toThrow(failMessage);
         });
       });

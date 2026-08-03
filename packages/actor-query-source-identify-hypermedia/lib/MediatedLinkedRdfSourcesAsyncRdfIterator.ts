@@ -1,27 +1,22 @@
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import { KeysStatistics } from '@comunica/context-entries';
 import type {
-  ILinkQueue,
-  MediatorRdfResolveHypermediaLinksQueue,
-} from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
-import { KeysQueryOperation, KeysStatistics } from '@comunica/context-entries';
-import type {
-  ComunicaDataFactory,
   IActionContext,
-  IAggregatedStore,
   IQueryBindingsOptions,
   MetadataBindings,
   ILink,
   IStatisticBase,
   IDiscoverEventData,
+  ILinkQueue,
 } from '@comunica/types';
-import type { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
-import type * as RDF from '@rdfjs/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import type { SourceStateGetter, ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
 
 /**
- * An quad iterator that can iterate over consecutive RDF sources
+ * A quad iterator that can iterate over consecutive RDF sources
  * that are determined using the rdf-resolve-hypermedia-links bus.
  *
  * @see LinkedRdfSourcesAsyncRdfIterator
@@ -30,125 +25,42 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate;
   private readonly mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks;
   private readonly mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue;
-  private readonly forceSourceType?: string;
   private readonly handledUrls: Record<string, boolean>;
-  private readonly aggregatedStore: IAggregatedStore | undefined;
-  private readonly dataFactory: ComunicaDataFactory;
-  private readonly algebraFactory: AlgebraFactory;
   private linkQueue: Promise<ILinkQueue> | undefined;
-  private wasForcefullyClosed = false;
 
   public constructor(
-    cacheSize: number,
     operation: Algebra.Operation,
     queryBindingsOptions: IQueryBindingsOptions | undefined,
     context: IActionContext,
-    forceSourceType: string | undefined,
-    firstUrl: string,
+    firstLink: ILink,
     maxIterators: number,
     sourceStateGetter: SourceStateGetter,
-    aggregatedStore: IAggregatedStore | undefined,
     mediatorMetadataAccumulate: MediatorRdfMetadataAccumulate,
     mediatorRdfResolveHypermediaLinks: MediatorRdfResolveHypermediaLinks,
     mediatorRdfResolveHypermediaLinksQueue: MediatorRdfResolveHypermediaLinksQueue,
-    dataFactory: ComunicaDataFactory,
-    algebraFactory: AlgebraFactory,
   ) {
     super(
-      cacheSize,
       operation,
       queryBindingsOptions,
       context,
-      firstUrl,
+      firstLink,
       maxIterators,
       sourceStateGetter,
-      // Buffersize must be infinite for an aggregated store because it must keep filling until there are no more
-      // derived iterators in the aggregated store.
-      aggregatedStore ? { maxBufferSize: Number.POSITIVE_INFINITY } : undefined,
     );
-    this.forceSourceType = forceSourceType;
     this.mediatorMetadataAccumulate = mediatorMetadataAccumulate;
     this.mediatorRdfResolveHypermediaLinks = mediatorRdfResolveHypermediaLinks;
     this.mediatorRdfResolveHypermediaLinksQueue = mediatorRdfResolveHypermediaLinksQueue;
-    this.handledUrls = { [firstUrl]: true };
-    this.aggregatedStore = aggregatedStore;
-    this.dataFactory = dataFactory;
-    this.algebraFactory = algebraFactory;
-  }
-
-  // Mark the aggregated store as ended once we trigger the closing or destroying of this iterator.
-  // We don't override _end, because that would mean that we have to wait
-  // until the buffer of this iterator must be fully consumed, which will not always be the case.
-
-  public override close(): void {
-    if (!this.aggregatedStore) {
-      super.close();
-      return;
-    }
-
-    this.getLinkQueue()
-      .then((linkQueue) => {
-        if (this.isCloseable(linkQueue, false)) {
-          // Wait a tick before ending the aggregatedStore, to ensure that pending match() calls to it have started.
-          setTimeout(() => this.aggregatedStore!.end());
-          super.close();
-        } else {
-          this.wasForcefullyClosed = true;
-        }
-      })
-      .catch(error => super.destroy(error));
-  }
-
-  public override destroy(cause?: Error): void {
-    if (!this.aggregatedStore) {
-      super.destroy(cause);
-      return;
-    }
-
-    this.getLinkQueue()
-      .then((linkQueue) => {
-        if (cause ?? this.isCloseable(linkQueue, false)) {
-          // Wait a tick before ending the aggregatedStore, to ensure that pending match() calls to it have started.
-          setTimeout(() => this.aggregatedStore!.end());
-          super.destroy(cause);
-        } else {
-          this.wasForcefullyClosed = true;
-        }
-      })
-      .catch(error => super.destroy(error));
+    this.handledUrls = { [firstLink.url]: true };
   }
 
   protected override isCloseable(linkQueue: ILinkQueue, requireQueueEmpty: boolean): boolean {
-    return (requireQueueEmpty ? linkQueue.isEmpty() : this.wasForcefullyClosed || linkQueue.isEmpty()) &&
-      !this.areIteratorsRunning();
-  }
-
-  protected override canStartNewIterator(): boolean {
-    // Also allow sub-iterators to be started if the aggregated store has at least one running iterator.
-    // We need this because there are cases where these running iterators will be consumed before this linked iterator.
-    // We can keep traversing if the iterator was forcefully closed and there are still running iterators on the
-    // aggregated store, as this might happen when sub-queries are spawned by the bind-join.
-    // Whenever the store is forcefully closed (like due to a limit being reached) and there are no iterators on the
-    // store, traversal should stop.
-    return (!this.wasForcefullyClosed ||
-      (this.aggregatedStore !== undefined && this.aggregatedStore.hasRunningIterators())) &&
-      super.canStartNewIterator();
-  }
-
-  protected override canStartNewIteratorConsiderReadable(): boolean {
-    return !this.aggregatedStore;
-  }
-
-  protected override isRunning(): boolean {
-    // Same as above
-    // eslint-disable-next-line ts/prefer-nullish-coalescing
-    return (this.aggregatedStore && this.aggregatedStore.hasRunningIterators()) || !this.done;
+    return (requireQueueEmpty ? linkQueue.isEmpty() : linkQueue.isEmpty()) && !this.areIteratorsRunning();
   }
 
   public getLinkQueue(): Promise<ILinkQueue> {
     if (!this.linkQueue) {
       this.linkQueue = this.mediatorRdfResolveHypermediaLinksQueue
-        .mediate({ firstUrl: this.firstUrl, context: this.context })
+        .mediate({ context: this.context })
         .then(result => result.linkQueue);
     }
     return this.linkQueue;
@@ -180,34 +92,6 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     }
   }
 
-  protected override startIterator(startSource: ISourceState): void {
-    if (this.aggregatedStore && !this.aggregatedStore.containedSources.has(startSource.link.url)) {
-      // A source that has been cached due to earlier query executions may not be part of the aggregated store yet.
-      // In that case, we add all quads from that source to the aggregated store.
-      this.aggregatedStore?.containedSources.add(startSource.link.url);
-      const stream = startSource.source.queryBindings(
-        this.algebraFactory.createPattern(
-          this.dataFactory.variable('s'),
-          this.dataFactory.variable('p'),
-          this.dataFactory.variable('o'),
-          this.dataFactory.variable('g'),
-        ),
-        this.context.set(KeysQueryOperation.unionDefaultGraph, true),
-      ).map(bindings => (<RDF.DataFactory<RDF.BaseQuad>> this.dataFactory).quad(
-        bindings.get('s')!,
-        bindings.get('p')!,
-        bindings.get('o')!,
-        bindings.get('g'),
-      ));
-      this.aggregatedStore.import(<RDF.Stream> stream)
-        .on('end', () => {
-          super.startIterator(startSource);
-        });
-    } else {
-      super.startIterator(startSource);
-    }
-  }
-
   public async accumulateMetadata(
     accumulatedMetadata: MetadataBindings,
     appendingMetadata: MetadataBindings,
@@ -218,10 +102,5 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       appendingMetadata,
       context: this.context,
     })).metadata;
-  }
-
-  protected override updateMetadata(metadataNew: MetadataBindings): void {
-    super.updateMetadata(metadataNew);
-    this.aggregatedStore?.setBaseMetadata(metadataNew, true);
   }
 }

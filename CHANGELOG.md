@@ -1,6 +1,185 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.3.0"></a>
+## [v5.3.0](https://github.com/comunica/comunica/compare/v5.2.4...v5.3.0) - 2026-07-10
+
+### Changed
+* [Update dependency undici to v8 (#1690)](https://github.com/comunica/comunica/commit/8102ad7e951a30bd899a88c854264a677f7580c7)
+* [Export expression evaluation helpers from utils-jest package](https://github.com/comunica/comunica/commit/9c7ab45a9a07b8d5483dd50b501c328d50429b0f)
+
+### Fixed
+* [Align CSV serialization with spec and enable spec tests (#1721)](https://github.com/comunica/comunica/commit/99e20ce1f3ca57e4554dce1cba51dabd99344fd3)
+
+<a name="v5.2.4"></a>
+## [v5.2.4](https://github.com/comunica/comunica/compare/v5.2.3...v5.2.4) - 2026-06-19
+
+### Fixed
+* [Consider application/octet-stream as unknown media type](https://github.com/comunica/comunica/commit/b7e62bec4fb0093cdeecc7e8b1145e03ff6b2181)
+
+<a name="v5.2.3"></a>
+## [v5.2.3](https://github.com/comunica/comunica/compare/v5.2.2...v5.2.3) - 2026-05-26
+
+### Changed
+* [Add SPARQL 1.2 service-description compatibility while preserving SPARQL 1.1 behavior (#1709)](https://github.com/comunica/comunica/commit/91d763c425da4ea3e00b6f019fd570c5e72f2b39)
+
+### Fixed
+* [Fix performance issue for complex queries in doesShapeAcceptOperation](https://github.com/comunica/comunica/commit/b56114e839b84fbab574141c17ad43864a24f91c)
+* [Make SPARQL TSV header serialization spec-compliant by prefixing variables with `?` (#1713)](https://github.com/comunica/comunica/commit/f487e2ec2e8fa2978399b1d0644b689bb8e92df2)
+
+<a name="v5.2.2"></a>
+## [v5.2.2](https://github.com/comunica/comunica/compare/v5.2.1...v5.2.2) - 2026-05-03
+
+### Changed
+* [Update dependency bignumber.js to v11 (#1698)](https://github.com/comunica/comunica/commit/7213f274972388b33127980aca373b9b912413b9)
+
+### Fixed
+* [Fix aggregate queries with partially unbound variables, Closes #1705](https://github.com/comunica/comunica/commit/cc9d52762622c4de065d216da90612a582f4bbad)
+* [Fix prototype pollution vulnerability in Actor constructor (#1704)](https://github.com/comunica/comunica/commit/aef95bc0adffa5dc500ce0eb5e5fd38d8fe5de1e)
+
+<a name="v5.2.1"></a>
+## [v5.2.1](https://github.com/comunica/comunica/compare/v5.2.0...v5.2.1) - 2026-04-20
+
+### Fixed
+* [Remove backwards-incompatible config change in query optimizers (#1701)](https://github.com/comunica/comunica/commit/4384ad36ccea6f29fe62eff7b32f6d2e72a65d3f)
+
+<a name="v5.2.0"></a>
+## [v5.2.0](https://github.com/comunica/comunica/compare/v5.1.3...v5.2.0) - 2026-04-14
+
+### Added
+* [Add compositefile query source and group-file-sources optimizer (#1681)](https://github.com/comunica/comunica/commit/98ff832e051ae6379114a772eca86a5481ec9ada)
+* [Retry response body streams on mid-read failures (#1667)](https://github.com/comunica/comunica/commit/572557d7e675a553f2068ef1b930589148bab4a8)
+* [Timeout SPARQL service description dereferences (#1669)](https://github.com/comunica/comunica/commit/30b28d54619f4ad44fe85468483b645745c0bc10)
+* [Add DistinctTerms operator for optimizing SELECT DISTINCT queries (#1668)](https://github.com/comunica/comunica/commit/88526dc43a891e76e329d7274a5cf68f0b5ffa70)
+* [Add interactive HTML view with YASGUI to comunica-sparql-http (#1664)](https://github.com/comunica/comunica/commit/83d3fbf528efe7ceac5c75ef7e6b609a03fdf4cf)
+* [Optimize Nodes part of property paths using custom new operator](https://github.com/comunica/comunica/commit/059ffca65c63b3a9dfc1f3ba3374ae0548a4a425)
+* [Detect SPARQL endpoints via HTTP Server header heuristics (#1653)](https://github.com/comunica/comunica/commit/1b8aea70c20e01c18e171fab92679cc8f16a3b35)
+
+### Changed
+* [Update dependency bignumber.js to v10](https://github.com/comunica/comunica/commit/bd36eea8943ffd4d9ab78b4621e6749263e5de8e)
+* [Throw error on invalid TRIPLE invocations, Closes #1675](https://github.com/comunica/comunica/commit/ddb8d13a13d4973274107d94f07084fe335d674a)
+* [Group repetitive logger warnings to reduce console noise (#1652)](https://github.com/comunica/comunica/commit/5dadcc8a7b6110c0190af675df9b642e818a55b8)
+
+### Fixed
+* [Fix nested FILTER NOT EXISTS not materializing outer bindings (#1695)](https://github.com/comunica/comunica/commit/32dcc1e9dc411f6238141060f9e668fc47b61367)
+* [Fix language direction handling in argument compatible string functions (#1694)](https://github.com/comunica/comunica/commit/921a47d32f6ed4e021b905d07785b40aacf74e00)
+* [Remove incorrect filter pushdown within the left side of a leftjoin (#1662)](https://github.com/comunica/comunica/commit/930f532ca2e3f98a37b8ae0928ea55c6338ee9f1)
+* [Fix GROUP_CONCAT incorrectly returning language tags](https://github.com/comunica/comunica/commit/4713f85162db9c70420d01a877062d17ebab8f1d)
+
+<a name="v5.1.3"></a>
+## [v5.1.3](https://github.com/comunica/comunica/compare/v5.1.2...v5.1.3) - 2026-01-30
+
+### Fixed
+* [Update to Traqula 1.0.1, Closes #1655](https://github.com/comunica/comunica/commit/bd4d9986cc98840bceb613b2417b1bba98e956ee)
+* [Fix missing autoStart: false in QuerySourceHypermedia, #1655](https://github.com/comunica/comunica/commit/1acdfc1f89e5ccd07db88a765f78d1db6336187e)
+
+<a name="v5.1.2"></a>
+## [v5.1.2](https://github.com/comunica/comunica/compare/v5.1.1...v5.1.2) - 2026-01-21
+
+### Fixed
+* [Fix undefined context when querying slow SPARQL endpoints](https://github.com/comunica/comunica/commit/91057abd44a62cc627f0ae587f65ef31b95add5e)
+
+<a name="v5.1.1"></a>
+## [v5.1.1](https://github.com/comunica/comunica/compare/v5.1.0...v5.1.1) - 2026-01-20
+
+### Changed
+* [Remove unnecessary quoted triple filtering in QPF](https://github.com/comunica/comunica/commit/53ca9a46c9e91eb69ef7fb2c290c4a0448987b59)
+
+<a name="v5.1.0"></a>
+## [v5.1.0](https://github.com/comunica/comunica/compare/v5.0.5...v5.1.0) - 2026-01-16
+
+### Added
+* [Allow prefixes to passed to N3 serializer with rdfSerializationPrefixes](https://github.com/comunica/comunica/commit/ac1c640b8493b5efd25397dda3fd01725136ff31)
+
+<a name="v5.0.5"></a>
+## [v5.0.5](https://github.com/comunica/comunica/compare/v5.0.4...v5.0.5) - 2026-01-13
+
+### Fixed
+* [Fix incorrect handling of zero-or-one path with var subject and object](https://github.com/comunica/comunica/commit/6eedf80d80474c08a445be101213e73cdd4d83c5)
+
+<a name="v5.0.4"></a>
+## [v5.0.4](https://github.com/comunica/comunica/compare/v5.0.3...v5.0.4) - 2026-01-13
+
+### Changed
+* [Modernize depcheck util](https://github.com/comunica/comunica/commit/bac72f3ff4c30adaff8211b059b56f4dc8216aef)
+
+<a name="v5.0.3"></a>
+## [v5.0.3](https://github.com/comunica/comunica/compare/v5.0.2...v5.0.3) - 2026-01-12
+
+### Fixed
+* [Fix ActionContext#ensureActionContext failing in obfuscated environments](https://github.com/comunica/comunica/commit/470692e848e08405aeb83f16e9063924eafa21c0)
+
+<a name="v5.0.2"></a>
+## [v5.0.2](https://github.com/comunica/comunica/compare/v5.0.1...v5.0.2) - 2026-01-12
+
+### Fixed
+* [Fix ActionContext#ensureActionContext failing on dual packages](https://github.com/comunica/comunica/commit/6262cd4ca705c4d7960fd8accffa1441476cdb52)
+
+### Changed
+* [Bump shaclc dependencies to reduce bundle size](https://github.com/comunica/comunica/commit/34cca6fe5891ef492805eaae71434d02f4b373e4)
+
+<a name="v5.0.1"></a>
+## [v5.0.1](https://github.com/comunica/comunica/compare/v5.0.0...v5.0.1) - 2026-01-08
+
+### Fixed
+* [Bump max bundle size](https://github.com/comunica/comunica/commit/7b7bf7a99b4af167582d2772ebc37e3d5c274334)
+
+<a name="v5.0.0"></a>
+## [v5.0.0](https://github.com/comunica/comunica/compare/v4.5.0...v5.0.0) - 2026-01-08
+
+### BREAKING CHANGES
+
+The following breaking changes will only impact users of Node.js < 20,
+users that issue RDF/SPARQL-star queries (now interpreted as RDF/SPARQL 1.2),
+and users that develop custom components or engines with Comunica.
+
+* [Drop Node 18 support and set TS target to es2023](https://github.com/comunica/comunica/commit/09db0d31ec576ab63e5bc49691033aaa6def8e9c)
+* [Remove link traversal logic from hypermedia actor](https://github.com/comunica/comunica/commit/cdf98fd988d7775ff1a22a427773280792ac8bf2)
+* [Move query source identification to optimize bus](https://github.com/comunica/comunica/commit/f492ab23dd7d369590184c4989edf700208190c8)
+* [Rename hypermedia-resolve bus to dereference-link](https://github.com/comunica/comunica/commit/ef6f96cfd8faf7c37955bb7e0fe9f6fc6a994bdf)
+* [Make HashFunction accept Iterable of variables instead of array](https://github.com/comunica/comunica/commit/dda63f141cf9d8694185dde2914a21389247dbe4)
+* [Rewrite SERVICE clauses as query operation with annotated source](https://github.com/comunica/comunica/commit/04b51f8b45a4ef0cbc870fe132b102c237d58e17)
+
+### Added
+* Add RDF and SPARQL 1.2 support (replaces RDF/SPARQL-star support)
+  * [Replace sparqljs parser by traqula](https://github.com/comunica/comunica/commit/c76421a0616b052233edf101a6a177ae1aac1fe4)
+  * [Migrate to traqula's extensible algebra (#1614)](https://github.com/comunica/comunica/commit/db7fb393b8ee89c9e52f8ab1137306e243cb8bba)
+  * [Update to N3.js v2](https://github.com/comunica/comunica/commit/09f634e5bbc7715ab655edb5170d9a8fc6b54c72)
+  * [Add new functions related to literals with base direction](https://github.com/comunica/comunica/commit/48dde680e6731d830406c992541255e5ba778125)
+  * [Add foundation for base direction support in functions](https://github.com/comunica/comunica/commit/d8d33ce9bf55a40987cda00c132868c22891670b)
+  * [Support base directions and triple terms in query result serializers](https://github.com/comunica/comunica/commit/7265e10b6d320cbf31f27ec62471aa5ba0551d99)
+  * [Update to rdf-data-factory@2 and @rdfjs/types@2](https://github.com/comunica/comunica/commit/830fbee0045f15b7ec345ea4d64a5a152b7b5f12)
+  * [Handle version announcement for parsing RDF](https://github.com/comunica/comunica/commit/7ca368c534d0d98754ef2a96ac4690796d880913)
+  * [Also error on unsupported versions as media type parameters on SPARQL endpoints](https://github.com/comunica/comunica/commit/46e782cf0e7f6015eb24ecf30cae507af5be57ca)
+  * [Emit error on unsupported versions at SPARQL endpoints](https://github.com/comunica/comunica/commit/a0a0b14fcf9e58fb86084dd4991e44dd01376bcf)
+* Make HTTP caching take into account caching headers
+  * [Make caches depend on HTTP cache semantics](https://github.com/comunica/comunica/commit/9dad2ce34a50936e1ae278e6e5723de75d0f6a1b)
+  * [Add in-memory HTTP caching](https://github.com/comunica/comunica/commit/d2c7e46d02ab2eb7577d9b6e18b4be344c04ed22)
+  * [Cache JSON-LD context in HTTP-dependent cache](https://github.com/comunica/comunica/commit/bf9c521a579548cfaf2fdeda79b3d089fe91eaa9)
+* [Support HTTP abort signals via httpAbortSignal context entry](https://github.com/comunica/comunica/commit/096be0f2b63c1262ef41f3d2867ad50f5e47c654)
+* [Add missing IQueryContextCommon entries](https://github.com/comunica/comunica/commit/0ad765aeb8100dd5f43684261e1f7402ffa27ee4)
+* [Fallback SPARQL endpoint requests to original URL if SD URL 404's](https://github.com/comunica/comunica/commit/d46a6578d8a990cf6ebcf0834a11a801c77061c9)
+* [Add explain mode that outputs a query after optimization](https://github.com/comunica/comunica/commit/cead31cdaef01ec797578488a7f8ae11b3954bfb)
+* [Move query serialization to a new dedicated bus](https://github.com/comunica/comunica/commit/2d88b82b158b3d561041a32bb354c21477c9cd36)
+
+### Fixed
+* [Fix lte operator not correctly handling error propagation](https://github.com/comunica/comunica/commit/a8c87f7a721f779225d5820480b1435bde3ced48)
+* [Fix outer GRAPH ?g being considered in MINUS variable disjointness](https://github.com/comunica/comunica/commit/5399977996b78403cf272d62d115625685e23574)
+* [Destroy non-smallest streams in bind join](https://github.com/comunica/comunica/commit/b2ef233775fecc55ab880ae0de20e53c7a02a6ff)
+* [Fix sd:defaultGraph parsing with QPF endpoints](https://github.com/comunica/comunica/commit/6bb44bcf06b652e6d0facedd05146d88cc7998e9)
+* [Don't rate limit 404's](https://github.com/comunica/comunica/commit/d6508e7c433d3938f93cc25078327b7845956b36)
+
+<a name="v4.5.0"></a>
+## [v4.5.0](https://github.com/comunica/comunica/compare/v4.4.1...v4.5.0) - 2025-11-18
+
+### Added
+* [Handle sd:propertyFeature in SPARQL endpoints](https://github.com/comunica/comunica/commit/e7949c4b2c77df52ab58c66e5eb95dde53147cdc)
+
+### Fixed
+* [Fix FragmentSelectorShape not matching on top-level disjunctions](https://github.com/comunica/comunica/commit/45cb52fd2a66d3e36fecc7bdaa8c374ea9a2e8a2)
+* [Fix outer GRAPH ?g being considered in MINUS variable disjointness](https://github.com/comunica/comunica/commit/7e215eea862e317bc8f56aa1cced97f9afd6e9a1)
+* [Fix LIMIT not terminating link traversal (#1634)](https://github.com/comunica/comunica/commit/2582af3942ac23b862ecb6920de570173b397220)
+
 <a name="v4.4.1"></a>
 ## [v4.4.1](https://github.com/comunica/comunica/compare/v4.4.0...v4.4.1) - 2025-09-25
 

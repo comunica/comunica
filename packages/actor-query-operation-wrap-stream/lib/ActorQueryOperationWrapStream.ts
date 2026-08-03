@@ -21,6 +21,8 @@ export class ActorQueryOperationWrapStream extends ActorQueryOperation {
 
   public constructor(args: IActorQueryOperationWrapStreamArgs) {
     super(args);
+    this.mediatorIteratorTransform = args.mediatorIteratorTransform;
+    this.mediatorQueryOperation = args.mediatorQueryOperation;
   }
 
   public async test(action: IActionQueryOperation): Promise<TestResult<IActorTest>> {

@@ -6,6 +6,7 @@ import type {
 import {
   ActorRdfSerializeFixedMediaTypes,
 } from '@comunica/bus-rdf-serialize';
+import { KeysRdfSerialize } from '@comunica/context-entries';
 import { StreamWriter } from 'n3';
 
 /**
@@ -35,7 +36,10 @@ export class ActorRdfSerializeN3 extends ActorRdfSerializeFixedMediaTypes {
 
   public async runHandle(action: IActionRdfSerialize, mediaType: string):
   Promise<IActorRdfSerializeOutput> {
-    const writer = new StreamWriter({ format: mediaType });
+    const writer = new StreamWriter({
+      format: mediaType,
+      prefixes: action.context.get(KeysRdfSerialize.rdfSerializationPrefixes),
+    });
     let data: NodeJS.ReadableStream;
     if ('pipe' in action.quadStream) {
       // Prefer piping if possible, to maintain backpressure

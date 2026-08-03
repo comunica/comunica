@@ -1,7 +1,9 @@
 import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
-import { runFuncTestTable } from '@comunica/bus-function-factory/test/util';
-import * as Data from '@comunica/utils-expression-evaluator/test/spec/_data';
-import { Notation } from '@comunica/utils-expression-evaluator/test/util/TestTable';
+import {
+  runFuncTestTable,
+  EvalTestData as Data,
+  Notation,
+} from '@comunica/utils-jest';
 import { ActorFunctionFactoryTermStrLang } from '../lib/ActorFunctionFactoryTermStrLang';
 
 /**
@@ -29,7 +31,7 @@ import { ActorFunctionFactoryTermStrLang } from '../lib/ActorFunctionFactoryTerm
  */
 
 describe('We should respect the strlang02 spec', () => {
-  const { s2 } = Data.data();
+  const { s2 } = Data.data;
   runFuncTestTable({
     registeredActors: [
       args => new ActorFunctionFactoryTermStrLang(args),

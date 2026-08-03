@@ -226,7 +226,7 @@ export class ActorRdfMetadataExtractVoid extends ActorRdfMetadataExtract {
               datasets.push({
                 uri,
                 source: action.url,
-                getCardinality: (operation: Algebra.Operation): QueryResultCardinality | undefined => {
+                getCardinality: async(operation: Algebra.Operation): Promise<QueryResultCardinality | undefined> => {
                   if (isKnownOperation(operation, Algebra.Types.PATTERN)) {
                     return { ...estimatePatternCardinality(dataset, operation), dataset: uri };
                   }

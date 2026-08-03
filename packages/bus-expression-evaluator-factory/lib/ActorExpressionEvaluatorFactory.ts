@@ -12,7 +12,7 @@ import type { Algebra } from '@comunica/utils-algebra';
  * Actor types:
  * * Input:  IActionExpressionEvaluatorFactory: The Query Operation and Function factory mediators.
  * * Test:   <none>
- * * Output: IActorExpressionEvaluatorFactoryOutput: TODO: fill in.
+ * * Output: IActorExpressionEvaluatorFactoryOutput: The constructed expression evaluator.
  *
  * @see IActionExpressionEvaluatorFactory
  * @see IActorExpressionEvaluatorFactoryOutput

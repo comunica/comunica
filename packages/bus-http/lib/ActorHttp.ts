@@ -1,5 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { ICachePolicy } from '@comunica/types';
 import { readableFromWeb } from 'readable-from-web';
 
 const isStream = require('is-stream');
@@ -135,7 +136,15 @@ export interface IActionHttp extends IAction {
  * The HTTP output, which contains the HTTP response.
  */
 export interface IActorHttpOutput extends IActorOutput, Response {
-
+  /**
+   * The cache policy of the request's response.
+   * This can be used to check if the given response is still valid for another request later on.
+   */
+  cachePolicy?: ICachePolicy<IActionHttp>;
+  /**
+   * If the response was served from cache.
+   */
+  fromCache?: boolean;
 }
 
 export type IActorHttpArgs<TS = undefined> = IActorArgs<IActionHttp, IActorTest, IActorHttpOutput, TS>;

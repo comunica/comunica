@@ -30,7 +30,7 @@ After installing, this mediator can be instantiated as follows:
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^5.0.0/components/context.jsonld"
   ],
   "actors": [
     ...

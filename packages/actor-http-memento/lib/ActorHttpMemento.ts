@@ -13,6 +13,7 @@ export class ActorHttpMemento extends ActorHttp {
 
   public constructor(args: IActorHttpMementoArgs) {
     super(args);
+    this.mediatorHttp = args.mediatorHttp;
   }
 
   public async test(action: IActionHttp): Promise<TestResult<IActorTest>> {

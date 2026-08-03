@@ -19,12 +19,13 @@ import type { AsyncIterator } from 'asynciterator';
  */
 export abstract class ActorIteratorTransform<TS = undefined>
   extends Actor<ActionIteratorTransform, IActorTest, ActorIteratorTransformOutput, TS> {
-  public wraps: possibleOperationTypes[];
+  public wraps: possibleOperationTypes[] | undefined;
   /**
    * @param args - @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
    */
   public constructor(args: IActorIteratorTransformArgs<TS>) {
     super(args);
+    this.wraps = args.wraps;
   }
 
   public async run(action: ActionIteratorTransform):

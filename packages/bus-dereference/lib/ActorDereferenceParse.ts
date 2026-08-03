@@ -4,8 +4,13 @@ import type { IActorArgs, IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { Readable } from 'readable-stream';
 import { PassThrough } from 'readable-stream';
-import type { IActionDereference, IActorDereferenceOutput, MediatorDereference } from './ActorDereference';
-import { ActorDereferenceBase, isHardError, emptyReadable } from './ActorDereferenceBase';
+import type {
+  IActionDereference,
+  IActorDereferenceOutput,
+  MediatorDereference,
+} from './ActorDereference';
+import { ActorDereferenceBase, isHardError, emptyReadable, shouldLogWarning } from './ActorDereferenceBase';
+import { DereferenceRdfCachePolicyDereferenceWrapper } from './DereferenceRdfCachePolicyDereferenceWrapper';
 
 /**
  * Get the media type based on the extension of the given path,
@@ -58,6 +63,10 @@ export abstract class ActorDereferenceParse<
 
   public constructor(args: IActorDereferenceParseArgs<S, K, M>) {
     super(args);
+    this.mediatorDereference = args.mediatorDereference;
+    this.mediatorParse = args.mediatorParse;
+    this.mediatorParseMediatypes = args.mediatorParseMediatypes;
+    this.mediaMappings = args.mediaMappings;
   }
 
   public async test(_action: IActionDereference): Promise<TestResult<IActorTest>> {
@@ -77,7 +86,9 @@ export abstract class ActorDereferenceParse<
     // If we don't emit hard errors, make parsing error events log instead, and silence them downstream.
     if (!isHardError(action.context)) {
       data.on('error', (error) => {
-        this.logWarn(action.context, error.message, () => ({ url: action.url }));
+        if (shouldLogWarning(error)) {
+          this.logWarn(action.context, error.message, () => ({ url: action.url }));
+        }
         // Make sure the errored stream is ended.
         data.push(null);
       });
@@ -90,10 +101,9 @@ export abstract class ActorDereferenceParse<
 
   public async run(action: IActionDereferenceParse<K>): Promise<IActorDereferenceParseOutput<S, M>> {
     const { context } = action;
-    const dereference = await this.mediatorDereference.mediate({
-      ...action,
-      mediaTypes: async() => (await this.mediatorParseMediatypes?.mediate({ context, mediaTypes: true }))?.mediaTypes,
-    });
+    const mediaTypes: () => Promise<Record<string, number> | undefined> =
+      async() => (await this.mediatorParseMediatypes?.mediate({ context, mediaTypes: true }))?.mediaTypes;
+    const dereference = await this.mediatorDereference.mediate({ ...action, mediaTypes });
 
     let result: IActorParseOutput<S, M>;
 
@@ -120,7 +130,13 @@ export abstract class ActorDereferenceParse<
     }
 
     // Return the parsed stream and any metadata
-    return { ...dereference, ...result };
+    return {
+      ...dereference,
+      ...result,
+      cachePolicy: dereference.cachePolicy ?
+        new DereferenceRdfCachePolicyDereferenceWrapper(dereference.cachePolicy, mediaTypes) :
+        undefined,
+    };
   }
 }
 

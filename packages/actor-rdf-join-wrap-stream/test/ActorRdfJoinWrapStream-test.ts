@@ -126,7 +126,7 @@ describe('ActorRdfJoinWrapStream', () => {
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('b'), DF.literal('b2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -152,7 +152,7 @@ describe('ActorRdfJoinWrapStream', () => {
                   [ DF.variable('a'), DF.literal('a2') ],
                   [ DF.variable('c'), DF.literal('c2') ],
                 ]),
-              ]),
+              ], { autoStart: false }),
               metadata: () => Promise.resolve(
                 {
                   state: new MetadataValidationState(),
@@ -254,7 +254,7 @@ describe('ActorRdfJoinWrapStream', () => {
               [ DF.variable('a'), DF.literal('a2') ],
               [ DF.variable('c'), DF.literal('c2') ],
             ]),
-          ]),
+          ], { autoStart: false }),
           metadata: async() => {
             return {};
           },
@@ -276,7 +276,7 @@ describe('ActorRdfJoinWrapStream', () => {
               [ DF.variable('a'), DF.literal('a2') ],
               [ DF.variable('c'), DF.literal('c2') ],
             ]),
-          ]),
+          ], { autoStart: false }),
           metadata: expect.any(Function),
           context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, action.entries),
           originalAction: action,
@@ -309,7 +309,7 @@ describe('ActorRdfJoinWrapStream', () => {
               [ DF.variable('a'), DF.literal('a2') ],
               [ DF.variable('c'), DF.literal('c2') ],
             ]),
-          ]),
+          ], { autoStart: false }),
           metadata: async() => {
             return {};
           },
@@ -330,7 +330,7 @@ describe('ActorRdfJoinWrapStream', () => {
               [ DF.variable('a'), DF.literal('a2') ],
               [ DF.variable('c'), DF.literal('c2') ],
             ]),
-          ]),
+          ], { autoStart: false }),
           metadata: expect.any(Function),
           context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, action.entries),
           originalAction: action,
@@ -363,7 +363,7 @@ describe('ActorRdfJoinWrapStream', () => {
               [ DF.variable('a'), DF.literal('a2') ],
               [ DF.variable('c'), DF.literal('c2') ],
             ]),
-          ]),
+          ], { autoStart: false }),
           metadata: async() => {
             return { a: 'value1', b: 'value2' };
           },
@@ -384,7 +384,7 @@ describe('ActorRdfJoinWrapStream', () => {
               [ DF.variable('a'), DF.literal('a2') ],
               [ DF.variable('c'), DF.literal('c2') ],
             ]),
-          ]),
+          ], { autoStart: false }),
           metadata: expect.any(Function),
           context: new ActionContext().set(KEY_CONTEXT_WRAPPED_RDF_JOIN, action.entries),
           originalAction: action,

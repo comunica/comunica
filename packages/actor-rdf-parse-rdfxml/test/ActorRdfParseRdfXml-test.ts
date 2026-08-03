@@ -151,6 +151,28 @@ describe('ActorRdfParseRdfXml', () => {
         })))
           .handle.data)).rejects.toBeTruthy();
       });
+
+      it('should reject on an invalid version media type parameter', async() => {
+        await expect(arrayifyStream((<any> (await actor.run({
+          handle: { data: input, metadata: { baseIRI: '', version: '1.2-invalid' }, context },
+          handleMediaType: 'application/trig',
+          context,
+        })))
+          .handle.data)).rejects.toThrow(`Detected unsupported version as media type parameter: 1.2-invalid`);
+      });
+
+      it('should parse for an invalid version media type parameter with parseUnsupportedVersions', async() => {
+        await actor.run({
+          handle: {
+            data: input,
+            metadata: { baseIRI: '', version: '1.2-invalid' },
+            context: context.set(KeysInitQuery.parseUnsupportedVersions, true),
+          },
+          handleMediaType: 'application/rdf+xml',
+          context,
+        })
+          .then(async(output: any) => await expect(arrayifyStream(output.handle.data)).resolves.toHaveLength(4));
+      });
     });
 
     describe('for getting media types', () => {

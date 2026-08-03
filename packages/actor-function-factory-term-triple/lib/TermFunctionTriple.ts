@@ -3,12 +3,13 @@ import { TermFunctionBase } from '@comunica/bus-function-factory';
 import {
   declare,
   DefaultGraph,
+  ExpressionError,
   Quad,
   SparqlOperator,
 } from '@comunica/utils-expression-evaluator';
 
 /**
- * https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#triple-function
+ * https://www.w3.org/TR/sparql12-query/#func-triple
  */
 export class TermFunctionTriple extends TermFunctionBase {
   public constructor() {
@@ -17,12 +18,15 @@ export class TermFunctionTriple extends TermFunctionBase {
       operator: SparqlOperator.TRIPLE,
       overloads: declare(SparqlOperator.TRIPLE)
         .onTerm3(
-          _ => (...args) => new Quad(
-            args[0],
-            args[1],
-            args[2],
-            new DefaultGraph(),
-          ),
+          _ => (subject, predicate, object) => {
+            if (subject.termType !== 'namedNode' && subject.termType !== 'blankNode') {
+              throw new ExpressionError(`Subjects in triple terms must either be named nodes or blank nodes`);
+            }
+            if (predicate.termType !== 'namedNode') {
+              throw new ExpressionError(`Predicates in triple terms must be named nodes`);
+            }
+            return new Quad(subject, predicate, object, new DefaultGraph());
+          },
         )
         .collect(),
     });

@@ -40,6 +40,11 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
 
   public constructor(args: IActorQueryProcessSequentialArgs) {
     super(args);
+    this.mediatorContextPreprocess = args.mediatorContextPreprocess;
+    this.mediatorQueryParse = args.mediatorQueryParse;
+    this.mediatorOptimizeQueryOperation = args.mediatorOptimizeQueryOperation;
+    this.mediatorQueryOperation = args.mediatorQueryOperation;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {

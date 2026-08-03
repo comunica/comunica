@@ -16,6 +16,7 @@ export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
 
   public constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
+    this.predicates = args.predicates;
   }
 
   public async test(_action: IActionRdfMetadataExtract): Promise<TestResult<IActorTest>> {

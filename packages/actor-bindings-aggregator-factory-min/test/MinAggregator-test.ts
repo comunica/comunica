@@ -7,15 +7,15 @@ import {
   BF,
   date,
   DF,
-  double,
+  termDouble,
   float,
   getMockEEActionContext,
   getMockEEFactory,
-  int,
+  termInt,
   makeAggregate,
   nonLiteral,
   string,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { MinAggregator } from '../lib/MinAggregator';
 
@@ -75,13 +75,13 @@ describe('MinAggregator', () => {
 
     it('a list of bindings', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('3') ]]),
-        BF.bindings([[ DF.variable('x'), int('4') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('3') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('4') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('1'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('1'));
     });
 
     it('a list of string bindings', async() => {
@@ -108,28 +108,28 @@ describe('MinAggregator', () => {
 
     it('should work with different types', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), double('11.0') ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), termDouble('11.0') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
         BF.bindings([[ DF.variable('x'), float('3') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('2'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('2'));
     });
 
     it('passing a non-literal should not be accepted', async() => {
       const input = [
         BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('3') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('3') ]]),
       ];
       await expect(runAggregator(aggregator, input)).resolves.toBeUndefined();
     });
 
     it('passing a non-literal should not be accepted even in non-first place', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
         BF.bindings([[ DF.variable('x'), nonLiteral() ]]),
-        BF.bindings([[ DF.variable('x'), int('3') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('3') ]]),
       ];
       await expect(runAggregator(aggregator, input)).resolves.toBeUndefined();
     });
@@ -153,13 +153,13 @@ describe('MinAggregator', () => {
 
     it('a list of bindings', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ], [ DF.variable('y'), termInt('1') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('1'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('1'));
     });
 
     it('with respect to empty input', async() => {

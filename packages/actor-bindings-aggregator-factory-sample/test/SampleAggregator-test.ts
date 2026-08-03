@@ -6,9 +6,9 @@ import {
   DF,
   getMockEEActionContext,
   getMockEEFactory,
-  int,
+  termInt,
   makeAggregate,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { SampleAggregator } from '../lib';
 
@@ -51,13 +51,13 @@ describe('SampleAggregator', () => {
 
     it('a list of bindings', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('3') ]]),
-        BF.bindings([[ DF.variable('x'), int('4') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('3') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('4') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('1'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('1'));
     });
 
     it('with respect to empty input', async() => {
@@ -74,13 +74,13 @@ describe('SampleAggregator', () => {
 
     it('a list of bindings', async() => {
       const input = [
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('2') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ]]),
-        BF.bindings([[ DF.variable('x'), int('1') ], [ DF.variable('y'), int('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('2') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ]]),
+        BF.bindings([[ DF.variable('x'), termInt('1') ], [ DF.variable('y'), termInt('1') ]]),
       ];
 
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(int('1'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(termInt('1'));
     });
 
     it('with respect to empty input', async() => {

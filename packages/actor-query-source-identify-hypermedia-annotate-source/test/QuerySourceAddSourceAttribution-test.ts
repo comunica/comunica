@@ -21,7 +21,8 @@ describe('QuerySourcAddSourceAttribution', () => {
 
   beforeEach(() => {
     sourceInner = {
-      getSelectorShape: <any> jest.fn(() => 'SHAPE'),
+      getFilterFactor: <any> jest.fn(async() => 1),
+      getSelectorShape: <any> jest.fn(async() => 'SHAPE'),
       queryBindings: <any> jest.fn(() => {
         const it = new ArrayIterator([
           BF.fromRecord({ a: DF.namedNode('a0') }),
@@ -45,6 +46,12 @@ describe('QuerySourcAddSourceAttribution', () => {
       referenceValue: 'REF',
     };
     source = new QuerySourceAddSourceAttribution(sourceInner);
+  });
+
+  it('should delegate getFilterFactor', async() => {
+    const context = new ActionContext();
+    await expect(source.getFilterFactor(context)).resolves.toBe(1);
+    expect(sourceInner.getFilterFactor).toHaveBeenCalledWith(context);
   });
 
   it('should delegate getSelectorShape', async() => {

@@ -23,7 +23,8 @@ TS = undefined,
   public readonly operationName: string;
 
   protected constructor(args: IActorQueryOperationArgs<TS>, operationName: string) {
-    super(<any> { ...args, operationName });
+    super(args);
+    this.operationName = operationName;
     if (!this.operationName) {
       throw new Error('A valid "operationName" argument must be provided.');
     }

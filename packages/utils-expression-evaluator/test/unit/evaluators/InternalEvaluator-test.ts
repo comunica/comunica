@@ -2,7 +2,7 @@ import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-e
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-expression-evaluator/test/util/helpers';
+import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 
@@ -89,7 +89,7 @@ describe('MaterializedEvaluatorContext', () => {
     });
 
     it('like an EXIST that errors', async() => {
-      const bindingsStream = new ArrayIterator([{}, {}, {}]).transform({
+      const bindingsStream = new ArrayIterator([{}, {}, {}], { autoStart: false }).transform({
         autoStart: false,
         transform(item, done, push) {
           push(item);

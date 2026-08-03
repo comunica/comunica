@@ -27,6 +27,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
   public constructor(args: IActorQueryOperationGroupArgs) {
     super(args, Algebra.Types.GROUP);
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
     this.mediatorBindingsAggregatorFactory = args.mediatorBindingsAggregatorFactory;
   }
 

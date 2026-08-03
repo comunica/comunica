@@ -119,6 +119,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If failing requests and parsing errors should be logged instead of causing a hard crash',
         },
+        parseUnsupportedVersions: {
+          type: 'boolean',
+          describe: 'If no error should be emitted on unsupported versions',
+        },
         version: {
           alias: 'v',
           type: 'boolean',
@@ -147,6 +151,26 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
         httpRetryDelayLimit: {
           type: 'number',
           describe: 'The upper limit in milliseconds for the delay between fetch retries',
+        },
+        httpRetryBodyCount: {
+          type: 'number',
+          describe: 'The number of retries to perform when the response body stream errors',
+        },
+        httpRetryBodyDelayFallback: {
+          type: 'number',
+          describe: 'The fallback delay in milliseconds between body retries',
+        },
+        httpRetryBodyAllowUnsafe: {
+          type: 'boolean',
+          describe: 'Allow body retries for non-idempotent requests',
+        },
+        httpRetryBodyMaxBytes: {
+          type: 'number',
+          describe: 'Maximum number of bytes to buffer when retrying response body streams',
+        },
+        httpCache: {
+          type: 'boolean',
+          describe: 'Enables HTTP-level caching',
         },
         unionDefaultGraph: {
           type: 'boolean',
@@ -247,6 +271,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
       context[KeysInitQuery.lenient.name] = true;
     }
 
+    // Define parseUnsupportedVersions
+    if (args.parseUnsupportedVersions) {
+      context[KeysInitQuery.parseUnsupportedVersions.name] = true;
+    }
+
     // Define HTTP timeout
     if (args.httpTimeout) {
       context[KeysHttp.httpTimeout.name] = args.httpTimeout;
@@ -279,6 +308,35 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
         throw new Error('The --httpRetryDelayLimit option requires the --httpRetryCount option to be set');
       }
       context[KeysHttp.httpRetryDelayLimit.name] = args.httpRetryDelayLimit;
+    }
+
+    // Define HTTP body retry count
+    if (args.httpRetryBodyCount) {
+      context[KeysHttp.httpRetryBodyCount.name] = args.httpRetryBodyCount;
+    }
+
+    // Define fallback HTTP delay between body retries
+    if (args.httpRetryBodyDelayFallback) {
+      if (!args.httpRetryBodyCount) {
+        throw new Error('The --httpRetryBodyDelayFallback option requires the --httpRetryBodyCount option to be set');
+      }
+      context[KeysHttp.httpRetryBodyDelayFallback.name] = args.httpRetryBodyDelayFallback;
+    }
+
+    // Define if body retries are allowed for non-idempotent methods
+    if (args.httpRetryBodyAllowUnsafe) {
+      if (!args.httpRetryBodyCount) {
+        throw new Error('The --httpRetryBodyAllowUnsafe option requires the --httpRetryBodyCount option to be set');
+      }
+      context[KeysHttp.httpRetryBodyAllowUnsafe.name] = true;
+    }
+
+    // Define max bytes to buffer for body retries
+    if (args.httpRetryBodyMaxBytes) {
+      if (!args.httpRetryBodyCount) {
+        throw new Error('The --httpRetryBodyMaxBytes option requires the --httpRetryBodyCount option to be set');
+      }
+      context[KeysHttp.httpRetryBodyMaxBytes.name] = args.httpRetryBodyMaxBytes;
     }
 
     // Define union default graph

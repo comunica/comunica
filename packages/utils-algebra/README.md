@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/utils-data-factory
+$ yarn add @comunica/utils-algebra
 ```
 
 ## Exposed

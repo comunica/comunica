@@ -67,6 +67,7 @@ Or jump right into one of the available query engines:
    * [Comunica SPARQL RDF/JS Lite](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs-lite#readme): Engine optimized for small bundle size to query over in-memory [RDF/JS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
    * [Comunica SPARQL HDT](https://github.com/comunica/comunica-feature-hdt/tree/master/engines/query-sparql-hdt#readme): Library to query over local [HDT](https://www.rdfhdt.org/) files
    * [Comunica SPARQL OSTRICH](https://github.com/comunica/comunica-feature-versioning/tree/master/engines/query-sparql-ostrich#readme): Library to query over local versioned [OSTRICH](https://github.com/rdfostrich/ostrich) archives
+   * [Comunica MCP](https://github.com/comunica/comunica-feature-mcp/): [MCP](https://modelcontextprotocol.io/) wrappers over most Comunica engines for interaction with AI agents.
 
  - Engines with alternative querying paradigms:
    * [Comunica SPARQL Link Traversal](https://github.com/comunica/comunica-feature-link-traversal/tree/master/engines/query-sparql-link-traversal#readme): Engine to query over multiple files by following links between them.

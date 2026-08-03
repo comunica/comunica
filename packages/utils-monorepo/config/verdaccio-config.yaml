@@ -1,0 +1,33 @@
+storage: /tmp/verdaccio/storage
+plugins: ./plugins
+
+web:
+  enable: false
+  title: Verdaccio
+
+auth:
+  htpasswd:
+    file: /tmp/verdaccio/htpasswd
+
+packages:
+  '@*/*':
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+  '**':
+    access: $all
+    publish: $authenticated
+    proxy: npmjs
+
+server:
+  keepAliveTimeout: 60
+
+middlewares:
+  audit:
+    enabled: true
+
+logs:
+  - {type: stdout, format: pretty, level: error}
+
+listen:
+  - localhost:4873

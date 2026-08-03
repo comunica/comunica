@@ -28,6 +28,7 @@ This actor adds the following entries to the metadata object.
 * `inputFormats`: List of `http://www.w3.org/ns/sparql-service-description#inputFormat` when available.
 * `resultFormats`: List of `http://www.w3.org/ns/sparql-service-description#resultFormat` when available.
 * `supportedLanguages`: List of `http://www.w3.org/ns/sparql-service-description#supportedLanguage` when available.
+* `supportedVersions`: List of `http://www.w3.org/ns/sparql-service-description#supportedVersion` when available.
 * `extensionFunctions`: List of `http://www.w3.org/ns/sparql-service-description#extensionFunction` when available.
 
 ## Configure
@@ -36,7 +37,7 @@ After installing, this package can be added to your engine's configuration as fo
 ```json
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^4.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^5.0.0/components/context.jsonld"
   ],
   "actors": [
     {

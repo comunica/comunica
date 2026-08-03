@@ -39,6 +39,9 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
       physicalName: 'bind-source',
       canHandleUndefs: true,
     });
+    this.selectivityModifier = args.selectivityModifier;
+    this.blockSize = args.blockSize;
+    this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
   }
 
   public async getOutput(
@@ -92,7 +95,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
       operation,
       sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
       { joinBindings: { bindings: chunk, metadata: smallestMetadata }},
-    )));
+    )), { autoStart: false });
 
     return {
       result: {

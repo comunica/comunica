@@ -1,0 +1,9 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-serialize/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^5.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:query-serialize/mediators#main",
+  "@type": "MediatorRace",
+  "bus": { "@id": "ActorQuerySerialize:_default_bus" }
+}

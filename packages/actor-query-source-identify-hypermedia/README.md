@@ -29,13 +29,11 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "urn:comunica:default:query-source-identify/actors#hypermedia",
       "@type": "ActorQuerySourceIdentifyHypermedia",
-      "mediatorDereferenceRdf": { "@id": "urn:comunica:default:dereference-rdf/mediators#main" },
-      "mediatorMetadata": { "@id": "urn:comunica:default:rdf-metadata/mediators#main" },
-      "mediatorMetadataExtract": { "@id": "urn:comunica:default:rdf-metadata-extract/mediators#main" },
       "mediatorMetadataAccumulate": { "@id": "urn:comunica:default:rdf-metadata-accumulate/mediators#main" },
-      "mediatorQuerySourceIdentifyHypermedia": { "@id": "urn:comunica:default:query-source-identify-hypermedia/mediators#main" },
+      "mediatorQuerySourceDereferenceLink": { "@id": "urn:comunica:default:query-source-dereference-link/mediators#main" },
       "mediatorRdfResolveHypermediaLinks": { "@id": "urn:comunica:default:rdf-resolve-hypermedia-links/mediators#main" },
-      "mediatorRdfResolveHypermediaLinksQueue": { "@id": "urn:comunica:default:rdf-resolve-hypermedia-links-queue/mediators#main" }
+      "mediatorRdfResolveHypermediaLinksQueue": { "@id": "urn:comunica:default:rdf-resolve-hypermedia-links-queue/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }
@@ -45,12 +43,8 @@ After installing, this package can be added to your engine's configuration as fo
 
 * `cacheSize`: The maximum number of entries in the LRU cache, set to 0 to disable, defaults to 100.
 * `maxIterators`: The maximum number of links that can be followed in parallel, defaults to 64.
-* `aggregateTraversalStore`: If all discovered quads across all links from a traversal source should be indexed in an aggregated store, to speed up later calls. This only applies to sources annotated with KeysQuerySourceIdentify.traverse. Defaults to true.
-* `httpInvalidator`: An optional actor that listens to HTTP invalidation events.
-* `mediatorDereferenceRdf`: A mediator over the [RDF Dereference bus](https://github.com/comunica/comunica/tree/master/packages/bus-dereference-rdf).
-* `mediatorMetadata`: A mediator over the [RDF Metadata bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata).
-* `mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).
 * `mediatorMetadataAccumulate`: A mediator over the [RDF Metadata Accumulate bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-accumulate).
-* `mediatorQuerySourceIdentifyHypermedia`: A mediator over the [Query Source Identify Hypermedia bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-identify-hypermedia).
+* `mediatorQuerySourceDereferenceLink`: A mediator over the [Query Source Hypermedia Resolve bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-dereference-link).
 * `mediatorRdfResolveHypermediaLinks`: A mediator over the [RDF Resolve Hypermedia Links bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links).
 * `mediatorRdfResolveHypermediaLinksQueue`: A mediator over the [RDF Resolve Hypermedia Links Queue bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links-queue).
+* `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).

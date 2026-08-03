@@ -28,6 +28,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
 
   public constructor(args: IActorQueryOperationPathZeroOrOneArgs) {
     super(args, Algebra.Types.ZERO_OR_ONE_PATH);
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   public async runOperation(
@@ -74,24 +75,8 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     let bindingsStream: BindingsStream;
     if (operation.subject.termType === 'Variable' && operation.object.termType === 'Variable') {
       // Both subject and object are variables
-      // To determine the "Zero" part, we
-      // query ?s ?p ?o. FILTER ?s = ?0, to get all possible namedNodes in de the db
-      const varP = this.generateVariable(dataFactory, operation);
-      const bindingsZero = getSafeBindings(
-        await this.mediatorQueryOperation.mediate({
-          context,
-          operation: algebraFactory.createFilter(
-            this.assignPatternSources(algebraFactory, algebraFactory
-              .createPattern(operation.subject, varP, operation.object, operation.graph), sources),
-            algebraFactory.createOperatorExpression('=', [
-              algebraFactory.createTermExpression(operation.subject),
-              algebraFactory.createTermExpression(operation.object),
-            ]),
-          ),
-        }),
-      ).bindingsStream.map(bindings => bindings.delete(varP));
       bindingsStream = new UnionIterator([
-        bindingsZero,
+        (await this.getNodes(operation, context, algebraFactory, sources)).bindingsStream,
         bindingsOne.bindingsStream,
       ], { autoStart: false });
     } else {

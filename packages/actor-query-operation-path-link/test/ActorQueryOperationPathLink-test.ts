@@ -25,7 +25,7 @@ describe('ActorQueryOperationPathLink', () => {
           BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
           BF.bindings([[ DF.variable('x'), DF.literal('3') ]]),
-        ]),
+        ], { autoStart: false }),
         metadata: () => Promise.resolve({ cardinality: 3 }),
         operated: arg,
         type: 'bindings',

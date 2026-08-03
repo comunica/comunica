@@ -27,6 +27,9 @@ export class ActorQueryResultSerializeRdf extends ActorQueryResultSerialize
 
   public constructor(args: IActorQueryResultSerializeRdfArgs) {
     super(args);
+    this.mediatorRdfSerialize = args.mediatorRdfSerialize;
+    this.mediatorMediaTypeCombiner = args.mediatorMediaTypeCombiner;
+    this.mediatorMediaTypeFormatCombiner = args.mediatorMediaTypeFormatCombiner;
   }
 
   public async testHandle(action: IActionSparqlSerialize, mediaType: string, context: IActionContext):

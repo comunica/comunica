@@ -10,6 +10,9 @@ import '@comunica/utils-jest';
 const mediatorMergeBindingsContext: any = {
   mediate: () => ({}),
 };
+const mediatorQuerySerialize: any = {
+  mediate: () => ({}),
+};
 
 const DF = new DataFactory();
 
@@ -53,11 +56,13 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         forceHttpGet: false,
         cacheSize: 1_024,
         mediatorMergeBindingsContext,
+        mediatorQuerySerialize,
         bindMethod: 'values',
         countTimeout: 3_000,
         cardinalityCountQueries: true,
         cardinalityEstimateConstruction: false,
         forceGetIfUrlLengthBelow: 600,
+        sparqlServerSoftwarePatterns: [ 'Virtuoso', 'Fuseki' ],
       });
     });
 
@@ -119,8 +124,11 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           bindMethod: 'values',
           countTimeout: 3_000,
           mediatorMergeBindingsContext,
+          mediatorQuerySerialize,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
+          cacheSize: 0,
+          forceGetIfUrlLengthBelow: 0,
         });
         await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context })).resolves
           .toFailTest('Actor actor could not detect a SPARQL service description or URL ending on /sparql.');
@@ -136,8 +144,11 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           bindMethod: 'values',
           countTimeout: 3_000,
           mediatorMergeBindingsContext,
+          mediatorQuerySerialize,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
+          cacheSize: 0,
+          forceGetIfUrlLengthBelow: 0,
         });
         await expect(actor
           .test({ url: 'URL/sparql', metadata: {}, quads: <any> null, forceSourceType: 'file', context }))
@@ -154,8 +165,11 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           bindMethod: 'values',
           countTimeout: 3_000,
           mediatorMergeBindingsContext,
+          mediatorQuerySerialize,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
+          cacheSize: 0,
+          forceGetIfUrlLengthBelow: 0,
         });
         await expect(actor.test({
           url: 'URL',
@@ -176,12 +190,96 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           bindMethod: 'values',
           countTimeout: 3_000,
           mediatorMergeBindingsContext,
+          mediatorQuerySerialize,
           cardinalityCountQueries: true,
           cardinalityEstimateConstruction: false,
+          cacheSize: 0,
+          forceGetIfUrlLengthBelow: 0,
         });
         await expect(actor.test({
           url: 'URL',
           metadata: {},
+          quads: <any> null,
+          context,
+        })).resolves
+          .toFailTest('Actor actor could not detect a SPARQL service description or URL ending on /sparql.');
+      });
+
+      it('should test with a valid server software header via configured patterns', async() => {
+        await expect(actor.test({
+          url: 'URL',
+          metadata: { serverSoftware: 'Virtuoso/08.03.3332' },
+          quads: <any> null,
+          context,
+        })).resolves
+          .toPassTest({ filterFactor: 1 });
+      });
+
+      it('should test with a valid server software header at end of string via configured patterns', async() => {
+        await expect(actor.test({
+          url: 'URL',
+          metadata: { serverSoftware: 'Caddy, Fuseki' },
+          quads: <any> null,
+          context,
+        })).resolves
+          .toPassTest({ filterFactor: 1 });
+      });
+
+      it('should not test with an invalid server software header via configured patterns', async() => {
+        await expect(actor.test({
+          url: 'URL',
+          metadata: { serverSoftware: 'Apache' },
+          quads: <any> null,
+          context,
+        })).resolves
+          .toFailTest('Actor actor could not detect a SPARQL service description or URL ending on /sparql.');
+      });
+
+      it('should test with a valid server software header via custom patterns', async() => {
+        actor = new ActorQuerySourceIdentifyHypermediaSparql({
+          name: 'actor',
+          bus,
+          mediatorHttp: <any>'mediator',
+          checkUrlSuffix: false,
+          forceHttpGet: false,
+          bindMethod: 'values',
+          countTimeout: 3_000,
+          mediatorMergeBindingsContext,
+          mediatorQuerySerialize,
+          cardinalityCountQueries: true,
+          cardinalityEstimateConstruction: false,
+          cacheSize: 0,
+          forceGetIfUrlLengthBelow: 0,
+          sparqlServerSoftwarePatterns: [ 'Custom' ],
+        });
+        await expect(actor.test({
+          url: 'URL',
+          metadata: { serverSoftware: 'Custom/1.0.0' },
+          quads: <any> null,
+          context,
+        })).resolves
+          .toPassTest({ filterFactor: 1 });
+      });
+
+      it('should not test with a server software header if no patterns are provided', async() => {
+        actor = new ActorQuerySourceIdentifyHypermediaSparql({
+          name: 'actor',
+          bus,
+          mediatorHttp: <any>'mediator',
+          checkUrlSuffix: false,
+          forceHttpGet: false,
+          bindMethod: 'values',
+          countTimeout: 3_000,
+          mediatorMergeBindingsContext,
+          mediatorQuerySerialize,
+          cardinalityCountQueries: true,
+          cardinalityEstimateConstruction: false,
+          cacheSize: 0,
+          forceGetIfUrlLengthBelow: 0,
+        });
+        await expect(actor.test({
+          url: 'URL',
+          metadata: { serverSoftware: 'Virtuoso/08.03.3332' },
           quads: <any> null,
           context,
         })).resolves
@@ -195,6 +293,20 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           .run({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null, context });
         expect(output.source).toBeInstanceOf(QuerySourceSparql);
         expect((<any> output.source).url).toBe('SERVICE');
+        expect((<any> output.source).endpointFetcher.sparqlJsonParser.parseUnsupportedVersions).toBe(false);
+        expect((<any> output.source).endpointFetcher.sparqlXmlParser.parseUnsupportedVersions).toBe(false);
+      });
+
+      it('should pass parseUnsupportedVersions to the parsers', async() => {
+        const output = await actor.run({
+          url: 'URL',
+          metadata: { sparqlService: 'SERVICE' },
+          quads: <any> null,
+          context: context.set(KeysInitQuery.parseUnsupportedVersions, true),
+        });
+        expect(output.source).toBeInstanceOf(QuerySourceSparql);
+        expect((<any> output.source).endpointFetcher.sparqlJsonParser.parseUnsupportedVersions).toBe(true);
+        expect((<any> output.source).endpointFetcher.sparqlXmlParser.parseUnsupportedVersions).toBe(true);
       });
 
       it('should return a source when no sparqlService was defined in metadata', async() => {

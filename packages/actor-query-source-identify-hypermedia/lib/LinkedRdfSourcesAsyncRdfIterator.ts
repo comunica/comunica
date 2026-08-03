@@ -1,4 +1,4 @@
-import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+import type { IActionQuerySourceDereferenceLink } from '@comunica/bus-query-source-dereference-link';
 import { KeysStatistics } from '@comunica/context-entries';
 import type {
   ILink,
@@ -7,6 +7,8 @@ import type {
   MetadataBindings,
   IQueryBindingsOptions,
   IStatisticBase,
+  ILinkQueue,
+  ICachePolicy,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -19,8 +21,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   protected readonly queryBindingsOptions: IQueryBindingsOptions | undefined;
   protected readonly context: IActionContext;
 
-  private readonly cacheSize: number;
-  protected readonly firstUrl: string;
+  protected readonly firstLink: ILink;
   private readonly maxIterators: number;
   private readonly sourceStateGetter: SourceStateGetter;
 
@@ -33,22 +34,20 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   private preflightMetadata: Promise<MetadataBindings> | undefined;
 
   public constructor(
-    cacheSize: number,
     operation: Algebra.Operation,
     queryBindingsOptions: IQueryBindingsOptions | undefined,
     context: IActionContext,
-    firstUrl: string,
+    firstLink: ILink,
     maxIterators: number,
     sourceStateGetter: SourceStateGetter,
     options?: BufferedIteratorOptions,
   ) {
     super({ autoStart: false, ...options });
     this._reading = false;
-    this.cacheSize = cacheSize;
     this.operation = operation;
     this.queryBindingsOptions = queryBindingsOptions;
     this.context = context;
-    this.firstUrl = firstUrl;
+    this.firstLink = firstLink;
     this.maxIterators = maxIterators;
     this.sourceStateGetter = sourceStateGetter;
 
@@ -72,7 +71,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       // iterator. This way, we keep the iterator lazy.
       if (!this.preflightMetadata) {
         this.preflightMetadata = new Promise((resolve, reject) => {
-          this.sourceStateGetter({ url: this.firstUrl }, {})
+          this.sourceStateGetter(this.firstLink, {})
             .then((sourceState) => {
               // Don't pass query options, as we don't want to consume any passed iterators
               const bindingsStream = sourceState.source.queryBindings(this.operation, this.context);
@@ -147,20 +146,18 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
         // We can safely ignore skip catching the error, since we are guaranteed to have
         // successfully got the source for this.firstUrl before.
         // eslint-disable-next-line ts/no-floating-promises
-        this.sourceStateGetter({ url: this.firstUrl }, {})
+        this.sourceStateGetter(this.firstLink, {})
           .then((sourceState) => {
             this.startIteratorsForNextUrls(sourceState.handledDatasets, false);
-            done();
           });
-      } else {
-        done();
       }
+      done();
     } else {
       // The first time this is called, prepare the first source
       this.started = true;
 
       // Await the source to be set, and start the source iterator
-      this.sourceStateGetter({ url: this.firstUrl }, {})
+      this.sourceStateGetter(this.firstLink, {})
         .then((sourceState) => {
           this.startIterator(sourceState);
           done();
@@ -370,6 +367,10 @@ export interface ISourceState {
    * All dataset identifiers that have been passed for this source.
    */
   handledDatasets: Record<string, boolean>;
+  /**
+   * The cache policy of the request's response.
+   */
+  cachePolicy?: ICachePolicy<IActionQuerySourceDereferenceLink>;
 }
 
 export type SourceStateGetter = (link: ILink, handledDatasets: Record<string, boolean>) => Promise<ISourceState>;

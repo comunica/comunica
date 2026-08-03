@@ -1,5 +1,10 @@
 {
-  "@context": "https://schema.org",
+  "@context": {
+    "ex": "http://example.org/",
+    "predicate1": "ex:predicate1",
+    "predicate2": "ex:predicate2"
+  },
+  "@id": "ex:subject",
   "predicate1": "value 1",
   "predicate2": "value 2"
 }

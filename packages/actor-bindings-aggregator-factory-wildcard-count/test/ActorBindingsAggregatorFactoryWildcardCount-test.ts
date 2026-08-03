@@ -7,10 +7,9 @@ import {
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
-} from '@comunica/utils-expression-evaluator/test/util/helpers';
+} from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { ActorBindingsAggregatorFactoryWildcardCount } from '../lib';
-import '@comunica/utils-jest';
 
 describe('ActorBindingsAggregatorFactoryWildcardCount', () => {
   let bus: any;

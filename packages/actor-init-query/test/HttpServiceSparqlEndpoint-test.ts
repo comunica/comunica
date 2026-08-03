@@ -1271,6 +1271,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       const s = '/sparql';
       const sd = 'http://www.w3.org/ns/sparql-service-description#';
+      const sparql = 'http://www.w3.org/ns/sparql#';
 
       beforeEach(() => {
         response = new ServerResponseMock();
@@ -1289,6 +1290,11 @@ describe('HttpServiceSparqlEndpoint', () => {
           quad(s, `${sd}endpoint`, s),
           quad(s, `${sd}url`, s),
           quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
+          quad(s, `${sd}supportedLanguage`, `${sd}SPARQLQuery`),
+          quad(s, `${sd}supportedVersion`, `${sparql}version-1.0`),
+          quad(s, `${sd}supportedVersion`, `${sparql}version-1.1`),
+          quad(s, `${sd}supportedVersion`, `${sparql}version-1.2`),
+          quad(s, `${sd}supportedVersion`, `${sparql}version-1.2-basic`),
           quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
           quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
           quad(s, `${sd}resultFormat`, 'ONE'),
@@ -1502,6 +1508,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         serviceDescriptionQuads.push(quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args1'));
         await expect((spyResultToString.mock.calls[0][0]).execute()).resolves.toEqual(new ArrayIterator(
           serviceDescriptionQuads,
+          { autoStart: false },
         ));
       });
 
@@ -1654,7 +1661,7 @@ describe('HttpServiceSparqlEndpoint', () => {
                 ]),
               ];
             }
-            return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray));
+            return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray, { autoStart: false }));
           };
         });
 
@@ -2079,6 +2086,168 @@ INSERT DATA {
         response.emit('close');
 
         expect(process.exit).toHaveBeenCalledWith(15);
+      });
+    });
+
+    describe('writeHtmlView', () => {
+      let response: any;
+      let request: any;
+      let endCalledPromise: any;
+
+      beforeEach(() => {
+        response = new ServerResponseMock();
+        request = Readable.from([ 'default_request_content' ]);
+        request.url = '/sparql';
+        request.method = 'GET';
+        request.headers = { host: 'localhost:3000' };
+        endCalledPromise = new Promise(resolve => response.onEnd = resolve);
+      });
+
+      it('should write HTML content with correct headers', async() => {
+        await instance.writeHtmlView(
+          new PassThrough(),
+          request,
+          response,
+        );
+
+        await expect(endCalledPromise).resolves.toBeTruthy();
+        expect(response.writeHead).toHaveBeenCalledWith(
+          200,
+          {
+            'content-type': HttpServiceSparqlEndpoint.MIME_HTML,
+            'Access-Control-Allow-Origin': '*',
+          },
+        );
+      });
+
+      it('should replace endpoint path placeholder with request URL', async() => {
+        request.url = '/custom-endpoint';
+        await instance.writeHtmlView(
+          new PassThrough(),
+          request,
+          response,
+        );
+
+        const html = await endCalledPromise;
+        expect(html).toContain('window.location.origin + "/custom-endpoint"');
+        expect(html).not.toContain('%%ENDPOINT_PATH%%');
+      });
+
+      it('should replace default query placeholder', async() => {
+        await instance.writeHtmlView(
+          new PassThrough(),
+          request,
+          response,
+        );
+
+        const html = await endCalledPromise;
+        expect(html).toContain('SELECT * WHERE');
+        expect(html).toContain('LIMIT 100');
+        expect(html).not.toContain('%%DEFAULT_QUERY%%');
+      });
+
+      it('should use /sparql as default endpoint when request.url is undefined', async() => {
+        request.url = undefined;
+        await instance.writeHtmlView(
+          new PassThrough(),
+          request,
+          response,
+        );
+
+        const html = await endCalledPromise;
+        expect(html).toContain('window.location.origin + "/sparql"');
+      });
+
+      it('should include Comunica branding in HTML', async() => {
+        await instance.writeHtmlView(
+          new PassThrough(),
+          request,
+          response,
+        );
+
+        const html = await endCalledPromise;
+        expect(html).toContain('Comunica SPARQL Endpoint');
+      });
+    });
+
+    describe('writeQueryResult with HTML Accept header', () => {
+      let response: any;
+      let request: any;
+
+      beforeEach(() => {
+        response = new ServerResponseMock();
+        request = Readable.from([ 'default_request_content' ]);
+        request.url = '/sparql';
+        request.method = 'GET';
+        request.headers = {
+          host: 'localhost:3000',
+          accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        };
+      });
+
+      it('should call writeHtmlView when Accept header contains text/html and no query', async() => {
+        const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
+
+        await instance.writeQueryResult(
+          await new QueryEngineFactoryBase().create(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          'text/html',
+          false,
+          true,
+          0,
+        );
+
+        expect(spyWriteHtmlView).toHaveBeenCalledTimes(1);
+        expect(spyWriteHtmlView).toHaveBeenCalledWith(
+          expect.any(PassThrough),
+          request,
+          response,
+        );
+      });
+
+      it('should not call writeHtmlView when Accept header does not contain text/html', async() => {
+        request.headers.accept = 'application/json';
+        const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
+        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+
+        await instance.writeQueryResult(
+          await new QueryEngineFactoryBase().create(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          'application/json',
+          false,
+          true,
+          0,
+        );
+
+        expect(spyWriteHtmlView).toHaveBeenCalledTimes(0);
+        expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not call writeHtmlView when query is provided even with text/html Accept header', async() => {
+        const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
+
+        await instance.writeQueryResult(
+          await new QueryEngineFactoryBase().create(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: 'SELECT * WHERE { ?s ?p ?o }', context: undefined },
+          'text/html',
+          false,
+          true,
+          0,
+        );
+
+        expect(spyWriteHtmlView).toHaveBeenCalledTimes(0);
       });
     });
 
