@@ -36,7 +36,7 @@ const config: FuncTestTableConfig<object> = {
 
 const nonLiteralEvalContext: FuncTestTableConfig<object> = {
   ...config,
-  evaluationActionContext: new ActionContext({
+  config: new ActionContext({
     [KeysExpressionEvaluator.nonLiteralExpressionComparison.name]: true,
   }),
 };
@@ -166,7 +166,7 @@ describe('evaluation of \'<=\'', () => {
       arity: 2,
       notation: Notation.Infix,
       aliases: bool,
-      evaluationActionContext: new ActionContext()
+      config: new ActionContext()
         .set(KeysExpressionEvaluator.defaultTimeZone, { zoneHours: -5, zoneMinutes: 0 }),
       testTable: `
         '${timeTyped('12:00:00')}' '${timeTyped('23:00:00+06:00')}' = true

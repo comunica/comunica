@@ -36,7 +36,7 @@ const config: FuncTestTableConfig<object> = {
 
 const nonLiteralEvalContext: FuncTestTableConfig<object> = {
   ...config,
-  evaluationActionContext: new ActionContext({
+  config: new ActionContext({
     [KeysExpressionEvaluator.nonLiteralExpressionComparison.name]: true,
   }),
 };
@@ -178,7 +178,7 @@ describe('evaluation of \'<\'', () => {
       arity: 2,
       notation: Notation.Infix,
       aliases: bool,
-      evaluationActionContext: new ActionContext()
+      config: new ActionContext()
         .set(KeysExpressionEvaluator.defaultTimeZone, { zoneHours: -5, zoneMinutes: 0 }),
       testTable: `
         '${timeTyped('12:00:00')}' '${timeTyped('23:00:00+06:00')}' = false
@@ -191,7 +191,7 @@ describe('evaluation of \'<\'', () => {
   describe('with numeric and type discovery like', () => {
     runFuncTestTable({
       ...config,
-      evaluationActionContext: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+      config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
         cache: new LRUCache<string, any>({ max: 1_000 }),
         discoverer: () => Eval.TypeURL.XSD_INTEGER,
       }),
@@ -276,7 +276,7 @@ describe('evaluation of \'<\'', () => {
         "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = true
         "a"^^xsd:time              "b"^^xsd:time              = true
       `,
-      evaluationActionContext: new ActionContext().set(KeysExpressionEvaluator.nonLiteralExpressionComparison, true),
+      config: new ActionContext().set(KeysExpressionEvaluator.nonLiteralExpressionComparison, true),
     });
   });
 

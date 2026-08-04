@@ -12,7 +12,7 @@ describe('We should respect the iri01 spec', () => {
     registeredActors: [
       args => new ActorFunctionFactoryTermIri(args),
     ],
-    evaluationActionContext: new ActionContext().set(KeysInitQuery.baseIRI, 'http://example.org'),
+    config: new ActionContext().set(KeysInitQuery.baseIRI, 'http://example.org'),
     arity: 1,
     operation: '',
     notation: Notation.Function,

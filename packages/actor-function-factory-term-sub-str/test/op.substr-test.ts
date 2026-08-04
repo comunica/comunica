@@ -17,7 +17,7 @@ describe('evaluations of \'substr\' like', () => {
     arity: 'vary',
     operation: 'substr',
     notation: Notation.Function,
-    evaluationActionContext: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+    config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
       cache: new LRUCache<string, any>({ max: 1_000 }),
       discoverer: () => Eval.TypeURL.XSD_STRING,
     }),

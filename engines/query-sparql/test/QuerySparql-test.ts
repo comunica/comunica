@@ -1826,27 +1826,29 @@ SELECT ?option WHERE {
       });
     });
 
-    it('nonLiteralExpressionComparison set to true', async() => {
-      const bool = DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean');
-      const expectedResult = [
-        [
-          [ DF.variable('l1'), DF.literal('true', bool) ],
-          [ DF.variable('l2'), DF.literal('false', bool) ],
-        ],
-      ];
+    describe('nonLiteralExpressionComparison set to true', () => {
+      it('compares nonLexical literals', async() => {
+        const bool = DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean');
+        const expectedResult = [
+          [
+            [ DF.variable('l1'), DF.literal('true', bool) ],
+            [ DF.variable('l2'), DF.literal('false', bool) ],
+          ],
+        ];
 
-      const bindings = (await arrayifyStream(await engine.queryBindings(`
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 SELECT 
   (( "a"^^xsd:dateTime < "b"^^xsd:dateTime ) AS ?l1)
   (( "a"^^xsd:boolean < "a"^^xsd:dateTime ) AS ?l2)
 WHERE { }
-      `, {
-        sources: [ 'http://example.org/' ],
-        nonLiteralExpressionComparison: true,
-      }))).map(binding => [ ...binding ]);
+        `, {
+          sources: [ 'http://example.org/' ],
+          nonLiteralExpressionComparison: true,
+        }))).map(binding => [ ...binding ]);
 
-      expect(bindings).toMatchObject(expectedResult);
+        expect(bindings).toMatchObject(expectedResult);
+      });
     });
 
     describe('count distinct with UNION and partially unbound variables', () => {

@@ -16,7 +16,7 @@ const BF = new BindingsFactory(DF);
 export interface IGeneralEvaluationArg {
   bindings?: RDF.Bindings;
   expression: string;
-  evaluationActionContext?: IActionContext;
+  generalEvaluationConfig?: IActionContext;
   /**
    * The factory that will create the evaluator used for this evaluation.
    */
@@ -34,7 +34,7 @@ Promise<{ asyncResult: RDF.Term; syncResult?: RDF.Term }> {
       [KeysInitQuery.queryTimestamp.name]: new Date(Date.now()),
       [KeysInitQuery.functionArgumentsCache.name]: {},
       [KeysInitQuery.dataFactory.name]: DF,
-    }).merge(arg.evaluationActionContext ?? new ActionContext()),
+    }).merge(arg.generalEvaluationConfig ?? new ActionContext()),
     arg.exprEvalFactory,
     arg.toAlgebraParse,
   );
@@ -48,7 +48,7 @@ Promise<{ asyncError: unknown } | undefined> {
     await evaluateAsync(
       arg.expression,
       bindings,
-      getMockEEActionContext(arg.evaluationActionContext),
+      getMockEEActionContext(arg.generalEvaluationConfig),
       arg.exprEvalFactory,
       arg.toAlgebraParse,
     );

@@ -35,12 +35,12 @@ abstract class Table<RowType extends Row> {
   public abstract test(): void;
 
   protected async testExpression(expr: string, result: string): Promise<void> {
-    const { evaluationActionContext, additionalPrefixes, exprEvalFactory } = this.def;
+    const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const aliases = this.def.aliases ?? {};
     result = aliases[result] || result;
     const evaluated = await generalEvaluate({
       expression: template(expr, additionalPrefixes),
-      evaluationActionContext,
+      generalEvaluationConfig: config,
       exprEvalFactory,
       toAlgebraParse: this.def.toAlgebraParse,
     });
@@ -48,10 +48,10 @@ abstract class Table<RowType extends Row> {
   }
 
   protected async testErrorExpression(expr: string, error: string): Promise<void> {
-    const { evaluationActionContext, additionalPrefixes, exprEvalFactory } = this.def;
+    const { config, additionalPrefixes, exprEvalFactory } = this.def;
     const result = await generalErrorEvaluation({
       expression: template(expr, additionalPrefixes),
-      evaluationActionContext,
+      generalEvaluationConfig: config,
       exprEvalFactory,
       toAlgebraParse: this.def.toAlgebraParse,
     });

@@ -51,7 +51,7 @@ describe('evaluation of \'/\' like', () => {
   });
   runFuncTestTable({
     ...config,
-    evaluationActionContext: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
+    config: new ActionContext().set(KeysExpressionEvaluator.superTypeProvider, {
       cache: new LRUCache<string, any>({ max: 1_000 }),
       discoverer: () => Eval.TypeURL.XSD_INTEGER,
     }),

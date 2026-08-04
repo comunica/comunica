@@ -40,7 +40,7 @@ const config: FuncTestTableConfig<object> = {
 
 const nonLiteralEvalContext: FuncTestTableConfig<object> = {
   ...config,
-  evaluationActionContext: new ActionContext({
+  config: new ActionContext({
     [KeysExpressionEvaluator.nonLiteralExpressionComparison.name]: true,
   }),
 };
