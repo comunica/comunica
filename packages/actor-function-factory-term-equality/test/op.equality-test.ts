@@ -122,10 +122,17 @@ describe('evaluation of \'=\'', () => {
     });
   });
 
-  describe('with date operants like', () => {
+  describe('with date operands like (with UTC defaultTimeZone)', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-date-equal
     runFuncTestTable({
       ...config,
+      config: new ActionContext().set(
+        KeysExpressionEvaluator.defaultTimeZone,
+        {
+          zoneHours: 0,
+          zoneMinutes: 0,
+        },
+      ),
       operation: '=',
       arity: 2,
       notation: Notation.Infix,
@@ -133,11 +140,36 @@ describe('evaluation of \'=\'', () => {
       testTable: `
         '${dateTyped('2004-12-25Z')}' '${dateTyped('2004-12-25+07:00')}' = false
         '${dateTyped('2004-12-25-12:00')}' '${dateTyped('2004-12-26+12:00')}' = true
+        '${dateTyped('2006-08-23Z')}' '${dateTyped('2006-08-23')}' = true
+        '${dateTyped('2006-08-23+00:00')}' '${dateTyped('2006-08-23')}' = true
       `,
     });
   });
 
-  describe('with time operants like', () => {
+  describe('with date operands like (with different defaultTImeZone)', () => {
+    runFuncTestTable({
+      ...config,
+      config: new ActionContext().set(
+        KeysExpressionEvaluator.defaultTimeZone,
+        {
+          zoneHours: 2,
+          zoneMinutes: 0,
+        },
+      ),
+      operation: '=',
+      arity: 2,
+      notation: Notation.Infix,
+      aliases: bool,
+      testTable: `
+        '${dateTyped('2004-12-25Z')}' '${dateTyped('2004-12-25+07:00')}' = false
+        '${dateTyped('2004-12-25-12:00')}' '${dateTyped('2004-12-26+12:00')}' = true
+        '${dateTyped('2006-08-23Z')}' '${dateTyped('2006-08-23')}' = false
+        '${dateTyped('2006-08-23+00:00')}' '${dateTyped('2006-08-23')}' = false
+      `,
+    });
+  });
+
+  describe('with time operands like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-time-equal
     runFuncTestTable({
       ...config,
