@@ -169,6 +169,17 @@ describe('evaluation of \'=\'', () => {
     });
   });
 
+  describe('with mixed dateTime and date operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testTable: `
+        "2006-08-23T09:00:00+01:00"^^xsd:dateTime "2006-08-23"^^xsd:date = false
+        "2006-08-23+00:00"^^xsd:date "2006-08-23T00:00:00+00:00"^^xsd:dateTime = true
+        "2006-08-23T23:00:00-01:00"^^xsd:dateTime "2006-08-24+00:00"^^xsd:date = true
+      `,
+    });
+  });
+
   describe('with time operands like', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-time-equal
     runFuncTestTable({

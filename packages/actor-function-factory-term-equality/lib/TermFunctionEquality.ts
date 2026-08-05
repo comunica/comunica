@@ -49,6 +49,14 @@ export class TermFunctionEquality extends TermFunctionBase {
             right,
             exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
           ).getTime())
+        .dateTimeAndDateTest(exprEval => (left, right) =>
+          toUTCDate(
+            left,
+            exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
+          ).getTime() === toUTCDate(
+            right,
+            exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
+          ).getTime())
         .copy({
           // https://www.w3.org/TR/xpath-functions/#func-date-equal
           from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
