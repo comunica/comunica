@@ -41,22 +41,14 @@ export class TermFunctionEquality extends TermFunctionBase {
       // Fall through: a TypeURL.XSD_STRING is never equal to a TypeURL.RDF_LANG_STRING.
         .set([ TypeAlias.SPARQL_STRINGLY, TypeAlias.SPARQL_STRINGLY ], () => () => bool(false))
         .booleanTest(() => (left, right) => left === right)
-        .dateTimeTest(exprEval => (left, right) =>
-          toUTCDate(
-            left,
-            exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
-          ).getTime() === toUTCDate(
-            right,
-            exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
-          ).getTime())
-        .dateTimeAndDateTest(exprEval => (left, right) =>
-          toUTCDate(
-            left,
-            exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
-          ).getTime() === toUTCDate(
-            right,
-            exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
-          ).getTime())
+        .dateTimeTest(exprEval => (left, right) => {
+          const defaultTimeZone = exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone);
+          return toUTCDate(left, defaultTimeZone).getTime() === toUTCDate(right, defaultTimeZone).getTime();
+        })
+        .dateTimeAndDateTest(exprEval => (left, right) => {
+          const defaultTimeZone = exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone);
+          return toUTCDate(left, defaultTimeZone).getTime() === toUTCDate(right, defaultTimeZone).getTime();
+        })
         .copy({
           // https://www.w3.org/TR/xpath-functions/#func-date-equal
           from: [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
