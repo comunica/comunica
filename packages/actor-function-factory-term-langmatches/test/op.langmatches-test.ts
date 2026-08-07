@@ -27,6 +27,7 @@ describe('evaluation of \'langMatches\' like', () => {
        "de-Deva" "de-*-DE" = false
        "de" "fr" = false
        "" "*" = false
+       "de-Latn-de" "de-de" = false
       `,
   });
 });
