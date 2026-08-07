@@ -19,6 +19,12 @@ module.exports = function(engine) {
       });
       return (await engine.resultToString(result, mediaType)).data;
     },
+    /**
+     * @param sources - The LDF sources to query.
+     * @param proxyUrl - The proxy URL to use.
+     * @param queryString - The query to execute.
+     * @param options - Query options. Must include the `checkOrder` property.
+     */
     async queryLdf(sources, proxyUrl, queryString, options) {
       sources = sources.map((source) => {
         if (source.type === 'rdfjsSource') {
