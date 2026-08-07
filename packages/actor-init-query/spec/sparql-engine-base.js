@@ -46,7 +46,7 @@ module.exports = function(engine) {
           (await require('arrayify-stream').default(await result.execute()))
             .map(binding => Object.fromEntries([ ...binding ]
               .map(([ key, value ]) => [ `?${key.value}`, value ]))),
-          /\border\s+by\b/iu.test(queryString),
+          options.checkOrder,
         );
       }
       throw new Error(`Invalid query result type: ${result.resultType}`);
