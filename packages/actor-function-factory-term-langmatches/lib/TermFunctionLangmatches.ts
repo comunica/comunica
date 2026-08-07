@@ -26,6 +26,10 @@ export class TermFunctionLangmatches extends TermFunctionBase {
   // https://www.ietf.org/rfc/rfc4647.txt
   // https://www.w3.org/TR/sparql11-query/#func-langMatches
   private static langMatches(tag: string, range: string): boolean {
+    if (tag === '') {
+      return false;
+    }
+
     const langTags = tag.split('-');
     const rangeTags = range.split('-');
 
