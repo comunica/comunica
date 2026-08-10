@@ -113,6 +113,17 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
       { term: pattern.object, position: 'object' },
       { term: pattern.graph, position: 'graph' },
     ];
+    const variableCounts = new Map<string, number>();
+    for (const { term } of termPositions) {
+      if (term.termType === 'Variable') {
+        variableCounts.set(term.value, (variableCounts.get(term.value) ?? 0) + 1);
+      } else if (term.termType !== 'DefaultGraph') {
+        return undefined;
+      }
+    }
+    if ([ ...variableCounts.values() ].some(count => count > 1)) {
+      return undefined;
+    }
 
     // Map each projected variable to its position in the pattern
     for (const variable of variables) {

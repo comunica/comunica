@@ -2948,6 +2948,28 @@ CONSTRUCT {
       expect(bindings).toHaveLength(2);
     });
 
+    it('should preserve constant terms in SELECT DISTINCT', async() => {
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(DF.namedNode('ex:alice'), DF.namedNode('ex:type'), DF.namedNode('ex:Person')));
+      store.addQuad(DF.quad(DF.namedNode('ex:report'), DF.namedNode('ex:type'), DF.namedNode('ex:Document')));
+
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
+
+      const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT DISTINCT ?person WHERE {
+          ?person ex:type ex:Person
+        }
+      `, { sources: [ store ]});
+
+      await expect(bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('person'), DF.namedNode('ex:alice') ],
+        ]),
+      ]);
+      expect(matchDistinctTermsSpy).not.toHaveBeenCalled();
+    });
+
     it('should handle SELECT DISTINCT with fixed graph', async() => {
       const store = RdfStore.createDefault();
       store.addQuad(DF.quad(
@@ -2987,7 +3009,7 @@ CONSTRUCT {
         ]),
       ]);
 
-      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
+      expect(matchDistinctTermsSpy).not.toHaveBeenCalled();
     });
 
     it('should handle SELECT DISTINCT as inner query within another SELECT', async() => {
