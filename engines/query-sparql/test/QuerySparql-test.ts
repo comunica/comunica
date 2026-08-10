@@ -2987,7 +2987,8 @@ CONSTRUCT {
         ]),
       ]);
 
-      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
+      // DistinctTerms optimisation must NOT fire because the graph position is a constant NamedNode
+      expect(matchDistinctTermsSpy).not.toHaveBeenCalled();
     });
 
     it('should handle SELECT DISTINCT as inner query within another SELECT', async() => {
@@ -3026,7 +3027,7 @@ CONSTRUCT {
       expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should not ignore constant terms in SELECT DISTINCT over a single triple pattern (regression #1733)', async() => {
+    it('should not ignore constant terms in SELECT DISTINCT over a single triple pattern (regression)', async() => {
       // ?person a ex:Person  -- predicate and object are constants, so DistinctTerms must NOT be used
       const store = RdfStore.createDefault();
       store.addQuad(DF.quad(DF.namedNode('ex:alice'), DF.namedNode('ex:type'), DF.namedNode('ex:Person')));

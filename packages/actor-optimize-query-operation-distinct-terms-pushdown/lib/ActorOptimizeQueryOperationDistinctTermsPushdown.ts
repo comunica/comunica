@@ -134,9 +134,13 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
     // If any position holds a constant term (e.g. a NamedNode or Literal), the
     // DistinctTerms operator has no way to enforce that constraint and the
     // optimisation must not fire.
+    // DefaultGraph is allowed because it is the implicit default graph and does
+    // not act as a filter on the result.
     const projectedPositions = new Set(Object.values(termsMapping));
     for (const { term, position } of termPositions) {
-      if (!projectedPositions.has(position) && term.termType !== 'Variable') {
+      if (!projectedPositions.has(position) &&
+        term.termType !== 'Variable' &&
+        term.termType !== 'DefaultGraph') {
         return undefined;
       }
     }
