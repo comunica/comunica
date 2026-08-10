@@ -130,6 +130,17 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
       }
     }
 
+    // Ensure that every non-projected position is a variable (unconstrained).
+    // If any position holds a constant term (e.g. a NamedNode or Literal), the
+    // DistinctTerms operator has no way to enforce that constraint and the
+    // optimisation must not fire.
+    const projectedPositions = new Set(Object.values(termsMapping));
+    for (const { term, position } of termPositions) {
+      if (!projectedPositions.has(position) && term.termType !== 'Variable') {
+        return undefined;
+      }
+    }
+
     return termsMapping;
   }
 }

@@ -127,6 +127,33 @@ describe('ActorOptimizeQueryOperationDistinctTermsPushdown', () => {
         expect(source.source.getSelectorShape).toHaveBeenCalledWith(expect.anything());
       });
 
+      it('should not optimize when a non-projected pattern position contains a constant term', async() => {
+        const source: IQuerySourceWrapper = <any> {
+          source: {
+            getSelectorShape: jest.fn(async() => ({
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: 'distinctterms',
+              },
+            })),
+          },
+        };
+
+        // ?s a ex:Person  → predicate and object are constants
+        const pattern = assignOperationSource(
+          AF.createPattern(DF.variable('s'), DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'), DF.namedNode('http://example.org/Person')),
+          source,
+        );
+        const operation = AF.createDistinct(
+          AF.createProject(pattern, [ DF.variable('s') ]),
+        );
+
+        const { operation: operationOut } = await actor.run({ operation, context });
+        // Optimization must NOT fire because predicate/object are constants
+        expect(operationOut).toEqual(operation);
+      });
+
       it('should optimize DISTINCT(PROJECT(PATTERN)) with supporting source', async() => {
         const source: IQuerySourceWrapper = <any> {
           source: {
