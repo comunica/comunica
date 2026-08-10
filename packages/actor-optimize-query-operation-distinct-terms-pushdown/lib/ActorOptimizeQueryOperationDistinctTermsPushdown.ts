@@ -114,10 +114,10 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
       { term: pattern.graph, position: 'graph' },
     ];
     const variableCounts = new Map<string, number>();
-    for (const { term } of termPositions) {
+    for (const { term, position } of termPositions) {
       if (term.termType === 'Variable') {
         variableCounts.set(term.value, (variableCounts.get(term.value) ?? 0) + 1);
-      } else if (term.termType !== 'DefaultGraph') {
+      } else if (position !== 'graph' || term.termType !== 'DefaultGraph') {
         return undefined;
       }
     }
