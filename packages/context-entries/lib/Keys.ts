@@ -274,7 +274,8 @@ export const KeysExpressionEvaluator = {
   ),
   actionContext: new ActionContextKey<IActionContext>('@comunica/utils-expression-evaluator:actionContext'),
   /**
-   * A boolean denoting the behaviour of the lesser than function when used with non literals operands.
+   * A boolean denoting the behaviour of the lesser than function when used with non-literals operands.
+   * Such non-literals are IRIs and blank nodes. Their comparison is not required by default in SPARQL.
    *
    * true: treats them as literals and compares their string values.
    * false: throws an error (default).
