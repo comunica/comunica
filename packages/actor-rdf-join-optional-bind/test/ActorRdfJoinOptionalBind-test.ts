@@ -321,6 +321,49 @@ IQueryOperationResultBindings
         )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
       });
 
+      it('should reject on a right stream containing extend wrapped in a project', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [
+              {
+                output: <any>{},
+                operation: <any>{},
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createProject(<any>{ type: Algebra.Types.EXTEND }, []),
+              },
+            ],
+            context,
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
+      });
+
       it('should not reject on a left stream of type group', async() => {
         await expect(actor.getJoinCoefficients(
           {
