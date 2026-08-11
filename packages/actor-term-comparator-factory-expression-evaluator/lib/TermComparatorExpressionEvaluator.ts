@@ -6,7 +6,7 @@ import type * as RDF from '@rdfjs/types';
 
 export class TermComparatorExpressionEvaluator implements ITermComparator {
   public constructor(
-    // The internal evaluator is expected to have a context with nonLiteralExpressionComparison set to true
+    // The internal evaluator is expected to have a context with nonLexicalComparison and fullTermComparison set to true
     private readonly internalEvaluator: InternalEvaluator,
     private readonly lessThanFunction: ITermFunction,
   ) {}

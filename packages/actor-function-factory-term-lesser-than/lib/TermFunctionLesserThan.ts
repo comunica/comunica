@@ -161,7 +161,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
   }
 
   private shouldThrowNonLexicalError(exprEval: IInternalEvaluator): boolean {
-    return !exprEval.context.get(KeysExpressionEvaluator.nonLiteralExpressionComparison);
+    return !exprEval.context.get(KeysExpressionEvaluator.nonLexicalComparison);
   }
 
   private quadComponentTest(left: Term, right: Term, exprEval: IInternalEvaluator): boolean | undefined {
@@ -184,7 +184,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
   private lesserThanTerms(termA: Term, termB: Term, exprEval: IInternalEvaluator): boolean {
     if (this.shouldThrowNonLexicalError(exprEval)) {
       throw new InvalidArgumentTypes([ termA, termB ], SparqlOperator.LT, `
-To enable comparison, set the ${KeysExpressionEvaluator.nonLiteralExpressionComparison.name} flag to true.`);
+To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name} flag to true.`);
     }
     // Order different types according to a priority mapping
     if (termA.termType !== termB.termType) {

@@ -184,9 +184,14 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If the query engine should deduplicate resulting triples',
         },
-        nonLiteralExpressionComparison: {
+        nonLexicalComparison: {
           type: 'boolean',
-          describe: 'When true, compares non literals using their string values in expressions. ' +
+          describe: 'When true, compares non-lexical literals.' +
+            'Throws an error otherwise.',
+        },
+        fullTermComparison: {
+          type: 'boolean',
+          describe: 'When true, compares IRIs, blank nodes, languageStrings and triple terms.' +
             'Throws an error otherwise.',
         },
         extensionFunctionsAlwaysPushdown: {
@@ -354,9 +359,14 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
       context[KeysInitQuery.distinctConstruct.name] = true;
     }
 
-    // Define if non literals should be string compared
-    if (args.nonLiteralExpressionComparison) {
-      context[KeysExpressionEvaluator.nonLiteralExpressionComparison.name] = true;
+    // Define if non -lexical literals should be compared
+    if (args.nonLexicalComparison) {
+      context[KeysExpressionEvaluator.nonLexicalComparison.name] = true;
+    }
+
+    // Define if every term should be string compared
+    if (args.fullTermComparison) {
+      context[KeysExpressionEvaluator.fullTermComparison.name] = true;
     }
 
     // Pushing down of extension functions

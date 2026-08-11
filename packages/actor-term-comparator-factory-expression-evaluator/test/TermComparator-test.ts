@@ -52,7 +52,8 @@ function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermCompara
     }
 
     return getMockEEActionContext()
-      .set(KeysExpressionEvaluator.nonLiteralExpressionComparison, true);
+      .set(KeysExpressionEvaluator.nonLexicalComparison, true)
+      .set(KeysExpressionEvaluator.fullTermComparison, true);
   };
 
   const equal = new TermFunctionEquality();

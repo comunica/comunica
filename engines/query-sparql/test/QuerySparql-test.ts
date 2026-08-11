@@ -1826,8 +1826,8 @@ SELECT ?option WHERE {
       });
     });
 
-    describe('nonLiteralExpressionComparison set to true', () => {
-      it('compares nonLexical literals', async() => {
+    describe('nonLexicalComparison set to true', () => {
+      it('compares non-lexical literals', async() => {
         const bool = DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean');
         const expectedResult = [
           [
@@ -1844,7 +1844,7 @@ SELECT
 WHERE { }
         `, {
           sources: [ 'http://example.org/' ],
-          nonLiteralExpressionComparison: true,
+          nonLexicalComparison: true,
         }))).map(binding => [ ...binding ]);
 
         expect(bindings).toMatchObject(expectedResult);

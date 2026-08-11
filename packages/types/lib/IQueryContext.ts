@@ -62,7 +62,8 @@ export interface IQueryContextCommon {
   => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
   functionArgumentsCache?: FunctionArgumentsCache;
   explain?: QueryExplainMode;
-  nonLiteralExpressionComparison?: boolean;
+  nonLexicalComparison?: boolean;
+  fullTermComparison?: boolean;
   unionDefaultGraph?: boolean;
   traverse?: boolean;
   invalidateCache?: boolean;

@@ -34,10 +34,10 @@ const config: FuncTestTableConfig<object> = {
   notation: Notation.Infix,
 };
 
-const nonLiteralEvalContext: FuncTestTableConfig<object> = {
+const nonLexicalEvalContext: FuncTestTableConfig<object> = {
   ...config,
   config: new ActionContext({
-    [KeysExpressionEvaluator.nonLiteralExpressionComparison.name]: true,
+    [KeysExpressionEvaluator.nonLexicalComparison.name]: true,
   }),
 };
 
@@ -209,7 +209,7 @@ describe('evaluation of \'<=\'', () => {
 
   describe('with literals of unknown types and nonLiteralCompare like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testTable: `
         "2"^^example:int "0"^^example:int = false
         "abc"^^example:string "def"^^example:string = true
@@ -241,7 +241,7 @@ describe('evaluation of \'<=\'', () => {
 
   describe('with quoted triple operands and nonLiteralComparison like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testArray: [
         [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:c> <ex:d> 123 )>>', 'true' ],
       ],
@@ -262,7 +262,7 @@ describe('evaluation of \'<=\'', () => {
 
   describe('with named nodes operands and nonLiteralCompare like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testArray: [
         [ '<ex:ab>', '<ex:cd>', 'true' ],
         [ '<ex:ad>', '<ex:bc>', 'true' ],
@@ -286,7 +286,7 @@ describe('evaluation of \'<=\'', () => {
 
   describe('with blank nodes operands and nonLiteralCompare like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testArray: [
         [ 'BNODE("ab")', 'BNODE("cd")', 'true' ],
         [ 'BNODE("ad")', 'BNODE("bc")', 'true' ],
@@ -310,7 +310,7 @@ describe('evaluation of \'<=\'', () => {
 
   describe('with mixed terms operands and nonLiteralCompare like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testArray: [
         [ 'BNODE("ab")', '<ex:ab>', 'true' ],
         [ '<<(<ex:a> <ex:b> 123)>>', '123', 'false' ],

@@ -274,14 +274,26 @@ export const KeysExpressionEvaluator = {
   ),
   actionContext: new ActionContextKey<IActionContext>('@comunica/utils-expression-evaluator:actionContext'),
   /**
-   * A boolean denoting the behaviour of the lesser than function when used with non-literals operands.
-   * Such non-literals are IRIs and blank nodes. Their comparison is not required by default in SPARQL.
+   * A boolean denoting the behaviour of the lesser than function when used with non-lexical literal operands.
+   *
+   * true: compares both operands:
+   *         if only 1 operand is non-lexical: the lexical is lower.
+   *         if both are non-lexical: their string values are compared.
+   * false: throws an error (default).
+   */
+  nonLexicalComparison: new ActionContextKey<boolean>(
+    '@comunica/utils-expression-evaluator:nonLexicalComparison',
+  ),
+  /**
+   * A boolean denoting the behaviour of the lesser than function when used with non-literal operands.
+   * Such non-literals are IRIs, blank nodes, languageStrings and triple terms.
+   * Their comparison is not required by default in SPARQL.
    *
    * true: treats them as literals and compares their string values.
    * false: throws an error (default).
    */
-  nonLiteralExpressionComparison: new ActionContextKey<boolean>(
-    '@comunica/utils-expression-evaluator:nonLiteralExpressionComparison',
+  fullTermComparison: new ActionContextKey<boolean>(
+    '@comunica/utils-expression-evaluator:fullTermComparison',
   ),
 };
 

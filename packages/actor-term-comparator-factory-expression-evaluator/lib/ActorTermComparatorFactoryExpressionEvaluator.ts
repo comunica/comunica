@@ -26,7 +26,8 @@ export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComp
    */
   public async run({ context }: IActionTermComparatorFactory): Promise<IActorTermComparatorFactoryOutput> {
     context = Eval.prepareEvaluatorActionContext(context)
-      .set(KeysExpressionEvaluator.nonLiteralExpressionComparison, true);
+      .set(KeysExpressionEvaluator.nonLexicalComparison, true)
+      .set(KeysExpressionEvaluator.fullTermComparison, true);
     return new TermComparatorExpressionEvaluator(
       new InternalEvaluator(
         context,

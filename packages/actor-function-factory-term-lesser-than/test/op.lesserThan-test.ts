@@ -34,10 +34,10 @@ const config: FuncTestTableConfig<object> = {
   notation: Notation.Infix,
 };
 
-const nonLiteralEvalContext: FuncTestTableConfig<object> = {
+const nonLexicalEvalContext: FuncTestTableConfig<object> = {
   ...config,
   config: new ActionContext({
-    [KeysExpressionEvaluator.nonLiteralExpressionComparison.name]: true,
+    [KeysExpressionEvaluator.nonLexicalComparison.name]: true,
   }),
 };
 
@@ -224,7 +224,7 @@ describe('evaluation of \'<\'', () => {
 
   describe('with literals of unknown types and nonLiteralComparison like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testTable: `
         "2"^^example:int "0"^^example:int = false
         "abc"^^example:string "def"^^example:string = true
@@ -261,7 +261,7 @@ describe('evaluation of \'<\'', () => {
 
   describe('with non lexical operands like (2)', () => {
     runFuncTestTable({
-      ...config,
+      ...nonLexicalEvalContext,
       testTable: `
         "a"^^xsd:dateTime    "b"^^xsd:dateTime   = true
         "a"^^xsd:dateTime    "a"^^xsd:dateTime   = false
@@ -276,14 +276,13 @@ describe('evaluation of \'<\'', () => {
         "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = true
         "a"^^xsd:time              "b"^^xsd:time              = true
       `,
-      config: new ActionContext().set(KeysExpressionEvaluator.nonLiteralExpressionComparison, true),
     });
   });
 
   describe('with quoted triple operands and nonLiteral eval like', () => {
     // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#sparql-compare
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testArray: [
         [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
         [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123.0 )>>', 'false' ],
@@ -309,7 +308,7 @@ describe('evaluation of \'<\'', () => {
 
   describe('with named nodes operands and nonLiteralComparison like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testArray: [
         [ '<ex:ab>', '<ex:cd>', 'true' ],
         [ '<ex:ad>', '<ex:bc>', 'true' ],
@@ -333,7 +332,7 @@ describe('evaluation of \'<\'', () => {
 
   describe('with blank nodes operands and nonLiteralCompare like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testArray: [
         [ 'BNODE("ab")', 'BNODE("cd")', 'true' ],
         [ 'BNODE("ad")', 'BNODE("bc")', 'true' ],
@@ -357,7 +356,7 @@ describe('evaluation of \'<\'', () => {
 
   describe('with mixed terms operands and nonLiteralCompare like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testArray: [
         [ 'BNODE("ab")', '<ex:ab>', 'true' ],
         [ '<<( <ex:a> <ex:b> 123)>>', '123', 'false' ],

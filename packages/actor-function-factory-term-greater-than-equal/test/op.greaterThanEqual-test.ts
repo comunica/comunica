@@ -1,6 +1,9 @@
 import { ActorFunctionFactoryExpressionBnode } from '@comunica/actor-function-factory-expression-bnode';
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { ActorFunctionFactoryTermLesserThan } from '@comunica/actor-function-factory-term-lesser-than';
+import {
+  ActorFunctionFactoryTermLesserThanEqual,
+} from '@comunica/actor-function-factory-term-lesser-than-equal';
 import { ActorFunctionFactoryTermTriple } from '@comunica/actor-function-factory-term-triple';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
@@ -10,36 +13,39 @@ import {
   bool,
   dateTime,
   dateTyped,
+  dayTimeDurationTyped,
   merge,
   numeric,
   str,
   timeTyped,
+  yearMonthDurationTyped,
   Notation,
 } from '@comunica/utils-jest';
-import { ActorFunctionFactoryTermGreaterThan } from '../lib';
+import { ActorFunctionFactoryTermGreaterThanEqual } from '../lib';
 
 const config: FuncTestTableConfig<object> = {
   registeredActors: [
     args => new ActorFunctionFactoryExpressionBnode(args),
-    args => new ActorFunctionFactoryTermGreaterThan(args),
+    args => new ActorFunctionFactoryTermGreaterThanEqual(args),
+    args => new ActorFunctionFactoryTermLesserThanEqual(args),
     args => new ActorFunctionFactoryTermLesserThan(args),
     args => new ActorFunctionFactoryTermEquality(args),
     args => new ActorFunctionFactoryTermTriple(args),
   ],
   arity: 2,
-  operation: '>',
+  operation: '>=',
   aliases: merge(numeric, str, dateTime, bool),
   notation: Notation.Infix,
 };
 
-const nonLiteralEvalContext: FuncTestTableConfig<object> = {
+const nonLexicalEvalContext: FuncTestTableConfig<object> = {
   ...config,
   config: new ActionContext({
-    [KeysExpressionEvaluator.nonLiteralExpressionComparison.name]: true,
+    [KeysExpressionEvaluator.nonLexicalComparison.name]: true,
   }),
 };
 
-describe('evaluation of \'>\'', () => {
+describe('evaluation of \'>=\'', () => {
   describe('with numeric operands like', () => {
     runFuncTestTable({
       ...config,
@@ -50,9 +56,9 @@ describe('evaluation of \'>\'', () => {
         -5f 3i = false
         -5f 3i = false
     
-        3i 3i = false
-        3d 3d = false
-        3f 3f = false
+        3i 3i = true
+        3d 3d = true
+        3f 3f = true
     
         3i -5i = true
         3d -5d = true
@@ -60,22 +66,21 @@ describe('evaluation of \'>\'', () => {
         3i -5f = true
         3d -5f = true
     
-         3i 3f = false
-         3i 3d = false
-         3d 3f = false
-        -0f 0f = false
+         3i 3f = true
+         3i 3d = true
+         3d 3f = true
+        -0f 0f = true
     
-         INF  INF = false
-        -INF -INF = false
+         INF  INF = true
+        -INF -INF = true
          INF  3f  = true
          3f   INF = false
         -INF  3f  = false
          3f  -INF = true
     
-        INF NaN = false
-        NaN NaN = false
-        NaN 3f  = false
-        3f  NaN = false
+        NaN    NaN    = false
+        NaN    anyNum = false
+        anyNum NaN    = false
       `,
     });
   });
@@ -84,10 +89,10 @@ describe('evaluation of \'>\'', () => {
     runFuncTestTable({
       ...config,
       testTable: `
-        empty empty = false
+        empty empty = true
         empty aaa   = false
         aaa   empty = true
-        aaa   aaa   = false
+        aaa   aaa   = true
         aaa   bbb   = false
         bbb   aaa   = true
       `,
@@ -98,10 +103,10 @@ describe('evaluation of \'>\'', () => {
     runFuncTestTable({
       ...config,
       testTable: `
-        true  true  = false
+        true  true  = true
         true  false = true
         false true  = false
-        false false = false
+        false false = true
       `,
     });
   });
@@ -110,9 +115,9 @@ describe('evaluation of \'>\'', () => {
     runFuncTestTable({
       ...config,
       testTable: `
-        earlyN earlyZ = false
-        earlyN earlyN = false
-        earlyZ earlyZ = false
+        earlyN earlyZ = true
+        earlyN earlyN = true
+        earlyZ earlyZ = true
     
         earlyN lateN  = false
         earlyN lateZ  = false
@@ -124,7 +129,20 @@ describe('evaluation of \'>\'', () => {
         lateZ earlyN  = true
         lateZ earlyZ  = true
     
-        edge1 edge2   = false
+        edge1 edge2   = true
+      `,
+    });
+  });
+
+  describe('with yearMonthDuration operands like', () => {
+    runFuncTestTable({
+      ...config,
+      testTable: `
+        '${yearMonthDurationTyped('P1Y')}' '${yearMonthDurationTyped('P1Y')}' = true
+        '${yearMonthDurationTyped('P1Y')}' '${yearMonthDurationTyped('P12M')}' = true
+        '${yearMonthDurationTyped('P1Y1M')}' '${yearMonthDurationTyped('P12M')}' = true
+        '${yearMonthDurationTyped('P1M')}' '${yearMonthDurationTyped('-P2M')}' = true
+        '${yearMonthDurationTyped('-P1Y')}' '${yearMonthDurationTyped('P13M')}' = false
       `,
     });
   });
@@ -133,13 +151,13 @@ describe('evaluation of \'>\'', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-date-less-than
     runFuncTestTable({
       ...config,
-      operation: '>',
+      operation: '>=',
       arity: 2,
       notation: Notation.Infix,
       aliases: bool,
       testTable: `
         '${dateTyped('2004-12-25Z')}' '${dateTyped('2004-12-25+07:00')}' = true
-        '${dateTyped('2004-12-25-12:00')}' '${dateTyped('2004-12-26+12:00')}' = false
+        '${dateTyped('2004-12-25-12:00')}' '${dateTyped('2004-12-26+12:00')}' = true
       `,
     });
   });
@@ -148,7 +166,7 @@ describe('evaluation of \'>\'', () => {
     // Originates from: https://www.w3.org/TR/xpath-functions/#func-time-greater-than
     runFuncTestTable({
       ...config,
-      operation: '>',
+      operation: '>=',
       arity: 2,
       notation: Notation.Infix,
       aliases: bool,
@@ -158,10 +176,28 @@ describe('evaluation of \'>\'', () => {
     });
   });
 
+  describe('with dayTimeDuration operands like', () => {
+    // Based on the spec tests of >
+    runFuncTestTable({
+      ...config,
+      operation: '>=',
+      arity: 2,
+      notation: Notation.Infix,
+      aliases: bool,
+      testTable: `
+        '${dayTimeDurationTyped('PT1H')}' '${dayTimeDurationTyped('PT60M')}' = true
+        '${dayTimeDurationTyped('PT1H')}' '${dayTimeDurationTyped('PT63M')}' = false
+        '${dayTimeDurationTyped('PT3S')}' '${dayTimeDurationTyped('PT2M')}' = false
+        '${dayTimeDurationTyped('-PT1H1M')}' '${dayTimeDurationTyped('-PT62M')}' = true
+        '${dayTimeDurationTyped('PT0S')}' '${dayTimeDurationTyped('-PT0.1S')}' = true
+      `,
+    });
+  });
+
   describe('with literals of unknown types like', () => {
     runFuncTestTable({
       ...config,
-      errorTable: `    
+      errorTable: `
         "2"^^example:int "0"^^example:int = 'Argument types not valid'
         "abc"^^example:string "def"^^example:string = 'Argument types not valid'
         "2"^^example:int "abc"^^example:string = 'Argument types not valid'
@@ -174,14 +210,14 @@ describe('evaluation of \'>\'', () => {
 
   describe('with literals of unknown types and nonLiteralCompare like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
-      testTable: `    
+      ...nonLexicalEvalContext,
+      testTable: `
         "2"^^example:int "0"^^example:int = true
         "abc"^^example:string "def"^^example:string = false
         "2"^^example:int "abc"^^example:string = false
         "2"^^example:int "2"^^example:string = false
         "2"^^example:string "2"^^example:int = true
-        "2"^^example:string "2"^^example:string = false
+        "2"^^example:string "2"^^example:string = true
       `,
     });
   });
@@ -191,10 +227,10 @@ describe('evaluation of \'>\'', () => {
     runFuncTestTable({
       ...config,
       testArray: [
-        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123.0 )>>', 'false' ],
-        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
-        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
-        [ '<<( <ex:a> <ex:b> 123e0 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
+        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123.0 )>>', 'true' ],
+        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'true' ],
+        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'true' ],
+        [ '<<( <ex:a> <ex:b> 123e0 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'true' ],
         [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 9 )>>', 'true' ],
         [ '<<( <ex:a> <ex:b> 9 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
       ],
@@ -215,12 +251,12 @@ describe('evaluation of \'>\'', () => {
 
   describe('with named nodes operands and nonLiteralCompare like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testArray: [
         [ '<ex:ab>', '<ex:cd>', 'false' ],
         [ '<ex:ad>', '<ex:bc>', 'false' ],
         [ '<ex:ba>', '<ex:ab>', 'true' ],
-        [ '<ex:ab>', '<ex:ab>', 'false' ],
+        [ '<ex:ab>', '<ex:ab>', 'true' ],
       ],
     });
   });
@@ -239,12 +275,12 @@ describe('evaluation of \'>\'', () => {
 
   describe('with blank nodes operands and nonLiteralCompare like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testArray: [
         [ 'BNODE("ab")', 'BNODE("cd")', 'false' ],
         [ 'BNODE("ad")', 'BNODE("bc")', 'false' ],
         [ 'BNODE("ba")', 'BNODE("ab")', 'true' ],
-        [ 'BNODE("ab")', 'BNODE("ab")', 'false' ],
+        [ 'BNODE("ab")', 'BNODE("ab")', 'true' ],
       ],
     });
   });
@@ -263,7 +299,7 @@ describe('evaluation of \'>\'', () => {
 
   describe('with mixed terms operands and nonLiteralCompare like', () => {
     runFuncTestTable({
-      ...nonLiteralEvalContext,
+      ...nonLexicalEvalContext,
       testArray: [
         [ 'BNODE("ab")', '<ex:ab>', 'false' ],
         [ '<<(<ex:a> <ex:b> 123)>>', '123', 'true' ],
