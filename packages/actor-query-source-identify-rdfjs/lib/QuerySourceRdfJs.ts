@@ -10,9 +10,11 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory, isKnownOperation, TypesComunica } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { MetadataValidationState } from '@comunica/utils-metadata';
+import { deferMetadata, MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
+import { LRUCache } from 'lru-cache';
+import { termToString } from 'rdf-string';
 import { filterTermsNested, someTerms, someTermsNested, uniqTerms } from 'rdf-terms';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
@@ -23,16 +25,23 @@ export class QuerySourceRdfJs implements IQuerySource {
   private readonly dataFactory: ComunicaDataFactory;
   private readonly bindingsFactory: BindingsFactory;
   private readonly dummyDefaultGraph: RDF.Variable;
+  private readonly cardinalityCache: LRUCache<string, number> | undefined;
+  private cardinalityCacheStoreSize: number | undefined;
 
   public constructor(
     source: RDF.Source | RDF.DatasetCore,
     dataFactory: ComunicaDataFactory,
     bindingsFactory: BindingsFactory,
+    cacheSize = 1_024,
   ) {
     this.source = source;
     this.referenceValue = source;
     this.dataFactory = dataFactory;
     this.bindingsFactory = bindingsFactory;
+    // Only enable cardinality caching if cache invalidation can be based on the source's size.
+    this.cardinalityCache = cacheSize > 0 && typeof (<RDF.DatasetCore> source).size === 'number' ?
+      new LRUCache({ max: cacheSize }) :
+      undefined;
     const AF = new AlgebraFactory(<RDF.DataFactory> this.dataFactory);
     let selectorShape: FragmentSelectorShape = {
       type: 'operation',
@@ -92,6 +101,21 @@ export class QuerySourceRdfJs implements IQuerySource {
   public static hasDuplicateVariables(pattern: RDF.BaseQuad): boolean {
     const variables = filterTermsNested(pattern, term => term.termType === 'Variable');
     return variables.length > 1 && uniqTerms(variables).length < variables.length;
+  }
+
+  /**
+   * Get the cardinality cache, after invalidating it if the source's size has changed.
+   * Sources without a synchronously accessible size never have a cache.
+   */
+  protected getValidatedCardinalityCache(): LRUCache<string, number> | undefined {
+    if (this.cardinalityCache) {
+      const size = (<RDF.DatasetCore> this.source).size;
+      if (size !== this.cardinalityCacheStoreSize) {
+        this.cardinalityCache.clear();
+        this.cardinalityCacheStoreSize = size;
+      }
+    }
+    return this.cardinalityCache;
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
@@ -196,11 +220,15 @@ export class QuerySourceRdfJs implements IQuerySource {
         operation.graph = this.dataFactory.defaultGraph();
       }
 
-      // Determine metadata
+      // Determine metadata lazily upon the first request,
+      // so that expensive cardinality counting is avoided when the metadata is never consumed.
       if (!it.getProperty('metadata')) {
         const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
-        this.setMetadata(it, operation, context, forceEstimateCardinality, { variables })
-          .catch(error => it.destroy(error));
+        const target = it;
+        deferMetadata(target, () => {
+          this.setMetadata(target, operation, context, forceEstimateCardinality, { variables })
+            .catch(error => target.destroy(error));
+        });
       }
 
       return it;
@@ -225,24 +253,30 @@ export class QuerySourceRdfJs implements IQuerySource {
       it = filterMatchingQuotedQuads(operation, it);
     }
 
-    // Determine metadata
-    if (!it.getProperty('metadata')) {
-      this.setMetadata(it, operation, context)
-        .catch(error => it.destroy(error));
-    }
-
     // Restore graph for determining variable metadata
     if (operation.graph.equals(this.dummyDefaultGraph)) {
       operation.graph = this.dataFactory.defaultGraph();
     }
 
-    return quadsToBindings(
+    const bindings = quadsToBindings(
       it,
       operation,
       this.dataFactory,
       this.bindingsFactory,
       Boolean(context.get(KeysQueryOperation.unionDefaultGraph)),
     );
+
+    // Determine metadata lazily upon the first request,
+    // so that expensive cardinality counting is avoided when the metadata is never consumed.
+    // Metadata assigned to the quads iterator is propagated to the bindings stream by `quadsToBindings`.
+    if (!it.getProperty('metadata')) {
+      deferMetadata(bindings, () => {
+        this.setMetadata(it, operation, context)
+          .catch(error => it.destroy(error));
+      });
+    }
+
+    return bindings;
   }
 
   protected async setMetadata(
@@ -257,41 +291,48 @@ export class QuerySourceRdfJs implements IQuerySource {
 
     // Check if we're running in union default graph mode
     const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
-    if (operation.graph.termType === 'DefaultGraph' && unionDefaultGraph) {
-      operation.graph = this.dummyDefaultGraph;
+    let graph: RDF.Term = operation.graph;
+    if (graph.termType === 'DefaultGraph' && unionDefaultGraph) {
+      graph = this.dummyDefaultGraph;
     }
 
-    let cardinality: number;
-    if ('countQuads' in this.source && this.source.countQuads) {
-      // If the source provides a dedicated method for determining cardinality, use that.
-      cardinality = await this.source.countQuads(
-        QuerySourceRdfJs.nullifyVariables(operation.subject, quotedTripleFiltering),
-        QuerySourceRdfJs.nullifyVariables(operation.predicate, quotedTripleFiltering),
-        QuerySourceRdfJs.nullifyVariables(operation.object, quotedTripleFiltering),
-        QuerySourceRdfJs.nullifyVariables(operation.graph, quotedTripleFiltering),
-      );
-    } else {
-      // Otherwise, fallback to a sub-optimal alternative where we just call match again to count the quads.
-      // WARNING: we can NOT reuse the original data stream here,
-      // because we may lose data elements due to things happening async.
-      let i = 0;
-      cardinality = await new Promise((resolve, reject) => {
-        let matches = this.source.match(
-          QuerySourceRdfJs.nullifyVariables(operation.subject, quotedTripleFiltering),
-          QuerySourceRdfJs.nullifyVariables(operation.predicate, quotedTripleFiltering),
-          QuerySourceRdfJs.nullifyVariables(operation.object, quotedTripleFiltering),
-          QuerySourceRdfJs.nullifyVariables(operation.graph, quotedTripleFiltering),
-        );
+    const subject = QuerySourceRdfJs.nullifyVariables(operation.subject, quotedTripleFiltering);
+    const predicate = QuerySourceRdfJs.nullifyVariables(operation.predicate, quotedTripleFiltering);
+    const object = QuerySourceRdfJs.nullifyVariables(operation.object, quotedTripleFiltering);
+    const graphNullified = QuerySourceRdfJs.nullifyVariables(graph, quotedTripleFiltering);
 
-        // If it's not a stream, turn it into one
-        if (typeof (<any> matches).on !== 'function') {
-          matches = <RDF.Stream>(new ArrayIterator(<RDF.DatasetCore> matches, { autoStart: false }));
-        }
+    // Cardinalities of identical patterns are cached,
+    // as query plans (such as bind-joins) may request them many times.
+    // The cache is invalidated when the source's size changes.
+    const cache = this.getValidatedCardinalityCache();
+    const cacheKey = cache ?
+      JSON.stringify([ subject, predicate, object, graphNullified ]
+        .map(term => term ? termToString(term) : null)) :
+      undefined;
+    let cardinality: number | undefined = cache?.get(cacheKey!);
+    if (cardinality === undefined) {
+      if ('countQuads' in this.source && this.source.countQuads) {
+        // If the source provides a dedicated method for determining cardinality, use that.
+        cardinality = await this.source.countQuads(subject, predicate, object, graphNullified);
+      } else {
+        // Otherwise, fallback to a sub-optimal alternative where we just call match again to count the quads.
+        // WARNING: we can NOT reuse the original data stream here,
+        // because we may lose data elements due to things happening async.
+        let i = 0;
+        cardinality = await new Promise((resolve, reject) => {
+          let matches = this.source.match(subject, predicate, object, graphNullified);
 
-        (<RDF.Stream>matches).on('error', reject);
-        (<RDF.Stream>matches).on('end', () => resolve(i));
-        (<RDF.Stream>matches).on('data', () => i++);
-      });
+          // If it's not a stream, turn it into one
+          if (typeof (<any> matches).on !== 'function') {
+            matches = <RDF.Stream>(new ArrayIterator(<RDF.DatasetCore> matches, { autoStart: false }));
+          }
+
+          (<RDF.Stream>matches).on('error', reject);
+          (<RDF.Stream>matches).on('end', () => resolve(i));
+          (<RDF.Stream>matches).on('data', () => i++);
+        });
+      }
+      cache?.set(cacheKey!, cardinality);
     }
 
     // If `match` would require filtering afterwards, our count will be an over-estimate.

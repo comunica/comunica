@@ -44,7 +44,7 @@ describe('ActorQuerySourceIdentifyRdfJs', () => {
     let dataset: RDF.DatasetCore;
 
     beforeEach(() => {
-      actor = new ActorQuerySourceIdentifyRdfJs({ name: 'actor', bus, mediatorMergeBindingsContext });
+      actor = new ActorQuerySourceIdentifyRdfJs({ name: 'actor', bus, mediatorMergeBindingsContext, cacheSize: 100 });
       source = { match: () => <any> null };
 
       // Mock of empty dataset

@@ -1075,4 +1075,150 @@ describe('QuerySourceRdfJs', () => {
         .toThrow(`queryVoid is not implemented in QuerySourceRdfJs`);
     });
   });
+
+  describe('cardinality metadata', () => {
+    let pattern: any;
+    beforeEach(() => {
+      store = new Store();
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+      source = new QuerySourceRdfJs(store, DF, BF);
+      pattern = AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'));
+    });
+
+    it('should not count quads if the metadata is never requested', async() => {
+      const spy = jest.spyOn(<Store> store, 'countQuads');
+      const data = source.queryBindings(pattern, ctx);
+      await arrayifyStream(data);
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+    it('should count quads once the metadata is requested', async() => {
+      const spy = jest.spyOn(<Store> store, 'countQuads');
+      const data = source.queryBindings(pattern, ctx);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual(expect.objectContaining({ cardinality: { type: 'exact', value: 2 }}));
+      await arrayifyStream(data);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should serve repeated counts of the same pattern from the cache', async() => {
+      const spy = jest.spyOn(<Store> store, 'countQuads');
+      for (let i = 0; i < 3; i++) {
+        const data = source.queryBindings(pattern, ctx);
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+          .toEqual(expect.objectContaining({ cardinality: { type: 'exact', value: 2 }}));
+      }
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should count different patterns separately', async() => {
+      const spy = jest.spyOn(<Store> store, 'countQuads');
+      const data1 = source.queryBindings(pattern, ctx);
+      await new Promise(resolve => data1.getProperty('metadata', resolve));
+      const data2 = source.queryBindings(AF.createPattern(
+        DF.variable('s'),
+        DF.variable('p'),
+        DF.variable('o'),
+      ), ctx);
+      await expect(new Promise(resolve => data2.getProperty('metadata', resolve))).resolves
+        .toEqual(expect.objectContaining({ cardinality: { type: 'exact', value: 2 }}));
+      expect(spy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should invalidate the cache when the store size changes', async() => {
+      const spy = jest.spyOn(<Store> store, 'countQuads');
+      const data1 = source.queryBindings(pattern, ctx);
+      await expect(new Promise(resolve => data1.getProperty('metadata', resolve))).resolves
+        .toEqual(expect.objectContaining({ cardinality: { type: 'exact', value: 2 }}));
+      store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.namedNode('o3')));
+      const data2 = source.queryBindings(pattern, ctx);
+      await expect(new Promise(resolve => data2.getProperty('metadata', resolve))).resolves
+        .toEqual(expect.objectContaining({ cardinality: { type: 'exact', value: 3 }}));
+      expect(spy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not cache when cacheSize is 0', async() => {
+      source = new QuerySourceRdfJs(store, DF, BF, 0);
+      const spy = jest.spyOn(<Store> store, 'countQuads');
+      for (let i = 0; i < 2; i++) {
+        const data = source.queryBindings(pattern, ctx);
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+          .toEqual(expect.objectContaining({ cardinality: { type: 'exact', value: 2 }}));
+      }
+      expect(spy).toHaveBeenCalledTimes(2);
+    });
+
+    it('should count by matching for sources without countQuads and without size', async() => {
+      const match = jest.fn(() => new ArrayIterator([
+        DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')),
+      ], { autoStart: false }));
+      source = new QuerySourceRdfJs(<any> { match }, DF, BF);
+      for (let i = 0; i < 2; i++) {
+        const data = source.queryBindings(pattern, ctx);
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+          .toEqual(expect.objectContaining({ cardinality: { type: 'exact', value: 1 }}));
+      }
+      // Twice per request: once for matching, once for counting; and no caching without a source size.
+      expect(match).toHaveBeenCalledTimes(4);
+    });
+
+    it('should count by iterating for sources returning non-stream matches', async() => {
+      const quads = [ DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')) ];
+      let calls = 0;
+      source = new QuerySourceRdfJs(<any> {
+        // Return an iterator for the data request, and a non-stream iterable for the count request.
+        match: () => calls++ === 0 ? new ArrayIterator(quads, { autoStart: false }) : <any> quads,
+      }, DF, BF);
+      const data = source.queryBindings(pattern, ctx);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual(expect.objectContaining({ cardinality: { type: 'exact', value: 1 }}));
+    });
+
+    it('should compute metadata lazily for matchBindings sources', async() => {
+      (<any> store).matchBindings = () => new ArrayIterator([], { autoStart: false });
+      const spy = jest.spyOn(<Store> store, 'countQuads');
+      const data = source.queryBindings(pattern, ctx);
+      await arrayifyStream(data);
+      expect(spy).not.toHaveBeenCalled();
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual(expect.objectContaining({ cardinality: { type: 'exact', value: 2 }}));
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should destroy the stream when lazy metadata computation fails for matchBindings sources', async() => {
+      (<any> store).matchBindings = () => new ArrayIterator([], { autoStart: false });
+      jest.spyOn(<Store> store, 'countQuads').mockImplementation(() => {
+        throw new Error('countQuads error in QuerySourceRdfJs-test');
+      });
+      const data = source.queryBindings(pattern, ctx);
+      data.getProperty('metadata', () => {
+        // Metadata will never be set.
+      });
+      await expect(new Promise((resolve, reject) => {
+        data.on('error', reject);
+        data.on('end', resolve);
+        data.on('data', () => {
+          // Consume data.
+        });
+      })).rejects.toThrow('countQuads error in QuerySourceRdfJs-test');
+    });
+
+    it('should destroy the stream when lazy metadata computation fails for match sources', async() => {
+      jest.spyOn(<Store> store, 'countQuads').mockImplementation(() => {
+        throw new Error('countQuads error in QuerySourceRdfJs-test');
+      });
+      const data = source.queryBindings(pattern, ctx);
+      data.getProperty('metadata', () => {
+        // Metadata will never be set.
+      });
+      await expect(new Promise((resolve, reject) => {
+        data.on('error', reject);
+        data.on('end', resolve);
+        data.on('data', () => {
+          // Consume data.
+        });
+      })).rejects.toThrow('countQuads error in QuerySourceRdfJs-test');
+    });
+  });
 });
