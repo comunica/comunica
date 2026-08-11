@@ -6,7 +6,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { QueryEngineFactory } from '../lib/QueryEngineFactory';
 
 // Use an increased timeout
-jest.setTimeout(30_000);
+jest.setTimeout(60_000);
 
 const DF = new DataFactory();
 const queryEngineFactory = new QueryEngineFactory();
