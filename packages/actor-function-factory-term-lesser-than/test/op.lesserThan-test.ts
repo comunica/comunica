@@ -41,6 +41,13 @@ const nonLexicalEvalContext: FuncTestTableConfig<object> = {
   }),
 };
 
+const fullTermEvalContext: FuncTestTableConfig<object> = {
+  ...config,
+  config: new ActionContext({
+    [KeysExpressionEvaluator.fullTermComparison.name]: true,
+  }),
+};
+
 describe('evaluation of \'<\'', () => {
   describe('with numeric operands like', () => {
     runFuncTestTable({
@@ -92,6 +99,25 @@ describe('evaluation of \'<\'', () => {
         aaa   aaa   = false
         aaa   bbb   = true
         bbb   aaa   = false
+      `,
+    });
+  });
+
+  describe('with language string operands like', () => {
+    runFuncTestTable({
+      ...config,
+      errorTable: `
+        "a"@en "b"@de = 'Argument types not valid'
+        "a"@en "a"@de = 'Argument types not valid'
+        "a"@en "a"@en = 'Argument types not valid'
+      `,
+    });
+  });
+
+  describe('with language string operands and fullTermComparison like', () => {
+    runFuncTestTable({
+      ...fullTermEvalContext,
+      testTable: `
         "a"@en "b"@de = true
         "a"@en "a"@de = false
         "a"@en "a"@en = false
@@ -222,9 +248,9 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
-  describe('with literals of unknown types and nonLiteralComparison like', () => {
+  describe('with literals of unknown types and fullTermComparison like', () => {
     runFuncTestTable({
-      ...nonLexicalEvalContext,
+      ...fullTermEvalContext,
       testTable: `
         "2"^^example:int "0"^^example:int = false
         "abc"^^example:string "def"^^example:string = true
@@ -239,7 +265,7 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
-  describe('with non lexical operands like (1)', () => {
+  describe('with non lexical operands like', () => {
     runFuncTestTable({
       ...config,
       errorTable: `
@@ -259,9 +285,35 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
-  describe('with non lexical operands like (2)', () => {
+  describe('with non lexical operands and nonLiteralComparison like', () => {
     runFuncTestTable({
       ...nonLexicalEvalContext,
+      testTable: `
+        "a"^^xsd:dateTime    "b"^^xsd:dateTime   = true
+        "a"^^xsd:dateTime    "a"^^xsd:dateTime   = false
+        "a"^^xsd:boolean     "b"^^xsd:boolean    = true
+        "a"^^xsd:boolean     "true"^^xsd:boolean = true
+        earlyN               "a"^^xsd:dateTime   = true
+        
+        "a"^^xsd:integer           "b"^^xsd:decimal           = true
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = true
+        "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = true
+        "a"^^xsd:time              "b"^^xsd:time              = true
+      `,
+      errorTable: `
+        "a"^^xsd:boolean     "a"^^xsd:dateTime   = 'Argument types not valid'
+        "true"^^xsd:boolean  "a"^^xsd:dateTime   = 'Argument types not valid'
+      `,
+    });
+  });
+
+  describe('with non lexical operands and both comparison options like', () => {
+    runFuncTestTable({
+      ...config,
+      config: new ActionContext({
+        [KeysExpressionEvaluator.nonLexicalComparison.name]: true,
+        [KeysExpressionEvaluator.fullTermComparison.name]: true,
+      }),
       testTable: `
         "a"^^xsd:dateTime    "b"^^xsd:dateTime   = true
         "a"^^xsd:dateTime    "a"^^xsd:dateTime   = false
@@ -279,10 +331,10 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
-  describe('with quoted triple operands and nonLiteral eval like', () => {
+  describe('with quoted triple operands and fullTermComparison like', () => {
     // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#sparql-compare
     runFuncTestTable({
-      ...nonLexicalEvalContext,
+      ...fullTermEvalContext,
       testArray: [
         [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
         [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123.0 )>>', 'false' ],
@@ -306,9 +358,9 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
-  describe('with named nodes operands and nonLiteralComparison like', () => {
+  describe('with named nodes operands and fullTermComparison like', () => {
     runFuncTestTable({
-      ...nonLexicalEvalContext,
+      ...fullTermEvalContext,
       testArray: [
         [ '<ex:ab>', '<ex:cd>', 'true' ],
         [ '<ex:ad>', '<ex:bc>', 'true' ],
@@ -330,9 +382,9 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
-  describe('with blank nodes operands and nonLiteralCompare like', () => {
+  describe('with blank nodes operands and fullTermComparison like', () => {
     runFuncTestTable({
-      ...nonLexicalEvalContext,
+      ...fullTermEvalContext,
       testArray: [
         [ 'BNODE("ab")', 'BNODE("cd")', 'true' ],
         [ 'BNODE("ad")', 'BNODE("bc")', 'true' ],
@@ -354,9 +406,9 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
-  describe('with mixed terms operands and nonLiteralCompare like', () => {
+  describe('with mixed terms operands and fullTermComparison like', () => {
     runFuncTestTable({
-      ...nonLexicalEvalContext,
+      ...fullTermEvalContext,
       testArray: [
         [ 'BNODE("ab")', '<ex:ab>', 'true' ],
         [ '<<( <ex:a> <ex:b> 123)>>', '123', 'false' ],

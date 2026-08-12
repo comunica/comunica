@@ -1,7 +1,8 @@
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import type { IInternalEvaluator } from '@comunica/types';
+import type { ActionContextKey } from '@comunica/core';
+import type { IInternalEvaluator, TermExpression } from '@comunica/types';
 import {
   bool,
   dayTimeDurationsToSeconds,
@@ -34,6 +35,8 @@ import * as Err from '@comunica/utils-expression-evaluator/lib/util/Errors';
 
 type Tuple<T> = readonly [T, T];
 
+// TODO: create fullTermComparison wrapper (just like the nonLexicalWrapper)
+
 export class TermFunctionLesserThan extends TermFunctionBase {
   public constructor(private readonly equalityFunction: ITermFunction) {
     super({
@@ -49,7 +52,8 @@ export class TermFunctionLesserThan extends TermFunctionBase {
         .stringTest(() => (left, right) => left.localeCompare(right) === -1)
         .set(
           [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
-          () => ([ left, right ]: LangStringLiteral[]) => {
+          exprEval => ([ left, right ]: LangStringLiteral[]) => {
+            this.fullTermComparisonCheck(exprEval, left, right);
             if (left.str() !== right.str()) {
               return bool(left.str() < right.str());
             }
@@ -143,12 +147,12 @@ export class TermFunctionLesserThan extends TermFunctionBase {
 
   private nonLexicalWrapper<LiteralType extends Literal<ISerializable>, ReturnType = boolean>(
     exprEval: IInternalEvaluator,
-    comparator: (arg: Tuple<LiteralType>) => ReturnType,
-  ): (arg: Tuple<LiteralType>) => ReturnType | boolean {
+    comparator: (args: Tuple<LiteralType>) => ReturnType,
+  ): (args: Tuple<LiteralType>) => ReturnType | boolean {
     return (args) => {
       const nonLexical = args.find(arg => arg instanceof NonLexicalLiteral);
       if (nonLexical) {
-        if (this.shouldThrowNonLexicalError(exprEval)) {
+        if (!exprEval.context.get(KeysExpressionEvaluator.nonLexicalComparison)) {
           throw new Err.InvalidLexicalForm(
             nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
           );
@@ -160,8 +164,11 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     };
   }
 
-  private shouldThrowNonLexicalError(exprEval: IInternalEvaluator): boolean {
-    return !exprEval.context.get(KeysExpressionEvaluator.nonLexicalComparison);
+  private fullTermComparisonCheck(exprEval: IInternalEvaluator, a: TermExpression, b: TermExpression): void {
+    if (!exprEval.context.get(KeysExpressionEvaluator.fullTermComparison)) {
+      throw new InvalidArgumentTypes([ a, b ], SparqlOperator.LT, `
+To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name} flag to true.`);
+    }
   }
 
   private quadComponentTest(left: Term, right: Term, exprEval: IInternalEvaluator): boolean | undefined {
@@ -182,20 +189,19 @@ export class TermFunctionLesserThan extends TermFunctionBase {
   }
 
   private lesserThanTerms(termA: Term, termB: Term, exprEval: IInternalEvaluator): boolean {
-    if (this.shouldThrowNonLexicalError(exprEval)) {
-      throw new InvalidArgumentTypes([ termA, termB ], SparqlOperator.LT, `
-To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name} flag to true.`);
-    }
-    // Order different types according to a priority mapping
+    this.fullTermComparisonCheck(exprEval, termA, termB);
+
+    // Order terms with different types according to a priority mapping
     if (termA.termType !== termB.termType) {
       return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType];
     }
 
-    // If both are literals, try compare data type first (or handle non-lexical behaviour in case of non lexicals)
+    // Comparison of literals with different or unknown data types
     if (termA.termType === 'literal' && termB.termType === 'literal') {
       const litA = <Literal<ISerializable>> termA;
       const litB = <Literal<ISerializable>> termB;
-      const evaluated = this.nonLexicalWrapper(
+
+      const dataTypesComparison = this.nonLexicalWrapper<Literal<ISerializable>, boolean | undefined>(
         exprEval,
         ([ litA, litB ]) => {
           const compareType =
@@ -205,9 +211,8 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
           }
         },
       )([ litA, litB ]);
-      if (evaluated !== undefined) {
-        return evaluated;
-      }
+
+      return dataTypesComparison ?? this.comparePrimitives(this.getValue(termA), this.getValue(termB)) === -1;
     }
 
     return this.comparePrimitives(this.getValue(termA), this.getValue(termB)) === -1;

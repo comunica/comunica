@@ -1851,6 +1851,8 @@ WHERE { }
       });
     });
 
+    // TODO: create integration tests for fullTermComparison set to true
+
     describe('count distinct with UNION and partially unbound variables', () => {
       it('should correctly count distinct values when a variable is only bound in one UNION branch', async() => {
         // Regression test: COUNT(DISTINCT ?x) should ignore bindings where ?x is unbound
