@@ -192,8 +192,14 @@ describe('terms order', () => {
     await orderTestIsLower(dateTime('a'), dateTime('b'));
     await orderTestIsEqual(dateTime('a'), dateTime('a'));
     await orderTestIsLower(bool('a'), bool('b'));
-    await orderTestIsLower(bool('a'), dateTime('a'));
     await orderTestIsLower(bool('a'), bool('true'));
+    // Except for numeric literals, data types are first compared,
+    // making xsd:bool < xsd:dateTime < xsd:integer < xsd:string
+    // See packages/actor-function-factory-term-lesser-than/lib/TermFunctionLesserThan.ts
+    await orderTestIsEqual(int('a'), decimal('a'));
+    await orderTestIsLower(bool('a'), dateTime('a'));
+    await orderTestIsLower(bool('true'), int('a'));
+    await orderTestIsLower(int('b'), string('a'));
   });
 
   it('quoted triples comparison', async() => {
