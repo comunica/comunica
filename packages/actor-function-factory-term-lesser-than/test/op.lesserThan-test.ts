@@ -273,7 +273,7 @@ describe('evaluation of \'<\'', () => {
         "a"^^xsd:dateTime    "a"^^xsd:dateTime   = 'Invalid lexical form'
         "a"^^xsd:boolean     "b"^^xsd:boolean    = 'Invalid lexical form'
         "a"^^xsd:boolean     "a"^^xsd:dateTime   = 'Argument types not valid'
-        "a"^^xsd:boolean     "true"^^xsd:boolean = 'Invalid lexical form'
+        "true"^^xsd:boolean  "a"^^xsd:boolean    = 'Invalid lexical form'
         earlyN               "a"^^xsd:dateTime   = 'Invalid lexical form'
         "true"^^xsd:boolean  "a"^^xsd:dateTime   = 'Argument types not valid'
         
@@ -292,7 +292,7 @@ describe('evaluation of \'<\'', () => {
         "a"^^xsd:dateTime    "b"^^xsd:dateTime   = true
         "a"^^xsd:dateTime    "a"^^xsd:dateTime   = false
         "a"^^xsd:boolean     "b"^^xsd:boolean    = true
-        "a"^^xsd:boolean     "true"^^xsd:boolean = true
+        "true"^^xsd:boolean  "a"^^xsd:boolean    = false
         earlyN               "a"^^xsd:dateTime   = true
         
         "a"^^xsd:integer           "b"^^xsd:decimal           = true
@@ -303,6 +303,26 @@ describe('evaluation of \'<\'', () => {
       errorTable: `
         "a"^^xsd:boolean     "a"^^xsd:dateTime   = 'Argument types not valid'
         "true"^^xsd:boolean  "a"^^xsd:dateTime   = 'Argument types not valid'
+      `,
+    });
+  });
+
+  describe('with non lexical operands and fullTermComparison like', () => {
+    runFuncTestTable({
+      ...fullTermEvalContext,
+      errorTable: `
+        "a"^^xsd:dateTime    "b"^^xsd:dateTime   = 'Invalid lexical form'
+        "a"^^xsd:dateTime    "a"^^xsd:dateTime   = 'Invalid lexical form'
+        "a"^^xsd:boolean     "b"^^xsd:boolean    = 'Invalid lexical form'
+        "a"^^xsd:boolean     "a"^^xsd:dateTime   = 'Invalid lexical form'
+        "true"^^xsd:boolean  "a"^^xsd:boolean    = 'Invalid lexical form'
+        earlyN               "a"^^xsd:dateTime   = 'Invalid lexical form'
+        "true"^^xsd:boolean  "a"^^xsd:dateTime   = 'Invalid lexical form'
+        
+        "a"^^xsd:integer           "b"^^xsd:decimal           = 'Invalid lexical form'
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = 'Invalid lexical form'
+        "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = 'Invalid lexical form'
+        "a"^^xsd:time              "b"^^xsd:time              = 'Invalid lexical form'
       `,
     });
   });
@@ -318,10 +338,10 @@ describe('evaluation of \'<\'', () => {
         "a"^^xsd:dateTime    "b"^^xsd:dateTime   = true
         "a"^^xsd:dateTime    "a"^^xsd:dateTime   = false
         "a"^^xsd:boolean     "b"^^xsd:boolean    = true
-        "a"^^xsd:boolean     "a"^^xsd:dateTime   = false
-        "a"^^xsd:boolean     "true"^^xsd:boolean = true
+        "a"^^xsd:boolean     "a"^^xsd:dateTime   = true
+        "true"^^xsd:boolean  "a"^^xsd:boolean    = false
         earlyN               "a"^^xsd:dateTime   = true
-        "true"^^xsd:boolean  "a"^^xsd:dateTime   = false
+        "true"^^xsd:boolean  "a"^^xsd:dateTime   = true
         
         "a"^^xsd:integer           "b"^^xsd:decimal           = true
         "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = true

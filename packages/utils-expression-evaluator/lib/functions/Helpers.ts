@@ -2,7 +2,7 @@
  * These helpers provide a (albeit inflexible) DSL for writing function
  * definitions for the SPARQL functions.
  */
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type {
   ComunicaDataFactory,
   IDateTimeRepresentation,
@@ -549,4 +549,21 @@ export function expressionToVar(
   variableExpression: VariableExpression,
 ): RDF.Variable {
   return dataFactory.variable(variableExpression.name.slice(1));
+}
+
+export function nonLexicalHandler(
+  exprEval: IInternalEvaluator,
+  left: Literal<ISerializable>,
+  right: Literal<ISerializable>,
+): undefined | -1 | 0 | 1 {
+  const nonLexical = [ left, right ].find(arg => arg instanceof NonLexicalLiteral);
+  if (nonLexical) {
+    if (!exprEval.context.get(KeysExpressionEvaluator.nonLexicalComparison)) {
+      throw new Err.InvalidLexicalForm(
+        nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
+      );
+    }
+    return left.str() === right.str() ? 0 : (left.str() < right.str() ? -1 : 1);
+  }
+  return undefined;
 }

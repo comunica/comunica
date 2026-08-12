@@ -45,6 +45,13 @@ const nonLexicalEvalContext: FuncTestTableConfig<object> = {
   }),
 };
 
+const fullTermEvalContext: FuncTestTableConfig<object> = {
+  ...config,
+  config: new ActionContext({
+    [KeysExpressionEvaluator.fullTermComparison.name]: true,
+  }),
+};
+
 describe('evaluation of \'>=\'', () => {
   describe('with numeric operands like', () => {
     runFuncTestTable({
@@ -208,9 +215,9 @@ describe('evaluation of \'>=\'', () => {
     });
   });
 
-  describe('with literals of unknown types and nonLiteralCompare like', () => {
+  describe('with literals of unknown types and fullTermComparison like', () => {
     runFuncTestTable({
-      ...nonLexicalEvalContext,
+      ...fullTermEvalContext,
       testTable: `
         "2"^^example:int "0"^^example:int = true
         "abc"^^example:string "def"^^example:string = false
@@ -218,6 +225,48 @@ describe('evaluation of \'>=\'', () => {
         "2"^^example:int "2"^^example:string = false
         "2"^^example:string "2"^^example:int = true
         "2"^^example:string "2"^^example:string = true
+      `,
+    });
+  });
+
+  describe('with non lexical operands like', () => {
+    runFuncTestTable({
+      ...config,
+      errorTable: `
+        "a"^^xsd:dateTime    "b"^^xsd:dateTime   = 'Invalid lexical form'
+        "a"^^xsd:dateTime    "a"^^xsd:dateTime   = 'Invalid lexical form'
+        "a"^^xsd:boolean     "b"^^xsd:boolean    = 'Invalid lexical form'
+        "a"^^xsd:boolean     "a"^^xsd:dateTime   = 'Argument types not valid'
+        "true"^^xsd:boolean  "a"^^xsd:boolean    = 'Invalid lexical form'
+        earlyN               "a"^^xsd:dateTime   = 'Invalid lexical form'
+        "true"^^xsd:boolean  "a"^^xsd:dateTime   = 'Argument types not valid'
+        
+        "a"^^xsd:integer           "b"^^xsd:decimal           = 'Invalid lexical form'
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = 'Invalid lexical form'
+        "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = 'Invalid lexical form'
+        "a"^^xsd:time              "b"^^xsd:time              = 'Invalid lexical form'
+      `,
+    });
+  });
+
+  describe('with non lexical operands and nonLiteralComparison like', () => {
+    runFuncTestTable({
+      ...nonLexicalEvalContext,
+      testTable: `
+        "a"^^xsd:dateTime    "b"^^xsd:dateTime   = false
+        "a"^^xsd:dateTime    "a"^^xsd:dateTime   = true
+        "a"^^xsd:boolean     "b"^^xsd:boolean    = false
+        "true"^^xsd:boolean  "a"^^xsd:boolean    = true
+        earlyN               "a"^^xsd:dateTime   = false
+        
+        "a"^^xsd:integer           "b"^^xsd:decimal           = false
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = false
+        "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = false
+        "a"^^xsd:time              "b"^^xsd:time              = false
+      `,
+      errorTable: `
+        "a"^^xsd:boolean     "a"^^xsd:dateTime   = 'Argument types not valid'
+        "true"^^xsd:boolean  "a"^^xsd:dateTime   = 'Argument types not valid'
       `,
     });
   });
@@ -249,9 +298,9 @@ describe('evaluation of \'>=\'', () => {
     });
   });
 
-  describe('with named nodes operands and nonLiteralCompare like', () => {
+  describe('with named nodes operands and fullTermComparison like', () => {
     runFuncTestTable({
-      ...nonLexicalEvalContext,
+      ...fullTermEvalContext,
       testArray: [
         [ '<ex:ab>', '<ex:cd>', 'false' ],
         [ '<ex:ad>', '<ex:bc>', 'false' ],
@@ -273,9 +322,9 @@ describe('evaluation of \'>=\'', () => {
     });
   });
 
-  describe('with blank nodes operands and nonLiteralCompare like', () => {
+  describe('with blank nodes operands and fullTermComparison like', () => {
     runFuncTestTable({
-      ...nonLexicalEvalContext,
+      ...fullTermEvalContext,
       testArray: [
         [ 'BNODE("ab")', 'BNODE("cd")', 'false' ],
         [ 'BNODE("ad")', 'BNODE("bc")', 'false' ],
@@ -297,9 +346,9 @@ describe('evaluation of \'>=\'', () => {
     });
   });
 
-  describe('with mixed terms operands and nonLiteralCompare like', () => {
+  describe('with mixed terms operands and fullTermComparison like', () => {
     runFuncTestTable({
-      ...nonLexicalEvalContext,
+      ...fullTermEvalContext,
       testArray: [
         [ 'BNODE("ab")', '<ex:ab>', 'false' ],
         [ '<<(<ex:a> <ex:b> 123)>>', '123', 'true' ],

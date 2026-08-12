@@ -1,7 +1,6 @@
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import type { ActionContextKey } from '@comunica/core';
 import type { IInternalEvaluator, TermExpression } from '@comunica/types';
 import {
   bool,
@@ -30,6 +29,7 @@ import type {
   TimeLiteral,
   ISerializable,
 } from '@comunica/utils-expression-evaluator';
+import { nonLexicalHandler } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
 import * as C from '@comunica/utils-expression-evaluator/lib/util/Consts';
 import * as Err from '@comunica/utils-expression-evaluator/lib/util/Errors';
 
@@ -145,22 +145,16 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     )(args));
   }
 
-  private nonLexicalWrapper<LiteralType extends Literal<ISerializable>, ReturnType = boolean>(
+  private nonLexicalWrapper<LiteralType extends Literal<ISerializable>>(
     exprEval: IInternalEvaluator,
-    comparator: (args: Tuple<LiteralType>) => ReturnType,
-  ): (args: Tuple<LiteralType>) => ReturnType | boolean {
-    return (args) => {
-      const nonLexical = args.find(arg => arg instanceof NonLexicalLiteral);
-      if (nonLexical) {
-        if (!exprEval.context.get(KeysExpressionEvaluator.nonLexicalComparison)) {
-          throw new Err.InvalidLexicalForm(
-            nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
-          );
-        }
-        const [ left, right ] = args;
-        return this.comparePrimitives(left.str(), right.str()) === -1;
+    comparator: (args: Tuple<LiteralType>) => boolean,
+  ): (args: Tuple<LiteralType>) => boolean {
+    return ([ left, right ]: Tuple<LiteralType>) => {
+      const nonLexicalCompareResult = nonLexicalHandler(exprEval, left, right);
+      if (nonLexicalCompareResult !== undefined) {
+        return nonLexicalCompareResult === -1;
       }
-      return comparator(args);
+      return comparator([ left, right ]);
     };
   }
 
@@ -201,18 +195,17 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
       const litA = <Literal<ISerializable>> termA;
       const litB = <Literal<ISerializable>> termB;
 
-      const dataTypesComparison = this.nonLexicalWrapper<Literal<ISerializable>, boolean | undefined>(
-        exprEval,
-        ([ litA, litB ]) => {
-          const compareType =
-            this.comparePrimitives(litA.dataType, litB.dataType);
-          if (compareType !== 0) {
-            return compareType === -1;
-          }
-        },
-      )([ litA, litB ]);
+      const nonLexical = [ litA, litB ].find(arg => arg instanceof NonLexicalLiteral);
+      if (nonLexical && !exprEval.context.get(KeysExpressionEvaluator.nonLexicalComparison)) {
+        throw new Err.InvalidLexicalForm(
+          nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
+        );
+      }
 
-      return dataTypesComparison ?? this.comparePrimitives(this.getValue(termA), this.getValue(termB)) === -1;
+      const compareType = this.comparePrimitives(litA.dataType, litB.dataType);
+      if (compareType !== 0) {
+        return compareType === -1;
+      }
     }
 
     return this.comparePrimitives(this.getValue(termA), this.getValue(termB)) === -1;
