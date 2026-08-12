@@ -190,7 +190,7 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
       return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType];
     }
 
-    // Comparison of literals with different or unknown data types
+    // Comparison of literals with different or unknown data types: handle non-lexicals and first check dataType
     if (termA.termType === 'literal' && termB.termType === 'literal') {
       const litA = <Literal<ISerializable>> termA;
       const litB = <Literal<ISerializable>> termB;

@@ -192,7 +192,7 @@ describe('terms order', () => {
     await orderTestIsLower(dateTime('a'), dateTime('b'));
     await orderTestIsEqual(dateTime('a'), dateTime('a'));
     await orderTestIsLower(bool('a'), bool('b'));
-    await orderTestIsEqual(bool('a'), dateTime('a'));
+    await orderTestIsLower(bool('a'), dateTime('a'));
     await orderTestIsLower(bool('a'), bool('true'));
   });
 
