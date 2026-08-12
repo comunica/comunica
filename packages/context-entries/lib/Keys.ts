@@ -285,7 +285,7 @@ export const KeysExpressionEvaluator = {
     '@comunica/utils-expression-evaluator:nonLexicalComparison',
   ),
   /**
-   * A boolean denoting the behaviour of the lesser than function when used with non-literal operands.
+   * A boolean denoting the behaviour of the lesser than function when used with non-literal and mixed operands.
    * Such non-literals are IRIs, blank nodes, languageStrings and triple terms.
    * Their comparison is not required by default in SPARQL.
    *
