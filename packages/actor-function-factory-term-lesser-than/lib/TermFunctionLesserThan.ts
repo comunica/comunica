@@ -35,9 +35,8 @@ import * as Err from '@comunica/utils-expression-evaluator/lib/util/Errors';
 
 type Tuple<T> = readonly [T, T];
 
-// TODO: create fullTermComparison wrapper (just like the nonLexicalWrapper)
-
 export class TermFunctionLesserThan extends TermFunctionBase {
+  // TODO: remove in next major, as it's unused
   public constructor(private readonly equalityFunction: ITermFunction) {
     super({
       arity: 2,
@@ -166,20 +165,23 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
   }
 
   private quadComponentTest(left: Term, right: Term, exprEval: IInternalEvaluator): boolean | undefined {
-    // If components are equal, we don't have an answer
-    const componentEqual = this.equalityFunction.applyOnTerms(
-      [ left, right ],
-      exprEval,
-    );
-    if ((<BooleanLiteral> componentEqual).typedValue) {
-      return undefined;
-    }
-
     const componentLess = this.applyOnTerms(
       [ left, right ],
       exprEval,
     );
-    return (<BooleanLiteral>componentLess).typedValue;
+    if ((<BooleanLiteral>componentLess).typedValue) {
+      return true;
+    }
+
+    const componentGreater = this.applyOnTerms(
+      [ right, left ],
+      exprEval,
+    );
+    if ((<BooleanLiteral>componentGreater).typedValue) {
+      return false;
+    }
+
+    return undefined;
   }
 
   private lesserThanTerms(termA: Term, termB: Term, exprEval: IInternalEvaluator): boolean {
