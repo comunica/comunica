@@ -14,6 +14,8 @@ import * as C from '@comunica/utils-expression-evaluator/lib/util/Consts';
 
 export class TermFunctionLesserThanEqual extends TermFunctionBase {
   public constructor(
+    // TODO: remove in next major, as it's unused
+    private readonly equalityFunction: ITermFunction,
     private readonly lessThanFunction: ITermFunction,
   ) {
     super({

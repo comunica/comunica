@@ -59,6 +59,7 @@ function orderByFactory(typeDiscoveryCallback?: SuperTypeCallback): ITermCompara
   const equal = new TermFunctionEquality();
   return new TermComparatorExpressionEvaluator(
     getMockInternalEvaluator(undefined, getContext()),
+    equal,
     new TermFunctionLesserThan(equal),
   );
 }

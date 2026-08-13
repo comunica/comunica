@@ -8,6 +8,8 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
   public constructor(
     // The internal evaluator is expected to have a context with nonLexicalComparison and fullTermComparison set to true
     private readonly internalEvaluator: InternalEvaluator,
+    // TODO: remove in next major, as it's unused
+    private readonly equalityFunction: ITermFunction,
     private readonly lessThanFunction: ITermFunction,
   ) {}
 
