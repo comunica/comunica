@@ -12556,10 +12556,10 @@ rdf-store-stream@^3.0.0:
   dependencies:
     rdf-stores "^2.0.0"
 
-rdf-stores@^2.0.0, rdf-stores@^2.1.1, rdf-stores@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/rdf-stores/-/rdf-stores-2.2.0.tgz#aa61ed5315fa5d6aff55575dddafa96bb608aaba"
-  integrity sha512-HEZblb6LQA+yiZrlO96HQeFRVjpEQUeCZ7rmCoN64bBQ6eHamKWPIh0vxMLe7h8a8AF23wbA3jpLG3pHRPk1mQ==
+rdf-stores@^2.0.0, rdf-stores@^2.1.1, rdf-stores@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/rdf-stores/-/rdf-stores-2.3.0.tgz#49ac3340cfcb4f06dedcfe3ab06ea12c9c091bf0"
+  integrity sha512-KfXy5sBDKdpJUx1KOquzx72smxu9tkMbhIr/lEUEte6ZWjGTW40/sWXlfVwblhy0kHKzu3z4cMRyiHO9sWAORw==
   dependencies:
     asynciterator "^3.8.0"
     rdf-data-factory "^2.0.1"

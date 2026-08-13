@@ -3013,6 +3013,31 @@ CONSTRUCT {
       expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('should not ignore constant terms in SELECT DISTINCT over a single triple pattern', async() => {
+      // ?person a ex:Person  -- predicate and object are constants, so DistinctTerms must NOT be used
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(DF.namedNode('ex:alice'), DF.namedNode('ex:type'), DF.namedNode('ex:Person')));
+      store.addQuad(DF.quad(DF.namedNode('ex:report'), DF.namedNode('ex:type'), DF.namedNode('ex:Document')));
+      store.addQuad(DF.quad(DF.namedNode('ex:report'), DF.namedNode('ex:author'), DF.namedNode('ex:alice')));
+
+      const matchDistinctTermsSpy = jest.spyOn(store, 'matchDistinctTerms');
+
+      const bindingsStream = await engine.queryBindings(`
+        PREFIX ex: <ex:>
+        SELECT DISTINCT ?person WHERE {
+          ?person ex:type ex:Person
+        }
+      `, { sources: [ store ]});
+
+      await expect(bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('person'), DF.namedNode('ex:alice') ],
+        ]),
+      ]);
+
+      expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should not optimize SELECT DISTINCT with multiple sources', async() => {
       const store1 = RdfStore.createDefault();
       store1.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')));

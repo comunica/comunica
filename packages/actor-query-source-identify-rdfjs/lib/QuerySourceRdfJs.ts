@@ -13,7 +13,7 @@ import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
-import { filterTermsNested, someTerms, someTermsNested, uniqTerms } from 'rdf-terms';
+import { filterTermsNested, QUAD_TERM_NAMES, someTerms, someTermsNested, uniqTerms } from 'rdf-terms';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
 export class QuerySourceRdfJs implements IQuerySource {
@@ -134,8 +134,9 @@ export class QuerySourceRdfJs implements IQuerySource {
       'matchDistinctTerms' in this.source && this.source.matchDistinctTerms) {
       // Convert the terms mapping to an array of QuadTermName in the order of variables
       const termNames: any[] = operation.variables.map(variable => operation.terms[variable.value]);
+      const filters = operation.filters ? QUAD_TERM_NAMES.map(name => operation.filters![name]) : undefined;
 
-      const rawStream = this.source.matchDistinctTerms(termNames);
+      const rawStream = this.source.matchDistinctTerms(termNames, filters);
       const it: AsyncIterator<RDF.Term[]> = rawStream instanceof AsyncIterator ?
         rawStream :
         wrapAsyncIterator<RDF.Term[]>(rawStream, { autoStart: false });
