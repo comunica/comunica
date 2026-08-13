@@ -383,6 +383,21 @@ export class HttpServiceSparqlEndpoint {
           this.lastQueryId++,
         );
         break;
+      case 'QUERY':
+        queryBody = await this.parseBody(request);
+        await this.writeQueryResult(
+          engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          queryBody,
+          mediaType,
+          false,
+          true,
+          this.lastQueryId++,
+        );
+        break;
       case 'HEAD':
       case 'GET':
         // eslint-disable-next-line no-case-declarations
@@ -558,7 +573,11 @@ export class HttpServiceSparqlEndpoint {
     stdout.write(`[200] ${request.method} to ${request.url}\n`);
     stdout.write(`      Requested media type: ${mediaType}\n`);
     stdout.write('      Received query for service description.\n');
-    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+    response.writeHead(200, {
+      'content-type': mediaType,
+      'Access-Control-Allow-Origin': '*',
+      'Accept-Query': 'application/sparql-query',
+    });
 
     if (headOnly) {
       response.end();

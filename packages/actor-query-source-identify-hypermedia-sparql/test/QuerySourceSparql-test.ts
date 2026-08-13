@@ -1374,6 +1374,85 @@ describe('QuerySourceSparql', () => {
       });
     });
 
+    describe('when queryAccepted is defined', () => {
+      let getSource: (arg0: string[]) => QuerySourceSparql;
+      let operationIn: Algebra.Operation;
+      let expectedResult: RDF.Bindings[];
+
+      beforeEach(() => {
+        getSource = (queryAccepted: string[]) => new QuerySourceSparql(
+          url,
+          url,
+          ctx,
+          mediatorHttp,
+          mediatorQuerySerialize,
+          'values',
+          DF,
+          AF,
+          BF,
+          false,
+          64,
+          10,
+          true,
+          true,
+          0,
+          false,
+
+          { queryAccepted },
+        );
+        operationIn = AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'));
+        expectedResult = [
+          BF.fromRecord({
+            p: DF.namedNode('p1'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p2'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p3'),
+          }),
+        ];
+      });
+
+      it('should perform an HTTP QUERY request when queryAccepted includes application/sparql-query', async() => {
+        source = getSource([ 'application/sparql-query' ]);
+
+        const stream = source.queryBindings(operationIn, ctx);
+        await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves.toBeDefined();
+        await expect(stream).toEqualBindingsStream(expectedResult);
+
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          context: ctx,
+          init: {
+            body: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }',
+            headers: expect.anything(),
+            method: 'QUERY',
+          },
+          input: url,
+        });
+      });
+
+      it('should perform an HTTP POST request when queryAccepted does not include application/sparql-query', async() => {
+        source = getSource([ 'application/graphql-query' ]);
+
+        const stream = source.queryBindings(operationIn, ctx);
+        await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves.toBeDefined();
+        await expect(stream).toEqualBindingsStream(expectedResult);
+
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          context: ctx,
+          init: {
+            body: new URLSearchParams({ query: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }' }),
+            headers: expect.anything(),
+            method: 'POST',
+          },
+          input: url,
+        });
+      });
+    });
+
     it('should return data when joining bindings', async() => {
       await expect(source.queryBindings(
         AF.createPattern(iriS, DF.variable('p'), iriO),

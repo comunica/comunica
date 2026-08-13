@@ -83,7 +83,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.algebraFactory = algebraFactory;
     this.bindingsFactory = bindingsFactory;
     this.endpointFetcher = new SparqlEndpointFetcher({
-      method: forceHttpGet ? 'GET' : 'POST',
+      method: forceHttpGet ? 'GET' : (metadata.queryAccepted?.includes('application/sparql-query') ? 'QUERY' : 'POST'),
       fetch: async(input: Request | string, init?: RequestInit) => {
         const response = await this.mediatorHttp.mediate(
           { input, init, context: this.lastSourceContext! },

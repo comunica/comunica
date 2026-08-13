@@ -1053,6 +1053,25 @@ describe('HttpServiceSparqlEndpoint', () => {
         );
       });
 
+      it('should call writeQueryResult with correct arguments if request method equals QUERY', async() => {
+        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
+        request.method = 'QUERY';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(instance.writeQueryResult).toHaveBeenCalledWith(
+          engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          { type: 'query', value: 'test_parseBody_result' },
+          null,
+          false,
+          true,
+          0,
+        );
+      });
+
       it('should choose a mediaType if accept header is set', async() => {
         const chosen = 'test_chosen_mediatype';
         variants = [{ type: chosen, quality: 1 }];
@@ -1489,7 +1508,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
           200,
-          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*', 'Accept-Query': 'application/sparql-query' },
         );
         response.push(null);
         const responseString = await stringifyStream(response);
@@ -1538,7 +1557,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
           200,
-          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*', 'Accept-Query': 'application/sparql-query' },
         );
         response.push(null);
         const responseString = await stringifyStream(response);
@@ -1577,7 +1596,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
           200,
-          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*', 'Accept-Query': 'application/sparql-query' },
         );
       });
 
@@ -1706,7 +1725,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           expect(response.writeHead).toHaveBeenCalledTimes(1);
           expect(response.writeHead).toHaveBeenLastCalledWith(
             200,
-            { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' },
+            { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*', 'Accept-Query': 'application/sparql-query' },
           );
           response.push(null);
           const responseString = await stringifyStream(response);
