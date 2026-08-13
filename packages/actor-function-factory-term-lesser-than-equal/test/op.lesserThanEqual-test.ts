@@ -270,10 +270,10 @@ describe('evaluation of \'<=\'', () => {
     });
   });
 
-  describe('with quoted triple operands like', () => {
+  describe('with quoted triple operands like and fullTermComparison like', () => {
     // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#sparql-compare
     runFuncTestTable({
-      ...config,
+      ...fullTermEvalContext,
       testArray: [
         [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123.0 )>>', 'true' ],
         [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'true' ],
@@ -281,9 +281,7 @@ describe('evaluation of \'<=\'', () => {
         [ '<<( <ex:a> <ex:b> 123e0 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'true' ],
         [ '<<( <ex:a> <ex:b> 9 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'true' ],
         [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 9 )>>', 'false' ],
-      ],
-      errorArray: [
-        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:c> <ex:d> 123 )>>', 'Argument types not valid' ],
+        [ '<<( <ex:a> <ex:c> 123 )>>', '<<( <ex:a> <ex:b> 9 )>>', 'false' ],
       ],
     });
   });

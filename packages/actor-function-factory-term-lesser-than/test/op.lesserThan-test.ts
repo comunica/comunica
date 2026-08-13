@@ -48,6 +48,14 @@ const fullTermEvalContext: FuncTestTableConfig<object> = {
   }),
 };
 
+const nonLexicalAndfullTermEvalContext: FuncTestTableConfig<object> = {
+  ...config,
+  config: new ActionContext({
+    [KeysExpressionEvaluator.nonLexicalComparison.name]: true,
+    [KeysExpressionEvaluator.fullTermComparison.name]: true,
+  }),
+};
+
 describe('evaluation of \'<\'', () => {
   describe('with numeric operands like', () => {
     runFuncTestTable({
@@ -329,11 +337,7 @@ describe('evaluation of \'<\'', () => {
 
   describe('with non lexical operands and both comparison options like', () => {
     runFuncTestTable({
-      ...config,
-      config: new ActionContext({
-        [KeysExpressionEvaluator.nonLexicalComparison.name]: true,
-        [KeysExpressionEvaluator.fullTermComparison.name]: true,
-      }),
+      ...nonLexicalAndfullTermEvalContext,
       testTable: `
         "a"^^xsd:dateTime    "b"^^xsd:dateTime   = true
         "a"^^xsd:dateTime    "a"^^xsd:dateTime   = false
@@ -362,6 +366,25 @@ describe('evaluation of \'<\'', () => {
         [ '<<( <ex:a> <ex:b> 9 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'true' ],
         [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 9 )>>', 'false' ],
         [ '<<( <ex:a> <ex:c> 123 )>>', '<<( <ex:a> <ex:b> 9 )>>', 'false' ],
+      ],
+      errorTable: `
+        <<( <ex:a> <ex:b> "abc"^^xsd:integer )>> <<( <ex:a> <ex:b> 9 )>> Invalid lexical form,
+      `,
+    });
+  });
+
+  describe('with quoted triple operands and both comparison options like', () => {
+    // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#sparql-compare
+    runFuncTestTable({
+      ...nonLexicalAndfullTermEvalContext,
+      testArray: [
+        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
+        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 123.0 )>>', 'false' ],
+        [ '<<( <ex:a> <ex:b> 123e0 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'false' ],
+        [ '<<( <ex:a> <ex:b> 9 )>>', '<<( <ex:a> <ex:b> 123 )>>', 'true' ],
+        [ '<<( <ex:a> <ex:b> 123 )>>', '<<( <ex:a> <ex:b> 9 )>>', 'false' ],
+        [ '<<( <ex:a> <ex:c> 123 )>>', '<<( <ex:a> <ex:b> 9 )>>', 'false' ],
+        [ '<<( <ex:a> <ex:b> "abc"^^xsd:integer )>>', '<<( <ex:a> <ex:b> 9 )>>', 'false' ],
       ],
     });
   });

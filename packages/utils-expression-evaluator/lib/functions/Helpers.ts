@@ -200,6 +200,7 @@ addInvalidHandling = false,
     return this.set(
       [ 'term', 'term', 'term' ],
       expressionEvaluator => ([ t1, t2, t3 ]: [Term, Term, Term]) => op(expressionEvaluator)(t1, t2, t3),
+      false,
     );
   }
 
