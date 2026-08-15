@@ -366,6 +366,85 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         .toThrow(`Expected a hydra:property for mapping1`);
     });
 
+    it('should get protocol mismatch origins for an https page', () => {
+      expect(actor.getProtocolMismatchOrigins('https://example.org/ds?s=s')).toEqual({
+        valid: 'https://example.org',
+        invalid: 'http://example.org',
+      });
+    });
+
+    it('should get protocol mismatch origins for an http page with a port', () => {
+      expect(actor.getProtocolMismatchOrigins('http://example.org:3000/ds')).toEqual({
+        valid: 'http://example.org:3000',
+        invalid: 'https://example.org:3000',
+      });
+    });
+
+    it('should get no protocol mismatch origins for a non-http page', () => {
+      expect(actor.getProtocolMismatchOrigins('ftp://example.org/ds')).toBeUndefined();
+    });
+
+    it('should get no protocol mismatch origins for an invalid URL', () => {
+      expect(actor.getProtocolMismatchOrigins('not a url')).toBeUndefined();
+    });
+
+    it('should not correct protocol mismatches for valid hydra properties', () => {
+      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const hydraProperties = {
+        next: { 'https://example.org/ds': [ 'https://example.org/ds?page=2' ]},
+      };
+      expect(actor.correctProtocolMismatches('https://example.org/ds', hydraProperties, context))
+        .toBe(hydraProperties);
+      expect(logWarn).not.toHaveBeenCalled();
+    });
+
+    it('should not correct protocol mismatches for a non-http page', () => {
+      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const hydraProperties = {
+        next: { 'http://example.org/ds': [ 'http://example.org/ds?page=2' ]},
+      };
+      expect(actor.correctProtocolMismatches('ftp://example.org/ds', hydraProperties, context))
+        .toBe(hydraProperties);
+      expect(logWarn).not.toHaveBeenCalled();
+    });
+
+    it('should correct protocol mismatches in subjects and objects, and warn', () => {
+      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      expect(actor.correctProtocolMismatches('https://example.org/ds?s=s', {
+        next: { 'http://example.org/ds?s=s': [ 'http://example.org/ds?s=s&page=2' ]},
+        search: { 'http://example.org/ds#dataset': [ '_:search1' ]},
+        template: { '_:search1': [ 'http://example.org/ds{?s,p,o}' ]},
+        variable: { '_:mapping1': [ 's' ]},
+      }, context)).toEqual({
+        next: { 'https://example.org/ds?s=s': [ 'https://example.org/ds?s=s&page=2' ]},
+        search: { 'https://example.org/ds#dataset': [ '_:search1' ]},
+        template: { '_:search1': [ 'https://example.org/ds{?s,p,o}' ]},
+        variable: { '_:mapping1': [ 's' ]},
+      });
+      expect(logWarn).toHaveBeenCalledWith(
+        context,
+        'Invalid metadata detected in https://example.org/ds?s=s: controls are exposed under http://example.org instead of https://example.org. These have been corrected, but the server should be reconfigured with a valid base URL.',
+      );
+    });
+
+    it('should correct protocol mismatches from https to http', () => {
+      expect(actor.correctProtocolMismatches('http://example.org/ds', {
+        next: { 'https://example.org/ds': [ 'https://example.org/ds?page=2' ]},
+      }, context)).toEqual({
+        next: { 'http://example.org/ds': [ 'http://example.org/ds?page=2' ]},
+      });
+    });
+
+    it('should not correct protocol mismatches for other hosts', () => {
+      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const hydraProperties = {
+        next: { 'http://example.org.other.com/ds': [ 'http://other.com/ds?page=2' ]},
+      };
+      expect(actor.correctProtocolMismatches('https://example.org/ds', hydraProperties, context))
+        .toBe(hydraProperties);
+      expect(logWarn).not.toHaveBeenCalled();
+    });
+
     it('should get hydra properties from stream', async() => {
       await expect(actor.getHydraProperties(streamifyArray([
         quad('mypage', `${HYDRA}next`, 'next'),
@@ -433,6 +512,38 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
           ],
         },
       }});
+    });
+
+    it('should run on controls that are exposed under an invalid protocol', async() => {
+      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const output = await actor.run({ metadata: streamifyArray([
+        quad('http://example.org/ds', `${HYDRA}next`, 'http://example.org/ds?page=2'),
+        quad('http://example.org/ds', `${HYDRA}first`, 'http://example.org/ds?page=1'),
+        quad('http://example.org/ds#dataset', `${HYDRA}search`, 'search1'),
+        quad('search1', `${HYDRA}template`, 'http://example.org/ds{?a,b}'),
+        quad('search1', `${HYDRA}mapping`, 'mapping1'),
+        quad('mapping1', `${HYDRA}variable`, 'a'),
+        quad('mapping1', `${HYDRA}property`, 'propa'),
+      ]), url: 'https://example.org/ds', requestTime: 0, context });
+
+      expect(output).toMatchObject({ metadata: {
+        first: [ 'https://example.org/ds?page=1' ],
+        last: [],
+        next: [ 'https://example.org/ds?page=2' ],
+        previous: [],
+        searchForms: {
+          values: [
+            {
+              dataset: 'https://example.org/ds#dataset',
+              mappings: { propa: 'a' },
+              template: 'https://example.org/ds{?a,b}',
+            },
+          ],
+        },
+      }});
+      expect(output.metadata.searchForms.values[0].getUri({ propa: 'x' }))
+        .toBe('https://example.org/ds?a=x');
+      expect(logWarn).toHaveBeenCalledTimes(1);
     });
   });
 });

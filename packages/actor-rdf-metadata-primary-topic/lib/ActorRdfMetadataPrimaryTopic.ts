@@ -50,7 +50,7 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
       const primaryTopics: Record<string, string> = {};
       action.quads.on('data', (quad) => {
         if (quad.predicate.value === 'http://rdfs.org/ns/void#subset' &&
-          quad.object.value === action.url) {
+          equalsIgnoringHttpProtocol(quad.object.value, action.url)) {
           endpointIdentifier = quad.subject.value;
         } else if (quad.predicate.value === 'http://xmlns.com/foaf/0.1/primaryTopic') {
           primaryTopics[quad.object.value] = quad.subject.value;
@@ -99,6 +99,27 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
 
     return { data, metadata };
   }
+}
+
+/**
+ * Check if the two given URLs are equal, while ignoring a potential http/https mismatch.
+ *
+ * Occasionally, servers are hosted over https, while their base URL is configured as http (or vice-versa),
+ * which causes the URLs in their metadata to be exposed under an invalid protocol.
+ * Without this correction, the metadata graph of such servers would not be detected.
+ * @param urlLeft A URL.
+ * @param urlRight A URL.
+ */
+function equalsIgnoringHttpProtocol(urlLeft: string, urlRight: string): boolean {
+  return urlLeft === urlRight || stripHttpProtocol(urlLeft) === stripHttpProtocol(urlRight);
+}
+
+/**
+ * Remove the http or https protocol from the given URL.
+ * @param url A URL.
+ */
+function stripHttpProtocol(url: string): string {
+  return url.replace(/^https?:\/\//u, '//');
 }
 
 export interface IActorRdfMetadataPrimaryTopicArgs extends IActorRdfMetadataArgs {
