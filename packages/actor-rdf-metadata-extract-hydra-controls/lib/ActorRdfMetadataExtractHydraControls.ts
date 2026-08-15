@@ -93,23 +93,30 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
     hydraProperties: Record<string, Record<string, string[]>>,
     context: IActionContext,
   ): Record<string, Record<string, string[]>> {
+    // Documents without any Hydra controls, such as plain RDF documents, can never contain invalid controls.
+    if (Object.keys(hydraProperties).length === 0) {
+      return hydraProperties;
+    }
+
     const origins = this.getProtocolMismatchOrigins(pageUrl);
     if (!origins) {
       return hydraProperties;
     }
 
-    // Rewrite all URLs that are exposed under the invalid origin, and remember if any of them were found.
-    let mismatchDetected = false;
-    const correctUrl = (url: string): string => {
-      // Only consider URLs for which the invalid origin is followed by a path, query, fragment, or nothing at all,
-      // so that hosts that merely start with the same characters are not corrected.
-      if (url.startsWith(origins.invalid) &&
-        (url.length === origins.invalid.length || '/?#'.includes(url[origins.invalid.length]))) {
-        mismatchDetected = true;
-        return origins.valid + url.slice(origins.invalid.length);
-      }
-      return url;
-    };
+    // Only URLs for which the invalid origin is followed by a path, query, fragment, or nothing at all are
+    // considered, so that hosts that merely start with the same characters are not corrected.
+    const isInvalidUrl = (url: string): boolean => url.startsWith(origins.invalid) &&
+      (url.length === origins.invalid.length || '/?#'.includes(url[origins.invalid.length]));
+
+    // Detect invalid URLs before correcting them,
+    // so that nothing has to be copied for the common case of valid metadata.
+    if (!this.hasInvalidUrl(hydraProperties, isInvalidUrl)) {
+      return hydraProperties;
+    }
+
+    const correctUrl = (url: string): string => isInvalidUrl(url) ?
+      origins.valid + url.slice(origins.invalid.length) :
+      url;
     const correctedHydraProperties: Record<string, Record<string, string[]>> = {};
     for (const [ property, subjects ] of Object.entries(hydraProperties)) {
       const correctedSubjects: Record<string, string[]> = correctedHydraProperties[property] = {};
@@ -123,11 +130,28 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
       }
     }
 
-    if (!mismatchDetected) {
-      return hydraProperties;
-    }
     this.logWarn(context, `Invalid metadata detected in ${pageUrl}: controls are exposed under ${origins.invalid} instead of ${origins.valid}. These have been corrected, but the server should be reconfigured with a valid base URL.`);
     return correctedHydraProperties;
+  }
+
+  /**
+   * Check if any URL within the given Hydra properties is invalid.
+   * @param hydraProperties The collected Hydra properties.
+   * @param isInvalidUrl A predicate determining if a URL is invalid.
+   */
+  protected hasInvalidUrl(
+    hydraProperties: Record<string, Record<string, string[]>>,
+    isInvalidUrl: (url: string) => boolean,
+  ): boolean {
+    for (const property in hydraProperties) {
+      const subjects = hydraProperties[property];
+      for (const subject in subjects) {
+        if (isInvalidUrl(subject) || subjects[subject].some(object => isInvalidUrl(object))) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**

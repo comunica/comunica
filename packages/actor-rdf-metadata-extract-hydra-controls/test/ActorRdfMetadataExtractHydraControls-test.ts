@@ -388,6 +388,14 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
       expect(actor.getProtocolMismatchOrigins('not a url')).toBeUndefined();
     });
 
+    it('should not correct protocol mismatches for empty hydra properties', () => {
+      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const hydraProperties = {};
+      expect(actor.correctProtocolMismatches('https://example.org/ds', hydraProperties, context))
+        .toBe(hydraProperties);
+      expect(logWarn).not.toHaveBeenCalled();
+    });
+
     it('should not correct protocol mismatches for valid hydra properties', () => {
       const logWarn = jest.spyOn(<any> actor, 'logWarn');
       const hydraProperties = {
