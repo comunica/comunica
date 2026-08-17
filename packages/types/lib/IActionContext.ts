@@ -18,7 +18,7 @@ export interface IActionContext {
   /**
    * @param key The key to set in the new copy
    * @param value The value that should be assigned to the key in the new copy
-   * @return A copy of the original context, but also mapping the key to the new value.
+   * @return A copy of the original context, additionally mapping the key to the new value.
    */
   set: <V>(key: IActionContextKey<V>, value: V) => IActionContext;
   /**
