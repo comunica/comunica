@@ -187,7 +187,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
         nonLexicalComparison: {
           type: 'boolean',
           describe: 'When true, compares non-lexical literals.' +
-            'Throws an error otherwise.',
+            'Throws an expression error otherwise, which is caught by FILTER and BIND.',
         },
         fullTermComparison: {
           type: 'boolean',
