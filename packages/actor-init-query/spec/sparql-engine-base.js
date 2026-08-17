@@ -5,7 +5,6 @@ const arrayifyStream = require('arrayify-stream').default;
 const { DataFactory } = require('rdf-data-factory');
 const RdfStore = require('rdf-stores').RdfStore;
 const RdfTestSuite = require('rdf-test-suite');
-const { translate } = require('sparqlalgebrajs');
 
 const DF = new DataFactory();
 
@@ -15,11 +14,11 @@ module.exports = function(engine) {
       return engine.actorInitQuery.mediatorQueryProcess.bus.actors[0].parse(query, new ActionContext({ [KeysInitQuery.baseIRI.name]: options.baseIRI }));
     },
     async query(data, queryString, options) {
-      const { store, cleanQuery } = await prepareDatasetAndQuery(data, queryString, options.baseIRI);
+      const { store, cleanQuery } = await prepareDatasetAndQuery(engine, data, queryString, options.baseIRI);
       return this.queryLdf([{ type: 'rdfjs', value: store }], null, cleanQuery, options);
     },
     async queryResultFormat(data, queryString, mediaType, options) {
-      const { store, cleanQuery } = await prepareDatasetAndQuery(data, queryString, options.baseIRI);
+      const { store, cleanQuery } = await prepareDatasetAndQuery(engine, data, queryString, options.baseIRI);
       const result = await engine.query(cleanQuery, {
         baseIRI: options.baseIRI,
         sources: [{ type: 'rdfjs', value: store }],
@@ -73,12 +72,13 @@ module.exports = function(engine) {
   };
 };
 
-function collectDatasetClauses(queryString, baseIRI) {
+async function collectDatasetClauses(engine, queryString, baseIRI) {
   // Maps are used for deduplication by term.value
   const defaultMap = new Map();
   const namedMap = new Map();
 
-  const algebra = translate(queryString, { baseIRI });
+  const algebra = await engine.actorInitQuery.mediatorQueryProcess.bus.actors[0]
+    .parse(queryString, new ActionContext({ [KeysInitQuery.baseIRI.name]: baseIRI }));
 
   function walk(node) {
     if (!node || typeof node !== 'object') {
@@ -122,8 +122,8 @@ async function getQuadsForGraph(uri) {
   return await arrayifyStream(stream);
 }
 
-async function prepareDatasetAndQuery(data, queryString, baseIRI) {
-  const { defaultGraphTerms, namedGraphTerms } = collectDatasetClauses(queryString, baseIRI);
+async function prepareDatasetAndQuery(engine, data, queryString, baseIRI) {
+  const { defaultGraphTerms, namedGraphTerms } = await collectDatasetClauses(engine, queryString, baseIRI);
   const hasDatasetClauses = defaultGraphTerms.length > 0 || namedGraphTerms.length > 0;
 
   const store = RdfStore.createDefault(true);
