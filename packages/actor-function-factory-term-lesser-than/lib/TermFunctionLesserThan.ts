@@ -29,7 +29,7 @@ import type {
   TimeLiteral,
   ISerializable,
 } from '@comunica/utils-expression-evaluator';
-import { nonLexicalHandler } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
+import { nonLexicalComparisonHandler } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
 import * as C from '@comunica/utils-expression-evaluator/lib/util/Consts';
 import * as Err from '@comunica/utils-expression-evaluator/lib/util/Errors';
 
@@ -149,7 +149,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     comparator: (args: Tuple<LiteralType>) => boolean,
   ): (args: Tuple<LiteralType>) => boolean {
     return ([ left, right ]: Tuple<LiteralType>) => {
-      const nonLexicalCompareResult = nonLexicalHandler(exprEval, left, right);
+      const nonLexicalCompareResult = nonLexicalComparisonHandler(exprEval, left, right);
       if (nonLexicalCompareResult !== undefined) {
         return nonLexicalCompareResult === -1;
       }

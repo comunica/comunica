@@ -49,6 +49,14 @@ export class Builder {
     return this.overloadTree;
   }
 
+  /**
+   * If any of the arguments are non-lexical literals, an error is thrown.
+   *
+   * @param {ImplementationFunction} func - The function that is wrapped.
+   *
+   * @returns {ImplementationFunction} The function that is wrapped if no error is thrown.
+   * @throws {Err.InvalidLexicalForm}
+   */
   private static wrapInvalidLexicalProtected(func: ImplementationFunction): ImplementationFunction {
     return (expressionEvaluator: IInternalEvaluator) => (args: TermExpression[]) => {
       for (const [ index, arg ] of args.entries()) {
@@ -552,7 +560,20 @@ export function expressionToVar(
   return dataFactory.variable(variableExpression.name.slice(1));
 }
 
-export function nonLexicalHandler(
+/**
+ * If any of the arguments is a non-lexical literal, an error is thrown or string comparison is performed
+ * depending on the value of the nonLexicalComparison option.
+ *
+ * @param {IInternalEvaluator} exprEval - The expression evaluator.
+ * @param {Literal<ISerializable>} left - The left operand.
+ * @param {Literal<ISerializable>} right - The right operand.
+ *
+ * @returns {undefined | -1 | 0 | 1}
+ * If there are no non-lexical arguments, undefined is returned. This tells the caller to handle the rest, it's safe.
+ * If there is a non-lexical argument and nonLexicalComparison is true, it returns the result of the string comparison.
+ * @throws {Err.InvalidLexicalForm}
+ */
+export function nonLexicalComparisonHandler(
   exprEval: IInternalEvaluator,
   left: Literal<ISerializable>,
   right: Literal<ISerializable>,
