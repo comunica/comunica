@@ -16,11 +16,13 @@ export class AlgebraFactory extends AlgebraFactoryBase {
   public createDistinctTerms(
     variables: RDF.Variable[],
     terms: Record<string, QuadTermName>,
+    filters?: Partial<Record<QuadTermName, RDF.Term>>,
   ): DistinctTerms {
     return {
       type: TypesComunica.DISTINCT_TERMS,
       variables,
       terms,
+      filters,
     };
   }
 }
