@@ -224,7 +224,7 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
     return term.str();
   }
 
-  private comparePrimitives(valueA: any, valueB: any): -1 | 0 | 1 {
+  private comparePrimitives<T>(valueA: T, valueB: T): -1 | 0 | 1 {
     return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
   }
 
