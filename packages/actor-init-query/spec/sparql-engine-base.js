@@ -74,51 +74,42 @@ module.exports = function(engine) {
 };
 
 function collectDatasetClauses(queryString, baseIRI) {
-  const defaultTerms = [];
-  const namedTerms = [];
+  // Maps are used for deduplication by term.value
+  const defaultMap = new Map();
+  const namedMap = new Map();
 
-  try {
-    const algebra = translate(queryString, { baseIRI });
+  const algebra = translate(queryString, { baseIRI });
 
-    function walk(node) {
-      if (!node || typeof node !== 'object') {
-        return;
-      }
+  function walk(node) {
+    if (!node || typeof node !== 'object') {
+      return;
+    }
 
-      if (node.type === 'from') {
-        if (Array.isArray(node.default)) {
-          defaultTerms.push(...node.default);
-        }
-        if (Array.isArray(node.named)) {
-          namedTerms.push(...node.named);
+    if (node.type === 'from') {
+      if (Array.isArray(node.default)) {
+        for (const term of node.default) {
+          defaultMap.set(term.value, term);
         }
       }
-
-      for (const key of Object.keys(node)) {
-        if (Array.isArray(node[key])) {
-          for (const child of node[key]) {
-            walk(child);
-          }
-        } else if (typeof node[key] === 'object') {
-          walk(node[key]);
+      if (Array.isArray(node.named)) {
+        for (const term of node.named) {
+          namedMap.set(term.value, term);
         }
       }
     }
 
-    walk(algebra);
-  } catch {
-    // If translation fails, fall back gracefully
+    for (const key of Object.keys(node)) {
+      if (Array.isArray(node[key])) {
+        for (const child of node[key]) {
+          walk(child);
+        }
+      } else {
+        walk(node[key]);
+      }
+    }
   }
 
-  const defaultMap = new Map();
-  for (const term of defaultTerms) {
-    defaultMap.set(term.value, term);
-  }
-
-  const namedMap = new Map();
-  for (const term of namedTerms) {
-    namedMap.set(term.value, term);
-  }
+  walk(algebra);
 
   return {
     defaultGraphTerms: [ ...defaultMap.values() ],
@@ -126,37 +117,9 @@ function collectDatasetClauses(queryString, baseIRI) {
   };
 }
 
-async function getQuadsForGraph(graphTerm, data) {
-  const uri = graphTerm.value;
-
-  // 1. Look for quads in `data` explicitly matching named graph `uri`
-  const namedQuadsInData = data.filter(q => q.graph && q.graph.value === uri);
-  if (namedQuadsInData.length > 0) {
-    return namedQuadsInData;
-  }
-
-  // 2. Fetch the RDF resource via RdfTestSuite
-  try {
-    const [ , stream ] = await RdfTestSuite.Util.fetchRdf(uri);
-    const quads = await arrayifyStream(stream);
-    if (quads && quads.length > 0) {
-      return quads;
-    }
-  } catch {
-    // Resource fetch failed or network unavailable
-  }
-
-  // 3. Fallback: if data has default graph quads, return those
-  const defaultQuadsInData = data.filter(q => q.graph && q.graph.termType === 'DefaultGraph');
-  if (defaultQuadsInData.length > 0) {
-    return defaultQuadsInData;
-  }
-
-  return [];
-}
-
-function stripFromClauses(queryString) {
-  return queryString.replaceAll(/from\s+(?:named\s+)?(?:<[^>]*>|[^\s(){}]+)/giu, '');
+async function getQuadsForGraph(uri) {
+  const [ , stream ] = await RdfTestSuite.Util.fetchRdf(uri);
+  return await arrayifyStream(stream);
 }
 
 async function prepareDatasetAndQuery(data, queryString, baseIRI) {
@@ -172,23 +135,22 @@ async function prepareDatasetAndQuery(data, queryString, baseIRI) {
     return { store, cleanQuery: queryString };
   }
 
-  // 1. Populate active Default Graph from `FROM` clauses
   for (const term of defaultGraphTerms) {
-    const quads = await getQuadsForGraph(term, data);
+    const quads = await getQuadsForGraph(term.value);
     for (const q of quads) {
       store.addQuad(DF.quad(q.subject, q.predicate, q.object, DF.defaultGraph()));
     }
   }
 
-  // 2. Populate active Named Graphs from `FROM NAMED` clauses
   for (const term of namedGraphTerms) {
-    const quads = await getQuadsForGraph(term, data);
+    const quads = await getQuadsForGraph(term.value);
     for (const q of quads) {
       store.addQuad(DF.quad(q.subject, q.predicate, q.object, term));
     }
   }
 
-  const cleanQuery = stripFromClauses(queryString);
+  // Strip FROM clauses
+  const cleanQuery = queryString.replaceAll(/from\s+(?:named\s+)?(?:<[^>]*>|[^\s(){}]+)/giu, '');
 
   return { store, cleanQuery };
 }
