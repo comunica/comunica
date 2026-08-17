@@ -53,10 +53,10 @@ export class TermFunctionLesserThan extends TermFunctionBase {
           [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
           exprEval => ([ left, right ]: LangStringLiteral[]) => {
             this.fullTermComparisonCheck(exprEval, left, right);
-            if (left.str() !== right.str()) {
-              return bool(left.str() < right.str());
+            if (left.str() === right.str()) {
+              return bool(left.language < right.language);
             }
-            return bool(left.language < right.language);
+            return bool(left.str() < right.str());
           },
         )
         .set(
