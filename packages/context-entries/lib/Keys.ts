@@ -274,7 +274,7 @@ export const KeysExpressionEvaluator = {
   ),
   actionContext: new ActionContextKey<IActionContext>('@comunica/utils-expression-evaluator:actionContext'),
   /**
-   * A boolean denoting the behaviour of the lesser than function when used with non-lexical literal operands.
+   * A boolean denoting the behaviour of the lesser than function when used with non-lexical literal operands. Non-lexical literal are literals whose value does not belong in the space of it's datatype, e.g. "not-a-number"^^xsd:int
    *
    * true: compares both operands:
    *         if only 1 operand is non-lexical: the lexical is lower.
