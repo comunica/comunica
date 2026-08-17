@@ -14,7 +14,8 @@ import type { TestResult } from '@comunica/core';
 import { passTestWithSideData, failTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { Bindings, BindingsStream, ComunicaDataFactory } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 
@@ -100,9 +101,8 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
-    // Reject binding on some operation types
-    if (action.entries[1].operation.type === Algebra.Types.EXTEND ||
-      action.entries[1].operation.type === Algebra.Types.GROUP) {
+    // Reject binding on some operation types (including when reachable through e.g. a Project or Filter wrapper)
+    if (!ActorRdfJoinMultiBind.canBindWithOperation(action.entries[1].operation)) {
       return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
     }
 

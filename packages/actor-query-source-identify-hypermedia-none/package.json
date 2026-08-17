@@ -48,6 +48,6 @@
     "@comunica/core": "^5.3.0",
     "@comunica/utils-bindings-factory": "^5.3.0",
     "@rdfjs/types": "*",
-    "rdf-stores": "^2.2.0"
+    "rdf-stores": "^2.3.0"
   }
 }

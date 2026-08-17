@@ -190,5 +190,6 @@ export interface DistinctTermsUnopened extends BaseOperation {
   type: TypesComunica.DISTINCT_TERMS;
   variables: RDF.Variable[];
   terms: Record<string, QuadTermName>;
+  filters?: Partial<Record<QuadTermName, RDF.Term>>;
 }
 export type DistinctTerms = Opened<DistinctTermsUnopened>;
