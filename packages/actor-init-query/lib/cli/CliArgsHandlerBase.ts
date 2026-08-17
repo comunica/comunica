@@ -192,7 +192,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
         fullTermComparison: {
           type: 'boolean',
           describe: 'When true, compares IRIs, blank nodes, languageStrings and triple terms.' +
-            'Throws an error otherwise.',
+            'Throws an expression error otherwise, which is caught by FILTER and BIND.',
         },
         extensionFunctionsAlwaysPushdown: {
           type: 'boolean',
