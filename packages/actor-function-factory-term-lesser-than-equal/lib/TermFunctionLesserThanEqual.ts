@@ -9,7 +9,7 @@ import {
   declare,
   SparqlOperator,
 } from '@comunica/utils-expression-evaluator';
-import { nonLexicalHandler } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
+import { nonLexicalComparisonHandler } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
 import * as C from '@comunica/utils-expression-evaluator/lib/util/Consts';
 
 export class TermFunctionLesserThanEqual extends TermFunctionBase {
@@ -29,7 +29,7 @@ export class TermFunctionLesserThanEqual extends TermFunctionBase {
         .set(
           [ C.TypeAlias.SPARQL_NUMERIC, C.TypeAlias.SPARQL_NUMERIC ],
           exprEval => ([ left, right ]: NumericLiteral[]) => {
-            const nonLexicalCompare = nonLexicalHandler(exprEval, left, right);
+            const nonLexicalCompare = nonLexicalComparisonHandler(exprEval, left, right);
             if (nonLexicalCompare !== undefined) {
               return bool(nonLexicalCompare !== 1);
             }

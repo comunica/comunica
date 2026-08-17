@@ -274,11 +274,11 @@ export const KeysExpressionEvaluator = {
   ),
   actionContext: new ActionContextKey<IActionContext>('@comunica/utils-expression-evaluator:actionContext'),
   /**
-   * A boolean denoting the behaviour of the lesser than function when used with non-lexical literal operands. Non-lexical literal are literals whose value does not belong in the space of it's datatype, e.g. "not-a-number"^^xsd:int
+   * A boolean denoting the behaviour of comparators (e.g. <, >, <=, >=) when used with non-lexical literal operands.
+   * Non-lexical literal are literals whose value does not belong in the space of it's datatype,
+   * e.g. "not-a-number"^^xsd:int
    *
-   * true: compares both operands:
-   *         if only 1 operand is non-lexical: the lexical is lower.
-   *         if both are non-lexical: their string values are compared.
+   * true: compares both operands by datatypes first and if they're equal, their string values are compared.
    * false: throws an error (default).
    */
   nonLexicalComparison: new ActionContextKey<boolean>(
@@ -289,7 +289,7 @@ export const KeysExpressionEvaluator = {
    * Such non-literals are IRIs, blank nodes, languageStrings and triple terms.
    * Their comparison is not required by default in SPARQL.
    *
-   * true: treats them as literals and compares their string values.
+   * true: compares them. (follows the relative ordering of https://www.w3.org/TR/sparql12-query/#modOrderBy)
    * false: throws an error (default).
    */
   fullTermComparison: new ActionContextKey<boolean>(

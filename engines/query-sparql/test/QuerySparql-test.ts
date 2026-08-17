@@ -1884,6 +1884,7 @@ WHERE { }
           [
             [ DF.variable('l1'), DF.literal('false', bool) ],
             [ DF.variable('l2'), DF.literal('true', bool) ],
+            [ DF.variable('l3'), DF.literal('false', bool) ],
           ],
         ];
 
@@ -1892,6 +1893,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 SELECT 
   (( "a"^^xsd:dateTime < "b"^^xsd:boolean ) AS ?l1)
   (( "a"^^xsd:boolean < "a"^^xsd:dateType ) AS ?l2)
+  (( "a"^^xsd:number < <ex://b> ) AS ?l3)
 WHERE { }
         `, {
           sources: [ 'http://example.org/' ],
