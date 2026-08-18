@@ -193,7 +193,8 @@ addInvalidHandling = true,
 
   public onTerm1<T extends Term>(
     op: (expressionEvaluator: IInternalEvaluator) => (term: T) => Term,
-    addInvalidHandling = true,
+    // TODO: next major change can change default to true
+    addInvalidHandling = false,
   ): Builder {
     return this.set(
       [ 'term' ],
@@ -204,7 +205,7 @@ addInvalidHandling = true,
 
   public onTerm3(
     op: (expressionEvaluator: IInternalEvaluator) => (t1: Term, t2: Term, t3: Term) => Term,
-    addInvalidHandling = true,
+    addInvalidHandling = false,
   ): Builder {
     return this.set(
       [ 'term', 'term', 'term' ],
