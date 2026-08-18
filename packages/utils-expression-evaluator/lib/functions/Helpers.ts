@@ -205,7 +205,7 @@ addInvalidHandling = true,
 
   public onTerm3(
     op: (expressionEvaluator: IInternalEvaluator) => (t1: Term, t2: Term, t3: Term) => Term,
-    addInvalidHandling = false,
+    addInvalidHandling = true,
   ): Builder {
     return this.set(
       [ 'term', 'term', 'term' ],

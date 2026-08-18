@@ -52,5 +52,15 @@ describe('The function helper file', () => {
       )(args);
       expect(func).toHaveBeenCalledTimes(1);
     });
+
+    it('defines a function onTerm3', () => {
+      const func = fn();
+      const args = [ bool(true), bool(true), bool(true) ];
+      builder.onTerm3(() => func).collect()
+        .search(args, superTypeProvider, functionArgumentsCache)!(
+        expressionEvaluator,
+      )(args);
+      expect(func).toHaveBeenCalledTimes(1);
+    });
   });
 });
