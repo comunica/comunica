@@ -27,6 +27,7 @@ export class TermFunctionTriple extends TermFunctionBase {
             }
             return new Quad(subject, predicate, object, new DefaultGraph());
           },
+          false,
         )
         .collect(),
     });

@@ -192,9 +192,8 @@ addInvalidHandling = true,
   }
 
   public onTerm1<T extends Term>(
-    op: (expressionEvaluator: IInternalEvaluator) =>
-    (term: T) => Term,
-addInvalidHandling = false,
+    op: (expressionEvaluator: IInternalEvaluator) => (term: T) => Term,
+    addInvalidHandling = true,
   ): Builder {
     return this.set(
       [ 'term' ],
@@ -203,12 +202,14 @@ addInvalidHandling = false,
     );
   }
 
-  public onTerm3(op: (expressionEvaluator: IInternalEvaluator) => (t1: Term, t2: Term, t3: Term) => Term):
-  Builder {
+  public onTerm3(
+    op: (expressionEvaluator: IInternalEvaluator) => (t1: Term, t2: Term, t3: Term) => Term,
+    addInvalidHandling = true,
+  ): Builder {
     return this.set(
       [ 'term', 'term', 'term' ],
       expressionEvaluator => ([ t1, t2, t3 ]: [Term, Term, Term]) => op(expressionEvaluator)(t1, t2, t3),
-      false,
+      addInvalidHandling,
     );
   }
 
@@ -230,7 +231,7 @@ addInvalidHandling = true,
 
   public onBoolean1(
     op: (expressionEvaluator: IInternalEvaluator) => (lit: E.BooleanLiteral) => Term,
-addInvalidHandling = true,
+    addInvalidHandling = true,
   ): Builder {
     return this.set(
       [ C.TypeURL.XSD_BOOLEAN ],

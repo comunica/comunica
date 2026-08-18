@@ -15,7 +15,7 @@ export class TermFunctionStr extends TermFunctionBase {
       arity: 1,
       operator: SparqlOperator.STR,
       overloads: declare(SparqlOperator.STR)
-        .onTerm1(() => term => string(term.str()))
+        .onTerm1(() => term => string(term.str()), false)
         .collect(),
     });
   }
