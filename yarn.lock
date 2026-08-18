@@ -12654,10 +12654,10 @@ rdf-test-suite@^2.1.4:
     stream-to-string "^1.1.0"
     streamify-string "^1.0.1"
 
-rdf-test-suite@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-2.3.0.tgz#5110aeb65159ffd8d92ab7e1610416a37dcc4304"
-  integrity sha512-2TKniDx9SNJ9Urnl6Otf/k/SmoMheMfSRMESg8EugUAN12/0Ft+yVQxsHLYOL7qMJkawEAYjelWTU8+YP+H8jg==
+rdf-test-suite@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-2.3.1.tgz#f9b73b03cedb6efbdb8b102d491aa522ec8f5f08"
+  integrity sha512-2Ewq7VIk13YsUnxx5h+Q+Stk7ptaUJA7GO7ajpRkP0NzAMQG8JqaYG8/j9O5GR88aYX19Bq8jIkHWaETjqpVqQ==
   dependencies:
     "@types/json-stable-stringify" "^1.0.32"
     "@types/minimist" "^1.2.0"
