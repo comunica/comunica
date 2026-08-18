@@ -22,6 +22,7 @@ import type {
 import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 
 /**
@@ -181,17 +182,84 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     };
   }
 
-  public static canBindWithOperation(operation: Algebra.Operation): boolean {
-    let valid = true;
+  public static getVariables(operation: Algebra.Operation): RDF.Variable[] {
+    const variables = new Map<string, RDF.Variable>();
+
+    const addTermIfVar = (term?: RDF.Term): void => {
+      if (term && term.termType === 'Variable') {
+        variables.set(term.value, term);
+      }
+    };
+
     algebraUtils.visitOperation(operation, {
-      [Algebra.Types.EXTEND]: { preVisitor: () => {
+      [Algebra.Types.PATTERN]: {
+        visitor: (op: Algebra.Pattern) => {
+          addTermIfVar(op.subject);
+          addTermIfVar(op.predicate);
+          addTermIfVar(op.object);
+          addTermIfVar(op.graph);
+        },
+      },
+      [Algebra.Types.PATH]: {
+        visitor: (op: Algebra.Path) => {
+          addTermIfVar(op.subject);
+          addTermIfVar(op.object);
+          addTermIfVar(op.graph);
+        },
+      },
+      [Algebra.Types.EXTEND]: {
+        visitor: (op: Algebra.Extend) => {
+          addTermIfVar(op.variable);
+        },
+      },
+    });
+
+    return [ ...variables.values() ];
+  }
+
+  public static canBindWithOperation(operation: Algebra.Operation, boundVariables: RDF.Variable[]): boolean {
+    let valid = true;
+    const boundVarNames = new Set(boundVariables.map(v => v.value));
+
+    const skipHandler = {
+      preVisitor: () => {
         valid = false;
         return { shortcut: true };
-      } },
-      [Algebra.Types.GROUP]: { preVisitor: () => {
-        valid = false;
-        return { shortcut: true };
-      } },
+      },
+    };
+
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.EXTEND]: skipHandler,
+      [Algebra.Types.GROUP]: skipHandler,
+      [Algebra.Types.LEFT_JOIN]: {
+        preVisitor: (op: Algebra.LeftJoin) => {
+          const leftOp = op.input[0];
+          const rightOp = op.input[1];
+
+          const leftVars = new Set(ActorRdfJoinMultiBind.getVariables(leftOp).map(v => v.value));
+          const rightVars = ActorRdfJoinMultiBind.getVariables(rightOp).map(v => v.value);
+
+          const conflict = rightVars.some(v => !leftVars.has(v) && boundVarNames.has(v));
+          if (conflict) {
+            valid = false;
+            return { shortcut: true };
+          }
+          return { shortcut: false };
+        },
+      },
+      [Algebra.Types.MINUS]: {
+        preVisitor: (op: Algebra.Minus) => {
+          const rightOp = op.input[1];
+          const rightVars = ActorRdfJoinMultiBind.getVariables(rightOp).map(v => v.value);
+
+          const conflict = rightVars.some(v => boundVarNames.has(v));
+          if (conflict) {
+            valid = false;
+            return { shortcut: true };
+          }
+          return { shortcut: false };
+        },
+      },
     });
 
     return valid;
@@ -226,9 +294,10 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     remainingRequestItemTimes.splice(0, 1);
 
     // Reject binding on some operation types
+    const boundVariables = ActorRdfJoinMultiBind.getVariables(entriesSorted[0].operation);
     if (remainingEntries
-      .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation))) {
-      return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
+      .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation, boundVariables))) {
+      return failTest(`Actor ${this.name} can not bind on Extend, Group, or conflicting LeftJoin/Minus operations`);
     }
 
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.
