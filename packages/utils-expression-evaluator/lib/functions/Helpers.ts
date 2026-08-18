@@ -562,7 +562,7 @@ export function expressionToVar(
 }
 
 /**
- * If any of the arguments is a non-lexical literal, an error is thrown or string comparison is performed
+ * If any of the arguments is a non-lexical literal, an error is thrown or string comparison of their value is performed
  * depending on the value of the nonLexicalComparison option.
  *
  * @param {IInternalEvaluator} exprEval - The expression evaluator.
