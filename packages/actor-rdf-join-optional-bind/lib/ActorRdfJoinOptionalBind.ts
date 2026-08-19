@@ -102,8 +102,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
     // Reject binding on some operation types (including when reachable through e.g. a Project or Filter wrapper)
-    const boundVariables = ActorRdfJoinMultiBind.getVariables(action.entries[0].operation);
-    if (!ActorRdfJoinMultiBind.canBindWithOperation(action.entries[1].operation, boundVariables)) {
+    if (!ActorRdfJoinMultiBind.canBindWithOperation(action.entries[1].operation)) {
       return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
     }
 

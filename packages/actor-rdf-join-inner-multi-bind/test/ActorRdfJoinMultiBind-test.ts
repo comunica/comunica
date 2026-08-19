@@ -133,6 +133,24 @@ IQueryOperationResultBindings
           expect(ActorRdfJoinMultiBind.getVariables(extend).map(v => v.value)).toEqual([ 'e' ]);
         });
       });
+
+      describe('canBindWithOperation without boundVariables', () => {
+        it('should return false even with non-conflicting variables with LEFT_JOIN', () => {
+          const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+          const rightPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p2'), DF.variable('b'));
+          const leftJoinOp = FACTORY.createLeftJoin(leftPattern, rightPattern);
+
+          expect(ActorRdfJoinMultiBind.canBindWithOperation(leftJoinOp)).toBe(false);
+        });
+
+        it('should return false even with non-conflicting variables with MINUS', () => {
+          const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+          const rightPattern = FACTORY.createPattern(DF.variable('x'), DF.namedNode('p2'), DF.namedNode('o2'));
+          const minusOp = FACTORY.createMinus(leftPattern, rightPattern);
+
+          expect(ActorRdfJoinMultiBind.canBindWithOperation(minusOp)).toBe(false);
+        });
+      });
     });
 
     describe('getJoinCoefficients', () => {

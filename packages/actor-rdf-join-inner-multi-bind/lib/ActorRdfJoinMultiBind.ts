@@ -217,9 +217,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     return [ ...variables.values() ];
   }
 
-  public static canBindWithOperation(operation: Algebra.Operation, boundVariables: RDF.Variable[]): boolean {
+  public static canBindWithOperation(operation: Algebra.Operation, boundVariables?: RDF.Variable[]): boolean {
     let valid = true;
-    const boundVarNames = new Set(boundVariables.map(v => v.value));
+    const boundVarNames = boundVariables ? boundVariables.map(v => v.value) : [];
 
     const skipHandler = {
       preVisitor: () => {
@@ -233,13 +233,19 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       [Algebra.Types.GROUP]: skipHandler,
       [Algebra.Types.LEFT_JOIN]: {
         preVisitor: (op: Algebra.LeftJoin) => {
+          // Default behaviour: skip
+          if (!boundVariables) {
+            valid = false;
+            return { shortcut: true };
+          }
+
           const leftOp = op.input[0];
           const rightOp = op.input[1];
 
           const leftVars = new Set(ActorRdfJoinMultiBind.getVariables(leftOp).map(v => v.value));
           const rightVars = ActorRdfJoinMultiBind.getVariables(rightOp).map(v => v.value);
 
-          const conflict = rightVars.some(v => !leftVars.has(v) && boundVarNames.has(v));
+          const conflict = rightVars.some(v => !leftVars.has(v) && boundVarNames.includes(v));
           if (conflict) {
             valid = false;
             return { shortcut: true };
@@ -249,10 +255,16 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       },
       [Algebra.Types.MINUS]: {
         preVisitor: (op: Algebra.Minus) => {
+          // Default behaviour: skip
+          if (!boundVariables) {
+            valid = false;
+            return { shortcut: true };
+          }
+
           const rightOp = op.input[1];
           const rightVars = ActorRdfJoinMultiBind.getVariables(rightOp).map(v => v.value);
 
-          const conflict = rightVars.some(v => boundVarNames.has(v));
+          const conflict = rightVars.some(v => boundVarNames.includes(v));
           if (conflict) {
             valid = false;
             return { shortcut: true };
