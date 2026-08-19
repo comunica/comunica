@@ -157,6 +157,15 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     };
   }
 
+  private nonLexicalCheck(exprEval: IInternalEvaluator, a: TermExpression, b: TermExpression): void {
+    const nonLexical = [ a, b ].find(arg => arg instanceof NonLexicalLiteral);
+    if (nonLexical && !exprEval.context.get(KeysExpressionEvaluator.nonLexicalComparison)) {
+      throw new Err.InvalidLexicalForm(
+        nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
+      );
+    }
+  }
+
   private fullTermComparisonCheck(exprEval: IInternalEvaluator, a: TermExpression, b: TermExpression): void {
     if (!exprEval.context.get(KeysExpressionEvaluator.fullTermComparison)) {
       throw new InvalidArgumentTypes([ a, b ], SparqlOperator.LT, `
@@ -186,6 +195,7 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
 
   private lesserThanTerms(termA: Term, termB: Term, exprEval: IInternalEvaluator): boolean {
     this.fullTermComparisonCheck(exprEval, termA, termB);
+    this.nonLexicalCheck(exprEval, termA, termB);
 
     // Order terms with different types according to a priority mapping
     if (termA.termType !== termB.termType) {
@@ -196,13 +206,6 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
     if (termA.termType === 'literal' && termB.termType === 'literal') {
       const litA = <Literal<ISerializable>> termA;
       const litB = <Literal<ISerializable>> termB;
-
-      const nonLexical = [ litA, litB ].find(arg => arg instanceof NonLexicalLiteral);
-      if (nonLexical && !exprEval.context.get(KeysExpressionEvaluator.nonLexicalComparison)) {
-        throw new Err.InvalidLexicalForm(
-          nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
-        );
-      }
 
       const compareType = this.comparePrimitives(litA.dataType, litB.dataType);
       if (compareType !== 0) {

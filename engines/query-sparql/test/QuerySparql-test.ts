@@ -1841,7 +1841,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 SELECT 
   (( "a"^^xsd:dateTime < "b"^^xsd:dateTime ) AS ?l1)
   (( "a"^^xsd:boolean < "a"^^xsd:boolean ) AS ?l2)
-  (( "a"^^xsd:number < <ex://b> ) AS ?l3)
+  (( "a"^^xsd:integer < <ex://b> ) AS ?l3)
 WHERE { }
         `, {
           sources: [ 'http://example.org/' ],
@@ -1859,7 +1859,6 @@ WHERE { }
             [ DF.variable('l2'), DF.literal('true', bool) ],
             [ DF.variable('l3'), DF.literal('false', bool) ],
             [ DF.variable('l4'), DF.literal('false', bool) ],
-            [ DF.variable('l5'), DF.literal('false', bool) ],
           ],
         ];
 
@@ -1871,7 +1870,7 @@ SELECT
   (( "a"@de < "a"@nl ) AS ?l2)
   (( "3"^^ex:integer < "2"^^ex:integer ) AS ?l3)
   (( <ex:b> < <ex:a> ) AS ?l4)
-  (( "a"^^xsd:number < <ex://b> ) AS ?l5)
+  (( "a"^^xsd:integer < <ex://b> ) AS ?l5)
 WHERE { }
         `, {
           sources: [ 'http://example.org/' ],
@@ -1896,7 +1895,7 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 SELECT 
   (( "a"^^xsd:dateTime < "b"^^xsd:boolean ) AS ?l1)
   (( "a"^^xsd:boolean < "a"^^xsd:dateType ) AS ?l2)
-  (( "a"^^xsd:number < <ex://b> ) AS ?l3)
+  (( "a"^^xsd:integer < <ex://b> ) AS ?l3)
 WHERE { }
         `, {
           sources: [ 'http://example.org/' ],
