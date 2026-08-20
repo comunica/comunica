@@ -76,6 +76,10 @@ import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { QueryEngineFactory } from '../lib';
 
+// Instantiating the runner from the Components.js config requires a scan of the whole module tree,
+// which can take a while on slower CI machines, so the default timeout is not enough here.
+jest.setTimeout(60_000);
+
 const queryEngineFactory = new QueryEngineFactory();
 const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);
