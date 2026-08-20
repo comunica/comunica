@@ -12,6 +12,7 @@ import {
   InvalidArgumentTypes,
   InvalidLexicalForm,
   NonLexicalLiteral,
+  nonLexicalComparisonHandler,
   SparqlOperator,
   toUTCDate,
   TypeURL,
@@ -31,7 +32,6 @@ import type {
   TimeLiteral,
   ISerializable,
 } from '@comunica/utils-expression-evaluator';
-import { nonLexicalComparisonHandler } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
 
 type Tuple<T> = readonly [T, T];
 

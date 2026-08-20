@@ -15,6 +15,7 @@ export {
   float,
   expressionToVar,
   Builder,
+  nonLexicalComparisonHandler,
 } from './functions/Helpers';
 export {
   ExpressionError,

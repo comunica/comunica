@@ -7,10 +7,10 @@ import type {
 import {
   bool,
   declare,
+  nonLexicalComparisonHandler,
   SparqlOperator,
   TypeAlias,
 } from '@comunica/utils-expression-evaluator';
-import { nonLexicalComparisonHandler } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
 
 export class TermFunctionLesserThanEqual extends TermFunctionBase {
   public constructor(
