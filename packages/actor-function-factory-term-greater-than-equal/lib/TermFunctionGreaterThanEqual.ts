@@ -15,7 +15,7 @@ export class TermFunctionGreaterThanEqual extends TermFunctionBase {
         .set([ 'term', 'term' ], exprEval =>
           ([ first, second ]) =>
             // X >= Y -> Y <= X
-            this.lessThanEqualFunction.applyOnTerms([ second, first ], exprEval))
+            this.lessThanEqualFunction.applyOnTerms([ second, first ], exprEval), false)
         .collect(),
     });
   }

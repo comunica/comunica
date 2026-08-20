@@ -10,7 +10,7 @@ import {
 import { TermFunctionLesserThan } from '../lib/TermFunctionLesserThan';
 
 describe('lesser than', () => {
-  describe('on sparql star tripples', () => {
+  describe('on sparql star triples', () => {
     it('allows Generalized RDF Triples', async() => {
       const op = new TermFunctionLesserThan(new TermFunctionEquality());
       const dg = new Eval.DefaultGraph();

@@ -1910,6 +1910,87 @@ SELECT ?option WHERE {
       });
     });
 
+    describe('non-lexical and full term comparison', () => {
+      it('nonLexicalComparison set to true', async() => {
+        const bool = DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean');
+        const expectedResult = [
+          [
+            [ DF.variable('l1'), DF.literal('true', bool) ],
+            [ DF.variable('l2'), DF.literal('false', bool) ],
+          ],
+        ];
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT 
+  (( "a"^^xsd:dateTime < "b"^^xsd:dateTime ) AS ?l1)
+  (( "a"^^xsd:boolean < "a"^^xsd:boolean ) AS ?l2)
+  (( "a"^^xsd:integer < <ex://b> ) AS ?l3)
+WHERE { }
+        `, {
+          sources: [ 'http://example.org/' ],
+          nonLexicalComparison: true,
+        }))).map(binding => [ ...binding ]);
+
+        expect(bindings).toMatchObject(expectedResult);
+      });
+
+      it('fullTermComparison set to true', async() => {
+        const bool = DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean');
+        const expectedResult = [
+          [
+            [ DF.variable('l1'), DF.literal('true', bool) ],
+            [ DF.variable('l2'), DF.literal('true', bool) ],
+            [ DF.variable('l3'), DF.literal('false', bool) ],
+            [ DF.variable('l4'), DF.literal('false', bool) ],
+          ],
+        ];
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX ex: <http://www.example.com/#>
+SELECT 
+  (( "1"^^xsd:integer < "hello"^^xsd:string ) AS ?l1)
+  (( "a"@de < "a"@nl ) AS ?l2)
+  (( "3"^^ex:integer < "2"^^ex:integer ) AS ?l3)
+  (( <ex:b> < <ex:a> ) AS ?l4)
+  (( "a"^^xsd:integer < <ex://b> ) AS ?l5)
+WHERE { }
+        `, {
+          sources: [ 'http://example.org/' ],
+          fullTermComparison: true,
+        }))).map(binding => [ ...binding ]);
+
+        expect(bindings).toMatchObject(expectedResult);
+      });
+
+      it('both set to true', async() => {
+        const bool = DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean');
+        const expectedResult = [
+          [
+            [ DF.variable('l1'), DF.literal('false', bool) ],
+            [ DF.variable('l2'), DF.literal('true', bool) ],
+            [ DF.variable('l3'), DF.literal('false', bool) ],
+          ],
+        ];
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT 
+  (( "a"^^xsd:dateTime < "b"^^xsd:boolean ) AS ?l1)
+  (( "a"^^xsd:boolean < "a"^^xsd:dateType ) AS ?l2)
+  (( "a"^^xsd:integer < <ex://b> ) AS ?l3)
+WHERE { }
+        `, {
+          sources: [ 'http://example.org/' ],
+          nonLexicalComparison: true,
+          fullTermComparison: true,
+        }))).map(binding => [ ...binding ]);
+
+        expect(bindings).toMatchObject(expectedResult);
+      });
+    });
+
     describe('count distinct with UNION and partially unbound variables', () => {
       it('should correctly count distinct values when a variable is only bound in one UNION branch', async() => {
         // Regression test: COUNT(DISTINCT ?x) should ignore bindings where ?x is unbound

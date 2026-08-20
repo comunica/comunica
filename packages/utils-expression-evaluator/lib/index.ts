@@ -15,6 +15,7 @@ export {
   float,
   expressionToVar,
   Builder,
+  nonLexicalComparisonHandler,
 } from './functions/Helpers';
 export {
   ExpressionError,
@@ -83,6 +84,7 @@ export {
   NonLexicalLiteral,
   StringLiteral,
   isNonLexicalLiteral,
+  ISerializable,
 } from './expressions';
 export { addDurationToDateTime, elapsedDuration } from './util/SpecAlgos';
 export {

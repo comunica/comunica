@@ -3,7 +3,7 @@ import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entrie
 import type { FunctionArgumentsCache, ISuperTypeProvider } from '@comunica/types';
 import { getMockEEActionContext, getMockEEFactory, getMockExpression } from '@comunica/utils-jest';
 import type { Builder } from '../../../lib';
-import { TypeURL, bool, declare } from '../../../lib';
+import { NonLexicalLiteral, TypeURL, bool, declare, integer, nonLexicalComparisonHandler } from '../../../lib';
 
 import fn = jest.fn;
 
@@ -51,6 +51,54 @@ describe('The function helper file', () => {
         expressionEvaluator,
       )(args);
       expect(func).toHaveBeenCalledTimes(1);
+    });
+
+    it('defines a function onTerm3', () => {
+      const func = fn();
+      const args = [ bool(true), bool(true), bool(true) ];
+      builder.onTerm3(() => func).collect()
+        .search(args, superTypeProvider, functionArgumentsCache)!(
+        expressionEvaluator,
+      )(args);
+      expect(func).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('nonLexicalComparisonHandler', () => {
+    const getExpressionEvaluator =
+      async(nonLexicalComparison = false) => <ExpressionEvaluator> await getMockEEFactory().run({
+        algExpr: getMockExpression('true'),
+        context: getMockEEActionContext().set(KeysExpressionEvaluator.nonLexicalComparison, nonLexicalComparison),
+      }, undefined);
+    let nonLexicalOperand: NonLexicalLiteral;
+
+    beforeEach(async() => {
+      nonLexicalOperand = new NonLexicalLiteral(
+        undefined,
+        TypeURL.XSD_INTEGER,
+        <any> {},
+        'abc',
+      );
+    });
+
+    describe('with non-lexical operands', () => {
+      it('throw when nonLexicalComparison is false', async() => {
+        const exprEval = await getExpressionEvaluator();
+        expect(() => nonLexicalComparisonHandler(exprEval, nonLexicalOperand, integer(0)))
+          .toThrow('Invalid lexical form');
+      });
+
+      it('return comparison result when nonLexicalComparison is true', async() => {
+        const exprEval = await getExpressionEvaluator(true);
+        expect(() => nonLexicalComparisonHandler(exprEval, nonLexicalOperand, integer(0))).not.toThrow();
+      });
+    });
+
+    describe('without non-lexical operands', () => {
+      it('returns undefined', async() => {
+        const exprEval = await getExpressionEvaluator();
+        expect(nonLexicalComparisonHandler(exprEval, integer(0), integer(1))).toBeUndefined();
+      });
     });
   });
 });
