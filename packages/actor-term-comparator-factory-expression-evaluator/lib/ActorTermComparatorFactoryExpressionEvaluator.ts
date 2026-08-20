@@ -1,4 +1,4 @@
-import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
+import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default';
 import type {
   IActionTermComparatorFactory,
   IActorTermComparatorFactoryOutput,

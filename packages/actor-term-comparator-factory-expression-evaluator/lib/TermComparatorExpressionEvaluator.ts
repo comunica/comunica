@@ -1,4 +1,4 @@
-import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
+import type { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default';
 import type { ITermFunction } from '@comunica/bus-function-factory';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import type * as Eval from '@comunica/utils-expression-evaluator';

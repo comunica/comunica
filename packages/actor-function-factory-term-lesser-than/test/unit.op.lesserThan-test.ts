@@ -1,5 +1,5 @@
 import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
-import { TermFunctionEquality } from '@comunica/actor-function-factory-term-equality/lib/TermFunctionEquality';
+import { TermFunctionEquality } from '@comunica/actor-function-factory-term-equality';
 import * as Eval from '@comunica/utils-expression-evaluator';
 import {
   createFuncMediator,

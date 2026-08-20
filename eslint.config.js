@@ -25,6 +25,17 @@ module.exports = config([
   },
   {
     rules: {
+      // Packages must only be imported via their package root,
+      // as deep imports break whenever a package re-organizes its internal file structure.
+      'no-restricted-imports': [ 'error', {
+        patterns: [
+          {
+            group: [ '@comunica/*/lib', '@comunica/*/lib/**' ],
+            message: 'Import from the package root (@comunica/<package>) instead of its internal files.',
+          },
+        ],
+      }],
+
       // Default
       'unicorn/consistent-destructuring': 'off',
       'unicorn/no-array-callback-reference': 'off',

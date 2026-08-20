@@ -1,7 +1,7 @@
 import {
   ActorExpressionEvaluatorFactoryDefault,
+  InternalEvaluator,
 } from '@comunica/actor-expression-evaluator-factory-default';
-import { InternalEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/InternalEvaluator';
 import type {
   ActorExpressionEvaluatorFactory,
   IActorExpressionEvaluatorFactoryArgs,
