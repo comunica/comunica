@@ -1,19 +1,14 @@
 import { TermFunctionRegex } from '@comunica/actor-function-factory-term-regex';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
-import type {
-  StringLiteral,
-
-  LangStringLiteral,
-} from '@comunica/utils-expression-evaluator';
+import type { DirLangStringLiteral, LangStringLiteral, StringLiteral } from '@comunica/utils-expression-evaluator';
 import {
   declare,
+  dirLangString,
   langString,
   SparqlOperator,
   string,
   TypeURL,
 } from '@comunica/utils-expression-evaluator';
-import type { DirLangStringLiteral } from '@comunica/utils-expression-evaluator/lib/expressions';
-import { dirLangString } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-replace

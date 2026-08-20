@@ -1,4 +1,4 @@
-import { KeysInitQuery } from '@comunica/context-entries/lib/Keys';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';

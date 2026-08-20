@@ -1,6 +1,6 @@
-import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default/lib/ExpressionEvaluator';
-import { TermFunctionAddition } from '@comunica/actor-function-factory-term-addition/lib/TermFunctionAddition';
-import { TermFunctionSubStr } from '@comunica/actor-function-factory-term-sub-str/lib/TermFunctionSubStr';
+import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-factory-default';
+import { TermFunctionAddition } from '@comunica/actor-function-factory-term-addition';
+import { TermFunctionSubStr } from '@comunica/actor-function-factory-term-sub-str';
 import type { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { FunctionArgumentsCache, ISuperTypeProvider } from '@comunica/types';

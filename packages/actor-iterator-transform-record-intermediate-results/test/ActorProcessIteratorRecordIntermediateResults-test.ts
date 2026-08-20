@@ -10,7 +10,7 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, MappingIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { types } from 'sparqlalgebrajs/lib/algebra';
+import { Algebra } from 'sparqlalgebrajs';
 import { ActorIteratorTransformRecordIntermediateResults }
   from '../lib/ActorIteratorTransformRecordIntermediateResults';
 
@@ -59,7 +59,7 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
       };
       actionQuads = {
         type: 'quads',
-        operation: types.CONSTRUCT,
+        operation: Algebra.types.CONSTRUCT,
         stream: new ArrayIterator<RDF.Quad>([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
         ], { autoStart: false }),
@@ -115,7 +115,7 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
             type: 'quads',
             data: DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
             metadata: {
-              operation: types.CONSTRUCT,
+              operation: Algebra.types.CONSTRUCT,
               metadata: expect.any(Function),
               time: performance.now(),
             },

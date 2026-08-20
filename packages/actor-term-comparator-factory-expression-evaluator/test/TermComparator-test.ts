@@ -1,7 +1,7 @@
-import { TermFunctionEquality } from '@comunica/actor-function-factory-term-equality/lib/TermFunctionEquality';
+import { TermFunctionEquality } from '@comunica/actor-function-factory-term-equality';
 import {
   TermFunctionLesserThan,
-} from '@comunica/actor-function-factory-term-lesser-than/lib/TermFunctionLesserThan';
+} from '@comunica/actor-function-factory-term-lesser-than';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { SuperTypeCallback } from '@comunica/types';

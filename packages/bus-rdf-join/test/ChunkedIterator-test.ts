@@ -1,4 +1,4 @@
-import { ChunkedIterator } from '@comunica/utils-iterator/lib/ChunkedIterator';
+import { ChunkedIterator } from '@comunica/utils-iterator';
 import { ArrayIterator } from 'asynciterator';
 
 describe('ChunkedIterator', () => {
