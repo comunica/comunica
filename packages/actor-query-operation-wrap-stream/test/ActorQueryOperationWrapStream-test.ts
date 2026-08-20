@@ -18,13 +18,13 @@ import type {
   MetadataBindings,
   MetadataQuads,
 } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MappingIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra } from 'sparqlalgebrajs';
 import {
   KEY_CONTEXT_WRAPPED_QUERY_OPERATION,
   ActorQueryOperationWrapStream,
@@ -152,14 +152,14 @@ describe('ActorQueryOperationWrapStream', () => {
       actionBindings = {
         type: 'bindings',
         operation: {
-          type: Algebra.types.NOP,
+          type: Algebra.Types.NOP,
         },
         context: new ActionContext(),
       };
       actionQuads = {
         type: 'quads',
         operation: {
-          type: Algebra.types.NOP,
+          type: Algebra.Types.NOP,
         },
         context: new ActionContext(),
       };
@@ -222,7 +222,7 @@ describe('ActorQueryOperationWrapStream', () => {
           <IQueryOperationResultBindings> await actorWrapStream.run(actionBindings);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
           type: 'bindings',
-          operation: Algebra.types.NOP,
+          operation: Algebra.Types.NOP,
           stream: bsOutput,
           metadata: expect.any(Function),
           context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actionBindings.operation }),
@@ -245,7 +245,7 @@ describe('ActorQueryOperationWrapStream', () => {
           <IQueryOperationResultBindings> await actorWrapStream.run(actionBindings);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
           type: 'bindings',
-          operation: Algebra.types.NOP,
+          operation: Algebra.Types.NOP,
           stream: bsOutput,
           metadata: expect.any(Function),
           context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actionBindings.operation }),
@@ -287,7 +287,7 @@ describe('ActorQueryOperationWrapStream', () => {
           <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
           type: 'quads',
-          operation: Algebra.types.NOP,
+          operation: Algebra.Types.NOP,
           stream: quadOutput,
           metadata: expect.any(Function),
           context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actionQuads.operation }),
@@ -310,7 +310,7 @@ describe('ActorQueryOperationWrapStream', () => {
           <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
         expect(spyIteratorTransform).toHaveBeenCalledWith({
           type: 'quads',
-          operation: Algebra.types.NOP,
+          operation: Algebra.Types.NOP,
           stream: quadOutput,
           metadata: expect.any(Function),
           context: new ActionContext({ [KEY_CONTEXT_WRAPPED_QUERY_OPERATION.name]: actionQuads.operation }),

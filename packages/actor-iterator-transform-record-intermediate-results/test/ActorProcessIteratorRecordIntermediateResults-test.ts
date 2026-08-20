@@ -5,12 +5,12 @@ import type {
 import { KeysStatistics } from '@comunica/context-entries';
 import { ActionContext, Bus, failTest, passTestVoid } from '@comunica/core';
 import { StatisticIntermediateResults } from '@comunica/statistic-intermediate-results';
+import { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, MappingIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { Algebra } from 'sparqlalgebrajs';
 import { ActorIteratorTransformRecordIntermediateResults }
   from '../lib/ActorIteratorTransformRecordIntermediateResults';
 
@@ -59,7 +59,7 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
       };
       actionQuads = {
         type: 'quads',
-        operation: Algebra.types.CONSTRUCT,
+        operation: Algebra.Types.CONSTRUCT,
         stream: new ArrayIterator<RDF.Quad>([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
         ], { autoStart: false }),
@@ -115,7 +115,7 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
             type: 'quads',
             data: DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
             metadata: {
-              operation: Algebra.types.CONSTRUCT,
+              operation: Algebra.Types.CONSTRUCT,
               metadata: expect.any(Function),
               time: performance.now(),
             },
