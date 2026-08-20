@@ -248,7 +248,7 @@ describe('evaluation of \'<=\'', () => {
     });
   });
 
-  describe('with non lexical operands and nonLiteralComparison like', () => {
+  describe('with non lexical operands and nonLexicalComparison like', () => {
     runFuncTestTable({
       ...nonLexicalEvalContext,
       testTable: `
