@@ -270,7 +270,7 @@ describe('evaluation of \'<=\'', () => {
     });
   });
 
-  describe('with quoted triple operandsand fullTermComparison like', () => {
+  describe('with quoted triple operands fullTermComparison like', () => {
     // Originates from: https://w3c.github.io/rdf-star/cg-spec/editors_draft.html#sparql-compare
     runFuncTestTable({
       ...fullTermEvalContext,
