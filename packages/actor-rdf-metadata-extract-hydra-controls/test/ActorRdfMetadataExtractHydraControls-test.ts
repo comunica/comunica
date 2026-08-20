@@ -366,34 +366,20 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         .toThrow(`Expected a hydra:property for mapping1`);
     });
 
-    it('should get protocol mismatch origins for an https page', () => {
-      expect(actor.getProtocolMismatchOrigins('https://example.org/ds?s=s')).toEqual({
-        valid: 'https://example.org',
-        invalid: 'http://example.org',
-      });
+    it('should get the invalid URL prefix for an https page', () => {
+      expect(actor.getInvalidUrlPrefix('https://example.org/ds?s=s')).toBe('http://example.org/');
     });
 
-    it('should get protocol mismatch origins for an http page with a port', () => {
-      expect(actor.getProtocolMismatchOrigins('http://example.org:3000/ds')).toEqual({
-        valid: 'http://example.org:3000',
-        invalid: 'https://example.org:3000',
-      });
+    it('should get the invalid URL prefix for an https page with a port', () => {
+      expect(actor.getInvalidUrlPrefix('https://example.org:3000/ds')).toBe('http://example.org:3000/');
     });
 
-    it('should get no protocol mismatch origins for a non-http page', () => {
-      expect(actor.getProtocolMismatchOrigins('ftp://example.org/ds')).toBeUndefined();
+    it('should get no invalid URL prefix for an http page', () => {
+      expect(actor.getInvalidUrlPrefix('http://example.org/ds')).toBeUndefined();
     });
 
-    it('should get no protocol mismatch origins for an invalid URL', () => {
-      expect(actor.getProtocolMismatchOrigins('not a url')).toBeUndefined();
-    });
-
-    it('should not correct protocol mismatches for empty hydra properties', () => {
-      const logWarn = jest.spyOn(<any> actor, 'logWarn');
-      const hydraProperties = {};
-      expect(actor.correctProtocolMismatches('https://example.org/ds', hydraProperties, context))
-        .toBe(hydraProperties);
-      expect(logWarn).not.toHaveBeenCalled();
+    it('should get no invalid URL prefix for an https page without a path', () => {
+      expect(actor.getInvalidUrlPrefix('https://example.org')).toBeUndefined();
     });
 
     it('should not correct protocol mismatches for valid hydra properties', () => {
@@ -406,12 +392,12 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
       expect(logWarn).not.toHaveBeenCalled();
     });
 
-    it('should not correct protocol mismatches for a non-http page', () => {
+    it('should not correct protocol mismatches for an http page', () => {
       const logWarn = jest.spyOn(<any> actor, 'logWarn');
       const hydraProperties = {
         next: { 'http://example.org/ds': [ 'http://example.org/ds?page=2' ]},
       };
-      expect(actor.correctProtocolMismatches('ftp://example.org/ds', hydraProperties, context))
+      expect(actor.correctProtocolMismatches('http://example.org/ds', hydraProperties, context))
         .toBe(hydraProperties);
       expect(logWarn).not.toHaveBeenCalled();
     });
@@ -423,24 +409,19 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         search: { 'http://example.org/ds#dataset': [ '_:search1' ]},
         template: { '_:search1': [ 'http://example.org/ds{?s,p,o}' ]},
         variable: { '_:mapping1': [ 's' ]},
+        // Hydra properties refer to http URLs on other hosts, which must be left untouched
+        property: { '_:mapping1': [ 'http://www.w3.org/1999/02/22-rdf-syntax-ns#subject' ]},
       }, context)).toEqual({
         next: { 'https://example.org/ds?s=s': [ 'https://example.org/ds?s=s&page=2' ]},
         search: { 'https://example.org/ds#dataset': [ '_:search1' ]},
         template: { '_:search1': [ 'https://example.org/ds{?s,p,o}' ]},
         variable: { '_:mapping1': [ 's' ]},
+        property: { '_:mapping1': [ 'http://www.w3.org/1999/02/22-rdf-syntax-ns#subject' ]},
       });
       expect(logWarn).toHaveBeenCalledWith(
         context,
-        'Invalid metadata detected in https://example.org/ds?s=s: controls are exposed under http://example.org instead of https://example.org. These have been corrected, but the server should be reconfigured with a valid base URL.',
+        'Invalid metadata detected in https://example.org/ds?s=s: controls are exposed under the http protocol instead of https. These have been corrected, but the server should be reconfigured with a valid base URL.',
       );
-    });
-
-    it('should correct protocol mismatches from https to http', () => {
-      expect(actor.correctProtocolMismatches('http://example.org/ds', {
-        next: { 'https://example.org/ds': [ 'https://example.org/ds?page=2' ]},
-      }, context)).toEqual({
-        next: { 'http://example.org/ds': [ 'http://example.org/ds?page=2' ]},
-      });
     });
 
     it('should not correct protocol mismatches for other hosts', () => {

@@ -2571,7 +2571,7 @@ ${triples}
         expect(requestedUrls).toEqual([ sourceUrl, `${sourceUrl}?page=2` ]);
 
         // The user must be warned about the invalid metadata
-        expect(logger.warnings).toContain(`Invalid metadata detected in ${sourceUrl}: controls are exposed under http://tpf.example.org instead of https://tpf.example.org. These have been corrected, but the server should be reconfigured with a valid base URL.`);
+        expect(logger.warnings).toContain(`Invalid metadata detected in ${sourceUrl}: controls are exposed under the http protocol instead of https. These have been corrected, but the server should be reconfigured with a valid base URL.`);
       });
     });
   });

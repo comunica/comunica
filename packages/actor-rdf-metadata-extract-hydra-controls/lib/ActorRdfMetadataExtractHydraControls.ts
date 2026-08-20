@@ -11,13 +11,8 @@ import type * as RDF from '@rdfjs/types';
 import type { UriTemplate } from 'uritemplate';
 import { parse as parseUriTemplate } from 'uritemplate';
 
-/**
- * The protocols that servers commonly mix up, mapped to the protocol they may have been mixed up with.
- */
-const PROTOCOL_ALTERNATIVES: Record<string, string> = {
-  'http:': 'https:',
-  'https:': 'http:',
-};
+const HTTP_PROTOCOL = 'http://';
+const HTTPS_PROTOCOL = 'https://';
 
 /**
  * An RDF Metadata Extract Actor that extracts all Hydra controls from the metadata stream.
@@ -52,37 +47,36 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
   }
 
   /**
-   * Determine the origin under which the given page URL is exposed,
-   * together with the origin that servers with an invalidly configured base URL may expose it under.
+   * Determine the URL prefix under which servers with an invalidly configured base URL
+   * expose the controls of the given page.
    *
-   * Concretely, the invalid origin is the origin of the page URL with the http and https protocols swapped.
+   * Concretely, this is the origin of the page URL with the https protocol replaced by http,
+   * including the trailing slash, so that only URLs on the host of the page are matched.
    * @param pageUrl The page URL in which the Hydra properties are defined.
-   * @return The valid and invalid origin, or undefined if the page URL is not an http(s) URL.
+   * @return The invalid URL prefix, or undefined if the page URL is not an https URL with a path.
    */
-  public getProtocolMismatchOrigins(pageUrl: string): { valid: string; invalid: string } | undefined {
-    let parsedUrl: URL;
-    try {
-      parsedUrl = new URL(pageUrl);
-    } catch {
+  public getInvalidUrlPrefix(pageUrl: string): string | undefined {
+    if (!pageUrl.startsWith(HTTPS_PROTOCOL)) {
       return;
     }
-    const alternativeProtocol = PROTOCOL_ALTERNATIVES[parsedUrl.protocol];
-    if (alternativeProtocol) {
-      return {
-        valid: `${parsedUrl.protocol}//${parsedUrl.host}`,
-        invalid: `${alternativeProtocol}//${parsedUrl.host}`,
-      };
+    const authorityEnd = pageUrl.indexOf('/', HTTPS_PROTOCOL.length);
+    if (authorityEnd < 0) {
+      return;
     }
+    return HTTP_PROTOCOL + pageUrl.slice(HTTPS_PROTOCOL.length, authorityEnd + 1);
   }
 
   /**
-   * Correct all URLs within the given Hydra properties that are exposed
-   * under another protocol (http/https) than the page they were retrieved from.
+   * Correct all URLs within the given Hydra properties that are exposed under the http protocol,
+   * while the page they were retrieved from is hosted over https.
    *
-   * Occasionally, TPF servers are hosted over https, while their base URL is configured as http (or vice-versa).
-   * This causes all URLs in their metadata to be exposed under an invalid protocol,
+   * Occasionally, TPF servers are hosted over https, while their base URL is configured as http.
+   * This causes all URLs in their metadata to be exposed under the http protocol,
    * which makes the Hydra controls unusable, as they can not be linked to the current page anymore.
    * Since this is a common problem, we detect it, correct the invalid URLs, and emit a warning.
+   *
+   * Only URLs on the host of the page are corrected, as the controls legitimately refer to http URLs elsewhere,
+   * such as the rdf:subject, rdf:predicate and rdf:object values of hydra:property.
    * @param pageUrl The page URL in which the Hydra properties are defined.
    * @param hydraProperties The collected Hydra properties.
    * @param context The action context, in which a warning will be logged upon detecting an invalid protocol.
@@ -93,29 +87,15 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
     hydraProperties: Record<string, Record<string, string[]>>,
     context: IActionContext,
   ): Record<string, Record<string, string[]>> {
-    // Documents without any Hydra controls, such as plain RDF documents, can never contain invalid controls.
-    if (Object.keys(hydraProperties).length === 0) {
-      return hydraProperties;
-    }
-
-    const origins = this.getProtocolMismatchOrigins(pageUrl);
-    if (!origins) {
-      return hydraProperties;
-    }
-
-    // Only URLs for which the invalid origin is followed by a path, query, fragment, or nothing at all are
-    // considered, so that hosts that merely start with the same characters are not corrected.
-    const isInvalidUrl = (url: string): boolean => url.startsWith(origins.invalid) &&
-      (url.length === origins.invalid.length || '/?#'.includes(url[origins.invalid.length]));
-
     // Detect invalid URLs before correcting them,
     // so that nothing has to be copied for the common case of valid metadata.
-    if (!this.hasInvalidUrl(hydraProperties, isInvalidUrl)) {
+    const invalidPrefix = this.getInvalidUrlPrefix(pageUrl);
+    if (!invalidPrefix || !this.hasInvalidUrl(hydraProperties, invalidPrefix)) {
       return hydraProperties;
     }
 
-    const correctUrl = (url: string): string => isInvalidUrl(url) ?
-      origins.valid + url.slice(origins.invalid.length) :
+    const correctUrl = (url: string): string => url.startsWith(invalidPrefix) ?
+      HTTPS_PROTOCOL + url.slice(HTTP_PROTOCOL.length) :
       url;
     const correctedHydraProperties: Record<string, Record<string, string[]>> = {};
     for (const [ property, subjects ] of Object.entries(hydraProperties)) {
@@ -130,23 +110,23 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
       }
     }
 
-    this.logWarn(context, `Invalid metadata detected in ${pageUrl}: controls are exposed under ${origins.invalid} instead of ${origins.valid}. These have been corrected, but the server should be reconfigured with a valid base URL.`);
+    this.logWarn(context, `Invalid metadata detected in ${pageUrl}: controls are exposed under the http protocol instead of https. These have been corrected, but the server should be reconfigured with a valid base URL.`);
     return correctedHydraProperties;
   }
 
   /**
-   * Check if any URL within the given Hydra properties is invalid.
+   * Check if any URL within the given Hydra properties starts with the given prefix.
    * @param hydraProperties The collected Hydra properties.
-   * @param isInvalidUrl A predicate determining if a URL is invalid.
+   * @param invalidPrefix The URL prefix of invalidly exposed controls.
    */
   protected hasInvalidUrl(
     hydraProperties: Record<string, Record<string, string[]>>,
-    isInvalidUrl: (url: string) => boolean,
+    invalidPrefix: string,
   ): boolean {
     for (const property in hydraProperties) {
       const subjects = hydraProperties[property];
       for (const subject in subjects) {
-        if (isInvalidUrl(subject) || subjects[subject].some(object => isInvalidUrl(object))) {
+        if (subject.startsWith(invalidPrefix) || subjects[subject].some(object => object.startsWith(invalidPrefix))) {
           return true;
         }
       }
