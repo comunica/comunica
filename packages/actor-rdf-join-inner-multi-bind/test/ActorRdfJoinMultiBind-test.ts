@@ -106,34 +106,6 @@ IQueryOperationResultBindings
     }
 
     describe('static helper methods', () => {
-      describe('getVariables', () => {
-        it('should extract variables from PATTERN, PATH, and EXTEND operations', () => {
-          const pattern = FACTORY.createPattern(
-            DF.variable('s'),
-            DF.variable('p'),
-            DF.variable('o'),
-            DF.variable('g'),
-          );
-          const path = FACTORY.createPath(
-            DF.variable('s2'),
-            <any>{},
-            DF.variable('o2'),
-            DF.variable('g2'),
-          );
-          const extend = FACTORY.createExtend(
-            FACTORY.createNop(),
-            DF.variable('e'),
-            <any>{},
-          );
-
-          expect(ActorRdfJoinMultiBind.getVariables(pattern).map(v => v.value)).toEqual([ 's', 'p', 'o', 'g' ]);
-
-          expect(ActorRdfJoinMultiBind.getVariables(path).map(v => v.value)).toEqual([ 's2', 'o2', 'g2' ]);
-
-          expect(ActorRdfJoinMultiBind.getVariables(extend).map(v => v.value)).toEqual([ 'e' ]);
-        });
-      });
-
       describe('canBindWithOperation without boundVariables', () => {
         it('should return false even with non-conflicting variables with LEFT_JOIN', () => {
           const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));

@@ -20,6 +20,7 @@ import type {
   IQueryOperationResultBindings,
 } from '@comunica/types';
 import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
+import { inScopeVariables } from '@comunica/utils-algebra/lib/utils';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -182,41 +183,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     };
   }
 
-  public static getVariables(operation: Algebra.Operation): RDF.Variable[] {
-    const variables = new Map<string, RDF.Variable>();
-
-    const addTermIfVar = (term?: RDF.Term): void => {
-      if (term && term.termType === 'Variable') {
-        variables.set(term.value, term);
-      }
-    };
-
-    algebraUtils.visitOperation(operation, {
-      [Algebra.Types.PATTERN]: {
-        visitor: (op: Algebra.Pattern) => {
-          addTermIfVar(op.subject);
-          addTermIfVar(op.predicate);
-          addTermIfVar(op.object);
-          addTermIfVar(op.graph);
-        },
-      },
-      [Algebra.Types.PATH]: {
-        visitor: (op: Algebra.Path) => {
-          addTermIfVar(op.subject);
-          addTermIfVar(op.object);
-          addTermIfVar(op.graph);
-        },
-      },
-      [Algebra.Types.EXTEND]: {
-        visitor: (op: Algebra.Extend) => {
-          addTermIfVar(op.variable);
-        },
-      },
-    });
-
-    return [ ...variables.values() ];
-  }
-
   public static canBindWithOperation(operation: Algebra.Operation, boundVariables?: RDF.Variable[]): boolean {
     let valid = true;
     const boundVarNames = boundVariables ? boundVariables.map(v => v.value) : [];
@@ -242,8 +208,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
           const leftOp = op.input[0];
           const rightOp = op.input[1];
 
-          const leftVars = new Set(ActorRdfJoinMultiBind.getVariables(leftOp).map(v => v.value));
-          const rightVars = ActorRdfJoinMultiBind.getVariables(rightOp).map(v => v.value);
+          const leftVars = new Set(inScopeVariables(leftOp).map(v => v.value));
+          const rightVars = inScopeVariables(rightOp).map(v => v.value);
 
           const conflict = rightVars.some(v => !leftVars.has(v) && boundVarNames.includes(v));
           if (conflict) {
@@ -262,7 +228,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
           }
 
           const rightOp = op.input[1];
-          const rightVars = ActorRdfJoinMultiBind.getVariables(rightOp).map(v => v.value);
+          const rightVars = inScopeVariables(rightOp).map(v => v.value);
 
           const conflict = rightVars.some(v => boundVarNames.includes(v));
           if (conflict) {
@@ -306,7 +272,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     remainingRequestItemTimes.splice(0, 1);
 
     // Reject binding on some operation types
-    const boundVariables = ActorRdfJoinMultiBind.getVariables(entriesSorted[0].operation);
+    const boundVariables = inScopeVariables(entriesSorted[0].operation);
     if (remainingEntries
       .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation, boundVariables))) {
       return failTest(`Actor ${this.name} can not bind on Extend, Group, or conflicting LeftJoin/Minus operations`);
