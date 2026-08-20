@@ -10,10 +10,12 @@ import {
   defaultedDayTimeDurationRepresentation,
   defaultedYearMonthDurationRepresentation,
   InvalidArgumentTypes,
+  InvalidLexicalForm,
   NonLexicalLiteral,
   SparqlOperator,
   toUTCDate,
   TypeURL,
+  TypeAlias,
   yearMonthDurationsToMonths,
 } from '@comunica/utils-expression-evaluator';
 import type {
@@ -30,8 +32,6 @@ import type {
   ISerializable,
 } from '@comunica/utils-expression-evaluator';
 import { nonLexicalComparisonHandler } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
-import * as C from '@comunica/utils-expression-evaluator/lib/util/Consts';
-import * as Err from '@comunica/utils-expression-evaluator/lib/util/Errors';
 
 type Tuple<T> = readonly [T, T];
 
@@ -43,7 +43,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
       operator: SparqlOperator.LT,
       overloads: declare(SparqlOperator.LT)
         .set(
-          [ C.TypeAlias.SPARQL_NUMERIC, C.TypeAlias.SPARQL_NUMERIC ],
+          [ TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_NUMERIC ],
           exprEval => this.compareLiterals(exprEval),
           false,
         )
@@ -60,11 +60,11 @@ export class TermFunctionLesserThan extends TermFunctionBase {
           },
         )
         .set(
-          [ C.TypeURL.XSD_BOOLEAN, C.TypeURL.XSD_BOOLEAN ],
+          [ TypeURL.XSD_BOOLEAN, TypeURL.XSD_BOOLEAN ],
           exprEval => this.compareLiterals(exprEval),
           false,
         ).set(
-          [ C.TypeURL.XSD_DATE_TIME, C.TypeURL.XSD_DATE_TIME ],
+          [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
           exprEval => this.compareLiterals<DateTimeLiteral>(exprEval, ([ left, right ]) =>
             toUTCDate(left.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
               toUTCDate(right.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime()),
@@ -160,7 +160,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
   private nonLexicalCheck(exprEval: IInternalEvaluator, a: TermExpression, b: TermExpression): void {
     const nonLexical = [ a, b ].find(arg => arg instanceof NonLexicalLiteral);
     if (nonLexical && !exprEval.context.get(KeysExpressionEvaluator.nonLexicalComparison)) {
-      throw new Err.InvalidLexicalForm(
+      throw new InvalidLexicalForm(
         nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
       );
     }

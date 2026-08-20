@@ -8,9 +8,9 @@ import {
   bool,
   declare,
   SparqlOperator,
+  TypeAlias,
 } from '@comunica/utils-expression-evaluator';
 import { nonLexicalComparisonHandler } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
-import * as C from '@comunica/utils-expression-evaluator/lib/util/Consts';
 
 export class TermFunctionLesserThanEqual extends TermFunctionBase {
   public constructor(
@@ -27,7 +27,7 @@ export class TermFunctionLesserThanEqual extends TermFunctionBase {
         // Because both NaN < NaN and NaN = NaN would return false, which is the correct output
         // But !(Nan < NaN) would return true, which is incorrect
         .set(
-          [ C.TypeAlias.SPARQL_NUMERIC, C.TypeAlias.SPARQL_NUMERIC ],
+          [ TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_NUMERIC ],
           exprEval => ([ left, right ]: NumericLiteral[]) => {
             const nonLexicalCompare = nonLexicalComparisonHandler(exprEval, left, right);
             if (nonLexicalCompare !== undefined) {
