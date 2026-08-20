@@ -1,6 +1,6 @@
 import { KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from '@comunica/utils-algebra';
 import {
   ActorOptimizeQueryOperationQuerySourceSkolemize,
 } from '../lib/ActorOptimizeQueryOperationQuerySourceSkolemize';
