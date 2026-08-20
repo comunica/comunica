@@ -18,6 +18,7 @@ import * as E from '../expressions';
 import { NonLexicalLiteral } from '../expressions';
 import * as C from '../util/Consts';
 import { TypeURL } from '../util/Consts';
+import { defaultedDateTimeRepresentation } from '../util/DateTimeHelpers';
 import * as Err from '../util/Errors';
 import { IncompatibleLanguageOperation } from '../util/Errors';
 import type {
@@ -506,6 +507,29 @@ addInvalidHandling = true,
           const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
           return bool(result);
         },
+        addInvalidHandling,
+      );
+  }
+
+  public dateTimeAndDateTest(test: (expressionEvaluator: IInternalEvaluator)
+  => (left: IDateTimeRepresentation, right: IDateTimeRepresentation) => boolean, addInvalidHandling = true): Builder {
+    return this
+      .set(
+        [ C.TypeURL.XSD_DATE_TIME, C.TypeURL.XSD_DATE ],
+        expressionEvaluator => ([ left, right ]: E.DateTimeLiteral[]) =>
+          bool(test(expressionEvaluator)(
+            left.typedValue,
+            defaultedDateTimeRepresentation(right.typedValue),
+          )),
+        addInvalidHandling,
+      )
+      .set(
+        [ C.TypeURL.XSD_DATE, C.TypeURL.XSD_DATE_TIME ],
+        expressionEvaluator => ([ left, right ]: E.DateTimeLiteral[]) =>
+          bool(test(expressionEvaluator)(
+            defaultedDateTimeRepresentation(left.typedValue),
+            right.typedValue,
+          )),
         addInvalidHandling,
       );
   }
