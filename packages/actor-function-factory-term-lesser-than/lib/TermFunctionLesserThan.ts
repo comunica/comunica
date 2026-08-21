@@ -44,7 +44,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
       overloads: declare(SparqlOperator.LT)
         .set(
           [ TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_NUMERIC ],
-          exprEval => this.compareLiterals(exprEval),
+          exprEval => this.literalLesserThan(exprEval),
           false,
         )
         // No non-lexical handling for strings, since they can't have invalid lexicals
@@ -61,11 +61,11 @@ export class TermFunctionLesserThan extends TermFunctionBase {
         )
         .set(
           [ TypeURL.XSD_BOOLEAN, TypeURL.XSD_BOOLEAN ],
-          exprEval => this.compareLiterals(exprEval),
+          exprEval => this.literalLesserThan(exprEval),
           false,
         ).set(
           [ TypeURL.XSD_DATE_TIME, TypeURL.XSD_DATE_TIME ],
-          exprEval => this.compareLiterals<DateTimeLiteral>(exprEval, ([ left, right ]) =>
+          exprEval => this.literalLesserThan<DateTimeLiteral>(exprEval, ([ left, right ]) =>
             toUTCDate(left.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime() <
               toUTCDate(right.typedValue, exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone)).getTime()),
           false,
@@ -76,14 +76,14 @@ export class TermFunctionLesserThan extends TermFunctionBase {
         })
         .set(
           [ TypeURL.XSD_YEAR_MONTH_DURATION, TypeURL.XSD_YEAR_MONTH_DURATION ],
-          exprEval => this.compareLiterals<YearMonthDurationLiteral>(exprEval, ([ dur1L, dur2L ]) =>
+          exprEval => this.literalLesserThan<YearMonthDurationLiteral>(exprEval, ([ dur1L, dur2L ]) =>
           // https://www.w3.org/TR/xpath-functions/#func-yearMonthDuration-less-than
             yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1L.typedValue)) <
                 yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2L.typedValue))),
           false,
         ).set(
           [ TypeURL.XSD_DAY_TIME_DURATION, TypeURL.XSD_DAY_TIME_DURATION ],
-          exprEval => this.compareLiterals<DayTimeDurationLiteral>(exprEval, ([ dur1, dur2 ]) =>
+          exprEval => this.literalLesserThan<DayTimeDurationLiteral>(exprEval, ([ dur1, dur2 ]) =>
           // https://www.w3.org/TR/xpath-functions/#func-dayTimeDuration-greater-than
             dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) <
                 dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))),
@@ -91,7 +91,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
         )
         .set(
           [ TypeURL.XSD_TIME, TypeURL.XSD_TIME ],
-          exprEval => this.compareLiterals<TimeLiteral>(exprEval, ([ time1, time2 ]) =>
+          exprEval => this.literalLesserThan<TimeLiteral>(exprEval, ([ time1, time2 ]) =>
           // https://www.w3.org/TR/xpath-functions/#func-time-less-than
             toUTCDate(
               defaultedDateTimeRepresentation(time1.typedValue),
@@ -134,7 +134,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
   /**
    * Compare the value of two literals, given a comparator, comparator defaults to JS `<`.
    */
-  private compareLiterals<LiteralType extends Literal<ISerializable>>(
+  private literalLesserThan<LiteralType extends Literal<ISerializable>>(
     exprEval: IInternalEvaluator,
     comparator: (arg: Tuple<LiteralType>) => boolean = ([ left, right ]) => left.typedValue < right.typedValue,
   ): ([ left, right ]: Tuple<LiteralType>) => BooleanLiteral {
