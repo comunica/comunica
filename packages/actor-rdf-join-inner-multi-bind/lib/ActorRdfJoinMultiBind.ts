@@ -19,9 +19,10 @@ import type {
   IJoinEntryWithMetadata,
   IQueryOperationResultBindings,
 } from '@comunica/types';
-import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
+import { AlgebraFactory, Algebra, algebraUtils, inScopeVariables } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 
 /**
@@ -181,17 +182,61 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     };
   }
 
-  public static canBindWithOperation(operation: Algebra.Operation): boolean {
+  public static canBindWithOperation(operation: Algebra.Operation, boundVariables?: RDF.Variable[]): boolean {
     let valid = true;
+    const boundVarNames = boundVariables ? boundVariables.map(v => v.value) : [];
+
+    const skipHandler = {
+      preVisitor: () => {
+        valid = false;
+        return { shortcut: true };
+      },
+    };
+
     algebraUtils.visitOperation(operation, {
-      [Algebra.Types.EXTEND]: { preVisitor: () => {
-        valid = false;
-        return { shortcut: true };
-      } },
-      [Algebra.Types.GROUP]: { preVisitor: () => {
-        valid = false;
-        return { shortcut: true };
-      } },
+      [Algebra.Types.EXTEND]: skipHandler,
+      [Algebra.Types.GROUP]: skipHandler,
+      [Algebra.Types.LEFT_JOIN]: {
+        preVisitor: (op: Algebra.LeftJoin) => {
+          // Default behaviour: skip
+          if (!boundVariables) {
+            valid = false;
+            return { shortcut: true };
+          }
+
+          const leftOp = op.input[0];
+          const rightOp = op.input[1];
+
+          const leftVars = new Set(inScopeVariables(leftOp).map(v => v.value));
+          const rightVars = inScopeVariables(rightOp).map(v => v.value);
+
+          const conflict = rightVars.some(v => !leftVars.has(v) && boundVarNames.includes(v));
+          if (conflict) {
+            valid = false;
+            return { shortcut: true };
+          }
+          return { shortcut: false };
+        },
+      },
+      [Algebra.Types.MINUS]: {
+        preVisitor: (op: Algebra.Minus) => {
+          // Default behaviour: skip
+          if (!boundVariables) {
+            valid = false;
+            return { shortcut: true };
+          }
+
+          const rightOp = op.input[1];
+          const rightVars = inScopeVariables(rightOp).map(v => v.value);
+
+          const conflict = rightVars.some(v => boundVarNames.includes(v));
+          if (conflict) {
+            valid = false;
+            return { shortcut: true };
+          }
+          return { shortcut: false };
+        },
+      },
     });
 
     return valid;
@@ -226,9 +271,10 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     remainingRequestItemTimes.splice(0, 1);
 
     // Reject binding on some operation types
+    const boundVariables = inScopeVariables(entriesSorted[0].operation);
     if (remainingEntries
-      .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation))) {
-      return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
+      .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation, boundVariables))) {
+      return failTest(`Actor ${this.name} can not bind on Extend, Group, or conflicting LeftJoin/Minus operations`);
     }
 
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.
