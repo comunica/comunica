@@ -404,7 +404,7 @@ IQueryOperationResultBindings
               },
               {
                 output: <any> {},
-                operation: <any> { type: Algebra.Types.GROUP },
+                operation: FACTORY.createGroup(FACTORY.createNop(), [], []),
               },
             ],
             context: new ActionContext(),
