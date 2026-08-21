@@ -19,8 +19,7 @@ import type {
   IJoinEntryWithMetadata,
   IQueryOperationResultBindings,
 } from '@comunica/types';
-import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
-import { inScopeVariables } from '@comunica/utils-algebra/lib/utils';
+import { AlgebraFactory, Algebra, algebraUtils, inScopeVariables } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
