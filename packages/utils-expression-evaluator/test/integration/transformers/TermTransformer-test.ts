@@ -108,6 +108,12 @@ describe('TermTransformer', () => {
         termTransformer.transformRDFTermUnsafe(null);
       }).toThrow(Err.InvalidExpression);
     });
+
+    it('a term expression without a term', () => {
+      expect(() => {
+        (<any> termTransformer).transformTerm({ type: 'expression', subType: 'term' });
+      }).toThrow(Err.InvalidExpression);
+    });
   });
 
   describe('ordering literals', () => {

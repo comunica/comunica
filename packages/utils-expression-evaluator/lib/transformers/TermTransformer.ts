@@ -32,33 +32,42 @@ export class TermTransformer implements ITermTransformer {
    * @param term RDF term to transform into internal representation of a term
    */
   public transformRDFTermUnsafe(term: RDF.Term): E.Term {
-    return <E.Term> this.transformTerm({
-      term,
-      type: Algebra.Types.EXPRESSION,
-      subType: Algebra.ExpressionTypes.TERM,
-    });
+    // This is on the hot path of every expression evaluation,
+    // so the RDF term is dispatched on directly instead of wrapping it in a term expression first.
+    // The wrapping term expression is only materialized for the error message.
+    if (!term) {
+      throw new Err.InvalidExpression({
+        term,
+        type: Algebra.Types.EXPRESSION,
+        subType: Algebra.ExpressionTypes.TERM,
+      });
+    }
+    return <E.Term> this.transformRdfTerm(term);
   }
 
   protected transformTerm(term: Algebra.TermExpression): Expression {
     if (!term.term) {
       throw new Err.InvalidExpression(term);
     }
+    return this.transformRdfTerm(term.term);
+  }
 
-    switch (term.term.termType) {
+  protected transformRdfTerm(term: RDF.Term): Expression {
+    switch (term.termType) {
       case 'Variable':
-        return new E.Variable(RDFString.termToString(term.term));
+        return new E.Variable(RDFString.termToString(term));
       case 'Literal':
-        return this.transformLiteral(term.term);
+        return this.transformLiteral(term);
       case 'NamedNode':
-        return new E.NamedNode(term.term.value);
+        return new E.NamedNode(term.value);
       case 'BlankNode':
-        return new E.BlankNode(term.term.value);
+        return new E.BlankNode(term.value);
       case 'Quad':
         return new E.Quad(
-          this.transformRDFTermUnsafe(term.term.subject),
-          this.transformRDFTermUnsafe(term.term.predicate),
-          this.transformRDFTermUnsafe(term.term.object),
-          this.transformRDFTermUnsafe(term.term.graph),
+          this.transformRDFTermUnsafe(term.subject),
+          this.transformRDFTermUnsafe(term.predicate),
+          this.transformRDFTermUnsafe(term.object),
+          this.transformRDFTermUnsafe(term.graph),
         );
       case 'DefaultGraph':
         return new E.DefaultGraph();
