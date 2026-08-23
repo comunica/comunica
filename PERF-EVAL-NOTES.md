@@ -513,3 +513,84 @@ than the file benchmark (3.06% vs 0.57%), which is expected at `queryRunnerRepli
 
 **Both benchmarks are runnable, repeatable, and cheap enough to use as an A/B harness.**
 That answers the question this session was spawned to settle.
+
+---
+
+## 2026-08-23 — Milestone 7: local micro-harness + first cost-model experiment
+
+Branch: **`claude/perf-cost-model-experiment`** (off `origin/master`).
+`feature/query-engine-performance` untouched.
+
+### Micro-harness (untracked, in `.git/info/exclude`)
+
+`perf-harness/` — 140,319-quad synthetic dataset (20k people with
+name/age/email/city/knows/nick/score, 100 cities, 10 countries), deterministic seeded LCG,
+loaded into `RdfStore.createDefault()`. 29 queries covering scans, star joins (2-5
+patterns), chains, property paths, filters, BIND, DISTINCT, ORDER BY, GROUP BY, OPTIONAL,
+UNION, MINUS, FILTER EXISTS, CONSTRUCT.
+
+- `perf-harness/run.js <rounds> <label>` — per-query medians + result counts.
+- `perf-harness/plans.js <label>` — physical plans via `engine.explain(q, ctx, 'physical')`.
+
+**Note for reuse:** `engine.query(q, {explain:'physical'})` does **not** work — it fails
+with `Tried to explain a query when in query-only mode`. You must call
+`engine.explain(query, context, 'physical')`. Also, `r.data` from explain is a
+**formatted string**, not a tree, so plan comparison means normalising away
+`timeSelf:`/`timeLife:`/`cardReal:`/`compacted-occurrences:` and diffing the text.
+
+The harness reproduces the reported pathology on master:
+
+| query | master |
+|---|---|
+| `star4` (4-pattern star) | 8650 ms |
+| `star5` (5-pattern star) | 12280 ms |
+| `optional-join` | 8767 ms |
+| `chain4` | 2551 ms |
+| `optional` | 2125 ms |
+
+### Experiment v1: gate `selectivityModifier` on `isRemoteAccess`
+
+```diff
+-      })).selectivity * this.selectivityModifier));
++      })).selectivity * (isRemoteAccess ? this.selectivityModifier : 1)));
+```
+(plus the equivalent one-liner in `ActorRdfJoinOptionalBind`, using
+`requestItemTimes.some(time => time > 0)`.)
+
+### Plan changes on local sources: only 4 of 29 queries moved
+
+| query | before | after |
+|---|---|---|
+| `chain2` | `bind` | `hash-def` |
+| `chain4` | `bind bind bind` | `bind bind hash-def` |
+| `optional-join` | `bind bind` | `hash-def hash-def` |
+| `optional` | (optional-bind) | (changed) |
+
+**`star4` and `star5` did NOT change — they still use `bind`.** This is the most important
+finding of the experiment so far, and it refines the analysis:
+
+For a >=3-entry join the competitor to `bind` is `multi-smallest`, whose `iterations` is
+still the product of all cardinalities. Removing bind's 1e-4 discount raises bind's
+estimate from ~4.4e4 to ~4.4e8, but `multi-smallest` sits at ~8e12, so **bind still wins**.
+The plan only flips where the competitor is a *2-way* `hash` join, because hash costs
+itself as a **sum** rather than a product.
+
+> **Conclusion: causes #2 and #3 must be fixed together.** Neither is sufficient alone.
+> Fixing only the `selectivityModifier` (#3) leaves every star join on bind, because
+> `multi-smallest` (#2) still self-costs as a cartesian product. Fixing only #2 leaves
+> bind with a 10,000x discount. This is a genuine compounding interaction, exactly as
+> suspected in the PR description.
+
+### Caution on the first measurement — it was biased
+
+A first comparison (1-round base vs 3-round patched) showed `optional-join` -95%,
+`optional` -60%, `chain2` -44%, but *also* showed +5% to +24% on queries with **no joins
+at all** (`scan-name`, `scan-age`, `path-star`, `union`, `construct`). The patch cannot
+affect a single-pattern scan, so that spread is measurement drift, not signal.
+
+Re-running properly **interleaved** (alternating base/patched with an incremental `tsc`
+between sides, per-query medians across rounds) — results in the next section. No number
+from the biased run is reported as a result.
+
+One apparent regression to check carefully in the interleaved run: **`chain4` 2551 -> 5642 ms
+(+121%)**.
