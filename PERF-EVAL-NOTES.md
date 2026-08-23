@@ -1023,3 +1023,178 @@ problem completely, but on the real local workload it trades one big win for 18 
 | file benchmark sets regressed | many | — | **18 / 20** |
 | micro-harness total | -12.5% | -76.1% | -76.1% (plans identical to v3) |
 | micro-harness `chain4` | +110.6% | -91.8% | -91.8% |
+
+---
+
+# 2026-08-23 — FOLLOW-UP TASK: change 3 (remoteness propagation) measured in isolation
+
+Branch: **`claude/perf-remoteness-propagation`**, off `origin/master`, 2 commits, pushed.
+No PR opened (not requested). No GitHub issue filed (declined).
+
+## The change
+
+Only `ActorRdfJoin.constructResultMetadata`. Exact diff of commit 1 (`523d134eca`):
+
+```diff
+@@ -272,8 +272,18 @@
+       }
+     }
+
++    // Propagate paging information from the inputs, so that operations higher up the plan
++    // tree can still tell that this result originates from a paged (remote) source.
++    // Without this, any join over join results is indistinguishable from a local source.
++    const pageSizes = metadatas.map(metadata => metadata.pageSize).filter(Boolean);
++    const pageSize = pageSizes.length > 0 ? Math.max(...<number[]> pageSizes) : undefined;
++    const requestTimes = metadatas.map(metadata => metadata.requestTime).filter(Boolean);
++    const requestTime = requestTimes.length > 0 ? Math.max(...<number[]> requestTimes) : undefined;
++
+     return {
+       state: this.constructState(metadatas),
++      ...pageSize === undefined ? {} : { pageSize },
++      ...requestTime === undefined ? {} : { requestTime },
+       ...partialMetadata,
+       cardinality: {
+         type: cardinalityJoined.type,
+```
+
+Commit 2 (`4cc930dca0`) narrows it so `requestTime` only propagates alongside `pageSize`:
+
+```diff
+-    const requestTimes = metadatas.map(metadata => metadata.requestTime).filter(Boolean);
+-    const requestTime = requestTimes.length > 0 ? Math.max(...<number[]> requestTimes) : undefined;
++    // Only propagate requestTime together with pageSize. For non-paged (local) sources
++    // requestTime is a one-off dereference cost, and re-applying it at every level of the
++    // plan tree would inflate the estimated cost of every nested join over a local source.
++    const requestTime = pageSize === undefined ?
++      undefined :
++      Math.max(...metadatas.map(metadata => metadata.requestTime ?? 0));
+```
+
+Note the spreads are placed *before* `...partialMetadata`, so an explicit caller-supplied
+value still wins.
+
+## !!! First: a methodology error that affects earlier numbers in this file !!!
+
+While measuring this change I found the local file benchmark reporting **+4.28%**, and
+after a "fix" **+5.40%** — worse. That contradiction prompted a drift check: **master
+re-measured on the same machine, hours after the original baseline.**
+
+```
+master EARLY  run1 38,901  run2 38,680  mean 38,790 ms   (back-to-back spread -0.57%)
+master NOW                             40,203 ms
+DRIFT = +3.64%
+```
+
+**The machine got 3.64% slower over the session.** Every jbr comparison in this file was
+made against a baseline captured hours earlier and is therefore inflated by up to ~3.6%.
+I interleaved the *micro-harness* A/B runs but did not interleave the *jbr* runs — that
+was an error.
+
+Re-scored against a same-session master baseline:
+
+| variant | vs EARLY base | **vs NOW base** |
+|---|---|---|
+| cost-model v1 | +2.50% | **-1.11%** |
+| cost-model v4 | -11.20% | **-14.32%** |
+| propagation commit 1 | +4.28% | **+0.61%** |
+| propagation commit 2 | +5.40% | **+1.69%** |
+
+**Retraction:** the earlier claim that "v1 regresses `benchmark-watdiv-file` by +2.50%" is
+**wrong**; re-scored it is -1.11%, i.e. indistinguishable from no change.
+
+**What is unaffected:** all TPF `httpRequests` conclusions (a counter — immune to machine
+speed), all correctness results, and v4's large per-set effects (C2 -15,449 ms / -88%,
+C3 +5,294 ms / +33%) which are an order of magnitude above drift and were corroborated by
+plan changes. **What is unreliable:** any file-benchmark claim in the +/-1-3% band, and the
+small-set percentages in the v4 table.
+
+**Rule for future work: interleave the jbr runs too, or re-baseline immediately before
+each comparison. Do not reuse a baseline across hours.**
+
+## Results for change 3 in isolation
+
+### Prediction 1 — "local sources: nothing changes" — HOLDS
+
+- **Micro-harness plans: 0 / 29 changed.**
+- **`benchmark-watdiv-file`: +0.61% (commit 1), +1.69% (commit 2)** against a same-session
+  master baseline. Both are inside the drift-inflated uncertainty; the 0.57% back-to-back
+  noise floor does not apply across runs separated in time. Treated as **no-op**.
+- Correctness: **0/100 mismatches, 244,585 results**, every run.
+
+Caveat on why the micro-harness could not have detected a local effect here:
+`QuerySourceRdfJs` hard-codes `requestTime: 0` ("free for future calls, as we're fully
+indexed"), and `0` is falsy, so `.filter(Boolean)` drops it. By contrast
+`ActorDereferenceFile` sets `requestTime = Date.now() - start`, which is non-zero and in
+**milliseconds**. So a 0/29 result on the `RdfStore`-backed harness is a true statement
+about `RdfStore` sources and **not** evidence about local sources generally. This is the
+motivation for commit 2, which is a semantic argument, not a measured one.
+
+### Prediction 2 — "TPF plans probably change" — FALSIFIED
+
+| | `httpRequests` total | differing | wall clock vs base |
+|---|---|---|---|
+| baseline (x2) | **128,609** | — | — |
+| commit 1 | **128,609** | **0 / 100** | +0.64% |
+| commit 2 | **128,609** | **0 / 100** | -0.17% |
+
+**Both commits leave TPF plan choice bit-identical.** Correctness identical
+(0/100 mismatches, 244,585). Wall clock well inside the 3.06% noise floor.
+
+The reasoning behind the prediction was sound — correct remoteness *does* make the
+`minMaxCardinalityRatio` gate stricter (`/1` instead of `/3`) — but no WatDiv TPF query
+sits in the narrow band where that flips the gate's outcome.
+
+### Is the change actually doing anything? (yes — "no change" is not "no effect")
+
+"0/100 changed" is ambiguous between *the fix is safe* and *the fix is inert*. The
+**v3-vs-v4 pair settles it as a controlled experiment**: those two branches differ by
+exactly this hunk and nothing else, and v3 changed 14/100 TPF queries while v4 changed
+0/100. The propagation demonstrably takes effect on TPF; it simply has no observable
+consequence unless something else also branches on `isRemoteAccess`.
+
+## VERDICT: shippable as a standalone bug fix — **qualified yes**, but not as a perf fix
+
+**Yes, because:**
+1. It fixes a real bug. On master, `isRemoteAccess` misclassifies nested joins over paged
+   sources as local, so `ActorRdfJoinMultiBind` applies its local `/3` relaxation to the
+   `minMaxCardinalityRatio` gate on remote queries. Demonstrated, not theorised.
+2. Measured harmless: 0/29 local plan changes, 0/100 TPF plan changes, wall clock within
+   noise on both, and byte-identical results on all 200 query executions across both
+   benchmarks.
+3. It is a prerequisite for any future locality-aware cost-model work — without it, no
+   such change can be made safely, as v1 and v3 demonstrated.
+
+**But only with these caveats stated honestly:**
+1. **Zero demonstrable benefit on either benchmark.** It must be justified as a
+   correctness/consistency fix. Anyone expecting a speedup will be disappointed.
+2. It touches shared join infrastructure used by every join actor, so its blast radius is
+   wider than the two WatDiv benchmarks that were run. **`benchmark-bsbm-tpf` and
+   `benchmark-bsbm-file` were never attempted in this session** (see below).
+3. `Math.max` for combining `pageSize`/`requestTime` is a judgement call, not validated.
+4. **Needs unit tests.** The repo enforces **100% coverage globally**, and this adds
+   branches: `pageSize` present/absent, `requestTime` present/absent, and (commit 2) the
+   `pageSize === undefined` short-circuit. `packages/bus-rdf-join/test/ActorRdfJoin-test.ts`
+   is the place. **I did not run the test suite on this branch** — it must pass before merge.
+
+**Which commits to keep:** both are TPF-neutral and correctness-neutral. Commit 2 is the
+more conservative artifact (a strict no-op for non-paged sources) and is recommended, but
+note its original motivation — the "+4.28% regression" — turned out to be machine drift.
+Its remaining justification is semantic: for a local file source `requestTime` is a one-off
+dereference cost in milliseconds, and `getRequestInitialTimes` returns it directly when
+`pageSize` is absent, so propagating it would re-charge that cost at every level of the
+plan tree. **The benchmarks cannot separate the two commits** (+0.61% vs +1.69%, both
+below resolution). If only one is kept, commit 1 is the one that was measured first and
+independently on TPF; commit 2 is measured too and is safer in principle.
+
+## `benchmark-bsbm-tpf`: NOT attempted
+
+Only `benchmark-watdiv-file` and `benchmark-watdiv-tpf` were ever run. Notes for whoever
+picks it up:
+- It has **no `fetch-assets` script**, unlike the watdiv benchmarks — the BSBM dataset is
+  generated by `jbr prepare` rather than downloaded, so expect a longer, Docker-dependent
+  prepare step that was never exercised here.
+- Its `performance:ci` is `jbr prepare -c 0 && jbr run -c 0 && psbr csv bsbm combinations/combination_0/output`.
+- It needs the same LDF server + nginx cache images, which are already built locally and
+  working, so the `mirror.gcr.io` workaround for the Docker Hub rate limit should not be
+  needed again in this container.
+- `benchmark-bsbm-file` was also never attempted.
