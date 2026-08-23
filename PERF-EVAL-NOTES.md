@@ -152,3 +152,61 @@ the most likely to be join-plan sensitive.
 
 Run 2 (identical commit, to establish the noise floor) is in progress — **no A/B
 comparison will be made until that noise floor is known.**
+
+---
+
+## 2026-08-23 — Milestone 3: noise floor of `benchmark-watdiv-file`
+
+Two **identical** runs of the same commit (`77a549162c`), back to back, nothing else
+running on the box. Wall clock 201.10 s and 194.64 s.
+
+### Correctness: perfectly deterministic
+
+**0 / 100 queries differed** in either result count or result hash between the two runs.
+So the harness gives a clean equivalence check — any future plan change can be validated
+for semantics by diffing the `results` and `hash` columns, independently of timing.
+
+### Timing: per-query noise is large, aggregate noise is small
+
+Per-query `|run2 - run1| / run1` over 100 queries:
+
+| median | mean | p90 | max |
+|---|---|---|---|
+| 10.5% | 14.5% | 33.3% | 75.0% |
+
+But the **total** (sum of per-query mean times) moved only
+**38,901 ms -> 38,680 ms = -0.57%**.
+
+The reason is that the per-query noise is concentrated entirely in the *short* queries,
+where the numbers are single-digit milliseconds and quantisation dominates:
+
+```
+S5 #4    4.0 ->  7.0 ms   +75.0%      <- 3 ms of jitter
+S1 #1  114.7 -> 31.7 ms   -72.4%
+L4 #3    6.0 ->  4.0 ms   -33.3%      <- 2 ms of jitter
+```
+
+The two queries that actually dominate runtime are stable:
+
+| set | avg time | drift run1->run2 | spread across its 5 instances |
+|---|---|---|---|
+| **C3** | 3171 ms | **+2.0%** | 3.7 pp |
+| **C2** | 3526 ms | **-0.8%** | 7.7 pp |
+
+C2 + C3 are ~86% of total runtime (33.5 s of 38.9 s), which is why the total is so stable.
+
+### Resolution limits — what this benchmark can and cannot prove
+
+- **Trustworthy signal: C2, C3, and the total.** Effects of **>= ~5%** on these are
+  resolvable. The observed run-to-run drift is 0.6-2%.
+- **Not trustworthy: any individual L\*/S\*/F\* query.** These need a >75% change before
+  it can be distinguished from jitter at replication 3. Do not report a "2x speedup on
+  S1" from this harness.
+- This *refines* the earlier "cannot resolve below ~30%" finding: that is about right for
+  individual short queries, but the aggregate and the two heavy queries are far better
+  than 30%.
+- `queryRunnerReplication` is **3** for watdiv-file but only **1** for watdiv-tpf, so
+  the TPF benchmarks should be expected to be noisier and will need repeated runs.
+
+**Rule adopted for the rest of this work: no A/B claim below 5% on C2/C3/total, and no
+claim at all on individual short queries.**
