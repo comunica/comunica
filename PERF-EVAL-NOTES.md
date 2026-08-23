@@ -739,3 +739,78 @@ Any fix that needs to treat local and remote sources differently **cannot use
 
 Its value is diagnostic: it proved the compounding of causes #2/#3, and it exposed the
 `isRemoteAccess` propagation bug.
+
+---
+
+## 2026-08-23 — Milestone 9: v1 on `benchmark-watdiv-file` — also a regression
+
+Correctness fine (**0/100 mismatches, 244,585 results**), but timing is a net loss:
+
+**TOTAL 38,790 ms (base mean of 2 runs) -> 39,758 ms = +2.50%**, against an aggregate
+noise floor of 0.57%. So this is a real regression, ~4x the noise.
+
+| set | base | v1 | delta |
+|---|---|---|---|
+| C1 | 477.1 | 386.1 | **-19.1%** |
+| L3 | 11.6 | 67.7 | **+483.9%** |
+| S5 | 5.2 | 17.6 | **+240.6%** |
+| S2 | 14.2 | 31.5 | **+121.5%** |
+| F2 | 51.3 | 66.7 | +29.9% |
+| F1 | 22.4 | 27.5 | +22.9% |
+| F4 | 49.9 | 59.9 | +20.2% |
+| F5 | 134.4 | 159.0 | +18.3% |
+| F3 | 85.6 | 98.8 | +15.5% |
+| C2 / C3 | 3509 / 3202 | 3600 / 3230 | +2.6% / +0.9% |
+
+L3, S2 and S5 are short queries where the per-query noise floor is high (median 10.5%,
+max 75%), but +484% and +241% are far outside that, and each figure is the mean of 5
+instantiations at replication 3. Treat them as real.
+
+**v1 verdict across all three harnesses: rejected.**
+
+| harness | v1 result |
+|---|---|
+| local micro-harness | -12.5% total, but `chain4` +110.6%, stars unchanged |
+| `benchmark-watdiv-file` | **+2.50%** (regression, 4x noise floor) |
+| `benchmark-watdiv-tpf` | 14/100 plans changed, S3 9.6x more HTTP requests |
+
+---
+
+## 2026-08-23 — Milestone 10: fixing cause #2 alone provably does nothing
+
+Tested the change that was suggested as "the smallest defensible change first" —
+`ActorRdfJoinMultiSmallest`'s product-of-cardinalities — **in isolation**, on a branch off
+`origin/master` with no other modification:
+
+```diff
+-      iterations: metadatas.reduce((acc, metadata) => acc * metadata.cardinality.value, 1),
++      iterations: metadatas.reduce((acc, metadata) => acc + metadata.cardinality.value, 0),
+```
+
+This is the most aggressive form of the fix — replacing the product with a **sum**, which
+for a 4-way star drops the estimate from 1.6e17 to 8e4, i.e. ~12 orders of magnitude.
+
+**Result: 0 / 29 query plans changed.** Not one.
+
+This empirically confirms the prediction made from the cost model: bind's flat 1e-4
+`selectivityModifier` dominates so completely that `multi-smallest` cannot win no matter
+how cheap it claims to be. **Anyone starting this work by fixing `multi-smallest` alone
+will measure exactly nothing and may wrongly conclude the cost model is fine.**
+
+## 2026-08-23 — Milestone 11: both fixes together (v3) — stars finally move
+
+Branch `claude/perf-cost-model-experiment-v2`, combining the two:
+
+**7 / 29 plans changed, including the headline cases:**
+
+| query | master | v3 |
+|---|---|---|
+| `star4` | `multi-smallest hash bind nested-loop x3` | `multi-smallest hash multi-smallest hash hash` |
+| `star5` | `multi-smallest hash bind nested-loop multi-smallest nested-loop x3` | all `multi-smallest` / `hash` |
+| `chain3` | `bind nested-loop` | `multi-smallest hash hash` |
+| `chain4` | `bind bind bind` | `multi-smallest hash multi-smallest hash hash` |
+| `chain2` | `bind` | `hash-def` |
+| `optional-join` | `bind bind` | `hash hash` |
+
+Every `bind` and `nested-loop` is gone from the star and chain plans. Interleaved A/B
+measurement in progress.
