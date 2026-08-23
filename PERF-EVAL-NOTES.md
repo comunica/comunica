@@ -814,3 +814,40 @@ Branch `claude/perf-cost-model-experiment-v2`, combining the two:
 
 Every `bind` and `nested-loop` is gone from the star and chain plans. Interleaved A/B
 measurement in progress.
+
+### v3 interleaved A/B on the local micro-harness — large, clean wins
+
+3 interleaved rounds, per-query medians, **0/29 result mismatches**.
+
+| query | master | v3 | delta |
+|---|---|---|---|
+| `optional-join` | 7713.9 ms | **375.0 ms** | **-95.1%** (20.6x) |
+| `star4` | 8975.2 ms | **462.3 ms** | **-94.8%** (19.4x) |
+| `star5` | 12679.4 ms | **664.3 ms** | **-94.8%** (19.1x) |
+| `chain4` | 2503.0 ms | **205.2 ms** | **-91.8%** (12.2x) |
+| `chain3` | 311.9 ms | **71.8 ms** | **-77.0%** |
+| `chain2` | 167.5 ms | **66.8 ms** | **-60.1%** |
+| `optional` | 1775.9 ms | **873.4 ms** | **-50.8%** |
+
+**TOTAL 40,837 -> 9,747 ms = -76.1%.**
+
+No significant regressions. The largest adverse move is `exists` +18.8%, which is below
+the 20% significance threshold against a ~9% within-side spread — flagged as "watch",
+not "regression". The join-free control queries (`scan-name` +7.3%, `construct` +6.7%,
+`path-star` +2.1%) sit within their spreads, so the measurement is not biased.
+
+**The `chain4` regression from v1 is gone — it flipped from +110.6% to -91.8%.** That is
+direct evidence for the compounding hypothesis: with `multi-smallest` no longer
+self-costing as a cartesian product, the planner finally has a *good* alternative to bind,
+so removing bind's discount stops pushing it onto a bad choice. Neither change is safe or
+effective alone; together they are both.
+
+These numbers are in the same range as the "bind-join actors disabled" measurements
+quoted in the PR description (4-pattern star 16x, 3-pattern chain 11x, OPTIONAL 3.4x),
+which is the expected outcome if the cost model — rather than the bind implementation —
+was the problem.
+
+**Caveat before anyone gets excited: this is the local micro-harness only.** v3 still
+contains the `isRemoteAccess` gate that Milestone 8 proved is broken, *and* the
+`multi-smallest` change is not gated at all, so it applies to remote sources too. TPF
+results are the deciding evidence and are pending.
