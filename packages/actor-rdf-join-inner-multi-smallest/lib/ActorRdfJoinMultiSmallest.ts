@@ -126,7 +126,9 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
     return passTestWithSideData({
-      iterations: metadatas.reduce((acc, metadata) => acc * metadata.cardinality.value, 1),
+      // This actor joins the two smallest entries and recursively delegates the rest,
+      // so it performs a sequence of pairwise joins rather than a cartesian product.
+      iterations: metadatas.reduce((acc, metadata) => acc + metadata.cardinality.value, 0),
       persistedItems: 0,
       blockingItems: 0,
       requestTime: metadatas.reduce((sum, metadata, i) => sum + requestInitialTimes[i] +

@@ -110,7 +110,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     const selectivity = (await this.mediatorJoinSelectivity.mediate({
       entries: action.entries,
       context: action.context,
-    })).selectivity * this.selectivityModifier;
+    })).selectivity * (requestItemTimes.some(time => time > 0) ? this.selectivityModifier : 1);
 
     return passTestWithSideData({
       iterations: metadatas[0].cardinality.value * metadatas[1].cardinality.value * selectivity,

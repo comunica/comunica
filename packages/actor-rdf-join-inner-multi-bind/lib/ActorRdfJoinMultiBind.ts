@@ -250,7 +250,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       .map(async entry => (await this.mediatorJoinSelectivity.mediate({
         entries: [ entriesSorted[0], entry ],
         context: action.context,
-      })).selectivity * this.selectivityModifier));
+      })).selectivity * (isRemoteAccess ? this.selectivityModifier : 1)));
 
     // Determine coefficients for remaining entries
     const cardinalityRemaining = remainingEntries
