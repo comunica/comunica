@@ -277,8 +277,12 @@ TS
     // Without this, any join over join results is indistinguishable from a local source.
     const pageSizes = metadatas.map(metadata => metadata.pageSize).filter(Boolean);
     const pageSize = pageSizes.length > 0 ? Math.max(...<number[]> pageSizes) : undefined;
-    const requestTimes = metadatas.map(metadata => metadata.requestTime).filter(Boolean);
-    const requestTime = requestTimes.length > 0 ? Math.max(...<number[]> requestTimes) : undefined;
+    // Only propagate requestTime together with pageSize. For non-paged (local) sources
+    // requestTime is a one-off dereference cost, and re-applying it at every level of the
+    // plan tree would inflate the estimated cost of every nested join over a local source.
+    const requestTime = pageSize === undefined ?
+      undefined :
+      Math.max(...metadatas.map(metadata => metadata.requestTime ?? 0));
 
     return {
       state: this.constructState(metadatas),
