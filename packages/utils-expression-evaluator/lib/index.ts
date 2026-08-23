@@ -2,7 +2,7 @@ export { TermTransformer } from './transformers/TermTransformer';
 export {
   OverloadTree,
 } from './functions/OverloadTree';
-export { prepareEvaluatorActionContext } from './util/Context';
+export { prepareEvaluatorActionContext, createSuperTypeProvider } from './util/Context';
 export {
   declare,
   bool,

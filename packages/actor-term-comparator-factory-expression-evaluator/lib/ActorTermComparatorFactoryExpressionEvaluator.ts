@@ -15,6 +15,12 @@ import { TermComparatorExpressionEvaluator } from './TermComparatorExpressionEva
  * A comunica Expression Evaluator Based Term Comparator Factory Actor.
  */
 export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComparatorFactory {
+  /**
+   * The super type provider handed to every comparator that does not get one from the context.
+   * It holds a type cache, so it is created once per actor instead of once per comparator.
+   */
+  private readonly defaultSuperTypeProvider = Eval.createSuperTypeProvider();
+
   public async test(_action: IActionTermComparatorFactory): Promise<TestResult<IActorTest>> {
     return passTestVoid();
   }
@@ -25,7 +31,7 @@ export class ActorTermComparatorFactoryExpressionEvaluator extends ActorTermComp
    * @param context.context IActionContext
    */
   public async run({ context }: IActionTermComparatorFactory): Promise<IActorTermComparatorFactoryOutput> {
-    context = Eval.prepareEvaluatorActionContext(context)
+    context = Eval.prepareEvaluatorActionContext(context, this.defaultSuperTypeProvider)
       .set(KeysExpressionEvaluator.nonLexicalComparison, true)
       .set(KeysExpressionEvaluator.fullTermComparison, true);
     return new TermComparatorExpressionEvaluator(

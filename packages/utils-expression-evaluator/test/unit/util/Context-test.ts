@@ -1,7 +1,7 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
-import { prepareEvaluatorActionContext } from '../../../lib';
+import { createSuperTypeProvider, prepareEvaluatorActionContext } from '../../../lib';
 
 const DF = new DataFactory();
 
@@ -10,6 +10,28 @@ describe('prepareEvaluatorActionContext', () => {
     [KeysInitQuery.queryTimestamp.name]: new Date(Date.now()),
     [KeysInitQuery.dataFactory.name]: DF,
     [KeysInitQuery.functionArgumentsCache.name]: {},
+  });
+
+  it('creates a super type provider when the context has none', () => {
+    const prepared = prepareEvaluatorActionContext(baseContext);
+    const provider = prepared.getSafe(KeysExpressionEvaluator.superTypeProvider);
+    expect(provider.cache).toBeDefined();
+    expect(provider.discoverer('http://example.org/unknown')).toBe('term');
+  });
+
+  it('reuses the given default super type provider', () => {
+    const provider = createSuperTypeProvider();
+    const prepared = prepareEvaluatorActionContext(baseContext, provider);
+    expect(prepared.getSafe(KeysExpressionEvaluator.superTypeProvider)).toBe(provider);
+  });
+
+  it('keeps a super type provider that is already in the context', () => {
+    const provider = createSuperTypeProvider();
+    const prepared = prepareEvaluatorActionContext(
+      baseContext.set(KeysExpressionEvaluator.superTypeProvider, provider),
+      createSuperTypeProvider(),
+    );
+    expect(prepared.getSafe(KeysExpressionEvaluator.superTypeProvider)).toBe(provider);
   });
 
   it('sets extensionFunctionCreator from extensionFunctions map', async() => {

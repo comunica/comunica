@@ -7,8 +7,9 @@ import { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evalua
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
+import type { ISuperTypeProvider } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { prepareEvaluatorActionContext } from '@comunica/utils-expression-evaluator';
+import { createSuperTypeProvider, prepareEvaluatorActionContext } from '@comunica/utils-expression-evaluator';
 import { AlgebraTransformer } from './AlgebraTransformer';
 import { ExpressionEvaluator } from './ExpressionEvaluator';
 
@@ -16,8 +17,15 @@ import { ExpressionEvaluator } from './ExpressionEvaluator';
  * A comunica Default Expression Evaluator Factory Actor.
  */
 export class ActorExpressionEvaluatorFactoryDefault extends ActorExpressionEvaluatorFactory {
+  /**
+   * The super type provider handed to every evaluator that does not get one from the context.
+   * It holds a type cache, so it is created once per actor instead of once per evaluator.
+   */
+  private readonly defaultSuperTypeProvider: ISuperTypeProvider;
+
   public constructor(args: IActorExpressionEvaluatorFactoryArgs) {
     super(args);
+    this.defaultSuperTypeProvider = createSuperTypeProvider();
   }
 
   public async test(_action: IActionExpressionEvaluatorFactory): Promise<TestResult<IActorTest>> {
@@ -25,7 +33,7 @@ export class ActorExpressionEvaluatorFactoryDefault extends ActorExpressionEvalu
   }
 
   public async run(action: IActionExpressionEvaluatorFactory): Promise<IActorExpressionEvaluatorFactoryOutput> {
-    const fullContext = prepareEvaluatorActionContext(action.context);
+    const fullContext = prepareEvaluatorActionContext(action.context, this.defaultSuperTypeProvider);
     return new ExpressionEvaluator(
       fullContext,
       await new AlgebraTransformer(
