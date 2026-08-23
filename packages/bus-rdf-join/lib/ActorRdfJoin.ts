@@ -272,8 +272,18 @@ TS
       }
     }
 
+    // Propagate paging information from the inputs, so that operations higher up the plan
+    // tree can still tell that this result originates from a paged (remote) source.
+    // Without this, any join over join results is indistinguishable from a local source.
+    const pageSizes = metadatas.map(metadata => metadata.pageSize).filter(Boolean);
+    const pageSize = pageSizes.length > 0 ? Math.max(...<number[]> pageSizes) : undefined;
+    const requestTimes = metadatas.map(metadata => metadata.requestTime).filter(Boolean);
+    const requestTime = requestTimes.length > 0 ? Math.max(...<number[]> requestTimes) : undefined;
+
     return {
       state: this.constructState(metadatas),
+      ...pageSize === undefined ? {} : { pageSize },
+      ...requestTime === undefined ? {} : { requestTime },
       ...partialMetadata,
       cardinality: {
         type: cardinalityJoined.type,
