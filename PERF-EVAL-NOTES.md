@@ -913,3 +913,46 @@ in `ActorRdfJoin.constructResultMetadata`. This also addresses the pre-existing
 
 Prediction under test: TPF `httpRequests` should return to exactly **128,609**.
 TPF run in progress.
+
+### v4 TPF result — prediction confirmed exactly
+
+```
+baseline total : 128609   (bit-identical across 2 runs)
+v3 total       : 129318   (14/100 queries differed)
+v4 total       : 128609   -> queries differing from baseline: 0 / 100
+                            *** ZERO PLAN CHANGES vs baseline ***
+```
+
+| check | result |
+|---|---|
+| result/hash mismatches | **0 / 100** |
+| total results | **244,585** (unchanged) |
+| `httpRequests` | **128,609 — exactly the baseline, every query** |
+| wall clock | 189,631 ms vs 187,535 base = **+1.12%** (inside 3.06% noise) |
+
+**TPF plan choice is provably unchanged under v4**, on the oracle that reproduced
+bit-identically twice. The remoteness-propagation fix does exactly what it was predicted
+to do, and the S3/S4/S5 blowups from v1 and v3 are completely gone.
+
+A useful illustration of why the oracle matters: v4's per-set wall clock still shows
+F2 +16.7%, F5 +15.4%, S3 +46.2%, S6 -22.2%. Since `httpRequests` is *identical* on every
+query, the plans are identical, so **every one of those swings is pure noise** — an
+artifact of `queryRunnerReplication: 1`. Anyone reading only the wall clock would report
+regressions that do not exist.
+
+### Where v4 stands
+
+| harness | v4 |
+|---|---|
+| local micro-harness (plans) | 7/29 improved, identical to v3 |
+| local micro-harness (timing) | expected ~-76%; confirmatory A/B pending |
+| `benchmark-watdiv-tpf` | **plans bit-identical to master; results identical; +1.12% wall clock (noise)** |
+| `benchmark-watdiv-file` | pending |
+
+v4 = three changes:
+1. `ActorRdfJoinMultiSmallest`: `iterations` product-of-cardinalities -> sum (cause #2).
+2. `ActorRdfJoinMultiBind` / `ActorRdfJoinOptionalBind`: apply `selectivityModifier` only
+   for remote (paged) access (cause #3).
+3. `ActorRdfJoin.constructResultMetadata`: propagate `pageSize`/`requestTime` so
+   remoteness survives up the plan tree (the enabling bug fix, and a fix for the
+   pre-existing `minMaxCardinalityRatio` misclassification).
