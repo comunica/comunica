@@ -851,3 +851,65 @@ was the problem.
 contains the `isRemoteAccess` gate that Milestone 8 proved is broken, *and* the
 `multi-smallest` change is not gated at all, so it applies to remote sources too. TPF
 results are the deciding evidence and are pending.
+
+---
+
+## 2026-08-23 — Milestone 12: v3 on TPF — damage isolated to the broken gate
+
+| check | baseline | v3 |
+|---|---|---|
+| result/hash mismatches | — | **0 / 100** |
+| total results | 244,585 | **244,585** |
+| `httpRequests` total | 128,609 (x2, identical) | **129,318 (+0.55%)**, 14/100 queries differ |
+| wall clock | 187,535 ms | 187,277 ms (**-0.14%**, within 3.06% noise) |
+
+Per-set HTTP request damage:
+
+| set | base | v3 | delta |
+|---|---|---|---|
+| S3 | 35 | 335 | **+857%** |
+| S4 | 135 | 439 | **+225%** |
+| S5 | 35 | 140 | **+300%** |
+
+and the matching wall clock: S3 25.3 -> 276.6 ms (+993%), S4 90.9 -> 377.6 ms (+315%),
+S5 23.9 -> 127.0 ms (+431%).
+
+### The decisive observation
+
+**v3's TPF `httpRequests` total is 129,318 — byte-for-byte the same as v1's, on the same
+14 queries.** v1 contained only the bind gate; v3 contains the gate *plus* the
+`multi-smallest` change. Since the two produce identical TPF request counts:
+
+> **The `multi-smallest` fix is completely TPF-neutral. 100% of the TPF regression comes
+> from the broken `isRemoteAccess` gate.**
+
+That is a clean decomposition: the change that delivers the local wins together with the
+gate is harmless remotely on its own, and the harmful part is precisely the piece already
+identified as buggy in Milestone 8.
+
+Note also the overall TPF wall clock is **-0.14%**, i.e. neutral — the S3/S4/S5 blowups
+are real but those queries are tiny in absolute terms, and C3 dominates the total. Judging
+this change on total TPF runtime alone would have missed the regression entirely. This is
+exactly why `httpRequests` was worth establishing as the primary oracle.
+
+## 2026-08-23 — Milestone 13: v4 — fix the remoteness propagation itself
+
+If all TPF damage flows from `isRemoteAccess` misreading nested joins as local, then
+fixing the propagation should restore TPF plans *and* keep the local wins. v4 adds to v3:
+
+```diff
++    // Propagate paging information from the inputs, so that operations higher up the plan
++    // tree can still tell that this result originates from a paged (remote) source.
++    const pageSizes = metadatas.map(metadata => metadata.pageSize).filter(Boolean);
++    const pageSize = pageSizes.length > 0 ? Math.max(...<number[]> pageSizes) : undefined;
++    const requestTimes = metadatas.map(metadata => metadata.requestTime).filter(Boolean);
++    const requestTime = requestTimes.length > 0 ? Math.max(...<number[]> requestTimes) : undefined;
+```
+
+in `ActorRdfJoin.constructResultMetadata`. This also addresses the pre-existing
+`minMaxCardinalityRatio` misclassification noted in Milestone 8.
+
+**Local plans: v4 vs v3 = 0/29 differences; v4 vs master = 7/29.** All local wins retained.
+
+Prediction under test: TPF `httpRequests` should return to exactly **128,609**.
+TPF run in progress.
