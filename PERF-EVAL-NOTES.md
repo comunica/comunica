@@ -390,3 +390,66 @@ apply the `selectivityModifier` only when `isRemoteAccess` is true, then
 4. verify result counts/hashes are unchanged.
 
 Step 1 is the cheap high-value check and does not need a full benchmark run.
+
+---
+
+## 2026-08-23 — Milestone 5: `benchmark-watdiv-tpf` completes end-to-end
+
+**Result: SUCCESS.** `jbr run -c 0` finished in **436.63 s** (warmup 4 min, measured 3 min),
+**0 errors** across all 100 queries.
+
+### Correctness cross-check against the file benchmark
+
+**TPF total results = 244,585. File total results = 244,585. Identical.**
+
+Per-set result counts also match the file run exactly (C3 = 48,802; F5 = 36.4 avg; etc.).
+Two completely different source implementations — a local N-Triples file vs a real TPF
+server over HTTP behind an nginx cache — agree exactly. That is a strong signal that both
+harnesses are sane and gives a second, independent correctness oracle for plan changes.
+
+### Run 1 baseline (commit 77a549162c, master)
+
+Sum of per-query times **190,452 ms** (~5x the file benchmark's 38,901 ms), and
+**128,609 HTTP requests** total.
+
+| set | avg results | avg time (ms) | avg HTTP reqs |
+|---|---|---|---|
+| C1 | 0.0 | 1496.8 | 940.0 |
+| C2 | 0.0 | 4549.8 | 2191.0 |
+| **C3** | **48802.0** | **28694.6** | **20454.0** |
+| F1 | 0.0 | 93.0 | 43.0 |
+| F2 | 0.6 | 475.2 | 334.2 |
+| F3 | 0.8 | 330.0 | 197.2 |
+| F4 | 7.2 | 436.2 | 299.6 |
+| F5 | 36.4 | 638.2 | 371.8 |
+| L1 | 3.4 | 108.6 | 47.6 |
+| L2 | 10.4 | 46.0 | 11.0 |
+| L3 | 39.0 | 80.6 | 40.0 |
+| L4 | 6.2 | 24.0 | 5.0 |
+| L5 | 6.4 | 46.8 | 11.0 |
+| S1 | 3.0 | 689.6 | 592.6 |
+| S2 | 1.4 | 150.2 | 110.0 |
+| S3 | 0.0 | 26.0 | 7.0 |
+| S4 | 0.0 | 94.0 | 27.0 |
+| S5 | 0.0 | 24.6 | 7.0 |
+| S6 | 0.2 | 69.8 | 27.6 |
+| S7 | 0.0 | 16.4 | 5.2 |
+
+C3 alone is 143 s of the 190 s total and 102k of the 129k HTTP requests.
+
+### Important: `httpRequests` is a much better metric than wall-clock here
+
+The TPF CSV records `httpRequests` per query. **The number of HTTP requests is a direct,
+essentially deterministic function of the query plan** — it does not depend on machine
+load, GC timing, or scheduler jitter the way wall-clock does.
+
+This matters a lot given `queryRunnerReplication: 1` for TPF (vs 3 for the file
+benchmark), which makes TPF wall-clock inherently noisier. So:
+
+> **For evaluating a join cost-model change against TPF, `httpRequests` is the primary
+> metric and wall-clock is secondary.** A plan change that is genuinely better for remote
+> sources must reduce HTTP requests; a change that leaves plans alone must leave
+> `httpRequests` bit-identical.
+
+Run 2 of the identical commit is in progress to confirm that `httpRequests` really is
+reproducible and to establish the TPF wall-clock noise floor.
