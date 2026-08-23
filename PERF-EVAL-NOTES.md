@@ -210,3 +210,81 @@ C2 + C3 are ~86% of total runtime (33.5 s of 38.9 s), which is why the total is 
 
 **Rule adopted for the rest of this work: no A/B claim below 5% on C2/C3/total, and no
 claim at all on individual short queries.**
+
+---
+
+## 2026-08-23 — Milestone 4: `benchmark-watdiv-tpf` — setup and the Docker Hub blocker
+
+### Blocker: Docker Hub unauthenticated pull rate limit
+
+`jbr prepare` for the TPF benchmarks needs three images. Two pulled fine, the third hit:
+
+```
+Error response from daemon: toomanyrequests: You have reached your unauthenticated
+pull rate limit. https://www.docker.com/increase-rate-limit
+```
+
+Retrying did not help — the limit is per source IP and the sandbox egress IP is shared.
+
+**Workaround that worked: pull through Google's Docker Hub mirror and retag.**
+
+```
+docker pull mirror.gcr.io/library/nginx:1.31.4
+docker tag  mirror.gcr.io/library/nginx:1.31.4 nginx:1.31.4
+```
+
+`mirror.gcr.io` is reachable through the egress proxy and is not rate-limited. After
+retagging, `FROM nginx:1.31.4` in `input/dockerfiles/Dockerfile-ldf-server-cache`
+resolves against the local image and the build succeeds without touching the repo.
+
+*If a future session hits this on the other images too, the general fix is to add
+`{"registry-mirrors": ["https://mirror.gcr.io"]}` to `/etc/docker/daemon.json` and
+restart dockerd — that fixes all Docker Hub pulls transparently.*
+
+Images required:
+
+| image | size | source used |
+|---|---|---|
+| `comunica/query-sparql:latest` | 1.3 GB | Docker Hub (ok) |
+| `linkeddatafragments/server:v3.3.0` | 234 MB | Docker Hub (ok) |
+| `nginx:1.31.4` | 162 MB | **mirror.gcr.io** (Hub rate-limited) |
+
+### Dataset reuse
+
+`benchmark-watdiv-tpf` needs the same watdiv-10 assets, including `dataset.hdt`
+(`generateHdt: true`). Rather than downloading again:
+
+```
+cp -a performance/benchmark-watdiv-file/generated/. performance/benchmark-watdiv-tpf/generated/
+```
+
+The `.prepared` marker copies across too, so `prepare` reports both
+`Generating WatDiv dataset and queries: Skipped` and
+`Converting WatDiv dataset to HDT: Skipped`. `jbr prepare -c 0` then takes **8.8 s** and
+its real work is just building the two Docker images.
+
+### Working procedure for `benchmark-watdiv-tpf`
+
+```
+docker pull mirror.gcr.io/library/nginx:1.31.4 && docker tag mirror.gcr.io/library/nginx:1.31.4 nginx:1.31.4
+docker pull linkeddatafragments/server:v3.3.0
+docker pull comunica/query-sparql:latest
+cp -a ../benchmark-watdiv-file/generated/. generated/
+yarn jbr prepare -c 0
+yarn jbr run -c 0
+```
+
+### Topology (why Docker is unavoidable here, unlike watdiv-file)
+
+- `HookSparqlEndpointLdf` runs the **LDF server** (`linkeddatafragments/server:v3.3.0`)
+  in Docker on port 2999, behind an **nginx cache** container on port 3000.
+- Combination 0's client is `HookCli` — comunica itself runs **outside** Docker via
+  `node engines/query-sparql/bin/http.js http://localhost:3000/dataset -p 3001 -t 500 -i`.
+- So the engine under test is the local build (good — changes are picked up by rebuilding),
+  but the *source* it queries is a real TPF server over HTTP.
+
+Confirmed running: containers `jbr-experiment-benchmark-watdiv-tpf-combination_0-sparql-endpoint-ldf-server`
+and `-cache` both `Up`, queries executing.
+
+**Caution:** `queryRunnerReplication` is **1** here (vs 3 for watdiv-file) and the
+per-query timeout is 500 s, so a single run is both noisier and potentially much longer.
