@@ -453,3 +453,63 @@ benchmark), which makes TPF wall-clock inherently noisier. So:
 
 Run 2 of the identical commit is in progress to confirm that `httpRequests` really is
 reproducible and to establish the TPF wall-clock noise floor.
+
+---
+
+## 2026-08-23 — Milestone 6: noise floor of `benchmark-watdiv-tpf`
+
+Two identical runs of commit `77a549162c`. Wall clock **436.63 s** and **408.58 s**.
+
+### `httpRequests` is exactly reproducible — this is the key measurement tool
+
+```
+queries with differing httpRequests:  0 / 100
+total httpRequests:  run1 128609   run2 128609   drift +0.000%
+```
+
+**Zero drift, bit-identical, on every single query.** Combined with 0/100 result/hash
+mismatches, this gives two noise-free oracles for TPF:
+
+| oracle | what it proves | noise |
+|---|---|---|
+| `results` + `hash` | semantics unchanged | **0%** |
+| `httpRequests` | **query plan unchanged** | **0%** |
+| wall-clock | actual speed | ~3% aggregate, ~7% median per-query |
+
+This is a much stronger position than expected. A cost-model change can be validated
+against TPF *without* fighting timing noise at all: if `httpRequests` is unchanged on all
+100 queries, the plans are unchanged; if it moves, the plans moved and by exactly how much.
+
+### Wall-clock noise (secondary metric)
+
+| median | mean | p90 | max |
+|---|---|---|---|
+| 7.3% | 9.6% | 21.4% | 50.5% |
+
+Aggregate drift: **TOTAL 190,452 -> 184,618 ms = -3.06%**; **C3 alone -2.80%**.
+
+As with the file benchmark, per-query noise lives in the short queries (S2 #2:
+105 -> 158 ms = +50.5%, i.e. 53 ms of jitter). TPF wall-clock is ~5x noisier in aggregate
+than the file benchmark (3.06% vs 0.57%), which is expected at `queryRunnerReplication: 1`.
+
+### Resolution limits for TPF
+
+- `httpRequests`: **any** change is real. Use this to detect plan changes.
+- wall-clock TOTAL / C3: trust changes **>= ~8%** (about 2.5x the observed 3% drift).
+- individual short queries: do not trust anything under ~50%.
+
+### Summary of both benchmarks
+
+| | watdiv-file | watdiv-tpf |
+|---|---|---|
+| runtime per run | ~200 s | ~420 s |
+| replication | 3 | 1 |
+| errors | 0 | 0 |
+| total results | 244,585 | **244,585** (identical) |
+| sum of query times | 38,901 ms | 190,452 ms |
+| result/hash reproducibility | exact | exact |
+| `httpRequests` reproducibility | n/a | **exact** |
+| wall-clock aggregate noise | 0.57% | 3.06% |
+
+**Both benchmarks are runnable, repeatable, and cheap enough to use as an A/B harness.**
+That answers the question this session was spawned to settle.
