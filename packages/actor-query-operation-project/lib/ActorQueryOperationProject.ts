@@ -12,7 +12,7 @@ import type {
   IQueryOperationResultBindings,
   MetadataVariable,
 } from '@comunica/types';
-import { Algebra } from '@comunica/utils-algebra';
+import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -23,6 +23,33 @@ import type * as RDF from '@rdfjs/types';
 export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated<Algebra.Project> {
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, Algebra.Types.PROJECT);
+  }
+
+  /**
+   * Determine if the given operation could produce {@link BlankNodeBindingsScoped} terms.
+   * These are only created by the BNODE() function, so any operation that does not contain
+   * a BNODE() (or a custom, named function that could delegate to it) can never emit them.
+   * @param operation The operation to inspect.
+   */
+  public static canCreateScopedBlankNodes(operation: Algebra.Operation): boolean {
+    let possible = false;
+    algebraUtils.visitOperationSub(operation, {}, {
+      [Algebra.Types.EXPRESSION]: {
+        [Algebra.ExpressionTypes.OPERATOR]: { preVisitor: (expression) => {
+          if (expression.operator === 'bnode') {
+            possible = true;
+            return { shortcut: true };
+          }
+          return {};
+        } },
+        // Custom functions are opaque, so we conservatively assume they may return a scoped blank node.
+        [Algebra.ExpressionTypes.NAMED]: { preVisitor: () => {
+          possible = true;
+          return { shortcut: true };
+        } },
+      },
+    });
+    return possible;
   }
 
   public async testOperation(_operation: Algebra.Project, _context: IActionContext): Promise<TestResult<IActorTest>> {
@@ -70,22 +97,27 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     // Make sure that blank nodes with same labels are not reused over different bindings, as required by SPARQL 1.1.
     // Required for the BNODE() function: https://www.w3.org/TR/sparql11-query/#func-bnode
     // When we have a scoped blank node, make sure the skolemized value is maintained.
-    let blankNodeCounter = 0;
-    bindingsStream = bindingsStream.map((bindings: Bindings) => {
-      blankNodeCounter++;
-      const scopedBlankNodesCache = new Map<string, RDF.BlankNode>();
-      return bindings.map((term) => {
-        if (term instanceof BlankNodeBindingsScoped) {
-          let scopedBlankNode = scopedBlankNodesCache.get(term.value);
-          if (!scopedBlankNode) {
-            scopedBlankNode = dataFactory.blankNode(`${term.value}${blankNodeCounter}`);
-            scopedBlankNodesCache.set(term.value, scopedBlankNode);
+    // Only scoped blank nodes need this rewrite, and those can only originate from BNODE()
+    // (or a custom function), so the whole (allocation-heavy) stage is skipped
+    // for the vast majority of queries, which can not produce them.
+    if (ActorQueryOperationProject.canCreateScopedBlankNodes(operation.input)) {
+      let blankNodeCounter = 0;
+      bindingsStream = bindingsStream.map((bindings: Bindings) => {
+        blankNodeCounter++;
+        const scopedBlankNodesCache = new Map<string, RDF.BlankNode>();
+        return bindings.map((term) => {
+          if (term instanceof BlankNodeBindingsScoped) {
+            let scopedBlankNode = scopedBlankNodesCache.get(term.value);
+            if (!scopedBlankNode) {
+              scopedBlankNode = dataFactory.blankNode(`${term.value}${blankNodeCounter}`);
+              scopedBlankNodesCache.set(term.value, scopedBlankNode);
+            }
+            return scopedBlankNode;
           }
-          return scopedBlankNode;
-        }
-        return term;
+          return term;
+        });
       });
-    });
+    }
 
     return {
       type: 'bindings',

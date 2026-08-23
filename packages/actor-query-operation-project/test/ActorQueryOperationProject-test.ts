@@ -1,6 +1,7 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/utils-data-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
@@ -11,6 +12,9 @@ import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const AF = new AlgebraFactory(DF);
+// An input operation that can produce binding-scoped blank nodes: BIND(BNODE() AS ?a)
+const bnodeInput = AF.createExtend(AF.createBgp([]), DF.variable('a'), AF.createOperatorExpression('bnode', []));
 
 describe('ActorQueryOperationProject', () => {
   let bus: any;
@@ -50,6 +54,37 @@ describe('ActorQueryOperationProject', () => {
       expect(() => {
         (<any> ActorQueryOperationProject)();
       }).toThrow(`Class constructor ActorQueryOperationProject cannot be invoked without 'new'`);
+    });
+  });
+
+  describe('canCreateScopedBlankNodes', () => {
+    it('should be false for an operation without expressions', () => {
+      expect(ActorQueryOperationProject.canCreateScopedBlankNodes(AF.createBgp([]))).toBeFalsy();
+    });
+
+    it('should be false for an operation with unrelated expressions', () => {
+      expect(ActorQueryOperationProject.canCreateScopedBlankNodes(AF.createFilter(
+        AF.createBgp([]),
+        AF.createOperatorExpression('strlen', [ AF.createTermExpression(DF.variable('a')) ]),
+      ))).toBeFalsy();
+    });
+
+    it('should be true for an operation with a BNODE() expression', () => {
+      expect(ActorQueryOperationProject.canCreateScopedBlankNodes(bnodeInput)).toBeTruthy();
+    });
+
+    it('should be true for an operation with a nested BNODE() expression', () => {
+      expect(ActorQueryOperationProject.canCreateScopedBlankNodes(AF.createFilter(
+        AF.createBgp([]),
+        AF.createOperatorExpression('isblank', [ AF.createOperatorExpression('bnode', []) ]),
+      ))).toBeTruthy();
+    });
+
+    it('should be true for an operation with a custom named expression', () => {
+      expect(ActorQueryOperationProject.canCreateScopedBlankNodes(AF.createFilter(
+        AF.createBgp([]),
+        AF.createNamedExpression(DF.namedNode('http://example.org/fn'), []),
+      ))).toBeTruthy();
     });
   });
 
@@ -254,7 +289,7 @@ describe('ActorQueryOperationProject', () => {
         type: 'bindings',
       });
       const op: any = {
-        operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
+        operation: { type: 'project', input: bnodeInput, variables: [ DF.variable('a') ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = getSafeBindings(await actor.run(op, undefined));
@@ -294,7 +329,7 @@ describe('ActorQueryOperationProject', () => {
         type: 'bindings',
       });
       const op: any = {
-        operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
+        operation: { type: 'project', input: bnodeInput, variables: [ DF.variable('a') ]},
         context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
       };
       const output = getSafeBindings(await actor.run(op, undefined));
