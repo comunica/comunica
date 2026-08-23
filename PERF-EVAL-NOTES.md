@@ -1198,3 +1198,166 @@ picks it up:
   working, so the `mirror.gcr.io` workaround for the Docker Hub rate limit should not be
   needed again in this container.
 - `benchmark-bsbm-file` was also never attempted.
+
+---
+
+# 2026-08-23 — FOLLOW-UP TASK 2: does PR #1754 itself improve a real WatDiv workload?
+
+The seven shipped optimisations on `origin/feature/query-engine-performance` had only ever
+been measured on a synthetic micro-harness. This A/Bs them against `origin/master` on the
+real benchmarks. **The branch was never modified or pushed to** — both sides were obtained
+with `git checkout <ref> -- packages` into a scratch working tree.
+
+## Method (interleaved this time)
+
+3 rounds, alternating master / branch, with a full `tsc` rebuild between every side, all
+within one session. No baseline was reused. The **master-vs-master** spread across the
+three rounds is the noise estimate.
+
+## `benchmark-watdiv-file` — NULL RESULT
+
+| round | master | branch | delta |
+|---|---|---|---|
+| 1 | 37,051 ms | 38,828 ms | **+4.80%** |
+| 2 | 41,028 ms | 39,495 ms | **-3.74%** |
+| 3 | 38,665 ms | 39,008 ms | **+0.89%** |
+
+**Aggregate: master mean 38,915 ms, branch mean 39,110 ms = +0.50%** (median-based +0.89%).
+
+**The sign flips between rounds**, which is the signature of noise rather than effect.
+
+### Noise estimate — and a warning about this machine
+
+```
+master rounds: 37,051 / 41,028 / 38,665 ms
+master spread: 10.22% (min-max),  stdev 2,000 ms = 5.14%
+branch spread:  1.71%
+```
+
+This morning the same benchmark had a **0.57%** back-to-back noise floor. It is now
+**5.14% stdev** — the container degraded badly over the session (the Docker daemon also
+died unprompted partway through, see below). With stdev 5.14% at n=3 the standard error of
+the mean is ~2.97%, so the resolvable effect is roughly **+/-6%**.
+
+> **The honest statement is "no effect detectable at +/-6% on this hardware today", NOT
+> "no effect".** Resolving a 1% effect at this noise level would need ~100 rounds.
+
+This also retro-justifies the interleaving: with rounds varying from 37.0 s to 41.0 s on
+*identical code*, a non-interleaved comparison could have produced anything from -4% to
++5% purely by choosing which runs to pair.
+
+### Per-set breakdown — every set is noise
+
+Median of 3 rounds per side; "m_noise" is the master-side min-max spread for that set.
+
+| set | master | branch | delta | m_noise | verdict |
+|---|---|---|---|---|---|
+| C1 | 2,281 | 2,391 | +4.8% | 14.8% | noise |
+| **C2** | **17,765** | **17,837** | **+0.4%** | 11.5% | **noise** |
+| **C3** | **15,508** | **15,699** | **+1.2%** | 6.9% | **noise** |
+| F1 | 111 | 111 | +0.3% | 27.9% | noise |
+| F2 | 245 | 249 | +1.5% | 19.4% | noise |
+| F3 | 431 | 453 | +5.0% | 15.1% | noise |
+| F4 | 256 | 273 | +6.8% | 24.5% | noise |
+| F5 | 724 | 694 | -4.1% | 17.3% | noise |
+| L1 | 112 | 103 | -7.5% | 31.3% | noise |
+| L2 | 38 | 35 | -7.9% | 16.7% | noise |
+| L3 | 64 | 55 | -13.5% | 18.8% | noise |
+| L4 | 27 | 23 | -14.8% | 19.8% | noise |
+| L5 | 38 | 35 | -7.1% | 29.2% | noise |
+| S1 | 292 | 262 | -10.5% | 23.5% | noise |
+| S2 | 91 | 78 | -14.7% | 20.1% | noise |
+| S3 | 252 | 230 | -8.5% | 49.5% | noise |
+| S4 | 202 | 219 | +8.6% | 31.6% | noise |
+| S5 | 27 | 25 | -5.0% | 46.3% | noise |
+| S6 | 30 | 32 | +6.7% | 49.4% | noise |
+| S7 | 15 | 14 | -10.9% | 8.7% | noise |
+
+**C3 detail** (48,802 results — the most per-solution work, the best case for these changes):
+
+```
+C3 master: 15,293 / 16,359 / 15,508 ms   (spread 6.8%)
+C3 branch: 15,699 / 15,677 / 16,487 ms   (spread 5.1%)
+C3 median delta: +1.23%
+```
+
+**C2 detail:**
+```
+C2 master: 16,935 / 18,976 / 17,765 ms   (spread 11.4%)
+C2 branch: 17,837 / 18,263 / 17,323 ms   (spread 5.3%)
+C2 median delta: +0.40%
+```
+
+### One pattern, offered as a hypothesis and not a finding
+
+The large sets (C1-C3, F1-F4) trend slightly positive while the small sets (L1-L5, S1-S3,
+S5, S7) trend negative by 5-15%. That would be consistent with a reduced fixed per-query
+overhead helping short queries proportionally more. **But it does not survive scrutiny:**
+a sign test over all 20 sets gives 11 negative / 9 positive, indistinguishable from a coin
+flip, and the small sets total only ~1,500 ms of ~39,000 ms, so even a genuine 10% win
+there would be ~0.4% overall — below resolution. Not to be relied on.
+
+## `benchmark-watdiv-tpf` — plan neutrality CONFIRMED
+
+| check | result |
+|---|---|
+| `httpRequests` total | **128,609 — exactly the baseline** |
+| queries differing | **0 / 100 — bit-identical** |
+| result/hash mismatches | **0 / 100** |
+| total results | **244,585** (unchanged) |
+| wall clock | 186,694 vs 187,535 ms = -0.45% (secondary; drift applies) |
+
+**No planning side effect.** None of the seven changes perturbs join plan selection, as
+expected — they are execution-path optimisations. This was the check worth doing: had
+`httpRequests` moved even slightly it would have indicated an unintended planner
+interaction, and the oracle is exact rather than statistical.
+
+### Infrastructure note
+
+The first TPF attempt failed after 4.88 s with
+`Error: connect ECONNREFUSED /var/run/docker.sock` — the Docker daemon had died during the
+long file-benchmark A/B. Not a code failure; no query ran. Restarted with
+`setsid nohup dockerd ... &` (all 5 images survived) and re-ran once. Combined with the
+noise degradation above, the container was clearly under increasing pressure late in the
+session.
+
+## VERDICT: the seven changes do **not** measurably improve a real WatDiv workload
+
+- **watdiv-file: +0.50% (i.e. nothing), against +/-6% resolution.** Not an improvement, and
+  not a regression either — the measurement cannot distinguish any of these from zero.
+- **watdiv-tpf: plan-neutral and correctness-neutral**, wall clock -0.45% (noise).
+- **Correctness is impeccable: 0 mismatches across 300 file-benchmark query executions and
+  100 TPF executions; 244,585 results everywhere.**
+
+**How much smaller than the micro-harness suggested?** The micro-harness reported a **~27%
+median** improvement. WatDiv shows **+0.50% aggregate** and **+1.23% on C3**. So the real
+workload shows **no detectable effect where the harness predicted ~27%** — a qualitative
+disagreement, not merely a smaller number. This is the same failure mode already documented
+in Milestone 14, where the harness predicted -76% and WatDiv delivered -11% with widespread
+regressions.
+
+**Important caveat in the PR's favour, and it is a real one:** WatDiv uses **no `ORDER BY`
+and no `GROUP BY`**. Four of the seven changes (`SortIterator` O(n log n), `GroupsState`
+per-solution allocations, and the two evaluator-constant changes) therefore have little or
+no path to being exercised here. In particular the O(n log n) `SortIterator` fix — the
+largest micro-harness win at 5.6x — **cannot be exercised by this benchmark at all**. A null
+result on WatDiv is *not* evidence those changes are worthless; it is evidence that
+**WatDiv does not test them**.
+
+### Recommendation for the PR description
+
+The changes are safe (correctness verified twice over, plan-neutral) and are defensible on
+algorithmic grounds — an O(n^2) -> O(n log n) sort is an improvement whether or not this
+benchmark shows it. But the description should not carry micro-harness percentages as if
+they were general performance claims. Suggested framing:
+
+1. State the ~27% figure explicitly as **micro-harness only**, with the query mix named.
+2. Add that **`benchmark-watdiv-file` shows no detectable change (+0.50%, +/-6% resolution)
+   and `benchmark-watdiv-tpf` is bit-identical in plans and results**.
+3. Explain that WatDiv exercises neither `ORDER BY` nor `GROUP BY`, so it cannot test four
+   of the seven changes — including the largest one.
+4. Keep the algorithmic-complexity argument for `SortIterator`, which stands on its own.
+
+A benchmark that *would* exercise these changes (BSBM has `ORDER BY`) was never run — see
+the `benchmark-bsbm-tpf` gap noted earlier in this file. **That is the single most valuable
+follow-up available**, and it would directly test the four changes WatDiv cannot reach.
