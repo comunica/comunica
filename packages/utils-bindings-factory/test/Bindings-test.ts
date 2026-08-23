@@ -150,6 +150,22 @@ describe('Bindings', () => {
         expect(cb).toHaveBeenNthCalledWith(2, DF.namedNode('ex:b'), DF.variable('b'));
         expect(cb).toHaveBeenNthCalledWith(3, DF.namedNode('ex:c'), DF.variable('c'));
       });
+
+      it('should return the same bindings if no value is replaced', () => {
+        const cb = jest.fn((value: RDF.Term) => value);
+        const bindingsNew = bindings.map(cb);
+        expect(bindingsNew).toBe(bindings);
+        expect(cb).toHaveBeenCalledTimes(3);
+      });
+
+      it('should only replace the values that the mapper changes', () => {
+        const bindingsNew = bindings.map(value => value.value === 'ex:b' ? DF.namedNode('ex:B') : value);
+        expect(bindingsNew).not.toBe(bindings);
+        expect(bindingsNew.size).toBe(3);
+        expect(bindingsNew.get(DF.variable('a'))).toEqual(DF.namedNode('ex:a'));
+        expect(bindingsNew.get(DF.variable('b'))).toEqual(DF.namedNode('ex:B'));
+        expect(bindingsNew.get(DF.variable('c'))).toEqual(DF.namedNode('ex:c'));
+      });
     });
 
     describe('size', () => {

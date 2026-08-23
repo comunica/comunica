@@ -102,8 +102,21 @@ export class Bindings implements RDF.Bindings {
   }
 
   public map(fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term): Bindings {
-    return new Bindings(this.dataFactory, Map<string, RDF.Term>(<any> this.entries
-      .map((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
+    // Iterating via `forEach` avoids allocating iterator objects, and the entries map is only
+    // rebuilt for the terms that the mapper actually replaces. Mappers that leave (all of) the
+    // terms untouched -- which is the common case on hot paths such as skolemization --
+    // therefore do not allocate at all.
+    let entries: Map<string, RDF.Term> | undefined;
+    // This is immutable.js's `forEach`, which iterates internally.
+    // A `for...of` would allocate an iterator per call, which is what this method avoids.
+    // eslint-disable-next-line unicorn/no-array-for-each
+    this.entries.forEach((value, key) => {
+      const mapped = fn(value, this.dataFactory.variable(key));
+      if (mapped !== value) {
+        entries = (entries ?? this.entries).set(key, mapped);
+      }
+    });
+    return entries === undefined ? this : new Bindings(this.dataFactory, entries, this.contextHolder);
   }
 
   public merge(other: RDF.Bindings | Bindings): Bindings | undefined {
