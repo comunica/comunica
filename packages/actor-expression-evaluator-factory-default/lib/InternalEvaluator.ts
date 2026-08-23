@@ -26,6 +26,14 @@ export class InternalEvaluator {
         [ExpressionType.Aggregate]: (_expr, _mapping) => this.evalAggregate(),
       };
 
+  /**
+   * Lazily initialized values that are constant for this evaluator,
+   * but are resolved per evaluation in the hot path otherwise.
+   */
+  private dataFactory: ComunicaDataFactory | undefined;
+  private algebraFactory: AlgebraFactory | undefined;
+  private readonly variableTerms: Record<string, RDF.Variable> = {};
+
   public constructor(
     public readonly context: IActionContext,
     mediatorFunctionFactory: MediatorFunctionFactory,
@@ -39,8 +47,13 @@ export class InternalEvaluator {
   }
 
   public async evaluatorExpressionEvaluation(expr: Expression, mapping: RDF.Bindings): Promise<TermExpression> {
-    const evaluator = this.subEvaluators[expr.expressionType];
-    return evaluator.bind(this)(expr, mapping);
+    // `call` instead of `bind`, as the latter allocates a new bound function per expression node per solution.
+    return this.subEvaluators[expr.expressionType].call(this, expr, mapping);
+  }
+
+  private getDataFactory(): ComunicaDataFactory {
+    this.dataFactory ??= this.context.getSafe(KeysInitQuery.dataFactory);
+    return this.dataFactory;
   }
 
   private term(expr: Eval.Term): Eval.Term {
@@ -48,7 +61,12 @@ export class InternalEvaluator {
   }
 
   private variable(expr: Eval.Variable, mapping: RDF.Bindings): Eval.Term {
-    const term = mapping.get(Eval.expressionToVar(this.context.getSafe(KeysInitQuery.dataFactory), expr));
+    // The RDF variable term for an expression never changes, so it is created once instead of per solution.
+    let variable = this.variableTerms[expr.name];
+    if (!variable) {
+      variable = this.variableTerms[expr.name] = Eval.expressionToVar(this.getDataFactory(), expr);
+    }
+    const term = mapping.get(variable);
     if (!term) {
       throw new Eval.UnboundVariableError(expr.name, mapping);
     }
@@ -65,9 +83,13 @@ export class InternalEvaluator {
   }
 
   private async evalExistence(expr: Eval.Existence, mapping: RDF.Bindings): Promise<Eval.Term> {
-    const dataFactory: ComunicaDataFactory = this.context.getSafe(KeysInitQuery.dataFactory);
-    const algebraFactory = new AlgebraFactory(dataFactory);
-    const operation = materializeOperation(expr.expression.input, mapping, algebraFactory, this.bindingsFactory);
+    this.algebraFactory ??= new AlgebraFactory(this.getDataFactory());
+    const operation = materializeOperation(
+      expr.expression.input,
+      mapping,
+      this.algebraFactory,
+      this.bindingsFactory,
+    );
 
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context: this.context });
     const output = getSafeBindings(outputRaw);
