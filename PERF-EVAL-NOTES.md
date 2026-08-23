@@ -594,3 +594,50 @@ from the biased run is reported as a result.
 
 One apparent regression to check carefully in the interleaved run: **`chain4` 2551 -> 5642 ms
 (+121%)**.
+
+### Interleaved A/B result for v1 (local micro-harness)
+
+Method: 3 rounds, alternating `git checkout origin/master -- <files>` and
+`git checkout HEAD -- <files>` with an incremental `tsc` between sides, per-query median
+of the 3 rounds. Sanity check that the bias is gone: the join-free queries
+(`scan-name` -7.3%, `scan-age` -7.9%, `union` -1.8%, `construct` -2.4%, `path-star` -3.9%)
+now sit within their own within-side spread, as they must.
+
+**Result counts identical on all 29 queries (0 mismatches).**
+
+Significance rule used: `|delta| > max(20%, 2x within-side spread)`.
+
+| query | base | v1 | delta | verdict |
+|---|---|---|---|---|
+| `optional-join` | 8063.4 ms | **357.8 ms** | **-95.6%** | 22.5x faster |
+| `optional` | 1844.4 ms | **832.7 ms** | **-54.9%** | 2.2x faster |
+| `chain2` | 145.3 ms | **74.1 ms** | **-49.0%** | 2.0x faster |
+| `chain4` | 2643.0 ms | **5566.2 ms** | **+110.6%** | **2.1x SLOWER — regression** |
+
+Everything else was within noise. `star4` +8.0% and `star5` +1.4% are **unchanged**, as the
+plan diff predicted.
+
+**TOTAL across all 29 queries: 40,878 -> 35,764 ms = -12.5%.**
+
+### The `chain4` regression is real and instructive
+
+`chain4` is `?s foaf:name ?n . ?s ex:city ?c . ?c ex:inCountry ?co . ?co ex:name ?con`
+— a chain whose later patterns are tiny (100 cities, 10 countries). Its plan changed
+`bind bind bind` -> `bind bind hash-def`, and that one flip cost 2.1x.
+
+This is the counter-example to a blanket removal of the discount: **for a chain join with
+a small driving side, the bind join really is the better operator, and the 1e-4 modifier
+was accidentally encoding that.** Removing it for all local joins is too blunt — it
+happens to be right for OPTIONAL and 2-pattern chains and wrong for deeper chains.
+
+### Honest assessment of v1
+
+- Big, real wins on OPTIONAL (`optional-join` 22.5x, `optional` 2.2x).
+- A real 2.1x regression on `chain4`.
+- **No effect at all on the headline problem — 4- and 5-pattern star joins.**
+- Net -12.5% on this query mix, but that number is dominated by one query
+  (`optional-join` alone accounts for ~7.7 s of the 5.1 s net gain, i.e. the other
+  queries are net *negative*).
+
+So v1 is **not** a shippable fix. It is useful as evidence about *where* the cost model is
+wrong, and it makes the compounding between causes #2 and #3 concrete and measured.
