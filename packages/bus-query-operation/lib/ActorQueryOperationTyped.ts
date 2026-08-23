@@ -23,7 +23,14 @@ TS = undefined,
   public readonly operationName: string;
 
   protected constructor(args: IActorQueryOperationArgs<TS>, operationName: string) {
-    super(args);
+    // `operationName` must be passed via the args object, and not just assigned below.
+    // `BusQueryOperation` indexes actors on `operationName`, and the indexing happens inside
+    // `Actor`'s constructor (which calls `bus.subscribe(this)`). Only the properties present on
+    // `args` are copied onto the actor before that point, so an assignment after `super(...)`
+    // would come too late, and the actor would be indexed as unidentified.
+    // This mirrors how `ActorFunctionFactoryDedicated` passes `functionNames` via its args.
+    const argsIndexed: IActorQueryOperationArgs<TS> & { operationName: string } = { ...args, operationName };
+    super(argsIndexed);
     this.operationName = operationName;
     if (!this.operationName) {
       throw new Error('A valid "operationName" argument must be provided.');
