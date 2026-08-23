@@ -641,3 +641,101 @@ happens to be right for OPTIONAL and 2-pattern chains and wrong for deeper chain
 
 So v1 is **not** a shippable fix. It is useful as evidence about *where* the cost model is
 wrong, and it makes the compounding between causes #2 and #3 concrete and measured.
+
+---
+
+## 2026-08-23 — Milestone 8: TPF verification — **the `isRemoteAccess` gate FAILS**
+
+This is the most important result of the session, and it **falsifies the claim I made in
+the cost-model analysis section above**. Recording it prominently so nobody builds on the
+wrong assumption.
+
+I claimed that gating `selectivityModifier` on `isRemoteAccess` would leave TPF plan
+choice "provably unchanged". **That is wrong.** Measured:
+
+```
+=== PLAN ORACLE: httpRequests, v1 vs baseline ===
+queries differing vs baseline:  14 / 100
+totals:  base_run1=128609   base_run2=128609   v1=129318   (+0.55%)
+  S3#0..4:   7 ->  67 requests   (9.6x more)
+  S4#0,1,3,4: 14 ->  90 requests   (6.4x more)
+  S5#0:       7 ->  28 requests
+```
+
+Recall the baseline was *bit-identical* across two runs (128,609 twice, 0/100 differing),
+so these 14 differences are real plan changes, not noise.
+
+Correctness held: **0/100 result or hash mismatches, total results 244,585 unchanged.**
+Wall clock 192,439 ms vs base mean 187,535 ms = **+2.61%**, which is *inside* the 3.06%
+noise floor and therefore not a significant timing result either way.
+
+### Why the gate fails — root cause
+
+`ActorRdfJoin.constructResultMetadata` builds a join's output metadata as:
+
+```js
+return {
+  state: this.constructState(metadatas),
+  ...partialMetadata,
+  cardinality: { type: ..., value: ... },
+  variables: ActorRdfJoin.joinVariables(...),
+};
+```
+
+It carries **no `pageSize` and no `requestTime`**. And:
+
+```js
+getRequestItemTimes = metadatas.map(m => m.pageSize ? (m.requestTime ?? 0) / m.pageSize : 0)
+```
+
+So `requestItemTimes` is 0 for any entry that is itself a join result. Since
+`isRemoteAccess = requestItemTimes.some(t => t > 0)`, a join whose inputs are all
+intermediate results reads as **local even in a pure TPF query**.
+
+`ActorRdfJoinMultiSmallest.getOutput` explicitly does this — it joins two entries and
+pushes the *result* back in as a new entry before re-mediating — so nested joins are the
+normal case, not an edge case. The leaves (raw TPF patterns, which do carry Hydra
+`pageSize`) see `isRemoteAccess === true`; everything above them sees `false`.
+
+> **`isRemoteAccess` is a property of one join's immediate inputs, not of the query's data
+> source.** It is only reliable at the leaves of the plan tree.
+
+### This is a pre-existing inconsistency in master, independent of my patch
+
+`ActorRdfJoinMultiBind.getJoinCoefficients` **already** uses `isRemoteAccess` on master,
+for its min/max cardinality gate:
+
+```js
+if (metadatas[0].cardinality.value * this.minMaxCardinalityRatio / (isRemoteAccess ? 1 : 3) > ...)
+```
+
+By the same mechanism, that gate is **already misclassifying nested joins over remote
+sources as local today**, applying the `/3` local relaxation to TPF queries. That looks
+like a genuine latent bug in master worth reporting on its own, separate from any
+cost-model change.
+
+### Consequences for the cost-model work
+
+Any fix that needs to treat local and remote sources differently **cannot use
+`isRemoteAccess` as it stands**. Options, in increasing order of invasiveness:
+
+1. **Propagate `pageSize`/`requestTime` through `constructResultMetadata`** (e.g. carry the
+   max or sum from the inputs) so remoteness survives up the plan tree. This would also
+   fix the pre-existing `minMaxCardinalityRatio` misclassification above. Small change,
+   but it alters existing behaviour for remote sources and so needs its own TPF run.
+2. **Derive remoteness from the query sources in the context** rather than from per-join
+   metadata — robust, but a larger change and arguably the wrong layer.
+3. **Do not branch on locality at all**; instead make the *estimates themselves* right, so
+   the operators compete fairly (fix `multi-smallest`'s cartesian self-cost and give the
+   selectivity heuristic real dynamic range). Most principled, most work.
+
+### Status of v1
+
+**v1 is rejected.** It does not do what it was designed to do:
+- it changes TPF plans (14/100 queries, S3 9.6x more HTTP requests) rather than leaving
+  them alone;
+- it does not fix star joins at all;
+- it regresses `chain4` by 2.1x locally.
+
+Its value is diagnostic: it proved the compounding of causes #2/#3, and it exposed the
+`isRemoteAccess` propagation bug.
