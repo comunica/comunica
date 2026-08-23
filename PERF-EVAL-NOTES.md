@@ -956,3 +956,70 @@ v4 = three changes:
 3. `ActorRdfJoin.constructResultMetadata`: propagate `pageSize`/`requestTime` so
    remoteness survives up the plan tree (the enabling bug fix, and a fix for the
    pre-existing `minMaxCardinalityRatio` misclassification).
+
+---
+
+## 2026-08-23 — Milestone 14: v4 on `benchmark-watdiv-file` — net win, but 18/20 sets regress
+
+Correctness fine (**0/100 mismatches, 244,585 results**).
+
+```
+base mean = 38,790 ms
+v1        = 39,758 ms  (+2.50%)
+v4        = 34,447 ms  (-11.20%)
+```
+
+-11.2% against a 0.57% noise floor looks like a clear win. **It is not.** The absolute
+accounting shows it is one query set carrying the entire result:
+
+| set | base | v4 | delta |
+|---|---|---|---|
+| **C2** | 17,546 ms | 2,097 ms | **-15,449 ms** |
+| C1 | 2,385 ms | 1,625 ms | -760 ms |
+| **C3** | 16,011 ms | 21,305 ms | **+5,294 ms** |
+| **S1** | 314 ms | 2,465 ms | **+2,152 ms** |
+| F5 | 672 ms | 1,740 ms | +1,068 ms |
+| F3 | 428 ms | 1,299 ms | +872 ms |
+| F4 | 249 ms | 996 ms | +747 ms |
+| F1 | 112 ms | 515 ms | +403 ms |
+| F2 | 257 ms | 622 ms | +365 ms |
+| S2 | 71 ms | 346 ms | +274 ms |
+| L3 | 58 ms | 315 ms | +257 ms |
+| L1 | 100 ms | 269 ms | +169 ms |
+| S6 | 31 ms | 198 ms | +168 ms |
+| (others) | | | +115 ms |
+| **TOTAL** | | | **-4,344 ms** |
+
+**C2 alone contributes -15,449 ms. Everything else nets +11,105 ms. 18 of 20 query sets
+get slower**, several by large relative margins (S1 +686%, S6 +547%, L3 +443%,
+S2 +386%, F1 +360%, F4 +300%, S5 +255%, F3 +204%).
+
+These are not noise: the per-set baseline drift between the two identical runs was at most
+~24% for the small sets and 2.0% for C3, so C3 +33.1% and S1 +686% are far outside it.
+
+### What this means — the micro-harness overstated the benefit
+
+The local micro-harness reported **-76.1%**. The real WatDiv workload reports **-11.2%,
+concentrated in one query and accompanied by widespread regressions.** The synthetic
+queries were biased toward exactly the pathological shape (uniform ~20k cardinalities,
+star and chain joins where bind is clearly wrong). Real WatDiv queries have varied and
+often highly selective patterns, and there **bind joins are frequently the right choice** —
+which is what the 1e-4 `selectivityModifier` was crudely encoding.
+
+> **Lesson: a hand-built micro-harness is good for finding and diagnosing a pathology, but
+> it cannot be used to size the benefit of a planner change. The standard benchmarks
+> disagreed with it by a factor of ~7, and disagreed in kind (broad regressions vs none).**
+
+### Verdict on v4
+
+**Not shippable.** It is the best of the four variants and it solved the remote-safety
+problem completely, but on the real local workload it trades one big win for 18 regressions.
+
+| | v1 | v3 | v4 |
+|---|---|---|---|
+| TPF plans | 14/100 changed | 14/100 changed | **0/100 — identical** |
+| TPF results | identical | identical | identical |
+| file benchmark total | +2.50% | (not run) | **-11.20%** |
+| file benchmark sets regressed | many | — | **18 / 20** |
+| micro-harness total | -12.5% | -76.1% | -76.1% (plans identical to v3) |
+| micro-harness `chain4` | +110.6% | -91.8% | -91.8% |
