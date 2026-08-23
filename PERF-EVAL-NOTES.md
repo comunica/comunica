@@ -288,3 +288,105 @@ and `-cache` both `Up`, queries executing.
 
 **Caution:** `queryRunnerReplication` is **1** here (vs 3 for watdiv-file) and the
 per-query timeout is 500 s, so a single run is both noisier and potentially much longer.
+
+---
+
+## 2026-08-23 — Cost-model analysis (code reading, independent of benchmarks)
+
+Confirmed all four suspected causes in the source, and found a discriminator that makes a
+**low-risk targeted fix** possible.
+
+### Confirmed: the cost function
+
+`MediatorJoinCoefficientsFixed.mediateWith`, weights from
+`engines/config-query-sparql/config/rdf-join/mediators.json`:
+
+```
+cost = iterations*10 + persistedItems*1 + blockingItems*2 + requestTime*10
+       (cpuWeight)     (memoryWeight)     (timeWeight)      (ioWeight)
+```
+
+`iterations` is an item count (often 1e6..1e17); `requestTime` is in **seconds**
+(single digits). With equal weights of 10, **`requestTime` is numerically irrelevant** —
+cause #4 confirmed. Network time cannot influence plan choice in any realistic case.
+
+### Confirmed: `iterations` is wildly inconsistent between actors
+
+| actor | `iterations` formula |
+|---|---|
+| `hash` (2-way) | `(c0 + c1) * 0.8` — a **sum** |
+| `multi-smallest` | `c0 * c1 * ... * cn` — a **full cartesian product**, no selectivity at all |
+| `multi-bind` | `c0 * SUM(ci * selectivity_i * selectivityModifier)` |
+
+`multi-smallest` costs itself as a cartesian product (cause #2 confirmed,
+`ActorRdfJoinMultiSmallest.ts:127`) even though it does not actually perform one — it
+joins the two smallest entries and recursively delegates the rest.
+
+### Confirmed: the `selectivityModifier` is bind-only
+
+Present **only** on the bind family, and absent from `hash` and `multi-smallest`:
+
+| actor | default `selectivityModifier` |
+|---|---|
+| `ActorRdfJoinMultiBind` | **1e-4** |
+| `ActorRdfJoinMultiBindSource` | **1e-4** |
+| `ActorRdfJoinMultiSmallestFilterBindings` | **1e-4** |
+| `ActorRdfJoinOptionalBind` | **1e-6** |
+| `ActorRdfJoinHash`, `ActorRdfJoinMultiSmallest` | *(none)* |
+
+Cause #3 confirmed. This is a flat 10,000x discount applied to one family of actors only.
+
+### Confirmed: selectivity has almost no dynamic range
+
+`ActorRdfJoinSelectivityVariableCounting.getOperationsPairwiseJoinCost` starts from
+`MAX_PAIRWISE_COST = 82` and subtracts single-digit amounts, then divides by 82. A shared
+subject (`unboundSS`) subtracts only 2, giving **80/82 = 0.976** versus **82/82 = 1.000**
+for no shared variable. Cause #1 confirmed: the pairwise term cannot separate a star join
+from a cartesian product.
+
+### Worked example — a 4-pattern star, each pattern ~20,000 rows, true output 20,000
+
+| actor | iterations | cost |
+|---|---|---|
+| `multi-smallest` | 20000^4 = **1.6e17** | 1.6e18 |
+| `multi-bind` | 20000 * (3 * 20000 * 0.55 * 1e-4) ~= **6.6e4** | 6.6e5 |
+
+Bind wins by **~12 orders of magnitude**. This is why the planner picks bind joins.
+
+Note what this implies: **fixing cause #2 alone is not enough.** Applying the existing
+selectivity to `multi-smallest` gives `1.6e17 * 0.55 = 8.8e16` — still ~11 orders of
+magnitude worse than bind. The 1e-4 modifier is the dominant term, so a fix that does not
+address it will not change plan choice. (For the estimate to be *correct*, selectivity
+would have to be 1.25e-13, which the variable-counting heuristic cannot express.)
+
+### The discriminator that makes a safe fix possible
+
+`ActorRdfJoinMultiBind.getJoinCoefficients` **already** distinguishes local from remote:
+
+```js
+const isRemoteAccess = requestItemTimes.some(time => time > 0);
+```
+
+and `ActorRdfJoin.getRequestItemTimes` is:
+
+```js
+metadatas.map(m => m.pageSize ? (m.requestTime ?? 0) / m.pageSize : 0)
+```
+
+So `requestItemTimes > 0` **iff the source is paged** — which is exactly TPF and other
+LDF sources. Local file/store sources have no `pageSize`, so they get 0.
+
+**This means the `selectivityModifier` can be gated on `isRemoteAccess` and TPF plan
+choice is provably unchanged**, because for paged sources every input to the formula
+stays identical. That directly resolves the concern that blocked the previous session:
+the risk of altering remote-source plans can be eliminated by construction, not just
+measured.
+
+Planned experiment (on its own branch, **not** `feature/query-engine-performance`):
+apply the `selectivityModifier` only when `isRemoteAccess` is true, then
+1. verify via `explain: 'physical'` that TPF plans are **byte-identical**;
+2. verify local plans switch from bind to hash/smallest;
+3. measure both the TPF benchmark and the local harness;
+4. verify result counts/hashes are unchanged.
+
+Step 1 is the cheap high-value check and does not need a full benchmark run.
