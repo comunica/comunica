@@ -73,3 +73,82 @@ watdiv-file experiment parameters (`jbr-experiment.json.template`):
 `queryRunnerReplication: 3`, `queryRunnerWarmupRounds: 1`, timeout 500 s.
 
 Status: `yarn fetch-assets` running; `jbr prepare`/`jbr run` next.
+
+---
+
+## 2026-08-23 — Milestone 2: `benchmark-watdiv-file` completes end-to-end
+
+**Result: SUCCESS.** Full `prepare` + `run` cycle for combination 0, zero query errors.
+
+### Two blockers hit first (both were session GitHub scope, not the benchmark)
+
+1. **`git push` denied.**
+   ```
+   remote: access denied by the git proxy: comunica/comunica is not in this session's
+   authorized repository set, so the proxy will not inject a credential for it.
+   fatal: ... The requested URL returned error: 403
+   ```
+   Fix: `add_repo(owner=comunica, repo=comunica, access="push")`. The repo has to be
+   attached to the session even though it was cloned successfully — cloning a public
+   repo works through the proxy, pushing does not.
+
+2. **`yarn fetch-assets` silently produced a corrupt zip.**
+   ```
+   unzip: cannot find zipfile directory in one of watdiv-10.zip or watdiv-10.zip.zip
+   error Command failed with exit code 9.
+   ```
+   The "zip" was 378 bytes of JSON: an HTTP 403 body from the proxy, because
+   `comunica/comunica-performance-assets` is a *separate* repo and was also not in the
+   session's authorized set. `curl -L` without `-f` happily wrote the error body to the
+   output file, so the failure only surfaced at `unzip`.
+   Fix: `add_repo(owner=comunica, repo=comunica-performance-assets, access="read")`,
+   then re-run the download — 15,098,195 bytes, HTTP 200.
+
+   *Anyone repeating this: check the downloaded file is actually a zip
+   (`file watdiv-10.zip`) before trusting `fetch-assets`.*
+
+### Working procedure for `benchmark-watdiv-file`
+
+```
+cd performance/benchmark-watdiv-file
+curl -sSL -o watdiv-10.zip "https://github.com/comunica/comunica-performance-assets/raw/master/watdiv-10.zip?download="
+unzip -o -q watdiv-10.zip -d generated/ && rm watdiv-10.zip
+yarn jbr prepare -c 0          # ~17 s; dataset generation is "Skipped" (assets pre-generated)
+yarn jbr run -c 0              # ~201 s
+```
+
+The unpacked assets are `dataset.nt` (152 MB), `dataset.hdt`, `dataset.hdt.index.v1-1`,
+20 query files, and a `.prepared` marker — that marker is why `prepare` skips generation
+and therefore why **no Docker is needed for watdiv-file combination 0 at all**.
+
+### Run 1 baseline (commit 77a549162c, master)
+
+Warmup 100 queries (1 min), then 20 query sets x 5 instantiations x replication 3 = 300
+executions (2 min). Wall clock 201 s. **0 errors, 52/100 queries return results,
+244,585 results total, sum of per-query mean times 38,901 ms.**
+
+| set | avg results | avg time (ms) | | set | avg results | avg time (ms) |
+|---|---|---|---|---|---|---|
+| C1 | 0.0 | 489.5 | | L1 | 3.4 | 21.9 |
+| C2 | 0.0 | 3526.4 | | L2 | 10.4 | 7.5 |
+| C3 | 48802.0 | 3171.3 | | L3 | 39.0 | 11.9 |
+| F1 | 0.0 | 22.9 | | L4 | 6.2 | 4.9 |
+| F2 | 0.6 | 51.1 | | L5 | 6.4 | 8.3 |
+| F3 | 0.8 | 85.7 | | S1 | 3.0 | 73.7 |
+| F4 | 7.2 | 52.1 | | S2 | 1.4 | 13.2 |
+| F5 | 36.4 | 144.3 | | S3 | 0.0 | 40.0 |
+| | | | | S4 | 0.0 | 41.0 |
+| | | | | S5 | 0.0 | 5.0 |
+| | | | | S6 | 0.2 | 6.4 |
+| | | | | S7 | 0.0 | 3.2 |
+
+Query sets with 0 results are expected at WatDiv scale 10 — those templates instantiate
+to selective patterns with no matches. They are still useful as timing probes but carry
+no join-plan signal, so **the cost-model comparison should be driven by C2, C3, F5, S1
+and C1**, which are the sets with meaningful work.
+
+C2 (3526 ms, 0 results) and C3 (3171 ms, 48802 results) dominate total runtime and are
+the most likely to be join-plan sensitive.
+
+Run 2 (identical commit, to establish the noise floor) is in progress — **no A/B
+comparison will be made until that noise floor is known.**
