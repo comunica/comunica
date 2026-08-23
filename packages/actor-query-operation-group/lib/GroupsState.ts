@@ -30,6 +30,17 @@ export class GroupsState {
   //  Without this we could have duplicate work/ override precious work.
   private readonly groupsInitializer: Map<BindingsHash, Promise<IGroup>>;
   private readonly groupVariables: Set<string>;
+  /**
+   * The variables that actually contribute to a group hash,
+   * i.e. the inner variables that are grouped on.
+   * Variables that are not grouped on always hash to the empty string,
+   * so leaving them out produces the exact same hash.
+   */
+  private readonly groupHashVariables: RDF.Variable[];
+  /**
+   * The aggregate variables, indexed for fast iteration on the hot path.
+   */
+  private readonly aggregateVariables: string[];
   private waitCounter: number;
   // Function that resolves the promise given by collectResults
   private waitResolver: ((bindings: Bindings[]) => void) | undefined;
@@ -45,6 +56,8 @@ export class GroupsState {
     this.groups = new Map();
     this.groupsInitializer = new Map();
     this.groupVariables = new Set(this.pattern.variables.map(x => x.value));
+    this.groupHashVariables = variables.filter(variable => this.groupVariables.has(variable.value));
+    this.aggregateVariables = this.pattern.aggregates.map(aggregate => aggregate.variable.value);
     this.waitCounter = 1;
     this.resultHasBeenCalled = false;
   }
@@ -64,47 +77,51 @@ export class GroupsState {
     // We increment the counter and decrement him when put action is performed.
     this.waitCounter++;
 
-    // Select the bindings on which we group
-    const grouper = bindings
-      .filter((_, variable) => this.groupVariables.has(variable.value));
-    const groupHash = this.hashBindings(grouper);
+    // Determine the group these bindings belong to.
+    // The grouping bindings themselves are only needed when a new group is created,
+    // so they are not materialized for every incoming bindings object.
+    const groupHash = this.hashBindings(bindings);
 
     // First member of group -> create new group
-    let groupInitializer: Promise<IGroup> | undefined = this.groupsInitializer.get(groupHash);
-
-    let res: Promise<any>;
+    const groupInitializer: Promise<IGroup> | undefined = this.groupsInitializer.get(groupHash);
     if (groupInitializer) {
-      const groupInitializerDefined = groupInitializer;
-      res = (async() => {
-        const group = await groupInitializerDefined;
-        await Promise.all(this.pattern.aggregates.map(async(aggregate) => {
-          // Distinct handling is done in the aggregator.
-          const variable = aggregate.variable.value;
-          await group.aggregators[variable].putBindings(bindings);
-        }));
-      })().then(async() => {
-        await this.subtractWaitCounterAndCollect();
-      });
-    } else {
-      // Initialize state for all aggregators for new group
-      groupInitializer = (async() => {
-        const aggregators: Record<string, IBindingsAggregator> = {};
-        await Promise.all(this.pattern.aggregates.map(async(aggregate) => {
-          const key = aggregate.variable.value;
-          aggregators[key] = await this.mediatorBindingsAggregatorFactory
-            .mediate({ expr: aggregate, context: this.context });
-          await aggregators[key].putBindings(bindings);
-        }));
-
-        const group = { aggregators, bindings: grouper };
-        this.groups.set(groupHash, group);
-        await this.subtractWaitCounterAndCollect();
-        return group;
-      })();
-      this.groupsInitializer.set(groupHash, groupInitializer);
-      res = groupInitializer;
+      return this.putInGroup(groupInitializer, bindings);
     }
-    return res;
+
+    // Initialize state for all aggregators for new group
+    const newGroupInitializer = this.createGroup(groupHash, bindings);
+    this.groupsInitializer.set(groupHash, newGroupInitializer);
+    return <Promise<any>> newGroupInitializer;
+  }
+
+  private async putInGroup(groupInitializer: Promise<IGroup>, bindings: Bindings): Promise<void> {
+    const group = await groupInitializer;
+    // Distinct handling is done in the aggregator.
+    const { aggregators } = group;
+    if (this.aggregateVariables.length === 1) {
+      await aggregators[this.aggregateVariables[0]].putBindings(bindings);
+    } else {
+      await Promise.all(this.aggregateVariables.map(variable => aggregators[variable].putBindings(bindings)));
+    }
+    await this.subtractWaitCounterAndCollect();
+  }
+
+  private async createGroup(groupHash: BindingsHash, bindings: Bindings): Promise<IGroup> {
+    const aggregators: Record<string, IBindingsAggregator> = {};
+    await Promise.all(this.pattern.aggregates.map(async(aggregate) => {
+      const key = aggregate.variable.value;
+      aggregators[key] = await this.mediatorBindingsAggregatorFactory
+        .mediate({ expr: aggregate, context: this.context });
+      await aggregators[key].putBindings(bindings);
+    }));
+
+    const group = {
+      aggregators,
+      bindings: bindings.filter((_, variable) => this.groupVariables.has(variable.value)),
+    };
+    this.groups.set(groupHash, group);
+    await this.subtractWaitCounterAndCollect();
+    return group;
   }
 
   private async subtractWaitCounterAndCollect(): Promise<void> {
@@ -183,6 +200,6 @@ export class GroupsState {
    * @param {Bindings} bindings - Bindings to hash
    */
   private hashBindings(bindings: Bindings): BindingsHash {
-    return bindingsToCompactString(bindings, this.variables);
+    return bindingsToCompactString(bindings, this.groupHashVariables);
   }
 }
