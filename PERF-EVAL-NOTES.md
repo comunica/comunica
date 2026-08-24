@@ -1441,3 +1441,58 @@ So after this run, 6 of 7 commits will have real-workload coverage and **one —
 will still have none.**
 
 Steps 3-4 (interleaved whole-branch A/B, then per-commit attribution if warranted) follow.
+
+## Step 3 — interleaved whole-branch A/B on `benchmark-bsbm-file`: INCONCLUSIVE (noise too high)
+
+5 rounds, alternating master / branch, full `tsc` rebuild between every side, no reused
+baseline. Metric is BSBM's own `totalruntime` (seconds for 10 query-mix runs after 5 warmups).
+
+| round | master | branch | delta |
+|---|---|---|---|
+| 1 | 12.777 | 13.410 | +4.95% |
+| 2 | 12.677 | **19.700** | +55.40% |
+| 3 | 12.931 | 12.328 | -4.66% |
+| 4 | 12.582 | 12.893 | +2.47% |
+| 5 | **19.479** | 13.146 | -32.51% |
+
+### The noise floor is enormous
+
+```
+master: 12.78 / 12.68 / 12.93 / 12.58 / 19.48   spread 49.0%   stdev 3.016 s = 21.4%
+branch: 13.41 / 19.70 / 12.33 / 12.89 / 13.15   spread 51.6%   stdev 3.048 s = 21.3%
+```
+
+**Each side produced exactly one ~19.5 s outlier against a ~12.7 s mode.** The outliers are
+symmetric across sides, so they are container interference, not a property of either build.
+
+### Aggregate
+
+| statistic | master | branch | delta |
+|---|---|---|---|
+| mean | 14.089 s | 14.295 s | **+1.46%** |
+| median | 12.777 s | 13.146 s | **+2.89%** |
+| median, outliers >16 s dropped (n=4 each) | 12.727 s | 13.020 s | **+2.30%** |
+
+**A +1.5-2.9% difference against a 21.4% standard deviation is nothing.** With stdev 21.4%
+at n=5 the standard error is ~9.6%, so the resolvable effect is roughly **+/-19%**.
+
+**Correctness: 0 mismatches** — `avgresults` and `timeoutcount` identical for all 11
+executed queries across all 5 rounds. (Q6 is excluded by BSBM itself, `executecount` 0, so
+11 of 12 run.)
+
+### Step 4 (per-commit attribution) is NOT triggered
+
+The brief specifies step 4 only if step 3 shows movement outside the noise floor. It does
+not — the effect is ~7x smaller than one standard deviation. Cherry-picking single commits
+would be strictly less sensitive than the whole-branch comparison that just failed to
+resolve anything, so per-commit attribution on this benchmark is not meaningful and was
+not attempted.
+
+### Why this benchmark is so noisy, and what would fix it
+
+The whole 12-query mix runs in ~12.7 s at `runs: 10`, so a single perturbed query-mix run
+moves the total by ~10%. This is a much worse noise environment than watdiv-file (0.57%
+this morning, 5.14% by evening). Raising `runs` from 10 to ~40 in
+`jbr-experiment.json.template` would average four times as many mixes per invocation and
+should cut the standard error roughly in half; that is the obvious next lever and is cheap
+(~60 s per run). Attempted below.
