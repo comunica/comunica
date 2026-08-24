@@ -1600,3 +1600,112 @@ queries across all 5 rounds. (Q6 is excluded by BSBM itself, `executecount` 0.)
 
 5 further interleaved rounds are running to double n and determine whether the -3%
 survives; at n=10 the SE should fall to ~1.2%, making a genuine 3% effect resolvable.
+
+## Step 3c — BSBM pooled over 10 interleaved rounds: small, feature-localised, NOT significant
+
+Doubling the sample **did not confirm** the -3.01% from the first block. It shrank.
+
+### Block reproducibility (outliers >65 s dropped)
+
+| block | master median | branch median | delta |
+|---|---|---|---|
+| block 1 (rounds 1-5) | 52.75 s | 51.16 s | **-3.01%** |
+| block 2 (rounds 6-10) | 51.51 s | 50.28 s | **-2.38%** |
+
+Consistent in sign and rough magnitude across two independent blocks — but both are small,
+and pooling weakens rather than strengthens the estimate.
+
+### Pooled, n=9 per side
+
+```
+master 52.02 +/- 1.36 s (2.6%)     branch 51.29 +/- 1.63 s (3.2%)
+mean delta   -1.41%      median delta  -2.08%      (all-rounds median -1.90%)
+Welch t = 1.04,  SE = 0.71 s = 1.36%     -> NOT significant
+95% CI on the mean delta: [-4.13%, +1.30%]  -> spans zero
+```
+
+Each side threw exactly one ~76 s outlier (master r4, branch r9) against a ~52 s mode —
+symmetric, so container interference rather than a property of either build.
+
+### Per-query, pooled (median aqet, n=9 per side)
+
+| Q | ORDER BY | master | branch | delta | m_sd |
+|---|---|---|---|---|---|
+| 1 | yes | 0.0066 | 0.0065 | -2.4% | 4.5% |
+| 2 | no | 0.0271 | 0.0273 | +0.7% | 3.4% |
+| 3 | yes | 0.0104 | 0.0103 | -1.6% | 2.6% |
+| 4 | yes | 0.0109 | 0.0109 | +0.3% | 3.1% |
+| 5 | yes | 0.3019 | 0.2949 | -2.3% | 3.2% |
+| 7 | no | 0.0575 | 0.0567 | -1.5% | 2.6% |
+| 8 | yes | 0.0450 | 0.0435 | -3.3% | 2.9% |
+| 9 | no | 0.0232 | 0.0234 | +0.9% | 3.2% |
+| 10 | yes | 0.0382 | 0.0372 | -2.6% | 2.0% |
+| 11 | no | 0.0030 | 0.0030 | -0.1% | 3.4% |
+| 12 | no | 0.0085 | 0.0086 | +1.7% | 8.7% |
+
+7 of 11 faster (was 9 of 11 at n=5) — sign test p ~= 0.55, i.e. nothing.
+
+### The one durable pattern: the effect sits on the ORDER BY queries
+
+| subset | delta (pooled) | delta (block 1) |
+|---|---|---|
+| **ORDER BY** (Q1,3,4,5,8,10) | **-2.36%** | -3.52% |
+| non-ORDER BY control (Q2,7,9,11,12) | **-0.28%** | -1.22% |
+| ORDER BY **excluding Q5** | **-2.51%** | — |
+
+The control subset is essentially zero (-0.28%) while the ORDER BY subset is consistently
+negative, and **this survives removing Q5** (-2.51%), which answers the caveat raised in
+step 3b: the ORDER BY effect is not just Q5's FILTER-heavy expression work. Five of the six
+ORDER BY queries are faster (Q1 -2.4%, Q3 -1.6%, Q5 -2.3%, Q8 -3.3%, Q10 -2.6%; only
+Q4 +0.3%), against two of five in the control.
+
+That is the pattern `b5c2d69` (SortIterator O(n log n)) predicts. It is **weak evidence,
+not proof** — no individual query clears 2x its own stdev, and the aggregate CI spans zero.
+
+**Correctness: 0 mismatches** on `avgresults` and `timeoutcount`, all 11 executed queries,
+all 10 rounds, both sides.
+
+### Step 4 (per-commit attribution) — NOT performed, and why
+
+The brief gates step 4 on step 3 showing movement outside the noise floor. Pooled over 10
+rounds the aggregate effect is **-1.41% with a 95% CI of [-4.13%, +1.30%]** against a
+resolution of about +/-2.7%. It does not clear the gate.
+
+More importantly, per-commit attribution would be **arithmetically hopeless here**: the
+whole seven-commit stack moves this benchmark by at most ~2%, so any single commit's share
+is ~1% or less, against a 1.36% standard error. Resolving that would need on the order of
+50-100 rounds per commit (~1-2 hours per commit, seven commits). Cherry-picking `b5c2d69`
+and reporting "-1.2%, not significant" would add cost without adding knowledge.
+
+## VERDICT on `benchmark-bsbm-file`
+
+**The seven changes do not produce a statistically significant improvement on BSBM either,
+but unlike WatDiv the direction is consistent and lands where theory predicts.**
+
+| | watdiv-file | bsbm-file |
+|---|---|---|
+| aggregate delta | +0.50% (nothing) | **-1.41%** (mean) / -1.90% (median) |
+| significance | none, +/-6% resolution | none, 95% CI [-4.13%, +1.30%] |
+| direction | signs disagree round to round | **consistent across 2 independent blocks** |
+| feature localisation | n/a (no ORDER BY exists) | **ORDER BY -2.36% vs control -0.28%** |
+| correctness | 0 / 300 mismatches | 0 mismatches, 10 rounds |
+
+So the fair summary for PR #1754 is:
+
+1. **No real-workload benchmark demonstrates a significant speedup.** Neither WatDiv nor
+   BSBM can support a headline performance number.
+2. **BSBM shows a small consistent improvement (~1.4-2.4%) concentrated on ORDER BY
+   queries**, reproduced across two independent 5-round blocks and surviving removal of the
+   dominant query. This is the only real-workload evidence in the changes' favour, and it
+   is weak.
+3. **The ~27% micro-harness median is not reproduced anywhere on a real workload** and
+   should not be quoted as a general claim.
+4. **Nothing regressed.** Correctness is exact everywhere (WatDiv 300 executions + TPF 100 +
+   BSBM 10 rounds), and TPF plans are bit-identical.
+5. `53d85d5` (GroupsState / GROUP BY) **still has no real-workload coverage at all** —
+   neither WatDiv nor BSBM contains a single aggregate. Any benchmark intended to justify
+   it would have to be written from scratch.
+
+The changes remain defensible on algorithmic grounds (O(n^2) -> O(n log n) is an improvement
+whether or not a 1000-product BSBM dataset can show it) and are safe to merge. They are not
+defensible as a measured ~27% speedup.
