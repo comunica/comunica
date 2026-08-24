@@ -271,7 +271,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     // Reject binding on some operation types
     if (remainingEntries
       .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation))) {
-      return failTest(`Actor ${this.name} can not bind on Extend, Group, or conflicting LeftJoin/Minus operations`);
+      return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
     }
 
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.
