@@ -95,32 +95,34 @@ export class TermFunctionEquality extends TermFunctionBase {
             if (!val && (left.termType === 'Literal') && (right.termType === 'Literal')) {
               this.fullTermComparisonCheck(exprEval, _left, _right);
               this.nonLexicalCheck(exprEval, _left, _right);
-              return bool(left.datatype === right.datatype && left.value === right.value);
+              return bool(left.datatype === right.datatype);
             }
             return bool(val);
           },
           false,
         )
-        .set([ TypeURL.XSD_DURATION, TypeURL.XSD_DURATION ], () =>
-          ([ dur1, dur2 ]: [ DurationLiteral, DurationLiteral ]) =>
-            bool(yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1.typedValue)) ===
-          yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2.typedValue)) &&
-          dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) ===
-          dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))))
-        .set([ TypeURL.XSD_TIME, TypeURL.XSD_TIME ], exprEval =>
-          ([ time1, time2 ]: [TimeLiteral, TimeLiteral]) =>
-          // https://www.w3.org/TR/xpath-functions/#func-time-equal
-            bool(
-              toUTCDate(
-                defaultedDateTimeRepresentation(time1.typedValue),
-                exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
-              ).getTime() ===
-          toUTCDate(
-            defaultedDateTimeRepresentation(time2.typedValue),
-            exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
-          ).getTime(),
-            ))
-        .collect(),
+        .set(
+          [ TypeURL.XSD_DURATION, TypeURL.XSD_DURATION ],
+          exprEval => this.literalEquality<DurationLiteral>(exprEval, ([ dur1, dur2 ]) =>
+            yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur1.typedValue)) ===
+            yearMonthDurationsToMonths(defaultedYearMonthDurationRepresentation(dur2.typedValue)) &&
+            dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur1.typedValue)) ===
+            dayTimeDurationsToSeconds(defaultedDayTimeDurationRepresentation(dur2.typedValue))),
+          false,
+        ).set(
+          [ TypeURL.XSD_TIME, TypeURL.XSD_TIME ],
+          exprEval => this.literalEquality<TimeLiteral>(exprEval, ([ time1, time2 ]) =>
+            // https://www.w3.org/TR/xpath-functions/#func-time-equal
+            toUTCDate(
+              defaultedDateTimeRepresentation(time1.typedValue),
+              exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
+            ).getTime() ===
+            toUTCDate(
+              defaultedDateTimeRepresentation(time2.typedValue),
+              exprEval.context.getSafe(KeysExpressionEvaluator.defaultTimeZone),
+            ).getTime()),
+          false,
+        ).collect(),
     });
   }
 
