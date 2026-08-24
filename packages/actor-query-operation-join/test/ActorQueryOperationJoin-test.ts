@@ -112,7 +112,9 @@ describe('ActorQueryOperationJoin', () => {
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]);
     });
-    it('should run when one of the join entries has an estimated cardinality of 0', async() => {
+    it('should return empty when one of the join entries has an estimated cardinality of 0', async() => {
+      // ActorRdfJoinMultiEmpty accepts a cardinality of zero of any type and always wins the cost
+      // comparison, so mediating this join can only produce an empty stream. It is short-circuited here.
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
@@ -127,9 +129,38 @@ describe('ActorQueryOperationJoin', () => {
         type: 'bindings',
       });
 
+      const joinSpy = jest.spyOn(mediatorJoin, 'mediate');
       const op: any = { operation: { type: 'join', input: [{}, {}, {}]}, context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       expect(output.type).toBe('bindings');
+      await expect(output.metadata()).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'exact', value: 0 },
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+        ],
+      });
+      await expect(output.bindingsStream).toEqualBindingsStream([]);
+      expect(joinSpy).not.toHaveBeenCalled();
+    });
+
+    it('should still mediate the join for a non-zero estimated cardinality', async() => {
+      mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
+        ], { autoStart: false }),
+        metadata: () => Promise.resolve({
+          cardinality: { type: 'estimate', value: 1 },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        }),
+        operated: arg,
+        type: 'bindings',
+      });
+
+      const joinSpy = jest.spyOn(mediatorJoin, 'mediate');
+      const op: any = { operation: { type: 'join', input: [{}, {}, {}]}, context: new ActionContext() };
+      const output = getSafeBindings(await actor.run(op, undefined));
+      expect(joinSpy).toHaveBeenCalledTimes(1);
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'exact', value: 100 },
         variables: [
@@ -137,17 +168,6 @@ describe('ActorQueryOperationJoin', () => {
           { variable: DF.variable('b'), canBeUndef: false },
         ],
       });
-      await expect(output.bindingsStream).toEqualBindingsStream([
-        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-        BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
-        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
-        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-        BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
-      ]);
     });
 
     it('should run when one of the join entries is empty', async() => {

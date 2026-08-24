@@ -44,8 +44,13 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
       }));
 
     // Return immediately if one of the join entries has cardinality zero, to avoid actor testing overhead.
+    // This uses the same emptiness condition as ActorRdfJoinMultiEmpty, which is the actor that would
+    // otherwise be selected here: it accepts a cardinality of zero of any type, and its join coefficients
+    // are all zero, so it always wins the cost comparison. Requiring an *exact* cardinality instead meant
+    // that sources reporting estimates - which includes every source behind the hypermedia layer, such as
+    // files - never took this path and paid a full join mediation only to be handed back an empty stream.
     if ((await Promise.all(entries.map(entry => entry.output.metadata())))
-      .some(entry => (entry.cardinality.value === 0 && entry.cardinality.type === 'exact'))) {
+      .some(entry => entry.cardinality.value === 0)) {
       for (const entry of entries) {
         entry.output.bindingsStream.close();
       }
