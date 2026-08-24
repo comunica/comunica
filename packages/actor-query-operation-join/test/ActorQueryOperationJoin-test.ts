@@ -170,6 +170,71 @@ describe('ActorQueryOperationJoin', () => {
       });
     });
 
+    it('should not evaluate join entries after an empty one', async() => {
+      const variablesPerEntry = [ DF.variable('a'), DF.variable('b'), DF.variable('c') ];
+      let evaluated = 0;
+      mediatorQueryOperation.mediate = (arg: any) => {
+        const variable = variablesPerEntry[evaluated++];
+        return Promise.resolve({
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
+          metadata: () => Promise.resolve({
+            cardinality: { type: 'exact', value: evaluated === 1 ? 0 : 3 },
+            variables: [{ variable, canBeUndef: false }],
+          }),
+          operated: arg,
+          type: 'bindings',
+        });
+      };
+
+      const op: any = { operation: { type: 'join', input: [{}, {}, {}]}, context: new ActionContext() };
+      const output = getSafeBindings(await actor.run(op, undefined));
+      expect(evaluated).toBe(1);
+      await expect(output.bindingsStream).toEqualBindingsStream([]);
+      expect(evaluated).toBe(1);
+    });
+
+    it('should determine the variables of the skipped entries when the metadata is requested', async() => {
+      const variablesPerEntry = [ DF.variable('a'), DF.variable('b'), DF.variable('c') ];
+      let evaluated = 0;
+      mediatorQueryOperation.mediate = (arg: any) => {
+        const variable = variablesPerEntry[evaluated++];
+        return Promise.resolve({
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
+          metadata: () => Promise.resolve({
+            cardinality: { type: 'exact', value: evaluated === 1 ? 0 : 3 },
+            variables: [{ variable, canBeUndef: false }],
+          }),
+          operated: arg,
+          type: 'bindings',
+        });
+      };
+
+      const op: any = { operation: { type: 'join', input: [{}, {}, {}]}, context: new ActionContext() };
+      const output = getSafeBindings(await actor.run(op, undefined));
+      await expect(output.metadata()).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'exact', value: 0 },
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: false },
+          { variable: DF.variable('c'), canBeUndef: false },
+        ],
+      });
+      expect(evaluated).toBe(3);
+
+      // Requesting the metadata again must not evaluate the skipped entries again
+      await expect(output.metadata()).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'exact', value: 0 },
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: false },
+          { variable: DF.variable('c'), canBeUndef: false },
+        ],
+      });
+      expect(evaluated).toBe(3);
+    });
+
     it('should run when one of the join entries is empty', async() => {
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([], { autoStart: false }),
