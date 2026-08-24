@@ -1361,3 +1361,83 @@ they were general performance claims. Suggested framing:
 A benchmark that *would* exercise these changes (BSBM has `ORDER BY`) was never run — see
 the `benchmark-bsbm-tpf` gap noted earlier in this file. **That is the single most valuable
 follow-up available**, and it would directly test the four changes WatDiv cannot reach.
+
+---
+
+# 2026-08-24 — FOLLOW-UP TASK 3: `benchmark-bsbm-file`
+
+WatDiv cannot exercise most of PR #1754. BSBM is the remaining real-workload evidence.
+
+## Step 1 — `jbr prepare` WORKS
+
+Docker had died again overnight (`Cannot connect to the Docker daemon`). Restarted with the
+usual `setsid nohup dockerd --exec-opt native.cgroupdriver=cgroupfs --storage-driver overlay2 &`
+— **all 5 previously-built images survived** the daemon restart.
+
+```
+cd performance/benchmark-bsbm-file
+yarn jbr prepare -c 0
+  -> Generating BSBM dataset
+  -> Done in 24.03s
+```
+
+**No `fetch-assets` needed and no manual dataset work.** `prepare` generates everything via
+Docker in 24 s:
+
+| artifact | size |
+|---|---|
+| `generated/dataset.nt` | **92 MB** |
+| `generated/td_data/` (5 `.dat` files) | 160 KB |
+| `generated/.prepared` | marker |
+
+Experiment parameters (`jbr-experiment.json.template`): `productCount: 1000`,
+`generateHdt: false`, `warmupRuns: 5`, `runs: 10`.
+
+Topology note: unlike watdiv-file, BSBM's **test driver runs in Docker** (`vcity/bsbm:v1.0`,
+399 MB) on a dedicated bridge network, and reaches the engine on the host via
+`host.docker.internal:3001`. Combination 0's engine is still `HookCli` — plain
+`node engines/query-sparql-file/bin/http.js file@generated/dataset.nt -p 3001` on the host —
+so the local build is what gets measured. **Docker is mandatory here even for combination 0**,
+which is why this could not have been done in a container without a working daemon.
+
+## Step 2 — what the BSBM query mix actually contains
+
+The driver is invoked with no `-ucf`, so it runs the **default `explore` mix: 12 queries**
+(`/app/queries/explore/query1..12.txt` inside the image; `ignoreQueries.txt` is empty, so
+none are skipped).
+
+| feature | count | queries |
+|---|---|---|
+| **ORDER BY** | **6 / 12** | Q1, Q3, Q4, Q5, Q8, Q10 |
+| **GROUP BY** | **0** | — |
+| **aggregates (COUNT/SUM/AVG/MIN/MAX)** | **0** | — |
+| **DISTINCT** | **4 / 12** | Q1, Q4, Q5, Q10 |
+| **OPTIONAL** | **4 / 12** | Q2, Q3, Q7, Q8 |
+| UNION | 2 / 12 | Q4, Q11 |
+| FILTER | 8 / 12 | Q1, Q3, Q4, Q5, Q6, Q7, Q8, Q10 |
+| comparison operators in expressions | 6 / 12 | Q1, Q3, Q4, Q5, Q7, Q10 |
+| arithmetic in expressions | 1 / 12 | Q5 only (`?origProperty1 + 120` etc.) |
+| `regex()` | 1 / 12 | Q6 |
+| `bound()` | 1 / 12 | Q3 |
+| LIMIT / OFFSET | 6 / 1 | Q4 has the only OFFSET |
+| CONSTRUCT | 1 / 12 | Q12 |
+| DESCRIBE | 1 / 12 | Q9 |
+| BIND, property paths, MINUS, VALUES, EXISTS, sub-SELECT, ASK, REDUCED | **0** | — |
+
+### What this means for attributing the seven commits — one correction
+
+BSBM **does** cover ORDER BY (6/12), DISTINCT (4/12) and OPTIONAL (4/12), so it can exercise
+`b5c2d69` (SortIterator O(n log n)), `98b5211` (projection blank-node rescoping) and — via
+FILTER in 8/12 queries — `25223ed` / `f36df92` / `63773b4` (the expression-evaluator and
+TermTransformer changes) and `f7c42b1` (`Bindings#map`).
+
+> **But BSBM explore has ZERO `GROUP BY` and zero aggregates, so it CANNOT exercise
+> `53d85d5` (GroupsState per-solution allocations) either.** The task brief prioritised
+> `53d85d5` as one of the two commits "BSBM can see that WatDiv cannot" — that is not the
+> case for the default explore mix. `53d85d5` remains untested by **any** real benchmark
+> available here. (BSBM's `bi` query mix does use GROUP BY, but jbr does not run it.)
+
+So after this run, 6 of 7 commits will have real-workload coverage and **one — `53d85d5` —
+will still have none.**
+
+Steps 3-4 (interleaved whole-branch A/B, then per-commit attribution if warranted) follow.
