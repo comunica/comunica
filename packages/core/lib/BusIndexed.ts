@@ -21,6 +21,20 @@ import { Bus } from './Bus';
 export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T extends IActorTest, O extends IActorOutput>
   extends Bus<A, I, T, O> {
   protected readonly actorsIndex: Record<string, A[]> = {};
+  /**
+   * The actors to publish to per action identifier: the actors indexed under that identifier,
+   * followed by the actors that have no identifier.
+   */
+  protected readonly actorsIndexMerged: Record<string, A[]> = {};
+  /**
+   * The subscribed actors, with one entry per `subscribe` call.
+   * This is separate from `actors`, which holds one entry per identifier of each subscribed actor.
+   */
+  protected readonly actorsSubscribed: A[] = [];
+  /**
+   * Whether `actorsIndex` currently reflects the subscribed actors.
+   */
+  protected actorsIndexed = false;
   protected readonly actorIdentifierFields: string[];
   protected readonly actionIdentifierFields: string[];
 
@@ -39,42 +53,89 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
 
   public override subscribe(actor: A): void {
     const actorIds = this.getActorIdentifiers(actor) ?? [ '_undefined_' ];
-    for (const actorId of actorIds) {
-      let actors = this.actorsIndex[actorId];
-      if (!actors) {
-        actors = this.actorsIndex[actorId] = [];
-      }
-      actors.push(actor);
+    for (const _actorId of actorIds) {
       super.subscribe(actor);
     }
+    this.actorsSubscribed.push(actor);
+    this.invalidateActorsIndex();
   }
 
   public override unsubscribe(actor: A): boolean {
     const actorIds = this.getActorIdentifiers(actor) ?? [ '_undefined_' ];
     let unsubscribed = false;
-    for (const actorId of actorIds) {
-      const actors = this.actorsIndex[actorId];
-      if (actors) {
-        const i = actors.indexOf(actor);
-        if (i >= 0) {
-          actors.splice(i, 1);
-        }
-        if (actors.length === 0) {
-          delete this.actorsIndex[actorId];
-        }
-      }
+    for (const _actorId of actorIds) {
       unsubscribed = unsubscribed || super.unsubscribe(actor);
     }
+    const i = this.actorsSubscribed.indexOf(actor);
+    if (i >= 0) {
+      this.actorsSubscribed.splice(i, 1);
+    }
+    this.invalidateActorsIndex();
     return unsubscribed;
   }
 
   public override publish(action: I): IActorReply<A, I, T, O>[] {
     const actionId = this.getActionIdentifier(action);
     if (actionId) {
-      const actors = [ ...this.actorsIndex[actionId] || [], ...this.actorsIndex._undefined_ || [] ];
+      const actors = this.getActorsForIdentifier(actionId);
       return actors.map((actor: A): IActorReply<A, I, T, O> => ({ actor, reply: actor.test(action) }));
     }
     return super.publish(action);
+  }
+
+  /**
+   * Mark the index as out of date, so that it is rebuilt when it is next needed.
+   */
+  protected invalidateActorsIndex(): void {
+    this.actorsIndexed = false;
+    for (const key of Object.keys(this.actorsIndex)) {
+      delete this.actorsIndex[key];
+    }
+    for (const key of Object.keys(this.actorsIndexMerged)) {
+      delete this.actorsIndexMerged[key];
+    }
+  }
+
+  /**
+   * Obtain the actors that an action with the given identifier must be published to.
+   * @param actionId An action identifier.
+   */
+  protected getActorsForIdentifier(actionId: string): A[] {
+    if (!this.actorsIndexed) {
+      this.buildActorsIndex();
+    }
+    let actors = this.actorsIndexMerged[actionId];
+    if (!actors) {
+      const identified = this.actorsIndex[actionId];
+      const unidentified = this.actorsIndex._undefined_;
+      if (identified) {
+        actors = unidentified ? [ ...identified, ...unidentified ] : identified;
+      } else {
+        actors = unidentified ?? [];
+      }
+      this.actorsIndexMerged[actionId] = actors;
+    }
+    return actors;
+  }
+
+  /**
+   * Index the subscribed actors by their identifiers.
+   *
+   * Actors subscribe to their bus from the `Actor` constructor, before subclass constructors have assigned
+   * the fields that identify them. Their identifiers are therefore only read here, on first use, at which
+   * point every actor is fully constructed.
+   */
+  protected buildActorsIndex(): void {
+    for (const actor of this.actorsSubscribed) {
+      for (const actorId of this.getActorIdentifiers(actor) ?? [ '_undefined_' ]) {
+        let actors = this.actorsIndex[actorId];
+        if (!actors) {
+          actors = this.actorsIndex[actorId] = [];
+        }
+        actors.push(actor);
+      }
+    }
+    this.actorsIndexed = true;
   }
 
   protected getActorIdentifiers(actor: A): string[] | undefined {

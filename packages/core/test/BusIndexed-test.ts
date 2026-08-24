@@ -196,6 +196,26 @@ describe('BusIndexed', () => {
     });
   });
 
+  describe('A BusIndexed instance with actors that have multiple identifiers', () => {
+    let bus: any;
+    const actorTest = (action: any) => Promise.resolve({ type: 'test', sent: action });
+
+    beforeEach(() => {
+      bus = new BusIndexed({ name: 'bus', actorIdentifierFields: [ 'types' ], actionIdentifierFields: [ 'a' ]});
+    });
+
+    it('should index an actor under each of its identifiers', () => {
+      const actorMulti = new (<any> Actor)({ name: 'actorMulti', bus: new Bus({ name: 'bus1' }), types: [ '1', '2' ]});
+      actorMulti.test = actorTest;
+      bus.subscribe(actorMulti);
+      expect(bus.getActorsForIdentifier('1')).toEqual([ actorMulti ]);
+      expect(bus.getActorsForIdentifier('2')).toEqual([ actorMulti ]);
+      expect(bus.getActorsForIdentifier('3')).toEqual([]);
+      expect(bus.unsubscribe(actorMulti)).toBeTruthy();
+      expect(bus.getActorsForIdentifier('1')).toEqual([]);
+    });
+  });
+
   describe('A BusIndexed instance with simple actorIdentifierFields and actionIdentifierFields', () => {
     let bus: any;
     const actor1 = new (<any> Actor)({ name: 'actor1', bus: new Bus({ name: 'bus1' }), type: '1' });
@@ -249,6 +269,7 @@ describe('BusIndexed', () => {
       bus.subscribe(actor1);
       expect(bus.actors).toContain(actor1);
       expect(bus.actors).toHaveLength(1);
+      expect(bus.getActorsForIdentifier('1')).toEqual([ actor1 ]);
       expect(bus.actorsIndex).toEqual({ 1: [ actor1 ]});
     });
 
@@ -269,10 +290,11 @@ describe('BusIndexed', () => {
       bus.subscribe(actor1);
       expect(bus.actors).toContain(actor1);
       expect(bus.actors).toHaveLength(1);
-      expect(bus.actorsIndex).toEqual({ 1: [ actor1 ]});
+      expect(bus.getActorsForIdentifier('1')).toEqual([ actor1 ]);
       expect(bus.unsubscribe(actor1)).toBeTruthy();
       expect(bus.actors).not.toContain(actor1);
       expect(bus.actors).toHaveLength(0);
+      expect(bus.getActorsForIdentifier('1')).toEqual([]);
       expect(bus.actorsIndex).toEqual({});
     });
 
@@ -280,11 +302,12 @@ describe('BusIndexed', () => {
       bus.subscribe(actor4);
       expect(bus.actors).toContain(actor4);
       expect(bus.actors).toHaveLength(1);
+      expect(bus.getActorsForIdentifier('1')).toEqual([ actor4 ]);
       expect(bus.actorsIndex).toEqual({ _undefined_: [ actor4 ]});
       expect(bus.unsubscribe(actor4)).toBeTruthy();
       expect(bus.actors).not.toContain(actor4);
       expect(bus.actors).toHaveLength(0);
-      expect(bus.actorsIndex).toEqual({});
+      expect(bus.getActorsForIdentifier('1')).toEqual([]);
     });
 
     it('should allow multiple actors to be subscribed and unsubscribed', () => {
@@ -295,12 +318,14 @@ describe('BusIndexed', () => {
       expect(bus.actors).toContain(actor2);
       expect(bus.actors).toContain(actor3);
       expect(bus.actors).toHaveLength(3);
-      expect(bus.actorsIndex).toEqual({ 1: [ actor1, actor3 ], 2: [ actor2 ]});
+      expect(bus.getActorsForIdentifier('1')).toEqual([ actor1, actor3 ]);
+      expect(bus.getActorsForIdentifier('2')).toEqual([ actor2 ]);
       expect(bus.unsubscribe(actor1)).toBeTruthy();
-      expect(bus.actorsIndex).toEqual({ 1: [ actor3 ], 2: [ actor2 ]});
+      expect(bus.getActorsForIdentifier('1')).toEqual([ actor3 ]);
       expect(bus.actors).toHaveLength(2);
       expect(bus.unsubscribe(actor3)).toBeTruthy();
-      expect(bus.actorsIndex).toEqual({ 2: [ actor2 ]});
+      expect(bus.getActorsForIdentifier('1')).toEqual([]);
+      expect(bus.getActorsForIdentifier('2')).toEqual([ actor2 ]);
       expect(bus.actors).not.toContain(actor1);
       expect(bus.actors).toContain(actor2);
       expect(bus.actors).not.toContain(actor3);
@@ -317,18 +342,21 @@ describe('BusIndexed', () => {
       expect(bus.actors).toContain(actor3);
       expect(bus.actors).toContain(actor4);
       expect(bus.actors).toHaveLength(4);
-      expect(bus.actorsIndex).toEqual({ 1: [ actor1, actor3 ], 2: [ actor2 ], _undefined_: [ actor4 ]});
+      expect(bus.getActorsForIdentifier('1')).toEqual([ actor1, actor3, actor4 ]);
+      expect(bus.getActorsForIdentifier('2')).toEqual([ actor2, actor4 ]);
       expect(bus.unsubscribe(actor1)).toBeTruthy();
-      expect(bus.actorsIndex).toEqual({ 1: [ actor3 ], 2: [ actor2 ], _undefined_: [ actor4 ]});
+      expect(bus.getActorsForIdentifier('1')).toEqual([ actor3, actor4 ]);
       expect(bus.actors).toHaveLength(3);
       expect(bus.unsubscribe(actor3)).toBeTruthy();
-      expect(bus.actorsIndex).toEqual({ 2: [ actor2 ], _undefined_: [ actor4 ]});
+      expect(bus.getActorsForIdentifier('1')).toEqual([ actor4 ]);
+      expect(bus.getActorsForIdentifier('2')).toEqual([ actor2, actor4 ]);
       expect(bus.actors).not.toContain(actor1);
       expect(bus.actors).toContain(actor2);
       expect(bus.actors).not.toContain(actor3);
       expect(bus.actors).toContain(actor4);
       expect(bus.actors).toHaveLength(2);
       expect(bus.unsubscribe(actor4)).toBeTruthy();
+      expect(bus.getActorsForIdentifier('2')).toEqual([ actor2 ]);
       expect(bus.actorsIndex).toEqual({ 2: [ actor2 ]});
       expect(bus.actors).not.toContain(actor1);
       expect(bus.actors).toContain(actor2);
@@ -341,7 +369,7 @@ describe('BusIndexed', () => {
       bus.subscribe(actor1);
       bus.subscribe(actor1);
       bus.subscribe(actor1);
-      expect(bus.actorsIndex).toEqual({ 1: [ actor1, actor1, actor1 ]});
+      expect(bus.getActorsForIdentifier('1')).toEqual([ actor1, actor1, actor1 ]);
       expect(bus.actors).toHaveLength(3);
     });
 
