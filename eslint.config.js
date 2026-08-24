@@ -1,6 +1,40 @@
 const config = require('@rubensworks/eslint-config');
 const requireAsyncIteratorAutostartFalse = require('./packages/utils-monorepo/lib/eslint/require-async-iterator-autostart-false');
 
+/**
+ * Packages must only be imported through their package root, as deep imports
+ * break whenever a package re-organizes its internal file structure.
+ * Note that this only covers 'import', as 'no-restricted-imports' does not check 'require'.
+ * @param allowed - Subpaths that have no equivalent on their package root, and are therefore allowed.
+ *                  Following gitignore semantics, every entry also allows anything nested below it.
+ * @returns An ESLint configuration for the 'no-restricted-imports' rule.
+ */
+function noDeepImports(...allowed) {
+  const message = 'Import from the package root instead of its internal files.';
+  const exceptions = scoped => allowed
+    .filter(entry => entry.startsWith('@') === scoped)
+    .map(entry => `!${entry}`);
+  return [ 'error', {
+    patterns: [
+      // Unscoped packages, ignoring relative imports.
+      // Scoped ones are excluded here, and handled by the group below.
+      { group: [ '*/*', '!./**', '!../**', '!@*/**', ...exceptions(false) ], message },
+      // Scoped packages
+      { group: [ '@*/*/*', ...exceptions(true) ], message },
+    ],
+  }];
+}
+
+// Subpaths that have no equivalent on their package root
+const allowedDeepImports = [
+  // 'undici' does not re-export its cache interceptor types
+  'undici/types',
+  // 'cross-fetch' exposes its polyfill as a separate entry point
+  'cross-fetch/polyfill',
+  // The engines share their Vite build configuration via this entry point
+  '@comunica/actor-init-query/vite.config.base',
+];
+
 module.exports = config([
   {
     plugins: {
@@ -25,6 +59,8 @@ module.exports = config([
   },
   {
     rules: {
+      'no-restricted-imports': noDeepImports(...allowedDeepImports),
+
       // Default
       'unicorn/consistent-destructuring': 'off',
       'unicorn/no-array-callback-reference': 'off',
@@ -101,6 +137,15 @@ module.exports = config([
     rules: {
       'import/no-anonymous-default-export': 'off',
       'import/no-default-export': 'off',
+    },
+  },
+  {
+    // Test utilities are shared across packages, and are not exposed on the package root
+    files: [
+      '**/test/**/*.ts',
+    ],
+    rules: {
+      'no-restricted-imports': noDeepImports(...allowedDeepImports, '@comunica/*/test'),
     },
   },
   {

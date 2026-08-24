@@ -4,7 +4,7 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries/lib/Keys';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';

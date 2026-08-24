@@ -5,6 +5,9 @@ import { failTest, passTestVoid } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { Readable } from 'readable-stream';
 
+const HTTP_PROTOCOL = 'http://';
+const HTTPS_PROTOCOL = 'https://';
+
 /**
  * An RDF Metadata Actor that splits off the metadata based on the existence of a 'foaf:primaryTopic' link.
  * Only non-triple quad streams are supported.
@@ -50,7 +53,7 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
       const primaryTopics: Record<string, string> = {};
       action.quads.on('data', (quad) => {
         if (quad.predicate.value === 'http://rdfs.org/ns/void#subset' &&
-          quad.object.value === action.url) {
+          equalsPageUrl(quad.object.value, action.url)) {
           endpointIdentifier = quad.subject.value;
         } else if (quad.predicate.value === 'http://xmlns.com/foaf/0.1/primaryTopic') {
           primaryTopics[quad.object.value] = quad.subject.value;
@@ -99,6 +102,20 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
 
     return { data, metadata };
   }
+}
+
+/**
+ * Check if the given URL from the metadata refers to the given page URL.
+ *
+ * Occasionally, servers are hosted over https, while their base URL is configured as http,
+ * which causes the URLs in their metadata to be exposed under the http protocol.
+ * Such URLs are considered equal as well, as the metadata graph would not be detected otherwise.
+ * @param url A URL occurring in the metadata.
+ * @param pageUrl The URL of the page the metadata was retrieved from.
+ */
+function equalsPageUrl(url: string, pageUrl: string): boolean {
+  return url === pageUrl ||
+    (url.startsWith(HTTP_PROTOCOL) && pageUrl === HTTPS_PROTOCOL + url.slice(HTTP_PROTOCOL.length));
 }
 
 export interface IActorRdfMetadataPrimaryTopicArgs extends IActorRdfMetadataArgs {

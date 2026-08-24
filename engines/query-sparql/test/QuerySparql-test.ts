@@ -1910,6 +1910,87 @@ SELECT ?option WHERE {
       });
     });
 
+    describe('non-lexical and full term comparison', () => {
+      it('nonLexicalComparison set to true', async() => {
+        const bool = DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean');
+        const expectedResult = [
+          [
+            [ DF.variable('l1'), DF.literal('true', bool) ],
+            [ DF.variable('l2'), DF.literal('false', bool) ],
+          ],
+        ];
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT 
+  (( "a"^^xsd:dateTime < "b"^^xsd:dateTime ) AS ?l1)
+  (( "a"^^xsd:boolean < "a"^^xsd:boolean ) AS ?l2)
+  (( "a"^^xsd:integer < <ex://b> ) AS ?l3)
+WHERE { }
+        `, {
+          sources: [ 'http://example.org/' ],
+          nonLexicalComparison: true,
+        }))).map(binding => [ ...binding ]);
+
+        expect(bindings).toMatchObject(expectedResult);
+      });
+
+      it('fullTermComparison set to true', async() => {
+        const bool = DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean');
+        const expectedResult = [
+          [
+            [ DF.variable('l1'), DF.literal('true', bool) ],
+            [ DF.variable('l2'), DF.literal('true', bool) ],
+            [ DF.variable('l3'), DF.literal('false', bool) ],
+            [ DF.variable('l4'), DF.literal('false', bool) ],
+          ],
+        ];
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX ex: <http://www.example.com/#>
+SELECT 
+  (( "1"^^xsd:integer < "hello"^^xsd:string ) AS ?l1)
+  (( "a"@de < "a"@nl ) AS ?l2)
+  (( "3"^^ex:integer < "2"^^ex:integer ) AS ?l3)
+  (( <ex:b> < <ex:a> ) AS ?l4)
+  (( "a"^^xsd:integer < <ex://b> ) AS ?l5)
+WHERE { }
+        `, {
+          sources: [ 'http://example.org/' ],
+          fullTermComparison: true,
+        }))).map(binding => [ ...binding ]);
+
+        expect(bindings).toMatchObject(expectedResult);
+      });
+
+      it('both set to true', async() => {
+        const bool = DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean');
+        const expectedResult = [
+          [
+            [ DF.variable('l1'), DF.literal('false', bool) ],
+            [ DF.variable('l2'), DF.literal('true', bool) ],
+            [ DF.variable('l3'), DF.literal('false', bool) ],
+          ],
+        ];
+
+        const bindings = (await arrayifyStream(await engine.queryBindings(`
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT 
+  (( "a"^^xsd:dateTime < "b"^^xsd:boolean ) AS ?l1)
+  (( "a"^^xsd:boolean < "a"^^xsd:dateType ) AS ?l2)
+  (( "a"^^xsd:integer < <ex://b> ) AS ?l3)
+WHERE { }
+        `, {
+          sources: [ 'http://example.org/' ],
+          nonLexicalComparison: true,
+          fullTermComparison: true,
+        }))).map(binding => [ ...binding ]);
+
+        expect(bindings).toMatchObject(expectedResult);
+      });
+    });
+
     describe('count distinct with UNION and partially unbound variables', () => {
       it('should correctly count distinct values when a variable is only bound in one UNION branch', async() => {
         // Regression test: COUNT(DISTINCT ?x) should ignore bindings where ?x is unbound
@@ -2473,6 +2554,105 @@ WHERE {
           ),
         ]);
         expect(getRequests).toBe(2);
+      });
+    });
+
+    describe('over a TPF interface with an invalid base URL', () => {
+      // Some TPF servers are hosted over https, while their base URL is configured as http,
+      // which causes all of their controls to be exposed under the http protocol.
+      const sourceUrl = 'https://tpf.example.org/ds';
+      const invalidBaseUrl = 'http://tpf.example.org/ds';
+
+      class WarningLogger extends Logger {
+        public readonly warnings: string[] = [];
+
+        public warn(message: string, _data?: any): void {
+          this.warnings.push(message);
+        }
+
+        public trace(_message: string, _data?: any) {}
+        public debug(_message: string, _data?: any) {}
+        public info(_message: string, _data?: any) {}
+        public error(_message: string, _data?: any) {}
+        public fatal(_message: string, _data?: any) {}
+      }
+
+      // Create a TPF fragment that exposes all of its controls under the invalid base URL
+      const createFragment = (fragmentUrl: string, triples: string, next?: string): string => `
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix hydra: <http://www.w3.org/ns/hydra/core#>.
+@prefix void: <http://rdfs.org/ns/void#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+<${fragmentUrl}#metadata> {
+  <${fragmentUrl}#metadata> foaf:primaryTopic <${fragmentUrl}>.
+  <${invalidBaseUrl}#dataset> a void:Dataset, hydra:Collection;
+    void:subset <${fragmentUrl}>;
+    hydra:search _:triplePattern.
+  _:triplePattern hydra:template "${invalidBaseUrl}{?subject,predicate,object}";
+    hydra:variableRepresentation hydra:ExplicitRepresentation;
+    hydra:mapping _:subject, _:predicate, _:object.
+  _:subject hydra:variable "subject"; hydra:property rdf:subject.
+  _:predicate hydra:variable "predicate"; hydra:property rdf:predicate.
+  _:object hydra:variable "object"; hydra:property rdf:object.
+  <${fragmentUrl}> a hydra:PartialCollectionView;
+    void:subset <${fragmentUrl}>;
+    hydra:totalItems "2"^^xsd:integer;
+    hydra:itemsPerPage "1"^^xsd:integer${next ? `;\n    hydra:next <${next}>` : ''}.
+}
+${triples}
+`;
+
+      let requestedUrls: string[];
+      let logger: WarningLogger;
+      let context: QueryStringContext;
+
+      beforeEach(async() => {
+        await engine.invalidateHttpCache();
+        requestedUrls = [];
+        logger = new WarningLogger();
+        const tpfFetch = (input: RequestInfo | URL): Promise<Response> => {
+          const url = typeof input === 'string' ? input : (input instanceof URL ? input.href : input.url);
+          requestedUrls.push(url);
+          let body: string | undefined;
+          if (url === sourceUrl) {
+            body = createFragment(
+              invalidBaseUrl,
+              '<http://example.org/s1> <http://example.org/p> "1".',
+              `${invalidBaseUrl}?page=2`,
+            );
+          } else if (url === `${sourceUrl}?page=2`) {
+            body = createFragment(
+              `${invalidBaseUrl}?page=2`,
+              '<http://example.org/s2> <http://example.org/p> "2".',
+            );
+          }
+          if (body === undefined) {
+            return Promise.reject(new Error(`Unexpected fetch call to ${url}`));
+          }
+          return Promise.resolve(new Response(body, {
+            status: 200,
+            headers: { 'Content-Type': 'application/trig' },
+          }));
+        };
+        context = { sources: [ sourceUrl ], fetch: <any> tpfFetch, log: logger };
+      });
+
+      it('should follow the corrected controls, and emit a warning', async() => {
+        const bindings = await (await engine.queryBindings('SELECT * WHERE { ?s ?p ?o }', context)).toArray();
+
+        // All pages must be traversed, without any metadata leaking into the results
+        expect(bindings.map(binding => binding.get(DF.variable('s'))!.value).sort()).toEqual([
+          'http://example.org/s1',
+          'http://example.org/s2',
+        ]);
+
+        // All requests must have been done over the protocol of the source, instead of the invalid one
+        expect(requestedUrls).toEqual([ sourceUrl, `${sourceUrl}?page=2` ]);
+
+        // The user must be warned about the invalid metadata
+        expect(logger.warnings).toContain(`Invalid metadata detected in ${sourceUrl}: controls are exposed under the http protocol instead of https. These have been corrected, but the server should be reconfigured with a valid base URL.`);
       });
     });
   });

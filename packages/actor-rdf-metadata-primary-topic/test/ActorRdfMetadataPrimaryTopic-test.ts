@@ -143,6 +143,70 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
         });
     });
 
+    it('should run on a metadata graph that is exposed under an invalid protocol', async() => {
+      const inputInvalidProtocol = streamifyArray([
+        quad('http://example.org/s1', 'http://example.org/p1', 'http://example.org/o1', ''),
+        quad(
+          'http://example.org/ds',
+          'http://rdfs.org/ns/void#subset',
+          'http://example.org/ds?s=s',
+          'http://example.org/ds?s=s#metadata',
+        ),
+        quad(
+          'http://example.org/ds?s=s#metadata',
+          'http://xmlns.com/foaf/0.1/primaryTopic',
+          'http://example.org/ds',
+          'http://example.org/ds?s=s#metadata',
+        ),
+      ]);
+      await actor.run({ context, url: 'https://example.org/ds?s=s', quads: inputInvalidProtocol })
+        .then(async(output) => {
+          const data: RDF.Quad[] = await arrayifyStream(output.data);
+          const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
+          expect(data).toEqual([
+            quad('http://example.org/s1', 'http://example.org/p1', 'http://example.org/o1', ''),
+          ]);
+          expect(metadata).toEqual([
+            quad(
+              'http://example.org/ds',
+              'http://rdfs.org/ns/void#subset',
+              'http://example.org/ds?s=s',
+              'http://example.org/ds?s=s#metadata',
+            ),
+            quad(
+              'http://example.org/ds?s=s#metadata',
+              'http://xmlns.com/foaf/0.1/primaryTopic',
+              'http://example.org/ds',
+              'http://example.org/ds?s=s#metadata',
+            ),
+          ]);
+        });
+    });
+
+    it('should run and make everything data with a metadata graph on a different host', async() => {
+      const inputOtherHost = streamifyArray([
+        quad('http://example.org/s1', 'http://example.org/p1', 'http://example.org/o1', ''),
+        quad(
+          'http://other.org/ds',
+          'http://rdfs.org/ns/void#subset',
+          'http://other.org/ds?s=s',
+          'http://other.org/ds?s=s#metadata',
+        ),
+        quad(
+          'http://other.org/ds?s=s#metadata',
+          'http://xmlns.com/foaf/0.1/primaryTopic',
+          'http://other.org/ds',
+          'http://other.org/ds?s=s#metadata',
+        ),
+      ]);
+      await actor.run({ context, url: 'https://example.org/ds?s=s', quads: inputOtherHost })
+        .then(async(output) => {
+          const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
+          await expect(arrayifyStream(output.data)).resolves.toHaveLength(3);
+          expect(metadata).toEqual([]);
+        });
+    });
+
     it('should run and make everything data without primaryTopic triple', async() => {
       await actor.run({ context, url: 'o1?param', quads: inputNone })
         .then(async(output) => {

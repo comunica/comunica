@@ -2,10 +2,10 @@ import { TermFunctionBase } from '@comunica/bus-function-factory';
 import {
   bool,
   declare,
+  DirLangStringLiteral,
   LangStringLiteral,
   SparqlOperator,
 } from '@comunica/utils-expression-evaluator';
-import { DirLangStringLiteral } from '@comunica/utils-expression-evaluator/lib/expressions';
 
 /**
  *

@@ -1,7 +1,7 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate, TestResult } from '@comunica/core';
 import { Actor, failTest } from '@comunica/core';
 import type { LogicalJoinType, IActionContext, MetadataBindings, MetadataQuads } from '@comunica/types';
-import type { KnownOperation } from '@comunica/utils-algebra/lib/Algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 
@@ -166,7 +166,7 @@ TS
   wraps?: possibleOperationTypes[];
 }
 
-export type possibleOperationTypes = KnownOperation | LogicalJoinType | string;
+export type possibleOperationTypes = Algebra.KnownOperation | LogicalJoinType | string;
 
 export type MediatorIteratorTransform =
   Mediate<

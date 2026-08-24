@@ -91,6 +91,11 @@
     "AggregateEvaluator",
     "ExpressionFunctionBase",
     "TermFunctionBase",
+    "InternalEvaluator",
+    "TermFunctionAddition",
+    "TermFunctionEquality",
+    "TermFunctionLesserThan",
+    "TermFunctionSubStr",
     "possibleOperationTypes"
   ],
   "modulePrefix": {

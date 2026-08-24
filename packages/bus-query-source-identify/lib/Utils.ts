@@ -11,11 +11,11 @@ import {
   forEachTermsNested,
   getTermsNested,
   getValueNestedPath,
+  matchPatternMappings,
   reduceTermsNested,
   someTerms,
   uniqTerms,
 } from 'rdf-terms';
-import { matchPatternMappings } from 'rdf-terms/lib/QuadTermUtil';
 
 /**
  * Convert an iterator of quads to an iterator of bindings.

@@ -2,15 +2,19 @@ import type { ITermFunction } from '@comunica/bus-function-factory';
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import type {
   BooleanLiteral,
+  NumericLiteral,
 } from '@comunica/utils-expression-evaluator';
 import {
   bool,
   declare,
+  nonLexicalComparisonHandler,
   SparqlOperator,
+  TypeAlias,
 } from '@comunica/utils-expression-evaluator';
 
 export class TermFunctionLesserThanEqual extends TermFunctionBase {
   public constructor(
+    // TODO: remove in next major, as it's unused
     private readonly equalityFunction: ITermFunction,
     private readonly lessThanFunction: ITermFunction,
   ) {
@@ -18,36 +22,25 @@ export class TermFunctionLesserThanEqual extends TermFunctionBase {
       arity: 2,
       operator: SparqlOperator.LTE,
       overloads: declare(SparqlOperator.LTE)
-        .set([ 'term', 'term' ], exprEval =>
-          ([ first, second ]) => {
-            // X <= Y -> X = Y || X < Y
-            // We must ensure correct handling of errors following logical-or semantics.
-
-            // First check if the first is lesser than the second.
-            let lessThanError: Error | undefined;
-            try {
-              if ((<BooleanLiteral> this.lessThanFunction.applyOnTerms([ first, second ], exprEval)).typedValue) {
-                return bool(true);
-              }
-            } catch (error) {
-              // If an error occurs, store it for later.
-              lessThanError = <Error> error;
+        // Special case for numbers as dictated in the spec: https://www.w3.org/TR/sparql11-query/#OperatorMapping
+        // A case that wouldn't work with !(Y < X) is comparing NaN with NaN for example
+        // Because both NaN < NaN and NaN = NaN would return false, which is the correct output
+        // But !(Nan < NaN) would return true, which is incorrect
+        .set(
+          [ TypeAlias.SPARQL_NUMERIC, TypeAlias.SPARQL_NUMERIC ],
+          exprEval => ([ left, right ]: NumericLiteral[]) => {
+            const nonLexicalCompare = nonLexicalComparisonHandler(exprEval, left, right);
+            if (nonLexicalCompare !== undefined) {
+              return bool(nonLexicalCompare !== 1);
             }
 
-            // Then check if they are equal, and return if so.
-            if ((<BooleanLiteral> this.equalityFunction.applyOnTerms([ first, second ], exprEval))
-              .typedValue) {
-              return bool(true);
-            }
-
-            // If less than produced an error and equals was false, throw the error.
-            if (lessThanError) {
-              throw lessThanError;
-            }
-
-            // In all other cases, return false
-            return bool(false);
-          })
+            return bool(left.typedValue < right.typedValue || left.typedValue === right.typedValue);
+          },
+          false,
+        )
+        .set([ 'term', 'term' ], exprEval => ([ left, right ]) =>
+          // X <= Y -> !(X > Y) -> !(Y < X)
+          bool(!(<BooleanLiteral> this.lessThanFunction.applyOnTerms([ right, left ], exprEval)).typedValue), false)
         .collect(),
     });
   }

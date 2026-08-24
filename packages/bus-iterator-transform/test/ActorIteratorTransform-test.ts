@@ -7,11 +7,11 @@ import type {
 import { ActorIteratorTransform } from '@comunica/bus-iterator-transform';
 import { ActionContext, Bus, failTest, passTestVoid } from '@comunica/core';
 import type { MetadataBindings, MetadataQuads } from '@comunica/types';
+import { Algebra } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { types } from 'sparqlalgebrajs/lib/algebra';
 
 const DF = new DataFactory();
 
@@ -80,7 +80,7 @@ describe('ActorIteratorTransform', () => {
     it('should test false when run with operation it does not wrap', async() => {
       await expect(actor.test({
         type: 'bindings',
-        operation: types.NOP,
+        operation: Algebra.Types.NOP,
         stream: bindingsStream,
         metadata,
         context: new ActionContext(),
@@ -92,7 +92,7 @@ describe('ActorIteratorTransform', () => {
       const actorWrapsAll = new DummyTransform({ name: 'actor', bus });
       await expect(actorWrapsAll.test({
         type: 'bindings',
-        operation: types.NOP,
+        operation: Algebra.Types.NOP,
         stream: bindingsStream,
         metadata,
         context: new ActionContext(),
@@ -105,7 +105,7 @@ describe('ActorIteratorTransform', () => {
       await actor.run(
         {
           type: 'bindings',
-          operation: types.NOP,
+          operation: Algebra.Types.NOP,
           stream: bindingsStream,
           metadata,
           context: new ActionContext(),
@@ -114,7 +114,7 @@ describe('ActorIteratorTransform', () => {
       );
       expect(spy).toHaveBeenCalledWith({
         type: 'bindings',
-        operation: types.NOP,
+        operation: Algebra.Types.NOP,
         stream: bindingsStream,
         metadata,
         context: new ActionContext(),
