@@ -1496,3 +1496,107 @@ this morning, 5.14% by evening). Raising `runs` from 10 to ~40 in
 `jbr-experiment.json.template` would average four times as many mixes per invocation and
 should cut the standard error roughly in half; that is the obvious next lever and is cheap
 (~60 s per run). Attempted below.
+
+## Step 3b — BSBM A/B at `runs: 40` — a usable measurement, and a weak positive signal
+
+The `runs: 10` measurement was useless (21.4% stdev). Raising `runs` to 40 in
+`combinations/combination_0/jbr-experiment.json` (local edit only, reverted afterwards)
+quadruples the query mixes averaged per invocation. **This worked**: the noise floor fell
+from 21.4% to ~3.5%.
+
+### Two harness bugs found first — worth recording
+
+1. **The Docker daemon is reaped repeatedly in this container.** It died overnight, died
+   again mid-session, and had died *again* before the first run of this experiment
+   (`Error: connect ECONNREFUSED /var/run/docker.sock`). Its log ends cleanly each time —
+   no crash, no OOM, 14.8 GB free — so something external reaps it, even under `setsid`.
+   The A/B script now checks `docker info` before every run and restarts the daemon if needed.
+
+2. **My own script silently fabricated data.** It did `cp output/bsbm.xml` unconditionally,
+   so when a run failed it copied the *previous* run's XML. The first `runs: 40` attempt
+   reported `RUN FAILED branch r1` and then a totalruntime of `13.146` — identical to
+   master r1 and to the prior experiment's last value. Had the duplicate number not been
+   noticed, five rounds of stale data would have gone into this file as a real result.
+   Fixed by `rm -f` on the output before each run and reporting `FAIL` when it is absent.
+
+   **Rule: never `cp` a benchmark artifact without deleting it first.**
+
+### Results, 5 interleaved rounds at `runs: 40`
+
+| round | master | branch | delta |
+|---|---|---|---|
+| 1 | 50.447 | 51.156 | +1.41% |
+| 2 | 54.588 | 52.053 | -4.64% |
+| 3 | 53.687 | 49.884 | -7.08% |
+| 4 | **76.328** | 52.923 | -30.66% |
+| 5 | 51.805 | 50.728 | -2.08% |
+
+Master round 4 (76.3 s vs a ~52 s mode) is container interference of the same kind seen
+throughout the session; it is excluded from the statistics below and its exclusion is
+stated wherever it matters.
+
+```
+master (all 5)          stdev 10.72 s = 18.7%
+master (excl. round 4)  stdev  1.86 s =  3.5%     <- usable
+branch (all 5)          stdev  1.18 s =  2.3%
+```
+
+| statistic | master | branch | delta |
+|---|---|---|---|
+| mean, all rounds | 57.371 | 51.349 | -10.50% *(inflated by the outlier — do not quote)* |
+| median, all rounds | 53.687 | 51.156 | -4.71% |
+| **median, outlier excluded** | **52.746** | **51.156** | **-3.01%** |
+
+Resolvable effect: master SE (n=4) = 1.77%, so roughly **+/-3.5%**.
+
+### Is the -3% real? Not at the 0.05 level, but the direction is consistent
+
+Welch t-test on totalruntime, master outlier excluded:
+```
+master 52.63 +/- 1.86 (n=4)    branch 51.35 +/- 1.18 (n=5)
+diff 1.28 s = 2.44%   SE 1.07   t = 1.20   -> NOT significant
+```
+
+But the per-query picture is more consistent than the aggregate test suggests
+(median aqet, seconds; O = ORDER BY, P = OPTIONAL, D = DISTINCT):
+
+| Q | feat | master | branch | delta | m_stdev | verdict |
+|---|---|---|---|---|---|---|
+| 1 | O-D | 0.0066 | 0.0066 | -1.0% | 3.8% | noise |
+| 2 | -P- | 0.0277 | 0.0273 | -1.4% | 4.6% | noise |
+| 3 | OP- | 0.0104 | 0.0103 | -1.0% | 3.2% | noise |
+| 4 | O-D | 0.0112 | 0.0109 | -2.5% | 4.4% | noise |
+| 5 | O-D | 0.3084 | 0.2964 | -3.9% | 3.8% | noise |
+| 7 | -P- | 0.0582 | 0.0568 | -2.4% | 3.3% | noise |
+| 8 | OP- | 0.0444 | 0.0439 | -1.3% | 3.0% | noise |
+| 9 | --- | 0.0235 | 0.0234 | -0.1% | 4.8% | noise |
+| **10** | **OP-** | **0.0391** | **0.0373** | **-4.5%** | 1.9% | **faster** |
+| 11 | --- | 0.0031 | 0.0031 | +0.1% | 3.8% | noise |
+| 12 | --- | 0.0083 | 0.0087 | +3.9% | 14.1% | noise |
+
+**9 of 11 queries are faster on the branch.** Under a null of pure noise that has
+two-sided p ~= 0.065 by sign test — suggestive, short of conclusive. Only Q10 clears
+2x its own stdev individually.
+
+And the split by feature is in the predicted direction:
+
+| subset | master | branch | delta |
+|---|---|---|---|
+| **ORDER BY queries** (1,3,4,5,8,10) | 0.4201 | 0.4053 | **-3.52%** |
+| non-ORDER BY control (2,7,9,11,12) | 0.1207 | 0.1193 | **-1.22%** |
+
+The ORDER BY subset improves ~3x as much as the control, which is what one would expect
+if `b5c2d69` (SortIterator O(n log n)) is contributing.
+
+**Caveat that weakens this considerably:** the ORDER BY subset is 73% Q5 by time
+(0.3084 of 0.4201), so "ORDER BY -3.52%" is largely "Q5 -3.9%". Q5 also carries heavy
+arithmetic FILTER expressions, which is exactly the territory of `25223ed`
+(InternalEvaluator) and `f36df92` (TermTransformer). **The improvement cannot be
+attributed to `SortIterator` on this evidence** — the feature split is suggestive, not
+diagnostic.
+
+**Correctness: 0 mismatches** on `avgresults` and `timeoutcount` for all 11 executed
+queries across all 5 rounds. (Q6 is excluded by BSBM itself, `executecount` 0.)
+
+5 further interleaved rounds are running to double n and determine whether the -3%
+survives; at n=10 the SE should fall to ~1.2%, making a genuine 3% effect resolvable.
