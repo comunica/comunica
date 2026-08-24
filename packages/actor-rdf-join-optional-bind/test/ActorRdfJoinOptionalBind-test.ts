@@ -371,7 +371,7 @@ IQueryOperationResultBindings
             entries: [
               {
                 output: <any> {},
-                operation: <any> { type: Algebra.Types.GROUP },
+                operation: FACTORY.createGroup(FACTORY.createNop(), [], []),
               },
               {
                 output: <any> {},
