@@ -198,10 +198,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       [Algebra.Types.GROUP]: skipHandler,
       [Algebra.Types.LEFT_JOIN]: {
         preVisitor: (op: Algebra.LeftJoin) => {
-          // Default behaviour: skip
+          // Default: valid
           if (!boundVariables) {
-            valid = false;
-            return { shortcut: true };
+            return {};
           }
 
           const leftOp = op.input[0];
@@ -220,10 +219,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       },
       [Algebra.Types.MINUS]: {
         preVisitor: (op: Algebra.Minus) => {
-          // Default behaviour: skip
+          // Default: valid
           if (!boundVariables) {
-            valid = false;
-            return { shortcut: true };
+            return {};
           }
 
           const rightOp = op.input[1];
@@ -271,9 +269,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     remainingRequestItemTimes.splice(0, 1);
 
     // Reject binding on some operation types
-    const boundVariables = inScopeVariables(entriesSorted[0].operation);
     if (remainingEntries
-      .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation, boundVariables))) {
+      .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation))) {
       return failTest(`Actor ${this.name} can not bind on Extend, Group, or conflicting LeftJoin/Minus operations`);
     }
 
