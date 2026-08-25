@@ -95,7 +95,7 @@ export class TermFunctionEquality extends TermFunctionBase {
             if (!val && (left.termType === 'Literal') && (right.termType === 'Literal')) {
               this.fullTermComparisonCheck(exprEval, _left, _right);
               this.nonLexicalCheck(exprEval, _left, _right);
-              return bool(left.datatype === right.datatype);
+              return bool(false);
             }
             return bool(val);
           },
