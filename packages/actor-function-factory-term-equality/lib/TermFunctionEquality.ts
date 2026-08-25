@@ -93,7 +93,11 @@ export class TermFunctionEquality extends TermFunctionBase {
             const right = _right.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory));
             const val = left.equals(right);
             if (!val && (left.termType === 'Literal') && (right.termType === 'Literal')) {
-              this.fullTermComparisonCheck(exprEval, _left, _right);
+              if (!exprEval.context.get(KeysExpressionEvaluator.fullTermComparison)) {
+                // Throw for two lexical but incompatible term types
+                // e.g. `1` and `"string"` or `"a"^^ex:unknown` and `"b"^^ex:unknown`
+                throw new RDFEqualTypeError([ _left, _right ]);
+              }
               // Throw if any are nonLexical, unless when it is allowed.
               this.nonLexicalCheck(exprEval, _left, _right);
               return bool(false);
@@ -159,12 +163,6 @@ export class TermFunctionEquality extends TermFunctionBase {
       throw new InvalidLexicalForm(
         nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
       );
-    }
-  }
-
-  private fullTermComparisonCheck(exprEval: IInternalEvaluator, a: TermExpression, b: TermExpression): void {
-    if (!exprEval.context.get(KeysExpressionEvaluator.fullTermComparison)) {
-      throw new RDFEqualTypeError([ a, b ]);
     }
   }
 }
