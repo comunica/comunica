@@ -411,6 +411,183 @@ IQueryOperationResultBindings
           requestTime: 0.396,
         });
       });
+
+      it('should allow binding on a right stream with safe LEFT_JOIN', async() => {
+        const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+        const rightPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p2'), DF.variable('b'));
+        const leftJoinOp = FACTORY.createLeftJoin(leftPattern, rightPattern);
+
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('p0'), DF.namedNode('o0')),
+              },
+              {
+                output: <any>{},
+                operation: leftJoinOp,
+              },
+            ],
+            context,
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 300 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+              },
+            ],
+          },
+        )).resolves.toPassTest({
+          iterations: 48.00000000000001,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 9.8,
+        });
+      });
+
+      it('should reject on a right stream with conflicting LEFT_JOIN', async() => {
+        // 'b' is bound by left stream, but 'b' appears exclusively on the right side of LEFT_JOIN
+        const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+        const rightPattern = FACTORY.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.namedNode('o2'));
+        const leftJoinOp = FACTORY.createLeftJoin(leftPattern, rightPattern);
+
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createPattern(DF.variable('b'), DF.namedNode('p0'), DF.namedNode('o0')),
+              },
+              {
+                output: <any>{},
+                operation: leftJoinOp,
+              },
+            ],
+            context,
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [{ variable: DF.variable('b'), canBeUndef: false }],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 300 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [{ variable: DF.variable('b'), canBeUndef: false }],
+              },
+            ],
+          },
+        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
+      });
+
+      it('should allow binding on a right stream with safe MINUS', async() => {
+        // 'a' is bound, but right side of MINUS only has 'x'
+        const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+        const rightPattern = FACTORY.createPattern(DF.variable('x'), DF.namedNode('p2'), DF.namedNode('o2'));
+        const minusOp = FACTORY.createMinus(leftPattern, rightPattern);
+
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('p0'), DF.namedNode('o0')),
+              },
+              {
+                output: <any>{},
+                operation: minusOp,
+              },
+            ],
+            context,
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 300 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+              },
+            ],
+          },
+        )).resolves.toPassTest({
+          iterations: 48.00000000000001,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 9.8,
+        });
+      });
+
+      it('should reject on a right stream with conflicting MINUS', async() => {
+        // 'a' is bound and also exists in right side of MINUS
+        const leftPattern = FACTORY.createPattern(DF.variable('x'), DF.namedNode('p'), DF.namedNode('o'));
+        const rightPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p2'), DF.namedNode('o2'));
+        const minusOp = FACTORY.createMinus(leftPattern, rightPattern);
+
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('p0'), DF.namedNode('o0')),
+              },
+              {
+                output: <any>{},
+                operation: minusOp,
+              },
+            ],
+            context,
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 300 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+              },
+            ],
+          },
+        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
+      });
     });
 
     describe('run', () => {
