@@ -27,7 +27,7 @@ coverage
 playwright-report
 test-results
 documentation
-earl.ttl
+earl*.ttl
 componentsjs-error-state.json
 engines/*/components
 packages/*/components
