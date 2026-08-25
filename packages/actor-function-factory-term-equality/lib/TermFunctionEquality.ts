@@ -100,7 +100,6 @@ export class TermFunctionEquality extends TermFunctionBase {
               }
               // Throw if any are nonLexical, unless when it is allowed.
               this.nonLexicalCheck(exprEval, _left, _right);
-              return bool(false);
             }
             return bool(val);
           },
