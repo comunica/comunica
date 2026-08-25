@@ -1991,6 +1991,42 @@ WHERE { }
       });
     });
 
+    describe('MINUS combined with a bind join', () => {
+      const store = new Store([
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p0'), DF.namedNode('ex:o0')),
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o1')),
+        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o1')),
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+        DF.quad(DF.namedNode('ex:x1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+      ]);
+
+      it('does not leak bindings excluded by MINUS when the shared variable is bound externally', async() => {
+        const bindingsStream = await engine.queryBindings(`
+          SELECT * WHERE {
+            ?a <ex:p0> <ex:o0> .
+            { ?a <ex:p> ?o } MINUS { ?a <ex:p2> ?o2 }
+          }
+        `, { sources: [ store ]});
+        const bindings = await bindingsStream.toArray();
+
+        expect(bindings).toHaveLength(0);
+      });
+
+      it('still returns bindings when MINUS shares no variable with the bound side', async() => {
+        const bindingsStream = await engine.queryBindings(`
+          SELECT * WHERE {
+            ?a <ex:p0> <ex:o0> .
+            { ?a <ex:p> ?o } MINUS { ?x <ex:p2> ?o2 }
+          }
+        `, { sources: [ store ]});
+        const bindings = await bindingsStream.toArray();
+
+        expect(bindings).toHaveLength(1);
+        expect(bindings[0].get('a')).toEqualRdfTerm(DF.namedNode('ex:s1'));
+        expect(bindings[0].get('o')).toEqualRdfTerm(DF.namedNode('ex:o1'));
+      });
+    });
+
     describe('count distinct with UNION and partially unbound variables', () => {
       it('should correctly count distinct values when a variable is only bound in one UNION branch', async() => {
         // Regression test: COUNT(DISTINCT ?x) should ignore bindings where ?x is unbound

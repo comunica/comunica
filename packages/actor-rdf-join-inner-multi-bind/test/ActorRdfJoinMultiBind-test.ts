@@ -105,6 +105,70 @@ IQueryOperationResultBindings
       return (await actor.test(action)).getSideData();
     }
 
+    describe('static helper methods', () => {
+      describe('canBindWithOperation', () => {
+        describe('default without boundVariables', () => {
+          it('should return true even with conflicting variables with LEFT_JOIN', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.namedNode('o2'));
+            const leftJoinOp = FACTORY.createLeftJoin(leftPattern, rightPattern);
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(leftJoinOp)).toBe(true);
+          });
+
+          it('should return true even with conflicting variables with MINUS', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('x'), DF.namedNode('p2'), DF.namedNode('o2'));
+            const minusOp = FACTORY.createMinus(leftPattern, rightPattern);
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(minusOp)).toBe(true);
+          });
+        });
+
+        describe('with boundVariables', () => {
+          it('should allow binding on a right stream with safe LEFT_JOIN', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p2'), DF.variable('b'));
+            const leftJoinOp = FACTORY.createLeftJoin(leftPattern, rightPattern);
+
+            const boundVariables = [ DF.variable('a') ];
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(leftJoinOp, boundVariables)).toBe(true);
+          });
+
+          it('should reject on a right stream with conflicting LEFT_JOIN', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.namedNode('o2'));
+            const leftJoinOp = FACTORY.createLeftJoin(leftPattern, rightPattern);
+
+            const boundVariables = [ DF.variable('b') ];
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(leftJoinOp, boundVariables)).toBe(false);
+          });
+
+          it('should allow binding on a right stream with safe MINUS', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('x'), DF.namedNode('p2'), DF.namedNode('o2'));
+            const minusOp = FACTORY.createMinus(leftPattern, rightPattern);
+
+            const boundVariables = [ DF.variable('a') ];
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(minusOp, boundVariables)).toBe(true);
+          });
+
+          it('should reject on a right stream with conflicting MINUS', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('x'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p2'), DF.namedNode('o2'));
+            const minusOp = FACTORY.createMinus(leftPattern, rightPattern);
+
+            const boundVariables = [ DF.variable('a') ];
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(minusOp, boundVariables)).toBe(false);
+          });
+        });
+      });
+    });
+
     describe('getJoinCoefficients', () => {
       it('should handle three entries', async() => {
         await expect(actor.getJoinCoefficients(
@@ -384,7 +448,7 @@ IQueryOperationResultBindings
               },
               {
                 output: <any> {},
-                operation: <any> { type: Algebra.Types.GROUP },
+                operation: FACTORY.createGroup(FACTORY.createNop(), [], []),
               },
             ],
             context: new ActionContext(),
