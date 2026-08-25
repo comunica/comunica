@@ -275,7 +275,7 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
+        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
       });
 
       it('should reject on a right stream of type group', async() => {
@@ -318,7 +318,7 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
+        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
       });
 
       it('should reject on a right stream containing extend wrapped in a project', async() => {
@@ -361,7 +361,7 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
+        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
       });
 
       it('should not reject on a left stream of type group', async() => {
