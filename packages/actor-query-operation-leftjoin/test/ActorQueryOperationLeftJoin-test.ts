@@ -180,6 +180,10 @@ describe('ActorQueryOperationLeftJoin', () => {
       const expression = AF.createTermExpression(DF.literal(''));
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
       const output = getSafeBindings(await actor.run(op, undefined));
+
+      const expectedFilterOperation: any = AF.createFilter(<any>{}, <any>expression);
+      expectedFilterOperation.isHoistedLeftJoinFilter = true;
+
       expect(mediatorJoin.mediate).toHaveBeenCalledWith({
         context: expect.anything(),
         type: 'optional',
@@ -190,7 +194,7 @@ describe('ActorQueryOperationLeftJoin', () => {
           },
           {
             output: expect.anything(),
-            operation: AF.createFilter(<any>{}, <any>expression),
+            operation: expectedFilterOperation,
             operationRequired: true,
           },
         ],

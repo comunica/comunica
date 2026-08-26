@@ -588,6 +588,90 @@ IQueryOperationResultBindings
           },
         )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
       });
+
+      it('should allow binding on a right stream with safe FILTER', async() => {
+        const filterOp: any = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
+        (<Algebra.Filter & { isHoistedLeftJoinFilter?: true }> filterOp).isHoistedLeftJoinFilter = true;
+
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('p0'), DF.namedNode('o0')),
+              },
+              {
+                output: <any>{},
+                operation: filterOp,
+              },
+            ],
+            context,
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 300 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+              },
+            ],
+          },
+        )).resolves.toPassTest({
+          iterations: 48.00000000000001,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 9.8,
+        });
+      });
+
+      it('should reject on a right stream with conflicting FILTER', async() => {
+        const filterOp: any = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
+
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('p0'), DF.namedNode('o0')),
+              },
+              {
+                output: <any>{},
+                operation: filterOp,
+              },
+            ],
+            context,
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 300 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+              },
+            ],
+          },
+        )).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
+      });
     });
 
     describe('run', () => {

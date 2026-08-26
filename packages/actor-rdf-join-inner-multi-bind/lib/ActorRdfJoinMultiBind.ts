@@ -239,10 +239,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       },
       [Algebra.Types.FILTER]: {
         preVisitor: (op: Algebra.Filter) => {
-          if (!boundVariables) {
-            return {};
-          }
-
           // Conflict when FILTER is not a direct child of LEFT_JOIN
           const conflict = !(<Algebra.Filter & { isHoistedLeftJoinFilter?: true }> op).isHoistedLeftJoinFilter;
           if (conflict) {

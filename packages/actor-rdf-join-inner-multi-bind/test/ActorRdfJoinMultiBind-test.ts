@@ -123,6 +123,19 @@ IQueryOperationResultBindings
 
             expect(ActorRdfJoinMultiBind.canBindWithOperation(minusOp)).toBe(true);
           });
+
+          it('should allow binding on a right stream with safe FILTER', () => {
+            const filter: any = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
+            (<Algebra.Filter & { isHoistedLeftJoinFilter?: true }> filter).isHoistedLeftJoinFilter = true;
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter)).toBe(true);
+          });
+
+          it('should allow binding on a right stream with conflicting FILTER', () => {
+            const filter: any = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter)).toBe(false);
+          });
         });
 
         describe('with boundVariables', () => {
