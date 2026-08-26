@@ -458,15 +458,6 @@ addInvalidHandling = true,
         double(evalHelper(expressionEvaluator)(left, right)), addInvalidHandling);
   }
 
-  public numberTest(
-    test: (expressionEvaluator: IInternalEvaluator) => (left: number, right: number) => boolean,
-  ): Builder {
-    return this.numeric(expressionEvaluator => ([ left, right ]: E.NumericLiteral[]) => {
-      const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
-      return bool(result);
-    });
-  }
-
   public stringTest(
     test: (expressionEvaluator: IInternalEvaluator) => (left: string, right: string) => boolean,
 addInvalidHandling = true,
@@ -480,38 +471,6 @@ addInvalidHandling = true,
         },
         addInvalidHandling,
       );
-  }
-
-  public booleanTest(
-    test: (expressionEvaluator: IInternalEvaluator) => (left: boolean, right: boolean) => boolean,
-addInvalidHandling = true,
-  ): Builder {
-    return this
-      .set(
-        [ C.TypeURL.XSD_BOOLEAN, C.TypeURL.XSD_BOOLEAN ],
-        expressionEvaluator => ([ left, right ]: E.BooleanLiteral[]) => {
-          const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
-          return bool(result);
-        },
-        addInvalidHandling,
-      );
-  }
-
-  public dateTimeTest(test: (expressionEvaluator: IInternalEvaluator)
-  => (left: IDateTimeRepresentation, right: IDateTimeRepresentation) => boolean, addInvalidHandling = true): Builder {
-    return this
-      .set(
-        [ C.TypeURL.XSD_DATE_TIME, C.TypeURL.XSD_DATE_TIME ],
-        expressionEvaluator => ([ left, right ]: E.DateTimeLiteral[]) => {
-          const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
-          return bool(result);
-        },
-        addInvalidHandling,
-      );
-  }
-
-  public numeric<T extends TermExpression>(op: ImplementationFunctionTuple<[T, T]>): Builder {
-    return this.set([ C.TypeAlias.SPARQL_NUMERIC, C.TypeAlias.SPARQL_NUMERIC ], op);
   }
 }
 

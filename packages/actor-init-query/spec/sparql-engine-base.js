@@ -39,6 +39,8 @@ module.exports = function(engine) {
         httpRetryCount: 3,
         httpRetryDelayFallback: 10,
         httpRetryDelayLimit: 100,
+        nonLexicalComparison: options.nonLexicalComparison,
+        fullTermComparison: options.fullTermComparison,
       });
       if (result.resultType === 'boolean') {
         return new RdfTestSuite.QueryResultBoolean(await result.execute());

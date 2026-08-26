@@ -1,5 +1,7 @@
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { ActorFunctionFactoryTermTriple } from '@comunica/actor-function-factory-term-triple';
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
 import type { FuncTestTableConfig } from '@comunica/utils-jest';
 import {
   runFuncTestTable,
@@ -25,6 +27,28 @@ const config: FuncTestTableConfig<object> = {
   operation: '!=',
   aliases: merge(numeric, str, dateTime, bool),
   notation: Notation.Infix,
+};
+
+const nonLexicalEvalContext: FuncTestTableConfig<object> = {
+  ...config,
+  config: new ActionContext({
+    [KeysExpressionEvaluator.nonLexicalComparison.name]: true,
+  }),
+};
+
+const fullTermEvalContext: FuncTestTableConfig<object> = {
+  ...config,
+  config: new ActionContext({
+    [KeysExpressionEvaluator.fullTermComparison.name]: true,
+  }),
+};
+
+const nonLexicalAndfullTermEvalContext: FuncTestTableConfig<object> = {
+  ...config,
+  config: new ActionContext({
+    [KeysExpressionEvaluator.nonLexicalComparison.name]: true,
+    [KeysExpressionEvaluator.fullTermComparison.name]: true,
+  }),
 };
 
 describe('evaluation of \'!=\'', () => {
@@ -149,6 +173,126 @@ describe('evaluation of \'!=\'', () => {
         '${durationTyped('PT1H')}' '${durationTyped('PT3600S')}' = false
         '${durationTyped('-P1Y')}' '${durationTyped('P1Y')}' = true
         '${durationTyped('-P0Y')}' '${durationTyped('PT0S')}' = false
+      `,
+    });
+  });
+
+  describe('with literals of unknown types like', () => {
+    runFuncTestTable({
+      ...config,
+      testTable: `
+        "2"^^example:string "2"^^example:string = false
+      `,
+      errorTable: `
+        "2"^^example:int "0"^^example:int = 'Equality test for literals with unsupported datatypes'
+        "abc"^^example:string "def"^^example:string = 'Equality test for literals with unsupported datatypes'
+        "2"^^example:int "abc"^^example:string = 'Equality test for literals with unsupported datatypes'
+        "2"^^example:int "2"^^example:string = 'Equality test for literals with unsupported datatypes'
+        "2"^^example:string "2"^^example:int = 'Equality test for literals with unsupported datatypes'
+        "a"^^example:unknown "b"^^example:unknown = 'Equality test for literals with unsupported datatypes'
+        
+        "01"^^example:int "2"^^example:int = 'Equality test for literals with unsupported datatypes'
+        "100"^^example:int "25"^^example:int = 'Equality test for literals with unsupported datatypes'
+      `,
+    });
+  });
+
+  describe('with literals of unknown types and fullTermComparison like', () => {
+    runFuncTestTable({
+      ...fullTermEvalContext,
+      testTable: `
+        "2"^^example:int "0"^^example:int = true
+        "abc"^^example:string "def"^^example:string = true
+        "2"^^example:int "abc"^^example:string = true
+        "2"^^example:int "2"^^example:string = true
+        "2"^^example:string "2"^^example:int = true
+        "2"^^example:string "2"^^example:string = false
+        "a"^^example:unknown "b"^^example:unknown = true
+        
+        "01"^^example:int "2"^^example:int = true
+        "100"^^example:int "25"^^example:int = true
+      `,
+    });
+  });
+
+  describe('with non lexical operands like', () => {
+    runFuncTestTable({
+      ...config,
+      errorTable: `
+        "a"^^xsd:dateTime    "b"^^xsd:dateTime   = 'Invalid lexical form'
+        "a"^^xsd:dateTime    "a"^^xsd:dateTime   = 'Invalid lexical form'
+        "a"^^xsd:boolean     "b"^^xsd:boolean    = 'Invalid lexical form'
+        "a"^^xsd:boolean     "a"^^xsd:dateTime   = 'Equality test for literals with unsupported datatypes'
+        "true"^^xsd:boolean  "a"^^xsd:boolean    = 'Invalid lexical form'
+        earlyN               "a"^^xsd:dateTime   = 'Invalid lexical form'
+        "true"^^xsd:boolean  "a"^^xsd:dateTime   = 'Equality test for literals with unsupported datatypes'
+        
+        "a"^^xsd:integer           "b"^^xsd:decimal           = 'Invalid lexical form'
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = 'Invalid lexical form'
+        "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = 'Invalid lexical form'
+        "a"^^xsd:time              "b"^^xsd:time              = 'Invalid lexical form'
+      `,
+    });
+  });
+
+  describe('with non lexical operands and nonLiteralComparison like', () => {
+    runFuncTestTable({
+      ...nonLexicalEvalContext,
+      testTable: `
+        "a"^^xsd:dateTime    "b"^^xsd:dateTime   = true
+        "a"^^xsd:dateTime    "a"^^xsd:dateTime   = false
+        "a"^^xsd:boolean     "b"^^xsd:boolean    = true
+        "true"^^xsd:boolean  "a"^^xsd:boolean    = true
+        earlyN               "a"^^xsd:dateTime   = true
+        
+        "a"^^xsd:integer           "b"^^xsd:decimal           = true
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = true
+        "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = true
+        "a"^^xsd:time              "b"^^xsd:time              = true
+      `,
+      errorTable: `
+        "a"^^xsd:boolean     "a"^^xsd:dateTime   = 'Equality test for literals with unsupported datatypes'
+        "true"^^xsd:boolean  "a"^^xsd:dateTime   = 'Equality test for literals with unsupported datatypes'
+      `,
+    });
+  });
+
+  describe('with non lexical operands and fullTermComparison like', () => {
+    runFuncTestTable({
+      ...fullTermEvalContext,
+      errorTable: `
+        "a"^^xsd:dateTime    "b"^^xsd:dateTime   = 'Invalid lexical form'
+        "a"^^xsd:dateTime    "a"^^xsd:dateTime   = 'Invalid lexical form'
+        "a"^^xsd:boolean     "b"^^xsd:boolean    = 'Invalid lexical form'
+        "a"^^xsd:boolean     "a"^^xsd:dateTime   = 'Invalid lexical form'
+        "true"^^xsd:boolean  "a"^^xsd:boolean    = 'Invalid lexical form'
+        earlyN               "a"^^xsd:dateTime   = 'Invalid lexical form'
+        "true"^^xsd:boolean  "a"^^xsd:dateTime   = 'Invalid lexical form'
+        
+        "a"^^xsd:integer           "b"^^xsd:decimal           = 'Invalid lexical form'
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = 'Invalid lexical form'
+        "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = 'Invalid lexical form'
+        "a"^^xsd:time              "b"^^xsd:time              = 'Invalid lexical form'
+      `,
+    });
+  });
+
+  describe('with non lexical operands and both comparison options like', () => {
+    runFuncTestTable({
+      ...nonLexicalAndfullTermEvalContext,
+      testTable: `
+        "a"^^xsd:dateTime    "b"^^xsd:dateTime   = true
+        "a"^^xsd:dateTime    "a"^^xsd:dateTime   = false
+        "a"^^xsd:boolean     "b"^^xsd:boolean    = true
+        "a"^^xsd:boolean     "a"^^xsd:dateTime   = true
+        "true"^^xsd:boolean  "a"^^xsd:boolean    = true
+        earlyN               "a"^^xsd:dateTime   = true
+        "true"^^xsd:boolean  "a"^^xsd:dateTime   = true
+        
+        "a"^^xsd:integer           "b"^^xsd:decimal           = true
+        "a"^^xsd:yearMonthDuration "b"^^xsd:yearMonthDuration = true
+        "a"^^xsd:dayTimeDuration   "b"^^xsd:dayTimeDuration   = true
+        "a"^^xsd:time              "b"^^xsd:time              = true
       `,
     });
   });
