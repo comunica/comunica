@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-nodejs-modules
+import * as util from 'node:util';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type {
@@ -200,7 +202,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         preVisitor: (op: Algebra.LeftJoin) => {
           // Default: valid
           if (!boundVariables) {
-            return {};
+            return { shortcut: false };
           }
 
           const leftOp = op.input[0];
@@ -221,13 +223,28 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         preVisitor: (op: Algebra.Minus) => {
           // Default: valid
           if (!boundVariables) {
-            return {};
+            return { shortcut: false };
           }
 
           const rightOp = op.input[1];
           const rightVars = inScopeVariables(rightOp).map(v => v.value);
 
           const conflict = rightVars.some(v => boundVarNames.includes(v));
+          if (conflict) {
+            valid = false;
+            return { shortcut: true };
+          }
+          return { shortcut: false };
+        },
+      },
+      [Algebra.Types.FILTER]: {
+        preVisitor: (op: Algebra.Filter) => {
+          if (!boundVariables) {
+            return {};
+          }
+
+          // Conflict when FILTER is not a direct child of LEFT_JOIN
+          const conflict = !(<Algebra.Filter & { isHoistedLeftJoinFilter?: true }> op).isHoistedLeftJoinFilter;
           if (conflict) {
             valid = false;
             return { shortcut: true };

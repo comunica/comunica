@@ -37,9 +37,11 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         // we attach the expression to the right-hand operation,
         // and enforce a bind-join.
         if (operationOriginal.expression && index === 1) {
+          const filterOperation = algebraFactory.createFilter(subOperation, operationOriginal.expression);
+          (<Algebra.Filter & { isHoistedLeftJoinFilter?: true }> filterOperation).isHoistedLeftJoinFilter = true;
           return {
             output,
-            operation: algebraFactory.createFilter(subOperation, operationOriginal.expression),
+            operation: filterOperation,
             operationRequired: true,
           };
         }
