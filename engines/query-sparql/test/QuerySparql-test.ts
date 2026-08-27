@@ -2923,6 +2923,62 @@ CONSTRUCT {
           .toBe(0);
       });
 
+      // https://github.com/comunica/comunica/issues/985
+      it('with insert where on a single source wrapped in a source object', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.blankNode('b1')),
+          DF.quad(DF.blankNode('b1'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+        ]);
+        expect(store.size).toBe(2);
+
+        // Execute query
+        const result = <RDF.QueryVoid> await engine.query(`INSERT {
+          ?s <ex:a> <ex:thing> .
+        } WHERE { ?s <ex:p> <ex:o> }`, {
+          sources: [{ type: 'rdfjs', value: store }],
+        });
+        await result.execute();
+
+        // Check store contents: the destination is wrapped in a source object,
+        // but must still be matched with its source id for deskolemization.
+        expect(store.size).toBe(3);
+        expect(store
+          .countQuads(DF.blankNode('b1'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()))
+          .toBe(1);
+        expect(store.countQuads(DF.blankNode('bc_0_b1'), null, null, null)).toBe(0);
+      });
+
+      // https://github.com/comunica/comunica/issues/985
+      it('with direct insert of a skolemized term obtained from an earlier query', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.blankNode('b1')),
+        ]);
+        const context: QueryStringContext = { sources: [{ type: 'rdfjs', value: store }]};
+
+        // Obtain the skolemized IRI of the blank node via a first query
+        const bindings = await (await engine.queryBindings('SELECT ?o WHERE { <ex:s> <ex:p> ?o }', context))
+          .toArray();
+        const skolemized = (<BlankNodeScoped> bindings[0].get('o')!).skolemized;
+        expect(skolemized.value).toBe('urn:comunica_skolem:source_0:b1');
+
+        // Use that IRI in a separate update query
+        const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
+          <${skolemized.value}> <ex:a> <ex:thing> .
+        }`, context);
+        await result.execute();
+
+        // Check store contents: the skolemized IRI must be resolved back to the original blank node
+        expect(store.size).toBe(2);
+        expect(store
+          .countQuads(DF.blankNode('b1'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()))
+          .toBe(1);
+        expect(store.countQuads(DF.namedNode(skolemized.value), null, null, null)).toBe(0);
+      });
+
       it('with variable delete', async() => {
         // Prepare store
         const store = new Store();
