@@ -2832,7 +2832,7 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@traqula/algebra-sparql-1-1@^1.1.7", "@traqula/algebra-sparql-1-1@^1.2.1":
+"@traqula/algebra-sparql-1-1@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@traqula/algebra-sparql-1-1/-/algebra-sparql-1-1-1.2.1.tgz#7b1696d346024aa6b608cdb0067fb4e6120fed3e"
   integrity sha512-i65jF9i51vfKgQjAcg5myBSHDLoB0HCYU58tW2ydhJC3RiUwHzh/PKB1RWQxz78nYXxTjy21+2icoDy5BBqBcg==
@@ -2851,7 +2851,7 @@
     "@traqula/algebra-transformations-1-2" "^1.2.1"
     "@traqula/core" "^1.2.0"
 
-"@traqula/algebra-transformations-1-1@^1.1.7", "@traqula/algebra-transformations-1-1@^1.2.1":
+"@traqula/algebra-transformations-1-1@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@traqula/algebra-transformations-1-1/-/algebra-transformations-1-1-1.2.1.tgz#4bfe8382696445cd201a85c3d5299d82e3833ed9"
   integrity sha512-tqsokMOsbjpL7gvLUHuP/iGkoiWRayPD/ogSzlaUBKI97uHCRvMTXGLYfy48UdtHHuo2KV5XRCK2lbbaLfrxVA==
@@ -2863,7 +2863,7 @@
     rdf-isomorphic "^2.0.0"
     rdf-string "^2.0.0"
 
-"@traqula/algebra-transformations-1-2@^1.0.0", "@traqula/algebra-transformations-1-2@^1.1.7", "@traqula/algebra-transformations-1-2@^1.2.1":
+"@traqula/algebra-transformations-1-2@^1.0.0", "@traqula/algebra-transformations-1-2@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@traqula/algebra-transformations-1-2/-/algebra-transformations-1-2-1.2.1.tgz#d94d44be6d5f3560b4117582bfc1e7070bd0a762"
   integrity sha512-V5/OIjcSKs3mQxYf2/gzLtV0aV3jjw8gZccCrLvKtq8v/kJU85jD1+AMEi/rn8Ig5HzOhfMv9JQ6MiftH2HCkA==
@@ -2877,14 +2877,14 @@
   resolved "https://registry.yarnpkg.com/@traqula/chevrotain/-/chevrotain-1.1.0.tgz#1ebd234481e63091eeed3f2d5cca8de7f3990044"
   integrity sha512-VpcoQKb2ZnsOQPlPO2mE9hfR0Aidp7drwTCtaXfpdRHGkXeQ5Nv4rnxmxwUoEDRzu6b/3z4n8oTd+sYhe4fAaA==
 
-"@traqula/core@^1.1.4", "@traqula/core@^1.2.0":
+"@traqula/core@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@traqula/core/-/core-1.2.0.tgz#ec1f24817bc832da0bc95c2ef0e8090337c2edbc"
   integrity sha512-4NEYjNKD31u1DMbccRNXBnpEQsoeVrTTrJfxbDU11/5zHQdcyrXYlJ7Dq2t3hlZgStMbVJrZbZJsr6p+lZBeZA==
   dependencies:
     "@traqula/chevrotain" "^1.1.0"
 
-"@traqula/generator-sparql-1-1@^1.1.6", "@traqula/generator-sparql-1-1@^1.2.1":
+"@traqula/generator-sparql-1-1@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@traqula/generator-sparql-1-1/-/generator-sparql-1-1-1.2.1.tgz#8a058b3c29c18eed6fb613434bf12a2eeb5ea2d6"
   integrity sha512-pgmQ1gDUAtqsZlN3rhg9lQpDzOoq1QmKwn+Iy6szxK1eVfHx0MkLkOVQTPYDfo8jeYq2+uFTE0gCooBDSJznJA==
@@ -2902,7 +2902,7 @@
     "@traqula/rules-sparql-1-1" "^1.2.1"
     "@traqula/rules-sparql-1-2" "^1.2.1"
 
-"@traqula/parser-sparql-1-1@^1.1.6", "@traqula/parser-sparql-1-1@^1.2.1":
+"@traqula/parser-sparql-1-1@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@traqula/parser-sparql-1-1/-/parser-sparql-1-1-1.2.1.tgz#ae3d98f80aa1d073c3f94b5f849e458bffd5c997"
   integrity sha512-z6t9pzGpScFqBnJcGAbCdh24EnxDpZjirobpJ1Y73Q17T1/qtb6L8T9DaEysX2e7i3O6qnbbiaOdLDKKte4PuA==
@@ -2921,7 +2921,7 @@
     "@traqula/rules-sparql-1-2" "^1.2.1"
     rdf-data-factory "^2.0.1"
 
-"@traqula/rules-sparql-1-1@^1.1.4", "@traqula/rules-sparql-1-1@^1.2.1":
+"@traqula/rules-sparql-1-1@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-1/-/rules-sparql-1-1-1.2.1.tgz#aa44e9ddd2ac9c1d7494f88d09d6a434163b5daa"
   integrity sha512-rSf/Lck9taQgz5r/6Hds4uBDiL8UVbF05aT8Tv7no9NvqAbGfRA01nyzYTVU+p+JLMnbjfZWaS1ZPOSBnh00zg==
@@ -2929,7 +2929,7 @@
     "@traqula/chevrotain" "^1.1.0"
     "@traqula/core" "^1.2.0"
 
-"@traqula/rules-sparql-1-2@^1.0.0", "@traqula/rules-sparql-1-2@^1.1.6", "@traqula/rules-sparql-1-2@^1.2.1":
+"@traqula/rules-sparql-1-2@^1.0.0", "@traqula/rules-sparql-1-2@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-2/-/rules-sparql-1-2-1.2.1.tgz#300ebdcb29b114a5a5a65b38d0e85f79f0cb35bf"
   integrity sha512-4RlakXIDca0shH1rRJyZyjHooTSJVK6kWgoX1hKj8x0NHTQaIBV0JDTnHlQh5u9TsF9uMcuKwqUoutIqkBxEIA==

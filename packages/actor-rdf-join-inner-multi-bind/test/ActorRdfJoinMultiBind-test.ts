@@ -131,10 +131,19 @@ IQueryOperationResultBindings
             expect(ActorRdfJoinMultiBind.canBindWithOperation(filter)).toBe(true);
           });
 
-          it('should allow binding on a right stream with conflicting FILTER', () => {
+          it('should reject binding on a right stream with conflicting FILTER', () => {
             const filter: any = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
 
             expect(ActorRdfJoinMultiBind.canBindWithOperation(filter)).toBe(false);
+          });
+
+          it('should not reject a FILTER nested inside a FILTER EXISTS', () => {
+            const innerFilter: any = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
+            const existsExpr = FACTORY.createExistenceExpression(false, innerFilter);
+            const outerFilter: any = FACTORY.createFilter(<any>{}, existsExpr);
+            outerFilter.isHoistedLeftJoinFilter = true;
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(outerFilter)).toBe(true);
           });
         });
 

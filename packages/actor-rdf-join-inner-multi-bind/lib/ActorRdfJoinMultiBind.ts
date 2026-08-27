@@ -246,6 +246,16 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
           return { shortcut: false };
         },
       },
+      [Algebra.Types.EXPRESSION]: {
+        preVisitor: (op: Algebra.Expression) => {
+          // Don't descend into the sub-pattern of a FILTER (NOT) EXISTS:
+          // it is evaluated as its own independent query
+          if (op.subType === Algebra.ExpressionTypes.EXISTENCE) {
+            return { continue: false };
+          }
+          return { shortcut: false };
+        },
+      },
     });
 
     return valid;
