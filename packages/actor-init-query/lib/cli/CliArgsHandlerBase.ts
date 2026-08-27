@@ -198,6 +198,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If extension functions must always be pushed down',
         },
+        fromNamesAsSources: {
+          type: 'boolean',
+          describe: 'When true, sets datasets/graphs in FROM (NAMED) clauses as sources',
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -372,6 +376,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Pushing down of extension functions
     if (args.extensionFunctionsAlwaysPushdown) {
       context[KeysInitQuery.extensionFunctionsAlwaysPushdown.name] = true;
+    }
+
+    // Define if datasets/graphs in FROM (NAMED) clauses should be set as sources
+    if (args.fromNamedAsSources) {
+      context[KeysQueryOperation.fromNamedAsSources.name] = true;
     }
   }
 }

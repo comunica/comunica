@@ -70,6 +70,7 @@ export interface IQueryContextCommon {
   dataFactory?: ComunicaDataFactory;
   distinctConstruct?: boolean;
   rdfSerializationPrefixes?: Record<string, string>;
+  fromNamedAsSources?: boolean;
 
   sources: SourceType[];
 }

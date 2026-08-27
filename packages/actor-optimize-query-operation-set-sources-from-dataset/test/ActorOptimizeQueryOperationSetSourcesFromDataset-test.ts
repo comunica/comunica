@@ -1,5 +1,5 @@
 import type { IActionOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationSetSourcesFromDataset } from '../lib/index';
@@ -17,10 +17,19 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
   });
 
   describe('test', () => {
-    it('should pass test void', async() => {
+    it('fails if fromNamedAsSources is false', async() => {
       const action: IActionOptimizeQueryOperation = {
         context: new ActionContext(),
-        operation: <any>{ type: 'bgp', patterns: []},
+        operation: <any> {},
+      };
+      await expect(actor.test(action)).resolves.toFailTest(
+        'This actor can only be used when fromNamedAsSources is enabled.',
+      );
+    });
+    it('passes if fromNamedAsSources is true', async() => {
+      const action: IActionOptimizeQueryOperation = {
+        context: new ActionContext().set(KeysQueryOperation.fromNamedAsSources, true),
+        operation: <any> {},
       };
       await expect(actor.test(action)).resolves.toPassTestVoid();
     });

@@ -4,8 +4,8 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
-import { passTestVoid, type IActorTest, type TestResult } from '@comunica/core';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { failTest, passTestVoid, type IActorTest, type TestResult } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { algebraUtils } from '@comunica/utils-algebra';
@@ -18,13 +18,14 @@ export class ActorOptimizeQueryOperationSetSourcesFromDataset extends ActorOptim
     super(args);
   }
 
-  public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+  public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+    if (!action.context.get(KeysQueryOperation.fromNamedAsSources)) {
+      return failTest('This actor can only be used when fromNamedAsSources is enabled.');
+    }
     return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    // TODO: add context option to enable/disable (or do it in test)
-
     const datasetClauses = ActorOptimizeQueryOperationSetSourcesFromDataset.extractDatasetClauses(action.operation);
 
     if (datasetClauses.defaultGraphs.length === 0 && datasetClauses.namedGraphs.length === 0) {
