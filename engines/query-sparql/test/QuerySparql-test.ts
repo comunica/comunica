@@ -2923,6 +2923,46 @@ CONSTRUCT {
           .toBe(0);
       });
 
+      // https://github.com/comunica/comunica/issues/1057
+      it('with delete insert where over blank nodes on a single source', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:field'), DF.namedNode('ex:option'), DF.blankNode('b1')),
+          DF.quad(DF.blankNode('b1'), DF.namedNode('ex:first'), DF.namedNode('ex:One')),
+          DF.quad(DF.blankNode('b1'), DF.namedNode('ex:rest'), DF.blankNode('b2')),
+          DF.quad(DF.blankNode('b2'), DF.namedNode('ex:first'), DF.namedNode('ex:Two')),
+        ]);
+        expect(store.size).toBe(4);
+
+        // Execute query
+        const result = <RDF.QueryVoid> await engine.query(`DELETE { ?s <ex:first> ?o }
+        INSERT { ?s <ex:firstNew> ?o }
+        WHERE { ?s <ex:first> ?o }`, {
+          sources: [ store ],
+        });
+        await result.execute();
+
+        // Check store contents: the skolemized blank nodes must have been deskolemized again,
+        // so that the original quads are deleted, and the new quads reuse the original labels.
+        expect(store.size).toBe(4);
+        expect(store
+          .countQuads(DF.blankNode('b1'), DF.namedNode('ex:first'), DF.namedNode('ex:One'), DF.defaultGraph()))
+          .toBe(0);
+        expect(store
+          .countQuads(DF.blankNode('b2'), DF.namedNode('ex:first'), DF.namedNode('ex:Two'), DF.defaultGraph()))
+          .toBe(0);
+        expect(store
+          .countQuads(DF.blankNode('b1'), DF.namedNode('ex:firstNew'), DF.namedNode('ex:One'), DF.defaultGraph()))
+          .toBe(1);
+        expect(store
+          .countQuads(DF.blankNode('b2'), DF.namedNode('ex:firstNew'), DF.namedNode('ex:Two'), DF.defaultGraph()))
+          .toBe(1);
+        // The skolemized labels must not leak into the destination
+        expect(store.countQuads(DF.blankNode('bc_0_b1'), null, null, null)).toBe(0);
+        expect(store.countQuads(DF.blankNode('bc_0_b2'), null, null, null)).toBe(0);
+      });
+
       it('with variable delete', async() => {
         // Prepare store
         const store = new Store();
