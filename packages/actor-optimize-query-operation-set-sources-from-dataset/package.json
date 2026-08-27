@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-optimize-query-operation-set-sources-from-dataset",
-  "version": "1.0.0",
+  "version": "5.3.0",
   "description": "A set-sources-from-dataset optimize-query-operation actor",
   "lsd:module": true,
   "license": "MIT",
