@@ -25,8 +25,6 @@ export function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuad
   if (!destination) {
     return action;
   }
-  // Source ids are keyed by the source's reference value, so the destination must be unwrapped
-  // before looking it up, as it may be wrapped in an IDataDestination object.
   const id = action.context.get<Map<any, string>>(KeysQuerySourceIdentify.sourceIds)
     ?.get(getDataDestinationValue(destination));
   if (!id) {
