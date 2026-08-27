@@ -16,7 +16,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-rewrite-move/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-construct-distinct/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-query-source-identify/^5.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-query-source-skolemize/^5.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-query-source-skolemize/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-set-sources-from-dataset/^5.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
@@ -111,6 +112,13 @@
     {
       "@id": "urn:comunica:default:optimize-query-operation/actors#construct-distinct",
       "@type": "ActorOptimizeQueryOperationConstructDistinct"
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#set-sources-from-dataset",
+      "@type": "ActorOptimizeQueryOperationSetSourcesFromDataset",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-identify" }
+      ]
     }
   ]
 }
