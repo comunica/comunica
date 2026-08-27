@@ -1,5 +1,3 @@
-// eslint-disable-next-line import/no-nodejs-modules
-import * as util from 'node:util';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type {
