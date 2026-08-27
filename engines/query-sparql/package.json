@@ -218,6 +218,7 @@
     "@comunica/actor-optimize-query-operation-rewrite-add": "^5.3.0",
     "@comunica/actor-optimize-query-operation-rewrite-copy": "^5.3.0",
     "@comunica/actor-optimize-query-operation-rewrite-move": "^5.3.0",
+    "@comunica/actor-optimize-query-operation-set-sources-from-dataset": "^5.3.0",
     "@comunica/actor-query-operation-ask": "^5.3.0",
     "@comunica/actor-query-operation-bgp-join": "^5.3.0",
     "@comunica/actor-query-operation-construct": "^5.3.0",

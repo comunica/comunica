@@ -111,6 +111,13 @@
     {
       "@id": "urn:comunica:default:optimize-query-operation/actors#construct-distinct",
       "@type": "ActorOptimizeQueryOperationConstructDistinct"
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#set-sources-from-dataset",
+      "@type": "ActorOptimizeQueryOperationSetSourcesFromDataset",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-identify" }
+      ]
     }
   ]
 }
