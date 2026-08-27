@@ -5,7 +5,8 @@ import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import { mapTermsNested, someTermsNested, uniqTerms } from 'rdf-terms';
+import { mapTermsNested, someTermsNested } from 'rdf-terms';
+import { getExpressionVariables } from './Expressions';
 
 /**
  * Materialize a term with the given binding.
@@ -167,17 +168,17 @@ export function materializeOperation(
           return filterOp;
         }
 
-        // Make a values clause for the variables from originalBindings that occur inside this filter operation.
-        // Bound variables that don't occur here don't have to be re-injected,
+        // Make a values clause for the variables from originalBindings that are used by this filter operation:
+        // the variables in scope of its input, and the variables its expression refers to.
+        // Bound variables that are not used here don't have to be re-injected,
         // since they are joined in at the operations that do refer to them,
         // and at the projection of the query.
         // Injecting them everywhere is semantically harmless,
         // but can significantly degrade the plans of (remote) query engines.
-        const values: Algebra.Operation[] = createValuesFromBindings(
-          algebraFactory,
-          originalBindings,
-          getOperationVariables(filterOp),
-        );
+        const values: Algebra.Operation[] = createValuesFromBindings(algebraFactory, originalBindings, [
+          ...algebraUtils.inScopeVariables(filterOp.input),
+          ...getExpressionVariables(filterOp.expression),
+        ]);
 
         // Recursively materialize the filter expression
         const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
@@ -341,22 +342,4 @@ function createValuesFromBindings(
   }
 
   return values;
-}
-
-/**
- * Get all variables that occur inside the given operation.
- * Contrary to {@link algebraUtils.inScopeVariables}, this also considers variables that are not in scope,
- * such as variables inside expressions and sub-queries.
- * @param operation An algebra operation.
- * @returns The variables occurring inside the given operation.
- */
-function getOperationVariables(operation: Algebra.Operation): RDF.Variable[] {
-  const variables: RDF.Variable[] = [];
-  // The operation visitors skip the terms inside operations, so we visit all objects instead.
-  algebraUtils.transformer.visitObject(operation, (value) => {
-    if ((<RDF.Term> value).termType === 'Variable') {
-      variables.push(<RDF.Variable> value);
-    }
-  });
-  return uniqTerms(variables);
 }
