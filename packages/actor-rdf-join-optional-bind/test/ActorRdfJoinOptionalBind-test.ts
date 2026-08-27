@@ -590,8 +590,8 @@ IQueryOperationResultBindings
       });
 
       it('should allow binding on a right stream with safe FILTER', async() => {
-        const filterOp: any = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
-        (<Algebra.Filter & { isHoistedLeftJoinFilter?: true }> filterOp).isHoistedLeftJoinFilter = true;
+        const filterOp: Algebra.Operation = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
+        filterOp.metadata = { isHoistedLeftJoinFilter: true };
 
         await expect(actor.getJoinCoefficients(
           {
