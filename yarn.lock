@@ -9742,7 +9742,7 @@ jsonld-context-parser@^2.2.2, jsonld-context-parser@^2.4.0:
     http-link-header "^1.0.2"
     relative-to-absolute-iri "^1.0.5"
 
-jsonld-context-parser@^3.0.0:
+jsonld-context-parser@^3.0.0, jsonld-context-parser@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/jsonld-context-parser/-/jsonld-context-parser-3.1.0.tgz#208249ab0e412c16e89788738e542b84d0d26041"
   integrity sha512-BfgNJ/t9jjK7Lun9XRCJM6YeNqDk8B6/lg+KS8rzhXAOtS0FvoClSmtLvF24V1M2CDYRy2LcEBt0ilxqSX93WA==
@@ -12754,10 +12754,10 @@ rdf-test-suite@^2.1.4:
     stream-to-string "^1.1.0"
     streamify-string "^1.0.1"
 
-rdf-test-suite@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-2.3.0.tgz#5110aeb65159ffd8d92ab7e1610416a37dcc4304"
-  integrity sha512-2TKniDx9SNJ9Urnl6Otf/k/SmoMheMfSRMESg8EugUAN12/0Ft+yVQxsHLYOL7qMJkawEAYjelWTU8+YP+H8jg==
+rdf-test-suite@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-2.4.0.tgz#249603b3f128384ab7048fa8838e62285168aee0"
+  integrity sha512-WoqNX4W/RktdpSJ6ztVQcHQ5TQKPt9O8jxF9XO4zLvc//JUm/VF8WsEHwmw84AJYPSWBDS8Q1mYIWtnuSbGs6Q==
   dependencies:
     "@types/json-stable-stringify" "^1.0.32"
     "@types/minimist" "^1.2.0"
@@ -12767,6 +12767,7 @@ rdf-test-suite@^2.3.0:
     cross-fetch "^4.0.0"
     is-stream "^2.0.0"
     json-stable-stringify "^1.0.1"
+    jsonld-context-parser "^3.1.0"
     jsonld-streaming-parser "^5.0.0"
     log-symbols "^4.0.0"
     minimist "^1.2.0"
@@ -12786,6 +12787,7 @@ rdf-test-suite@^2.3.0:
     sparqljson-parse "^3.0.0"
     sparqlxml-parse "^3.0.0"
     stream-to-string "^1.1.0"
+    streamify-array "^2.0.0"
     streamify-string "^1.0.1"
 
 rdfa-streaming-parser@^2.0.1:

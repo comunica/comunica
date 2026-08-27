@@ -23,7 +23,8 @@ TS = undefined,
   public readonly operationName: string;
 
   protected constructor(args: IActorQueryOperationArgs<TS>, operationName: string) {
-    super(args);
+    // Pass via args so the bus can index on it during subscription in Actor's constructor.
+    super(<IActorQueryOperationArgs<TS>>{ ...args, operationName });
     this.operationName = operationName;
     if (!this.operationName) {
       throw new Error('A valid "operationName" argument must be provided.');
