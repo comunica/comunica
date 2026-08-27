@@ -5,7 +5,7 @@ import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import { mapTermsNested, someTermsNested } from 'rdf-terms';
+import { getTermsNested, mapTermsNested, someTermsNested, uniqTerms } from 'rdf-terms';
 
 /**
  * Materialize a term with the given binding.
@@ -167,8 +167,17 @@ export function materializeOperation(
           return filterOp;
         }
 
-        // Make a values clause using all the variables from originalBindings.
-        const values: Algebra.Operation[] = createValuesFromBindings(algebraFactory, originalBindings);
+        // Make a values clause for the variables from originalBindings that occur inside this filter operation.
+        // Bound variables that don't occur here don't have to be re-injected,
+        // since they are joined in at the operations that do refer to them,
+        // and at the projection of the query.
+        // Injecting them everywhere is semantically harmless,
+        // but can significantly degrade the plans of (remote) query engines.
+        const values: Algebra.Operation[] = createValuesFromBindings(
+          algebraFactory,
+          originalBindings,
+          getOperationVariables(filterOp),
+        );
 
         // Recursively materialize the filter expression
         const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
@@ -188,7 +197,9 @@ export function materializeOperation(
           options,
         );
 
-        recursionResultInput = algebraFactory.createJoin([ ...values, recursionResultInput ]);
+        if (values.length > 0) {
+          recursionResultInput = algebraFactory.createJoin([ ...values, recursionResultInput ]);
+        }
 
         return algebraFactory.createFilter(recursionResultInput, recursionResultExpression);
       },
@@ -330,4 +341,53 @@ function createValuesFromBindings(
   }
 
   return values;
+}
+
+/**
+ * Get all variables that occur inside the given operation.
+ * Contrary to {@link algebraUtils.inScopeVariables}, this also considers variables that are not in scope,
+ * such as variables inside expressions and sub-queries.
+ * @param operation An algebra operation.
+ * @returns The variables occurring inside the given operation.
+ */
+function getOperationVariables(operation: Algebra.Operation): RDF.Variable[] {
+  const variables: RDF.Variable[] = [];
+  collectVariables(operation, variables);
+  return uniqTerms(variables);
+}
+
+/**
+ * Recursively collect all variables inside the given algebra value into the given array.
+ * @param value Part of an algebra operation, which can be an operation, an RDF term, an array, or any other value.
+ * @param variables The array to append the discovered variables to.
+ */
+function collectVariables(value: unknown, variables: RDF.Variable[]): void {
+  if (Array.isArray(value)) {
+    for (const entry of value) {
+      collectVariables(entry, variables);
+    }
+    return;
+  }
+  if (typeof value !== 'object' || value === null) {
+    return;
+  }
+  if ('termType' in value) {
+    const term = <RDF.Term> value;
+    if (term.termType === 'Variable') {
+      variables.push(term);
+    } else if (term.termType === 'Quad') {
+      for (const subTerm of getTermsNested(term)) {
+        if (subTerm.termType === 'Variable') {
+          variables.push(subTerm);
+        }
+      }
+    }
+    return;
+  }
+  for (const [ key, entry ] of Object.entries(value)) {
+    // Metadata can contain arbitrary (possibly cyclic) values that are not part of the query itself.
+    if (key !== 'metadata') {
+      collectVariables(entry, variables);
+    }
+  }
 }

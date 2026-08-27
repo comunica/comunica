@@ -2279,6 +2279,60 @@ WHERE { }
         await expect(bindings).toEqualBindingsStream(expectedResult);
       });
 
+      it('should consider initialBindings in filters inside non-matching sub-operations', async() => {
+        // https://github.com/comunica/comunica/issues/1759
+        const initialBindings = BF.bindings([
+          [ DF.variable('subject'), DF.namedNode('http://example.org/test#subjectEx') ],
+        ]);
+
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+                @prefix ex: <http://example.org/test#> .
+
+                ex:subjectEx
+                    ex:name "Subject" ;
+                    ex:broader ex:broaderEx ;
+                .
+                ex:broaderEx
+                    ex:officialName "Official"@en ;
+                .`,
+              mediaType: 'text/turtle',
+            },
+          ],
+          initialBindings,
+        };
+
+        // The filter inside the union branch does not refer to $subject,
+        // so no values clause for it should be injected there.
+        const bindings = (await engine.queryBindings(`
+        PREFIX ex: <http://example.org/test#>
+
+        SELECT $subject ?label WHERE {
+          $subject ex:name ?name .
+          OPTIONAL {
+            $subject ex:broader ?broader .
+            {
+              ?broader ex:officialName ?label .
+              FILTER(LANGMATCHES(LANG(?label), "en"))
+            }
+            UNION
+            {
+              ?broader ex:name ?label .
+            }
+          }
+        }`, context));
+
+        await expect(bindings).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('subject'), DF.namedNode('http://example.org/test#subjectEx') ],
+            [ DF.variable('label'), DF.literal('Official', 'en') ],
+          ]),
+        ]);
+      });
+
       it('should not overwrite initialBindings', async() => {
         const context: QueryStringContext = {
           sources: [
