@@ -5,7 +5,7 @@ import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import { getTermsNested, mapTermsNested, someTermsNested, uniqTerms } from 'rdf-terms';
+import { mapTermsNested, someTermsNested, uniqTerms } from 'rdf-terms';
 
 /**
  * Materialize a term with the given binding.
@@ -352,42 +352,11 @@ function createValuesFromBindings(
  */
 function getOperationVariables(operation: Algebra.Operation): RDF.Variable[] {
   const variables: RDF.Variable[] = [];
-  collectVariables(operation, variables);
+  // The operation visitors skip the terms inside operations, so we visit all objects instead.
+  algebraUtils.transformer.visitObject(operation, (value) => {
+    if ((<RDF.Term> value).termType === 'Variable') {
+      variables.push(<RDF.Variable> value);
+    }
+  });
   return uniqTerms(variables);
-}
-
-/**
- * Recursively collect all variables inside the given algebra value into the given array.
- * @param value Part of an algebra operation, which can be an operation, an RDF term, an array, or any other value.
- * @param variables The array to append the discovered variables to.
- */
-function collectVariables(value: unknown, variables: RDF.Variable[]): void {
-  if (Array.isArray(value)) {
-    for (const entry of value) {
-      collectVariables(entry, variables);
-    }
-    return;
-  }
-  if (typeof value !== 'object' || value === null) {
-    return;
-  }
-  if ('termType' in value) {
-    const term = <RDF.Term> value;
-    if (term.termType === 'Variable') {
-      variables.push(term);
-    } else if (term.termType === 'Quad') {
-      for (const subTerm of getTermsNested(term)) {
-        if (subTerm.termType === 'Variable') {
-          variables.push(subTerm);
-        }
-      }
-    }
-    return;
-  }
-  for (const [ key, entry ] of Object.entries(value)) {
-    // Metadata can contain arbitrary (possibly cyclic) values that are not part of the query itself.
-    if (key !== 'metadata') {
-      collectVariables(entry, variables);
-    }
-  }
 }
