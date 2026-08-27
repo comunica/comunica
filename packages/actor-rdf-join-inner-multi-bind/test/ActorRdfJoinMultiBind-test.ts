@@ -125,8 +125,9 @@ IQueryOperationResultBindings
           });
 
           it('should allow binding on a right stream with safe FILTER', () => {
-            const filter: any = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
-            (<Algebra.Filter & { isHoistedLeftJoinFilter?: true }> filter).isHoistedLeftJoinFilter = true;
+            const filter: Algebra.Operation =
+              FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
+            filter.metadata = { isHoistedLeftJoinFilter: true };
 
             expect(ActorRdfJoinMultiBind.canBindWithOperation(filter)).toBe(true);
           });
@@ -140,8 +141,8 @@ IQueryOperationResultBindings
           it('should not reject a FILTER nested inside a FILTER EXISTS', () => {
             const innerFilter: any = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
             const existsExpr = FACTORY.createExistenceExpression(false, innerFilter);
-            const outerFilter: any = FACTORY.createFilter(<any>{}, existsExpr);
-            outerFilter.isHoistedLeftJoinFilter = true;
+            const outerFilter: Algebra.Operation = FACTORY.createFilter(<any>{}, existsExpr);
+            outerFilter.metadata = { isHoistedLeftJoinFilter: true };
 
             expect(ActorRdfJoinMultiBind.canBindWithOperation(outerFilter)).toBe(true);
           });
