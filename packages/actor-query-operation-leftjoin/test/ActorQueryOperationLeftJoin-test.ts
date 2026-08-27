@@ -182,7 +182,7 @@ describe('ActorQueryOperationLeftJoin', () => {
       const output = getSafeBindings(await actor.run(op, undefined));
 
       const expectedFilterOperation: any = AF.createFilter(<any>{}, <any>expression);
-      expectedFilterOperation.isHoistedLeftJoinFilter = true;
+      expectedFilterOperation.metadata = { isHoistedLeftJoinFilter: true };
 
       expect(mediatorJoin.mediate).toHaveBeenCalledWith({
         context: expect.anything(),
