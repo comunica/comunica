@@ -1,6 +1,7 @@
 import type { IActionOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { Algebra } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationSetSourcesFromDataset } from '../lib/index';
 import '@comunica/utils-jest';
@@ -38,9 +39,9 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
   describe('static helpers', () => {
     describe('extractDatasetClauses', () => {
       it('should extract default and named graphs from a "from" operation', () => {
-        const operation: any = {
-          type: 'from',
-          input: { type: 'bgp', patterns: []},
+        const operation: Algebra.From = {
+          type: Algebra.Types.FROM,
+          input: <Algebra.Bgp> { type: Algebra.Types.BGP, patterns: []},
           default: [ DF.namedNode('http://example.org/default.ttl') ],
           named: [ DF.namedNode('http://example.org/named.ttl') ],
         };
@@ -53,7 +54,7 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
       });
 
       it('should return empty arrays if no "from" clause is present', () => {
-        const operation: any = { type: 'bgp', patterns: []};
+        const operation: Algebra.Bgp = { type: Algebra.Types.BGP, patterns: []};
         const clauses = ActorOptimizeQueryOperationSetSourcesFromDataset.extractDatasetClauses(operation);
         expect(clauses).toEqual({ defaultGraphs: [], namedGraphs: []});
       });
@@ -62,9 +63,7 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
     describe('appendSources', () => {
       it('should append new sources and deduplicate existing ones in context', () => {
         const context = new ActionContext({
-          [KeysInitQuery.querySourcesUnidentified.name]: [
-            { type: 'auto', value: 'http://example.org/default.ttl' },
-          ],
+          [KeysInitQuery.querySourcesUnidentified.name]: [ 'http://example.org/default.ttl' ],
         });
 
         const clauses = {
@@ -76,17 +75,17 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
         const sources = newContext.get(KeysInitQuery.querySourcesUnidentified);
 
         expect(sources).toEqual([
-          { type: 'auto', value: 'http://example.org/default.ttl' },
-          { type: 'auto', value: 'http://example.org/named.ttl' },
+          'http://example.org/default.ttl',
+          'http://example.org/named.ttl',
         ]);
       });
     });
 
     describe('stripDatasetClauses', () => {
       it('should unwrap the "from" operation wrapper', () => {
-        const innerOperation: any = { type: 'bgp', patterns: []};
-        const operation: any = {
-          type: 'from',
+        const innerOperation: Algebra.Bgp = { type: Algebra.Types.BGP, patterns: []};
+        const operation: Algebra.From = {
+          type: Algebra.Types.FROM,
           input: innerOperation,
           default: [ DF.namedNode('http://example.org/default.ttl') ],
           named: [],
@@ -101,7 +100,7 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
 
   describe('run', () => {
     it('should return unchanged action output if no FROM/FROM NAMED clauses are present', async() => {
-      const operation: any = { type: 'bgp', patterns: []};
+      const operation: Algebra.Bgp = { type: Algebra.Types.BGP, patterns: []};
       const context = new ActionContext();
 
       const output = await actor.run({ operation, context });
@@ -111,9 +110,9 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
     });
 
     it('should modify context and strip algebra operation when FROM/FROM NAMED clauses are present', async() => {
-      const innerOperation: any = { type: 'bgp', patterns: []};
-      const operation: any = {
-        type: 'from',
+      const innerOperation: Algebra.Bgp = { type: Algebra.Types.BGP, patterns: []};
+      const operation: Algebra.From = {
+        type: Algebra.Types.FROM,
         input: innerOperation,
         default: [ DF.namedNode('http://example.org/default.ttl') ],
         named: [ DF.namedNode('http://example.org/named.ttl') ],
@@ -124,8 +123,8 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
 
       expect(output.operation).toEqual(innerOperation);
       expect(output.context.get(KeysInitQuery.querySourcesUnidentified)).toEqual([
-        { type: 'auto', value: 'http://example.org/default.ttl' },
-        { type: 'auto', value: 'http://example.org/named.ttl' },
+        'http://example.org/default.ttl',
+        'http://example.org/named.ttl',
       ]);
     });
   });

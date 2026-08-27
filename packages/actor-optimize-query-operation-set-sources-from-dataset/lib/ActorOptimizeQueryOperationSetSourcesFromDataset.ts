@@ -6,9 +6,10 @@ import type {
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { failTest, passTestVoid, type IActorTest, type TestResult } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
+import type { IActionContext, SourceType } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { algebraUtils } from '@comunica/utils-algebra';
+import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica Optimize Query Operation Set Sources From Dataset Optimize Query Operation Actor.
@@ -29,7 +30,6 @@ export class ActorOptimizeQueryOperationSetSourcesFromDataset extends ActorOptim
     const datasetClauses = ActorOptimizeQueryOperationSetSourcesFromDataset.extractDatasetClauses(action.operation);
 
     if (datasetClauses.defaultGraphs.length === 0 && datasetClauses.namedGraphs.length === 0) {
-      // No FROM/FROM NAMED present - nothing to do.
       return { operation: action.operation, context: action.context };
     }
 
@@ -46,12 +46,12 @@ export class ActorOptimizeQueryOperationSetSourcesFromDataset extends ActorOptim
 
     algebraUtils.visitOperation(operation, {
       from: {
-        visitor(op: any) {
+        visitor(op: Algebra.From) {
           if (op.default) {
-            defaultGraphs.push(...op.default.map((graph: any) => graph.value ?? graph));
+            defaultGraphs.push(...op.default.map((graph: RDF.NamedNode) => graph.value));
           }
           if (op.named) {
-            namedGraphs.push(...op.named.map((graph: any) => graph.value ?? graph));
+            namedGraphs.push(...op.named.map((graph: RDF.NamedNode) => graph.value));
           }
         },
       },
@@ -61,15 +61,10 @@ export class ActorOptimizeQueryOperationSetSourcesFromDataset extends ActorOptim
   }
 
   public static appendSources(context: IActionContext, clauses: IDatasetClauses): IActionContext {
-    const existingSources: any[] = context.get(KeysInitQuery.querySourcesUnidentified) ?? [];
+    const existingSources: SourceType[] = context.get(KeysInitQuery.querySourcesUnidentified) ?? [];
 
-    const newSources = [
-      ...clauses.defaultGraphs.map(iri => ({ type: 'auto', value: iri })),
-      ...clauses.namedGraphs.map(iri => ({ type: 'auto', value: iri })),
-    ];
-
-    const mergedSources = [ ...existingSources, ...newSources ].filter(
-      (source, index, self) => index === self.findIndex(s => s.value === source.value),
+    const mergedSources = [ ...existingSources, ...clauses.defaultGraphs, ...clauses.namedGraphs ].filter(
+      (source, index, self) => index === self.indexOf(source),
     );
 
     return context.set(KeysInitQuery.querySourcesUnidentified, mergedSources);
@@ -78,8 +73,8 @@ export class ActorOptimizeQueryOperationSetSourcesFromDataset extends ActorOptim
   public static stripDatasetClauses(operation: Algebra.Operation): Algebra.Operation {
     return algebraUtils.mapOperation(operation, {
       from: {
-        transform(copy: any) {
-          return copy.input;
+        transform(op: Algebra.From) {
+          return op.input;
         },
       },
     });
