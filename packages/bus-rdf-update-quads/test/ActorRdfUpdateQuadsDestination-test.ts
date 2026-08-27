@@ -164,7 +164,6 @@ describe('ActorRdfUpdateQuadsDestination', () => {
     });
   });
 
-  // https://github.com/comunica/comunica/issues/985
   describe('An ActorRdfUpdateQuadsDestination instance with a wrapped rdfjs destination', () => {
     const actor = new (<any> ActorRdfUpdateQuadsDestination)({ name: 'actor', bus });
     actor.getDestination = (context: any) => Promise.resolve(
