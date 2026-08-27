@@ -39,7 +39,11 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         if (operationOriginal.expression && index === 1) {
           const filterOperation: Algebra.Operation =
             algebraFactory.createFilter(subOperation, operationOriginal.expression);
-          filterOperation.metadata = { isHoistedLeftJoinFilter: true };
+          if (filterOperation.metadata) {
+            filterOperation.metadata.isHoistedLeftJoinFilter = true;
+          } else {
+            filterOperation.metadata = { isHoistedLeftJoinFilter: true };
+          }
           return {
             output,
             operation: filterOperation,

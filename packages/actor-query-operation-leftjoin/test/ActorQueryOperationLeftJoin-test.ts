@@ -1,7 +1,7 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { IActionContext, IJoinEntry } from '@comunica/types';
-import { AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import {
   getMockEEActionContext,
@@ -181,7 +181,7 @@ describe('ActorQueryOperationLeftJoin', () => {
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
       const output = getSafeBindings(await actor.run(op, undefined));
 
-      const expectedFilterOperation: any = AF.createFilter(<any>{}, <any>expression);
+      const expectedFilterOperation: Algebra.Operation = AF.createFilter(<Algebra.Operation>{}, expression);
       expectedFilterOperation.metadata = { isHoistedLeftJoinFilter: true };
 
       expect(mediatorJoin.mediate).toHaveBeenCalledWith({
