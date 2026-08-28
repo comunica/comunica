@@ -131,9 +131,6 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         return algebraFactory.createValues([], []);
       }
       if (patternGraph.termType === 'Variable') {
-        if (namedGraphs.length === 0) {
-          return algebraFactory.createValues([], []);
-        }
         if (namedGraphs.length === 1) {
           const graph: RDF.NamedNode = namedGraphs[0];
           // If the pattern graph is a variable, replace the graph and bind the variable using VALUES
