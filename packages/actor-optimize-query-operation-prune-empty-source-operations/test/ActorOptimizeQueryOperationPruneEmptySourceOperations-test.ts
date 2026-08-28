@@ -329,6 +329,23 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           ]));
         });
 
+        it('should check links via patterns with valid variables', async() => {
+          const opIn = AF.createAlt([
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+          ]);
+          await actor.run({ operation: opIn, context: ctx });
+          expect(source1.source.queryBindings).toHaveBeenCalledTimes(2);
+          expect(source1.source.queryBindings).toHaveBeenCalledWith(
+            AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.variable('o')),
+            ctx,
+          );
+          expect(source1.source.queryBindings).toHaveBeenCalledWith(
+            AF.createPattern(DF.variable('s'), DF.namedNode('empty'), DF.variable('o')),
+            ctx,
+          );
+        });
+
         it('should not prune for no empty children', async() => {
           const opIn = AF.createAlt([
             assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
