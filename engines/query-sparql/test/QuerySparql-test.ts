@@ -2324,28 +2324,12 @@ WHERE { }
     });
 
     describe('FROM (NAMED) as sources', () => {
-      let engine: QueryEngine;
-      let originalFetch: typeof globalThis.fetch;
-
       const datasetIri = 'http://example.org/my-dataset.ttl';
       const datasetTurtle = `
         @prefix ex: <http://example.org/> .
         ex:s1 ex:p1 ex:o1 .
         ex:s2 ex:p2 ex:o2 .
       `;
-
-      beforeAll(() => {
-        engine = new QueryEngine();
-      });
-
-      beforeEach(() => {
-        originalFetch = globalThis.fetch;
-      });
-
-      afterEach(() => {
-        globalThis.fetch = originalFetch;
-        jest.restoreAllMocks();
-      });
 
       it('does not append FROM IRI as a real source when fromNamedSources is false (default)', async() => {
         await expect(engine.queryBindings(
@@ -2357,6 +2341,8 @@ WHERE { }
       });
 
       it('appends the FROM IRI as a real source when fromNamedAsSources is true', async() => {
+        const originalFetch = globalThis.fetch;
+
         globalThis.fetch = <typeof globalThis.fetch> jest.fn(async(input: string, init?: RequestInit) => {
           if (input === datasetIri) {
             return <Response> {
@@ -2398,6 +2384,8 @@ WHERE { }
           datasetIri,
           expect.anything(),
         );
+
+        globalThis.fetch = originalFetch;
       });
     });
 
