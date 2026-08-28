@@ -126,7 +126,7 @@ IQueryOperationResultBindings
 
           it('should allow binding on a right stream with safe FILTER', () => {
             const filter: Algebra.Operation =
-              FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
+              FACTORY.createFilter(FACTORY.createNop(), FACTORY.createTermExpression(DF.literal('')));
             filter.metadata = { isHoistedLeftJoinFilter: true };
 
             expect(ActorRdfJoinMultiBind.canBindWithOperation(filter)).toBe(true);
