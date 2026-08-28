@@ -394,6 +394,17 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(quad('s', 'p', 'o', 'g').equals(result.input[1])).toBeTruthy();
     });
 
+    it('should transform a Path with a variable graph pattern without any named graphs to a no-op', () => {
+      const result = <Algebra.Join> ActorQueryOperationFromQuad
+        .applyOperationNamedGraph(
+          AF,
+          Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }),
+          [],
+          [ DF.namedNode('g') ],
+        );
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
+    });
+
     it('should transform a Path with a non-available non-default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
