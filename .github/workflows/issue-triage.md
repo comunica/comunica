@@ -6,6 +6,10 @@ on:
     types: [opened, reopened]
   roles: all
 engine: copilot
+# Pin an explicit model: the Copilot engine otherwise defaults to 'auto', which the AWF
+# API proxy resolves to the literal 'copilot/auto' passthrough. That has no entry in the
+# AI-credits pricing table, so every inference request is rejected with HTTP 400.
+model: agent
 strict: true
 permissions:
   contents: read
