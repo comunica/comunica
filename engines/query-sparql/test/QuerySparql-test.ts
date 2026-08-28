@@ -2097,6 +2097,9 @@ WHERE { }
       });
     });
 
+    // Several of these cases mirror https://github.com/bergos/comunica-tests,
+    // which checks the behaviour that shacl-engine (https://github.com/rdf-ext/shacl-engine)
+    // relies on for SHACL pre-binding. Their names are referenced per test below.
     describe('initialBindings', () => {
       let initialBindings: Bindings;
       let sourcesValue1: string;
@@ -2113,6 +2116,7 @@ WHERE { }
           `;
       });
 
+      // Mirrors the pre-binding-005 case.
       it('should consider the initialBindings in the bound function', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -2146,6 +2150,7 @@ WHERE { }
         await expect(bindings).toEqualBindingsStream(expectedResult);
       });
 
+      // Mirrors the pre-binding-006 case, with SELECT * in the sub-query.
       it('should consider the initialBindings in the filter function', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -2179,6 +2184,7 @@ WHERE { }
         await expect(bindings).toEqualBindingsStream(expectedResult);
       });
 
+      // Mirrors the pre-binding-006 case, with an explicit projection in the sub-query.
       it('should consider the initialBindings in the filter function 2', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -2212,6 +2218,7 @@ WHERE { }
         await expect(bindings).toEqualBindingsStream(expectedResult);
       });
 
+      // Mirrors the property-sparql-001 case.
       it('should consider initialBindings which are not projected', async() => {
         const initialBindings = BF.bindings([
           [ DF.variable('predicate'), DF.namedNode('http://example.org/test#predicateEx') ],
@@ -2245,6 +2252,7 @@ WHERE { }
         await expect(bindings).toEqualBindingsStream([]);
       });
 
+      // Mirrors the pre-binding-004 case.
       it('should consider initialBindings in the extend operation', async() => {
         const initialBindings = BF.bindings([
           [ DF.variable('initialBindingsVariable'), DF.namedNode('http://example.org/test#InitialBindingsValue') ],
@@ -2333,6 +2341,47 @@ WHERE { }
         ]);
       });
 
+      // Mirrors the pre-binding-002 case.
+      it('should consider initialBindings in a union of filter-only branches', async() => {
+        const initialBindings = BF.bindings([
+          [ DF.variable('this'), DF.namedNode('http://example.org/test#InvalidResource') ],
+        ]);
+
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+                @prefix ex: <http://example.org/test#> .
+                @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+                ex:ValidResource1 a rdfs:Resource .`,
+              mediaType: 'text/turtle',
+            },
+          ],
+          initialBindings,
+        };
+
+        // Neither branch matches a triple, so $this is only bound via the initial bindings.
+        const bindings = (await engine.queryBindings(`
+        PREFIX ex: <http://example.org/test#>
+
+        SELECT $this WHERE {
+          {
+            FILTER (false) .
+          } UNION {
+            FILTER ($this = ex:InvalidResource) .
+          }
+        }`, context));
+
+        await expect(bindings).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('this'), DF.namedNode('http://example.org/test#InvalidResource') ],
+          ]),
+        ]);
+      });
+
+      // Mirrors the unsupported-sparql-005 case.
       it('should not overwrite initialBindings', async() => {
         const context: QueryStringContext = {
           sources: [
