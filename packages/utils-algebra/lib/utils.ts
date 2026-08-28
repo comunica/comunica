@@ -379,3 +379,11 @@ export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer)
 export const inScopeVariables: typeof algebraUtils.inScopeVariables =
   (op: Operation, visitor = <typeof algebraUtils.visitOperation>visitOperation): RDF.Variable[] =>
     algebraUtils.inScopeVariables(op, visitor);
+
+/**
+ * Returns an operation with an always-defined metadata property.
+ */
+export function withMetadata<T extends Operation>(op: T): T & { metadata: Record<string, unknown> } {
+  op.metadata ??= {};
+  return <T & { metadata: Record<string, unknown> }> op;
+}
