@@ -2,6 +2,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import arrayifyStream from 'arrayify-stream';
 import '@comunica/utils-jest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorDereferenceFallback } from '../lib/ActorDereferenceFallback';
 
 describe('ActorDereferenceFallback', () => {
@@ -30,7 +31,7 @@ describe('ActorDereferenceFallback', () => {
 
     it('should run and log on lenient mode', async() => {
       const context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
-      const spy = jest.spyOn(actor, <any> 'logWarn');
+      const spy = vi.spyOn(actor, <any> 'logWarn');
       const output = await actor.run({ url: 'URL', context });
       expect(output.url).toBe('URL');
       await expect(arrayifyStream(output.data)).resolves.toEqual([]);

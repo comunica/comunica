@@ -1,6 +1,7 @@
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
+import { describe, expect, it } from 'vitest';
 import {
   date,
   decimal,

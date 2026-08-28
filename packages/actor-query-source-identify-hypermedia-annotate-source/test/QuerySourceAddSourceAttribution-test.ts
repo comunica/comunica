@@ -7,9 +7,9 @@ import type { Bindings } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QuerySourceAddSourceAttribution } from '../lib/QuerySourceAddSourceAttribution';
 import '@comunica/utils-jest';
-import 'jest-rdf';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -21,9 +21,9 @@ describe('QuerySourcAddSourceAttribution', () => {
 
   beforeEach(() => {
     sourceInner = {
-      getFilterFactor: <any> jest.fn(async() => 1),
-      getSelectorShape: <any> jest.fn(async() => 'SHAPE'),
-      queryBindings: <any> jest.fn(() => {
+      getFilterFactor: <any> vi.fn(async() => 1),
+      getSelectorShape: <any> vi.fn(async() => 'SHAPE'),
+      queryBindings: <any> vi.fn(() => {
         const it = new ArrayIterator([
           BF.fromRecord({ a: DF.namedNode('a0') }),
           BF.fromRecord({ a: DF.blankNode('a1') }),
@@ -32,8 +32,8 @@ describe('QuerySourcAddSourceAttribution', () => {
         it.setProperty('metadata', { state: new MetadataValidationState() });
         return it;
       }),
-      queryBoolean: <any> jest.fn(async() => true),
-      queryQuads: <any> jest.fn(() => {
+      queryBoolean: <any> vi.fn(async() => true),
+      queryQuads: <any> vi.fn(() => {
         const it = new ArrayIterator([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.blankNode('o1')),
           DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.blankNode('o2')),
@@ -41,8 +41,8 @@ describe('QuerySourcAddSourceAttribution', () => {
         it.setProperty('metadata', { state: new MetadataValidationState() });
         return it;
       }),
-      queryVoid: <any> jest.fn(),
-      toString: <any> jest.fn(() => 'STR'),
+      queryVoid: <any> vi.fn(),
+      toString: <any> vi.fn(() => 'STR'),
       referenceValue: 'REF',
     };
     source = new QuerySourceAddSourceAttribution(sourceInner);
@@ -88,7 +88,7 @@ describe('QuerySourcAddSourceAttribution', () => {
   });
 
   it('should not add source to unsupported bindings', async() => {
-    sourceInner.queryBindings = <any> jest.fn(() => {
+    sourceInner.queryBindings = <any> vi.fn(() => {
       const it = new ArrayIterator([
         { a: DF.namedNode('a0') },
         { a: DF.blankNode('a1') },

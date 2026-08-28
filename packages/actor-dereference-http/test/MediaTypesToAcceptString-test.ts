@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { mediaTypesToAcceptString } from '../lib/ActorDereferenceHttpBase';
 
 describe('mediaTypesToAcceptString', () => {

@@ -2,6 +2,7 @@ import type { IQueryProcessSequential } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryPhysicalQueryPlanLogger } from '../lib';
 import { ActorQueryProcessExplainPhysical } from '../lib/ActorQueryProcessExplainPhysical';
 import '@comunica/utils-jest';
@@ -25,7 +26,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
         async optimize(query: string, context: any) {
           return { operation: `${query}OPT`, context };
         },
-        evaluate: jest.fn(async() => {
+        evaluate: vi.fn(async() => {
           return {
             type: 'bindings',
             bindingsStream: new ArrayIterator([], { autoStart: false }),
@@ -120,7 +121,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
         (<any> queryProcessor).evaluate = async() => {
           return {
             type: 'boolean',
-            execute: jest.fn(),
+            execute: vi.fn(),
           };
         };
 
@@ -141,7 +142,7 @@ describe('ActorQueryProcessExplainPhysical', () => {
         (<any> queryProcessor).evaluate = async() => {
           return {
             type: 'void',
-            execute: jest.fn(),
+            execute: vi.fn(),
           };
         };
 

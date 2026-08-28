@@ -3,8 +3,9 @@ import { ActionContext, ActionContextKey } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
+import '@comunica/utils-jest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Bindings } from '../lib/Bindings';
-import 'jest-rdf';
 
 const DF = new DataFactory();
 const contextMergeHandlers = {};
@@ -142,7 +143,7 @@ describe('Bindings', () => {
 
     describe('forEach', () => {
       it('should iterate over all entries', () => {
-        const cb = jest.fn();
+        const cb = vi.fn();
         // eslint-disable-next-line unicorn/no-array-for-each
         bindings.forEach(cb);
         expect(cb).toHaveBeenCalledTimes(3);
@@ -228,7 +229,7 @@ describe('Bindings', () => {
 
     describe('filter', () => {
       it('should not change anything for a filter that always returns true', () => {
-        const cb = jest.fn(() => true);
+        const cb = vi.fn(() => true);
         const bindingsNew = bindings.filter(cb);
         expect(bindingsNew).not.toBe(bindings);
         expect(bindingsNew.size).toEqual(bindings.size);
@@ -240,7 +241,7 @@ describe('Bindings', () => {
       });
 
       it('should filter a specific element', () => {
-        const cb = jest.fn((value: RDF.Term) => value.value !== 'ex:b');
+        const cb = vi.fn((value: RDF.Term) => value.value !== 'ex:b');
         const bindingsNew = bindings.filter(cb);
         expect(bindingsNew).not.toBe(bindings);
         expect(bindingsNew.size).toBe(2);
@@ -258,7 +259,7 @@ describe('Bindings', () => {
 
     describe('map', () => {
       it('should map values', () => {
-        const cb = jest.fn((value: RDF.Term) => DF.namedNode(`${value.value}.2`));
+        const cb = vi.fn((value: RDF.Term) => DF.namedNode(`${value.value}.2`));
         const bindingsNew = bindings.map(cb);
         expect(bindingsNew).not.toBe(bindings);
         expect(bindingsNew.size).toBe(3);
@@ -369,7 +370,7 @@ describe('Bindings', () => {
             [ 'g', DF.namedNode('ex:g') ],
             [ 'h', DF.namedNode('ex:h') ],
           ]), { contextMergeHandlers });
-          const spy = jest.spyOn(<any> bindingsOther, 'merge');
+          const spy = vi.spyOn(<any> bindingsOther, 'merge');
 
           const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
           expect(spy).toHaveBeenCalledWith(bindings);
@@ -431,7 +432,7 @@ describe('Bindings', () => {
           };
           expect(bindingsOther instanceof Bindings).toBeFalsy();
 
-          const cb = jest.fn();
+          const cb = vi.fn();
           const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
           expect(bindingsNew).toBeDefined();
           expect(bindingsNew).not.toBe(bindings);
@@ -459,7 +460,7 @@ describe('Bindings', () => {
           };
           expect(bindingsOther instanceof Bindings).toBeFalsy();
 
-          const cb = jest.fn();
+          const cb = vi.fn();
           const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
           expect(bindingsNew).toBeDefined();
           expect(bindingsNew).not.toBe(bindings);
@@ -483,7 +484,7 @@ describe('Bindings', () => {
           };
           expect(bindingsOther instanceof Bindings).toBeFalsy();
 
-          const cb = jest.fn((left: RDF.Term, right: RDF.Term) => DF.namedNode(`${left.value}+${right.value}`));
+          const cb = vi.fn((left: RDF.Term, right: RDF.Term) => DF.namedNode(`${left.value}+${right.value}`));
           const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
           expect(bindingsNew).toBeDefined();
           expect(bindingsNew).not.toBe(bindings);
@@ -506,7 +507,7 @@ describe('Bindings', () => {
             [ 'f', DF.namedNode('ex:f') ],
           ]), { contextMergeHandlers });
 
-          const cb = jest.fn();
+          const cb = vi.fn();
           const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
           expect(bindingsNew).toBeDefined();
           expect(bindingsNew).not.toBe(bindings);
@@ -530,9 +531,9 @@ describe('Bindings', () => {
             [ 'g', DF.namedNode('ex:g') ],
             [ 'h', DF.namedNode('ex:h') ],
           ]), { contextMergeHandlers });
-          const spy = jest.spyOn(<any> bindingsOther, 'mergeWith');
+          const spy = vi.spyOn(<any> bindingsOther, 'mergeWith');
 
-          const cb = jest.fn();
+          const cb = vi.fn();
           const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
           expect(spy).toHaveBeenCalledWith(cb, bindings);
           expect(bindingsNew).toBeDefined();
@@ -558,7 +559,7 @@ describe('Bindings', () => {
             [ 'b', DF.namedNode('ex:b') ],
           ]), { contextMergeHandlers });
 
-          const cb = jest.fn();
+          const cb = vi.fn();
           const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
           expect(bindingsNew).toBeDefined();
           expect(bindingsNew).not.toBe(bindings);
@@ -577,7 +578,7 @@ describe('Bindings', () => {
             [ 'a', DF.namedNode('ex:b') ],
           ]), { contextMergeHandlers });
 
-          const cb = jest.fn((left: RDF.Term, right: RDF.Term) => DF.namedNode(`${left.value}+${right.value}`));
+          const cb = vi.fn((left: RDF.Term, right: RDF.Term) => DF.namedNode(`${left.value}+${right.value}`));
           const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
           expect(bindingsNew).toBeDefined();
           expect(bindingsNew).not.toBe(bindings);
@@ -811,7 +812,7 @@ describe('Bindings', () => {
         },
       );
 
-      const cb = jest.fn();
+      const cb = vi.fn();
       const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
       expect(bindingsNew).toBeDefined();
       expect(bindingsNew.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));
@@ -895,7 +896,7 @@ describe('Bindings', () => {
       });
 
       it('calling mergeWith twice with different bindings should give correct results', () => {
-        const cb = jest.fn();
+        const cb = vi.fn();
         const bindingsNew1: Bindings = bindings.mergeWith(cb, bindingsOther1);
         expect(bindingsNew1).toBeDefined();
         expect(bindingsNew1.getContext()).toEqual(new ActionContext({ source: [ 'ex:S1', 'ex:S2', 'ex:S3', 'ex:S5' ]}));

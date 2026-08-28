@@ -74,11 +74,12 @@ import { instantiateComponent } from '@comunica/runner';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { QueryEngineFactory } from '../lib';
 
 // Instantiating the runner from the Components.js config requires a scan of the whole module tree,
 // which can take a while on slower CI machines, so the default timeout is not enough here.
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000, hookTimeout: 60_000 });
 
 const queryEngineFactory = new QueryEngineFactory();
 const DF = new DataFactory();

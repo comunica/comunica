@@ -2,6 +2,7 @@ import type { IQuerySource } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { MemoryPhysicalQueryPlanLogger } from '../lib/MemoryPhysicalQueryPlanLogger';
 
 const factory = new AlgebraFactory();

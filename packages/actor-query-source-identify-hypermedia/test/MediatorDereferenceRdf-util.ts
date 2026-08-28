@@ -16,7 +16,6 @@ import type { ICachePolicy, IQuerySource, MetadataBindings } from '@comunica/typ
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { ArrayIterator } from 'asynciterator';
-import 'jest-rdf';
 import { DataFactory } from 'rdf-data-factory';
 
 const DF = new DataFactory();

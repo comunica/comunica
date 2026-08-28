@@ -1,4 +1,5 @@
 import { DataFactory } from 'rdf-data-factory';
+import { describe, expect, it } from 'vitest';
 import { ExpressionError, isExpressionError, ExtensionFunctionError, InvalidLexicalForm } from '../../../lib';
 
 const DF = new DataFactory();

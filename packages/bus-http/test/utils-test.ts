@@ -1,4 +1,5 @@
 import { Readable } from 'node:stream';
+import { describe, expect, it, vi } from 'vitest';
 import { validateAndCloseHttpResponse } from '../lib/utils';
 
 describe('validateAndCloseHttpResponse', () => {
@@ -7,7 +8,7 @@ describe('validateAndCloseHttpResponse', () => {
   });
 
   it('should cancel the body on a valid response', async() => {
-    const body = <any> { cancel: jest.fn() };
+    const body = <any> { cancel: vi.fn() };
     await validateAndCloseHttpResponse('URL', <Response> { status: 200, body });
     expect(body.cancel).toHaveBeenCalledTimes(1);
   });

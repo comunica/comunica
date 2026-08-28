@@ -11,6 +11,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationPathZeroOrOne } from '../lib/ActorQueryOperationPathZeroOrOne';
 import '@comunica/utils-jest';
 
@@ -29,7 +30,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: jest.fn((arg: any) => {
+      mediate: vi.fn((arg: any) => {
         if (arg.operation.type === 'nodes' || arg.operation.type === 'union') {
           return Promise.resolve({
             bindingsStream: new ArrayIterator([

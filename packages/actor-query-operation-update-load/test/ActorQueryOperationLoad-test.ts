@@ -6,6 +6,7 @@ import { assignOperationSource } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationLoad } from '../lib/ActorQueryOperationLoad';
 import '@comunica/utils-jest';
 
@@ -21,7 +22,7 @@ describe('ActorQueryOperationLoad', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: jest.fn().mockResolvedValue({
+      mediate: vi.fn().mockResolvedValue({
         quadStream: new ArrayIterator([
           DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
         ], { autoStart: false }),
@@ -30,12 +31,12 @@ describe('ActorQueryOperationLoad', () => {
       }),
     };
     mediatorUpdateQuads = {
-      mediate: jest.fn(() => Promise.resolve({
+      mediate: vi.fn(() => Promise.resolve({
         execute: () => Promise.resolve(),
       })),
     };
     mediatorQuerySourceIdentify = {
-      mediate: jest.fn(() => Promise.resolve({
+      mediate: vi.fn(() => Promise.resolve({
         querySource: 'SRC',
       })),
     };

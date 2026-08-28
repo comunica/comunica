@@ -1,4 +1,5 @@
 import type { ILink } from '@comunica/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { StatisticBase } from '../lib';
 
 class MockStatisticBase<T> extends StatisticBase<T> {
@@ -12,8 +13,8 @@ describe('StatisticLinkDiscovery', () => {
 
   beforeEach(() => {
     mockStatisticBase = new MockStatisticBase();
-    cb = jest.fn(() => {});
-    cb1 = jest.fn(() => {});
+    cb = vi.fn(() => {});
+    cb1 = vi.fn(() => {});
   });
 
   describe('An StatisticLinkDereference instance should', () => {

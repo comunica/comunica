@@ -11,6 +11,8 @@ import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { MockInstance } from 'vitest';
 import type {
   IActorRdfJoinMultiBindSourceTestSideData,
 } from '../lib/ActorRdfJoinMultiBindSource';
@@ -35,7 +37,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
     let mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
     let mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
     let actor: ActorRdfJoinMultiBindSource;
-    let logSpy: jest.SpyInstance;
+    let logSpy: MockInstance;
     let source1: IQuerySourceWrapper;
     let source2: IQuerySourceWrapper;
     let source3TriplePattern: IQuerySourceWrapper;
@@ -61,7 +63,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
       });
-      logSpy = jest.spyOn((<any> actor), 'logDebug').mockImplementation();
+      logSpy = vi.spyOn((<any> actor), 'logDebug').mockImplementation();
       source1 = <IQuerySourceWrapper> <any> {
         source: {
           getSelectorShape() {
@@ -71,7 +73,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               joinBindings: true,
             };
           },
-          queryBindings: jest.fn((operation: any, ctx: any, options: any) => {
+          queryBindings: vi.fn((operation: any, ctx: any, options: any) => {
             return options.joinBindings.bindings.transform({
               map(binding: RDF.Bindings): RDF.Bindings {
                 return binding.merge(BF.bindings([
@@ -114,7 +116,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               joinBindings: true,
             };
           },
-          queryBindings: jest.fn((operation: any, ctx: any, options: any) => {
+          queryBindings: vi.fn((operation: any, ctx: any, options: any) => {
             return options.joinBindings.bindings.transform({
               map(binding: RDF.Bindings): RDF.Bindings {
                 return binding.merge(BF.bindings([
@@ -367,6 +369,49 @@ describe('ActorRdfJoinMultiBindSource', () => {
     });
 
     describe('getJoinCoefficients', () => {
+      it('should not handle entries without a common variable', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{},
+                operation: assignOperationSource(AF.createNop(), source1),
+              },
+              {
+                output: <any>{},
+                operation: assignOperationSource(AF.createNop(), source1),
+              },
+            ],
+            context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+
+                variables: [
+                  { variable: DF.variable('b'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest('Bind join can only join entries with at least one common variable');
+      });
+
       it('should handle three entries', async() => {
         await expect(actor.getJoinCoefficients(
           {

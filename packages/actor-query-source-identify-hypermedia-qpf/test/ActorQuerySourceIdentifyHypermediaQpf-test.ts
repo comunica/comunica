@@ -2,6 +2,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { empty, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { QuerySourceQpf } from '../lib';
 import { ActorQuerySourceIdentifyHypermediaQpf } from '../lib/ActorQuerySourceIdentifyHypermediaQpf';
 import '@comunica/utils-jest';

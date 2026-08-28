@@ -1,6 +1,7 @@
 import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQueryParseGraphql } from '..';
 import '@comunica/utils-jest';
 

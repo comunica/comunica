@@ -1,5 +1,6 @@
 import { ActionContext } from '@comunica/core';
 import CachePolicy = require('http-cache-semantics');
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CachePolicyHttpCacheSemanticsWrapper } from '../lib/CachePolicyHttpCacheSemanticsWrapper';
 import { FetchInitPreprocessor } from '../lib/FetchInitPreprocessor';
 
@@ -46,14 +47,14 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
       cacheMaxEntrySize: 5242880,
       agentOptions: {},
       httpInvalidator: <any> {
-        addInvalidateListener: jest.fn(),
+        addInvalidateListener: vi.fn(),
       },
     }));
   });
 
   describe('storable', () => {
     it('is delegated to the cachePolicy', () => {
-      jest.spyOn(cachePolicy, 'storable');
+      vi.spyOn(cachePolicy, 'storable');
       expect(wrapper.storable()).toBeTruthy();
       expect(cachePolicy.storable).toHaveBeenCalledTimes(1);
     });
@@ -61,7 +62,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
 
   describe('satisfiesWithoutRevalidation', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
+      vi.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
       await expect(wrapper.satisfiesWithoutRevalidation({
         input: 'http://localhost:8080/',
         init: { headers: new Headers({ a: 'b' }) },
@@ -76,7 +77,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
     });
 
     it('is delegated to the cachePolicy with input request', async() => {
-      jest.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
+      vi.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
       await expect(wrapper.satisfiesWithoutRevalidation({
         input: new Request('http://localhost:8080/', { headers: new Headers({ a: 'b' }) }),
         context: new ActionContext(),
@@ -90,7 +91,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
     });
 
     it('is delegated to the cachePolicy when media types are passed', async() => {
-      jest.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
+      vi.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
       await expect(wrapper.satisfiesWithoutRevalidation({
         input: 'http://localhost:8080/',
         init: { headers: new Headers({ a: 'b' }) },
@@ -107,7 +108,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
 
   describe('responseHeaders', () => {
     it('is delegated to the cachePolicy', () => {
-      jest.spyOn(cachePolicy, 'responseHeaders');
+      vi.spyOn(cachePolicy, 'responseHeaders');
       expect(wrapper.responseHeaders()).toEqual(new Headers({ a: 'b' }));
       expect(cachePolicy.responseHeaders).toHaveBeenCalledTimes(1);
     });
@@ -115,7 +116,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
 
   describe('timeToLive', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'timeToLive');
+      vi.spyOn(cachePolicy, 'timeToLive');
       expect(wrapper.timeToLive()).toBe(123);
       expect(cachePolicy.timeToLive).toHaveBeenCalledTimes(1);
     });
@@ -123,7 +124,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
 
   describe('revalidationHeaders', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'revalidationHeaders');
+      vi.spyOn(cachePolicy, 'revalidationHeaders');
       await expect(wrapper.revalidationHeaders({
         input: 'http://localhost:8080/',
         init: { headers: new Headers({ a: 'b' }) },
@@ -140,7 +141,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
 
   describe('revalidatedPolicy', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'revalidatedPolicy');
+      vi.spyOn(cachePolicy, 'revalidatedPolicy');
       await expect(wrapper.revalidatedPolicy({
         input: 'http://localhost:8080/',
         init: { headers: new Headers({ a: 'b' }) },
@@ -159,7 +160,7 @@ describe('CachePolicyHttpCacheSemanticsWrapper', () => {
     });
 
     it('is delegated to the cachePolicy without revalidationResponse headers', async() => {
-      jest.spyOn(cachePolicy, 'revalidatedPolicy');
+      vi.spyOn(cachePolicy, 'revalidatedPolicy');
       await expect(wrapper.revalidatedPolicy({
         input: 'http://localhost:8080/',
         init: { headers: new Headers({ a: 'b' }) },

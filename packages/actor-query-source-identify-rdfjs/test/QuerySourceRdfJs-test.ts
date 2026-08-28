@@ -10,9 +10,9 @@ import { ArrayIterator } from 'asynciterator';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { QuerySourceRdfJs } from '../lib';
 import '@comunica/utils-jest';
-import 'jest-rdf';
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory();

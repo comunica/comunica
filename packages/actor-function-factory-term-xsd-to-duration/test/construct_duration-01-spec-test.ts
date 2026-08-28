@@ -5,6 +5,7 @@ import {
   compactTermString,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermXsdToDuration } from '../lib';
 
 describe('construct duration', () => {

@@ -5,6 +5,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   ActorQueryProcessAnnotateSourceBinding,
   KEY_CONTEXT_WRAPPED,

@@ -3,6 +3,7 @@ import type { IActionContext } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfJoinSelectivityVariableCounting, JoinTypes } from '../lib/ActorRdfJoinSelectivityVariableCounting';
 import '@comunica/utils-jest';
 

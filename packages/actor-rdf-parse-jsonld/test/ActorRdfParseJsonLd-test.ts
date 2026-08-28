@@ -2,10 +2,10 @@ import { Readable } from 'node:stream';
 import type { ActorHttpInvalidateListenable, IInvalidateListener } from '@comunica/bus-http-invalidate';
 import { KeysInitQuery, KeysRdfParseHtmlScript, KeysRdfParseJsonLd } from '@comunica/context-entries';
 import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
-import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';
 import '@comunica/utils-jest';
 
@@ -24,7 +24,7 @@ describe('ActorRdfParseJsonLd', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = {
-      mediate: jest.fn((args: any) => {
+      mediate: vi.fn((args: any) => {
         // Error
         if (args.input.includes('error')) {
           return Promise.resolve({
@@ -508,7 +508,7 @@ describe('ActorRdfParseJsonLd', () => {
           context,
         })
           .then(async(output: any) => expect(arrayifyStream(output.handle.data)).rejects
-            .toThrow(new Error('Failed to load remote context http://myschema.org/error: some error')));
+            .toThrow('Failed to load remote context http://myschema.org/error: some error'));
       });
 
       it('should run for a JSON doc with a context link header', async() => {
@@ -558,7 +558,7 @@ describe('ActorRdfParseJsonLd', () => {
           handleMediaType: 'application/json',
           context,
         })).rejects
-          .toThrow(new Error('Missing context link header for media type application/json on IRI'));
+          .toThrow('Missing context link header for media type application/json on IRI');
       });
 
       it('should ignore a context link header on a valid JSON-LD document', async() => {
@@ -585,12 +585,12 @@ describe('ActorRdfParseJsonLd', () => {
           handleMediaType: 'application/json',
           context,
         }))
-          .rejects.toThrow(new Error('Multiple JSON-LD context link headers were found on mult'));
+          .rejects.toThrow('Multiple JSON-LD context link headers were found on mult');
       });
 
       it('should run with a custom document loader', async() => {
         const documentLoader: any = {
-          load: jest.fn(() => ({ '@context': { '@vocab': 'http://custom.org/' }})),
+          load: vi.fn(() => ({ '@context': { '@vocab': 'http://custom.org/' }})),
         };
         await actor.run({
           handle: { data: inputRemoteContext, metadata: { baseIRI: '' }, context },
@@ -620,7 +620,7 @@ describe('ActorRdfParseJsonLd', () => {
           context: new ActionContext({ [KeysRdfParseJsonLd.strictValues.name]: true }),
         })
           .then(async(output: any) => expect(arrayifyStream(output.handle.data)).rejects
-            .toThrow(new Error('Invalid predicate IRI: skipped')));
+            .toThrow('Invalid predicate IRI: skipped'));
       });
     });
 

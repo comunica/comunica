@@ -1,6 +1,7 @@
 import { KeysCore } from '@comunica/context-entries';
 import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActionContext, Actor, Bus } from '..';
 
 describe('Actor', () => {
@@ -53,8 +54,8 @@ describe('Actor', () => {
     };
 
     beforeEach(() => {
-      jest.spyOn(actor, 'run');
-      jest.spyOn(bus, 'onRun');
+      vi.spyOn(actor, 'run');
+      vi.spyOn(bus, 'onRun');
     });
 
     it('should have a \'name\' field', () => {
@@ -106,12 +107,12 @@ describe('Actor', () => {
 
       beforeEach(() => {
         logger = new LoggerVoid();
-        jest.spyOn(logger, 'trace');
-        jest.spyOn(logger, 'debug');
-        jest.spyOn(logger, 'info');
-        jest.spyOn(logger, 'warn');
-        jest.spyOn(logger, 'error');
-        jest.spyOn(logger, 'fatal');
+        vi.spyOn(logger, 'trace');
+        vi.spyOn(logger, 'debug');
+        vi.spyOn(logger, 'info');
+        vi.spyOn(logger, 'warn');
+        vi.spyOn(logger, 'error');
+        vi.spyOn(logger, 'fatal');
         context = new ActionContext({ [KeysCore.log.name]: logger });
       });
 

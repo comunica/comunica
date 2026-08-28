@@ -18,6 +18,7 @@ import { getSafeBindings } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationOrderBy } from '../lib/ActorQueryOperationOrderBy';
 
 const DF = new DataFactory();
@@ -344,8 +345,8 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       // Mock the expression error test so we can force 'a programming error' and test the branch
 
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
-      // eslint-disable-next-line jest/prefer-spy-on
-      (<any>sparqlee).isExpressionError = jest.fn(() => false);
+      // eslint-disable-next-line vitest/prefer-spy-on
+      (<any>sparqlee).isExpressionError = vi.fn(() => false);
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderB ]},
         context,

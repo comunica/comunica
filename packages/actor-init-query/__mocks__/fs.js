@@ -1,3 +1,5 @@
+import { vi } from 'vitest';
+
 const testFileContentDict = {
   '@context': {
     foaf: 'http://xmlns.com/foaf/0.1/',
@@ -32,34 +34,33 @@ const testFileContentDict = {
 
 const testArgumentDict = { sources: [{ type: 'file', value: 'example' }]};
 
-const fs = jest.createMockFromModule('fs');
-const actualFs = jest.requireActual('fs');
+// 'node:fs' is mocked with this module, so the real one has to be pulled in explicitly
+const actualFs = await vi.importActual('node:fs');
 
-// eslint-disable-next-line no-sync
-fs.existsSync = jest.fn(() => true);
-// eslint-disable-next-line no-sync
-fs.readFileSync = jest.fn((path) => {
-  if (path.includes('sparql-endpoint.html')) {
-    // Use actual fs to read the real HTML file
-    // eslint-disable-next-line no-sync
-    return actualFs.readFileSync(path, 'utf8');
-  }
-  return JSON.stringify(testFileContentDict);
-});
+const fs = {
+  ...actualFs,
 
-// Add promises support for async file reading
-fs.promises = {
-  readFile: jest.fn((path, _encoding) => {
+  existsSync: vi.fn(() => true),
+
+  readFileSync: vi.fn((path) => {
     if (path.includes('sparql-endpoint.html')) {
       // Use actual fs to read the real HTML file
-      return actualFs.promises.readFile(path, 'utf8');
+      // eslint-disable-next-line no-sync
+      return actualFs.readFileSync(path, 'utf8');
     }
-    return Promise.resolve(JSON.stringify(testFileContentDict));
+    return JSON.stringify(testFileContentDict);
   }),
+  // Add promises support for async file reading
+  promises: {
+    ...actualFs.promises,
+    readFile: vi.fn((path, _encoding) => {
+      if (path.includes('sparql-endpoint.html')) {
+        // Use actual fs to read the real HTML file
+        return actualFs.promises.readFile(path, 'utf8');
+      }
+      return Promise.resolve(JSON.stringify(testFileContentDict));
+    }),
+  },
 };
 
-module.exports = {
-  fs,
-  testFileContentDict,
-  testArgumentDict,
-};
+export { fs, testArgumentDict, testFileContentDict };

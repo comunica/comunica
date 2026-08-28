@@ -1,6 +1,7 @@
 import { KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { Algebra } from '@comunica/utils-algebra';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   ActorOptimizeQueryOperationQuerySourceSkolemize,
 } from '../lib/ActorOptimizeQueryOperationQuerySourceSkolemize';

@@ -1,16 +1,17 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LoggerBunyan } from '../lib/LoggerBunyan';
 import { BunyanStreamProviderStderr } from '../lib/stream/BunyanStreamProviderStderr';
 
-jest.mock<typeof import('bunyan')>('bunyan', () => {
+vi.mock(import('bunyan'), () => {
   return <any>{
     createLogger: (args: any) => ({
       ...args,
-      trace: jest.fn(() => null),
-      debug: jest.fn(() => null),
-      info: jest.fn(() => null),
-      warn: jest.fn(() => null),
-      error: jest.fn(() => null),
-      fatal: jest.fn(() => null),
+      trace: vi.fn(() => null),
+      debug: vi.fn(() => null),
+      info: vi.fn(() => null),
+      warn: vi.fn(() => null),
+      error: vi.fn(() => null),
+      fatal: vi.fn(() => null),
     }),
   };
 });
@@ -18,7 +19,7 @@ jest.mock<typeof import('bunyan')>('bunyan', () => {
 describe('LoggerBunyan', () => {
   it('should create streams from providers during construction', () => {
     const myProvider = new BunyanStreamProviderStderr({ name: 'def', level: 'warn' });
-    jest.spyOn(myProvider, 'createStream');
+    vi.spyOn(myProvider, 'createStream');
     const myLogger = new LoggerBunyan({ name: 'abc', streamProviders: [ myProvider ]});
     expect(myProvider.createStream).toHaveBeenCalledTimes(1);
     expect((<any> myLogger).bunyanLogger.streams).toEqual([ myProvider.createStream() ]);

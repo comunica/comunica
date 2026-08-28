@@ -8,6 +8,7 @@ import { AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryProcessExplainQuery } from '../lib/ActorQueryProcessExplainQuery';
 
 const AF = new AlgebraFactory();
@@ -53,8 +54,8 @@ describe('ActorQueryProcessExplainQuery', () => {
         },
       };
       const mediatorQuerySerialize: any = {
-        mediate: jest.fn((action: any) => new ActorQuerySerializeSparql(<any> {
-          bus: { subscribe: jest.fn() },
+        mediate: vi.fn((action: any) => new ActorQuerySerializeSparql(<any> {
+          bus: { subscribe: vi.fn() },
         }).run(action)),
       };
       actor = new ActorQueryProcessExplainQuery({ name: 'actor', bus, queryProcessor, mediatorQuerySerialize });

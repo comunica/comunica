@@ -3,6 +3,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { union, fromArray } from 'asynciterator';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfSerializeShaclc } from '../lib/ActorRdfSerializeShaclc';
 import '@comunica/utils-jest';
 

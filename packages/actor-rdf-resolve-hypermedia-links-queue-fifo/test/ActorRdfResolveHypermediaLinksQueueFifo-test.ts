@@ -1,4 +1,5 @@
 import { ActionContext, Bus } from '@comunica/core';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { LinkQueueFifo } from '..';
 import { ActorRdfResolveHypermediaLinksQueueFifo } from '../lib/ActorRdfResolveHypermediaLinksQueueFifo';
 import '@comunica/utils-jest';

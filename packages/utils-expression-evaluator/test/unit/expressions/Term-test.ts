@@ -1,6 +1,7 @@
 import type { ISuperTypeProvider } from '@comunica/types';
 import { getMockSuperTypeProvider } from '@comunica/utils-jest';
 import { DataFactory } from 'rdf-data-factory';
+import { describe, expect, it } from 'vitest';
 import {
   TypeURL,
   DoubleLiteral,

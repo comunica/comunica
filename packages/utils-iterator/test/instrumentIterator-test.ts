@@ -1,4 +1,5 @@
 import { ArrayIterator } from 'asynciterator';
+import { describe, expect, it } from 'vitest';
 import { instrumentIterator } from '../lib/instrumentIterator';
 
 describe('instrumentIterator', () => {

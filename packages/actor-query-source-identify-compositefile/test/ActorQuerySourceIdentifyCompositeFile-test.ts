@@ -7,6 +7,7 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQuerySourceIdentifyCompositeFile } from '../lib/ActorQuerySourceIdentifyCompositeFile';
 import '@comunica/utils-jest';
 

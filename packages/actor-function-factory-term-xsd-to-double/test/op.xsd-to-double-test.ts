@@ -2,6 +2,7 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermXsdToDouble } from '../lib';
 
 describe('to double', () => {

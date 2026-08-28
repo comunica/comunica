@@ -3,6 +3,7 @@ import { ActorHashQuads } from '@comunica/bus-hash-quads';
 import { ActionContext, Bus } from '@comunica/core';
 import type { Quad } from 'rdf-data-factory';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorHashQuadsMurmur } from '../lib/ActorHashQuadsMurmur';
 import '@comunica/utils-jest';
 

@@ -6,9 +6,9 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfUpdateQuadsRdfJsStore } from '../lib/ActorRdfUpdateQuadsRdfJsStore';
 import { RdfJsQuadDestination } from '../lib/RdfJsQuadDestination';
-import 'jest-rdf';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();

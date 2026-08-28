@@ -3,6 +3,7 @@ import type { ActorHttpInvalidateListenable, IInvalidateListener } from '@comuni
 import { KeysHttp } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { Bus, ActionContext } from '@comunica/core';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorHttpRetry } from '../lib/ActorHttpRetry';
 import '@comunica/utils-jest';
 
@@ -18,7 +19,7 @@ describe('ActorHttpRetry', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = <any> {
-      mediate: jest.fn().mockRejectedValue(new Error('mediatorHttp.mediate called without mocking')),
+      mediate: vi.fn().mockRejectedValue(new Error('mediatorHttp.mediate called without mocking')),
     };
     httpInvalidator = <any>{
       addInvalidateListener: (listener: IInvalidateListener) => httpInvalidatorListener = listener,
@@ -26,13 +27,13 @@ describe('ActorHttpRetry', () => {
     input = 'http://127.0.0.1/abc';
     actor = new ActorHttpRetry({ bus, mediatorHttp, httpInvalidator, name: 'actor' });
     context = new ActionContext({ [KeysHttp.httpRetryCount.name]: 1 });
-    jest.spyOn((<any>actor), 'logDebug').mockImplementation((...args) => (<() => unknown>args[2])());
-    jest.spyOn((<any>actor), 'logWarn').mockImplementation((...args) => (<() => unknown>args[2])());
+    vi.spyOn((<any>actor), 'logDebug').mockImplementation((...args) => (<() => unknown>args[2])());
+    vi.spyOn((<any>actor), 'logWarn').mockImplementation((...args) => (<() => unknown>args[2])());
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
+    vi.resetAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('test', () => {
@@ -59,13 +60,13 @@ describe('ActorHttpRetry', () => {
 
   describe('run', () => {
     beforeEach(() => {
-      jest.spyOn(ActorHttpRetry, 'sleep').mockResolvedValue();
-      jest.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(new Date(0));
+      vi.spyOn(ActorHttpRetry, 'sleep').mockResolvedValue();
+      vi.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(new Date(0));
     });
 
     it('should handle an immediately successful request', async() => {
       const response: Response = <any> { ok: true };
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(mediatorHttp.mediate).not.toHaveBeenCalled();
       await expect(actor.run({ input, context })).resolves.toEqual(response);
@@ -79,8 +80,8 @@ describe('ActorHttpRetry', () => {
         <any> { ok: false, status: 504, statusText: 'Gateway Timeout', headers: new Map() },
         <any> { ok: true },
       ];
-      // eslint-disable-next-line jest/prefer-mock-promise-shorthand
-      jest.spyOn(mediatorHttp, 'mediate').mockImplementation(() => Promise.resolve(mediatorResponseQueue.shift()!));
+      // eslint-disable-next-line vitest/prefer-mock-promise-shorthand
+      vi.spyOn(mediatorHttp, 'mediate').mockImplementation(() => Promise.resolve(mediatorResponseQueue.shift()!));
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
       expect(mediatorHttp.mediate).not.toHaveBeenCalled();
@@ -95,7 +96,7 @@ describe('ActorHttpRetry', () => {
 
     it('should handle error codes in the 400 range', async() => {
       const response: Response = <any> { ok: false, status: 400, headers: new Map() };
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
       expect(mediatorHttp.mediate).not.toHaveBeenCalled();
@@ -107,7 +108,7 @@ describe('ActorHttpRetry', () => {
 
     it('should handle error codes in the 500 range', async() => {
       const response: Response = <any> { ok: false, status: 500, headers: new Map() };
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
       expect(mediatorHttp.mediate).not.toHaveBeenCalled();
@@ -119,7 +120,7 @@ describe('ActorHttpRetry', () => {
 
     it('should handle error codes in force retry list', async() => {
       const response: Response = <any> { ok: false, status: 500, headers: new Map() };
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
       expect(mediatorHttp.mediate).not.toHaveBeenCalled();
@@ -143,9 +144,9 @@ describe('ActorHttpRetry', () => {
         status,
         headers: new Headers({ 'retry-after': retryAfterDate.getTime().toString(10) }),
       };
-      jest.spyOn(Date, 'now').mockReturnValue(0);
-      jest.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(retryAfterDate);
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
+      vi.spyOn(Date, 'now').mockReturnValue(0);
+      vi.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(retryAfterDate);
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(mediatorHttp.mediate).not.toHaveBeenCalled();
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
@@ -166,10 +167,10 @@ describe('ActorHttpRetry', () => {
         status: 429,
         headers: new Headers({ 'retry-after': retryAfterDate.getTime().toString(10) }),
       };
-      jest.spyOn(Date, 'now').mockReturnValue(0);
-      jest.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(retryAfterDate);
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
+      vi.spyOn(Date, 'now').mockReturnValue(0);
+      vi.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(retryAfterDate);
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
+      vi.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
       expect(mediatorHttp.mediate).not.toHaveBeenCalled();
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
@@ -186,9 +187,9 @@ describe('ActorHttpRetry', () => {
         status: 429,
         headers: new Headers({ 'retry-after': 'a b c' }),
       };
-      jest.spyOn(Date, 'now').mockReturnValue(0);
-      jest.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(undefined);
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
+      vi.spyOn(Date, 'now').mockReturnValue(0);
+      vi.spyOn(ActorHttpRetry, 'parseRetryAfterHeader').mockReturnValue(undefined);
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(mediatorHttp.mediate).not.toHaveBeenCalled();
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
@@ -207,8 +208,8 @@ describe('ActorHttpRetry', () => {
         status: 429,
         headers: new Headers(),
       };
-      jest.spyOn(Date, 'now').mockReturnValue(0);
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
+      vi.spyOn(Date, 'now').mockReturnValue(0);
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
       expect(mediatorHttp.mediate).not.toHaveBeenCalled();
       expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
@@ -221,14 +222,14 @@ describe('ActorHttpRetry', () => {
 
     it('should propagate errors from the mediator', async() => {
       const error = new Error('mediator error');
-      jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
+      vi.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
       await expect(actor.run({ input, context })).rejects.toThrow(error);
     });
   });
 
   describe('sleep', () => {
     beforeEach(() => {
-      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
+      vi.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
     });
 
     it('should sleep the specified amount of milliseconds', async() => {
@@ -254,7 +255,7 @@ describe('ActorHttpRetry', () => {
 
   describe('parseRetryAfterHeader', () => {
     beforeEach(() => {
-      jest.spyOn(Date, 'now').mockReturnValue(0);
+      vi.spyOn(Date, 'now').mockReturnValue(0);
     });
 
     it('should parse integer header', () => {
@@ -274,7 +275,7 @@ describe('ActorHttpRetry', () => {
 
   describe('handleHttpInvalidateEvent', () => {
     it('should get called by the invalidator', () => {
-      jest.spyOn(actor, 'handleHttpInvalidateEvent').mockReturnValue();
+      vi.spyOn(actor, 'handleHttpInvalidateEvent').mockReturnValue();
       expect(actor.handleHttpInvalidateEvent).not.toHaveBeenCalled();
       httpInvalidatorListener({ context, url: undefined });
       expect(actor.handleHttpInvalidateEvent).toHaveBeenCalledTimes(1);

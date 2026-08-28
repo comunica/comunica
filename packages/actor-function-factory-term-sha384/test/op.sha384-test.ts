@@ -2,6 +2,7 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermSha384 } from '../lib';
 
 describe('evaluation of \'sha384\' like', () => {

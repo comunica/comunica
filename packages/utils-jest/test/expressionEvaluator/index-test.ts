@@ -2,6 +2,7 @@
  * This test exercises the named re-exports in utils-jest/lib/index.ts
  * to ensure Istanbul registers coverage for those getter functions.
  */
+import { describe, expect, it } from 'vitest';
 import {
   BF,
   date,

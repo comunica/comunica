@@ -2,6 +2,7 @@ import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
+import { describe, expect, it } from 'vitest';
 import { materializeOperation, materializeTerm } from '../lib/MaterializeBindings';
 
 const DF = new DataFactory();

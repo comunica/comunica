@@ -1,4 +1,5 @@
 import { ActionContext } from '@comunica/core';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FetchInitPreprocessor } from '../lib/FetchInitPreprocessor-browser';
 import type { IFetchInitPreprocessor } from '../lib/IFetchInitPreprocessor';
 
@@ -10,9 +11,9 @@ describe('FetchInitPreprocessor-browser', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
-    jest.resetAllMocks();
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   describe('handle', () => {

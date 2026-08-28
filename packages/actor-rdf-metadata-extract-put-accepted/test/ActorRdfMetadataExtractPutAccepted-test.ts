@@ -1,6 +1,7 @@
 import type { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfMetadataExtractPutAccepted } from '../lib/ActorRdfMetadataExtractPutAccepted';
 import '@comunica/utils-jest';
 

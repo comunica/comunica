@@ -4,6 +4,7 @@ import type { IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorOptimizeQueryOperationRewriteMove } from '../lib/ActorOptimizeQueryOperationRewriteMove';
 import '@comunica/utils-jest';
 

@@ -6,6 +6,7 @@ import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQueryResultSerializeSparqlCsv } from '..';
 import '@comunica/utils-jest';
 

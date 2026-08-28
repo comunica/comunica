@@ -1,4 +1,5 @@
 import type { IMetadataValidationState } from '@comunica/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MetadataValidationState } from '../lib/MetadataValidationState';
 
 describe('MetadataValidationState', () => {
@@ -20,8 +21,8 @@ describe('MetadataValidationState', () => {
     let listener1: any;
     let listener2: any;
     beforeEach(() => {
-      listener1 = jest.fn();
-      listener2 = jest.fn();
+      listener1 = vi.fn();
+      listener2 = vi.fn();
       state.addInvalidateListener(listener1);
       state.addInvalidateListener(listener2);
     });

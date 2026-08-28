@@ -10,6 +10,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfJoinOptionalBind } from '../lib/ActorRdfJoinOptionalBind';
 import '@comunica/utils-jest';
 
@@ -49,7 +50,7 @@ IQueryOperationResultBindings
         mediate: async() => ({ selectivity: 0.8 }),
       };
       mediatorQueryOperation = <any> {
-        mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IQueryOperationResultBindings> => {
+        mediate: vi.fn(async(arg: IActionQueryOperation): Promise<IQueryOperationResultBindings> => {
           let data: Bindings[] = [];
           switch ((<Algebra.Pattern> arg.operation).subject.value) {
             case '1':

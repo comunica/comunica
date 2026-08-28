@@ -1,8 +1,8 @@
-# Comunica Jest helpers
+# Comunica Vitest helpers
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Futils-jest.svg)](https://www.npmjs.com/package/@comunica/utils-jest)
 
-Jest test helpers for Comunica
+Vitest test helpers for Comunica
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -19,28 +19,17 @@ $ yarn add --save-dev @comunica/utils-jest
 
 In order to use matchers in your tests,
 you'll have to make sure that they are imported.
-This can be done by adding the following entry to your Jest configuration:
-```json
-{
-  "jest": {
-    "setupFilesAfterEnv": ["@comunica/utils-jest"]
-  }
-}
-```
-
-If you are already using an existing test framework script file,
-make sure to add @comunica/utils-jest as follows to your file:
+This can be done by adding the following entry to your Vitest configuration:
 ```javascript
-...
-require('@comunica/utils-jest');
+export default defineConfig({
+  test: {
+    setupFiles: ['@comunica/utils-jest'],
+  },
+});
 ```
 
-## _Optional: Typescript typings configuration_
-
-If you are using TypeScript, possibly in combination with [ts-jest](https://www.npmjs.com/package/ts-jest),
-you will need to import the typings of this package to make the TS compiler recognise the new matchers.
-
-For this, include the following import at the top of each applicable test file:
+Alternatively, include the following import at the top of each applicable test file,
+which also makes the TypeScript compiler recognise the new matchers:
 ```
 import "@comunica/utils-jest";
 ```
@@ -123,4 +112,36 @@ expect(new ArrayIterator([
     [ DF.variable('c'), DF.namedNode('c1') ],
   ]),
 ]);
+```
+
+#### toBeRdfIsomorphic
+
+Check if two RDF graphs are isomorphic.
+
+```js
+expect([ quadA1, quadA2 ]).toBeRdfIsomorphic([ quadB1, quadB2 ]);
+```
+
+#### toEqualRdfTerm
+
+Check if two RDF terms are equal, ignoring the labels of blank nodes.
+
+```js
+expect(DF.namedNode('ex:s')).toEqualRdfTerm(DF.namedNode('ex:s'));
+```
+
+#### toEqualRdfQuad
+
+Check if two RDF quads are equal, ignoring the labels of blank nodes.
+
+```js
+expect(quadA).toEqualRdfQuad(quadB);
+```
+
+#### toEqualRdfQuadArray
+
+Check if two RDF quad arrays are equal, ignoring the labels of blank nodes.
+
+```js
+expect([ quadA1, quadA2 ]).toEqualRdfQuadArray([ quadB1, quadB2 ]);
 ```

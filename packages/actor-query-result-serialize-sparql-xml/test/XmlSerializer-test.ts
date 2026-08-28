@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { XmlSerializer } from '../lib/XmlSerializer';
 
 describe('XmlSerializer', () => {

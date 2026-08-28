@@ -11,6 +11,7 @@ import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySource } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQuerySourceDereferenceLinkForceSparql } from '../lib/ActorQuerySourceDereferenceLinkForceSparql';
 import '@comunica/utils-jest';
 

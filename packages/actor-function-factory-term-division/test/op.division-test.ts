@@ -9,6 +9,7 @@ import {
 } from '@comunica/utils-jest';
 import type { FuncTestTableConfig } from '@comunica/utils-jest';
 import { LRUCache } from 'lru-cache';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermDivision } from '../lib';
 
 describe('evaluation of \'/\' like', () => {

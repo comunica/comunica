@@ -10,6 +10,7 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfJoinOptionalHash } from '../lib/ActorRdfJoinOptionalHash';
 import '@comunica/utils-jest';
 

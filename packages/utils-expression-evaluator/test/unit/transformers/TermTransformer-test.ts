@@ -1,5 +1,6 @@
 import { getMockSuperTypeProvider } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TermTransformer, TypeURL } from '../../../lib';
 
 describe('Term Transformer', () => {

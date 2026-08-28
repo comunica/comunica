@@ -4,6 +4,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { RDFA_FEATURES, RdfaParser } from 'rdfa-streaming-parser';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfParseHtmlRdfa } from '../lib/ActorRdfParseHtmlRdfa';
 import '@comunica/utils-jest';
 
@@ -71,9 +72,9 @@ describe('ActorRdfParseHtmlRdfa', () => {
             return null;
           },
         };
-        emit = jest.fn();
-        error = jest.fn();
-        end = jest.fn();
+        emit = vi.fn();
+        error = vi.fn();
+        end = vi.fn();
         action = { baseIRI, headers, emit, error, end, context };
       });
 

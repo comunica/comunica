@@ -8,6 +8,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationPathNps } from '../lib/ActorQueryOperationPathNps';
 import '@comunica/utils-jest';
 
@@ -23,7 +24,7 @@ describe('ActorQueryOperationPathNps', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: jest.fn((arg: any) => {
+      mediate: vi.fn((arg: any) => {
         const vars: RDF.Variable[] = [];
         for (const name of QUAD_TERM_NAMES) {
           if (arg.operation[name].termType === 'Variable' || arg.operation[name].termType === 'BlankNode') {

@@ -1,4 +1,5 @@
 import { ActionContext, Bus } from '@comunica/core';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorContextPreprocessConvertShortcuts } from '../lib/ActorContextPreprocessConvertShortcuts';
 import '@comunica/utils-jest';
 

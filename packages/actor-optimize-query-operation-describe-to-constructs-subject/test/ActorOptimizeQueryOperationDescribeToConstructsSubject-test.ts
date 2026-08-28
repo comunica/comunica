@@ -2,6 +2,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   ActorOptimizeQueryOperationDescribeToConstructsSubject,
 } from '../lib/ActorOptimizeQueryOperationDescribeToConstructsSubject';

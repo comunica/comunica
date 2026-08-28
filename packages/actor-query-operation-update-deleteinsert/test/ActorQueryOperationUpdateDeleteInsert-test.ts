@@ -7,8 +7,8 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationUpdateDeleteInsert } from '../lib/ActorQueryOperationUpdateDeleteInsert';
-import 'jest-rdf';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -40,7 +40,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       }),
     };
     mediatorUpdateQuads = {
-      mediate: jest.fn(() => Promise.resolve({
+      mediate: vi.fn(() => Promise.resolve({
         execute: () => Promise.resolve(),
       })),
     };
@@ -239,7 +239,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
 
     it('should return a rejecting updateResult when the update actor\'s result rejects', async() => {
       const error = new Error('DeleteInsert error');
-      jest.spyOn(mediatorUpdateQuads, 'mediate').mockResolvedValue({
+      vi.spyOn(mediatorUpdateQuads, 'mediate').mockResolvedValue({
         execute: () => Promise.reject(error),
       });
 

@@ -2,6 +2,7 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermStrLang } from '../lib';
 
 describe('like \'strlang\' receiving', () => {

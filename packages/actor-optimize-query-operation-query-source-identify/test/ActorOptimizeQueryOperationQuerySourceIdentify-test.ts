@@ -11,6 +11,7 @@ import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorOptimizeQueryOperationQuerySourceIdentify } from '../lib/ActorOptimizeQueryOperationQuerySourceIdentify';
 import '@comunica/utils-jest';
 
@@ -47,7 +48,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
 
     beforeEach(() => {
       mediatorQuerySourceIdentify = <any> {
-        mediate: jest.fn(async(action: IActionQuerySourceIdentify) => {
+        mediate: vi.fn(async(action: IActionQuerySourceIdentify) => {
           if (action.querySourceUnidentified.value === 'sourceSparql') {
             return { querySource: <any> {
               ofUnidentified: action.querySourceUnidentified,
@@ -284,9 +285,9 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       });
 
       it('should record dereference events when passed dereference statistic', async() => {
-        const cb = jest.fn(() => {});
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
+        const cb = vi.fn(() => {});
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
 
         // Define actor that does return required field source with reference value
         mediatorQuerySourceIdentify = <any> {
@@ -334,7 +335,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           },
         );
 
-        jest.useRealTimers();
+        vi.useRealTimers();
       });
     });
   });
@@ -351,7 +352,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         },
       };
       httpInvalidator = <any>{
-        addInvalidateListener: jest.fn(),
+        addInvalidateListener: vi.fn(),
       };
       actor = new ActorOptimizeQueryOperationQuerySourceIdentify({
         name: 'actor',
@@ -401,14 +402,14 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
 
     beforeEach(() => {
       mediatorQuerySourceIdentify = <any> {
-        mediate: jest.fn(async(action: IActionQuerySourceIdentify) => {
+        mediate: vi.fn(async(action: IActionQuerySourceIdentify) => {
           return {
             querySource: <any> { ofUnidentified: action.querySourceUnidentified, source: { referenceValue: 'abc' }},
           };
         }),
       };
       httpInvalidator = <any>{
-        addInvalidateListener: jest.fn(),
+        addInvalidateListener: vi.fn(),
       };
       actor = new ActorOptimizeQueryOperationQuerySourceIdentify({
         name: 'actor',

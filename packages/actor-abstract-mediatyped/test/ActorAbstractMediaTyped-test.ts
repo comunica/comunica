@@ -1,4 +1,5 @@
 import { Actor, Bus, passTestVoid } from '@comunica/core';
+import { describe, expect, it } from 'vitest';
 import { ActorAbstractMediaTyped } from '../lib/ActorAbstractMediaTyped';
 import '@comunica/utils-jest';
 

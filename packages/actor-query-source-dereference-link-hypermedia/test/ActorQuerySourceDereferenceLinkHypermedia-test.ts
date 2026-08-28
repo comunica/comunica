@@ -23,6 +23,7 @@ import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 import { streamifyArray } from 'streamify-array';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQuerySourceDereferenceLinkHypermedia } from '../lib/ActorQuerySourceDereferenceLinkHypermedia';
 import { QuerySourceCachePolicyDereferenceWrapper } from '../lib/QuerySourceCachePolicyDereferenceWrapper';
 import '@comunica/utils-jest';
@@ -181,7 +182,7 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
       });
 
       it('should apply the link transformation', async() => {
-        const transformQuads = jest.fn(inputQuads => inputQuads
+        const transformQuads = vi.fn(inputQuads => inputQuads
           .map((q: RDF.Quad) => DF.quad(q.subject, q.predicate, DF.literal(`TRANSFORMED(${q.object.value})`))));
         const { source, metadata, dataset } = await actor.run({
           link: { url: 'startUrl', transform: transformQuads },
@@ -194,7 +195,7 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
       });
 
       it('should apply the link context', async() => {
-        jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
+        vi.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
         const { source, metadata, dataset } = await actor.run({
           link: { url: 'startUrl', context: new ActionContext({ b: 2 }) },
           context: new ActionContext({ a: 1 }),
@@ -238,7 +239,7 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
             source: { sourceContents: quads },
           };
         };
-        mediatorMetadata.mediate = <any> jest.fn(() => {
+        mediatorMetadata.mediate = <any> vi.fn(() => {
           const data = new Readable();
           data._read = () => null;
           data.on('newListener', (name: string) => {
@@ -284,7 +285,7 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
           mediatorQuerySourceIdentifyHypermedia,
         });
 
-        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
+        const dereferenceSpy = vi.spyOn(mediatorDereferenceRdf, 'mediate');
 
         await actorWithoutTimeout.run({
           link: { url: 'https://example.org/sparql' },
@@ -296,8 +297,8 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
       });
 
       it('should apply a timeout to SPARQL service description dereferences', async() => {
-        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
-        const identifySpy = jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
+        const dereferenceSpy = vi.spyOn(mediatorDereferenceRdf, 'mediate');
+        const identifySpy = vi.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
 
         const context = new ActionContext();
         await actor.run({
@@ -316,8 +317,8 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
       });
 
       it('should decrease an existing httpTimeout when dereferencing SPARQL service descriptions', async() => {
-        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
-        const identifySpy = jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
+        const dereferenceSpy = vi.spyOn(mediatorDereferenceRdf, 'mediate');
+        const identifySpy = vi.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
 
         const context = new ActionContext({ [KeysHttp.httpTimeout.name]: 10_000 });
         await actor.run({
@@ -333,7 +334,7 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
       });
 
       it('should not apply a timeout to non-SPARQL dereferences', async() => {
-        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
+        const dereferenceSpy = vi.spyOn(mediatorDereferenceRdf, 'mediate');
 
         await actor.run({
           link: { url: 'https://example.org/data.ttl' },
@@ -346,7 +347,7 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
       });
 
       it('should not apply a timeout when source type is forced to non-SPARQL', async() => {
-        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
+        const dereferenceSpy = vi.spyOn(mediatorDereferenceRdf, 'mediate');
 
         await actor.run({
           link: { url: 'https://example.org/sparql', forceSourceType: 'file' },
@@ -359,7 +360,7 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
       });
 
       it('should not increase an existing httpTimeout when dereferencing SPARQL service descriptions', async() => {
-        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
+        const dereferenceSpy = vi.spyOn(mediatorDereferenceRdf, 'mediate');
 
         const context = new ActionContext({ [KeysHttp.httpTimeout.name]: 1_000 });
         await actor.run({

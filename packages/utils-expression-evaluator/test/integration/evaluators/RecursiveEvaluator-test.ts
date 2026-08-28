@@ -2,6 +2,7 @@ import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockInternalEvaluator } from '@comunica/utils-jest';
 import { DataFactory } from 'rdf-data-factory';
+import { describe, expect, it } from 'vitest';
 import * as E from '../../../lib/expressions';
 import * as Err from '../../../lib/util/Errors';
 

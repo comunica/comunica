@@ -12,6 +12,7 @@ import {
 
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryExpressionExtensions } from '../lib';
 
 const DF = new DataFactory();

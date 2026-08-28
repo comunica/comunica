@@ -1,4 +1,5 @@
 import { DataFactory } from 'rdf-data-factory';
+import { describe, expect, it } from 'vitest';
 import { BlankNodeScoped } from '..';
 
 const DF = new DataFactory();

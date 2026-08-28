@@ -1,4 +1,5 @@
 import { getMockSuperTypeProvider } from '@comunica/utils-jest';
+import { describe, expect, it } from 'vitest';
 import { TypeAlias, TypeURL } from '../../../lib';
 import type { KnownLiteralTypes } from '../../../lib/';
 import type { OverrideType } from '../../../lib/util/TypeHandling';

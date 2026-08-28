@@ -1,6 +1,7 @@
 import { ActorQueryResultSerialize } from '@comunica/bus-query-result-serialize';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQueryResultSerializeRdf } from '../lib/ActorQueryResultSerializeRdf';
 import '@comunica/utils-jest';
 

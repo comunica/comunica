@@ -6,6 +6,7 @@ import {
 } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
+import { describe, expect, it } from 'vitest';
 import { TermTransformer, TypeURL } from '../../../lib';
 
 const DF = new DataFactory();

@@ -1,6 +1,7 @@
 import type { IActionDereference } from '@comunica/bus-dereference';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, ICachePolicy, ICacheResponseHead, IRevalidationPolicy } from '@comunica/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QuerySourceCachePolicyDereferenceWrapper } from '../lib/QuerySourceCachePolicyDereferenceWrapper';
 
 describe('QuerySourceCachePolicyDereferenceWrapper', () => {
@@ -42,7 +43,7 @@ describe('QuerySourceCachePolicyDereferenceWrapper', () => {
 
   describe('storable', () => {
     it('is delegated to the cachePolicy', () => {
-      jest.spyOn(cachePolicy, 'storable');
+      vi.spyOn(cachePolicy, 'storable');
       expect(wrapper.storable()).toBeTruthy();
       expect(cachePolicy.storable).toHaveBeenCalledTimes(1);
     });
@@ -50,7 +51,7 @@ describe('QuerySourceCachePolicyDereferenceWrapper', () => {
 
   describe('satisfiesWithoutRevalidation', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
+      vi.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
       await expect(wrapper.satisfiesWithoutRevalidation({ link: { url: 'http://localhost:8080' }, context })).resolves.toBeTruthy();
       expect(cachePolicy.satisfiesWithoutRevalidation).toHaveBeenCalledTimes(1);
       expect(cachePolicy.satisfiesWithoutRevalidation).toHaveBeenCalledWith({
@@ -62,7 +63,7 @@ describe('QuerySourceCachePolicyDereferenceWrapper', () => {
 
   describe('responseHeaders', () => {
     it('is delegated to the cachePolicy', () => {
-      jest.spyOn(cachePolicy, 'responseHeaders');
+      vi.spyOn(cachePolicy, 'responseHeaders');
       expect(wrapper.responseHeaders()).toEqual(new Headers({ a: 'b' }));
       expect(cachePolicy.responseHeaders).toHaveBeenCalledTimes(1);
     });
@@ -70,7 +71,7 @@ describe('QuerySourceCachePolicyDereferenceWrapper', () => {
 
   describe('timeToLive', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'timeToLive');
+      vi.spyOn(cachePolicy, 'timeToLive');
       expect(wrapper.timeToLive()).toBe(123);
       expect(cachePolicy.timeToLive).toHaveBeenCalledTimes(1);
     });
@@ -78,7 +79,7 @@ describe('QuerySourceCachePolicyDereferenceWrapper', () => {
 
   describe('revalidationHeaders', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'revalidationHeaders');
+      vi.spyOn(cachePolicy, 'revalidationHeaders');
       await expect(wrapper.revalidationHeaders({
         link: { url: 'http://localhost:8080' },
         context,
@@ -93,7 +94,7 @@ describe('QuerySourceCachePolicyDereferenceWrapper', () => {
 
   describe('revalidatedPolicy', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'revalidatedPolicy');
+      vi.spyOn(cachePolicy, 'revalidatedPolicy');
       await expect(wrapper.revalidatedPolicy({
         link: { url: 'http://localhost:8080' },
         context,

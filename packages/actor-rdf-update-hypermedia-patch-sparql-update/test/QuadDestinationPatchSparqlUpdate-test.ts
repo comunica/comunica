@@ -6,6 +6,7 @@ import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import { fromArray, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QuadDestinationPatchSparqlUpdate } from '../lib/QuadDestinationPatchSparqlUpdate';
 
 const DF = new DataFactory();
@@ -18,7 +19,7 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
 
   beforeEach(() => {
     mediatorHttp = {
-      mediate: jest.fn(() => ({
+      mediate: vi.fn(() => ({
         status: 200,
       })),
     };
@@ -111,7 +112,7 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
     });
 
     it('should close body if available', async() => {
-      const cancel = jest.fn();
+      const cancel = vi.fn();
       mediatorHttp.mediate = () => ({
         status: 200,
         body: { cancel },

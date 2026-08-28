@@ -5,6 +5,7 @@ import {
   yearMonthDurationTyped,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermXsdToDayTimeDuration } from '../lib';
 
 describe('to dayTimeDuration', () => {

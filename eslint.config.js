@@ -33,6 +33,8 @@ const allowedDeepImports = [
   'cross-fetch/polyfill',
   // The engines share their Vite build configuration via this entry point
   '@comunica/actor-init-query/vite.config.base',
+  // 'vitest' exposes its config helpers on a separate entry point
+  'vitest/config',
 ];
 
 module.exports = config([
@@ -132,7 +134,7 @@ module.exports = config([
     // Some packages make use of 'export default'
     files: [
       'packages/actor-http-*/lib/*.ts',
-      'packages/jest/**/*.ts',
+      'packages/utils-jest/**/*.ts',
     ],
     rules: {
       'import/no-anonymous-default-export': 'off',
@@ -149,12 +151,32 @@ module.exports = config([
     },
   },
   {
-    // Some test files import 'jest-rdf' which triggers this
-    // Some jest tests import '../../lib' which triggers this
+    // Manual mocks are only ever imported from tests, so they may use the dev dependencies as well
+    files: [
+      '**/__mocks__/**',
+    ],
+    rules: {
+      'import/no-extraneous-dependencies': 'off',
+    },
+  },
+  {
+    // The browser tests run under Playwright rather than vitest, so they use its 'test' function
+    files: [
+      '**/*.spec.ts',
+    ],
+    rules: {
+      'vitest/consistent-test-it': 'off',
+      'vitest/prefer-importing-vitest-globals': 'off',
+      'vitest/require-top-level-describe': 'off',
+    },
+  },
+  {
+    // Some test files import '@comunica/utils-jest' for its matchers, which triggers this
+    // Some tests import '../../lib' which triggers this
     files: [
       '**/test/*-test.ts',
       '**/test/*-util.ts',
-      'packages/jest/test/matchers/*-test.ts',
+      'packages/utils-jest/test/matchers/*-test.ts',
     ],
     rules: {
       'import/no-unassigned-import': 'off',
@@ -186,10 +208,11 @@ module.exports = config([
     },
   },
   {
-    // Vite configurations
+    // Vite and Vitest configurations
     files: [
       '**/vite.config.ts',
       '**/vite.config.base.ts',
+      'vitest.config.ts',
     ],
     rules: {
       'import/extensions': 'off',
@@ -227,4 +250,4 @@ module.exports = config([
       'lerna.json',
     ],
   },
-]);
+], { disableJest: true, enableVitest: true });

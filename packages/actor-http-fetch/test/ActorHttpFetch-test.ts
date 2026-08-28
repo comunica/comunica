@@ -6,11 +6,12 @@ import type { IActorTest } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import CachePolicy = require('http-cache-semantics');
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 import '@comunica/utils-jest';
 import { CachePolicyHttpCacheSemanticsWrapper } from '../lib/CachePolicyHttpCacheSemanticsWrapper';
 
-jest.mock('../lib/FetchInitPreprocessor');
+vi.mock(import('../lib/FetchInitPreprocessor'));
 
 describe('ActorHttpFetch', () => {
   let bus: Bus<ActorHttp, IActionHttp, IActorTest, IActorHttpOutput>;
@@ -24,7 +25,7 @@ describe('ActorHttpFetch', () => {
     input = 'http://example.org/';
     context = new ActionContext();
     httpInvalidator = <any>{
-      addInvalidateListener: jest.fn(),
+      addInvalidateListener: vi.fn(),
     };
     actor = new ActorHttpFetch({
       name: 'actor',
@@ -34,15 +35,15 @@ describe('ActorHttpFetch', () => {
       cacheMaxEntrySize: 5242880,
       httpInvalidator,
     });
-    jest.useFakeTimers();
-    jest.spyOn(<any>actor, 'logInfo').mockImplementation(
+    vi.useFakeTimers();
+    vi.spyOn(<any>actor, 'logInfo').mockImplementation(
       (...args) => args.length === 3 ? (<() => unknown>(args[2]))() : args[1],
     );
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
-    jest.useRealTimers();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
   });
 
   describe('constructor', () => {
@@ -63,16 +64,16 @@ describe('ActorHttpFetch', () => {
 
     beforeEach(() => {
       headers = new Headers();
-      jest.spyOn(actor, 'prepareRequestHeaders').mockReturnValue(headers);
-      jest.spyOn(ActorHttp, 'headersToHash').mockReturnValue({ headersToHash: 'true' });
-      jest.replaceProperty(<any>actor, 'fetchInitPreprocessor', {
-        handle: jest.fn().mockResolvedValue({ requestInit: true }),
+      vi.spyOn(actor, 'prepareRequestHeaders').mockReturnValue(headers);
+      vi.spyOn(ActorHttp, 'headersToHash').mockReturnValue({ headersToHash: 'true' });
+      vi.spyOn(<any>actor, 'fetchInitPreprocessor', 'get').mockReturnValue({
+        handle: vi.fn().mockResolvedValue({ requestInit: true }),
       });
     });
 
     it('should call fetch and return its output', async() => {
       const response: any = { response: true, status: 200, headers: new Headers({ a: 'b' }) };
-      jest.spyOn(globalThis, 'fetch').mockResolvedValue(response);
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(response);
       const ret = await actor.run({ input, context });
       expect(ret).toBe(response);
       expect(ret.fromCache).toBeFalsy();
@@ -99,9 +100,9 @@ describe('ActorHttpFetch', () => {
 
     it('should call custom fetch and return its output', async() => {
       const response = { customFetchResponse: true, headers: new Headers({ a: 'b' }) };
-      const customFetch = jest.fn().mockResolvedValue(response);
+      const customFetch = vi.fn().mockResolvedValue(response);
       const contextWithFetch = context.set(KeysHttp.fetch, customFetch);
-      jest.spyOn(globalThis, 'fetch').mockResolvedValue(<any>'default fetch response');
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(<any>'default fetch response');
       await expect(actor.run({ input, context: contextWithFetch })).resolves.toBe(response);
       expect(actor.prepareRequestHeaders).toHaveBeenCalledTimes(1);
       // TODO: the headersToHash will no longer be called once the workaround in the actor is removed
@@ -121,7 +122,7 @@ describe('ActorHttpFetch', () => {
     it('should handle included credentials', async() => {
       const response = { response: true, headers: new Headers({ a: 'b' }) };
       const contextWithFlag = context.set(KeysHttp.includeCredentials, true);
-      jest.spyOn(globalThis, 'fetch').mockResolvedValue(<any>response);
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(<any>response);
       await expect(actor.run({ input, context: contextWithFlag })).resolves.toBe(response);
       expect(actor.prepareRequestHeaders).toHaveBeenCalledTimes(1);
       expect(ActorHttp.headersToHash).toHaveBeenCalledTimes(2);
@@ -139,16 +140,16 @@ describe('ActorHttpFetch', () => {
       const abortController = new AbortController();
       // Mocks the fetch output to a promise that is never resolved, to mimick no reply from server,
       // and makes sure the promise is rejected on abort signal to simulate the fetch functionality
-      jest.spyOn(globalThis, 'fetch').mockImplementationOnce((url, init) => {
+      vi.spyOn(globalThis, 'fetch').mockImplementationOnce((url, init) => {
         abortController.abort(new Error('ActorHttpFetch aborted'));
         return globalThis.fetch(url, init);
       });
-      jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
-      const errorHandler = jest.fn();
-      const successHandler = jest.fn();
+      vi.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
+      const errorHandler = vi.fn();
+      const successHandler = vi.fn();
       const promise = actor.run({ input, context: context.set(KeysHttp.httpAbortSignal, abortController.signal) });
       await promise.then(successHandler).catch(errorHandler);
-      await jest.runAllTimersAsync();
+      await vi.runAllTimersAsync();
       expect(successHandler).not.toHaveBeenCalled();
       expect(errorHandler).toHaveBeenCalledTimes(1);
       expect(errorHandler).toHaveBeenNthCalledWith(1, new Error('ActorHttpFetch aborted'));
@@ -161,17 +162,17 @@ describe('ActorHttpFetch', () => {
       const abortController = new AbortController();
       // Mocks the fetch output to a promise that is never resolved, to mimick no reply from server,
       // and makes sure the promise is rejected on abort signal to simulate the fetch functionality
-      jest.spyOn(globalThis, 'fetch').mockImplementationOnce((url, init) => {
+      vi.spyOn(globalThis, 'fetch').mockImplementationOnce((url, init) => {
         abortController.abort(new Error('ActorHttpFetch aborted'));
         return globalThis.fetch(url, init);
       });
-      jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockImplementation(args => args);
-      const errorHandler = jest.fn();
-      const successHandler = jest.fn();
+      vi.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockImplementation(args => args);
+      const errorHandler = vi.fn();
+      const successHandler = vi.fn();
       const promise = actor
         .run({ input, init, context: context.set(KeysHttp.httpAbortSignal, abortController.signal) });
       await promise.then(successHandler).catch(errorHandler);
-      await jest.runAllTimersAsync();
+      await vi.runAllTimersAsync();
       expect(successHandler).not.toHaveBeenCalled();
       expect(errorHandler).toHaveBeenCalledTimes(1);
       expect(errorHandler).toHaveBeenNthCalledWith(1, new Error('ActorHttpFetch aborted'));
@@ -183,17 +184,17 @@ describe('ActorHttpFetch', () => {
       const expectedError = new Error(`Fetch timed out for ${input} after ${timeoutMilliseconds} ms`);
       // Mocks the fetch output to a promise that is never resolved, to mimick no reply from server,
       // and makes sure the promise is rejected on abort signal to simulate the fetch functionality
-      jest.spyOn(globalThis, 'fetch').mockImplementation((_, init) => {
+      vi.spyOn(globalThis, 'fetch').mockImplementation((_, init) => {
         return new Promise((_, reject) => init!.signal!.addEventListener('abort', () => reject(init!.signal!.reason)));
       });
-      jest.spyOn(globalThis, 'setTimeout');
-      jest.spyOn(globalThis, 'clearTimeout');
-      jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
-      const errorHandler = jest.fn();
-      const successHandler = jest.fn();
+      vi.spyOn(globalThis, 'setTimeout');
+      vi.spyOn(globalThis, 'clearTimeout');
+      vi.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
+      const errorHandler = vi.fn();
+      const successHandler = vi.fn();
 
       actor.run({ input, context: contextWithTimeout }).then(successHandler).catch(errorHandler);
-      await jest.runAllTimersAsync();
+      await vi.runAllTimersAsync();
       expect(successHandler).not.toHaveBeenCalled();
       expect(errorHandler).toHaveBeenCalledTimes(1);
       expect(errorHandler).toHaveBeenNthCalledWith(1, expectedError);
@@ -211,17 +212,17 @@ describe('ActorHttpFetch', () => {
       const expectedError = new Error(`Fetch timed out for ${input} after ${timeoutMilliseconds} ms`);
       // Mocks the fetch output to a promise that is never resolved, to mimick no reply from server,
       // and makes sure the promise is rejected on abort signal to simulate the fetch functionality
-      jest.spyOn(globalThis, 'fetch').mockImplementation((_, init) => {
+      vi.spyOn(globalThis, 'fetch').mockImplementation((_, init) => {
         return new Promise((_, reject) => init!.signal!.addEventListener('abort', () => reject(init!.signal!.reason)));
       });
-      jest.spyOn(globalThis, 'setTimeout');
-      jest.spyOn(globalThis, 'clearTimeout');
-      jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockImplementation(args => args);
-      const errorHandler = jest.fn();
-      const successHandler = jest.fn();
+      vi.spyOn(globalThis, 'setTimeout');
+      vi.spyOn(globalThis, 'clearTimeout');
+      vi.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockImplementation(args => args);
+      const errorHandler = vi.fn();
+      const successHandler = vi.fn();
 
       actor.run({ input, init, context: contextWithTimeout }).then(successHandler).catch(errorHandler);
-      await jest.runAllTimersAsync();
+      await vi.runAllTimersAsync();
       expect(successHandler).not.toHaveBeenCalled();
       expect(errorHandler).toHaveBeenCalledTimes(1);
       expect(errorHandler).toHaveBeenNthCalledWith(1, expectedError);
@@ -234,10 +235,10 @@ describe('ActorHttpFetch', () => {
       const response = { response: true, headers: new Headers({ a: 'b' }) };
       const timeoutMilliseconds = 10_000;
       const contextWithTimeout = context.set(KeysHttp.httpTimeout, timeoutMilliseconds);
-      jest.spyOn(globalThis, 'fetch').mockResolvedValue(<any>response);
-      jest.spyOn(globalThis, 'setTimeout');
-      jest.spyOn(globalThis, 'clearTimeout');
-      jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(<any>response);
+      vi.spyOn(globalThis, 'setTimeout');
+      vi.spyOn(globalThis, 'clearTimeout');
+      vi.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
       await expect(actor.run({ input, context: contextWithTimeout })).resolves.toBe(response);
       expect(globalThis.setTimeout).toHaveBeenCalledTimes(1);
       expect(globalThis.setTimeout).toHaveBeenNthCalledWith(1, expect.any(Function), timeoutMilliseconds);
@@ -250,7 +251,7 @@ describe('ActorHttpFetch', () => {
         .set(KeysHttp.httpTimeout, timeoutMilliseconds)
         .set(KeysHttp.httpBodyTimeout, true);
       const expectedError = new Error(`Fetch timed out for ${input} after ${timeoutMilliseconds} ms`);
-      jest.spyOn(globalThis, 'fetch').mockImplementation((_, init) => {
+      vi.spyOn(globalThis, 'fetch').mockImplementation((_, init) => {
         let bodyReadReject: Function;
         const body = new ReadableStream({
           pull: () => new Promise((_, reject) => {
@@ -263,16 +264,16 @@ describe('ActorHttpFetch', () => {
         });
         return Promise.resolve(<any>{ body, headers: new Headers({ a: 'b' }) });
       });
-      jest.spyOn(globalThis, 'setTimeout');
-      jest.spyOn(globalThis, 'clearTimeout');
-      jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
+      vi.spyOn(globalThis, 'setTimeout');
+      vi.spyOn(globalThis, 'clearTimeout');
+      vi.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
       const response = await actor.run({ input, context: contextWithTimeout });
       const responseReader = response.body!.getReader();
-      const errorHandler = jest.fn();
-      const successHandler = jest.fn();
+      const errorHandler = vi.fn();
+      const successHandler = vi.fn();
 
       responseReader.read().then(successHandler).catch(errorHandler);
-      await jest.runAllTimersAsync();
+      await vi.runAllTimersAsync();
       expect(successHandler).not.toHaveBeenCalled();
       expect(errorHandler).toHaveBeenCalledTimes(1);
       expect(errorHandler).toHaveBeenNthCalledWith(1, expectedError);
@@ -286,7 +287,7 @@ describe('ActorHttpFetch', () => {
       const contextWithTimeout = context
         .set(KeysHttp.httpTimeout, timeoutMilliseconds)
         .set(KeysHttp.httpBodyTimeout, true);
-      jest.spyOn(globalThis, 'fetch').mockResolvedValue(<any>{
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(<any>{
         body: new ReadableStream({
           pull: async(controller) => {
             controller.enqueue('abc');
@@ -295,9 +296,9 @@ describe('ActorHttpFetch', () => {
         }),
         headers: new Headers({ a: 'b' }),
       });
-      jest.spyOn(globalThis, 'setTimeout');
-      jest.spyOn(globalThis, 'clearTimeout');
-      jest.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
+      vi.spyOn(globalThis, 'setTimeout');
+      vi.spyOn(globalThis, 'clearTimeout');
+      vi.spyOn((<any>actor).fetchInitPreprocessor, 'handle').mockResolvedValue({});
       const response = await actor.run({ input, context: contextWithTimeout });
       const responseReader = response.body!.getReader();
       await expect(responseReader.read()).resolves.toEqual({ done: false, value: 'abc' });
@@ -308,7 +309,7 @@ describe('ActorHttpFetch', () => {
 
     it('should mark fromCache if response was cached', async() => {
       const response = { response: true, headers: new Headers({ 'x-comunica-cache': 'HIT' }) };
-      jest.spyOn(globalThis, 'fetch').mockResolvedValue(<any>response);
+      vi.spyOn(globalThis, 'fetch').mockResolvedValue(<any>response);
       const ret = await actor.run({ input, context });
       expect(ret.fromCache).toBeTruthy();
     });
@@ -317,16 +318,16 @@ describe('ActorHttpFetch', () => {
   describe('prepareRequestHeaders', () => {
     it('should assign user-agent header when none has been provided', () => {
       const userAgent = 'actor-determined agent';
-      jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
-      jest.replaceProperty(<any>ActorHttpFetch, 'userAgent', userAgent);
+      vi.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
+      vi.spyOn(<any>ActorHttpFetch, 'userAgent', 'get').mockReturnValue(userAgent);
       expect(globalThis.window).toBeUndefined();
       expect(actor.prepareRequestHeaders({ input, context }).get('user-agent')).toBe(userAgent);
     });
 
     it('should not re-assign user-agent header when one has been provided', () => {
       const userAgent = 'actor-determined agent';
-      jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
-      jest.replaceProperty(<any>ActorHttpFetch, 'userAgent', userAgent);
+      vi.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
+      vi.spyOn(<any>ActorHttpFetch, 'userAgent', 'get').mockReturnValue(userAgent);
       expect(globalThis.window).toBeUndefined();
       expect(actor.prepareRequestHeaders({ input, init: { headers: new Headers({ 'user-agent': 'UA' }) }, context })
         .get('user-agent')).toBe('UA');
@@ -334,7 +335,7 @@ describe('ActorHttpFetch', () => {
 
     it('should remove custom user-agent header in browser environments', () => {
       const init = { headers: { 'user-agent': 'custom agent' }};
-      jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(true);
+      vi.spyOn(ActorHttp, 'isBrowser').mockReturnValue(true);
       expect(actor.prepareRequestHeaders({ input, context, init }).has('user-agent')).toBeFalsy();
       delete (<any>globalThis).window;
     });
@@ -342,16 +343,16 @@ describe('ActorHttpFetch', () => {
     it('should add authorization header from context when provided', () => {
       const userAgent = 'actor-determined agent';
       const contextWithAuth = context.set(KeysHttp.auth, 'a');
-      jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
-      jest.replaceProperty(<any>ActorHttpFetch, 'userAgent', userAgent);
+      vi.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
+      vi.spyOn(<any>ActorHttpFetch, 'userAgent', 'get').mockReturnValue(userAgent);
       expect(actor.prepareRequestHeaders({ input, context: contextWithAuth }).has('authorization')).toBeTruthy();
     });
 
     it('should not add empty authorization header from context when provided', () => {
       const userAgent = 'actor-determined agent';
       const contextWithAuth = context.set(KeysHttp.auth, '');
-      jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
-      jest.replaceProperty(<any>ActorHttpFetch, 'userAgent', userAgent);
+      vi.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
+      vi.spyOn(<any>ActorHttpFetch, 'userAgent', 'get').mockReturnValue(userAgent);
       expect(actor.prepareRequestHeaders({ input, context: contextWithAuth }).has('authorization')).toBeFalsy();
     });
   });

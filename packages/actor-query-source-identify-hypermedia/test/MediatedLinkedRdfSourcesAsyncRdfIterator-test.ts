@@ -10,6 +10,7 @@ import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Algebra } from '@comunica/utils-algebra';
 import { setTaskScheduler } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ISourceState, SourceStateGetter } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 
@@ -37,7 +38,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         DF.namedNode('g'),
       );
       mediatorRdfResolveHypermediaLinks = <any>{
-        mediate: jest.fn(({ metadata }: any) => Promise
+        mediate: vi.fn(({ metadata }: any) => Promise
           .resolve({ links: [{ url: `${metadata.baseURL}url1` }, { url: `${metadata.baseURL}url2` }]})),
       };
       mediatorRdfResolveHypermediaLinksQueue = <any>{
@@ -101,12 +102,12 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     describe('getSourceLinks', () => {
       // Else isClosable tests will time out due to async nature of 'should update discover statistic data'
       afterEach(() => {
-        jest.useRealTimers();
+        vi.useRealTimers();
       });
 
       it('should get urls based on mediatorRdfResolveHypermediaLinks', async() => {
         const source = sourceFactory();
-        jest.spyOn(mediatorRdfResolveHypermediaLinks, 'mediate');
+        vi.spyOn(mediatorRdfResolveHypermediaLinks, 'mediate');
         await expect(source.getSourceLinks({ baseURL: 'http://base.org/' })).resolves.toEqual([
           { url: 'http://base.org/url1' },
           { url: 'http://base.org/url2' },
@@ -166,8 +167,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should update discover statistic data', async() => {
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
 
         const statisticTracker: StatisticLinkDiscovery = new StatisticLinkDiscovery();
         context = context.set(KeysStatistics.discoveredLinks, statisticTracker);
@@ -195,7 +196,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           ],
         });
 
-        jest.useRealTimers();
+        vi.useRealTimers();
         source.destroy();
         await new Promise(setImmediate);
       });

@@ -1,4 +1,5 @@
 import CacheHandler from 'undici/types/cache-interceptor';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MetadataWrappingCacheStore } from '../lib/MetadataWrappingCacheStore';
 import CacheStore = CacheHandler.CacheStore;
 
@@ -7,11 +8,11 @@ describe('MetadataWrappingCacheStore', () => {
   let wrapper: MetadataWrappingCacheStore;
   beforeEach(() => {
     wrapped = <CacheStore> <any> {
-      get: jest.fn(() => {
+      get: vi.fn(() => {
         return { headers: { a: 'b' }};
       }),
-      createWriteStream: jest.fn(() => 'WS'),
-      delete: jest.fn(),
+      createWriteStream: vi.fn(() => 'WS'),
+      delete: vi.fn(),
     };
     wrapper = new MetadataWrappingCacheStore(wrapped);
   });
@@ -31,7 +32,7 @@ describe('MetadataWrappingCacheStore', () => {
 
   it('delegates get for undefined cache value', async() => {
     wrapped = <CacheStore> <any> {
-      get: jest.fn(() => {
+      get: vi.fn(() => {
         return undefined;
       }),
     };

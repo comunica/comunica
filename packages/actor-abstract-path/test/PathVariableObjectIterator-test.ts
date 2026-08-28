@@ -7,6 +7,7 @@ import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PathVariableObjectIterator } from '../lib';
 
 const DF = new DataFactory();
@@ -21,9 +22,9 @@ describe('PathVariableObjectIterator', () => {
   beforeEach(() => {
     createdBindingsStreams = [];
     mediatorQueryOperation = <any> {
-      mediate: jest.fn(() => {
+      mediate: vi.fn(() => {
         const bindingsStream = new BufferedIterator<RDF.Bindings>({ autoStart: false });
-        jest.spyOn(bindingsStream, 'destroy');
+        vi.spyOn(bindingsStream, 'destroy');
         createdBindingsStreams.push(bindingsStream);
         return { type: 'bindings', bindingsStream };
       }),

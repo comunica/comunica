@@ -1,5 +1,6 @@
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfUpdateHypermediaPutLdp } from '../lib/ActorRdfUpdateHypermediaPutLdp';
 import { QuadDestinationPutLdp } from '../lib/QuadDestinationPutLdp';
 import '@comunica/utils-jest';
@@ -13,17 +14,17 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = {
-      mediate: jest.fn(() => ({
+      mediate: vi.fn(() => ({
         body: 'BODY',
       })),
     };
     mediatorRdfSerializeMediatypes = {
-      mediate: jest.fn(() => ({
+      mediate: vi.fn(() => ({
         todo: 'TRUE',
       })),
     };
     mediatorRdfSerialize = {
-      mediate: jest.fn(() => ({
+      mediate: vi.fn(() => ({
         todo: 'TRUE',
       })),
     };

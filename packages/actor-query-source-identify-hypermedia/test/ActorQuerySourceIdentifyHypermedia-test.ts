@@ -9,9 +9,9 @@ import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQuerySourceIdentifyHypermedia } from '../lib/ActorQuerySourceIdentifyHypermedia';
 import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
-import 'jest-rdf';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -34,7 +34,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
     mediatorQuerySourceDereferenceLink = utilMediators.mediatorQuerySourceDereferenceLink;
     mediatorRdfResolveHypermediaLinks = utilMediators.mediatorRdfResolveHypermediaLinks;
     mediatorRdfResolveHypermediaLinksQueue = utilMediators.mediatorRdfResolveHypermediaLinksQueue;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('The ActorQuerySourceIdentifyHypermedia module', () => {

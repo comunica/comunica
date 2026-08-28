@@ -1,4 +1,5 @@
 import { Bus } from '@comunica/core';
+import { describe, expect, it } from 'vitest';
 import { ActorQueryOperation } from '..';
 
 describe('ActorQueryOperation', () => {

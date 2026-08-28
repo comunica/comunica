@@ -12,6 +12,7 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationPathSeq } from '../lib/ActorQueryOperationPathSeq';
 import '@comunica/utils-jest';
 
@@ -27,7 +28,7 @@ describe('ActorQueryOperationPathSeq', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: jest.fn((arg: any) => {
+      mediate: vi.fn((arg: any) => {
         const vars: RDF.Variable[] = [];
         for (const name of QUAD_TERM_NAMES) {
           if (arg.operation[name].termType === 'Variable' || arg.operation[name].termType === 'BlankNode') {

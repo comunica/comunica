@@ -7,6 +7,7 @@ import {
   getMockEEFactory,
   getMockExpression,
 } from '@comunica/utils-jest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('ActorExpressionEvaluatorFactoryDefault', () => {
   describe('An ActorExpressionEvaluatorFactoryDefault instance', () => {

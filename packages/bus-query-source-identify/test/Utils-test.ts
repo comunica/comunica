@@ -5,6 +5,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { describe, expect, it } from 'vitest';
 import {
   filterMatchingQuotedQuads,
   getDuplicateElementLinks,
@@ -16,7 +17,6 @@ import {
   setMetadata,
 } from '../lib';
 import '@comunica/utils-jest';
-import 'jest-rdf';
 
 const quad = require('rdf-quad');
 

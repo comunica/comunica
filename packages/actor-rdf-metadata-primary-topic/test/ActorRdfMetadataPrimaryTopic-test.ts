@@ -5,6 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { streamifyArray } from 'streamify-array';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfMetadataPrimaryTopic } from '../lib/ActorRdfMetadataPrimaryTopic';
 import '@comunica/utils-jest';
 

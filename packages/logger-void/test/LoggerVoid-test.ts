@@ -1,3 +1,4 @@
+import { beforeEach, describe, it } from 'vitest';
 import { LoggerVoid } from '../lib/LoggerVoid';
 
 describe('LoggerVoid', () => {

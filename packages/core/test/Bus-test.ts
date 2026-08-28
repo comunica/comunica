@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IAction, IActorOutput, IActorTest } from '..';
 import { ActionObserver, Actor, Bus } from '..';
 
@@ -43,13 +44,13 @@ describe('Bus', () => {
         // Do nothing
       };
 
-      jest.spyOn(actor1, 'test');
-      jest.spyOn(actor2, 'test');
-      jest.spyOn(actor3, 'test');
+      vi.spyOn(actor1, 'test');
+      vi.spyOn(actor2, 'test');
+      vi.spyOn(actor3, 'test');
 
-      jest.spyOn(observer1, 'onRun');
-      jest.spyOn(observer2, 'onRun');
-      jest.spyOn(observer3, 'onRun');
+      vi.spyOn(observer1, 'onRun');
+      vi.spyOn(observer2, 'onRun');
+      vi.spyOn(observer3, 'onRun');
 
       bus = new Bus({ name: 'bus' });
     });

@@ -21,6 +21,7 @@ import {
   yearMonthDurationTyped,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermGreaterThanEqual } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

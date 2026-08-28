@@ -1,6 +1,7 @@
 import type { IAction, IActorOutput, IActorTest, IBus } from '@comunica/core';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Runner } from '../lib/Runner';
 
 describe('Runner', () => {
@@ -78,10 +79,10 @@ describe('Runner', () => {
       (<any> actor1).run = actorRun;
       (<any> actor2).run = actorRun;
 
-      jest.spyOn(actor1, 'test');
-      jest.spyOn(actor2, 'test');
-      jest.spyOn(actor1, 'run');
-      jest.spyOn(actor2, 'run');
+      vi.spyOn(actor1, 'test');
+      vi.spyOn(actor2, 'test');
+      vi.spyOn(actor1, 'run');
+      vi.spyOn(actor2, 'run');
 
       bus.subscribe(actor1);
       bus.subscribe(actor2);

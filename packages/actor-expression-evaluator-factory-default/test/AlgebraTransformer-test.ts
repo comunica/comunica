@@ -14,6 +14,7 @@ import {
   getMockEEActionContext,
 } from '@comunica/utils-jest';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { AlgebraTransformer } from '../lib/AlgebraTransformer';
 
 const DF = new DataFactory();
@@ -122,7 +123,7 @@ describe('AlgebraTransformer', () => {
   it('throws on unknown expression type', async() => {
     const notWildcard = AF.createWildcardExpression();
     notWildcard.subType = <any> 'unknown type';
-    await expect(async() => await algebraTransformer.transformAlgebra(notWildcard))
+    await expect(algebraTransformer.transformAlgebra(notWildcard))
       .rejects.toThrow('unknown type cannot be converted into internal representation of expression.');
   });
 });

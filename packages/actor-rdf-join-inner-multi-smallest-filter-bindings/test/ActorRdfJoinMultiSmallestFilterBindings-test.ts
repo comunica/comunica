@@ -12,6 +12,7 @@ import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfJoinMultiSmallestFilterBindings } from '../lib/ActorRdfJoinMultiSmallestFilterBindings';
 import '@comunica/utils-jest';
 
@@ -74,7 +75,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
       });
-      jest.spyOn((<any> actor), 'logDebug').mockImplementation();
+      vi.spyOn((<any> actor), 'logDebug').mockImplementation();
       source1 = <IQuerySourceWrapper> <any> {
         source: {
           getSelectorShape() {
@@ -84,7 +85,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               filterBindings: true,
             };
           },
-          queryBindings: jest.fn((operation: any, ctx: any, options: any) => {
+          queryBindings: vi.fn((operation: any, ctx: any, options: any) => {
             return options.filterBindings.bindings.transform({
               map(binding: RDF.Bindings): RDF.Bindings {
                 return binding.merge(BF.bindings([
@@ -104,7 +105,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               operation: { operationType: 'type', type: Algebra.Types.PROJECT },
             };
           },
-          queryBindings: jest.fn((operation: any, ctx: any, options: any) => {
+          queryBindings: vi.fn((operation: any, ctx: any, options: any) => {
             return options.joinBindings.bindings.transform({
               map(binding: RDF.Bindings): RDF.Bindings {
                 return binding.merge(BF.bindings([
@@ -125,7 +126,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
               filterBindings: true,
             };
           },
-          queryBindings: jest.fn((operation: any, ctx: any, options: any) => {
+          queryBindings: vi.fn((operation: any, ctx: any, options: any) => {
             return options.filterBindings.bindings.transform({
               map(binding: RDF.Bindings): RDF.Bindings {
                 return binding.merge(BF.bindings([

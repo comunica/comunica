@@ -11,6 +11,7 @@ import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfJoinNestedLoop } from '../lib/ActorRdfJoinNestedLoop';
 import '@comunica/utils-jest';
 

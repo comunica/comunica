@@ -1,5 +1,6 @@
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
+import { describe, expect, it } from 'vitest';
 import {
   assignOperationSource,
   getOperationSource,

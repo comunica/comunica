@@ -1,8 +1,12 @@
 import * as url from 'node:url';
+import { describe, expect, it, vi } from 'vitest';
 import Requester from '../lib/Requester';
 
-// eslint-disable-next-line jest/no-mocks-import
-const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
+// eslint-disable-next-line vitest/no-mocks-import
+import { mockSetup } from './__mocks__/follow-redirects';
+
+// Unlike jest, vitest does not pick up '__mocks__' entries for node modules automatically
+vi.mock(import('follow-redirects'), () => import('./__mocks__/follow-redirects'));
 
 describe('Requester', () => {
   it('also works with parsed URL objects', async() => {

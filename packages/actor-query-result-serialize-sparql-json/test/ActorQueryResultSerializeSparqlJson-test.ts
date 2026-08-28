@@ -8,6 +8,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActionObserverHttp, ActorQueryResultSerializeSparqlJson } from '..';
 import '@comunica/utils-jest';
 
@@ -119,7 +120,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     beforeEach(() => {
       observedActors = [ 'urn:comunica:default:http/actors#fetch' ];
       httpInvalidator = <any> {
-        addInvalidateListener: jest.fn((listener: IInvalidateListener) => {
+        addInvalidateListener: vi.fn((listener: IInvalidateListener) => {
           lastListener = listener;
         }),
       };

@@ -7,6 +7,7 @@ import {
   getMockMediatorMergeBindingsContext,
   getMockMediatorQueryOperation,
 } from '@comunica/utils-jest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   ActorTermComparatorFactoryExpressionEvaluator,
 } from '../lib';

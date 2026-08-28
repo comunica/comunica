@@ -11,6 +11,7 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationPathZeroOrMore } from '../lib/ActorQueryOperationPathZeroOrMore';
 import '@comunica/utils-jest';
 
@@ -33,7 +34,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     };
 
     mediatorQueryOperation = {
-      mediate: jest.fn((arg: any) => {
+      mediate: vi.fn((arg: any) => {
         const vars: RDF.Variable[] = [];
         const distinct: boolean = arg.operation.type === 'distinct';
 

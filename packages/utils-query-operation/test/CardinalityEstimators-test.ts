@@ -1,6 +1,7 @@
 import type { IDataset, QueryResultCardinality } from '@comunica/types';
 import { AlgebraFactory, Algebra } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   estimateCardinality,
   estimateUnionCardinality,
@@ -14,10 +15,10 @@ describe('CardinalityEstimators', () => {
   const datasetUri = 'http://localhost/sparql';
 
   beforeEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
+    vi.resetAllMocks();
+    vi.restoreAllMocks();
     dataset = {
-      getCardinality: jest.fn().mockImplementation(
+      getCardinality: vi.fn().mockImplementation(
         (operation: Algebra.Operation): QueryResultCardinality | undefined => {
           if (operation.type === Algebra.Types.PATTERN) {
             return { type: 'estimate', value: 2, dataset: datasetUri };

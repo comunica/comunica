@@ -1,6 +1,7 @@
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfJoinEntriesSortSelectivity } from '../lib/ActorRdfJoinEntriesSortSelectivity';
 import '@comunica/utils-jest';
 

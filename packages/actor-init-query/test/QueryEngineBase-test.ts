@@ -22,11 +22,11 @@ import { Parser } from '@traqula/parser-sparql-1-2';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QueryEngineBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
 import '@comunica/utils-jest';
-import 'jest-rdf';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
@@ -56,7 +56,7 @@ describe('QueryEngineBase', () => {
       input.push(null);
     };
     mediatorQueryProcess = <any>{
-      mediate: jest.fn((action: any) => {
+      mediate: vi.fn((action: any) => {
         if (action.context.has(KeysInitQuery.explain)) {
           return Promise.resolve({
             result: {
@@ -132,7 +132,7 @@ describe('QueryEngineBase', () => {
 
     describe('invalidateHttpCache', () => {
       it('should call the HTTP invalidate mediator', async() => {
-        jest.spyOn(mediatorHttpInvalidate, 'mediate');
+        vi.spyOn(mediatorHttpInvalidate, 'mediate');
         await queryEngine.invalidateHttpCache('a');
         expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledWith({ context, url: 'a' });
       });
@@ -233,7 +233,7 @@ describe('QueryEngineBase', () => {
         });
 
         it('rejects for an invalid bindings query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
           await expect(queryEngine.queryBindings('INSERT ...')).rejects
             .toThrow(`Query result type 'bindings' was expected, while 'void' was found.`);
         });
@@ -244,7 +244,7 @@ describe('QueryEngineBase', () => {
           input = new ArrayIterator([
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
           ], { autoStart: false });
-          jest.spyOn(mediatorQueryProcess, 'mediate')
+          vi.spyOn(mediatorQueryProcess, 'mediate')
             .mockResolvedValue({ result: { type: 'quads', quadStream: input }});
           await expect(arrayifyStream(await queryEngine.queryQuads('CONSTRUCT ...'))).resolves.toEqualRdfQuadArray([
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
@@ -252,7 +252,7 @@ describe('QueryEngineBase', () => {
         });
 
         it('rejects for an invalid bindings query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
           await expect(queryEngine.queryQuads('INSERT ...')).rejects
             .toThrow(`Query result type 'quads' was expected, while 'void' was found.`);
         });
@@ -260,7 +260,7 @@ describe('QueryEngineBase', () => {
 
       describe('queryBoolean', () => {
         it('handles a valid boolean query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
             result: {
               type: 'boolean',
               execute: () => Promise.resolve(true),
@@ -270,7 +270,7 @@ describe('QueryEngineBase', () => {
         });
 
         it('rejects for an invalid boolean query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
           await expect(queryEngine.queryBoolean('INSERT ...')).rejects
             .toThrow(`Query result type 'boolean' was expected, while 'void' was found.`);
         });
@@ -278,7 +278,7 @@ describe('QueryEngineBase', () => {
 
       describe('queryVoid', () => {
         it('handles a valid void query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
             result: {
               type: 'void',
               execute: () => Promise.resolve(true),
@@ -288,7 +288,7 @@ describe('QueryEngineBase', () => {
         });
 
         it('rejects for an invalid void query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
             result: { type: 'boolean' },
           });
           await expect(queryEngine.queryVoid('ASK ...')).rejects
@@ -438,7 +438,7 @@ describe('QueryEngineBase', () => {
 
       beforeEach(() => {
         mockLogger = <Logger><unknown>{
-          flush: jest.fn(),
+          flush: vi.fn(),
         };
       });
 

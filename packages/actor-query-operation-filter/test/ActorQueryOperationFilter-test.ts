@@ -24,6 +24,7 @@ import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { Parser } from '@traqula/parser-sparql-1-2';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationFilter } from '../lib';
 
 const DF = new DataFactory();
@@ -181,7 +182,7 @@ describe('ActorQueryOperationFilter', () => {
 
     it('Should log warning for an expressionError', async() => {
       // The order is very important. This item requires isExpressionError to still have it's right definition.
-      const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
+      const logWarnSpy = vi.spyOn(<any> actor, 'logWarn');
       const op = {
         operation: AF.createFilter(AF.createBgp([]), erroringExpression),
         context,
@@ -196,9 +197,9 @@ describe('ActorQueryOperationFilter', () => {
         if (index === 0) {
           const dataCB = <() => { error: any; bindings: Bindings }>call[2];
           const { error, bindings } = dataCB();
-          // eslint-disable-next-line jest/no-conditional-expect
+          // eslint-disable-next-line vitest/no-conditional-expect
           expect(isExpressionError(error)).toBeTruthy();
-          // eslint-disable-next-line jest/no-conditional-expect
+          // eslint-disable-next-line vitest/no-conditional-expect
           expect(bindings).toBe(`{
   "a": "\\"1\\""
 }`);
@@ -208,8 +209,8 @@ describe('ActorQueryOperationFilter', () => {
 
     it('should emit an error for a hard erroring filter', async() => {
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
-      // eslint-disable-next-line jest/prefer-spy-on
-      (<any> sparqlee).isExpressionError = jest.fn(() => false);
+      // eslint-disable-next-line vitest/prefer-spy-on
+      (<any> sparqlee).isExpressionError = vi.fn(() => false);
       const op = {
         operation: AF.createFilter(AF.createBgp([]), erroringExpression),
         context,

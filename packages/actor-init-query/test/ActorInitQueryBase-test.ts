@@ -2,6 +2,7 @@ import { Transform } from 'node:stream';
 import { ActorInit } from '@comunica/bus-init';
 import { Bus } from '@comunica/core';
 import '@comunica/utils-jest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IActorInitQueryBaseArgs } from '../lib/ActorInitQueryBase';
 import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
 
@@ -16,7 +17,7 @@ describe('ActorInitQueryBase', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryProcess = <any>{
-      mediate: jest.fn().mockRejectedValue(new Error('Invalid query')),
+      mediate: vi.fn().mockRejectedValue(new Error('Invalid query')),
     };
     mediatorSparqlSerialize = {
       mediate: (arg: any) => Promise.resolve(arg.mediaTypes ?

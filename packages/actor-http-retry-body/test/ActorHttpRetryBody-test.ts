@@ -5,6 +5,7 @@ import type { IActorTest } from '@comunica/core';
 import { Bus, ActionContext } from '@comunica/core';
 import arrayifyStream from 'arrayify-stream';
 import { Readable } from 'readable-stream';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorHttpRetryBody } from '../lib/ActorHttpRetryBody';
 import '@comunica/utils-jest';
 
@@ -18,18 +19,18 @@ describe('ActorHttpRetryBody', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = <any> {
-      mediate: jest.fn().mockRejectedValue(new Error('mediatorHttp.mediate called without mocking')),
+      mediate: vi.fn().mockRejectedValue(new Error('mediatorHttp.mediate called without mocking')),
     };
     input = 'http://127.0.0.1/abc';
     actor = new ActorHttpRetryBody({ bus, mediatorHttp, name: 'actor' });
     context = new ActionContext({ [KeysHttp.httpRetryBodyCount.name]: 1 });
-    jest.spyOn(<any> actor, 'logDebug').mockImplementation((...args) => (<() => unknown>args[2])());
-    jest.spyOn(<any> actor, 'logWarn').mockImplementation((...args) => (<() => unknown>args[2])());
+    vi.spyOn(<any> actor, 'logDebug').mockImplementation((...args) => (<() => unknown>args[2])());
+    vi.spyOn(<any> actor, 'logWarn').mockImplementation((...args) => (<() => unknown>args[2])());
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
+    vi.resetAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('test', () => {
@@ -100,7 +101,7 @@ describe('ActorHttpRetryBody', () => {
 
     it('should remove retry body count from the mediated action context', async() => {
       const body = Readable.from([ 'abcdef' ]);
-      const mediateSpy = jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      const mediateSpy = vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body,
@@ -127,7 +128,7 @@ describe('ActorHttpRetryBody', () => {
         <any> { ok: true, status: 200, body: secondBody, headers: new Headers() },
       ];
 
-      jest.spyOn(mediatorHttp, 'mediate')
+      vi.spyOn(mediatorHttp, 'mediate')
         .mockResolvedValueOnce(responses.shift()!)
         .mockResolvedValueOnce(responses.shift()!);
 
@@ -151,7 +152,7 @@ describe('ActorHttpRetryBody', () => {
         <any> { ok: true, status: 200, body: secondBody, headers: new Headers() },
       ];
 
-      jest.spyOn(mediatorHttp, 'mediate')
+      vi.spyOn(mediatorHttp, 'mediate')
         .mockResolvedValueOnce(responses.shift()!)
         .mockResolvedValueOnce(responses.shift()!);
 
@@ -169,7 +170,7 @@ describe('ActorHttpRetryBody', () => {
       });
       const firstBody = createErrorBody('abc');
       const secondBody = Readable.from([ 'abcdef' ]);
-      jest.spyOn(mediatorHttp, 'mediate')
+      vi.spyOn(mediatorHttp, 'mediate')
         .mockResolvedValueOnce(<any> { ok: true, status: 200, body: firstBody, headers: new Headers() })
         .mockResolvedValueOnce(<any> { ok: true, status: 200, body: secondBody, headers: new Headers() });
 
@@ -193,7 +194,7 @@ describe('ActorHttpRetryBody', () => {
       });
       const firstBody = createErrorBody('abc');
       const secondBody = Readable.from([ 'abcdef' ]);
-      jest.spyOn(mediatorHttp, 'mediate')
+      vi.spyOn(mediatorHttp, 'mediate')
         .mockResolvedValueOnce(<any> { ok: true, status: 200, body: firstBody, headers: new Headers() })
         .mockResolvedValueOnce(<any> { ok: true, status: 200, body: secondBody, headers: new Headers() });
 
@@ -210,7 +211,7 @@ describe('ActorHttpRetryBody', () => {
         [KeysHttp.httpRetryBodyMaxBytes.name]: 2,
       });
       const body = Readable.from([ 'abcdef' ]);
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body,
@@ -228,7 +229,7 @@ describe('ActorHttpRetryBody', () => {
         [KeysHttp.httpRetryBodyMaxBytes.name]: 10,
       });
       const body = Readable.from([ 'abcdef' ]);
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body,
@@ -249,7 +250,7 @@ describe('ActorHttpRetryBody', () => {
         [KeysHttp.httpRetryBodyMaxBytes.name]: 2,
       });
       const body = Readable.from([ 'abcdef' ]);
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body,
@@ -270,7 +271,7 @@ describe('ActorHttpRetryBody', () => {
         [KeysHttp.httpRetryBodyMaxBytes.name]: 2,
       });
       const body = Readable.from([ 'abcdef' ]);
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body,
@@ -288,7 +289,7 @@ describe('ActorHttpRetryBody', () => {
       const abortController = new AbortController();
       abortController.abort();
       const body = createErrorBody('abc');
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body,
@@ -309,7 +310,7 @@ describe('ActorHttpRetryBody', () => {
         [KeysHttp.httpAbortSignal.name]: abortController.signal,
       });
       const body = createErrorBody('abc');
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body,
@@ -338,7 +339,7 @@ describe('ActorHttpRetryBody', () => {
           process.nextTick(() => this.destroy(new Error('Body stream error after overflow')));
         },
       });
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body,
@@ -354,7 +355,7 @@ describe('ActorHttpRetryBody', () => {
     it('should error when retry limit is exhausted', async() => {
       const firstBody = createErrorBody('abc');
       const secondBody = createErrorBody('abc');
-      jest.spyOn(mediatorHttp, 'mediate')
+      vi.spyOn(mediatorHttp, 'mediate')
         .mockResolvedValueOnce(<any> { ok: true, status: 200, body: firstBody, headers: new Headers() })
         .mockResolvedValueOnce(<any> { ok: true, status: 200, body: secondBody, headers: new Headers() });
 
@@ -366,7 +367,7 @@ describe('ActorHttpRetryBody', () => {
     it('should discard partial output before retrying', async() => {
       const firstBody = createErrorBody('abcdef');
       const secondBody = Readable.from([ 'abc' ]);
-      jest.spyOn(mediatorHttp, 'mediate')
+      vi.spyOn(mediatorHttp, 'mediate')
         .mockResolvedValueOnce(<any> { ok: true, status: 200, body: firstBody, headers: new Headers() })
         .mockResolvedValueOnce(<any> { ok: true, status: 200, body: secondBody, headers: new Headers() });
 
@@ -382,10 +383,10 @@ describe('ActorHttpRetryBody', () => {
         [KeysHttp.httpRetryBodyCount.name]: 1,
         [KeysHttp.httpRetryBodyDelayFallback.name]: 123,
       });
-      const sleepSpy = jest.spyOn(ActorHttpRetryBody, 'sleep').mockResolvedValue();
+      const sleepSpy = vi.spyOn(ActorHttpRetryBody, 'sleep').mockResolvedValue();
       const firstBody = createErrorBody('abc');
       const secondBody = Readable.from([ 'abcdef' ]);
-      jest.spyOn(mediatorHttp, 'mediate')
+      vi.spyOn(mediatorHttp, 'mediate')
         .mockResolvedValueOnce(<any> { ok: true, status: 200, body: firstBody, headers: new Headers() })
         .mockResolvedValueOnce(<any> { ok: true, status: 200, body: secondBody, headers: new Headers() });
 
@@ -395,7 +396,7 @@ describe('ActorHttpRetryBody', () => {
     });
 
     it('should be able to wrap native Response instances', async() => {
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> new Response('abcdef'));
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> new Response('abcdef'));
 
       const response = await actor.run({ input, context });
       expect(response.ok).toBe(true);
@@ -409,7 +410,7 @@ describe('ActorHttpRetryBody', () => {
 
     it('should pass through when response is not ok', async() => {
       const body = Readable.from([ 'abc' ]);
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: false,
         status: 500,
         body,
@@ -422,7 +423,7 @@ describe('ActorHttpRetryBody', () => {
     });
 
     it('should pass through when response has no body', async() => {
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body: null,
@@ -451,7 +452,7 @@ describe('ActorHttpRetryBody', () => {
         }
       });
 
-      const writeSpy = jest.spyOn(<any> output, 'write');
+      const writeSpy = vi.spyOn(<any> output, 'write');
       body.emit('data', 'abc');
       await new Promise(resolve => process.nextTick(resolve));
       expect(writeSpy).toHaveBeenCalledTimes(0);
@@ -494,8 +495,8 @@ describe('ActorHttpRetryBody', () => {
       const output: Readable = (<any> actor).createRetryingBody(body, { input, context }, 1, 0, url, undefined);
       (<any> output).destroyed = true;
 
-      const writeSpy = jest.spyOn(<any> output, 'write');
-      const endSpy = jest.spyOn(<any> output, 'end');
+      const writeSpy = vi.spyOn(<any> output, 'write');
+      const endSpy = vi.spyOn(<any> output, 'end');
       body.push('abc');
       body.push(null);
       await new Promise(resolve => process.nextTick(resolve));
@@ -534,7 +535,7 @@ describe('ActorHttpRetryBody', () => {
       const body = new Readable({ read() {} });
       (<any> body).destroy = undefined;
       const secondBody = Readable.from([ 'abcdef' ]);
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body: secondBody,
@@ -661,7 +662,7 @@ describe('ActorHttpRetryBody', () => {
       const url = new URL(input);
       const firstBody = new Readable({ read() {} });
       const secondBody = new FakeErroredBody();
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body: secondBody,
@@ -694,7 +695,7 @@ describe('ActorHttpRetryBody', () => {
       const url = new URL(input);
       const firstBody = new Readable({ read() {} });
       const secondBody = new Readable({ read() {} });
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: true,
         status: 200,
         body: secondBody,
@@ -724,7 +725,7 @@ describe('ActorHttpRetryBody', () => {
     });
 
     it('should stop retrying if output is closed during the retry delay', async() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
       try {
         const url = new URL(input);
         const body = new Readable({ read() {} });
@@ -734,20 +735,20 @@ describe('ActorHttpRetryBody', () => {
         body.emit('error', new Error('Body stream error'));
         output.destroy();
 
-        jest.advanceTimersByTime(10);
+        vi.advanceTimersByTime(10);
         await Promise.resolve();
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(0);
         await closed;
       } finally {
-        jest.useRealTimers();
+        vi.useRealTimers();
       }
     });
 
     it('should error if the retry response is not ok', async() => {
       const url = new URL(input);
       const body = new Readable({ read() {} });
-      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
+      vi.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any> {
         ok: false,
         status: 500,
         body: null,
@@ -765,10 +766,10 @@ describe('ActorHttpRetryBody', () => {
       const url = new URL(input);
       const body = new Readable({ read() {} });
       const secondBody = new Readable({ read() {} });
-      const secondBodyDestroySpy = jest.spyOn(secondBody, 'destroy');
+      const secondBodyDestroySpy = vi.spyOn(secondBody, 'destroy');
 
       let resolveMediate: ((value: IActorHttpOutput) => void) | undefined;
-      jest.spyOn(mediatorHttp, 'mediate').mockImplementation(async() => await new Promise((resolve) => {
+      vi.spyOn(mediatorHttp, 'mediate').mockImplementation(async() => await new Promise((resolve) => {
         resolveMediate = resolve;
       }));
 
@@ -800,7 +801,7 @@ describe('ActorHttpRetryBody', () => {
       }
 
       let resolveMediate: ((value: IActorHttpOutput) => void) | undefined;
-      jest.spyOn(mediatorHttp, 'mediate').mockImplementation(async() => await new Promise((resolve) => {
+      vi.spyOn(mediatorHttp, 'mediate').mockImplementation(async() => await new Promise((resolve) => {
         resolveMediate = resolve;
       }));
 
@@ -823,7 +824,7 @@ describe('ActorHttpRetryBody', () => {
     it('should error if the HTTP mediator throws during a body retry', async() => {
       const url = new URL(input);
       const body = new Readable({ read() {} });
-      jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(new Error('mediate failed'));
+      vi.spyOn(mediatorHttp, 'mediate').mockRejectedValue(new Error('mediate failed'));
 
       const output: Readable = (<any> actor).createRetryingBody(body, { input, context }, 2, 0, url, undefined);
       const outputPromise = arrayifyStream(output);
@@ -835,7 +836,7 @@ describe('ActorHttpRetryBody', () => {
     it('should error if the HTTP mediator throws a non-Error during a body retry', async() => {
       const url = new URL(input);
       const body = new Readable({ read() {} });
-      jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue('mediate failed');
+      vi.spyOn(mediatorHttp, 'mediate').mockRejectedValue('mediate failed');
 
       const output: Readable = (<any> actor).createRetryingBody(body, { input, context }, 2, 0, url, undefined);
       const outputPromise = arrayifyStream(output);

@@ -1,6 +1,11 @@
 import { RuleTester } from 'eslint';
+import { describe, it } from 'vitest';
 
 const rule = require('../../lib/eslint/require-async-iterator-autostart-false');
+
+// RuleTester picks these up from the global scope, which vitest only populates when 'globals' is enabled
+RuleTester.describe = describe;
+RuleTester.it = it;
 
 const ruleTester = new RuleTester({
   parserOptions: {

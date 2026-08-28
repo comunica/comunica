@@ -4,6 +4,7 @@ import {
   int,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermStrLen } from '../lib';
 
 /**

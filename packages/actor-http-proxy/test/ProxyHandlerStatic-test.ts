@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ProxyHandlerStatic } from '../lib/ProxyHandlerStatic';
 
 describe('ProxyHandlerStatic', () => {

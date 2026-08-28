@@ -1,12 +1,16 @@
-const EventEmitter = require('node:events');
-const { PassThrough } = require('readable-stream');
+import EventEmitter from 'node:events';
+import { PassThrough } from 'readable-stream';
+import { vi } from 'vitest';
+
+// 'node:http' is mocked with this module, so the real one has to be pulled in explicitly
+const actualHttp = await vi.importActual('node:http');
 
 class ServerResponseMock extends PassThrough {
   // eslint-disable-next-line ts/explicit-member-accessibility
   constructor() {
     super();
-    this.writeHead = jest.fn();
-    this.end = jest.fn(message => this.onEnd && this.onEnd(message));
+    this.writeHead = vi.fn();
+    this.end = vi.fn(message => this.onEnd && this.onEnd(message));
   }
 }
 
@@ -19,18 +23,15 @@ class ServerMock extends EventEmitter {
   // eslint-disable-next-line ts/explicit-member-accessibility
   constructor() {
     super();
-    this.listen = jest.fn();
-    this.setTimeout = jest.fn();
-    this.close = jest.fn();
+    this.listen = vi.fn();
+    this.setTimeout = vi.fn();
+    this.close = vi.fn();
   }
 }
 
 const http = {
-  ...jest.requireActual('http'),
+  ...actualHttp,
+  createServer: vi.fn(() => new ServerMock()),
 };
-http.createServer = jest.fn(() => new ServerMock());
 
-module.exports = {
-  ServerResponseMock,
-  http,
-};
+export { http, ServerResponseMock };

@@ -5,6 +5,7 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermIri } from '../lib';
 
 describe('We should respect the iri01 spec', () => {

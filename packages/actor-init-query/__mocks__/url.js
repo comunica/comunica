@@ -1,4 +1,4 @@
-function parse(url, _parseQueryString) {
+export function parse(url, _parseQueryString) {
   if (url === 'url_sparql') {
     return {
       pathname: '/sparql',
@@ -16,7 +16,3 @@ function parse(url, _parseQueryString) {
     query: { query: 'test_query' },
   };
 }
-
-module.exports = {
-  parse,
-};

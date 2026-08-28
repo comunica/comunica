@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest';
 import { stringToTermPrefix, template } from './Aliases';
 import { generalErrorEvaluation, generalEvaluate } from './generalEvaluation';
 import type { TestTableConfig } from './utils';
@@ -56,9 +57,16 @@ abstract class Table<RowType extends Row> {
       toAlgebraParse: this.def.toAlgebraParse,
     });
     expect(result).toBeDefined();
-    expect(() => {
+    const rethrow = (): never => {
       throw result?.asyncError;
-    }).toThrow(error);
+    };
+    // An empty entry in an error table only requires the expression to error, without fixing the message.
+    // Jest treated an empty expectation as such, while vitest matches it against the message exactly.
+    if (error === '') {
+      expect(rethrow).toThrow();
+    } else {
+      expect(rethrow).toThrow(error);
+    }
   }
 
   protected abstract format(operation: string, row: RowType): string;

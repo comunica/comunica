@@ -1,4 +1,5 @@
 import type * as RDF from '@rdfjs/types';
+import { expect } from 'vitest';
 import matchers from './matchers';
 
 export * from './expressionEvaluator/Aliases';
@@ -31,18 +32,19 @@ export {
   double as termDouble,
 } from './expressionEvaluator/helpers';
 
-declare global {
-  // eslint-disable-next-line ts/no-namespace
-  namespace jest {
-    interface Matchers<R> {
-      toEqualBindings: (actual: RDF.Bindings) => R;
-      toEqualBindingsArray: (actual: RDF.Bindings[], ignoreOrder?: boolean) => R;
-      toEqualBindingsStream: (actual: RDF.Bindings[], ignoreOrder?: boolean) => Promise<R>;
-      toPassTest: (actual: any) => R;
-      toPassTestVoid: () => R;
-      toFailTest: (actual: string) => R;
-    }
+declare module 'vitest' {
+  interface Matchers<T = any> {
+    toEqualBindings: (actual: RDF.Bindings) => T;
+    toEqualBindingsArray: (actual: RDF.Bindings[], ignoreOrder?: boolean) => T;
+    toEqualBindingsStream: (actual: RDF.Bindings[], ignoreOrder?: boolean) => Promise<T>;
+    toPassTest: (actual: any) => T;
+    toPassTestVoid: () => T;
+    toFailTest: (actual: string) => T;
+    toBeRdfIsomorphic: (actual: Iterable<RDF.BaseQuad>) => T;
+    toEqualRdfTerm: (actual: RDF.Term) => T;
+    toEqualRdfQuad: (actual: RDF.BaseQuad) => T;
+    toEqualRdfQuadArray: (actual: RDF.BaseQuad[]) => T;
   }
 }
 
-(<any> globalThis).expect.extend(matchers);
+expect.extend(matchers);

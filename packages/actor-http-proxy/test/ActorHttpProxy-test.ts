@@ -2,6 +2,7 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpProxy } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorHttpProxy } from '../lib/ActorHttpProxy';
 import { ProxyHandlerStatic } from '../lib/ProxyHandlerStatic';
 import '@comunica/utils-jest';
@@ -15,7 +16,7 @@ describe('ActorHttpProxy', () => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext();
     mediatorHttp = {
-      mediate: jest.fn().mockReturnValue({ output: 'ABC', headers: new Headers({}) }),
+      mediate: vi.fn().mockReturnValue({ output: 'ABC', headers: new Headers({}) }),
     };
   });
 
@@ -78,7 +79,7 @@ describe('ActorHttpProxy', () => {
     it('should run when the proxy does return an x-final-url header', async() => {
       const input = 'http://example.org/';
       const headers = new Headers({ 'x-final-url': 'http://example.org/redirected/' });
-      jest.spyOn(mediatorHttp, 'mediate').mockImplementation(() => ({ output: 'ABC', headers }));
+      vi.spyOn(mediatorHttp, 'mediate').mockImplementation(() => ({ output: 'ABC', headers }));
       await expect(actor.run({ input, context })).resolves
         .toEqual({ url: 'http://example.org/redirected/', output: 'ABC', headers });
       expect(mediatorHttp.mediate).toHaveBeenCalledWith(

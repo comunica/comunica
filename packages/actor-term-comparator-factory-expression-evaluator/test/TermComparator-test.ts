@@ -10,6 +10,7 @@ import { getMockEEActionContext, getMockInternalEvaluator } from '@comunica/util
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
+import { describe, expect, it } from 'vitest';
 import { TermComparatorExpressionEvaluator } from '../lib/TermComparatorExpressionEvaluator';
 
 const DF = new DataFactory();

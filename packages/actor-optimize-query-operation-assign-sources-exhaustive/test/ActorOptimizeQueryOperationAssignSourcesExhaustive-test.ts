@@ -4,6 +4,7 @@ import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { getOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
   ActorOptimizeQueryOperationAssignSourcesExhaustive,
 } from '../lib/ActorOptimizeQueryOperationAssignSourcesExhaustive';

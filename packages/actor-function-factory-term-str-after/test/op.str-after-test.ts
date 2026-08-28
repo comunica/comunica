@@ -3,6 +3,7 @@ import {
   bool,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermStrAfter } from '../lib';
 
 describe('evaluations of \'strafter\' like', () => {

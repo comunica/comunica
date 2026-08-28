@@ -1,5 +1,5 @@
 import type { TestResult } from '@comunica/core';
-import { equals } from '@jest/expect-utils';
+import { equals } from '@vitest/expect';
 
 // eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
 const inspect = require('object-inspect');

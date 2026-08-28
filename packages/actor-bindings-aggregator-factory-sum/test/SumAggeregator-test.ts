@@ -18,6 +18,7 @@ import {
   nonLiteral,
 } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { SumAggregator } from '../lib';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {

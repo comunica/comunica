@@ -7,6 +7,7 @@ import {
   yearMonthDurationTyped,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermSubtraction } from '../lib';
 
 describe('subtract duration and dayTimeDuration 01', () => {

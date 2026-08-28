@@ -6,6 +6,7 @@ import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/utils-data-f
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQueryOperationProject } from '../lib/ActorQueryOperationProject';
 import '@comunica/utils-jest';
 

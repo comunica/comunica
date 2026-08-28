@@ -3,6 +3,7 @@ import {
   durationTyped,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermXsdToDuration } from '../lib';
 
 describe('to duration', () => {

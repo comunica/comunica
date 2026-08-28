@@ -1,5 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import * as rdfString from 'rdf-string';
+import { describe, expect, it, vi } from 'vitest';
 import {
   bool,
   compactTermString,
@@ -138,7 +139,7 @@ describe('Aliases', () => {
         language: '',
         direction: '',
       };
-      const spy = jest.spyOn(rdfString, 'stringToTerm').mockReturnValueOnce(fakeLiteral);
+      const spy = vi.spyOn(rdfString, 'stringToTerm').mockReturnValueOnce(fakeLiteral);
       // The try block tries to assign to frozenDatatype.value, which throws in strict mode;
       // the catch block handles it and returns the term unchanged.
       const result = stringToTermPrefix('"5"^^xsd:integer');

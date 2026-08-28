@@ -1,5 +1,6 @@
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, ICachePolicy, ICacheResponseHead, IRevalidationPolicy } from '@comunica/types';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IActionDereference } from '../lib';
 import { DereferenceRdfCachePolicyDereferenceWrapper } from '../lib/DereferenceRdfCachePolicyDereferenceWrapper';
 
@@ -46,7 +47,7 @@ describe('DereferenceRdfCachePolicyDereferenceWrapper', () => {
 
   describe('storable', () => {
     it('is delegated to the cachePolicy', () => {
-      jest.spyOn(cachePolicy, 'storable');
+      vi.spyOn(cachePolicy, 'storable');
       expect(wrapper.storable()).toBeTruthy();
       expect(cachePolicy.storable).toHaveBeenCalledTimes(1);
     });
@@ -54,7 +55,7 @@ describe('DereferenceRdfCachePolicyDereferenceWrapper', () => {
 
   describe('satisfiesWithoutRevalidation', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
+      vi.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
       await expect(wrapper.satisfiesWithoutRevalidation({ url: 'http://localhost:8080', context })).resolves.toBeTruthy();
       expect(cachePolicy.satisfiesWithoutRevalidation).toHaveBeenCalledTimes(1);
       expect(cachePolicy.satisfiesWithoutRevalidation).toHaveBeenCalledWith({
@@ -67,7 +68,7 @@ describe('DereferenceRdfCachePolicyDereferenceWrapper', () => {
 
   describe('responseHeaders', () => {
     it('is delegated to the cachePolicy', () => {
-      jest.spyOn(cachePolicy, 'responseHeaders');
+      vi.spyOn(cachePolicy, 'responseHeaders');
       expect(wrapper.responseHeaders()).toEqual(new Headers({ a: 'b' }));
       expect(cachePolicy.responseHeaders).toHaveBeenCalledTimes(1);
     });
@@ -75,7 +76,7 @@ describe('DereferenceRdfCachePolicyDereferenceWrapper', () => {
 
   describe('timeToLive', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'timeToLive');
+      vi.spyOn(cachePolicy, 'timeToLive');
       expect(wrapper.timeToLive()).toBe(123);
       expect(cachePolicy.timeToLive).toHaveBeenCalledTimes(1);
     });
@@ -83,7 +84,7 @@ describe('DereferenceRdfCachePolicyDereferenceWrapper', () => {
 
   describe('revalidationHeaders', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'revalidationHeaders');
+      vi.spyOn(cachePolicy, 'revalidationHeaders');
       await expect(wrapper.revalidationHeaders({
         url: 'http://localhost:8080',
         context,
@@ -99,7 +100,7 @@ describe('DereferenceRdfCachePolicyDereferenceWrapper', () => {
 
   describe('revalidatedPolicy', () => {
     it('is delegated to the cachePolicy', async() => {
-      jest.spyOn(cachePolicy, 'revalidatedPolicy');
+      vi.spyOn(cachePolicy, 'revalidatedPolicy');
       await expect(wrapper.revalidatedPolicy({
         url: 'http://localhost:8080',
         context,

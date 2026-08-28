@@ -6,11 +6,15 @@ import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 import '@comunica/utils-jest';
 
-// eslint-disable-next-line jest/no-mocks-import
-const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
+// eslint-disable-next-line vitest/no-mocks-import
+import { mockSetup } from './__mocks__/follow-redirects';
+
+// Unlike jest, vitest does not pick up '__mocks__' entries for node modules automatically
+vi.mock(import('follow-redirects'), () => import('./__mocks__/follow-redirects'));
 
 describe('ActorHttpNative', () => {
   let bus: any;
@@ -205,7 +209,7 @@ describe('ActorHttpNative', () => {
 
     it('should run with a logger', async() => {
       const logger = new LoggerVoid();
-      const spy = jest.spyOn(logger, 'info');
+      const spy = vi.spyOn(logger, 'info');
       mockSetup({ statusCode: 200 });
       await actor.run({
         input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) }),

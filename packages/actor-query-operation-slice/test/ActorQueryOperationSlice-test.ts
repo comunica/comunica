@@ -6,6 +6,7 @@ import { getSafeBindings, getSafeBoolean, getSafeQuads } from '@comunica/utils-q
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationSlice } from '../lib/ActorQueryOperationSlice';
 import '@comunica/utils-jest';
 
@@ -23,7 +24,7 @@ describe('ActorQueryOperationSlice', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: jest.fn((arg: any) => Promise.resolve({
+      mediate: vi.fn((arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),

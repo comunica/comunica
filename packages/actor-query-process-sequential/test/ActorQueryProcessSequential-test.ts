@@ -9,6 +9,7 @@ import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryProcessSequential } from '../lib/ActorQueryProcessSequential';
 import '@comunica/utils-jest';
 
@@ -27,16 +28,16 @@ describe('ActorQueryProcessSequential', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorContextPreprocess = <any> {
-      mediate: jest.fn((action: any) => Promise.resolve(action)),
+      mediate: vi.fn((action: any) => Promise.resolve(action)),
     };
     mediatorQueryParse = <any> {
-      mediate: jest.fn((action: any) => Promise.resolve({
+      mediate: vi.fn((action: any) => Promise.resolve({
         operation: 'PARSED',
         context: action.context,
       })),
     };
     mediatorOptimizeQueryOperation = <any> {
-      mediate: jest.fn((action: any) => Promise.resolve({
+      mediate: vi.fn((action: any) => Promise.resolve({
         operation: AF.createJoin([
           action.operation,
         ], false),
@@ -44,7 +45,7 @@ describe('ActorQueryProcessSequential', () => {
       })),
     };
     mediatorQueryOperation = <any> {
-      mediate: jest.fn((action: any) => Promise.resolve({
+      mediate: vi.fn((action: any) => Promise.resolve({
         type: 'bindings',
         ...action,
       })),
@@ -176,7 +177,7 @@ describe('ActorQueryProcessSequential', () => {
       });
 
       it('parses a query with baseIRI in query', async() => {
-        jest.spyOn((<any> mediatorQueryParse), 'mediate').mockImplementation((action: any) => Promise.resolve({
+        vi.spyOn(mediatorQueryParse, 'mediate').mockImplementation((action: any) => Promise.resolve({
           operation: 'PARSED',
           context: action.context,
           baseIRI: 'BASE',

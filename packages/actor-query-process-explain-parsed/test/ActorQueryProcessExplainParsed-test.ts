@@ -1,6 +1,7 @@
 import type { IQueryProcessSequential } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQueryProcessExplainParsed } from '../lib/ActorQueryProcessExplainParsed';
 import '@comunica/utils-jest';
 

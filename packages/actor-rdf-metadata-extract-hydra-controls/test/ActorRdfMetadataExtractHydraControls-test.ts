@@ -2,6 +2,7 @@ import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { streamifyArray } from 'streamify-array';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfMetadataExtractHydraControls } from '../lib/ActorRdfMetadataExtractHydraControls';
 import '@comunica/utils-jest';
 
@@ -383,7 +384,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
 
     it('should not correct protocol mismatches for valid hydra properties', () => {
-      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const logWarn = vi.spyOn(<any> actor, 'logWarn');
       const hydraProperties = {
         next: { 'https://example.org/ds': [ 'https://example.org/ds?page=2' ]},
       };
@@ -393,7 +394,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
 
     it('should not correct protocol mismatches for an http page', () => {
-      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const logWarn = vi.spyOn(<any> actor, 'logWarn');
       const hydraProperties = {
         next: { 'http://example.org/ds': [ 'http://example.org/ds?page=2' ]},
       };
@@ -403,7 +404,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
 
     it('should correct protocol mismatches in subjects and objects, and warn', () => {
-      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const logWarn = vi.spyOn(<any> actor, 'logWarn');
       expect(actor.correctProtocolMismatches('https://example.org/ds?s=s', {
         next: { 'http://example.org/ds?s=s': [ 'http://example.org/ds?s=s&page=2' ]},
         search: { 'http://example.org/ds#dataset': [ '_:search1' ]},
@@ -425,7 +426,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
 
     it('should not correct protocol mismatches for other hosts', () => {
-      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const logWarn = vi.spyOn(<any> actor, 'logWarn');
       const hydraProperties = {
         next: { 'http://example.org.other.com/ds': [ 'http://other.com/ds?page=2' ]},
       };
@@ -504,7 +505,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
 
     it('should run on controls that are exposed under an invalid protocol', async() => {
-      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const logWarn = vi.spyOn(<any> actor, 'logWarn');
       const output = await actor.run({ metadata: streamifyArray([
         quad('http://example.org/ds', `${HYDRA}next`, 'http://example.org/ds?page=2'),
         quad('http://example.org/ds', `${HYDRA}first`, 'http://example.org/ds?page=1'),

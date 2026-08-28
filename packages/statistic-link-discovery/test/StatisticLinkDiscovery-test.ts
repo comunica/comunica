@@ -1,12 +1,13 @@
 import type { ILink, IDiscoverEventData } from '@comunica/types';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { StatisticLinkDiscovery } from '../lib/StatisticLinkDiscovery';
 
 describe('StatisticLinkDiscovery', () => {
   let statisticLinkDiscovery: StatisticLinkDiscovery;
 
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
     statisticLinkDiscovery = new StatisticLinkDiscovery();
   });
 
@@ -28,7 +29,7 @@ describe('StatisticLinkDiscovery', () => {
           childkey: 5,
         },
       };
-      cb = jest.fn(() => {});
+      cb = vi.fn(() => {});
     });
 
     it('update metadata links', () => {
@@ -79,6 +80,6 @@ describe('StatisticLinkDiscovery', () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 });

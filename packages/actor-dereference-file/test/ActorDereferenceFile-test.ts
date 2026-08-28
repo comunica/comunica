@@ -6,6 +6,7 @@ import { ActorDereference } from '@comunica/bus-dereference';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { stringify as streamToString } from '@jeswr/stream-to-string';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorDereferenceFile } from '../lib/ActorDereferenceFile';
 import '@comunica/utils-jest';
 

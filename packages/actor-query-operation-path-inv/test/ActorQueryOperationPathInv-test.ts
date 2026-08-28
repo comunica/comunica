@@ -6,6 +6,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQueryOperationPathInv } from '../lib/ActorQueryOperationPathInv';
 import '@comunica/utils-jest';
 

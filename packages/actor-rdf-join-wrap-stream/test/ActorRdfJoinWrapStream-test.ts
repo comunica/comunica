@@ -22,6 +22,7 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { KEY_CONTEXT_WRAPPED_RDF_JOIN, ActorRdfJoinWrapStream } from '../lib/ActorRdfJoinWrapStream';
 
 const DF = new DataFactory();
@@ -92,7 +93,7 @@ describe('ActorRdfJoinWrapStream', () => {
       };
       mediatorJoin = {
         async mediate(a: any) {
-          // Record the context it was called with, as jest calledWith looks only at object reference
+          // Record the context it was called with, as vitest calledWith looks only at object reference
           // Which is mutated in .run(a), resulting in failing tests that test behavior of mediate
           // correct.
           calledWithContext = a.context;
@@ -229,7 +230,7 @@ describe('ActorRdfJoinWrapStream', () => {
     });
 
     it('should handle undefined context from mediatorJoin', async() => {
-      const mockedMediatorTransformIterator = jest.spyOn(
+      const mockedMediatorTransformIterator = vi.spyOn(
         mediatorIteratorTransform,
         'mediate',
       ).mockResolvedValue(
@@ -242,7 +243,7 @@ describe('ActorRdfJoinWrapStream', () => {
           originalAction: action,
         },
       );
-      const _mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
+      const _mockedMediatorJoin = vi.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
         {
           type: 'bindings',
           bindingsStream: new ArrayIterator<RDF.Bindings>([
@@ -284,7 +285,7 @@ describe('ActorRdfJoinWrapStream', () => {
       );
     });
     it('should handle join result context', async() => {
-      const mockedMediatorTransformIterator = jest.spyOn(
+      const mockedMediatorTransformIterator = vi.spyOn(
         mediatorIteratorTransform,
         'mediate',
       ).mockResolvedValue(
@@ -297,7 +298,7 @@ describe('ActorRdfJoinWrapStream', () => {
           originalAction: action,
         },
       );
-      const _mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
+      const _mockedMediatorJoin = vi.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
         {
           type: 'bindings',
           bindingsStream: new ArrayIterator<RDF.Bindings>([
@@ -338,7 +339,7 @@ describe('ActorRdfJoinWrapStream', () => {
       );
     });
     it('should correctly pass through metadata from mediatorJoin', async() => {
-      const mockedMediatorTransformIterator = jest.spyOn(
+      const mockedMediatorTransformIterator = vi.spyOn(
         mediatorIteratorTransform,
         'mediate',
       ).mockResolvedValue(
@@ -351,7 +352,7 @@ describe('ActorRdfJoinWrapStream', () => {
           originalAction: action,
         },
       );
-      const _mockedMediatorJoin = jest.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
+      const _mockedMediatorJoin = vi.spyOn(mediatorJoin, 'mediate').mockResolvedValue(
         {
           type: 'bindings',
           bindingsStream: new ArrayIterator<RDF.Bindings>([

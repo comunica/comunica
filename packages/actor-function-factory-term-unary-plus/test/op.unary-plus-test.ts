@@ -2,6 +2,7 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermUnaryPlus } from '../lib';
 
 describe('evaluation of \'+ (unary)\' like', () => {

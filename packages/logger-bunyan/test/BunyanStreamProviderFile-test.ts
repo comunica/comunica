@@ -1,4 +1,5 @@
 import { URL } from 'node:url';
+import { describe, expect, it } from 'vitest';
 import { BunyanStreamProviderFile } from '../lib/stream/BunyanStreamProviderFile';
 
 describe('BunyanStreamProviderFile', () => {

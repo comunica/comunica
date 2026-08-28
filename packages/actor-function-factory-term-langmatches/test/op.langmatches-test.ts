@@ -3,6 +3,7 @@ import {
   bool,
   Notation,
 } from '@comunica/utils-jest';
+import { describe } from 'vitest';
 import { ActorFunctionFactoryTermLangmatches } from '../lib';
 
 // TODO: Add errors for when non BCP47 strings are passed

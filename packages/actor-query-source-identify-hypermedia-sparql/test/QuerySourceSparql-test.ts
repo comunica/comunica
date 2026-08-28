@@ -11,8 +11,8 @@ import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 
 // Needed to load Headers
-import 'jest-rdf';
 import { Readable } from 'readable-stream';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QuerySourceSparql } from '../lib/QuerySourceSparql';
 import '@comunica/utils-jest';
 
@@ -37,7 +37,7 @@ describe('QuerySourceSparql', () => {
   let ctx: IActionContext;
   let lastQuery: string;
   const mediatorHttp: any = {
-    mediate: jest.fn((action: any) => {
+    mediate: vi.fn((action: any) => {
       const query: string = action.init.method === 'GET' ? action.input : action.init.body.toString();
       lastQuery = query;
       return {
@@ -76,15 +76,15 @@ describe('QuerySourceSparql', () => {
     }),
   };
   const mediatorQuerySerialize: any = {
-    mediate: jest.fn((action: any) => new ActorQuerySerializeSparql(<any> {
-      bus: { subscribe: jest.fn() },
+    mediate: vi.fn((action: any) => new ActorQuerySerializeSparql(<any> {
+      bus: { subscribe: vi.fn() },
     }).run(action)),
   };
   let source: QuerySourceSparql;
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    logger = { warn: jest.fn() };
+    vi.clearAllMocks();
+    logger = { warn: vi.fn() };
     ctx = new ActionContext({
       [KeysCore.log.name]: logger,
       [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
@@ -195,7 +195,7 @@ describe('QuerySourceSparql', () => {
     });
 
     it('should return data with local cardinality estimation', async() => {
-      jest.spyOn(source, 'estimateOperationCardinality').mockResolvedValue({
+      vi.spyOn(source, 'estimateOperationCardinality').mockResolvedValue({
         type: 'estimate',
         value: 1,
         dataset: url,
@@ -218,7 +218,7 @@ describe('QuerySourceSparql', () => {
 
     it('should return data with quoted triples', async() => {
       const thisMediator: any = {
-        mediate: jest.fn((action: any) => {
+        mediate: vi.fn((action: any) => {
           const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
@@ -295,7 +295,7 @@ describe('QuerySourceSparql', () => {
 
     it('should return data with quoted triple patterns', async() => {
       const thisMediator: any = {
-        mediate: jest.fn((action: any) => {
+        mediate: vi.fn((action: any) => {
           const query = action.init.body.toString();
           return {
             headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
@@ -1482,7 +1482,7 @@ describe('QuerySourceSparql', () => {
     });
 
     it('should emit metadata with infinity count with timeout', async() => {
-      jest.useFakeTimers();
+      vi.useFakeTimers();
 
       const thisMediator: any = {
         mediate(action: any) {
@@ -1490,7 +1490,7 @@ describe('QuerySourceSparql', () => {
             setTimeout(() => {
               resolve(mediatorHttp.mediate(action));
             }, 1_000);
-            jest.runAllTimers();
+            vi.runAllTimers();
           });
         },
       };
@@ -1530,7 +1530,7 @@ describe('QuerySourceSparql', () => {
           ],
         });
 
-      jest.useRealTimers();
+      vi.useRealTimers();
     });
 
     it('should pass the original queryString if defined', async() => {
@@ -1815,7 +1815,7 @@ describe('QuerySourceSparql', () => {
   describe('queryQuads', () => {
     it('should return data', async() => {
       const thisMediator: any = {
-        mediate: jest.fn(() => ({
+        mediate: vi.fn(() => ({
           headers: new Headers({ 'Content-Type': 'text/turtle' }),
           body: Readable.from([ `<s1> <p1> <o1>. <s2> <p2> <o2>.` ]),
           ok: true,
@@ -1864,7 +1864,7 @@ describe('QuerySourceSparql', () => {
 
     it('should emit metadata', async() => {
       const thisMediator: any = {
-        mediate: jest.fn((action: any) => {
+        mediate: vi.fn((action: any) => {
           const query = action.init.body.toString();
           lastQuery = query;
           return {
@@ -1930,7 +1930,7 @@ describe('QuerySourceSparql', () => {
 
     it('should pass the original queryString if defined', async() => {
       const thisMediator: any = {
-        mediate: jest.fn(() => ({
+        mediate: vi.fn(() => ({
           headers: new Headers({ 'Content-Type': 'text/turtle' }),
           body: Readable.from([ `<s1> <p1> <o1>. <s2> <p2> <o2>.` ]),
           ok: true,
@@ -1981,7 +1981,7 @@ describe('QuerySourceSparql', () => {
   describe('queryBoolean', () => {
     it('should return data', async() => {
       const thisMediator: any = {
-        mediate: jest.fn(() => ({
+        mediate: vi.fn(() => ({
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
           body: Readable.from([ `{
   "head": { "vars": [ "p" ]
@@ -2030,7 +2030,7 @@ describe('QuerySourceSparql', () => {
 
     it('should pass the original queryString if defined', async() => {
       const thisMediator: any = {
-        mediate: jest.fn(() => ({
+        mediate: vi.fn(() => ({
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
           body: Readable.from([ `{
   "head": { "vars": [ "p" ]
@@ -2078,8 +2078,8 @@ describe('QuerySourceSparql', () => {
     });
 
     it('should shortcut to true if operation uses property features', async() => {
-      jest.spyOn(source, 'operationUsesPropertyFeatures').mockReturnValue(true);
-      jest.spyOn((<any>source).endpointFetcher, 'fetchAsk');
+      vi.spyOn(source, 'operationUsesPropertyFeatures').mockReturnValue(true);
+      vi.spyOn((<any>source).endpointFetcher, 'fetchAsk');
       await expect(source.queryBoolean(AF.createAsk(AF.createNop()), ctx)).resolves.toBeTruthy();
       expect((<any>source).endpointFetcher.fetchAsk).not.toHaveBeenCalled();
     });
@@ -2088,7 +2088,7 @@ describe('QuerySourceSparql', () => {
   describe('queryVoid', () => {
     it('should return data', async() => {
       const thisMediator: any = {
-        mediate: jest.fn(() => ({
+        mediate: vi.fn(() => ({
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
           body: Readable.from([ `OK` ]),
           ok: true,
@@ -2136,7 +2136,7 @@ describe('QuerySourceSparql', () => {
 
     it('should pass the original queryString if defined', async() => {
       const thisMediator: any = {
-        mediate: jest.fn(() => ({
+        mediate: vi.fn(() => ({
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
           body: Readable.from([ `OK` ]),
           ok: true,
@@ -2354,7 +2354,7 @@ describe('QuerySourceSparql', () => {
       const defaultGraph: IDataset = {
         uri: defaultGraphUri,
         source: url,
-        getCardinality: jest.fn().mockReturnValue(defaultGraphCardinality),
+        getCardinality: vi.fn().mockReturnValue(defaultGraphCardinality),
       };
       source = new QuerySourceSparql(
         url,
@@ -2419,12 +2419,12 @@ describe('QuerySourceSparql', () => {
         {
           uri: 'ex:g1',
           source: url,
-          getCardinality: jest.fn().mockReturnValue({ type: 'exact', value: 1, dataset: 'ex:g1' }),
+          getCardinality: vi.fn().mockReturnValue({ type: 'exact', value: 1, dataset: 'ex:g1' }),
         },
         {
           uri: 'ex:g2',
           source: url,
-          getCardinality: jest.fn().mockReturnValue({ type: 'exact', value: 2, dataset: 'ex:g2' }),
+          getCardinality: vi.fn().mockReturnValue({ type: 'exact', value: 2, dataset: 'ex:g2' }),
         },
       ];
       source = new QuerySourceSparql(
@@ -2463,12 +2463,12 @@ describe('QuerySourceSparql', () => {
         {
           uri: 'ex:g1',
           source: url,
-          getCardinality: jest.fn().mockReturnValue({ type: 'exact', value: 2, dataset: 'ex:g1' }),
+          getCardinality: vi.fn().mockReturnValue({ type: 'exact', value: 2, dataset: 'ex:g1' }),
         },
         {
           uri: 'ex:g2',
           source: url,
-          getCardinality: jest.fn().mockReturnValue({ type: 'estimate', value: 3, dataset: 'ex:g2' }),
+          getCardinality: vi.fn().mockReturnValue({ type: 'estimate', value: 3, dataset: 'ex:g2' }),
         },
       ];
       source = new QuerySourceSparql(
@@ -2503,8 +2503,8 @@ describe('QuerySourceSparql', () => {
     });
 
     it('should shortcut to estimate 1 when operation uses property features', async() => {
-      jest.spyOn(source, 'operationUsesPropertyFeatures').mockReturnValue(true);
-      jest.spyOn(source, 'operationToNormalizedCountQuery');
+      vi.spyOn(source, 'operationUsesPropertyFeatures').mockReturnValue(true);
+      vi.spyOn(source, 'operationToNormalizedCountQuery');
       await expect(source.estimateOperationCardinality(AF.createNop())).resolves.toEqual({
         type: 'estimate',
         value: 1,
