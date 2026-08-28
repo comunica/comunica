@@ -5,7 +5,7 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';
@@ -590,8 +590,10 @@ IQueryOperationResultBindings
       });
 
       it('should allow binding on a right stream with safe FILTER', async() => {
-        const filterOp: Algebra.Operation = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
-        filterOp.metadata = { isHoistedLeftJoinFilter: true };
+        const filterOp = algebraUtils.withMetadata(
+          FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal(''))),
+        );
+        filterOp.metadata.isHoistedLeftJoinFilter = true;
 
         await expect(actor.getJoinCoefficients(
           {

@@ -7,7 +7,7 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
-import { AlgebraFactory, Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
@@ -125,9 +125,10 @@ IQueryOperationResultBindings
           });
 
           it('should allow binding on a right stream with safe FILTER', () => {
-            const filter: Algebra.Operation =
-              FACTORY.createFilter(FACTORY.createNop(), FACTORY.createTermExpression(DF.literal('')));
-            filter.metadata = { isHoistedLeftJoinFilter: true };
+            const filter = algebraUtils.withMetadata(
+              FACTORY.createFilter(FACTORY.createNop(), FACTORY.createTermExpression(DF.literal(''))),
+            );
+            filter.metadata.isHoistedLeftJoinFilter = true;
 
             expect(ActorRdfJoinMultiBind.canBindWithOperation(filter)).toBe(true);
           });
@@ -142,8 +143,8 @@ IQueryOperationResultBindings
             const innerFilter: any =
               FACTORY.createFilter(FACTORY.createNop(), FACTORY.createTermExpression(DF.literal('')));
             const existsExpr = FACTORY.createExistenceExpression(false, innerFilter);
-            const outerFilter: Algebra.Operation = FACTORY.createFilter(FACTORY.createNop(), existsExpr);
-            outerFilter.metadata = { isHoistedLeftJoinFilter: true };
+            const outerFilter = algebraUtils.withMetadata(FACTORY.createFilter(FACTORY.createNop(), existsExpr));
+            outerFilter.metadata.isHoistedLeftJoinFilter = true;
 
             expect(ActorRdfJoinMultiBind.canBindWithOperation(outerFilter)).toBe(true);
           });
