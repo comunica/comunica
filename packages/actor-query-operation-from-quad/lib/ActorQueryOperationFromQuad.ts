@@ -132,7 +132,6 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
       }
       if (patternGraph.termType === 'Variable') {
         if (namedGraphs.length === 0) {
-          // No named graphs available to bind to the variable -> zero solutions
           return algebraFactory.createValues([], []);
         }
         if (namedGraphs.length === 1) {
