@@ -2323,6 +2323,62 @@ WHERE { }
       });
     });
 
+    describe('RDF dataset construction with FROM and FROM NAMED', () => {
+      // These cases are defined by https://www.w3.org/TR/sparql11-query/#specifyingDataset
+      const G1 = 'http://example.org/g1';
+      const G2 = 'http://example.org/g2';
+      let store: RdfStore;
+
+      beforeEach(() => {
+        store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o1'), DF.namedNode(G1)));
+        store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o2'), DF.namedNode(G2)));
+      });
+
+      async function queryCount(query: string): Promise<number> {
+        return (await (await engine.queryBindings(query, { sources: [ store ]})).toArray()).length;
+      }
+
+      it('should query the default graph over the graphs in FROM', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> { ?s ?p ?o }`)).resolves.toBe(1);
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM <${G2}> { ?s ?p ?o }`)).resolves.toBe(2);
+      });
+
+      it('should have an empty default graph if only FROM NAMED is used', async() => {
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { ?s ?p ?o }`)).resolves.toBe(0);
+      });
+
+      it('should query the graphs in FROM NAMED via GRAPH', async() => {
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(1);
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> FROM NAMED <${G2}> { GRAPH ?g { ?s ?p ?o } }`))
+          .resolves.toBe(2);
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { GRAPH <${G1}> { ?s ?p ?o } }`)).resolves.toBe(1);
+      });
+
+      it('should have no named graphs if only FROM is used', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(0);
+        // Graphs from FROM are merged into the default graph, they are not available as named graph
+        await expect(queryCount(`SELECT * FROM <${G1}> { GRAPH <${G1}> { ?s ?p ?o } }`)).resolves.toBe(0);
+      });
+
+      it('should not make graphs from FROM available as named graphs', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM NAMED <${G2}> { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(1);
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM NAMED <${G2}> { GRAPH <${G1}> { ?s ?p ?o } }`))
+          .resolves.toBe(0);
+      });
+
+      it('should combine the default graph and named graphs in a union', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM NAMED <${G2}> {
+          { ?s ?p ?o } UNION { GRAPH ?g { ?s ?p ?o } }
+        }`)).resolves.toBe(2);
+      });
+
+      it('should query the graphs in FROM NAMED via GRAPH with property paths', async() => {
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { GRAPH ?g { ?s <ex:p>* ?o } }`)).resolves.toBe(3);
+        await expect(queryCount(`SELECT * FROM <${G1}> { GRAPH ?g { ?s <ex:p>* ?o } }`)).resolves.toBe(0);
+      });
+    });
+
     describe('for a complex query', () => {
       it('with VALUES and OPTIONAL', async() => {
         const context: QueryStringContext = {
