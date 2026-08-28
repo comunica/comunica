@@ -5,7 +5,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IJoinEntry, IQueryOperationResult } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 
 /**
@@ -37,13 +37,9 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         // we attach the expression to the right-hand operation,
         // and enforce a bind-join.
         if (operationOriginal.expression && index === 1) {
-          const filterOperation: Algebra.Operation =
-            algebraFactory.createFilter(subOperation, operationOriginal.expression);
-          if (filterOperation.metadata) {
-            filterOperation.metadata.isHoistedLeftJoinFilter = true;
-          } else {
-            filterOperation.metadata = { isHoistedLeftJoinFilter: true };
-          }
+          const filterOperation =
+            algebraUtils.withMetadata(algebraFactory.createFilter(subOperation, operationOriginal.expression));
+          filterOperation.metadata.isHoistedLeftJoinFilter = true;
           return {
             output,
             operation: filterOperation,
