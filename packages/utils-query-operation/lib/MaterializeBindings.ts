@@ -170,11 +170,7 @@ export function materializeOperation(
 
         // Make a values clause for the variables from originalBindings that are used by this filter operation:
         // the variables in scope of its input, and the variables its expression refers to.
-        // Bound variables that are not used here don't have to be re-injected,
-        // since they are joined in at the operations that do refer to them,
-        // and at the projection of the query.
-        // Injecting them everywhere is semantically harmless,
-        // but can significantly degrade the plans of (remote) query engines.
+        // Bound variables that are not used here don't have to be re-injected.
         const values: Algebra.Operation[] = createValuesFromBindings(algebraFactory, originalBindings, [
           ...algebraUtils.inScopeVariables(filterOp.input),
           ...getExpressionVariables(filterOp.expression),
