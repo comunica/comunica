@@ -8,7 +8,6 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { failTest, passTestVoid, type IActorTest, type TestResult } from '@comunica/core';
 import type { IActionContext, SourceType } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
-import { algebraUtils } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -44,18 +43,15 @@ export class ActorOptimizeQueryOperationSetSourcesFromDataset extends ActorOptim
     const defaultGraphs: string[] = [];
     const namedGraphs: string[] = [];
 
-    algebraUtils.visitOperation(operation, {
-      from: {
-        visitor(op: Algebra.From) {
-          if (op.default) {
-            defaultGraphs.push(...op.default.map((graph: RDF.NamedNode) => graph.value));
-          }
-          if (op.named) {
-            namedGraphs.push(...op.named.map((graph: RDF.NamedNode) => graph.value));
-          }
-        },
-      },
-    });
+    if (operation.type === 'from') {
+      const fromOp = <Algebra.From> operation;
+      if (fromOp.default) {
+        defaultGraphs.push(...fromOp.default.map((graph: RDF.NamedNode) => graph.value));
+      }
+      if (fromOp.named) {
+        namedGraphs.push(...fromOp.named.map((graph: RDF.NamedNode) => graph.value));
+      }
+    }
 
     return { defaultGraphs, namedGraphs };
   }
@@ -71,13 +67,10 @@ export class ActorOptimizeQueryOperationSetSourcesFromDataset extends ActorOptim
   }
 
   public static stripDatasetClauses(operation: Algebra.Operation): Algebra.Operation {
-    return algebraUtils.mapOperation(operation, {
-      from: {
-        transform(op: Algebra.From) {
-          return op.input;
-        },
-      },
-    });
+    if (operation.type === 'from') {
+      return (<Algebra.From> operation).input;
+    }
+    return operation;
   }
 }
 
