@@ -54,6 +54,10 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         return { continue: false };
       } },
       [Algebra.Types.SERVICE]: { preVisitor: () => ({ continue: false }) },
+      // Operations within FROM (NAMED) are evaluated over a different dataset than the source's default dataset.
+      // Their graphs are only rewritten when the FROM operation is executed,
+      // so emptiness checks against the source would be done on the wrong graphs here.
+      [Algebra.Types.FROM]: { preVisitor: () => ({ continue: false }) },
     });
 
     // Determine in an async manner whether or not these sources return non-empty results
