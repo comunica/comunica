@@ -128,9 +128,12 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
       if (patternGraph.termType === 'DefaultGraph') {
         // SPARQL spec (8.2) describes that when FROM NAMED's are used without a FROM, the default graph must be empty.
         // The FROMs are transformed before this step to a named node, so this will not apply to this case anymore.
-        return algebraFactory.createBgp([]);
+        return algebraFactory.createValues([], []);
       }
       if (patternGraph.termType === 'Variable') {
+        if (namedGraphs.length === 0) {
+          return algebraFactory.createValues([], []);
+        }
         if (namedGraphs.length === 1) {
           const graph: RDF.NamedNode = namedGraphs[0];
           // If the pattern graph is a variable, replace the graph and bind the variable using VALUES
@@ -173,7 +176,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         return operation;
       }
       // No-op if the pattern's graph was not selected in a FROM NAMED.
-      return algebraFactory.createBgp([]);
+      return algebraFactory.createValues([], []);
     }
 
     return ActorQueryOperationFromQuad.copyOperation(
