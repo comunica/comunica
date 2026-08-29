@@ -1,22 +1,27 @@
 import type { IBindingsContextMergeHandler, MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Map } from 'immutable';
+import type { IContextHolder } from './Bindings';
 import { Bindings } from './Bindings';
 
 /**
- * A Bindings factory that provides Bindings backed by immutable.js.
+ * A Bindings factory that provides Bindings backed by a native Map.
  */
 export class BindingsFactory implements RDF.BindingsFactory {
   private readonly dataFactory: ComunicaDataFactory;
-  private readonly contextMergeHandlers: Record<string, IBindingsContextMergeHandler<any>> | undefined;
+  /**
+   * The context holder that is shared across all bindings created by this factory.
+   * Context holders are never modified in-place, so sharing a single instance is safe,
+   * and avoids an object allocation for every created bindings object.
+   */
+  private readonly contextHolder: IContextHolder | undefined;
 
   public constructor(
     dataFactory: ComunicaDataFactory,
     contextMergeHandlers?: Record<string, IBindingsContextMergeHandler<any>>,
   ) {
     this.dataFactory = dataFactory;
-    this.contextMergeHandlers = contextMergeHandlers;
+    this.contextHolder = contextMergeHandlers ? { contextMergeHandlers } : undefined;
   }
 
   public static async create(
@@ -31,11 +36,11 @@ export class BindingsFactory implements RDF.BindingsFactory {
   }
 
   public bindings(entries: [RDF.Variable, RDF.Term][] = []): Bindings {
-    return new Bindings(
-      this.dataFactory,
-      Map(entries.map(([ key, value ]) => [ key.value, value ])),
-      this.contextMergeHandlers ? { contextMergeHandlers: this.contextMergeHandlers } : undefined,
-    );
+    const entriesMap = new Map<string, RDF.Term>();
+    for (const [ variable, term ] of entries) {
+      entriesMap.set(variable.value, term);
+    }
+    return new Bindings(this.dataFactory, entriesMap, this.contextHolder);
   }
 
   public fromBindings(bindings: RDF.Bindings): Bindings {

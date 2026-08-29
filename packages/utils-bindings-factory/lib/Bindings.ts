@@ -2,22 +2,44 @@ import type { IBindingsContextMergeHandler } from '@comunica/bus-merge-bindings-
 import { ActionContext } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IActionContextKey } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Map } from 'immutable';
 import { bindingsToString } from './bindingsToString';
 
 /**
- * An immutable.js-based Bindings object.
+ * An immutable Bindings object.
+ *
+ * Internally, bindings are stored in a native `Map` that is treated as immutable:
+ * it is never modified after it has been passed into a `Bindings` instance.
+ * All mutating operations copy the map before applying their change.
+ * Since bindings objects are typically very small (one entry per query variable),
+ * copying is cheaper than the structural sharing of a persistent data structure,
+ * while lookups and iteration remain significantly faster.
  */
 export class Bindings implements RDF.Bindings {
   public readonly type = 'bindings';
 
   private readonly dataFactory: ComunicaDataFactory;
+  /**
+   * The bindings entries, indexed by variable name.
+   * This map must be considered immutable, and must never be modified after construction.
+   */
   private readonly entries: Map<string, RDF.Term>;
   private readonly contextHolder: IContextHolder | undefined;
 
-  public constructor(dataFactory: ComunicaDataFactory, entries: Map<string, RDF.Term>, contextHolder?: IContextHolder) {
+  /**
+   * @param dataFactory The data factory for creating variables.
+   * @param entries The entries of this bindings object, indexed by variable name.
+   *                If a native `Map` is passed, it is adopted as-is,
+   *                and must not be modified afterwards.
+   *                Any other iterable of entries (such as an Immutable.js map) is copied.
+   * @param contextHolder The optional context holder.
+   */
+  public constructor(
+    dataFactory: ComunicaDataFactory,
+    entries: Map<string, RDF.Term> | Iterable<[string, RDF.Term]>,
+    contextHolder?: IContextHolder,
+  ) {
     this.dataFactory = dataFactory;
-    this.entries = entries;
+    this.entries = entries instanceof Map ? entries : new Map(entries);
     this.contextHolder = contextHolder;
   }
 
@@ -30,34 +52,41 @@ export class Bindings implements RDF.Bindings {
   }
 
   public set(key: RDF.Variable | string, value: RDF.Term): Bindings {
-    return new Bindings(
-      this.dataFactory,
-      this.entries.set(typeof key === 'string' ? key : key.value, value),
-      this.contextHolder,
-    );
+    const entries = this.cloneEntries();
+    entries.set(typeof key === 'string' ? key : key.value, value);
+    return new Bindings(this.dataFactory, entries, this.contextHolder);
   }
 
   public delete(key: RDF.Variable | string): Bindings {
-    return new Bindings(
-      this.dataFactory,
-      this.entries.delete(typeof key === 'string' ? key : key.value),
-      this.contextHolder,
-    );
+    const keyString = typeof key === 'string' ? key : key.value;
+    // Avoid copying the entries if the key is not present anyway
+    if (!this.entries.has(keyString)) {
+      return new Bindings(this.dataFactory, this.entries, this.contextHolder);
+    }
+    // Copy while skipping the deleted key, which is cheaper than copying and deleting afterwards
+    const entries = new Map<string, RDF.Term>();
+    for (const [ entryKey, entryValue ] of this.entries) {
+      if (entryKey !== keyString) {
+        entries.set(entryKey, entryValue);
+      }
+    }
+    return new Bindings(this.dataFactory, entries, this.contextHolder);
   }
 
   public keys(): Iterable<RDF.Variable> {
-    return this.mapIterable<string, RDF.Variable>(
-      this.iteratorToIterable(this.entries.keys()),
-      key => this.dataFactory.variable(key),
-    );
+    const keys: RDF.Variable[] = [];
+    for (const key of this.entries.keys()) {
+      keys.push(this.dataFactory.variable(key));
+    }
+    return keys;
   }
 
   public values(): Iterable<RDF.Term> {
-    return this.iteratorToIterable(this.entries.values());
+    return [ ...this.entries.values() ];
   }
 
   public forEach(fn: (value: RDF.Term, key: RDF.Variable) => any): void {
-    for (const [ key, value ] of this.entries.entries()) {
+    for (const [ key, value ] of this.entries) {
       fn(value, this.dataFactory.variable(key));
     }
   }
@@ -67,10 +96,11 @@ export class Bindings implements RDF.Bindings {
   }
 
   public [Symbol.iterator](): Iterator<[RDF.Variable, RDF.Term]> {
-    return this.mapIterable<[string, RDF.Term], [RDF.Variable, RDF.Term]>(
-      this.iteratorToIterable(<Iterator<[string, RDF.Term]>> this.entries.entries()),
-      ([ key, value ]) => [ this.dataFactory.variable(key), value ],
-    )[Symbol.iterator]();
+    const entries: [RDF.Variable, RDF.Term][] = [];
+    for (const [ key, value ] of this.entries) {
+      entries.push([ this.dataFactory.variable(key), value ]);
+    }
+    return entries[Symbol.iterator]();
   }
 
   public equals(other: RDF.Bindings | null | undefined): boolean {
@@ -86,9 +116,21 @@ export class Bindings implements RDF.Bindings {
       return false;
     }
 
-    // Then check if keys and values are equal
-    for (const key of this.keys()) {
-      if (!this.get(key)?.equals(other.get(key))) {
+    // Then check if keys and values are equal.
+    // If the other bindings object is of type Bindings, we can access its entries immediately,
+    // which skips the unnecessary conversion from string to variable.
+    if (other instanceof Bindings) {
+      for (const [ key, value ] of this.entries) {
+        const otherValue = other.entries.get(key);
+        if (!otherValue || !value.equals(otherValue)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    for (const [ key, value ] of this.entries) {
+      if (!value.equals(other.get(this.dataFactory.variable(key)))) {
         return false;
       }
     }
@@ -97,20 +139,28 @@ export class Bindings implements RDF.Bindings {
   }
 
   public filter(fn: (value: RDF.Term, key: RDF.Variable) => boolean): Bindings {
-    return new Bindings(this.dataFactory, Map<string, RDF.Term>(<any> this.entries
-      .filter((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
+    const entries = new Map<string, RDF.Term>();
+    for (const [ key, value ] of this.entries) {
+      if (fn(value, this.dataFactory.variable(key))) {
+        entries.set(key, value);
+      }
+    }
+    return new Bindings(this.dataFactory, entries, this.contextHolder);
   }
 
   public map(fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term): Bindings {
-    return new Bindings(this.dataFactory, Map<string, RDF.Term>(<any> this.entries
-      .map((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
+    const entries = new Map<string, RDF.Term>();
+    for (const [ key, value ] of this.entries) {
+      entries.set(key, fn(value, this.dataFactory.variable(key)));
+    }
+    return new Bindings(this.dataFactory, entries, this.contextHolder);
   }
 
   public merge(other: RDF.Bindings | Bindings): Bindings | undefined {
     if (this.size < other.size && other instanceof Bindings) {
       return other.merge(this);
     }
-    let entries = this.entries;
+    const entries = this.cloneEntries();
 
     // Check if other is of type Bindings, in that case we can access entries immediately.
     // This skips the unnecessary conversion from string to variable.
@@ -120,7 +170,7 @@ export class Bindings implements RDF.Bindings {
         if (left && !left.equals(right)) {
           return;
         }
-        entries = entries.set(variable, right);
+        entries.set(variable, right);
       }
     } else {
       for (const [ variable, right ] of other) {
@@ -128,7 +178,7 @@ export class Bindings implements RDF.Bindings {
         if (left && !left.equals(right)) {
           return;
         }
-        entries = entries.set(variable.value, right);
+        entries.set(variable.value, right);
       }
     }
 
@@ -142,7 +192,7 @@ export class Bindings implements RDF.Bindings {
     if (this.size < other.size && other instanceof Bindings) {
       return other.mergeWith(merger, this);
     }
-    let entries = this.entries;
+    const entries = this.cloneEntries();
 
     // For code comments see Bindings.merge function
     if (other instanceof Bindings) {
@@ -154,7 +204,7 @@ export class Bindings implements RDF.Bindings {
         } else {
           value = right;
         }
-        entries = entries.set(variable, value);
+        entries.set(variable, value);
       }
     } else {
       for (const [ variable, right ] of other) {
@@ -165,7 +215,7 @@ export class Bindings implements RDF.Bindings {
         } else {
           value = right;
         }
-        entries = entries.set(variable.value, value);
+        entries.set(variable.value, value);
       }
     }
 
@@ -298,16 +348,17 @@ export class Bindings implements RDF.Bindings {
     return bindingsToString(this);
   }
 
-  protected* mapIterable<T, U>(iterable: Iterable<T>, callback: (value: T) => U): Iterable<U> {
-    for (const x of iterable) {
-      yield callback(x);
+  /**
+   * Create a mutable copy of the entries of this bindings object.
+   * Copying entry by entry is significantly cheaper than `new Map(this.entries)`,
+   * which goes through the generic iterable constructor path.
+   */
+  protected cloneEntries(): Map<string, RDF.Term> {
+    const entries = new Map<string, RDF.Term>();
+    for (const [ key, value ] of this.entries) {
+      entries.set(key, value);
     }
-  }
-
-  protected iteratorToIterable<T>(iterator: Iterator<T>): Iterable<T> {
-    return {
-      [Symbol.iterator]: () => iterator,
-    };
+    return entries;
   }
 }
 

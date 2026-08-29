@@ -32,7 +32,7 @@ describe('ActorQueryOperationReducedHash', () => {
       }),
     };
     mediatorHashBindings = {
-      mediate: () => Promise.resolve({ hashFunction: (bindings: any) => JSON.stringify(bindings) }),
+      mediate: () => Promise.resolve({ hashFunction: (bindings: any) => bindings.toString() }),
     };
     cacheSize = 20;
   });
@@ -142,7 +142,7 @@ describe('Smaller cache than number of queries', () => {
       }),
     };
     mediatorHashBindings = {
-      mediate: () => Promise.resolve({ hashFunction: (bindings: any) => JSON.stringify(bindings) }),
+      mediate: () => Promise.resolve({ hashFunction: (bindings: any) => bindings.toString() }),
     };
     actor = new ActorQueryOperationReducedHash(
       { name: 'actor', bus, mediatorQueryOperation, mediatorHashBindings, cacheSize },

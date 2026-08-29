@@ -57,7 +57,7 @@ describe('ActorQueryOperationDistinctHash', () => {
       }),
     };
     mediatorHashBindings = {
-      mediate: () => Promise.resolve({ hashFunction: (bindings: any) => JSON.stringify(bindings) }),
+      mediate: () => Promise.resolve({ hashFunction: (bindings: any) => bindings.toString() }),
     };
     mediatorHashQuads = {
       mediate: () => Promise.resolve({ hashFunction: (bindings: any) => JSON.stringify(bindings) }),
