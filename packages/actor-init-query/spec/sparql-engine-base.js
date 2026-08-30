@@ -1,11 +1,15 @@
+/* eslint-disable import/no-nodejs-modules */
+const http = require('node:http');
+/* eslint-enable import/no-nodejs-modules */
 const ProxyHandlerStatic = require('@comunica/actor-http-proxy').ProxyHandlerStatic;
 const { KeysInitQuery } = require('@comunica/context-entries');
 const { ActionContext } = require('@comunica/core');
 const RdfStore = require('rdf-stores').RdfStore;
 const RdfTestSuite = require('rdf-test-suite');
+const { HttpServiceSparqlEndpoint } = require('..');
 
-module.exports = function(engine) {
-  return {
+module.exports = function(engine, exposeServiceDescriptionEndpoint = false) {
+  const testEngine = {
     parse(query, options) {
       return engine.actorInitQuery.mediatorQueryProcess.bus.actors[0].parse(query, new ActionContext({ [KeysInitQuery.baseIRI.name]: options.baseIRI }));
     },
@@ -70,6 +74,12 @@ module.exports = function(engine) {
       return store.getQuads();
     },
   };
+
+  if (exposeServiceDescriptionEndpoint) {
+    testEngine.startServiceDescriptionEndpoint = createServiceDescriptionEndpointStarter(engine);
+  }
+
+  return testEngine;
 };
 
 function source(data) {
@@ -78,4 +88,52 @@ function source(data) {
     store.addQuad(quad);
   }
   return store;
+}
+
+function createServiceDescriptionEndpointStarter(engine) {
+  let server;
+  let endpoint;
+
+  async function close() {
+    if (!server) {
+      return;
+    }
+    const serverToClose = server;
+    server = undefined;
+    endpoint = undefined;
+    await new Promise((resolve, reject) => serverToClose.close(error => error ? reject(error) : resolve()));
+  }
+
+  return async function() {
+    if (endpoint) {
+      return { close, endpoint };
+    }
+
+    const mediaTypes = await engine.getResultMediaTypes();
+    const variants = Object.entries(mediaTypes).map(([ type, quality ]) => ({ type, quality }));
+
+    server = http.createServer();
+    await new Promise((resolve, reject) => {
+      server.once('error', reject);
+      server.listen(0, '127.0.0.1', () => {
+        server.removeListener('error', reject);
+        resolve();
+      });
+    });
+
+    const address = server.address();
+    if (!address || typeof address === 'string') {
+      await close();
+      throw new Error('Could not determine the service description endpoint address.');
+    }
+
+    const service = new HttpServiceSparqlEndpoint({ port: address.port });
+    service.engine.catch(() => {
+      // Ignore the failure to create the unused engine.
+    });
+    server.on('request', service.handleRequest.bind(service, engine, variants, process.stdout, process.stderr));
+
+    endpoint = `http://127.0.0.1:${address.port}/sparql`;
+    return { close, endpoint };
+  };
 }
