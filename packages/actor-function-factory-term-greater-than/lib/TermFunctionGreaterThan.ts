@@ -15,7 +15,7 @@ export class TermFunctionGreaterThan extends TermFunctionBase {
         .set([ 'term', 'term' ], expressionEvaluator =>
           ([ first, second ]) =>
           // X < Y -> Y > X
-            this.lessThanFunction.applyOnTerms([ second, first ], expressionEvaluator))
+            this.lessThanFunction.applyOnTerms([ second, first ], expressionEvaluator), false)
         .collect(),
     });
   }

@@ -1,10 +1,5 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
-import {
-  bool,
-  declare,
-  SparqlOperator,
-} from '@comunica/utils-expression-evaluator';
-import { DirLangStringLiteral } from '@comunica/utils-expression-evaluator/lib/expressions';
+import { bool, declare, DirLangStringLiteral, SparqlOperator } from '@comunica/utils-expression-evaluator';
 
 /**
  *

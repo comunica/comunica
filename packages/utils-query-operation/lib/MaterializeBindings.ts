@@ -6,6 +6,7 @@ import type * as RDF from '@rdfjs/types';
 import type { Variable } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
+import { getExpressionVariables } from './Expressions';
 
 /**
  * Materialize a term with the given binding.
@@ -167,8 +168,13 @@ export function materializeOperation(
           return filterOp;
         }
 
-        // Make a values clause using all the variables from originalBindings.
-        const values: Algebra.Operation[] = createValuesFromBindings(algebraFactory, originalBindings);
+        // Make a values clause for the variables from originalBindings that are used by this filter operation:
+        // the variables in scope of its input, and the variables its expression refers to.
+        // Bound variables that are not used here don't have to be re-injected.
+        const values: Algebra.Operation[] = createValuesFromBindings(algebraFactory, originalBindings, [
+          ...algebraUtils.inScopeVariables(filterOp.input),
+          ...getExpressionVariables(filterOp.expression),
+        ]);
 
         // Recursively materialize the filter expression
         const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
@@ -188,7 +194,9 @@ export function materializeOperation(
           options,
         );
 
-        recursionResultInput = algebraFactory.createJoin([ ...values, recursionResultInput ]);
+        if (values.length > 0) {
+          recursionResultInput = algebraFactory.createJoin([ ...values, recursionResultInput ]);
+        }
 
         return algebraFactory.createFilter(recursionResultInput, recursionResultExpression);
       },

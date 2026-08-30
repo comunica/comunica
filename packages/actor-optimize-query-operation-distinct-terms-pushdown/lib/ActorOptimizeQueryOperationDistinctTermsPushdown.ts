@@ -11,6 +11,7 @@ import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comuni
 import { assignOperationSource, doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { QuadTermName } from 'rdf-terms';
+import { QUAD_TERM_NAMES } from 'rdf-terms';
 
 /**
  * A comunica Distinct Terms Optimize Query Operation Actor.
@@ -65,6 +66,7 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
           const distinctTermsOp = algebraFactory.createDistinctTerms(
             operation.input.variables,
             termsMapping,
+            this.getTermFilters(operation.input.input),
           );
 
           // Check if the source supports this operation
@@ -131,5 +133,15 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
     }
 
     return termsMapping;
+  }
+
+  private getTermFilters(pattern: Algebra.Pattern): Partial<Record<QuadTermName, RDF.Term>> | undefined {
+    const filters: Partial<Record<QuadTermName, RDF.Term>> = {};
+    for (const quadTermName of QUAD_TERM_NAMES) {
+      if (pattern[quadTermName].termType !== 'Variable') {
+        filters[quadTermName] = pattern[quadTermName];
+      }
+    }
+    return Object.keys(filters).length > 0 ? filters : undefined;
   }
 }

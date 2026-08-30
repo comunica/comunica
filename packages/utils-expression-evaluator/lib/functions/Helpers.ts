@@ -2,7 +2,7 @@
  * These helpers provide a (albeit inflexible) DSL for writing function
  * definitions for the SPARQL functions.
  */
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type {
   ComunicaDataFactory,
   IDateTimeRepresentation,
@@ -49,6 +49,14 @@ export class Builder {
     return this.overloadTree;
   }
 
+  /**
+   * If any of the arguments are non-lexical literals, an error is thrown.
+   *
+   * @param {ImplementationFunction} func - The function that is wrapped.
+   *
+   * @returns {ImplementationFunction} The function that is wrapped if no error is thrown.
+   * @throws {Err.InvalidLexicalForm}
+   */
   private static wrapInvalidLexicalProtected(func: ImplementationFunction): ImplementationFunction {
     return (expressionEvaluator: IInternalEvaluator) => (args: TermExpression[]) => {
       for (const [ index, arg ] of args.entries()) {
@@ -184,9 +192,9 @@ addInvalidHandling = true,
   }
 
   public onTerm1<T extends Term>(
-    op: (expressionEvaluator: IInternalEvaluator) =>
-    (term: T) => Term,
-addInvalidHandling = false,
+    op: (expressionEvaluator: IInternalEvaluator) => (term: T) => Term,
+    // TODO: next major change can change default to true
+    addInvalidHandling = false,
   ): Builder {
     return this.set(
       [ 'term' ],
@@ -195,11 +203,14 @@ addInvalidHandling = false,
     );
   }
 
-  public onTerm3(op: (expressionEvaluator: IInternalEvaluator) => (t1: Term, t2: Term, t3: Term) => Term):
-  Builder {
+  public onTerm3(
+    op: (expressionEvaluator: IInternalEvaluator) => (t1: Term, t2: Term, t3: Term) => Term,
+    addInvalidHandling = true,
+  ): Builder {
     return this.set(
       [ 'term', 'term', 'term' ],
       expressionEvaluator => ([ t1, t2, t3 ]: [Term, Term, Term]) => op(expressionEvaluator)(t1, t2, t3),
+      addInvalidHandling,
     );
   }
 
@@ -221,7 +232,7 @@ addInvalidHandling = true,
 
   public onBoolean1(
     op: (expressionEvaluator: IInternalEvaluator) => (lit: E.BooleanLiteral) => Term,
-addInvalidHandling = true,
+    addInvalidHandling = true,
   ): Builder {
     return this.set(
       [ C.TypeURL.XSD_BOOLEAN ],
@@ -447,15 +458,6 @@ addInvalidHandling = true,
         double(evalHelper(expressionEvaluator)(left, right)), addInvalidHandling);
   }
 
-  public numberTest(
-    test: (expressionEvaluator: IInternalEvaluator) => (left: number, right: number) => boolean,
-  ): Builder {
-    return this.numeric(expressionEvaluator => ([ left, right ]: E.NumericLiteral[]) => {
-      const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
-      return bool(result);
-    });
-  }
-
   public stringTest(
     test: (expressionEvaluator: IInternalEvaluator) => (left: string, right: string) => boolean,
 addInvalidHandling = true,
@@ -469,38 +471,6 @@ addInvalidHandling = true,
         },
         addInvalidHandling,
       );
-  }
-
-  public booleanTest(
-    test: (expressionEvaluator: IInternalEvaluator) => (left: boolean, right: boolean) => boolean,
-addInvalidHandling = true,
-  ): Builder {
-    return this
-      .set(
-        [ C.TypeURL.XSD_BOOLEAN, C.TypeURL.XSD_BOOLEAN ],
-        expressionEvaluator => ([ left, right ]: E.BooleanLiteral[]) => {
-          const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
-          return bool(result);
-        },
-        addInvalidHandling,
-      );
-  }
-
-  public dateTimeTest(test: (expressionEvaluator: IInternalEvaluator)
-  => (left: IDateTimeRepresentation, right: IDateTimeRepresentation) => boolean, addInvalidHandling = true): Builder {
-    return this
-      .set(
-        [ C.TypeURL.XSD_DATE_TIME, C.TypeURL.XSD_DATE_TIME ],
-        expressionEvaluator => ([ left, right ]: E.DateTimeLiteral[]) => {
-          const result = test(expressionEvaluator)(left.typedValue, right.typedValue);
-          return bool(result);
-        },
-        addInvalidHandling,
-      );
-  }
-
-  public numeric<T extends TermExpression>(op: ImplementationFunctionTuple<[T, T]>): Builder {
-    return this.set([ C.TypeAlias.SPARQL_NUMERIC, C.TypeAlias.SPARQL_NUMERIC ], op);
   }
 }
 
@@ -549,4 +519,34 @@ export function expressionToVar(
   variableExpression: VariableExpression,
 ): RDF.Variable {
   return dataFactory.variable(variableExpression.name.slice(1));
+}
+
+/**
+ * If any of the arguments is a non-lexical literal, an error is thrown or string comparison of their value is performed
+ * depending on the value of the nonLexicalComparison option.
+ *
+ * @param {IInternalEvaluator} exprEval - The expression evaluator.
+ * @param {Literal<ISerializable>} left - The left operand.
+ * @param {Literal<ISerializable>} right - The right operand.
+ *
+ * @returns {undefined | -1 | 0 | 1}
+ * If there are no non-lexical arguments, undefined is returned. This tells the caller to handle the rest, it's safe.
+ * If there is a non-lexical argument and nonLexicalComparison is true, it returns the result of the string comparison.
+ * @throws {Err.InvalidLexicalForm}
+ */
+export function nonLexicalComparisonHandler(
+  exprEval: IInternalEvaluator,
+  left: Literal<ISerializable>,
+  right: Literal<ISerializable>,
+): undefined | -1 | 0 | 1 {
+  const nonLexical = [ left, right ].find(arg => arg instanceof NonLexicalLiteral);
+  if (nonLexical) {
+    if (!exprEval.context.get(KeysExpressionEvaluator.nonLexicalComparison)) {
+      throw new Err.InvalidLexicalForm(
+        nonLexical.toRDF(exprEval.context.getSafe(KeysInitQuery.dataFactory)),
+      );
+    }
+    return left.str() === right.str() ? 0 : (left.str() < right.str() ? -1 : 1);
+  }
+  return undefined;
 }

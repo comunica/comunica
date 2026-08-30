@@ -7,7 +7,7 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
-import { AlgebraFactory, Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
@@ -104,6 +104,95 @@ IQueryOperationResultBindings
     async function getSideData(action: IActionRdfJoin): Promise<IActorRdfJoinMultiBindTestSideData> {
       return (await actor.test(action)).getSideData();
     }
+
+    describe('static helper methods', () => {
+      describe('canBindWithOperation', () => {
+        describe('default without boundVariables', () => {
+          it('should return true even with conflicting variables with LEFT_JOIN', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.namedNode('o2'));
+            const leftJoinOp = FACTORY.createLeftJoin(leftPattern, rightPattern);
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(leftJoinOp)).toBe(true);
+          });
+
+          it('should return true even with conflicting variables with MINUS', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('x'), DF.namedNode('p2'), DF.namedNode('o2'));
+            const minusOp = FACTORY.createMinus(leftPattern, rightPattern);
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(minusOp)).toBe(true);
+          });
+
+          it('should allow binding on a right stream with safe FILTER', () => {
+            const filter = algebraUtils.withMetadata(
+              FACTORY.createFilter(FACTORY.createNop(), FACTORY.createTermExpression(DF.literal(''))),
+            );
+            filter.metadata.isHoistedLeftJoinFilter = true;
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter)).toBe(true);
+          });
+
+          it('should reject binding on a right stream with conflicting FILTER', () => {
+            const filter: any = FACTORY.createFilter(FACTORY.createNop(), FACTORY.createTermExpression(DF.literal('')));
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter)).toBe(false);
+          });
+
+          it('should not reject a FILTER nested inside a FILTER EXISTS', () => {
+            const innerFilter: any =
+              FACTORY.createFilter(FACTORY.createNop(), FACTORY.createTermExpression(DF.literal('')));
+            const existsExpr = FACTORY.createExistenceExpression(false, innerFilter);
+            const outerFilter = algebraUtils.withMetadata(FACTORY.createFilter(FACTORY.createNop(), existsExpr));
+            outerFilter.metadata.isHoistedLeftJoinFilter = true;
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(outerFilter)).toBe(true);
+          });
+        });
+
+        describe('with boundVariables', () => {
+          it('should allow binding on a right stream with safe LEFT_JOIN', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p2'), DF.variable('b'));
+            const leftJoinOp = FACTORY.createLeftJoin(leftPattern, rightPattern);
+
+            const boundVariables = [ DF.variable('a') ];
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(leftJoinOp, boundVariables)).toBe(true);
+          });
+
+          it('should reject on a right stream with conflicting LEFT_JOIN', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.namedNode('o2'));
+            const leftJoinOp = FACTORY.createLeftJoin(leftPattern, rightPattern);
+
+            const boundVariables = [ DF.variable('b') ];
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(leftJoinOp, boundVariables)).toBe(false);
+          });
+
+          it('should allow binding on a right stream with safe MINUS', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('x'), DF.namedNode('p2'), DF.namedNode('o2'));
+            const minusOp = FACTORY.createMinus(leftPattern, rightPattern);
+
+            const boundVariables = [ DF.variable('a') ];
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(minusOp, boundVariables)).toBe(true);
+          });
+
+          it('should reject on a right stream with conflicting MINUS', () => {
+            const leftPattern = FACTORY.createPattern(DF.variable('x'), DF.namedNode('p'), DF.namedNode('o'));
+            const rightPattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p2'), DF.namedNode('o2'));
+            const minusOp = FACTORY.createMinus(leftPattern, rightPattern);
+
+            const boundVariables = [ DF.variable('a') ];
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(minusOp, boundVariables)).toBe(false);
+          });
+        });
+      });
+    });
 
     describe('getJoinCoefficients', () => {
       it('should handle three entries', async() => {
@@ -384,7 +473,7 @@ IQueryOperationResultBindings
               },
               {
                 output: <any> {},
-                operation: <any> { type: Algebra.Types.GROUP },
+                operation: FACTORY.createGroup(FACTORY.createNop(), [], []),
               },
             ],
             context: new ActionContext(),

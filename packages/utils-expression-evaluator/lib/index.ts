@@ -11,10 +11,12 @@ export {
   integer,
   dateTime,
   langString,
+  dirLangString,
   decimal,
   float,
   expressionToVar,
   Builder,
+  nonLexicalComparisonHandler,
 } from './functions/Helpers';
 export {
   ExpressionError,
@@ -63,6 +65,7 @@ export {
   DurationLiteral,
   TimeLiteral,
   LangStringLiteral,
+  DirLangStringLiteral,
   Term,
   YearMonthDurationLiteral,
   Quad,
@@ -83,6 +86,7 @@ export {
   NonLexicalLiteral,
   StringLiteral,
   isNonLexicalLiteral,
+  ISerializable,
 } from './expressions';
 export { addDurationToDateTime, elapsedDuration } from './util/SpecAlgos';
 export {

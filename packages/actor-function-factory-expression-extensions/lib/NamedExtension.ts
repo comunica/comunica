@@ -1,4 +1,4 @@
-import { ExpressionFunctionBase } from '@comunica/bus-function-factory/lib/implementation/Core';
+import { ExpressionFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { AsyncExtensionFunction, IEvalContext, TermExpression } from '@comunica/types';
 import { ExtensionFunctionError, TermTransformer } from '@comunica/utils-expression-evaluator';

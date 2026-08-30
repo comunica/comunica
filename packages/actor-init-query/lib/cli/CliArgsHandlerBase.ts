@@ -3,7 +3,13 @@ import { exec } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import * as OS from 'node:os';
 import * as Path from 'node:path';
-import { KeysHttp, KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import {
+  KeysExpressionEvaluator,
+  KeysHttp,
+  KeysInitQuery,
+  KeysQueryOperation,
+  KeysRdfUpdateQuads,
+} from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActionContext, ICliArgsHandler } from '@comunica/types';
@@ -178,6 +184,16 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If the query engine should deduplicate resulting triples',
         },
+        nonLexicalComparison: {
+          type: 'boolean',
+          describe: 'When true, compares non-lexical literals.' +
+            'Throws an expression error otherwise, which is caught by FILTER and BIND.',
+        },
+        fullTermComparison: {
+          type: 'boolean',
+          describe: 'When true, compares IRIs, blank nodes, languageStrings and triple terms.' +
+            'Throws an expression error otherwise, which is caught by FILTER and BIND.',
+        },
         extensionFunctionsAlwaysPushdown: {
           type: 'boolean',
           describe: 'If extension functions must always be pushed down',
@@ -341,6 +357,16 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define if results should be deduplicated
     if (args.distinctConstruct) {
       context[KeysInitQuery.distinctConstruct.name] = true;
+    }
+
+    // Define if non -lexical literals should be compared
+    if (args.nonLexicalComparison) {
+      context[KeysExpressionEvaluator.nonLexicalComparison.name] = true;
+    }
+
+    // Define if every term should be string compared
+    if (args.fullTermComparison) {
+      context[KeysExpressionEvaluator.fullTermComparison.name] = true;
     }
 
     // Pushing down of extension functions

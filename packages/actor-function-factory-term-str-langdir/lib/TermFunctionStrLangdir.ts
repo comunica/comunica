@@ -1,11 +1,11 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 import {
   declare,
+  DirLangStringLiteral,
   ExpressionError,
   SparqlOperator,
   TypeURL,
 } from '@comunica/utils-expression-evaluator';
-import { DirLangStringLiteral } from '@comunica/utils-expression-evaluator/lib/expressions';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-strlang

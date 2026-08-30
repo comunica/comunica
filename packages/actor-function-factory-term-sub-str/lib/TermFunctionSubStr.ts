@@ -1,18 +1,13 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
-import type {
-  NumericLiteral,
-
-  LangStringLiteral,
-} from '@comunica/utils-expression-evaluator';
+import type { DirLangStringLiteral, LangStringLiteral, NumericLiteral } from '@comunica/utils-expression-evaluator';
 import {
   declare,
+  dirLangString,
   langString,
   SparqlOperator,
   string,
   TypeURL,
 } from '@comunica/utils-expression-evaluator';
-import type { DirLangStringLiteral } from '@comunica/utils-expression-evaluator/lib/expressions';
-import { dirLangString } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-substr
