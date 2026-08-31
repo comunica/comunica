@@ -1,4 +1,5 @@
 import type { MediatorHttp } from '@comunica/bus-http';
+import { ActorHttp } from '@comunica/bus-http';
 import type { MediatorQuerySerialize } from '@comunica/bus-query-serialize';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Actor } from '@comunica/core';
@@ -94,11 +95,11 @@ export class QuerySourceSparql implements IQuerySource {
           Actor.getContextLogger(this.context)?.warn(`Encountered a 404 when requesting ${this.url} according to the service description of ${this.urlBackup}. This is a server configuration issue. Retrying the current and modifying future requests to ${this.urlBackup} instead.`);
           input = (<string> input).replace(this.url, this.urlBackup);
           this.url = this.urlBackup;
-          return await this.mediatorHttp.mediate(
+          return QuerySourceSparql.wrapResponseBodyErrors(await this.mediatorHttp.mediate(
             { input, init, context: this.lastSourceContext! },
-          );
+          ));
         }
-        return response;
+        return QuerySourceSparql.wrapResponseBodyErrors(response);
       },
       prefixVariableQuestionMark: true,
       dataFactory,
@@ -117,6 +118,34 @@ export class QuerySourceSparql implements IQuerySource {
     this.datasets = metadata.datasets;
     this.extensionFunctions = metadata.extensionFunctions;
     this.propertyFeatures = metadata.propertyFeatures ? new Set(metadata.propertyFeatures) : undefined;
+  }
+
+  /**
+   * Replace the body of the given HTTP response with a Node.js stream that forwards its errors
+   * to the streams it is piped into.
+   *
+   * For CONSTRUCT and DESCRIBE queries, `fetch-sparql-endpoint` pipes the response body into an RDF parser,
+   * and only the parser is listened to for errors.
+   * Because Node.js's `pipe` does not forward errors to the destination stream,
+   * an endpoint that drops the connection halfway through the response body
+   * would cause an error to be emitted on a stream without any listeners, which crashes the process,
+   * instead of the error ending up on the quad stream that was returned to the caller.
+   *
+   * The body is only converted upon access, so that responses of which the body is never read
+   * (such as those of update queries) are left untouched.
+   * @param response An HTTP response.
+   * @returns The same response, with its body replaced by an error-forwarding Node.js stream.
+   */
+  public static wrapResponseBodyErrors(response: Response): Response {
+    const { body } = response;
+    if (body) {
+      let nodeBody: NodeJS.ReadableStream | undefined;
+      Object.defineProperty(response, 'body', {
+        configurable: true,
+        get: () => nodeBody ??= ActorHttp.toNodeReadableForwardingErrors(body),
+      });
+    }
+    return response;
   }
 
   public async getFilterFactor(): Promise<number> {
