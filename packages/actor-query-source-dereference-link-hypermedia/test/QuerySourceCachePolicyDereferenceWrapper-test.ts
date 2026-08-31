@@ -1,7 +1,6 @@
 import type { IActionDereference } from '@comunica/bus-dereference';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, ICachePolicy, ICacheResponseHead, IRevalidationPolicy } from '@comunica/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QuerySourceCachePolicyDereferenceWrapper } from '../lib/QuerySourceCachePolicyDereferenceWrapper';
 
 describe('QuerySourceCachePolicyDereferenceWrapper', () => {

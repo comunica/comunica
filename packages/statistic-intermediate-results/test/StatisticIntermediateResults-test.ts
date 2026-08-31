@@ -1,7 +1,6 @@
 import type { PartialResult } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { StatisticIntermediateResults } from '../lib/StatisticIntermediateResults';
 
 const DF = new DataFactory();

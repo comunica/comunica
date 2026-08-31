@@ -1,5 +1,4 @@
 import { DataFactory } from 'rdf-data-factory';
-import { describe, expect, it } from 'vitest';
 import { bindingsToCompactString, bindingsToString } from '../lib';
 import { BindingsFactory } from '../lib/BindingsFactory';
 

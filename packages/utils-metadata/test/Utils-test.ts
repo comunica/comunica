@@ -1,6 +1,5 @@
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import { describe, expect, it, vi } from 'vitest';
 import { cachifyMetadata, getMetadataBindings, getMetadataQuads, MetadataValidationState } from '../lib';
 
 describe('Utils', () => {

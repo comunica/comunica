@@ -3,7 +3,6 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermSubject } from '../lib';
 
 describe('evaluation of \'SUBJECT\'', () => {

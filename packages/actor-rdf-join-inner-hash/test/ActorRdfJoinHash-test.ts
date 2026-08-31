@@ -13,7 +13,6 @@ import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfJoinHash } from '../lib/ActorRdfJoinHash';
 import '@comunica/utils-jest';
 

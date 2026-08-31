@@ -10,7 +10,6 @@ import {
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
 } from '@comunica/utils-jest';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorBindingsAggregatorFactoryAverage } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryAverage', () => {

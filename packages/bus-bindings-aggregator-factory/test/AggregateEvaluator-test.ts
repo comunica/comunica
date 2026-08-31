@@ -9,7 +9,6 @@ import {
 } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { describe, expect, it } from 'vitest';
 import { AggregateEvaluator } from '../lib';
 
 const DF = <ComunicaDataFactory> new DataFactory();

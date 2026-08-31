@@ -8,7 +8,6 @@ import {
   yearMonthDurationTyped,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermSubtraction } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

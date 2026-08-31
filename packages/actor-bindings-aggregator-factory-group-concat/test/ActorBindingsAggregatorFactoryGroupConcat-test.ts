@@ -9,7 +9,6 @@ import {
   makeAggregate,
 } from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorBindingsAggregatorFactoryGroupConcat } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryGroupConcat', () => {

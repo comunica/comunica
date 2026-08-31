@@ -4,7 +4,6 @@ import {
   EvalTestData as Data,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermSha512 } from '../lib';
 
 /**

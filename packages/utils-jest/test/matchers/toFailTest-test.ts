@@ -1,5 +1,4 @@
 import { failTest, passTest } from '@comunica/core';
-import { describe, expect, it } from 'vitest';
 import '../../lib';
 
 describe('toFailTest', () => {

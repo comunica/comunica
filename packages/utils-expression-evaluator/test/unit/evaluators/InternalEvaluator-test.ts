@@ -5,7 +5,6 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

@@ -3,7 +3,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationDrop } from '../lib/ActorQueryOperationDrop';
 import '@comunica/utils-jest';
 

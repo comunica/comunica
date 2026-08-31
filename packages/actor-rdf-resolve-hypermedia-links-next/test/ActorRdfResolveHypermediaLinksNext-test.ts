@@ -1,7 +1,6 @@
 import { ActorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfResolveHypermediaLinksNext } from '../lib/ActorRdfResolveHypermediaLinksNext';
 import '@comunica/utils-jest';
 

@@ -5,7 +5,6 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { describe, expect, it } from 'vitest';
 import {
   filterMatchingQuotedQuads,
   getDuplicateElementLinks,

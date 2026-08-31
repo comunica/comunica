@@ -1,7 +1,6 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import CachePolicy = require('http-cache-semantics');
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CachePolicyHttpCacheSemanticsWrapper } from '../lib/CachePolicyHttpCacheSemanticsWrapper';
 import { FetchInitPreprocessor } from '../lib/FetchInitPreprocessor';
 

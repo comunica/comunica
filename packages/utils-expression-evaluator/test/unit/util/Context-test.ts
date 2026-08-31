@@ -1,7 +1,6 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
-import { describe, expect, it } from 'vitest';
 import { prepareEvaluatorActionContext } from '../../../lib';
 
 const DF = new DataFactory();

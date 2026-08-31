@@ -1,6 +1,5 @@
 import { ActionContext, Bus } from '@comunica/core';
 import '@comunica/utils-jest';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IInvalidateListener } from '..';
 import { ActorHttpInvalidateListenable } from '..';
 

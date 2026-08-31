@@ -1,5 +1,4 @@
 import type { ILink } from '@comunica/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { StatisticBase } from '../lib';
 
 class MockStatisticBase<T> extends StatisticBase<T> {

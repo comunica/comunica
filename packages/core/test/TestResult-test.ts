@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it } from 'vitest';
 import type { TestResult } from '../lib/TestResult';
 import { passTestVoidWithSideData, passTestVoid, passTestWithSideData, failTest, passTest } from '../lib/TestResult';
 

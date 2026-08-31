@@ -7,7 +7,6 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { streamifyArray } from 'streamify-array';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQuerySourceIdentifySerialized } from '../lib/ActorQuerySourceIdentifySerialized';
 import '@comunica/utils-jest';
 

@@ -3,7 +3,6 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 
 describe('like \'langdir\' receiving', () => {
   runFuncTestTable({

@@ -1,7 +1,6 @@
 import type { IAction, IActorOutput, IActorTest, IBus } from '@comunica/core';
 import { ActionContext, Actor, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Runner } from '../lib/Runner';
 
 describe('Runner', () => {

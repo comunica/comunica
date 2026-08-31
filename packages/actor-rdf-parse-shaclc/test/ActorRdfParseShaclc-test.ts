@@ -3,7 +3,6 @@ import { KeysRdfParseHtmlScript } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfParseShaclc } from '../lib/ActorRdfParseShaclc';
 import '@comunica/utils-jest';
 

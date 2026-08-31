@@ -2,7 +2,6 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import arrayifyStream from 'arrayify-stream';
 import '@comunica/utils-jest';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorDereferenceFallback } from '../lib/ActorDereferenceFallback';
 
 describe('ActorDereferenceFallback', () => {

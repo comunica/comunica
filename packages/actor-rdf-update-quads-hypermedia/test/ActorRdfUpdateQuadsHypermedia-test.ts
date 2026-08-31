@@ -4,7 +4,6 @@ import type { IActionRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extra
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, ICachePolicy } from '@comunica/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfUpdateQuadsHypermedia } from '../lib/ActorRdfUpdateQuadsHypermedia';
 import '@comunica/utils-jest';
 

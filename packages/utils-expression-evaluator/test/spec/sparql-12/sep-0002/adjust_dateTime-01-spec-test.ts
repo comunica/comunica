@@ -5,7 +5,6 @@ import {
   dateTimeTyped,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 
 describe('adjust dateTime duration', () => {
   /**

@@ -12,7 +12,6 @@ import {
   bool,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermAbs } from '../lib';
 
 /**

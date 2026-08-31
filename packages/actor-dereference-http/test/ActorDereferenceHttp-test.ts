@@ -5,7 +5,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
 import type { IActionContext, ICachePolicy } from '@comunica/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorDereferenceHttp } from '../lib/ActorDereferenceHttp';
 import { DereferenceCachePolicyHttpWrapper } from '../lib/DereferenceCachePolicyHttpWrapper';
 import '@comunica/utils-jest';

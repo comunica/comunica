@@ -3,7 +3,6 @@ import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { streamifyArray } from 'streamify-array';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfMetadataExtractHydraCount } from '../lib/ActorRdfMetadataExtractHydraCount';
 import '@comunica/utils-jest';
 

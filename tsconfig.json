@@ -8,7 +8,7 @@
     ],
     "module": "commonjs",
     "resolveJsonModule": true,
-    "types": ["node"],
+    "types": ["node", "vitest/globals"],
 
     "strict": true,
     "strictFunctionTypes": true,

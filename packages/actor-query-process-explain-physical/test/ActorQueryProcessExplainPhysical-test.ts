@@ -2,7 +2,6 @@ import type { IQueryProcessSequential } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryPhysicalQueryPlanLogger } from '../lib';
 import { ActorQueryProcessExplainPhysical } from '../lib/ActorQueryProcessExplainPhysical';
 import '@comunica/utils-jest';

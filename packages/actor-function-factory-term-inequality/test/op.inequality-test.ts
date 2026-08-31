@@ -15,7 +15,6 @@ import {
   timeTyped,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermInequality } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

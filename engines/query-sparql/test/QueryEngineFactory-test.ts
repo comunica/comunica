@@ -2,7 +2,6 @@ import type { QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
-import { describe, expect, it, vi } from 'vitest';
 import { QueryEngineFactory } from '../lib/QueryEngineFactory';
 
 // Use an increased timeout

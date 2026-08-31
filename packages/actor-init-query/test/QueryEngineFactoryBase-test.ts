@@ -1,5 +1,4 @@
 import * as Path from 'node:path';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QueryEngineBase } from '../lib/QueryEngineBase';
 import { QueryEngineFactoryBase } from '../lib/QueryEngineFactoryBase';
 

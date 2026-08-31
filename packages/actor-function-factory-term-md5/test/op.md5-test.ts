@@ -2,7 +2,6 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermMd5 } from '../lib';
 
 describe('evaluation of \'md5\' like', () => {

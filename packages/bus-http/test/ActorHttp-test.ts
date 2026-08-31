@@ -1,5 +1,4 @@
 import { Readable } from 'readable-stream';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorHttp } from '../lib/ActorHttp';
 import 'cross-fetch/polyfill';
 

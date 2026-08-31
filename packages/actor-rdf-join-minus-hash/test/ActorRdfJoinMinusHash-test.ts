@@ -8,7 +8,6 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfJoinMinusHash } from '../lib/ActorRdfJoinMinusHash';
 import '@comunica/utils-jest';
 

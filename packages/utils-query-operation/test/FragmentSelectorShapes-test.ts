@@ -1,7 +1,6 @@
 import type { FragmentSelectorShape } from '@comunica/types';
 import { Algebra, AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
-import { beforeAll, describe, expect, it } from 'vitest';
 import { doesShapeAcceptOperation } from '../lib/FragmentSelectorShapes';
 
 const AF = new AlgebraFactory();

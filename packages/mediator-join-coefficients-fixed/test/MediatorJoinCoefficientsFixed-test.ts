@@ -4,7 +4,6 @@ import type { IAction, IActorOutput, TestResult } from '@comunica/core';
 import { failTest, passTest, ActionContext, Actor, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MediatorJoinCoefficientsFixed } from '../lib/MediatorJoinCoefficientsFixed';
 
 const DF = new DataFactory();

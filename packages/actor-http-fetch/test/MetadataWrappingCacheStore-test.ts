@@ -1,5 +1,4 @@
 import CacheHandler from 'undici/types/cache-interceptor';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MetadataWrappingCacheStore } from '../lib/MetadataWrappingCacheStore';
 import CacheStore = CacheHandler.CacheStore;
 

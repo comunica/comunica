@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LoggerBunyan } from '../lib/LoggerBunyan';
 import { BunyanStreamProviderStderr } from '../lib/stream/BunyanStreamProviderStderr';
 

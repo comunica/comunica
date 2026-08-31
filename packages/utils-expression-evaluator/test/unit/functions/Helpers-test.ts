@@ -2,7 +2,6 @@ import type { ExpressionEvaluator } from '@comunica/actor-expression-evaluator-f
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { FunctionArgumentsCache, ISuperTypeProvider } from '@comunica/types';
 import { getMockEEActionContext, getMockEEFactory, getMockExpression } from '@comunica/utils-jest';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Builder } from '../../../lib';
 import { NonLexicalLiteral, TypeURL, bool, declare, integer, nonLexicalComparisonHandler } from '../../../lib';
 

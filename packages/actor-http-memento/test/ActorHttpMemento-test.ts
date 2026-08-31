@@ -3,7 +3,6 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttpMemento } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorHttpMemento } from '../lib/ActorHttpMemento';
 import '@comunica/utils-jest';
 

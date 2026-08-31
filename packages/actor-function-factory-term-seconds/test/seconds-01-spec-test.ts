@@ -4,7 +4,6 @@ import {
   decimal,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermSeconds } from '../lib';
 
 /**

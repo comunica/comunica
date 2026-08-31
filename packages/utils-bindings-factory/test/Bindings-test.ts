@@ -4,7 +4,6 @@ import type * as RDF from '@rdfjs/types';
 import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
 import '@comunica/utils-jest';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Bindings } from '../lib/Bindings';
 
 const DF = new DataFactory();

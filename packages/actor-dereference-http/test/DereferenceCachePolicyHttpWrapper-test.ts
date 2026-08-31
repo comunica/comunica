@@ -1,7 +1,6 @@
 import type { IActionHttp } from '@comunica/bus-http';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, ICachePolicy, ICacheResponseHead, IRevalidationPolicy } from '@comunica/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DereferenceCachePolicyHttpWrapper } from '../lib/DereferenceCachePolicyHttpWrapper';
 
 describe('DereferenceCachePolicyHttpWrapper', () => {

@@ -13,7 +13,6 @@ import {
   bool,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermRand } from '../lib';
 
 describe('We should respect the rand01 spec', () => {

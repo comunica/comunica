@@ -1,6 +1,5 @@
 import { KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorContextPreprocessSourceToDestination } from '../lib/ActorContextPreprocessSourceToDestination';
 import '@comunica/utils-jest';
 

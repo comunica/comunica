@@ -1,6 +1,5 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfMetadataAccumulateRequestTime } from '../lib/ActorRdfMetadataAccumulateRequestTime';
 import '@comunica/utils-jest';
 

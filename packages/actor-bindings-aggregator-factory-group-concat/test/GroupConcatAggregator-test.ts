@@ -11,7 +11,6 @@ import {
   makeAggregate,
 } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { GroupConcatAggregator } from '../lib/GroupConcatAggregator';
 
 async function runAggregator(aggregator: IBindingsAggregator, input: RDF.Bindings[]): Promise<RDF.Term | undefined> {

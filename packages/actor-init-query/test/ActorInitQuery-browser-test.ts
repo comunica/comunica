@@ -1,7 +1,6 @@
 import { Transform } from 'node:stream';
 import { Bus } from '@comunica/core';
 import '@comunica/utils-jest';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IActorInitQueryBaseArgs } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery-browser';
 

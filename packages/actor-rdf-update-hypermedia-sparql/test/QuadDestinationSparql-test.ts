@@ -6,7 +6,6 @@ import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QuadDestinationSparql } from '../lib/QuadDestinationSparql';
 
 const DF = new DataFactory();

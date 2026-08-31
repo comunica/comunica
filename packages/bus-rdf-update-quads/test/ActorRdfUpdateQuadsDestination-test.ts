@@ -9,7 +9,6 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory, Store } from 'n3';
 import { DataFactory as RdfDataFactory } from 'rdf-data-factory';
 import '@comunica/utils-jest';
-import { describe, expect, it } from 'vitest';
 import type { IActorRdfUpdateQuadsOutput } from '../lib';
 import { ActorRdfUpdateQuadsDestination } from '../lib';
 

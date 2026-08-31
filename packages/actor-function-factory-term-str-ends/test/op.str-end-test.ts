@@ -3,7 +3,6 @@ import {
   bool,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermStrEnds } from '../lib';
 
 describe('evaluation of \'strends\' like', () => {

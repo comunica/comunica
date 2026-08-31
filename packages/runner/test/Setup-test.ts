@@ -1,7 +1,6 @@
 import { ActionContext } from '@comunica/core';
 import { ComponentsManagerBuilder } from 'componentsjs';
 import { Readable } from 'readable-stream';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import * as Setup from '..';
 
 describe('Setup', () => {

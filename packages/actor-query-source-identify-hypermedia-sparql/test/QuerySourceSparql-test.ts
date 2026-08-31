@@ -12,7 +12,6 @@ import { DataFactory } from 'rdf-data-factory';
 
 // Needed to load Headers
 import { Readable } from 'readable-stream';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QuerySourceSparql } from '../lib/QuerySourceSparql';
 import '@comunica/utils-jest';
 

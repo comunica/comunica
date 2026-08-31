@@ -10,7 +10,6 @@ import {
 } from '@comunica/utils-jest';
 
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorFunctionFactoryExpressionBound } from '../lib';
 
 const DF = new DataFactory();

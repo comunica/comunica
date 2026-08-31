@@ -2,7 +2,6 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { BindingsIndexUndef } from '../lib/BindingsIndexUndef';
 
 const DF = new DataFactory();

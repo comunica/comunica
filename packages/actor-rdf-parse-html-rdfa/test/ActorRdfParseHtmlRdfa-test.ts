@@ -4,7 +4,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { RDFA_FEATURES, RdfaParser } from 'rdfa-streaming-parser';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfParseHtmlRdfa } from '../lib/ActorRdfParseHtmlRdfa';
 import '@comunica/utils-jest';
 

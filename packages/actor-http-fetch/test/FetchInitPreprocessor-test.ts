@@ -5,7 +5,6 @@ import { KeysHttp } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import CacheHandler from 'undici/types/cache-interceptor';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FetchInitPreprocessor } from '../lib/FetchInitPreprocessor';
 import type { IFetchInitPreprocessor } from '../lib/IFetchInitPreprocessor';
 

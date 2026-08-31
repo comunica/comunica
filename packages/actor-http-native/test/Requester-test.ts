@@ -1,5 +1,4 @@
 import * as url from 'node:url';
-import { describe, expect, it, vi } from 'vitest';
 import Requester from '../lib/Requester';
 
 // eslint-disable-next-line vitest/no-mocks-import

@@ -3,7 +3,6 @@ import '@comunica/utils-jest';
 import type { IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQuerySerializeSparql } from '../lib/ActorQuerySerializeSparql';
 
 const AF = new AlgebraFactory();

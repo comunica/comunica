@@ -5,7 +5,6 @@ import type { TermFunctionBase } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { FunctionArgumentsCache, ISuperTypeProvider } from '@comunica/types';
 import { getMockEEActionContext, getMockEEFactory, getMockExpression } from '@comunica/utils-jest';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TypeURL, OverloadTree } from '../../../lib';
 import type { KnownLiteralTypes } from '../../../lib';
 import {

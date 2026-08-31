@@ -1,7 +1,6 @@
 import { KeysCore } from '@comunica/context-entries';
 import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActionContext, Actor, Bus } from '..';
 
 describe('Actor', () => {

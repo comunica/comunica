@@ -5,7 +5,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfJoinMultiEmpty } from '../lib/ActorRdfJoinMultiEmpty';
 import '@comunica/utils-jest';
 

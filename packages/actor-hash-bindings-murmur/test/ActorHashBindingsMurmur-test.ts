@@ -3,7 +3,6 @@ import { ActorHashBindings } from '@comunica/bus-hash-bindings';
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorHashBindingsMurmur } from '../lib/ActorHashBindingsMurmur';
 import '@comunica/utils-jest';
 

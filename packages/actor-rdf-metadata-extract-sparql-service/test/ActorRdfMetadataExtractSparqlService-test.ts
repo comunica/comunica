@@ -2,7 +2,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { streamifyArray } from 'streamify-array';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfMetadataExtractSparqlService } from '../lib/ActorRdfMetadataExtractSparqlService';
 
 const DF = new DataFactory();

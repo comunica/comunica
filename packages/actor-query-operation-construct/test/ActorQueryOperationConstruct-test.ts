@@ -6,7 +6,6 @@ import { getSafeQuads } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQueryOperationConstruct } from '../lib/ActorQueryOperationConstruct';
 import '@comunica/utils-jest';
 

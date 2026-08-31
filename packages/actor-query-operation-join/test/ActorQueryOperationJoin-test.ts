@@ -6,7 +6,6 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQueryOperationJoin } from '../lib/ActorQueryOperationJoin';
 import '@comunica/utils-jest';
 

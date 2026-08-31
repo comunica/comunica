@@ -1,5 +1,4 @@
 import { Readable } from 'node:stream';
-import { describe, expect, it, vi } from 'vitest';
 import { validateAndCloseHttpResponse } from '../lib/utils';
 
 describe('validateAndCloseHttpResponse', () => {

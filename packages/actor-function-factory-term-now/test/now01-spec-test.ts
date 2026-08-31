@@ -3,7 +3,6 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermNow } from '../lib';
 
 describe('We should respect the now01 spec', () => {

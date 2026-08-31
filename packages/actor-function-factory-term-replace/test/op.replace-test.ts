@@ -2,7 +2,6 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermReplace } from '../lib';
 
 // Eventually, it might be nice to have a spec compliant regex engine

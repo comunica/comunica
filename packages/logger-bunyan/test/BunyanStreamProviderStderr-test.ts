@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { BunyanStreamProviderStderr } from '../lib/stream/BunyanStreamProviderStderr';
 
 describe('BunyanStreamProviderStderr', () => {

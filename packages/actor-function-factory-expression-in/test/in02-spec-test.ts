@@ -5,7 +5,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-import { describe } from 'vitest';
 import { ActorFunctionFactoryExpressionIn } from '../lib';
 
 /**

@@ -16,7 +16,6 @@ import {
   timeTyped,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermGreaterThan } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

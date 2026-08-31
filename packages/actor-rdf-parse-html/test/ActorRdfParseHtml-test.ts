@@ -10,7 +10,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfParseHtml } from '../lib/ActorRdfParseHtml';
 import '@comunica/utils-jest';
 

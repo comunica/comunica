@@ -2,7 +2,6 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermXsdToTime } from '../lib';
 
 describe('Construct time', () => {

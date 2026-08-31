@@ -1,5 +1,4 @@
 import { ActionContext, Bus } from '@comunica/core';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfMetadataExtractRequestTime } from '../lib/ActorRdfMetadataExtractRequestTime';
 import '@comunica/utils-jest';
 

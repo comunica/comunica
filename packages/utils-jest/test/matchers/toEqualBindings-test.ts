@@ -1,6 +1,5 @@
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
-import { describe, expect, it } from 'vitest';
 import '../../lib';
 
 const DF = new DataFactory();

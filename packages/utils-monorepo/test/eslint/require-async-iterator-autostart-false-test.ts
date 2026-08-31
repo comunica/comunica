@@ -1,5 +1,4 @@
 import { RuleTester } from 'eslint';
-import { describe, it } from 'vitest';
 
 const rule = require('../../lib/eslint/require-async-iterator-autostart-false');
 

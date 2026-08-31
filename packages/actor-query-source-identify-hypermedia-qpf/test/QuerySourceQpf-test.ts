@@ -12,7 +12,6 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { PassThrough } from 'readable-stream';
 import { streamifyArray } from 'streamify-array';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QuerySourceQpf } from '../lib/QuerySourceQpf';
 import '@comunica/utils-jest';
 

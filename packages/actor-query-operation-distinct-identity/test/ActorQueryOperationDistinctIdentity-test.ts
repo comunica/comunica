@@ -3,7 +3,6 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorQueryOperationDistinctIdentity } from '..';
 import '@comunica/utils-jest';
 

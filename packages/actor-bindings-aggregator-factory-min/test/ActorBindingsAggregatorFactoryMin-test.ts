@@ -11,7 +11,6 @@ import {
   makeAggregate,
 } from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorBindingsAggregatorFactoryMin } from '../lib';
 
 describe('ActorBindingsAggregatorFactoryMin', () => {

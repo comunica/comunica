@@ -3,7 +3,6 @@ import {
   bool,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermContains } from '../lib';
 
 describe('evaluation of \'contains\' like', () => {

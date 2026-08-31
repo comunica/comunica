@@ -6,7 +6,6 @@ import type { IActorTest } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import CachePolicy = require('http-cache-semantics');
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorHttpFetch } from '../lib/ActorHttpFetch';
 import '@comunica/utils-jest';
 import { CachePolicyHttpCacheSemanticsWrapper } from '../lib/CachePolicyHttpCacheSemanticsWrapper';

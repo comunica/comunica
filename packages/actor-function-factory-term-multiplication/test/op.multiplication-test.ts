@@ -6,7 +6,6 @@ import {
   numeric,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermMultiplication } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

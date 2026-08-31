@@ -7,7 +7,6 @@ import {
   getMockEEFactory,
   getMockExpression,
 } from '@comunica/utils-jest';
-import { describe, expect, it } from 'vitest';
 import { TermFunctionLesserThan } from '../lib/TermFunctionLesserThan';
 
 describe('lesser than', () => {

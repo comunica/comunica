@@ -6,7 +6,6 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationBgpJoin } from '../lib/ActorQueryOperationBgpJoin';
 
 const DF = new DataFactory();

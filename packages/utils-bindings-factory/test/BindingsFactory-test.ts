@@ -1,6 +1,5 @@
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { Bindings } from '../lib/Bindings';
 import { BindingsFactory } from '../lib/BindingsFactory';
 

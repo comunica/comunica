@@ -1,5 +1,4 @@
 import { Bus } from '@comunica/core';
-import { describe, expect, it } from 'vitest';
 import { ActorRdfParse } from '..';
 
 describe('ActorRdfParse', () => {

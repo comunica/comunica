@@ -1,4 +1,3 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Logger } from '../lib/Logger';
 
 class LoggerMock extends Logger {

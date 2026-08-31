@@ -5,7 +5,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfJoinNone } from '../lib/ActorRdfJoinNone';
 import '@comunica/utils-jest';
 

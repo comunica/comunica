@@ -74,7 +74,6 @@ import { instantiateComponent } from '@comunica/runner';
 import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { QueryEngineFactory } from '../lib';
 
 // Instantiating the runner from the Components.js config requires a scan of the whole module tree,

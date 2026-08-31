@@ -4,7 +4,6 @@ import {
   timeTyped,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermMinutes } from '../lib';
 
 describe('evaluation of \'MINUTES\'', () => {

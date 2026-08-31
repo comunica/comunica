@@ -1,6 +1,5 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorMergeBindingsContextUnion } from '../lib/ActorMergeBindingsContextUnion';
 import { SetUnionBindingsContextMergeHandler } from '../lib/SetUnionBindingsContextMergeHandler';
 import '@comunica/utils-jest';

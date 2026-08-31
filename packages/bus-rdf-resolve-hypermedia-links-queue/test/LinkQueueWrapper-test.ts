@@ -1,5 +1,4 @@
 import type { ILinkQueue } from '@comunica/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LinkQueueWrapper } from '..';
 
 describe('LinkQueueWrapper', () => {

@@ -8,7 +8,6 @@ import { AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryProcessExplainQuery } from '../lib/ActorQueryProcessExplainQuery';
 
 const AF = new AlgebraFactory();

@@ -4,7 +4,6 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import '@comunica/utils-jest';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { QueryEngine } from '../lib/QueryEngine';
 
 const DF = new DataFactory();

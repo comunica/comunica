@@ -5,7 +5,6 @@ import {
   durationTyped,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 
 describe('compare duration 01', () => {
   /**

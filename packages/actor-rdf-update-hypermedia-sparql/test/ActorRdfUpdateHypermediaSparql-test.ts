@@ -1,7 +1,6 @@
 import { KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfUpdateHypermediaSparql } from '../lib/ActorRdfUpdateHypermediaSparql';
 import { QuadDestinationSparql } from '../lib/QuadDestinationSparql';
 import '@comunica/utils-jest';

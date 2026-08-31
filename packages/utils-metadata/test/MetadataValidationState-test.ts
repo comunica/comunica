@@ -1,5 +1,4 @@
 import type { IMetadataValidationState } from '@comunica/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MetadataValidationState } from '../lib/MetadataValidationState';
 
 describe('MetadataValidationState', () => {

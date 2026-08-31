@@ -1,7 +1,6 @@
 import type { IAction, IActorOutput, IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTest, ActionContext, Actor, Bus, Mediator } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { MediatorNumber } from '..';
 
 describe('MediatorNumber', () => {

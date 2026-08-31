@@ -6,7 +6,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 import '@comunica/utils-jest';
 

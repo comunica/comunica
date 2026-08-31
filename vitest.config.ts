@@ -37,6 +37,8 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    // Expose the test API globally, so that test files do not have to import it, like jest did
+    globals: true,
     include: [
       'engines/*/test/**/*-test.ts',
       'packages/*/test/**/*-test.ts',

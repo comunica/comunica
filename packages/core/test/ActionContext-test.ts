@@ -1,7 +1,6 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActionContext, IActionContextKey } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActionContext, ActionContextKey } from '../lib';
 
 describe('ActionContext', () => {

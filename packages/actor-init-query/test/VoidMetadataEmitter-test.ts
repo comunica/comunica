@@ -6,7 +6,6 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // @ts-expect-error
 import { QueryEngineFactoryBase } from '../__mocks__';

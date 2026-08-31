@@ -19,7 +19,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 import { LRUCache } from 'lru-cache';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermLesserThan } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

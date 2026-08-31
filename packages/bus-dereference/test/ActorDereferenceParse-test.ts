@@ -1,6 +1,5 @@
 import type { IActionParse, IActorParseOutput, IParseMetadata } from '@comunica/actor-abstract-parse';
 import { ActionContext, Bus } from '@comunica/core';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IActionDereference, IActorDereferenceOutput, IActorDereferenceParseArgs } from '../lib';
 import { ActorDereferenceParse, emptyReadable } from '../lib';
 import '@comunica/utils-jest';

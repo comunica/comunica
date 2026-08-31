@@ -2,7 +2,6 @@ import {
   runFuncTestTable,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryExpressionBnode } from '../lib';
 
 describe('evaluations of \'bnode\' with custom blank node generator function', () => {

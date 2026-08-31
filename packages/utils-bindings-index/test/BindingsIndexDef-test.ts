@@ -1,6 +1,5 @@
 import { BindingsFactory, bindingsToCompactString } from '@comunica/utils-bindings-factory';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { BindingsIndexDef } from '../lib/BindingsIndexDef';
 
 const DF = new DataFactory();

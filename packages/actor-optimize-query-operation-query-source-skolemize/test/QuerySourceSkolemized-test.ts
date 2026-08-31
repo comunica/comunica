@@ -7,7 +7,6 @@ import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QuerySourceSkolemized } from '../lib/QuerySourceSkolemized';
 import '@comunica/utils-jest';
 

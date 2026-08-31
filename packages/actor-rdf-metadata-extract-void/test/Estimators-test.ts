@@ -1,6 +1,5 @@
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RDF_TYPE } from '../lib/Definitions';
 import {
   estimatePatternCardinality,

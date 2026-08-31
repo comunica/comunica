@@ -5,7 +5,6 @@ import {
   dayTimeDurationTyped,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 
 describe('adjust date duration', () => {
   /**

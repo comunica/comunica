@@ -7,7 +7,6 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import type { AsyncIterator } from 'asynciterator';
 import { streamifyArray } from 'streamify-array';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfSerializeN3 } from '../lib/ActorRdfSerializeN3';
 import '@comunica/utils-jest';
 

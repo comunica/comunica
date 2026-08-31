@@ -1,6 +1,5 @@
 import type * as RDF from '@rdfjs/types';
 import * as rdfString from 'rdf-string';
-import { describe, expect, it, vi } from 'vitest';
 import {
   bool,
   compactTermString,

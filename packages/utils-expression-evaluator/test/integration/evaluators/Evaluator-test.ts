@@ -11,7 +11,6 @@ import {
 } from '@comunica/utils-jest';
 import { DataFactory } from 'rdf-data-factory';
 import type { Mock } from 'vitest';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { IntegerLiteral, SparqlOperator } from '../../../lib';
 import { TypeURL as DT } from '../../../lib/util/Consts';
 import * as Err from '../../../lib/util/Errors';

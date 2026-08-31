@@ -7,7 +7,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 
-import { describe } from 'vitest';
 import { ActorFunctionFactoryExpressionLogicalOr } from '../lib';
 
 const config: FuncTestTableConfig<object> = {

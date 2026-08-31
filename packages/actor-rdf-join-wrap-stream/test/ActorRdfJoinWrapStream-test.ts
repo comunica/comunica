@@ -22,7 +22,6 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { KEY_CONTEXT_WRAPPED_RDF_JOIN, ActorRdfJoinWrapStream } from '../lib/ActorRdfJoinWrapStream';
 
 const DF = new DataFactory();

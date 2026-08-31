@@ -5,7 +5,6 @@ import type { IActorTest } from '@comunica/core';
 import { Bus, ActionContext } from '@comunica/core';
 import arrayifyStream from 'arrayify-stream';
 import { Readable } from 'readable-stream';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorHttpRetryBody } from '../lib/ActorHttpRetryBody';
 import '@comunica/utils-jest';
 

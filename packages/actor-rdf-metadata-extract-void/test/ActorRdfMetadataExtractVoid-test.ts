@@ -3,7 +3,6 @@ import type { IDataset } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { streamifyArray } from 'streamify-array';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfMetadataExtractVoid } from '../lib/ActorRdfMetadataExtractVoid';
 import '@comunica/utils-jest';
 import {

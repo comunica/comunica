@@ -4,7 +4,6 @@ import type { IActionContext } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { ArrayIterator } from 'asynciterator';
 import { streamifyArray } from 'streamify-array';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfSerializeJsonLd } from '../lib/ActorRdfSerializeJsonLd';
 import '@comunica/utils-jest';
 

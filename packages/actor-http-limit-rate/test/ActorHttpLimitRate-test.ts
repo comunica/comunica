@@ -1,7 +1,6 @@
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import { ActionContext, Bus } from '@comunica/core';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorHttpLimitRate } from '../lib/ActorHttpLimitRate';
 import '@comunica/utils-jest';
 

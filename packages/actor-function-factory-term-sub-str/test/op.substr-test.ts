@@ -6,7 +6,6 @@ import {
   Notation,
 } from '@comunica/utils-jest';
 import { LRUCache } from 'lru-cache';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermSubStr } from '../lib';
 
 describe('evaluations of \'substr\' like', () => {

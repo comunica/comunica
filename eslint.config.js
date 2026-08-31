@@ -166,7 +166,6 @@ module.exports = config([
     ],
     rules: {
       'vitest/consistent-test-it': 'off',
-      'vitest/prefer-importing-vitest-globals': 'off',
       'vitest/require-top-level-describe': 'off',
     },
   },

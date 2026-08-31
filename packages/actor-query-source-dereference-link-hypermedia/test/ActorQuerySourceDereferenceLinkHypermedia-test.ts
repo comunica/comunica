@@ -23,7 +23,6 @@ import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 import { streamifyArray } from 'streamify-array';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQuerySourceDereferenceLinkHypermedia } from '../lib/ActorQuerySourceDereferenceLinkHypermedia';
 import { QuerySourceCachePolicyDereferenceWrapper } from '../lib/QuerySourceCachePolicyDereferenceWrapper';
 import '@comunica/utils-jest';

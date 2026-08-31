@@ -1,7 +1,6 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus, passTest } from '@comunica/core';
 import type { IPhysicalQueryPlanLogger } from '@comunica/types';
-import { describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationTyped, BusQueryOperation } from '..';
 import '@comunica/utils-jest';
 

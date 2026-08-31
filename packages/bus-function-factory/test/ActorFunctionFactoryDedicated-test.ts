@@ -1,7 +1,6 @@
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import '@comunica/utils-jest';
-import { beforeEach, describe, expect, it } from 'vitest';
 import {
   ActorFunctionFactoryDedicated,
 } from '../lib';

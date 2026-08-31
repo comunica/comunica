@@ -6,7 +6,6 @@ import { assignOperationSource } from '@comunica/utils-query-operation';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationLoad } from '../lib/ActorQueryOperationLoad';
 import '@comunica/utils-jest';
 

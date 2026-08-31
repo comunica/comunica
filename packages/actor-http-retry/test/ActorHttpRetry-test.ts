@@ -3,7 +3,6 @@ import type { ActorHttpInvalidateListenable, IInvalidateListener } from '@comuni
 import { KeysHttp } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { Bus, ActionContext } from '@comunica/core';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorHttpRetry } from '../lib/ActorHttpRetry';
 import '@comunica/utils-jest';
 

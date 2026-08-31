@@ -3,7 +3,6 @@ import type { MediatorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-
 import { KeysHttpWayback, KeysHttpProxy } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IProxyHandler, IRequest } from '@comunica/types';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorHttpWayback } from '../lib';
 import '@comunica/utils-jest';
 

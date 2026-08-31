@@ -1,5 +1,4 @@
 import type { ILink, IDiscoverEventData } from '@comunica/types';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { StatisticLinkDiscovery } from '../lib/StatisticLinkDiscovery';
 
 describe('StatisticLinkDiscovery', () => {

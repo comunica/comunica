@@ -1,6 +1,5 @@
 import { ActionContext } from '@comunica/core';
 import type { IActionContext, ICachePolicy, ICacheResponseHead, IRevalidationPolicy } from '@comunica/types';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IActionDereference } from '../lib';
 import { DereferenceRdfCachePolicyDereferenceWrapper } from '../lib/DereferenceRdfCachePolicyDereferenceWrapper';
 

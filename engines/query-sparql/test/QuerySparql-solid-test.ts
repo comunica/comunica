@@ -9,7 +9,6 @@ import type { App } from '@solid/community-server';
 import { AppRunner, resolveModulePath } from '@solid/community-server';
 import fetch from 'node-fetch';
 import '@comunica/utils-jest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, test, vi } from 'vitest';
 import { QueryEngine } from '../lib/QueryEngine';
 
 const squad = require('rdf-quad');

@@ -2,7 +2,6 @@ import type { Readable } from 'node:stream';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { streamifyArray } from 'streamify-array';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorRdfMetadataExtractHydraPagesize } from '../lib/ActorRdfMetadataExtractHydraPagesize';
 import '@comunica/utils-jest';
 

@@ -1,6 +1,5 @@
 import { KeysHttp } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import { describe, expect, it } from 'vitest';
 import { CliArgsHandlerBase } from '../../lib/cli/CliArgsHandlerBase';
 
 describe('CliArgsHandlerBase', () => {

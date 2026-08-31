@@ -4,7 +4,6 @@ import type { IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorOptimizeQueryOperationDistinctTermsPushdown } from '../lib';
 import '@comunica/utils-jest';
 

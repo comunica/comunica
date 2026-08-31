@@ -5,7 +5,6 @@ import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';
 import '@comunica/utils-jest';
 

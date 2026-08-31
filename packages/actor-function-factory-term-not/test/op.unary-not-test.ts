@@ -4,7 +4,6 @@ import {
   bool,
   Notation,
 } from '@comunica/utils-jest';
-import { describe } from 'vitest';
 import { ActorFunctionFactoryTermNot } from '../lib';
 
 describe('evaluation of \'! (unary)\' like', () => {

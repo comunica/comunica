@@ -7,7 +7,6 @@ import type {
 } from '@comunica/types';
 import type { Quad } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { StatisticLinkDereference } from '../lib/StatisticLinkDereference';
 
 class MockQuerySource implements IQuerySource {

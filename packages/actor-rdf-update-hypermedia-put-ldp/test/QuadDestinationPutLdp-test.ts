@@ -5,7 +5,6 @@ import type { IActionContext } from '@comunica/types';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { QuadDestinationPutLdp } from '../lib/QuadDestinationPutLdp';
 
 const DF = new DataFactory();

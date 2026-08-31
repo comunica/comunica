@@ -8,7 +8,6 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ActorQueryOperationPathNps } from '../lib/ActorQueryOperationPathNps';
 import '@comunica/utils-jest';
 

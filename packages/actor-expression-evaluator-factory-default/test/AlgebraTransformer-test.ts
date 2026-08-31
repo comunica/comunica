@@ -14,7 +14,6 @@ import {
   getMockEEActionContext,
 } from '@comunica/utils-jest';
 import { DataFactory } from 'rdf-data-factory';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { AlgebraTransformer } from '../lib/AlgebraTransformer';
 
 const DF = new DataFactory();

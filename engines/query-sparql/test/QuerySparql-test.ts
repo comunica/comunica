@@ -13,7 +13,6 @@ import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import rdfParse from 'rdf-parse';
 import { RdfStore } from 'rdf-stores';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { QueryEngine } from '../lib/QueryEngine';
 import { fetch as cachedFetch } from './util';
 

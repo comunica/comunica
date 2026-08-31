@@ -9,7 +9,6 @@ import {
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
 } from '@comunica/utils-jest';
-import { beforeEach, describe, expect, it } from 'vitest';
 import { ActorBindingsAggregatorFactoryCount } from '../lib';
 
 describe('ActorExpressionEvaluatorAggregateCount', () => {

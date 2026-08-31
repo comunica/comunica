@@ -6,7 +6,6 @@ import {
   isDataDestinationRawType,
 } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { describe, expect, it } from 'vitest';
 
 describe('utils', () => {
   const rdfjsStore: RDF.Store = <any> { remove: true };
