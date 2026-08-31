@@ -54,9 +54,12 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         return { continue: false };
       } },
       [Algebra.Types.SERVICE]: { preVisitor: () => ({ continue: false }) },
-      // Operations within FROM (NAMED) are evaluated over a different dataset than the source's default dataset.
-      // Their graphs are only rewritten when the FROM operation is executed,
-      // so emptiness checks against the source would be done on the wrong graphs here.
+      // A FROM operation defines its own dataset, which differs from the dataset of the source.
+      // The graphs of the operations within it are only rewritten once that FROM operation is executed,
+      // which happens after this optimization, so checking them for emptiness against the source
+      // would happen on the wrong graphs here.
+      // This is not restricted to the top-level operation, as the USING and USING NAMED clauses of an
+      // update are translated into a FROM operation nested within the update operation as well.
       [Algebra.Types.FROM]: { preVisitor: () => ({ continue: false }) },
     });
 

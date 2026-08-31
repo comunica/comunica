@@ -2373,6 +2373,15 @@ WHERE { }
         }`)).resolves.toBe(2);
       });
 
+      it('should apply the same dataset rules to the USING clauses of an update', async() => {
+        // USING and USING NAMED are translated into the same FROM operation, but nested within the update
+        await (await engine.query(
+          `DELETE { GRAPH <${G1}> { ?s ?p ?o } } USING <${G1}> WHERE { { ?s ?p ?o } UNION { ?s ?p ?o } }`,
+          { sources: [ store ], destination: store },
+        )).execute();
+        expect(store.getQuads().map(q => q.graph.value)).toEqual([ G2 ]);
+      });
+
       it('should query the graphs in FROM NAMED via GRAPH with property paths', async() => {
         await expect(queryCount(`SELECT * FROM NAMED <${G1}> { GRAPH ?g { ?s <ex:p>* ?o } }`)).resolves.toBe(3);
         await expect(queryCount(`SELECT * FROM <${G1}> { GRAPH ?g { ?s <ex:p>* ?o } }`)).resolves.toBe(0);

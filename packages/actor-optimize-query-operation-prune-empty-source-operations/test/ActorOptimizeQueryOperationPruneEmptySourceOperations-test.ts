@@ -528,6 +528,25 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
       });
 
       describe('with from operations', () => {
+        it('should not modify children of a nested from, such as the USING of an update', async() => {
+          const opIn = AF.createDeleteInsert(
+            undefined,
+            undefined,
+            AF.createFrom(
+              AF.createUnion([
+                assignOperationSource(AF
+                  .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
+                assignOperationSource(AF
+                  .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
+              ]),
+              [ DF.namedNode('g1') ],
+              [],
+            ),
+          );
+          const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+          expect(opOut).toEqual(opIn);
+        });
+
         it('should not modify children', async() => {
           // The graphs of the patterns within a FROM are only rewritten when that FROM is executed,
           // so their emptiness may not be determined against the source's dataset here.
