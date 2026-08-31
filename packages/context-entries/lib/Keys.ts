@@ -342,6 +342,12 @@ export const KeysQueryOperation = {
   serviceSources: new ActionContextKey<Record<string, IQuerySourceWrapper>>(
     '@comunica/bus-query-operation:serviceSources',
   ),
+  /**
+   * A boolean denoting if datasets/graphs in FROM (NAMED) clauses should be set as sources (default: false).
+   */
+  fromNamedAsSources: new ActionContextKey<boolean>(
+    '@comunica/bus-query-operation:fromNamedAsSources',
+  ),
 };
 
 export const KeysRdfParseJsonLd = {

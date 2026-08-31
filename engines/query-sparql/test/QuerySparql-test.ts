@@ -2426,6 +2426,72 @@ WHERE { }
       });
     });
 
+    describe('FROM (NAMED) as sources', () => {
+      const datasetIri = 'http://example.org/my-dataset.ttl';
+      const datasetTurtle = `
+        @prefix ex: <http://example.org/> .
+        ex:s1 ex:p1 ex:o1 .
+        ex:s2 ex:p2 ex:o2 .
+      `;
+
+      it('does not append FROM IRI as a real source when fromNamedSources is false (default)', async() => {
+        await expect(engine.queryBindings(
+          `SELECT * FROM <${datasetIri}> WHERE { ?s ?p ?o }`,
+          {
+            sources: [],
+          },
+        )).rejects.toThrow('none of the configured actors were able to handle the operation type pattern');
+      });
+
+      it('appends the FROM IRI as a real source when fromNamedAsSources is true', async() => {
+        const originalFetch = globalThis.fetch;
+
+        globalThis.fetch = <typeof globalThis.fetch> jest.fn(async(input: string, init?: RequestInit) => {
+          if (input === datasetIri) {
+            return <Response> {
+              status: 200,
+              ok: true,
+              headers: new Headers({ 'content-type': 'text/turtle' }),
+              body: stringToStream(datasetTurtle),
+              url: input,
+            };
+          }
+          return originalFetch(input, init);
+        });
+
+        // No sources in context
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM <${datasetIri}> WHERE { ?s ?p ?o }`,
+          {
+            sources: [],
+            fromNamedAsSources: true,
+          },
+        );
+        const bindings = await bindingsStream.toArray();
+
+        expect(bindings).toHaveLength(2);
+        expect(bindings).toEqualBindingsArray([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p1') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
+          ]),
+        ]);
+
+        expect(globalThis.fetch).toHaveBeenCalledWith(
+          datasetIri,
+          expect.anything(),
+        );
+
+        globalThis.fetch = originalFetch;
+      });
+    });
+
     describe('for a complex query', () => {
       it('with VALUES and OPTIONAL', async() => {
         const context: QueryStringContext = {
