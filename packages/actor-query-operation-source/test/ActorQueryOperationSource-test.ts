@@ -223,6 +223,24 @@ describe('ActorQueryOperationSource', () => {
         await expect(result.bindingsStream).toEqualBindingsStream([]);
       });
 
+      it('should merge the source wrapper context into the operation context', async() => {
+        const sourceContext = new ActionContext({ 'context-key': 'context-value' });
+        const sourceWithContext: IQuerySourceWrapper = <any> {
+          context: sourceContext,
+          source: {
+            referenceValue: 'source1',
+            queryBindings: vi.fn(() => {
+              const bindingsStream = new ArrayIterator([], { autoStart: false });
+              bindingsStream.setProperty('metadata', { cardinality: { value: 10 }, variables: []});
+              return bindingsStream;
+            }),
+          },
+        };
+        const opIn = assignOperationSource(AF.createNop(), sourceWithContext);
+        await actor.run({ operation: opIn, context: ctx });
+        expect(sourceWithContext.source.queryBindings).toHaveBeenCalledWith(opIn, ctx.merge(sourceContext));
+      });
+
       it('should handle sliced bindings operations', async() => {
         const opIn = assignOperationSource(AF.createSlice(AF.createNop(), 1), source1);
         const result: IQueryOperationResultBindings = <any> await actor.run({ operation: opIn, context: ctx });

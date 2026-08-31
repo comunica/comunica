@@ -48,6 +48,18 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
       }),
     },
   };
+  const sourcePatternB: IQuerySourceWrapper = <any> {
+    source: {
+      referenceValue: 'source2',
+      getSelectorShape: () => ({
+        type: 'operation',
+        operation: {
+          operationType: 'type',
+          type: Algebra.Types.PATTERN,
+        },
+      }),
+    },
+  };
 
   const ctx = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
 
@@ -159,6 +171,13 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
             ),
           );
         });
+
+        it('should not move a source annotation upwards for a singular sub-input without a source', async() => {
+          const opIn = AF.createOrderBy(AF.createNop(), []);
+          const opOut = await actor.groupOperation(opIn, ctx);
+          expect(opOut).toEqual(AF.createOrderBy(AF.createNop(), []));
+          expect(getOperationSource(opOut)).toBeUndefined();
+        });
       });
 
       describe('for a join operation', () => {
@@ -262,6 +281,49 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
               source2,
             ),
           ], false));
+        });
+
+        it('should keep flatten true when no cluster accepts the merged operation', async() => {
+          const opIn = AF.createJoin([
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s1'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePattern,
+            ),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s2'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePatternB,
+            ),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s3'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePattern,
+            ),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s4'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePatternB,
+            ),
+          ]);
+          const opOut = await actor.groupOperation(opIn, ctx);
+          // None of the sources accept a Join operation in their shape (they only accept Pattern),
+          // so the source annotation can never be moved upwards for any cluster, and flatten stays true.
+          expect(opOut).toEqual(AF.createJoin([
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s1'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePattern,
+            ),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s3'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePattern,
+            ),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s2'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePatternB,
+            ),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s4'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePatternB,
+            ),
+          ], true));
+          expect(getOperationSource(opOut)).toBeUndefined();
         });
       });
 

@@ -37,6 +37,19 @@ describe('ActorOptimizeQueryOperationQuerySourceSkolemize', () => {
         }));
       });
 
+      it('with a context that already has sourceIds', async() => {
+        const existingSourceIds = new Map([[ 'S0', '0' ]]);
+        const contextIn = new ActionContext({
+          [KeysQuerySourceIdentify.sourceIds.name]: existingSourceIds,
+        });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+
+        expect(contextOut.getSafe(KeysQuerySourceIdentify.sourceIds)).toBe(existingSourceIds);
+        expect(contextOut).toEqual(new ActionContext({
+          [KeysQuerySourceIdentify.sourceIds.name]: existingSourceIds,
+        }));
+      });
+
       it('with sources', async() => {
         const source1: any = {
           source: { referenceValue: 'S0' },

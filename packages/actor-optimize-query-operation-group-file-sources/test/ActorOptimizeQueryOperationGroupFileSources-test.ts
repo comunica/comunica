@@ -24,6 +24,17 @@ function createFileMockSource(referenceValue = 'http://example.org/source'): IQu
   return createMockSource(referenceValue, 'file');
 }
 
+function createHypermediaMockSource(
+  referenceValue = 'http://example.org/source',
+  filterFactor = 0,
+): IQuerySourceWrapper {
+  // Hypermedia sources (e.g. SPARQL endpoints, TPF) have a firstLink, but no forced 'file' source type,
+  // so their filter factor has to be requested (which is more expensive due to the HTTP lookup).
+  const wrapper = createMockSource(referenceValue, 'sparql');
+  (<any> wrapper.source.getFilterFactor).mockResolvedValue(filterFactor);
+  return wrapper;
+}
+
 describe('ActorOptimizeQueryOperationGroupFileSources', () => {
   let bus: any;
   let mediatorQuerySourceIdentify: any;
@@ -131,6 +142,38 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
         const { operation, context: ctxOut } = await actor.run({ operation: opIn, context });
 
         expect(operation).toBe(opIn);
+        expect(ctxOut.get(KeysQueryOperation.querySources)).toBe(querySources);
+        expect(mediatorQuerySourceIdentify.mediate).not.toHaveBeenCalled();
+      });
+
+      it('should delegate to getFilterFactor for hypermedia sources without a forced file type', async() => {
+        const hypermediaSource1 = createHypermediaMockSource('http://example.org/hyper1');
+        const hypermediaSource2 = createHypermediaMockSource('http://example.org/hyper2');
+        const querySources = [ hypermediaSource1, hypermediaSource2 ];
+        const context = ctx.set(KeysQueryOperation.querySources, querySources);
+        const opIn = <any> { type: 'nop' };
+
+        const { context: ctxOut } = await actor.run({ operation: opIn, context });
+
+        expect(hypermediaSource1.source.getFilterFactor).toHaveBeenCalledWith(context);
+        expect(hypermediaSource2.source.getFilterFactor).toHaveBeenCalledWith(context);
+
+        const newSources = ctxOut.get(KeysQueryOperation.querySources)!;
+        expect(newSources).toHaveLength(1);
+        expect(newSources).toContain(compositeWrapper);
+      });
+
+      it('should not group hypermedia sources whose getFilterFactor does not resolve to 0', async() => {
+        const hypermediaSource1 = createHypermediaMockSource('http://example.org/hyper1', 0.5);
+        const hypermediaSource2 = createHypermediaMockSource('http://example.org/hyper2', 0.5);
+        const querySources = [ hypermediaSource1, hypermediaSource2 ];
+        const context = ctx.set(KeysQueryOperation.querySources, querySources);
+        const opIn = <any> { type: 'nop' };
+
+        const { context: ctxOut } = await actor.run({ operation: opIn, context });
+
+        expect(hypermediaSource1.source.getFilterFactor).toHaveBeenCalledWith(context);
+        expect(hypermediaSource2.source.getFilterFactor).toHaveBeenCalledWith(context);
         expect(ctxOut.get(KeysQueryOperation.querySources)).toBe(querySources);
         expect(mediatorQuerySourceIdentify.mediate).not.toHaveBeenCalled();
       });

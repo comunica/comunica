@@ -495,7 +495,6 @@ describe('QuerySourceSparql', () => {
         true,
         0,
         false,
-
         {},
       );
       const stream = source.queryBindings(AF.createPattern(
@@ -508,6 +507,53 @@ describe('QuerySourceSparql', () => {
         .toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: url },
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
+        });
+      await expect(stream).toEqualBindingsStream([
+        BF.fromRecord({
+          p: DF.namedNode('p1'),
+        }),
+        BF.fromRecord({
+          p: DF.namedNode('p2'),
+        }),
+        BF.fromRecord({
+          p: DF.namedNode('p3'),
+        }),
+      ]);
+    });
+
+    it('should emit metadata when cardinalityEstimateConstruction is false', async() => {
+      source = new QuerySourceSparql(
+        url,
+        url,
+        ctx,
+        mediatorHttp,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10_000,
+        true,
+        false,
+        0,
+        false,
+        {},
+      );
+      const stream = source.queryBindings(AF.createPattern(
+        iriS,
+        DF.variable('p'),
+        iriO,
+        DF.defaultGraph(),
+      ), ctx);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          state: expect.any(MetadataValidationState),
+          cardinality: { type: 'exact', value: 3, dataset: url },
           variables: [
             { variable: DF.variable('p'), canBeUndef: false },
           ],

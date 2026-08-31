@@ -259,6 +259,63 @@ IQueryOperationResultBindings
         });
       });
 
+      it('should return a failed test if the entries could not be sorted due to no common variables', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+            ],
+            context: new ActionContext(),
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+
+                variables: [
+                  { variable: DF.variable('b'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 500 },
+                pageSize: 100,
+                requestTime: 30,
+
+                variables: [
+                  { variable: DF.variable('c'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest(`Bind join can only join entries with at least one common variable`);
+      });
+
       it('should handle three entries with a lower variable overlap', async() => {
         await expect(actor.getJoinCoefficients(
           {

@@ -79,6 +79,23 @@ describe('ActorQueryProcessExplainPhysical', () => {
           .set(KeysInitQuery.physicalQueryPlanLogger, new MemoryPhysicalQueryPlanLogger()));
       });
 
+      it('handles physical explain in raw context', async() => {
+        await expect(actor.run({
+          query: 'q',
+          context: new ActionContext().setRaw('explain', 'physical'),
+        })).resolves
+          .toEqual({
+            result: {
+              explain: true,
+              type: 'physical',
+              data: 'Empty',
+            },
+          });
+        expect(queryProcessor.evaluate).toHaveBeenCalledWith('qPARSEOPT', new ActionContext()
+          .setRaw('explain', 'physical')
+          .set(KeysInitQuery.physicalQueryPlanLogger, new MemoryPhysicalQueryPlanLogger()));
+      });
+
       it('handles physical-json explain in context', async() => {
         await expect(actor.run({
           query: 'q',

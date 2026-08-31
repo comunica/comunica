@@ -61,6 +61,14 @@ describe('ActorRdfMetadataExtractVoid', () => {
       await expect(actor.run(<any>{ metadata, url: sparqlEndpoint.value })).resolves.toEqual({ metadata: {}});
     });
 
+    it('should ignore rdf:type quads that are neither void:Dataset nor sd:Graph', async() => {
+      const metadata = streamifyArray([
+        DF.quad(sparqlEndpoint, DF.namedNode(RDF_TYPE), DF.namedNode('http://example.org/SomeOtherType')),
+        DF.quad(sparqlEndpoint, DF.namedNode(VOID_TRIPLES), DF.literal('1234')),
+      ]);
+      await expect(actor.run(<any>{ metadata, url: sparqlEndpoint.value })).resolves.toEqual({ metadata: {}});
+    });
+
     describe.each([
       [ 'void:Dataset', VOID_DATASET ],
       [ 'sd:Graph', SD_GRAPH ],
@@ -130,6 +138,28 @@ describe('ActorRdfMetadataExtractVoid', () => {
           DF.quad(defaultGraph, DF.namedNode(VOID_TRIPLES), DF.literal('1234')),
         ]);
         await expect(actor.run(<any>{ metadata, url: sparqlEndpoint.value })).resolves.toEqual({ metadata: {}});
+      });
+
+      it('should not drop sd:defaultGraph when sd:feature is not sd:UnionDefaultGraph', async() => {
+        const defaultGraph = DF.namedNode('ex:defaultGraph');
+        const metadata = streamifyArray([
+          DF.quad(sparqlEndpoint, DF.namedNode(RDF_TYPE), DF.namedNode(VOID_DATASET)),
+          DF.quad(sparqlEndpoint, DF.namedNode(SD_DEFAULT_GRAPH), defaultGraph),
+          DF.quad(sparqlEndpoint, DF.namedNode(SD_FEATURE), DF.namedNode('sd:BasicFederatedQuery')),
+          DF.quad(defaultGraph, DF.namedNode(RDF_TYPE), DF.namedNode(typeUri)),
+          DF.quad(defaultGraph, DF.namedNode(VOID_TRIPLES), DF.literal('1234')),
+        ]);
+        await expect(actor.run(<any>{ metadata, url: sparqlEndpoint.value })).resolves.toEqual({
+          metadata: {
+            datasets: [
+              {
+                getCardinality: expect.any(Function),
+                source: sparqlEndpoint.value,
+                uri: defaultGraph.value,
+              },
+            ],
+          },
+        });
       });
 
       it('should drop intermediate sd:defaultDataset and propagate its vocabularies to sd:defaultGraph', async() => {

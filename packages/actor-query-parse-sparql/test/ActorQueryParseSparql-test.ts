@@ -114,6 +114,22 @@ describe('ActorQueryParseSparql', () => {
       });
     });
 
+    it('should run with a PREFIX declaration and no BASE', async() => {
+      const result = await actor.run({
+        query: 'PREFIX ex: <http://example.org/> SELECT * WHERE { ?a a ?b }',
+        context,
+      });
+      expect(result.baseIRI).toBeUndefined();
+    });
+
+    it('should run with both a BASE and a PREFIX declaration', async() => {
+      const result = await actor.run({
+        query: 'BASE <http://example.org/book/> PREFIX ex: <http://example.org/> SELECT * WHERE { ?a a ?b }',
+        context,
+      });
+      expect(result.baseIRI).toBe('http://example.org/book/');
+    });
+
     it('should provide a clear error message by default on invalid query', async() => {
       const invalidQuery = [
         'SELECT ?movie ?title ?name',

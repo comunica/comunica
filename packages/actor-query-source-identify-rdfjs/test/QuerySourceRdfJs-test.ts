@@ -530,6 +530,42 @@ describe('QuerySourceRdfJs', () => {
         });
     });
 
+    it('should fallback to match if countQuads is not available and match returns a non-stream', async() => {
+      const quads = [
+        DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')),
+        DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')),
+      ];
+      store = <any> {
+        match: () => new Set(quads),
+      };
+      source = new QuerySourceRdfJs(store, DF, BF);
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({
+          s: DF.namedNode('s1'),
+          o: DF.namedNode('o1'),
+        }),
+        BF.fromRecord({
+          s: DF.namedNode('s2'),
+          o: DF.namedNode('o2'),
+        }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 2 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
+          requestTime: 0,
+        });
+    });
+
     it('should delegate errors', async() => {
       const it = new Readable();
       it._read = () => {
@@ -990,6 +1026,32 @@ describe('QuerySourceRdfJs', () => {
             requestTime: 0,
           });
       });
+
+      it('should return nodes in the default graph when matchNodes returns an AsyncIterator', async() => {
+        (<any> store).matchNodes = () => {
+          return new ArrayIterator([
+            [ DF.defaultGraph(), DF.namedNode('s1') ],
+            [ DF.defaultGraph(), DF.namedNode('o1') ],
+          ], { autoStart: false });
+        };
+        const data = source.queryBindings(
+          AF.createNodes(DF.defaultGraph(), DF.variable('x')),
+          ctx,
+        );
+        await expect(data).toEqualBindingsStream([
+          BF.fromRecord({ x: DF.namedNode('s1') }),
+          BF.fromRecord({ x: DF.namedNode('o1') }),
+        ]);
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+          .toEqual({
+            cardinality: { type: 'exact', value: 2 },
+            state: expect.any(MetadataValidationState),
+            variables: [
+              { variable: DF.variable('x'), canBeUndef: false },
+            ],
+            requestTime: 0,
+          });
+      });
     });
 
     describe('for distinctterms operations', () => {
@@ -1036,6 +1098,53 @@ describe('QuerySourceRdfJs', () => {
             state: expect.any(MetadataValidationState),
             variables: [
               { variable: DF.variable('p'), canBeUndef: false },
+            ],
+            requestTime: 0,
+          });
+      });
+
+      it('should return distinct predicates when matchDistinctTerms returns an AsyncIterator', async() => {
+        (<any> store).matchDistinctTerms = () => {
+          return new ArrayIterator([
+            [ DF.namedNode('p') ],
+          ], { autoStart: false });
+        };
+        const data = source.queryBindings(
+          AF.createDistinctTerms([ DF.variable('p') ], { p: 'predicate' }),
+          ctx,
+        );
+        await expect(data).toEqualBindingsStream([
+          BF.fromRecord({ p: DF.namedNode('p') }),
+        ]);
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+          .toEqual({
+            cardinality: { type: 'exact', value: 1 },
+            state: expect.any(MetadataValidationState),
+            variables: [
+              { variable: DF.variable('p'), canBeUndef: false },
+            ],
+            requestTime: 0,
+          });
+      });
+
+      it('should apply filters when provided', async() => {
+        const data = source.queryBindings(
+          AF.createDistinctTerms(
+            [ DF.variable('o') ],
+            { o: 'object' },
+            { subject: DF.namedNode('s1'), graph: DF.defaultGraph() },
+          ),
+          ctx,
+        );
+        await expect(data).toEqualBindingsStream([
+          BF.fromRecord({ o: DF.namedNode('o1') }),
+        ]);
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+          .toEqual({
+            cardinality: { type: 'exact', value: 2 },
+            state: expect.any(MetadataValidationState),
+            variables: [
+              { variable: DF.variable('o'), canBeUndef: false },
             ],
             requestTime: 0,
           });

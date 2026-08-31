@@ -180,6 +180,11 @@ TOTAL,3.14,2
         );
       });
 
+      it('should not count requests from actors that are not observed', () => {
+        (<any> httpObserver).onRun({ name: 'urn:comunica:default:http/actors#other' }, null, null);
+        expect(httpObserver.requests).toBe(0);
+      });
+
       it('should run on a bindings stream with http requests and cache invalidations', async() => {
         (<any> httpObserver).onRun({ name: 'urn:comunica:default:http/actors#fetch' }, null, null);
         (<any> httpObserver).onRun({ name: 'urn:comunica:default:http/actors#fetch' }, null, null);

@@ -3,6 +3,7 @@ import { AlgebraFactory } from '@comunica/utils-algebra';
 import { describe, expect, it } from 'vitest';
 import {
   assignOperationSource,
+  getDataDestinationType,
   getOperationSource,
   getSafeBindings,
   getSafeBoolean,
@@ -119,6 +120,21 @@ describe('utils', () => {
       const opOut: Algebra.Nop = AF.createNop();
       opOut.metadata = { other: true };
       expect(opIn).toEqual(opOut);
+    });
+  });
+
+  describe('#getDataDestinationType', () => {
+    it('should return an empty string for a string destination', () => {
+      expect(getDataDestinationType('abc')).toBe('');
+    });
+
+    it('should return rdfjsStore for an RDF.Store destination', () => {
+      const store: any = { remove: () => {} };
+      expect(getDataDestinationType(store)).toBe('rdfjsStore');
+    });
+
+    it('should return the type for a destination with type and value', () => {
+      expect(getDataDestinationType({ type: 'file', value: 'abc' })).toBe('file');
     });
   });
 });

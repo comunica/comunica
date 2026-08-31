@@ -170,6 +170,38 @@ describe('ActorQuerySourceIdentifyCompositeFile', () => {
         ]);
       });
 
+      it('should combine quads from a file source and an already-identified source', async() => {
+        const context = new ActionContext({
+          '@comunica/actor-init-query:dataFactory': DF,
+        });
+
+        const preIdentifiedStore = createStoreWithQuads([
+          DF.quad(DF.namedNode('ex:s3'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3')),
+        ]);
+        const preIdentifiedSource = new QuerySourceRdfJs(preIdentifiedStore, DF, BF);
+        preIdentifiedSource.referenceValue = 'my-pre-identified-source';
+
+        const result = await actor.run({
+          querySourceUnidentified: {
+            type: 'compositefile',
+            value: [ 'http://example.org/file1.ttl', { source: preIdentifiedSource }],
+          },
+          context,
+        });
+
+        const { source } = result.querySource;
+        expect(source).toBeInstanceOf(QuerySourceRdfJs);
+        expect(source.referenceValue).toBe('http://example.org/file1.ttl\nmy-pre-identified-source');
+        expect(source.toString())
+          .toBe(`QuerySourceRdfJs(composite: http://example.org/file1.ttl,my-pre-identified-source)`);
+
+        const stream = source.queryBindings(AF.createPattern(v1, v2, v3), context);
+        await expect(stream).toEqualBindingsStream([
+          BF.fromRecord({ v1: DF.namedNode('ex:s1'), v2: DF.namedNode('ex:p1'), v3: DF.namedNode('ex:o1') }),
+          BF.fromRecord({ v1: DF.namedNode('ex:s3'), v2: DF.namedNode('ex:p3'), v3: DF.namedNode('ex:o3') }),
+        ]);
+      });
+
       it('should use context from compositefile source', async() => {
         const sourceContext = new ActionContext({ myKey: 'myValue' });
         const context = new ActionContext({

@@ -37,6 +37,24 @@ describe('ActorOptimizeQueryOperationLeftjoinExpressionPushdown', () => {
         expect(operationOut).toEqual(operationIn);
       });
 
+      it('for an operation with leftjoin without an expression', async() => {
+        const operationIn = AF.createLeftJoin(
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s1'), DF.variable('p1') ],
+          ),
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s2'), DF.variable('p2') ],
+          ),
+        );
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
+        expect(operationOut).toEqual(operationIn);
+      });
+
       it('for an operation with leftjoin that overlaps only left', async() => {
         const operationIn = AF.createLeftJoin(
           AF.createProject(

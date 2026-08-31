@@ -52,10 +52,12 @@ export default defineConfig({
     hookTimeout: 20_000,
     coverage: {
       enabled: true,
-      // The engines instantiate their actors through componentsjs, which requires the compiled
-      // packages at runtime rather than importing them through Vite. Only V8 coverage observes those,
-      // so the istanbul provider would drop everything the engine tests exercise.
-      provider: 'v8',
+      // The V8 provider derives the implicit else-path of an `if` without an `else` by subtracting the
+      // count of the consequent from that of the `if` itself, which goes negative for an `if` inside a
+      // loop and is then reported as uncovered. That left 79 covered paths across 52 files counted as
+      // misses, so branch coverage is measured through istanbul instead.
+      // See https://github.com/AriPerkkio/ast-v8-to-istanbul/issues/148.
+      provider: 'istanbul',
       // Matches the Jest defaults; CI submits 'coverage/lcov.info' to Coveralls
       reporter: [ 'clover', 'json', 'lcov', 'text' ],
       exclude: [
@@ -66,14 +68,7 @@ export default defineConfig({
         '**/__mocks__/**',
         '**/*.config.{js,ts}',
         '**/engine-default.js',
-        // Package entry points only re-export, and V8 reports them as fully uncovered
-        '**/index.js',
-        '**/index.ts',
       ],
-      // TODO: Branch coverage currently sits at 98.4%, so this gate fails until those tests are written.
-      // Jest reported 100% because it instrumented the compiled JavaScript and remapped the result through
-      // the source maps, which drops the implicit else-path of every `if` without an `else`. Measuring the
-      // TypeScript directly leaves 79 such paths across 52 files uncovered.
       thresholds: {
         branches: 100,
         functions: 100,

@@ -673,6 +673,60 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         });
       });
 
+      it('should return a failed test if the entries could not be sorted due to no common variables', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{},
+                operation: assignOperationSource(AF.createNop(), source1),
+              },
+              {
+                output: <any>{},
+                operation: AF.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: assignOperationSource(AF.createNop(), source1),
+              },
+            ],
+            context: new ActionContext(),
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('b'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+                variables: [
+                  { variable: DF.variable('c'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest(`Actor actor can only join with common variables`);
+      });
+
       it('throws if lastPhysicalJoin is set to the same physical name', async() => {
         await expect(actor.getJoinCoefficients(
           {
