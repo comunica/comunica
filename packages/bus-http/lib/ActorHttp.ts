@@ -43,42 +43,6 @@ export abstract class ActorHttp<TS = undefined> extends Actor<IActionHttp, IActo
   }
 
   /**
-   * Converts WhatWG streams to Node streams if required, just like {@link ActorHttp.toNodeReadable},
-   * with the addition that unhandled errors are forwarded to the streams this stream is piped into.
-   *
-   * Node.js's `pipe` does not forward errors to the destination stream.
-   * Since consumers of HTTP response bodies commonly pipe them into a parser,
-   * and only listen for errors on that parser,
-   * errors on the body itself (such as an endpoint dropping the connection halfway through the response)
-   * would otherwise be emitted on a stream without any listeners, which crashes the process.
-   *
-   * Consumers that do listen for errors on the body handle those errors themselves,
-   * so the error is only forwarded if no other error listeners are attached to the body.
-   * @param {ReadableStream} body A WhatWG stream.
-   * @returns {NodeJS.ReadableStream} A node stream that forwards its errors to its pipe destinations.
-   */
-  public static toNodeReadableForwardingErrors(body: ReadableStream): NodeJS.ReadableStream {
-    const stream = ActorHttp.toNodeReadable(body);
-    const destinations: NodeJS.WritableStream[] = [];
-    const pipeOriginal = stream.pipe.bind(stream);
-    stream.pipe = <T extends NodeJS.WritableStream>(destination: T, options?: { end?: boolean }): T => {
-      if (destinations.length === 0) {
-        stream.on('error', (error: Error) => {
-          // This listener is included in the count, so a higher count means the error is handled elsewhere.
-          if (stream.listenerCount('error') === 1) {
-            for (const dest of destinations) {
-              dest.emit('error', error);
-            }
-          }
-        });
-      }
-      destinations.push(destination);
-      return pipeOriginal(destination, options);
-    };
-    return stream;
-  }
-
-  /**
    * Converts Node streams to WhatWG streams.
    * @param {NodeJS.ReadableStream} body
    * @returns {ReadableStream} A web stream.

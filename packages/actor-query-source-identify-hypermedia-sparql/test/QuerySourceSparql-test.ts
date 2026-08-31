@@ -111,20 +111,6 @@ describe('QuerySourceSparql', () => {
     );
   });
 
-  describe('wrapResponseBodyErrors', () => {
-    it('should leave responses without a body untouched', () => {
-      const response = <Response> <any> { body: null };
-      expect(QuerySourceSparql.wrapResponseBodyErrors(response)).toBe(response);
-      expect(response.body).toBeNull();
-    });
-
-    it('should only convert the body once', () => {
-      const response = <Response> <any> { body: Readable.from([ 'CONTENT' ]) };
-      QuerySourceSparql.wrapResponseBodyErrors(response);
-      expect(response.body).toBe(response.body);
-    });
-  });
-
   describe('getSelectorShape', () => {
     it('should return a selector shape', async() => {
       await expect(source.getSelectorShape()).resolves.toEqual({
@@ -1874,54 +1860,6 @@ describe('QuerySourceSparql', () => {
         },
         input: url,
       });
-    });
-
-    it('should emit an error when the response body errors halfway through', async() => {
-      // Emulates an endpoint that answers with 200 OK, and then drops the connection mid-body.
-      const body = new Readable({ read: () => {} });
-      body.push('<s1> <p1> <o1>. <s2> ');
-      const thisMediator: any = {
-        mediate: jest.fn(() => ({
-          headers: new Headers({ 'Content-Type': 'text/turtle' }),
-          body,
-          ok: true,
-        })),
-      };
-      source = new QuerySourceSparql(
-        url,
-        url,
-        ctx,
-        thisMediator,
-        mediatorQuerySerialize,
-        'values',
-        DF,
-        AF,
-        BF,
-        false,
-        64,
-        10,
-        true,
-        true,
-        0,
-        false,
-
-        {},
-      );
-
-      const stream = source.queryQuads(
-        AF.createConstruct(AF.createPattern(iriS, DF.variable('p'), iriO), []),
-        ctx,
-      );
-      const errorPromise = new Promise((resolve, reject) => {
-        stream.on('data', () => {
-          // Void any data, so that the stream starts flowing
-        });
-        stream.on('error', reject);
-        stream.on('end', resolve);
-      });
-      body.destroy(new Error('Response body dropped'));
-
-      await expect(errorPromise).rejects.toThrow('Response body dropped');
     });
 
     it('should emit metadata', async() => {

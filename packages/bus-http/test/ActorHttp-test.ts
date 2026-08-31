@@ -1,5 +1,4 @@
-import { stringify as stringifyStream } from '@jeswr/stream-to-string';
-import { PassThrough, Readable } from 'readable-stream';
+import { Readable } from 'readable-stream';
 import { ActorHttp } from '../lib/ActorHttp';
 import 'cross-fetch/polyfill';
 
@@ -23,52 +22,6 @@ describe('ActorHttp', () => {
       const readableStream = Readable.from([ 'CONTENT' ]);
       const whatwgReadableStream = readableToWeb(readableStream);
       expect(ActorHttp.toNodeReadable(whatwgReadableStream)).toBeInstanceOf(Readable);
-    });
-  });
-
-  describe('toNodeReadableForwardingErrors', () => {
-    it('should handle WHATWG ReadableStream', async() => {
-      const whatwgReadableStream = readableToWeb(Readable.from([ 'CONTENT' ]));
-      const stream = ActorHttp.toNodeReadableForwardingErrors(whatwgReadableStream);
-      expect(stream).toBeInstanceOf(Readable);
-      await expect(stringifyStream(stream)).resolves.toBe('CONTENT');
-    });
-
-    it('should forward errors to the streams it is piped into', async() => {
-      const source = new Readable({ read: () => {} });
-      const stream = ActorHttp.toNodeReadableForwardingErrors(<any> source);
-      const destinations = [ new PassThrough(), new PassThrough() ];
-      const errors = destinations.map((destination) => {
-        stream.pipe(destination);
-        return new Promise(resolve => destination.on('error', resolve));
-      });
-
-      const error = new Error('Error in toNodeReadableForwardingErrors');
-      source.emit('error', error);
-
-      await expect(Promise.all(errors)).resolves.toEqual([ error, error ]);
-    });
-
-    it('should not forward errors that are handled by another listener', async() => {
-      const source = new Readable({ read: () => {} });
-      const stream = ActorHttp.toNodeReadableForwardingErrors(<any> source);
-      const destination = new PassThrough();
-      stream.pipe(destination);
-      destination.on('error', () => {
-        throw new Error('The error should not have been forwarded');
-      });
-      const handled = new Promise(resolve => stream.on('error', resolve));
-
-      const error = new Error('Error in toNodeReadableForwardingErrors');
-      source.emit('error', error);
-
-      await expect(handled).resolves.toBe(error);
-    });
-
-    it('should not forward errors when the stream is not piped anywhere', () => {
-      const source = new Readable({ read: () => {} });
-      ActorHttp.toNodeReadableForwardingErrors(<any> source);
-      expect(source.listenerCount('error')).toBe(0);
     });
   });
 
