@@ -6,10 +6,13 @@ on:
     types: [opened, reopened]
   roles: all
 engine: copilot
-# Pin an explicit model: the Copilot engine otherwise defaults to 'auto', which the AWF
-# API proxy resolves to the literal 'copilot/auto' passthrough. That has no entry in the
-# AI-credits pricing table, so every inference request is rejected with HTTP 400.
-model: agent
+# Pin a *concrete* model rather than one of gh-aw's aliases ('auto', 'agent', 'sonnet', ...).
+# Aliases are expanded at run time against the model catalogue that the AWF API proxy fetches
+# from api.githubcopilot.com/models, and that fetch returns 403 here. With an empty catalogue
+# the Copilot harness refuses to start ("refusing to start Copilot with an unresolved alias"),
+# so the run dies before producing any output. A concrete id skips alias resolution entirely
+# and has AI-credits pricing in the built-in table.
+model: copilot/claude-sonnet-4.5
 strict: true
 permissions:
   contents: read
