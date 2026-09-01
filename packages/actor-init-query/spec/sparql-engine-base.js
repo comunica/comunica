@@ -127,10 +127,7 @@ function createServiceDescriptionEndpointStarter(engine) {
       throw new Error('Could not determine the service description endpoint address.');
     }
 
-    const service = new HttpServiceSparqlEndpoint({ port: address.port });
-    service.engine.catch(() => {
-      // Ignore the failure to create the unused engine.
-    });
+    const service = new HttpServiceSparqlEndpoint({ engine, port: address.port });
     server.on('request', service.handleRequest.bind(service, engine, variants, process.stdout, process.stderr));
 
     endpoint = `http://127.0.0.1:${address.port}/sparql`;

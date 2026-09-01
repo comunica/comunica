@@ -83,7 +83,7 @@
     "spec-earl:prot-1-1": "yarn run --silent spec:prot-1-1 -o earl -p spec/earl-meta.json -e > earl-prot-1-1.ttl",
     "spec-earl:graphstore-1-1": "yarn run --silent spec:graphstore-1-1 -o earl -p spec/earl-meta.json -e > earl-graphstore-1-1.ttl",
     "spec-earl:sparql12-xsd-datetime-duration": "yarn run --silent spec:sparql12-xsd-datetime-duration -o earl -p spec/earl-meta.json -e > earl-sparql12-xsd-datetime-duration.ttl",
-    "spec-earl": "yarn run spec-earl:query-1-0 && yarn run spec-earl:query-1-1 && yarn run spec-earl:update-1-1 && yarn run spec-earl:csv-tsv-1-1 && yarn run spec-earl:json-1-1 && yarn run spec-earl:sparql12-xsd-datetime-duration && yarn run spec-earl:query-1-2",
+    "spec-earl": "yarn run spec-earl:query-1-0 && yarn run spec-earl:query-1-1 && yarn run spec-earl:update-1-1 && yarn run spec-earl:csv-tsv-1-1 && yarn run spec-earl:json-1-1 && yarn run spec-earl:sd-1-1 && yarn run spec-earl:sparql12-xsd-datetime-duration && yarn run spec-earl:query-1-2",
     "integration": "rdf-test-suite-ldf spec/sparql-engine.js https://comunica.github.io/manifest-ldf-tests/sparql/sparql-manifest.ttl -d 200000 -c ../../.rdf-test-suite-ldf-cache/",
     "test:docker": "./test/docker.sh"
   },
