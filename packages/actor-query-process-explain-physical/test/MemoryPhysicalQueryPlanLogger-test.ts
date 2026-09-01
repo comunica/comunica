@@ -60,6 +60,19 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       )).toThrow('Detected more than one parent-less node');
     });
 
+    it('logging the same node twice', () => {
+      const node = factory.createPattern(
+        DF.namedNode('ex:s1'),
+        DF.namedNode('ex:p1'),
+        DF.variable('o1'),
+        DF.namedNode('ex:g1'),
+      );
+      logger.logOperation('pattern', undefined, node, undefined, 'actor-pattern', {});
+
+      expect(() => logger.logOperation('pattern', undefined, node, node, 'actor-pattern', {}))
+        .toThrow('Detected duplicate node in the physical query plan');
+    });
+
     it('referencing an unknown parent', () => {
       logger.logOperation(
         'pattern',

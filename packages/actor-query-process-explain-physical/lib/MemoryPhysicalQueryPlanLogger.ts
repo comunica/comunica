@@ -22,6 +22,10 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     actor: string,
     metadata: any,
   ): void {
+    if (this.planNodes.has(node)) {
+      throw new Error(`Detected duplicate node in the physical query plan`);
+    }
+
     const planNode: IPlanNode = {
       actor,
       logicalOperator,

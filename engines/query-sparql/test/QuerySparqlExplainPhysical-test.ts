@@ -94,12 +94,13 @@ ${SOURCES_ONE}`);
 ${SOURCES_ONE}`);
     });
 
-    // KNOWN ISSUE (plan §2.2c): the pattern that drives the bind join (?s foaf:name ?n) is absent.
+    // KNOWN ISSUE (plan §2.2c): the pattern that drives the bind join is only reported as a
+    // bindOperation string, it is not a node of its own.
     it('explains an optional', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n OPTIONAL { ?s foaf:knows ?f } }`)).resolves
         .toBe(`project (f,n,s)
   leftjoin
-    join-optional(bind) cardReal:6 timeSelf:Xms timeLife:Xms
+    join-optional(bind) bindOperation:(?s http://xmlns.com/foaf/0.1/name ?n) bindCardEst:5 cardReal:6 timeSelf:Xms timeLife:Xms
       pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 compacted-occurrences:5
 ${SOURCES_ONE}`);
     });
@@ -132,25 +133,12 @@ ${SOURCES_ONE}`);
 ${SOURCES_ONE}`);
     });
 
-    // KNOWN ISSUE (plan §2.5, §2.6): the path algorithm that ran is not identified, and the
-    // per-subject evaluations are siblings of the seed operation.
-    it('explains a property path', async() => {
-      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:knows+ ?o }`)).resolves.toBe(`project (o,s)
-  path
-    distinct
-      path
-        distinct
-          path
-            pattern (?s http://xmlns.com/foaf/0.1/knows ?o) src:0
-        path
-          pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?b) src:0
-        path
-          pattern (http://example.org/bob http://xmlns.com/foaf/0.1/knows ?b) src:0
-        path
-          pattern (http://example.org/carol http://xmlns.com/foaf/0.1/knows ?b) src:0
-        path
-          pattern (http://example.org/dave http://xmlns.com/foaf/0.1/knows ?b) src:0
-${SOURCES_ONE}`);
+    // KNOWN ISSUE (plan §2.2a): ALP evaluation re-dispatches the same path operation object, which is
+    // also the plan node key. That collision used to silently drop earlier subtrees; it is now
+    // reported, and phase 2 removes the possibility of a collision altogether.
+    it('fails on a property path', async() => {
+      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:knows+ ?o }`))
+        .rejects.toThrow('Detected duplicate node in the physical query plan');
     });
 
     it('explains a minus', async() => {
@@ -317,34 +305,33 @@ sources:
     });
   });
 
-  describe('for queries that crash the plan logger', () => {
-    // KNOWN ISSUE (plan §2.1): ActorRdfJoin.run dereferences sideData.metadatas when a plan logger is
-    // present, but ActorRdfJoinNone passes no side data. Both queries execute fine without explaining.
-    it('throws on an empty where clause', async() => {
-      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { }`))
-        .rejects.toThrow('Cannot read properties of undefined (reading \'metadatas\')');
+  describe('for queries containing a zero-entry join', () => {
+    it('explains an empty where clause', async() => {
+      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { }`)).resolves.toBe(`project ()
+  join
+    join-inner(none) cardReal:1 timeSelf:Xms timeLife:Xms`);
     });
 
-    it('throws on a query that only binds', async() => {
-      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { BIND(1 AS ?x) }`))
-        .rejects.toThrow('Cannot read properties of undefined (reading \'metadatas\')');
+    it('explains a query that only binds', async() => {
+      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { BIND(1 AS ?x) }`)).resolves.toBe(`project (x)
+  extend
+    join
+      join-inner(none) cardReal:1 timeSelf:Xms timeLife:Xms`);
     });
   });
 
   describe('with the wrap-stream join actor enabled', () => {
     // KNOWN ISSUE (plan §2.2a): ActorRdfJoinWrapStream re-dispatches the same join action object,
-    // which is also the plan node key, so the actual join and its inputs are lost.
-    it('loses the whole join subtree', async() => {
+    // which is also the plan node key. The resulting collision used to silently drop the join and its
+    // inputs; it is now reported, and phase 2 removes the possibility of a collision altogether.
+    it('fails on the colliding join node', async() => {
       const engine = await new QueryEngineFactory()
         .create({ configPath: join(__dirname, 'assets', 'config-join-wrap-stream.json') });
-      const result = await engine.explain(
+      await expect(engine.explain(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a }`,
         { sources: [ createStore() ]},
         'physical',
-      );
-      expect(normalize(<string> result.data)).toBe(`project (a,n,s)
-  join
-    join-inner(wrap-stream)`);
+      )).rejects.toThrow('Detected duplicate node in the physical query plan');
     }, 60_000);
   });
 

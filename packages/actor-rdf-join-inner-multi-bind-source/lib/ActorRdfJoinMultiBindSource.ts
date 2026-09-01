@@ -105,6 +105,8 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
       },
       physicalPlanMetadata: {
         bindIndex: sideData.entriesUnsorted.indexOf(entries[0]),
+        bindOperation: entries[0].operation,
+        bindOperationCardinality: entries[0].metadata.cardinality,
       },
     };
   }

@@ -446,7 +446,9 @@ TS
         });
 
       Object.assign(planMetadata, physicalPlanMetadata);
-      const cardinalities = sideData.metadatas.map(ActorRdfJoin.getCardinality);
+      // Side data is optional for actors that do not need entry metadata, such as zero-entry joins,
+      // so the plan logger must never assume that it is present.
+      const cardinalities = (sideData?.metadatas ?? []).map(ActorRdfJoin.getCardinality);
       planMetadata.cardinalities = cardinalities;
       planMetadata.joinCoefficients = (await this.getJoinCoefficients(action, sideData)).getOrThrow();
 

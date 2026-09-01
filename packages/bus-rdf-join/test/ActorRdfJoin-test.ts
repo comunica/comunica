@@ -1287,5 +1287,33 @@ IActorRdfJoinSelectivityOutput
         }),
       }, sideData);
     });
+
+    it('invokes the physicalQueryPlanLogger without side data', async() => {
+      const parentNode = '';
+      const logger: IPhysicalQueryPlanLogger = {
+        logOperation: jest.fn(),
+        toJson: jest.fn(),
+        stashChildren: jest.fn(),
+        unstashChild: jest.fn(),
+        appendMetadata: jest.fn(),
+      };
+      action.context = new ActionContext({
+        [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
+        [KeysInitQuery.physicalQueryPlanNode.name]: parentNode,
+      });
+
+      const result = await instance.run(action, <any> undefined);
+      await result.bindingsStream.toArray();
+      await new Promise(setImmediate);
+
+      expect(logger.logOperation).toHaveBeenCalledWith(
+        'join-inner',
+        'PHYSICAL',
+        action,
+        parentNode,
+        'name',
+        expect.objectContaining({ cardinalities: []}),
+      );
+    });
   });
 });
