@@ -1,6 +1,9 @@
 import type { ILogOperationArgs, IPhysicalQueryPlanLogger, IPhysicalQueryPlanNode } from '@comunica/types';
 import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
+import type { IInstrumentedIterator } from '@comunica/utils-iterator';
+import { instrumentIterator } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
+import { scheduleTask } from 'asynciterator';
 import { termToString } from 'rdf-string';
 
 /**
@@ -79,10 +82,14 @@ export class MemoryPlanNode implements IPhysicalQueryPlanNode {
  */
 export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   private readonly nodesByOutput: WeakMap<any, MemoryPlanNode>;
+  private readonly measurements: IInstrumentedIterator[];
+  private readonly pending: Promise<void>[];
   private rootNode: MemoryPlanNode | undefined;
 
   public constructor() {
     this.nodesByOutput = new WeakMap();
+    this.measurements = [];
+    this.pending = [];
   }
 
   public logOperation(args: ILogOperationArgs): IPhysicalQueryPlanNode {
@@ -108,14 +115,60 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   }
 
   /**
-   * Associate a query operation output with the given node.
+   * Associate a query operation output with the given node, and start measuring it.
    * @param output A query operation output.
    * @param node The node that produced the output.
    */
   public registerOutput(output: unknown, node: MemoryPlanNode): void {
     if (typeof output === 'object' && output !== null) {
       this.nodesByOutput.set(output, node);
+      this.measureOutput(<any> output, node);
     }
+  }
+
+  /**
+   * Measure how many results the given output produced and how long that took.
+   * @param output A query operation output.
+   * @param node The node that produced the output.
+   */
+  private measureOutput(output: any, node: MemoryPlanNode): void {
+    const stream = output.bindingsStream ?? output.quadStream;
+    if (!stream) {
+      return;
+    }
+
+    const measurement = instrumentIterator(stream);
+    this.measurements.push(measurement);
+    this.pending.push(measurement.counters
+      .then(async(counters) => {
+        node.appendMetadata({
+          cardinalityReal: counters.count,
+          timeSelf: counters.timeSelf,
+          timeLife: counters.timeLife,
+          ...counters.state === 'ended' ? {} : { streamState: counters.state },
+        });
+
+        // Only ask for metadata of an output that reached its final state on its own,
+        // as the metadata of an output that was never consumed may never resolve.
+        if (counters.state !== 'unfinished' && node.metadata.cardinality === undefined) {
+          const metadata = await output.metadata();
+          node.appendMetadata({ cardinality: metadata.cardinality });
+        }
+      })
+      // The query itself reports failures, the plan just records what it could measure
+      .catch(() => {
+        // Ignore
+      }));
+  }
+
+  public async finalize(): Promise<void> {
+    // Let every measurement that can still settle on its own do so
+    await new Promise(resolve => scheduleTask(() => resolve()));
+    // Outputs that were never consumed and never destroyed would otherwise never settle
+    for (const measurement of this.measurements) {
+      measurement.finish();
+    }
+    await Promise.all(this.pending);
   }
 
   public toJson(): IPlanNodeJson | Record<string, never> {
@@ -265,9 +318,10 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       node.bindOperation ? ` bindOperation:(${node.bindOperation.pattern}) bindCardEst:${node.bindOperationCardinality.type === 'estimate' ? '~' : ''}${numberToString(node.bindOperationCardinality.value)}` : ''}${
       node.cardinality ? ` cardEst:${node.cardinality.type === 'estimate' ? '~' : ''}${numberToString(node.cardinality.value)}` : ''}${
       node.source ? ` src:${sourceId}` : ''}${
-      node.cardinalityReal ? ` cardReal:${node.cardinalityReal}` : ''}${
-      node.timeSelf ? ` timeSelf:${numberToString(node.timeSelf)}ms` : ''}${
-      node.timeLife ? ` timeLife:${numberToString(node.timeLife)}ms` : ''}${
+      node.cardinalityReal === undefined ? '' : ` cardReal:${node.cardinalityReal}`}${
+      node.timeSelf === undefined ? '' : ` timeSelf:${numberToString(node.timeSelf)}ms`}${
+      node.timeLife === undefined ? '' : ` timeLife:${numberToString(node.timeLife)}ms`}${
+      node.streamState ? ` ${node.streamState}` : ''}${
       metadata ? ` ${metadata}` : ''}`);
     for (const child of node.children ?? []) {
       this.nodeToCompactString(lines, sources, `${indent}  `, child);

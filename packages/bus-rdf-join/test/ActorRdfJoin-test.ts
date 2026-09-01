@@ -1161,6 +1161,7 @@ IActorRdfJoinSelectivityOutput
       };
       const logger: IPhysicalQueryPlanLogger = {
         logOperation: jest.fn().mockReturnValue(planNode),
+        finalize: jest.fn(),
         getNodeForOutput: jest.fn(output => entryNodes[action.entries.findIndex(e => e.output === output)]),
         toJson: jest.fn(),
       };
@@ -1219,11 +1220,6 @@ IActorRdfJoinSelectivityOutput
       expect(entryNodes[1].appendMetadata).toHaveBeenCalledWith({
         cardinality: { type: 'estimate', value: 5 },
       });
-      expect(planNode.appendMetadata).toHaveBeenCalledWith({
-        cardinalityReal: 1,
-        timeLife: expect.anything(),
-        timeSelf: expect.anything(),
-      });
       expect(instance.getOutput).toHaveBeenCalledWith({
         ...action,
         context: new ActionContext({
@@ -1242,6 +1238,7 @@ IActorRdfJoinSelectivityOutput
       };
       const logger: IPhysicalQueryPlanLogger = {
         logOperation: jest.fn().mockReturnValue(planNode),
+        finalize: jest.fn(),
         getNodeForOutput: jest.fn(),
         toJson: jest.fn(),
       };
@@ -1280,6 +1277,7 @@ IActorRdfJoinSelectivityOutput
       };
       const logger: IPhysicalQueryPlanLogger = {
         logOperation: jest.fn().mockReturnValue(planNode),
+        finalize: jest.fn(),
         getNodeForOutput: jest.fn(),
         toJson: jest.fn(),
       };

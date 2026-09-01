@@ -87,6 +87,7 @@ describe('ActorQueryOperationTyped', () => {
       };
       const logger: IPhysicalQueryPlanLogger = {
         logOperation: jest.fn().mockReturnValue(planNode),
+        finalize: jest.fn(),
         getNodeForOutput: jest.fn(),
         toJson: jest.fn(),
       };

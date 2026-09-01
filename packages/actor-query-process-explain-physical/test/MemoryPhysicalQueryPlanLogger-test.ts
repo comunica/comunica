@@ -1,6 +1,7 @@
 import type { IPhysicalQueryPlanNode, IQuerySource } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
+import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { MemoryPhysicalQueryPlanLogger } from '../lib/MemoryPhysicalQueryPlanLogger';
 
@@ -38,6 +39,16 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
     });
     nodes.set(operation, node);
     return node;
+  }
+
+  /**
+   * Consume the given stream, so that it reaches its end like it would during query execution.
+   */
+  async function consume(stream: any): Promise<void> {
+    stream.on('data', () => {
+      // Go into flow-mode.
+    });
+    await new Promise(resolve => stream.on('end', resolve));
   }
 
   function createPattern(suffix = '1', graph = DF.namedNode(`ex:g${suffix}`)): any {
@@ -118,6 +129,89 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       node.setOutput('abc');
 
       expect(logger.getNodeForOutput('abc')).toBeUndefined();
+    });
+  });
+
+  describe('setOutput', () => {
+    it('measures an output stream', async() => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
+      const bindingsStream = new ArrayIterator([ 'a', 'b' ], { autoStart: false });
+      node.setOutput({
+        bindingsStream,
+        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 2 }}),
+      });
+      await consume(bindingsStream);
+      await logger.finalize();
+
+      expect(logger.toJson()).toEqual({
+        logical: 'pattern',
+        pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
+        cardinality: { type: 'exact', value: 2 },
+        cardinalityReal: 2,
+        timeSelf: expect.any(Number),
+        timeLife: expect.any(Number),
+      });
+    });
+
+    it('keeps a cardinality that was already recorded', async() => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {
+        cardinality: { type: 'estimate', value: 10 },
+      });
+      const bindingsStream = new ArrayIterator([ 'a' ], { autoStart: false });
+      node.setOutput({
+        bindingsStream,
+        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 1 }}),
+      });
+      await consume(bindingsStream);
+      await logger.finalize();
+
+      expect(logger.toJson()).toMatchObject({ cardinality: { type: 'estimate', value: 10 }});
+    });
+
+    it('reports an output that was never consumed', async() => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
+      node.setOutput({
+        bindingsStream: new BufferedIterator({ autoStart: false }),
+        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 0 }}),
+      });
+      await logger.finalize();
+
+      expect(logger.toJson()).toMatchObject({ streamState: 'unfinished' });
+      expect(logger.toJson()).not.toHaveProperty('cardinality');
+    });
+
+    it('ignores an output whose metadata rejects', async() => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
+      const bindingsStream = new ArrayIterator([ 'a' ], { autoStart: false });
+      node.setOutput({
+        bindingsStream,
+        metadata: () => Promise.reject(new Error('Metadata failure')),
+      });
+      await consume(bindingsStream);
+      await logger.finalize();
+
+      expect(logger.toJson()).not.toHaveProperty('cardinality');
+    });
+
+    it('ignores an output without a stream', async() => {
+      const node = logOperation('ask', undefined, {}, undefined, 'actor-ask', {});
+      node.setOutput({ execute: () => Promise.resolve(true) });
+      await logger.finalize();
+
+      expect(logger.toJson()).toEqual({ logical: 'ask' });
+    });
+
+    it('measures a quad stream', async() => {
+      const node = logOperation('construct', undefined, {}, undefined, 'actor-construct', {});
+      const quadStream = new ArrayIterator([ 'a' ], { autoStart: false });
+      node.setOutput({
+        quadStream,
+        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 1 }}),
+      });
+      await consume(quadStream);
+      await logger.finalize();
+
+      expect(logger.toJson()).toMatchObject({ cardinalityReal: 1 });
     });
   });
 

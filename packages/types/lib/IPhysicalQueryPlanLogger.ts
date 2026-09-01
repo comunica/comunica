@@ -27,6 +27,15 @@ export interface IPhysicalQueryPlanLogger {
   getNodeForOutput: (output: unknown) => IPhysicalQueryPlanNode | undefined;
 
   /**
+   * Wait for all outstanding measurements of this plan to complete.
+   *
+   * Statistics such as the produced number of results are only known once a node's output has been
+   * consumed. Serializing the plan without awaiting this first yields a plan that varies between
+   * runs, so this must be awaited before {@link IPhysicalQueryPlanLogger#toJson}.
+   */
+  finalize: () => Promise<void>;
+
+  /**
    * Serialize the collected query plan to JSON.
    */
   toJson: () => any;
@@ -86,9 +95,12 @@ export interface IPhysicalQueryPlanNode {
   adoptInput: (node: IPhysicalQueryPlanNode) => void;
 
   /**
-   * Associate the given query operation output with this node,
-   * so that consumers of the output can find this node via
-   * {@link IPhysicalQueryPlanLogger#getNodeForOutput}.
+   * Associate the given query operation output with this node.
+   *
+   * This lets consumers of the output find this node via
+   * {@link IPhysicalQueryPlanLogger#getNodeForOutput}, and lets the logger measure the output,
+   * so that the node reports how many results it produced and how long that took.
+   *
    * @param output A query operation output.
    */
   setOutput: (output: unknown) => void;

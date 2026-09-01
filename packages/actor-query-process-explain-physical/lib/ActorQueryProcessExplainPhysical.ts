@@ -59,6 +59,9 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
         break;
     }
 
+    // Statistics are only complete once every measurement has settled
+    await physicalQueryPlanLogger.finalize();
+
     const mode = (action.context.get(KeysInitQuery.explain) ??
       action.context.getSafe(new ActionContextKey('explain')));
     return {

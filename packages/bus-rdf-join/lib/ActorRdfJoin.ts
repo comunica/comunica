@@ -19,7 +19,6 @@ import type {
   MetadataVariable,
   LogicalJoinType,
 } from '@comunica/types';
-import { instrumentIterator } from '@comunica/utils-iterator';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 
@@ -428,18 +427,9 @@ TS
 
     // Fill in the physical plan metadata after determining action output
     if (planNode) {
-      // Allow consumers of this output, such as an enclosing join, to find this node
+      // Allow consumers of this output, such as an enclosing join, to find this node.
+      // This also starts the measurement of the produced results.
       planNode.setOutput(result);
-
-      // eslint-disable-next-line ts/no-floating-promises
-      instrumentIterator(result.bindingsStream)
-        .then((counters) => {
-          planNode.appendMetadata({
-            cardinalityReal: counters.count,
-            timeSelf: counters.timeSelf,
-            timeLife: counters.timeLife,
-          });
-        });
 
       Object.assign(planMetadata, physicalPlanMetadata);
       // Side data is optional for actors that do not need entry metadata, such as zero-entry joins,
