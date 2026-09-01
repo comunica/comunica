@@ -163,7 +163,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
 
   public async finalize(): Promise<void> {
     // Let every measurement that can still settle on its own do so
-    await new Promise(resolve => scheduleTask(() => resolve()));
+    await new Promise<void>(resolve => scheduleTask(resolve));
     // Outputs that were never consumed and never destroyed would otherwise never settle
     for (const measurement of this.measurements) {
       measurement.finish();
@@ -275,9 +275,10 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     const node = this.toJson();
     const lines: string[] = [];
     const sources: Map<string, number> = new Map();
+    const sourceQueries: Map<string, number> = new Map();
 
     if ('logical' in node) {
-      this.nodeToCompactString(lines, sources, '', <IPlanNodeJson> node);
+      this.nodeToCompactString(lines, sources, sourceQueries, '', <IPlanNodeJson> node);
     } else {
       lines.push('Empty');
     }
@@ -290,24 +291,43 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       }
     }
 
+    if (sourceQueries.size > 0) {
+      lines.push('');
+      lines.push('source queries:');
+      for (const [ key, id ] of sourceQueries.entries()) {
+        lines.push(`  ${id}: ${key.split('\n').join('\n     ')}`);
+      }
+    }
+
     return lines.join('\n');
+  }
+
+  /**
+   * Assign a stable identifier to the given value within the given legend.
+   * @param legend A mapping of values to their identifier.
+   * @param value The value to identify.
+   */
+  private identify(legend: Map<string, number>, value: string): number {
+    let id = legend.get(value);
+    if (id === undefined) {
+      id = legend.size;
+      legend.set(value, id);
+    }
+    return id;
   }
 
   public nodeToCompactString(
     lines: string[],
     sources: Map<string, number>,
+    sourceQueries: Map<string, number>,
     indent: string,
     node: IPlanNodeJson,
     metadata?: string,
   ): void {
-    let sourceId: number | undefined;
-    if (node.source) {
-      sourceId = sources.get(node.source);
-      if (sourceId === undefined) {
-        sourceId = sources.size;
-        sources.set(node.source, sourceId);
-      }
-    }
+    const sourceId = node.source === undefined ? undefined : this.identify(sources, node.source);
+    const sourceQueryId = node.sourceQuery === undefined ?
+      undefined :
+      this.identify(sourceQueries, node.sourceQuery);
 
     lines.push(`${
       indent}${
@@ -322,12 +342,15 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       node.timeSelf === undefined ? '' : ` timeSelf:${numberToString(node.timeSelf)}ms`}${
       node.timeLife === undefined ? '' : ` timeLife:${numberToString(node.timeLife)}ms`}${
       node.streamState ? ` ${node.streamState}` : ''}${
+      sourceQueryId === undefined ? '' : ` srcQuery:${sourceQueryId}`}${
+      node.httpRequests === undefined ? '' : ` httpRequests:${node.httpRequests}`}${
+      node.delegated ? ' delegated' : ''}${
       metadata ? ` ${metadata}` : ''}`);
     for (const child of node.children ?? []) {
-      this.nodeToCompactString(lines, sources, `${indent}  `, child);
+      this.nodeToCompactString(lines, sources, sourceQueries, `${indent}  `, child);
     }
     for (const child of node.childrenCompact ?? []) {
-      this.nodeToCompactString(lines, sources, `${indent}  `, child.firstOccurrence, `compacted-occurrences:${child.occurrences}`);
+      this.nodeToCompactString(lines, sources, sourceQueries, `${indent}  `, child.firstOccurrence, `compacted-occurrences:${child.occurrences}`);
     }
   }
 }

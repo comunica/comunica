@@ -272,6 +272,67 @@ describe('ActorQueryOperationSource', () => {
         });
         expect(planNode.setOutput).toHaveBeenCalledWith(result);
       });
+
+      it('should log the operations that the source handles itself', async() => {
+        const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
+        const planNode: IPhysicalQueryPlanNode = {
+          appendMetadata: jest.fn(),
+          adoptInput: jest.fn(),
+          setOutput: jest.fn(),
+        };
+        const logger: IPhysicalQueryPlanLogger = {
+          logOperation: jest.fn().mockReturnValue(planNode),
+          getNodeForOutput: jest.fn(),
+          finalize: jest.fn(),
+          toJson: jest.fn(),
+        };
+        ctx = new ActionContext({
+          [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
+          [KeysInitQuery.physicalQueryPlanNode.name]: parentNode,
+        });
+
+        const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+        const opIn = assignOperationSource(AF.createProject(AF.createJoin([ pattern ]), []), source1);
+        await actor.run({ operation: opIn, context: ctx });
+
+        expect(logger.logOperation).toHaveBeenCalledWith({
+          logicalOperator: 'join',
+          parentNode: planNode,
+          actor: 'actor',
+          operation: (<any> opIn).input,
+          metadata: { delegated: true },
+        });
+        expect(logger.logOperation).toHaveBeenCalledWith({
+          logicalOperator: 'pattern',
+          parentNode: planNode,
+          actor: 'actor',
+          operation: pattern,
+          metadata: { delegated: true },
+        });
+      });
+    });
+
+    describe('getSubOperations', () => {
+      it('returns the nested operations', () => {
+        const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+        const operation = AF.createProject(AF.createJoin([ pattern, pattern ]), []);
+
+        expect(ActorQueryOperationSource.getSubOperations(operation)).toEqual([ operation.input ]);
+        expect(ActorQueryOperationSource.getSubOperations(operation.input)).toEqual([ pattern, pattern ]);
+        expect(ActorQueryOperationSource.getSubOperations(pattern)).toEqual([]);
+      });
+
+      it('does not return expressions or property path symbols', () => {
+        const path = AF.createPath(
+          DF.variable('s'),
+          AF.createOneOrMorePath(AF.createLink(DF.namedNode('ex:p'))),
+          DF.variable('o'),
+        );
+        const filter = AF.createFilter(path, AF.createTermExpression(DF.literal('true')));
+
+        expect(ActorQueryOperationSource.getSubOperations(filter)).toEqual([ path ]);
+        expect(ActorQueryOperationSource.getSubOperations(path)).toEqual([]);
+      });
     });
   });
 });

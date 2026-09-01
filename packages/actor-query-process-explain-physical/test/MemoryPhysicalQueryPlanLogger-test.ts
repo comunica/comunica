@@ -860,6 +860,29 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       expect(logger.toCompactString()).toBe('Empty');
     });
 
+    it('for an operation that a source handled itself', () => {
+      const root = assignOperationSource(
+        factory.createProject(factory.createJoin([]), []),
+        { source: <IQuerySource> { toString: () => 'SRC' }},
+      );
+      logOperation('project', undefined, root, undefined, 'actor-source', {
+        sourceQuery: 'SELECT * WHERE {\n  ?s ?p ?o\n}',
+        httpRequests: 2,
+      });
+      logOperation('join', undefined, root.input, root, 'actor-source', { delegated: true });
+
+      expect(logger.toCompactString()).toBe(`project () src:0 srcQuery:0 httpRequests:2
+  join delegated
+
+sources:
+  0: SRC
+
+source queries:
+  0: SELECT * WHERE {
+       ?s ?p ?o
+     }`);
+    });
+
     it('for a single pattern', () => {
       logOperation(
         'pattern',
