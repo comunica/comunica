@@ -2097,6 +2097,9 @@ WHERE { }
       });
     });
 
+    // Several of these cases mirror https://github.com/bergos/comunica-tests,
+    // which checks the behaviour that shacl-engine (https://github.com/rdf-ext/shacl-engine)
+    // relies on for SHACL pre-binding. Their names are referenced per test below.
     describe('initialBindings', () => {
       let initialBindings: Bindings;
       let sourcesValue1: string;
@@ -2113,6 +2116,7 @@ WHERE { }
           `;
       });
 
+      // Mirrors the pre-binding-005 case.
       it('should consider the initialBindings in the bound function', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -2146,6 +2150,7 @@ WHERE { }
         await expect(bindings).toEqualBindingsStream(expectedResult);
       });
 
+      // Mirrors the pre-binding-006 case, with SELECT * in the sub-query.
       it('should consider the initialBindings in the filter function', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -2179,6 +2184,7 @@ WHERE { }
         await expect(bindings).toEqualBindingsStream(expectedResult);
       });
 
+      // Mirrors the pre-binding-006 case, with an explicit projection in the sub-query.
       it('should consider the initialBindings in the filter function 2', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -2212,6 +2218,7 @@ WHERE { }
         await expect(bindings).toEqualBindingsStream(expectedResult);
       });
 
+      // Mirrors the property-sparql-001 case.
       it('should consider initialBindings which are not projected', async() => {
         const initialBindings = BF.bindings([
           [ DF.variable('predicate'), DF.namedNode('http://example.org/test#predicateEx') ],
@@ -2245,6 +2252,7 @@ WHERE { }
         await expect(bindings).toEqualBindingsStream([]);
       });
 
+      // Mirrors the pre-binding-004 case.
       it('should consider initialBindings in the extend operation', async() => {
         const initialBindings = BF.bindings([
           [ DF.variable('initialBindingsVariable'), DF.namedNode('http://example.org/test#InitialBindingsValue') ],
@@ -2279,6 +2287,101 @@ WHERE { }
         await expect(bindings).toEqualBindingsStream(expectedResult);
       });
 
+      it('should consider initialBindings in filters inside non-matching sub-operations', async() => {
+        // https://github.com/comunica/comunica/issues/1759
+        const initialBindings = BF.bindings([
+          [ DF.variable('subject'), DF.namedNode('http://example.org/test#subjectEx') ],
+        ]);
+
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+                @prefix ex: <http://example.org/test#> .
+
+                ex:subjectEx
+                    ex:name "Subject" ;
+                    ex:broader ex:broaderEx ;
+                .
+                ex:broaderEx
+                    ex:officialName "Official"@en ;
+                .`,
+              mediaType: 'text/turtle',
+            },
+          ],
+          initialBindings,
+        };
+
+        // The filter inside the union branch does not refer to $subject,
+        // so no values clause for it should be injected there.
+        const bindings = (await engine.queryBindings(`
+        PREFIX ex: <http://example.org/test#>
+
+        SELECT $subject ?label WHERE {
+          $subject ex:name ?name .
+          OPTIONAL {
+            $subject ex:broader ?broader .
+            {
+              ?broader ex:officialName ?label .
+              FILTER(LANGMATCHES(LANG(?label), "en"))
+            }
+            UNION
+            {
+              ?broader ex:name ?label .
+            }
+          }
+        }`, context));
+
+        await expect(bindings).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('subject'), DF.namedNode('http://example.org/test#subjectEx') ],
+            [ DF.variable('label'), DF.literal('Official', 'en') ],
+          ]),
+        ]);
+      });
+
+      // Mirrors the pre-binding-002 case.
+      it('should consider initialBindings in a union of filter-only branches', async() => {
+        const initialBindings = BF.bindings([
+          [ DF.variable('this'), DF.namedNode('http://example.org/test#InvalidResource') ],
+        ]);
+
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+                @prefix ex: <http://example.org/test#> .
+                @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+                ex:ValidResource1 a rdfs:Resource .`,
+              mediaType: 'text/turtle',
+            },
+          ],
+          initialBindings,
+        };
+
+        // Neither branch matches a triple, so $this is only bound via the initial bindings.
+        const bindings = (await engine.queryBindings(`
+        PREFIX ex: <http://example.org/test#>
+
+        SELECT $this WHERE {
+          {
+            FILTER (false) .
+          } UNION {
+            FILTER ($this = ex:InvalidResource) .
+          }
+        }`, context));
+
+        await expect(bindings).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('this'), DF.namedNode('http://example.org/test#InvalidResource') ],
+          ]),
+        ]);
+      });
+
+      // Mirrors the unsupported-sparql-005 case.
       it('should not overwrite initialBindings', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -2320,6 +2423,62 @@ WHERE { }
       ?s ?p ?o.
     }`, { sources: [ store ], unionDefaultGraph: true });
         await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(2);
+      });
+    });
+
+    describe('RDF dataset construction with FROM and FROM NAMED', () => {
+      // These cases are defined by https://www.w3.org/TR/sparql11-query/#specifyingDataset
+      const G1 = 'http://example.org/g1';
+      const G2 = 'http://example.org/g2';
+      let store: RdfStore;
+
+      beforeEach(() => {
+        store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o1'), DF.namedNode(G1)));
+        store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o2'), DF.namedNode(G2)));
+      });
+
+      async function queryCount(query: string): Promise<number> {
+        return (await (await engine.queryBindings(query, { sources: [ store ]})).toArray()).length;
+      }
+
+      it('should query the default graph over the graphs in FROM', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> { ?s ?p ?o }`)).resolves.toBe(1);
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM <${G2}> { ?s ?p ?o }`)).resolves.toBe(2);
+      });
+
+      it('should have an empty default graph if only FROM NAMED is used', async() => {
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { ?s ?p ?o }`)).resolves.toBe(0);
+      });
+
+      it('should query the graphs in FROM NAMED via GRAPH', async() => {
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(1);
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> FROM NAMED <${G2}> { GRAPH ?g { ?s ?p ?o } }`))
+          .resolves.toBe(2);
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { GRAPH <${G1}> { ?s ?p ?o } }`)).resolves.toBe(1);
+      });
+
+      it('should have no named graphs if only FROM is used', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(0);
+        // Graphs from FROM are merged into the default graph, they are not available as named graph
+        await expect(queryCount(`SELECT * FROM <${G1}> { GRAPH <${G1}> { ?s ?p ?o } }`)).resolves.toBe(0);
+      });
+
+      it('should not make graphs from FROM available as named graphs', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM NAMED <${G2}> { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(1);
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM NAMED <${G2}> { GRAPH <${G1}> { ?s ?p ?o } }`))
+          .resolves.toBe(0);
+      });
+
+      it('should combine the default graph and named graphs in a union', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM NAMED <${G2}> {
+          { ?s ?p ?o } UNION { GRAPH ?g { ?s ?p ?o } }
+        }`)).resolves.toBe(2);
+      });
+
+      it('should query the graphs in FROM NAMED via GRAPH with property paths', async() => {
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { GRAPH ?g { ?s <ex:p>* ?o } }`)).resolves.toBe(3);
+        await expect(queryCount(`SELECT * FROM <${G1}> { GRAPH ?g { ?s <ex:p>* ?o } }`)).resolves.toBe(0);
       });
     });
 
@@ -2921,6 +3080,102 @@ CONSTRUCT {
         expect(store
           .countQuads(DF.namedNode('ex:s-pre'), DF.namedNode('ex:p-pre'), DF.namedNode('ex:o-pre'), DF.defaultGraph()))
           .toBe(0);
+      });
+
+      // https://github.com/comunica/comunica/issues/1057
+      it('with delete insert where over blank nodes on a single source', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:field'), DF.namedNode('ex:option'), DF.blankNode('b1')),
+          DF.quad(DF.blankNode('b1'), DF.namedNode('ex:first'), DF.namedNode('ex:One')),
+          DF.quad(DF.blankNode('b1'), DF.namedNode('ex:rest'), DF.blankNode('b2')),
+          DF.quad(DF.blankNode('b2'), DF.namedNode('ex:first'), DF.namedNode('ex:Two')),
+        ]);
+        expect(store.size).toBe(4);
+
+        // Execute query
+        const result = <RDF.QueryVoid> await engine.query(`DELETE { ?s <ex:first> ?o }
+        INSERT { ?s <ex:firstNew> ?o }
+        WHERE { ?s <ex:first> ?o }`, {
+          sources: [ store ],
+        });
+        await result.execute();
+
+        // Check store contents: the skolemized blank nodes must have been deskolemized again,
+        // so that the original quads are deleted, and the new quads reuse the original labels.
+        expect(store.size).toBe(4);
+        expect(store
+          .countQuads(DF.blankNode('b1'), DF.namedNode('ex:first'), DF.namedNode('ex:One'), DF.defaultGraph()))
+          .toBe(0);
+        expect(store
+          .countQuads(DF.blankNode('b2'), DF.namedNode('ex:first'), DF.namedNode('ex:Two'), DF.defaultGraph()))
+          .toBe(0);
+        expect(store
+          .countQuads(DF.blankNode('b1'), DF.namedNode('ex:firstNew'), DF.namedNode('ex:One'), DF.defaultGraph()))
+          .toBe(1);
+        expect(store
+          .countQuads(DF.blankNode('b2'), DF.namedNode('ex:firstNew'), DF.namedNode('ex:Two'), DF.defaultGraph()))
+          .toBe(1);
+        // The skolemized labels must not leak into the destination
+        expect(store.countQuads(DF.blankNode('bc_0_b1'), null, null, null)).toBe(0);
+        expect(store.countQuads(DF.blankNode('bc_0_b2'), null, null, null)).toBe(0);
+      });
+
+      // https://github.com/comunica/comunica/issues/985
+      it('with insert where on a single source wrapped in a source object', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.blankNode('b1')),
+          DF.quad(DF.blankNode('b1'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+        ]);
+        expect(store.size).toBe(2);
+
+        // Execute query
+        const result = <RDF.QueryVoid> await engine.query(`INSERT {
+          ?s <ex:a> <ex:thing> .
+        } WHERE { ?s <ex:p> <ex:o> }`, {
+          sources: [{ type: 'rdfjs', value: store }],
+        });
+        await result.execute();
+
+        // Check store contents: the destination is wrapped in a source object,
+        // but must still be matched with its source id for deskolemization.
+        expect(store.size).toBe(3);
+        expect(store
+          .countQuads(DF.blankNode('b1'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()))
+          .toBe(1);
+        expect(store.countQuads(DF.blankNode('bc_0_b1'), null, null, null)).toBe(0);
+      });
+
+      // https://github.com/comunica/comunica/issues/985
+      it('with direct insert of a skolemized term obtained from an earlier query', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.blankNode('b1')),
+        ]);
+        const context: QueryStringContext = { sources: [{ type: 'rdfjs', value: store }]};
+
+        // Obtain the skolemized IRI of the blank node via a first query
+        const bindings = await (await engine.queryBindings('SELECT ?o WHERE { <ex:s> <ex:p> ?o }', context))
+          .toArray();
+        const skolemized = (<BlankNodeScoped> bindings[0].get('o')!).skolemized;
+        expect(skolemized.value).toBe('urn:comunica_skolem:source_0:b1');
+
+        // Use that IRI in a separate update query
+        const result = <RDF.QueryVoid> await engine.query(`INSERT DATA {
+          <${skolemized.value}> <ex:a> <ex:thing> .
+        }`, context);
+        await result.execute();
+
+        // Check store contents: the skolemized IRI must be resolved back to the original blank node
+        expect(store.size).toBe(2);
+        expect(store
+          .countQuads(DF.blankNode('b1'), DF.namedNode('ex:a'), DF.namedNode('ex:thing'), DF.defaultGraph()))
+          .toBe(1);
+        expect(store.countQuads(DF.namedNode(skolemized.value), null, null, null)).toBe(0);
       });
 
       it('with variable delete', async() => {

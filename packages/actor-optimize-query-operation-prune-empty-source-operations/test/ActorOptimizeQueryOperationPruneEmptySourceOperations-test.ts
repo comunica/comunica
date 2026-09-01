@@ -329,6 +329,23 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           ]));
         });
 
+        it('should check links via patterns with valid variables', async() => {
+          const opIn = AF.createAlt([
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+          ]);
+          await actor.run({ operation: opIn, context: ctx });
+          expect(source1.source.queryBindings).toHaveBeenCalledTimes(2);
+          expect(source1.source.queryBindings).toHaveBeenCalledWith(
+            AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.variable('o')),
+            ctx,
+          );
+          expect(source1.source.queryBindings).toHaveBeenCalledWith(
+            AF.createPattern(DF.variable('s'), DF.namedNode('empty'), DF.variable('o')),
+            ctx,
+          );
+        });
+
         it('should not prune for no empty children', async() => {
           const opIn = AF.createAlt([
             assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
@@ -506,6 +523,42 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
               ]),
             ]),
             DF.namedNode('source'),
+          ));
+        });
+      });
+
+      describe('with from operations', () => {
+        it('should not modify children', async() => {
+          // The graphs of the patterns within a FROM are only rewritten when that FROM is executed,
+          // so their emptiness may not be determined against the source's dataset here.
+          const opIn = AF.createFrom(
+            AF.createUnion([
+              assignOperationSource(AF
+                .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
+              assignOperationSource(AF
+                .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
+              AF.createAlt([
+                assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              ]),
+            ]),
+            [ DF.namedNode('g1') ],
+            [ DF.namedNode('g2') ],
+          );
+          const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+          expect(opOut).toEqual(AF.createFrom(
+            AF.createUnion([
+              assignOperationSource(AF
+                .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
+              assignOperationSource(AF
+                .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
+              AF.createAlt([
+                assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              ]),
+            ]),
+            [ DF.namedNode('g1') ],
+            [ DF.namedNode('g2') ],
           ));
         });
       });

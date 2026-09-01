@@ -112,6 +112,19 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(instance.timeout).toBe(60_000);
       expect(instance.port).toBe(3_000);
     });
+
+    it('should expose the engine from args if present', async() => {
+      const engine = <any> { engineFromArgs: true };
+      const instance = new HttpServiceSparqlEndpoint({ ...argsDefault, engine });
+
+      await expect(instance.engine).resolves.toBe(engine);
+    });
+
+    it('should create an engine if none is present in args', async() => {
+      const instance = new HttpServiceSparqlEndpoint({ ...argsDefault });
+
+      await expect(instance.engine).resolves.toHaveProperty('invalidateHttpCache');
+    });
   });
 
   describe('runArgsInProcess', () => {

@@ -200,7 +200,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         preVisitor: (op: Algebra.LeftJoin) => {
           // Default: valid
           if (!boundVariables) {
-            return {};
+            return { shortcut: false };
           }
 
           const leftOp = op.input[0];
@@ -221,7 +221,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         preVisitor: (op: Algebra.Minus) => {
           // Default: valid
           if (!boundVariables) {
-            return {};
+            return { shortcut: false };
           }
 
           const rightOp = op.input[1];
@@ -231,6 +231,26 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
           if (conflict) {
             valid = false;
             return { shortcut: true };
+          }
+          return { shortcut: false };
+        },
+      },
+      [Algebra.Types.FILTER]: {
+        preVisitor: (op: Algebra.Filter) => {
+          // Conflict when FILTER is not a direct child of LEFT_JOIN
+          if (!op.metadata?.isHoistedLeftJoinFilter) {
+            valid = false;
+            return { shortcut: true };
+          }
+          return { shortcut: false };
+        },
+      },
+      [Algebra.Types.EXPRESSION]: {
+        preVisitor: (op: Algebra.Expression) => {
+          // Don't descend into the sub-pattern of a FILTER (NOT) EXISTS:
+          // it is evaluated as its own independent query
+          if (op.subType === Algebra.ExpressionTypes.EXISTENCE) {
+            return { continue: false };
           }
           return { shortcut: false };
         },
