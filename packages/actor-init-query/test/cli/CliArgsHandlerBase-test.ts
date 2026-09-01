@@ -18,9 +18,9 @@ describe('CliArgsHandlerBase', () => {
     });
 
     it('should work with type annotation', () => {
-      const hypermedia = 'hypermedia@http://example.org/';
+      const hypermedia = 'qpf@http://example.org/';
       expect(CliArgsHandlerBase.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/', type: 'hypermedia' });
+        .toEqual({ value: 'http://example.org/', type: 'qpf' });
     });
 
     it('should work with authorization in url', () => {
@@ -33,9 +33,9 @@ describe('CliArgsHandlerBase', () => {
     });
 
     it('should work with type annotation and authorization in url', () => {
-      const hypermedia = 'hypermedia@http://username:passwd@example.org/';
+      const hypermedia = 'qpf@http://username:passwd@example.org/';
       expect(CliArgsHandlerBase.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/', type: 'hypermedia', context: new ActionContext({ [KeysHttp.auth.name]: 'username:passwd' }) });
+        .toEqual({ value: 'http://example.org/', type: 'qpf', context: new ActionContext({ [KeysHttp.auth.name]: 'username:passwd' }) });
     });
 
     it('should work with empty username in authorization in url', () => {

@@ -43,7 +43,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
   }
 
   /**
-   * Converts an URL like 'hypermedia@http://user:passwd@example.com to an IDataSource
+   * Converts an URL like 'sparql@http://user:passwd@example.com to an IDataSource
    * @param {string} sourceString An url with possibly a type and authorization.
    * @return {[id: string]: any} An IDataSource which represents the sourceString.
    */
