@@ -20,6 +20,7 @@
     "http://www.w3.org/TR/sparql11-update/",
     "http://www.w3.org/TR/sparql11-results-csv-tsv/",
     "http://www.w3.org/TR/sparql11-results-json/",
+    "http://www.w3.org/TR/sparql11-federated-query/",
     "http://www.w3.org/TR/sparql11-service-description/",
     "https://www.w3.org/TR/sparql12-query/"
   ]

@@ -4,6 +4,7 @@ const http = require('node:http');
 const ProxyHandlerStatic = require('@comunica/actor-http-proxy').ProxyHandlerStatic;
 const { KeysInitQuery } = require('@comunica/context-entries');
 const { ActionContext } = require('@comunica/core');
+const { stringify: stringifyStream } = require('@jeswr/stream-to-string');
 const RdfStore = require('rdf-stores').RdfStore;
 const RdfTestSuite = require('rdf-test-suite');
 const { HttpServiceSparqlEndpoint } = require('..');
@@ -36,9 +37,11 @@ module.exports = function(engine, exposeServiceDescriptionEndpoint = false) {
         }
         return source;
       });
+      const serviceFetch = createServiceFetch(engine, options.serviceData);
       const result = await engine.query(queryString, {
         baseIRI: options.baseIRI,
         sources,
+        ...(serviceFetch && { fetch: serviceFetch }),
         httpProxyHandler: proxyUrl ? new ProxyHandlerStatic(proxyUrl) : null,
         httpRetryCount: 3,
         httpRetryDelayFallback: 10,
@@ -88,6 +91,36 @@ function source(data) {
     store.addQuad(quad);
   }
   return store;
+}
+
+function createServiceFetch(engine, serviceData) {
+  if (!serviceData) {
+    return;
+  }
+
+  const stores = Object.fromEntries(Object.entries(serviceData)
+    .map(([ endpoint, data ]) => [ endpoint, source(data) ]));
+
+  async function serviceFetch(input, init) {
+    const url = new URL(input);
+    const store = stores[`${url.origin}${url.pathname}`];
+    const query = extractQuery(url, init);
+    if (!store || !query) {
+      return new Response(null, { status: 404 });
+    }
+
+    const result = await engine.query(query, { sources: [ store ]});
+    const mediaType = 'application/sparql-results+json';
+    const body = await stringifyStream((await engine.resultToString(result, mediaType)).data);
+    return new Response(body, { status: 200, headers: { 'content-type': mediaType }});
+  }
+
+  return serviceFetch;
+}
+
+function extractQuery(url, init) {
+  return url.searchParams.get('query') ??
+    (init.body ? new URLSearchParams(String(init.body)).get('query') : null);
 }
 
 function createServiceDescriptionEndpointStarter(engine) {
