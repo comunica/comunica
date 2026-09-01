@@ -1,6 +1,7 @@
 # Plan: making physical query plans complete and reliable
 
-Status: proposal / design document.
+Status: implemented. Every phase below has landed; where the implementation deviates from what
+was planned, [§5](#5-what-was-done-differently) records what changed and why.
 Scope: `explain physical` and `explain physical-json`.
 
 This document records the problems that were found in the current physical explain
@@ -353,13 +354,44 @@ Address §2.3 by extending the query-source contract rather than guessing from o
 
 ## 4. Compatibility
 
-* `IPhysicalQueryPlanLogger` is exported from `@comunica/types` and is part of the public
-  API; phase 2a is a breaking change to it and to `IJoinEntry`. It should land in a major
-  release, together with the `ActorRdfJoin` protected-member changes from 2c.
+* `IPhysicalQueryPlanLogger` and `IPhysicalQueryPlanNode` are exported from `@comunica/types`
+  and are part of the public API; phase 2a is a breaking change to them. It should land in a
+  major release, together with the removal of `isLeaf` from `ActorRdfJoin`.
+* `IJoinEntry` is unchanged.
 * The `physical-json` output gains fields (`actor`, per-node statistics, aggregated
   compaction) and changes the shape of compacted children. It is a debugging format, but
   the change is visible; worth calling out in the changelog.
 * Phase 1 is behaviour-preserving except that it fixes crashes, and can be backported.
+
+## 5. What was done differently
+
+* **Join entries are found by their output, not by a field on `IJoinEntry`** (2b). Adding a
+  `physicalPlanNode` field would have changed a public interface for the sake of the plan
+  logger; the logger instead remembers which node produced which query operation output, and
+  a join looks its entries up by the output it was handed. This works for entries a join
+  builds itself, such as the intermediate join of `ActorRdfJoinMultiSmallest`.
+* **`includeInLogs` was kept, `isLeaf` was removed** (2c). `isLeaf` only ever shaped the plan
+  and is gone; `includeInLogs` still decides whether a join actor appears in the *debug*
+  logger, which is a separate concern, and no longer hides an actor from the plan.
+* **`unstashChild` was not made to fail loudly in phase 1.** It could not be, since
+  `ActorRdfJoinMultiSmallest` legitimately passed it an unknown node until phase 2 removed the
+  mechanism. Phase 1 reports the duplicate node keys instead, which is what actually caused the
+  silent data loss.
+* **`timeSelf` is not exclusive of descendants in the strict sense** (3b). It is the time spent
+  in an operator's own output iterator; the iterators it reads from are measured separately, by
+  whichever operator produced them. Subtracting nested read times would need a call-stack-aware
+  profiler on the hot read path, for a number that is already comparable between operators.
+* **Repetition is grouped rather than detected** (5). Compacting every repeated sibling would
+  merge things that are not repetitions: the two operands of a union, or a filter's input and
+  the per-binding evaluations of its `EXISTS`. Operations that evaluate a sub-operation once per
+  binding now say so by grouping those evaluations under a node of their own, and only within
+  such a group are repetitions summarized.
+* **Non-join actors do not declare a `physicalName`** (5). Serializing the actor name identifies
+  the implementation that ran an operation without having to name every actor twice.
+* **The explain shortcut is expanded in `QueryEngineBase.queryOrExplain`** (6), rather than by
+  running the whole context preprocessing before the query-process bus. The latter would require
+  a context-preprocess mediator on the init actor, which is a config-visible change that would
+  break existing engine configurations.
 
 ## Appendix A — reproductions
 

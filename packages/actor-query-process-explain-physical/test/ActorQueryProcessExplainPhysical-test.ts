@@ -53,11 +53,6 @@ describe('ActorQueryProcessExplainPhysical', () => {
         })).resolves
           .toPassTestVoid();
       });
-
-      it('handles physical explain in raw context', async() => {
-        await expect(actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'physical') })).resolves
-          .toPassTestVoid();
-      });
     });
 
     describe('run', () => {
