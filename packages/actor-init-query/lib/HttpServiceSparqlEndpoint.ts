@@ -66,11 +66,13 @@ export class HttpServiceSparqlEndpoint {
     this.emitVoid = Boolean(args.emitVoid);
     this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
 
-    this.engine = new QueryEngineFactoryBase(
-      args.moduleRootPath,
-      args.defaultConfigPath,
-      actorInitQuery => new QueryEngineBase(actorInitQuery),
-    ).create(args);
+    this.engine = args.engine ?
+      Promise.resolve(args.engine) :
+      new QueryEngineFactoryBase(
+        args.moduleRootPath,
+        args.defaultConfigPath,
+        actorInitQuery => new QueryEngineBase(actorInitQuery),
+      ).create(args);
   }
 
   /**
@@ -760,6 +762,7 @@ export interface IQueryBody {
 }
 
 export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptions {
+  engine?: QueryEngineBase;
   context?: any;
   timeout?: number;
   port?: number;
