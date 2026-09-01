@@ -9,9 +9,11 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-allow-http-methods/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-post-accepted/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-put-accepted/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-query-accepted/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-patch-sparql-update/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^5.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-void/^5.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-void/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-server-software/^5.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
@@ -45,6 +47,10 @@
       "@type": "ActorRdfMetadataExtractPutAccepted"
     },
     {
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#query-accepted",
+      "@type": "ActorRdfMetadataExtractQueryAccepted"
+    },
+    {
       "@id": "urn:comunica:default:rdf-metadata-extract/actors#patch-sparql-update",
       "@type": "ActorRdfMetadataExtractPatchSparqlUpdate"
     },
@@ -55,6 +61,10 @@
     {
       "@id": "urn:comunica:default:rdf-metadata-extract/actors#void",
       "@type": "ActorRdfMetadataExtractVoid"
+    },
+    {
+      "@id": "urn:comunica:default:rdf-metadata-extract/actors#server-software",
+      "@type": "ActorRdfMetadataExtractServerSoftware"
     }
   ]
 }
