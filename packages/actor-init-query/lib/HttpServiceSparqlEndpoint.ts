@@ -40,6 +40,14 @@ export class HttpServiceSparqlEndpoint {
   public static readonly MIME_PLAIN = 'text/plain';
   public static readonly MIME_JSON = 'application/json';
   public static readonly MIME_HTML = 'text/html';
+  /**
+   * The query format that is accepted in the body of HTTP QUERY requests (RFC 10008).
+   */
+  public static readonly MIME_SPARQL_QUERY = 'application/sparql-query';
+  /**
+   * The HTTP methods this service handles, as advertised via the `Allow` and `Access-Control-Allow-Methods` headers.
+   */
+  public static readonly ALLOWED_METHODS = 'GET, HEAD, OPTIONS, POST, QUERY';
 
   public readonly engine: Promise<QueryEngineBase>;
 
@@ -418,11 +426,24 @@ export class HttpServiceSparqlEndpoint {
           this.lastQueryId++,
         );
         break;
+      case 'OPTIONS':
+        // Answer CORS preflight requests, which browsers always send for QUERY, as it is never a simple method.
+        stdout.write(`[204] ${request.method} to ${request.url}\n`);
+        response.writeHead(204, HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
+          'Access-Control-Max-Age': '86400',
+        }));
+        response.end();
+        break;
       default:
         stdout.write(`[405] ${request.method} to ${request.url}\n`);
         response.writeHead(
           405,
-          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' },
+          HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({
+            'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
+            'Access-Control-Allow-Origin': '*',
+          }),
         );
         response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
     }
@@ -573,11 +594,12 @@ export class HttpServiceSparqlEndpoint {
     stdout.write(`[200] ${request.method} to ${request.url}\n`);
     stdout.write(`      Requested media type: ${mediaType}\n`);
     stdout.write('      Received query for service description.\n');
-    response.writeHead(200, {
+    response.writeHead(200, HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({
       'content-type': mediaType,
       'Access-Control-Allow-Origin': '*',
-      'Accept-Query': 'application/sparql-query',
-    });
+      // Without this, browser clients are not allowed to read the QUERY advertisement.
+      'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+    }));
 
     if (headOnly) {
       response.end();
@@ -727,7 +749,21 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
-   * Parses the body of a SPARQL POST request
+   * Determines the headers with which this service advertises the HTTP methods and query formats it supports.
+   * @param headers The headers to extend.
+   * @return {Record<string, string>} The given headers, extended with the method advertisement headers.
+   */
+  public static getMethodAdvertisementHeaders(headers: Record<string, string>): Record<string, string> {
+    return {
+      ...headers,
+      'Access-Control-Allow-Methods': HttpServiceSparqlEndpoint.ALLOWED_METHODS,
+      Allow: HttpServiceSparqlEndpoint.ALLOWED_METHODS,
+      'Accept-Query': HttpServiceSparqlEndpoint.MIME_SPARQL_QUERY,
+    };
+  }
+
+  /**
+   * Parses the body of a SPARQL POST or QUERY request
    * @param {module:http.IncomingMessage} request Request object.
    * @return {Promise<IQueryBody>} A promise resolving to a query body object.
    */
@@ -742,7 +778,7 @@ export class HttpServiceSparqlEndpoint {
       request.on('end', () => {
         const contentType: string | undefined = request.headers['content-type'];
         if (contentType) {
-          if (contentType.includes('application/sparql-query')) {
+          if (contentType.includes(HttpServiceSparqlEndpoint.MIME_SPARQL_QUERY)) {
             return resolve({ type: 'query', value: body, context: undefined });
           }
           if (contentType.includes('application/sparql-update')) {
@@ -766,7 +802,7 @@ export class HttpServiceSparqlEndpoint {
             }
           }
         }
-        reject(new Error(`Invalid POST body received, query type could not be determined`));
+        reject(new Error(`Invalid request body received, query type could not be determined`));
       });
     });
   }

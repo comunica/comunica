@@ -1030,8 +1030,32 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         expect(response.writeHead).toHaveBeenCalledWith(
           405,
-          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' },
+          {
+            'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
+            Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
+            'Accept-Query': 'application/sparql-query',
+          },
         );
+      });
+
+      it('should answer a CORS preflight request for OPTIONS', async() => {
+        request.method = 'OPTIONS';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(response.writeHead).toHaveBeenCalledWith(
+          204,
+          {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
+            'Access-Control-Max-Age': '86400',
+            'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
+            Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
+            'Accept-Query': 'application/sparql-query',
+          },
+        );
+        expect(instance.writeQueryResult).not.toHaveBeenCalled();
       });
 
       it('should call writeQueryResult with correct arguments if request method equals POST', async() => {
@@ -1508,7 +1532,14 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
           200,
-          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*', 'Accept-Query': 'application/sparql-query' },
+          {
+            'content-type': mediaType,
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+            'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
+            Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
+            'Accept-Query': 'application/sparql-query',
+          },
         );
         response.push(null);
         const responseString = await stringifyStream(response);
@@ -1557,7 +1588,14 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
           200,
-          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*', 'Accept-Query': 'application/sparql-query' },
+          {
+            'content-type': mediaType,
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+            'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
+            Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
+            'Accept-Query': 'application/sparql-query',
+          },
         );
         response.push(null);
         const responseString = await stringifyStream(response);
@@ -1596,7 +1634,14 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
           200,
-          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*', 'Accept-Query': 'application/sparql-query' },
+          {
+            'content-type': mediaType,
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+            'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
+            Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
+            'Accept-Query': 'application/sparql-query',
+          },
         );
       });
 
@@ -1725,7 +1770,14 @@ describe('HttpServiceSparqlEndpoint', () => {
           expect(response.writeHead).toHaveBeenCalledTimes(1);
           expect(response.writeHead).toHaveBeenLastCalledWith(
             200,
-            { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*', 'Accept-Query': 'application/sparql-query' },
+            {
+              'content-type': mediaType,
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+              'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
+              Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
+              'Accept-Query': 'application/sparql-query',
+            },
           );
           response.push(null);
           const responseString = await stringifyStream(response);
@@ -2295,13 +2347,13 @@ INSERT DATA {
       it('should reject without content-type', async() => {
         httpRequestMock.headers = {};
         await expect(instance.parseBody(httpRequestMock)).rejects
-          .toThrow(`Invalid POST body received, query type could not be determined`);
+          .toThrow(`Invalid request body received, query type could not be determined`);
       });
 
       it('should reject if the query is invalid and the content-type is application/x-www-form-urlencoded', async() => {
         httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
         await expect(instance.parseBody(httpRequestMock)).rejects
-          .toThrow(`Invalid POST body received, query type could not be determined`);
+          .toThrow(`Invalid request body received, query type could not be determined`);
       });
 
       it('should parse query from url if the content-type is application/x-www-form-urlencoded', async() => {
@@ -2349,7 +2401,7 @@ INSERT DATA {
 
       it('should reject if content-type is not application/[sparql-query|x-www-form-urlencoded]', async() => {
         await expect(instance.parseBody(httpRequestMock)).rejects
-          .toThrow(`Invalid POST body received, query type could not be determined`);
+          .toThrow(`Invalid request body received, query type could not be determined`);
       });
 
       it('should return input body if content-type is application/sparql-query', async() => {

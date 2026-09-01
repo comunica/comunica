@@ -281,6 +281,7 @@
     "@comunica/actor-rdf-metadata-extract-patch-sparql-update": "^5.3.0",
     "@comunica/actor-rdf-metadata-extract-post-accepted": "^5.3.0",
     "@comunica/actor-rdf-metadata-extract-put-accepted": "^5.3.0",
+    "@comunica/actor-rdf-metadata-extract-query-accepted": "^5.3.0",
     "@comunica/actor-rdf-metadata-extract-request-time": "^5.3.0",
     "@comunica/actor-rdf-metadata-extract-server-software": "^5.3.0",
     "@comunica/actor-rdf-metadata-extract-sparql-service": "^5.3.0",

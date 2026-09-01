@@ -7306,10 +7306,10 @@ fetch-sparql-endpoint@^5.1.0:
     stream-to-string "^1.0.0"
     yargs "^17.0.0"
 
-fetch-sparql-endpoint@^7.1.0:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-7.1.0.tgz#1a8c759715b8ee38f29957b3d091b248809e4135"
-  integrity sha512-+C5x3uOqumCvyqDkwXZ31len8qsNfBERWvL6ngqO4m1PSmfqmut4A+2bBbBln48Ag4qudUrG+9qZjFvzY66ubw==
+fetch-sparql-endpoint@^7.2.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-7.2.0.tgz#db8ebaa265d343e91e054cf885bbc1665adca498"
+  integrity sha512-8J0RuZveKb8ikpAj8Y95S/UfFKeMRtgNNBJKGa+QJfSK2NWcR+QqgUZ77TR2saVvDpOyp89OsV0mIz96V0k1sg==
   dependencies:
     "@traqula/parser-sparql-1-2" "^1.0.0"
     "@traqula/rules-sparql-1-2" "^1.0.0"

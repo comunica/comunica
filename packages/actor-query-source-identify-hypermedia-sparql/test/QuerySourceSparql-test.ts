@@ -1375,16 +1375,16 @@ describe('QuerySourceSparql', () => {
     });
 
     describe('when queryAccepted is defined', () => {
-      let getSource: (arg0: string[]) => QuerySourceSparql;
+      let getSource: (queryAccepted: string[], httpMediator?: any) => QuerySourceSparql;
       let operationIn: Algebra.Operation;
       let expectedResult: RDF.Bindings[];
 
       beforeEach(() => {
-        getSource = (queryAccepted: string[]) => new QuerySourceSparql(
+        getSource = (queryAccepted: string[], httpMediator: any = mediatorHttp) => new QuerySourceSparql(
           url,
           url,
           ctx,
-          mediatorHttp,
+          httpMediator,
           mediatorQuerySerialize,
           'values',
           DF,
@@ -1433,7 +1433,7 @@ describe('QuerySourceSparql', () => {
         });
       });
 
-      it('should perform an HTTP POST request when queryAccepted does not include application/sparql-query', async() => {
+      it('should perform an HTTP POST request when queryAccepted excludes application/sparql-query', async() => {
         source = getSource([ 'application/graphql-query' ]);
 
         const stream = source.queryBindings(operationIn, ctx);
@@ -1450,6 +1450,73 @@ describe('QuerySourceSparql', () => {
           },
           input: url,
         });
+      });
+
+      it('should fall back to POST when the endpoint rejects an HTTP QUERY request', async() => {
+        const thisMediator: any = {
+          mediate: jest.fn((action: any) => {
+            if (action.init.method === 'QUERY') {
+              return {
+                headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+                body: Readable.from([ `empty body` ]),
+                ok: false,
+                status: 405,
+                statusText: 'Method Not Allowed',
+              };
+            }
+            return mediatorHttp.mediate(action);
+          }),
+        };
+        source = getSource([ 'application/sparql-query' ], thisMediator);
+
+        const stream = source.queryBindings(operationIn, ctx);
+        await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves.toBeDefined();
+        await expect(stream).toEqualBindingsStream(expectedResult);
+
+        expect(logger.warn).toHaveBeenCalledWith(`Encountered a 405 for an HTTP QUERY request to ${url}, even though it advertises support for it via the Accept-Query header. Retrying the current and modifying future requests to use POST instead.`);
+
+        // The count query is attempted over QUERY, rejected, and retried over POST,
+        // after which the bindings query goes over POST straight away.
+        expect(thisMediator.mediate).toHaveBeenCalledTimes(3);
+        expect(thisMediator.mediate).toHaveBeenNthCalledWith(1, expect.objectContaining({
+          init: expect.objectContaining({
+            body: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }',
+            method: 'QUERY',
+          }),
+        }));
+        expect(thisMediator.mediate).toHaveBeenNthCalledWith(2, expect.objectContaining({
+          init: expect.objectContaining({
+            body: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }',
+            method: 'POST',
+          }),
+        }));
+        expect(thisMediator.mediate).toHaveBeenNthCalledWith(3, expect.objectContaining({
+          init: expect.objectContaining({ method: 'POST' }),
+        }));
+      });
+
+      it('should fall back to POST when the endpoint does not implement HTTP QUERY', async() => {
+        const thisMediator: any = {
+          mediate: jest.fn((action: any) => {
+            if (action.init.method === 'QUERY') {
+              return {
+                headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+                body: Readable.from([ `empty body` ]),
+                ok: false,
+                status: 501,
+                statusText: 'Not Implemented',
+              };
+            }
+            return mediatorHttp.mediate(action);
+          }),
+        };
+        source = getSource([ 'application/sparql-query' ], thisMediator);
+
+        const stream = source.queryBindings(operationIn, ctx);
+        await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves.toBeDefined();
+        await expect(stream).toEqualBindingsStream(expectedResult);
+
+        expect(thisMediator.mediate).toHaveBeenCalledTimes(3);
       });
     });
 

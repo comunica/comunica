@@ -29,6 +29,11 @@ import { uniqTerms } from 'rdf-terms';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
 export class QuerySourceSparql implements IQuerySource {
+  /**
+   * The query format that endpoints advertise via the `Accept-Query` header when they support HTTP QUERY (RFC 10008).
+   */
+  public static readonly MEDIATYPE_SPARQL_QUERY = 'application/sparql-query';
+
   public readonly referenceValue: string;
   private url: string;
   private readonly urlBackup: string;
@@ -52,6 +57,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly cache: LRUCache<string, QueryResultCardinality> | undefined;
 
   private lastSourceContext: IActionContext | undefined;
+  private httpQueryMethodRejected = false;
 
   public constructor(
     url: string,
@@ -82,10 +88,26 @@ export class QuerySourceSparql implements IQuerySource {
     this.dataFactory = dataFactory;
     this.algebraFactory = algebraFactory;
     this.bindingsFactory = bindingsFactory;
+
+    // Endpoints advertise support for the HTTP QUERY method (RFC 10008) via the Accept-Query header,
+    // which lets us send the query in the request body without the side effects of a POST.
+    let method: 'GET' | 'POST' | 'QUERY' = 'POST';
+    if (forceHttpGet) {
+      method = 'GET';
+    } else if (metadata.queryAccepted?.includes(QuerySourceSparql.MEDIATYPE_SPARQL_QUERY)) {
+      method = 'QUERY';
+    }
+
     this.endpointFetcher = new SparqlEndpointFetcher({
-      method: forceHttpGet ? 'GET' : (metadata.queryAccepted?.includes('application/sparql-query') ? 'QUERY' : 'POST'),
+      method,
       fetch: async(input: Request | string, init?: RequestInit) => {
-        const response = await this.mediatorHttp.mediate(
+        // The advertisement may be stale, or an intermediary may not know the method,
+        // in which case we permanently fall back to a direct POST, which carries an identical body.
+        if (this.httpQueryMethodRejected && init?.method === 'QUERY') {
+          init = { ...init, method: 'POST' };
+        }
+
+        let response = await this.mediatorHttp.mediate(
           { input, init, context: this.lastSourceContext! },
         );
         // If we encounter a 404, try our backup URL.
@@ -94,10 +116,19 @@ export class QuerySourceSparql implements IQuerySource {
           Actor.getContextLogger(this.context)?.warn(`Encountered a 404 when requesting ${this.url} according to the service description of ${this.urlBackup}. This is a server configuration issue. Retrying the current and modifying future requests to ${this.urlBackup} instead.`);
           input = (<string> input).replace(this.url, this.urlBackup);
           this.url = this.urlBackup;
-          return await this.mediatorHttp.mediate(
+          response = await this.mediatorHttp.mediate(
             { input, init, context: this.lastSourceContext! },
           );
         }
+
+        if (init?.method === 'QUERY' && (response.status === 405 || response.status === 501)) {
+          Actor.getContextLogger(this.context)?.warn(`Encountered a ${response.status} for an HTTP QUERY request to ${this.url}, even though it advertises support for it via the Accept-Query header. Retrying the current and modifying future requests to use POST instead.`);
+          this.httpQueryMethodRejected = true;
+          response = await this.mediatorHttp.mediate(
+            { input, init: { ...init, method: 'POST' }, context: this.lastSourceContext! },
+          );
+        }
+
         return response;
       },
       prefixVariableQuestionMark: true,
