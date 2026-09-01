@@ -17,7 +17,7 @@ import type { Bindings, BindingsStream, ComunicaDataFactory } from '@comunica/ty
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory, inScopeVariables } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getSafeBindings } from '@comunica/utils-query-operation';
+import { getSafeBindings, groupRepeatedSubOperations } from '@comunica/utils-query-operation';
 
 /**
  * A comunica Optional Bind RDF Join Actor.
@@ -56,7 +56,7 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
 
     // Bind the right pattern for each binding in the stream
     const leftMetadata = await action.entries[0].output.metadata();
-    const subContext = action.context
+    const subContext = groupRepeatedSubOperations(action.context, 'bindings', this.name)
       .set(KeysQueryOperation.joinLeftMetadata, leftMetadata)
       .set(KeysQueryOperation.joinRightMetadatas, [ await action.entries[1].output.metadata() ]);
     const bindingsStream: BindingsStream = ActorRdfJoinMultiBind.createBindStream(

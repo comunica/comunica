@@ -28,6 +28,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
     parentOperation: any,
     actor: string,
     metadata: any,
+    repeated = false,
   ): IPhysicalQueryPlanNode {
     const node = logger.logOperation({
       logicalOperator,
@@ -36,6 +37,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       actor,
       metadata,
       operation,
+      repeated,
     });
     nodes.set(operation, node);
     return node;
@@ -98,9 +100,10 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       expect(first).not.toBe(second);
       expect(logger.toJson()).toEqual({
         logical: 'join',
+        actor: 'actor-join',
         children: [
-          { logical: 'pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
-          { logical: 'pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+          { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+          { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
         ],
       });
     });
@@ -145,6 +148,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
+        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
         cardinality: { type: 'exact', value: 2 },
         cardinalityReal: 2,
@@ -198,7 +202,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       node.setOutput({ execute: () => Promise.resolve(true) });
       await logger.finalize();
 
-      expect(logger.toJson()).toEqual({ logical: 'ask' });
+      expect(logger.toJson()).toEqual({ logical: 'ask', actor: 'actor-ask' });
     });
 
     it('measures a quad stream', async() => {
@@ -226,12 +230,14 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
+        actor: 'actor-join',
         children: [
           {
             logical: 'join',
             physical: 'hash',
+            actor: 'actor-join-hash',
             children: [
-              { logical: 'pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+              { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
             ],
           },
         ],
@@ -248,8 +254,9 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
+        actor: 'actor-join',
         children: [
-          { logical: 'pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+          { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
         ],
       });
     });
@@ -263,6 +270,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
+        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
         a: true,
         b: 1,
@@ -274,7 +282,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       node.appendMetadata({ a: true });
 
-      expect(logger.toJson()).toEqual({ logical: 'pattern', a: true });
+      expect(logger.toJson()).toEqual({ logical: 'pattern', actor: 'actor-pattern', a: true });
     });
   });
 
@@ -300,6 +308,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
+        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
       });
     });
@@ -324,6 +333,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
+        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
         source: 'SRC',
       });
@@ -346,6 +356,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
+        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1',
       });
     });
@@ -369,6 +380,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
+        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
         metaKey: 'metaValue',
       });
@@ -413,13 +425,16 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'bgp',
+        actor: 'actor-bgp',
         children: [
           {
             logical: 'pattern',
+            actor: 'actor-pattern',
             pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
           },
           {
             logical: 'pattern',
+            actor: 'actor-pattern',
             pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
           },
         ],
@@ -478,6 +493,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'project',
+        actor: 'actor-bgp',
         variables: [
           'varA',
           'varB',
@@ -485,13 +501,16 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         children: [
           {
             logical: 'bgp',
+            actor: 'actor-bgp',
             children: [
               {
                 logical: 'pattern',
+                actor: 'actor-pattern',
                 pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
               },
               {
                 logical: 'pattern',
+                actor: 'actor-pattern',
                 pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
               },
             ],
@@ -513,19 +532,13 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       const bjNode = {};
       logOperation(
-        'join-inner',
-        'bind',
+        'bindings',
+        undefined,
         bjNode,
         joinNode,
         'actor-bind',
-        {
-          bindOperation: factory.createPattern(
-            DF.namedNode('ex:s2'),
-            DF.namedNode('ex:p2'),
-            DF.variable('o2'),
-            DF.namedNode('ex:g2'),
-          ),
-        },
+        {},
+        true,
       );
 
       const subJoinNode1 = {};
@@ -594,35 +607,36 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
+        actor: 'actor-join',
         children: [
           {
-            logical: 'join-inner',
-            physical: 'bind',
-            bindOperation: {
-              pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
-            },
+            logical: 'bindings',
+            actor: 'actor-bind',
+            children: [
+              {
+                logical: 'join',
+                actor: 'actor-join',
+                children: [
+                  {
+                    logical: 'bgp',
+                    actor: 'actor-bgp',
+                  },
+                ],
+              },
+            ],
             childrenCompact: [
               {
                 occurrences: 2,
                 firstOccurrence: {
+                  logical: 'join',
+                  actor: 'actor-join',
                   children: [
                     {
                       logical: 'pattern',
+                      actor: 'actor-pattern',
                       pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
                     },
                   ],
-                  logical: 'join',
-                },
-              },
-              {
-                occurrences: 1,
-                firstOccurrence: {
-                  children: [
-                    {
-                      logical: 'bgp',
-                    },
-                  ],
-                  logical: 'join',
                 },
               },
             ],
@@ -644,12 +658,13 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       const bjNode = {};
       logOperation(
-        'join-inner',
-        'bind',
+        'bindings',
+        undefined,
         bjNode,
         joinNode,
         'actor-bind',
         {},
+        true,
       );
 
       const subJoinNode1 = {};
@@ -686,12 +701,13 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       );
       const subBjNode1 = {};
       logOperation(
-        'join-inner',
-        'bind',
+        'bindings',
+        undefined,
         subBjNode1,
         subJoinNode2,
         'actor-bind',
         {},
+        true,
       );
 
       const subSubJoinNode1 = {};
@@ -719,48 +735,45 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
+        actor: 'actor-join',
         children: [
           {
-            logical: 'join-inner',
-            physical: 'bind',
-            childrenCompact: [
+            logical: 'bindings',
+            actor: 'actor-bind',
+            children: [
               {
-                occurrences: 1,
-                firstOccurrence: {
-                  logical: 'join',
-                  children: [
-                    {
-                      logical: 'pattern',
-                      pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
-                    },
-                  ],
-                },
+                logical: 'join',
+                actor: 'actor-join',
+                children: [
+                  {
+                    logical: 'pattern',
+                    actor: 'actor-pattern',
+                    pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
+                  },
+                ],
               },
               {
-                occurrences: 1,
-                firstOccurrence: {
-                  children: [
-                    {
-                      logical: 'join-inner',
-                      physical: 'bind',
-                      childrenCompact: [
-                        {
-                          occurrences: 1,
-                          firstOccurrence: {
-                            logical: 'join',
-                            children: [
-                              {
-                                logical: 'pattern',
-                                pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
-                              },
-                            ],
+                logical: 'join',
+                actor: 'actor-join',
+                children: [
+                  {
+                    logical: 'bindings',
+                    actor: 'actor-bind',
+                    children: [
+                      {
+                        logical: 'join',
+                        actor: 'actor-join',
+                        children: [
+                          {
+                            logical: 'pattern',
+                            actor: 'actor-pattern',
+                            pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
                           },
-                        },
-                      ],
-                    },
-                  ],
-                  logical: 'join',
-                },
+                        ],
+                      },
+                    ],
+                  },
+                ],
               },
             ],
           },
@@ -781,12 +794,13 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       const bjNode = {};
       logOperation(
-        'join-inner',
-        'bind',
+        'bindings',
+        undefined,
         bjNode,
         joinNode,
         'actor-bind',
         {},
+        true,
       );
 
       logOperation(
@@ -805,12 +819,13 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       const subBjNode1 = {};
       logOperation(
-        'join-inner',
-        'bind',
+        'bindings',
+        undefined,
         subBjNode1,
         bjNode,
         'actor-bind',
         {},
+        true,
       );
 
       logOperation(
@@ -829,29 +844,45 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
+        actor: 'actor-join',
         children: [
           {
-            logical: 'join-inner',
-            physical: 'bind',
+            logical: 'bindings',
+            actor: 'actor-bind',
             childrenCompact: [
               {
                 occurrences: 2,
                 firstOccurrence: {
                   logical: 'pattern',
+                  actor: 'actor-pattern',
                   pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
-                },
-              },
-              {
-                occurrences: 1,
-                firstOccurrence: {
-                  logical: 'join-inner',
-                  physical: 'bind',
                 },
               },
             ],
           },
         ],
       });
+    });
+  });
+
+  describe('aggregateOccurrences', () => {
+    it('sums the measurements of the occurrences', () => {
+      expect(MemoryPhysicalQueryPlanLogger.aggregateOccurrences(<any> [
+        { cardinalityReal: 2, timeSelf: 1, timeLife: 3 },
+        { cardinalityReal: 3, timeSelf: 2, timeLife: 4 },
+      ])).toEqual({ cardinalityRealSum: 5, timeSelfSum: 3, timeLifeSum: 7 });
+    });
+
+    it('omits measurements that none of the occurrences have', () => {
+      expect(MemoryPhysicalQueryPlanLogger.aggregateOccurrences(<any> [{}, {}])).toEqual({});
+    });
+
+    it('reports the sources when the occurrences hit more than one', () => {
+      expect(MemoryPhysicalQueryPlanLogger.aggregateOccurrences(<any> [
+        { source: 'SRC1' },
+        { source: 'SRC2' },
+        { source: 'SRC1' },
+      ])).toEqual({ sources: [ 'SRC1', 'SRC2' ]});
     });
   });
 
@@ -871,11 +902,14 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       });
       logOperation('join', undefined, root.input, root, 'actor-source', { delegated: true });
 
-      expect(logger.toCompactString()).toBe(`project () src:0 srcQuery:0 httpRequests:2
-  join delegated
+      expect(logger.toCompactString()).toBe(`project () src:0 srcQuery:0 httpRequests:2 actor:0
+  join delegated actor:0
 
 sources:
   0: SRC
+
+actors:
+  0: actor-source
 
 source queries:
   0: SELECT * WHERE {
@@ -898,7 +932,10 @@ source queries:
         {},
       );
 
-      expect(logger.toCompactString()).toBe('pattern (ex:s1 ex:p1 ?o1 ex:g1)');
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:0
+
+actors:
+  0: actor-pattern`);
     });
 
     it('for a single pattern with source', () => {
@@ -919,10 +956,13 @@ source queries:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0 actor:0
 
 sources:
-  0: SRC`);
+  0: SRC
+
+actors:
+  0: actor-pattern`);
     });
 
     it('for a single pattern in the default graph', () => {
@@ -940,7 +980,10 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe('pattern (ex:s1 ex:p1 ?o1)');
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1) actor:0
+
+actors:
+  0: actor-pattern`);
     });
 
     it('for a single pattern with metadata', () => {
@@ -964,7 +1007,10 @@ sources:
         },
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:~3 cardReal:1 timeSelf:0.123ms timeLife:0.679ms`);
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:~3 cardReal:1 timeSelf:0.123ms timeLife:0.679ms actor:0
+
+actors:
+  0: actor-pattern`);
     });
 
     it('for a single pattern with metadata and exact cardinality', () => {
@@ -985,7 +1031,10 @@ sources:
         },
       );
 
-      expect(logger.toCompactString()).toBe('pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:3');
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:3 actor:0
+
+actors:
+  0: actor-pattern`);
     });
 
     it('for a BGP and patterns', () => {
@@ -1025,9 +1074,13 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`bgp
-  pattern (ex:s1 ex:p1 ?o1 ex:g1)
-  pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
+      expect(logger.toCompactString()).toBe(`bgp actor:0
+  pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:1
+  pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:1
+
+actors:
+  0: actor-bgp
+  1: actor-pattern`);
     });
 
     it('for a project, BGP and patterns', () => {
@@ -1080,10 +1133,14 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`project (varA,varB)
-  bgp
-    pattern (ex:s1 ex:p1 ?o1 ex:g1)
-    pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
+      expect(logger.toCompactString()).toBe(`project (varA,varB) actor:0
+  bgp actor:0
+    pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:1
+    pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:1
+
+actors:
+  0: actor-bgp
+  1: actor-pattern`);
     });
 
     it('for a bind join', () => {
@@ -1099,20 +1156,13 @@ sources:
 
       const bjNode = {};
       logOperation(
-        'join-inner',
-        'bind',
+        'bindings',
+        undefined,
         bjNode,
         joinNode,
         'actor-bind',
-        {
-          bindOperation: factory.createPattern(
-            DF.namedNode('ex:s2'),
-            DF.namedNode('ex:p2'),
-            DF.variable('o2'),
-            DF.namedNode('ex:g2'),
-          ),
-          bindOperationCardinality: { type: 'estimate', value: 3 },
-        },
+        { bindIndex: 1 },
+        true,
       );
 
       const subJoinNode1 = {};
@@ -1179,12 +1229,18 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`join
-  join-inner(bind) bindOperation:(ex:s2 ex:p2 ?o2 ex:g2) bindCardEst:~3
-    join compacted-occurrences:2
-      pattern (ex:s2 ex:p2 ?o2 ex:g2)
-    join compacted-occurrences:1
-      bgp`);
+      expect(logger.toCompactString()).toBe(`join actor:0
+  bindings bindIndex:1 actor:1
+    join actor:0
+      bgp actor:2
+    join actor:0 compacted-occurrences:2
+      pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:3
+
+actors:
+  0: actor-join
+  1: actor-bind
+  2: actor-bgp
+  3: actor-pattern`);
     });
 
     it('for a bind join with nesting', () => {
@@ -1200,20 +1256,13 @@ sources:
 
       const bjNode = {};
       logOperation(
-        'join-inner',
-        'bind',
+        'bindings',
+        undefined,
         bjNode,
         joinNode,
         'actor-bind',
-        {
-          bindOperation: factory.createPattern(
-            DF.namedNode('ex:s2'),
-            DF.namedNode('ex:p2'),
-            DF.variable('o2'),
-            DF.namedNode('ex:g2'),
-          ),
-          bindOperationCardinality: { type: 'exact', value: 3 },
-        },
+        { bindIndex: 1 },
+        true,
       );
 
       const subJoinNode1 = {};
@@ -1250,12 +1299,13 @@ sources:
       );
       const subBjNode1 = {};
       logOperation(
-        'join-inner',
-        'bind',
+        'bindings',
+        undefined,
         subBjNode1,
         subJoinNode2,
         'actor-bind',
         {},
+        true,
       );
 
       const subSubJoinNode1 = {};
@@ -1281,14 +1331,19 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`join
-  join-inner(bind) bindOperation:(ex:s2 ex:p2 ?o2 ex:g2) bindCardEst:3
-    join compacted-occurrences:1
-      pattern (ex:s2 ex:p2 ?o2 ex:g2)
-    join compacted-occurrences:1
-      join-inner(bind)
-        join compacted-occurrences:1
-          pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
+      expect(logger.toCompactString()).toBe(`join actor:0
+  bindings bindIndex:1 actor:1
+    join actor:0
+      pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:2
+    join actor:0
+      bindings actor:1
+        join actor:0
+          pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:2
+
+actors:
+  0: actor-join
+  1: actor-bind
+  2: actor-pattern`);
     });
 
     it('for two patterns with the same source', () => {
@@ -1340,12 +1395,15 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1)
-  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
-  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:0
+  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0 actor:0
+  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0 actor:0
 
 sources:
-  0: SRC`);
+  0: SRC
+
+actors:
+  0: actor-pattern`);
     });
   });
 });

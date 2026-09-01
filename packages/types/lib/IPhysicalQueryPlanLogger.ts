@@ -56,9 +56,16 @@ export interface ILogOperationArgs {
    */
   parentNode?: IPhysicalQueryPlanNode;
   /**
-   * The current actor name.
+   * The current actor name, if an actor is responsible for this node.
    */
-  actor: string;
+  actor?: string;
+  /**
+   * If the operations executed within this node are repeated evaluations of the same operation,
+   * such as the per-binding evaluations of a bind join.
+   *
+   * Such repetitions are summarized rather than listed one by one.
+   */
+  repeated?: boolean;
   /**
    * Metadata to include together in the physical query plan output for this node.
    */
@@ -86,9 +93,6 @@ export interface IPhysicalQueryPlanNode {
    * This is needed by operations that only learn which node their inputs belong under after those
    * inputs have already been executed, such as join actors that are selected after their entries
    * have been evaluated.
-   *
-   * Inputs are kept apart from the sub-operations that this node executes itself, so that repeated
-   * sub-operations, such as those of a bind join, can be summarized without hiding the inputs.
    *
    * @param node The node to adopt.
    */

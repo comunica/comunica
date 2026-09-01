@@ -3679,11 +3679,15 @@ CONSTRUCT {
     }`, {
           sources: [ 'https://www.rubensworks.net/' ],
         }, 'physical');
-        expect((<string> result.data).replaceAll(/[\d,.]+ms/gu, 'Xms')).toBe(`project (o,p,s) cardEst:~523 cardReal:523 timeSelf:Xms timeLife:Xms
-  pattern (?s ?p ?o) cardEst:~523 src:0 cardReal:523 timeSelf:Xms timeLife:Xms
+        expect((<string> result.data).replaceAll(/[\d,.]+ms/gu, 'Xms')).toBe(`project (o,p,s) cardEst:~523 cardReal:523 timeSelf:Xms timeLife:Xms actor:0
+  pattern (?s ?p ?o) cardEst:~523 src:0 cardReal:523 timeSelf:Xms timeLife:Xms actor:1
 
 sources:
-  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`);
+  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)
+
+actors:
+  0: urn:comunica:default:query-operation/actors#project
+  1: urn:comunica:default:query-operation/actors#source`);
         expect(result).toMatchObject({ explain: true, type: 'physical' });
       });
 
@@ -3698,6 +3702,7 @@ sources:
           type: 'physical-json',
           data: {
             logical: 'project',
+            actor: 'urn:comunica:default:query-operation/actors#project',
             variables: [ 'o', 'p', 's' ],
             cardinality: { type: 'estimate', value: 523 },
             cardinalityReal: 523,
@@ -3706,6 +3711,7 @@ sources:
             children: [
               {
                 logical: 'pattern',
+                actor: 'urn:comunica:default:query-operation/actors#source',
                 pattern: '?s ?p ?o',
                 source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
                 cardinality: { type: 'estimate', value: 523 },
