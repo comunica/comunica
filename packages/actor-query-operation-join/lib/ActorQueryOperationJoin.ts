@@ -7,7 +7,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { IQueryOperationResult, IActionContext, IJoinEntry } from '@comunica/types';
-import { Algebra } from '@comunica/utils-algebra';
+import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -41,6 +41,9 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
       .map(({ output, operation }) => ({
         output: getSafeBindings(output),
         operation,
+        // SERVICE clauses with a variable target can only be evaluated once that variable is bound,
+        // so we enforce a bind-join for these entries.
+        ...containsUnboundService(operation) && { operationRequired: <const> true },
       }));
 
     // Return immediately if one of the join entries has cardinality zero, to avoid actor testing overhead.
@@ -69,4 +72,21 @@ export interface IActorQueryOperationJoinArgs extends IActorQueryOperationTypedM
    * A mediator for joining Bindings streams
    */
   mediatorJoin: MediatorRdfJoin;
+}
+
+/**
+ * Check if the given operation contains a SERVICE clause with an unbound variable target.
+ */
+function containsUnboundService(operation: Algebra.Operation): boolean {
+  let found = false;
+  algebraUtils.visitOperation(operation, {
+    [Algebra.Types.SERVICE]: {
+      visitor: (serviceOp) => {
+        if (serviceOp.name.termType === 'Variable') {
+          found = true;
+        }
+      },
+    },
+  });
+  return found;
 }

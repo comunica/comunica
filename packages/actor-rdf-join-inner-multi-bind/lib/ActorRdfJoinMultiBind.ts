@@ -41,6 +41,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       logicalType: 'inner',
       physicalName: 'bind',
       canHandleUndefs: true,
+      canHandleOperationRequired: true,
       isLeaf: false,
     });
     this.bindOrder = args.bindOrder;
@@ -292,6 +293,11 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     if (remainingEntries
       .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation))) {
       return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
+    }
+
+    // Entries that require their operation to be pushed down must end up on the bound side.
+    if (entriesSorted[0].operationRequired) {
+      return failTest(`Actor ${this.name} can not use an entry with operationRequired as the first entry`);
     }
 
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.

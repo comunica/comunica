@@ -322,6 +322,52 @@ IQueryOperationResultBindings
         });
       });
 
+      it('should reject when the first entry has operationRequired', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{
+                  metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 2 }}),
+                },
+                operation: <any>{},
+                operationRequired: true,
+              },
+              {
+                output: <any>{
+                  metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }}),
+                },
+                operation: <any>{},
+              },
+            ],
+            context: new ActionContext(),
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest('Actor actor can not use an entry with operationRequired as the first entry');
+      });
+
       it('should reject on a right stream of type extend', async() => {
         await expect(actor.getJoinCoefficients(
           {

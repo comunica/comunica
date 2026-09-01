@@ -109,7 +109,8 @@ function createServiceFetch(engine, serviceData) {
       return new Response(null, { status: 404 });
     }
 
-    const result = await engine.query(query, { sources: [ store ]});
+    // Pass the same fetch function, so that this endpoint can resolve nested SERVICE clauses.
+    const result = await engine.query(query, { sources: [ store ], fetch: serviceFetch });
     const mediaType = 'application/sparql-results+json';
     const body = await stringifyStream((await engine.resultToString(result, mediaType)).data);
     return new Response(body, { status: 200, headers: { 'content-type': mediaType }});

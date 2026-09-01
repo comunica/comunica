@@ -58,12 +58,14 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
    * @param operation The input operation.
    * @param sources The sources to assign.
    * @param serviceSources Mapping of SERVICE names to sources.
+   * @param withinService If we are assigning sources within the body of a SERVICE clause.
    */
   public assignExhaustive(
     factory: AlgebraFactory,
     operation: Algebra.Operation,
     sources: IQuerySourceWrapper[],
     serviceSources: Record<string, IQuerySourceWrapper>,
+    withinService = false,
   ): Algebra.Operation {
     return algebraUtils.mapOperation(operation, {
       [Algebra.Types.PATTERN]: {
@@ -85,17 +87,28 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
               if (serviceOp.silent) {
                 source = {
                   ...source,
-                  context: (source.context ?? new ActionContext()).set(KeysInitQuery.lenient, true),
+                  context: (source.context ?? new ActionContext())
+                    // Suppresses hard errors while dereferencing a SERVICE target that is a plain document.
+                    .set(KeysInitQuery.lenient, true)
+                    // Replaces errors from the source by a single empty solution.
+                    .set(KeysQueryOperation.silent, true),
                 };
               }
-              return this.assignExhaustive(
+              const input = this.assignExhaustive(
                 factory,
                 serviceOp.input,
                 [ source ],
-                // Pass empty serviceSources to ensure nested SERVICE clauses are not transformed.
+                // Pass empty serviceSources, so that nested SERVICE clauses are delegated to this source.
                 {},
+                true,
               );
+              return input;
             }
+          }
+          // Nested SERVICE clauses are delegated as-is to the source of the enclosing SERVICE clause,
+          // which is responsible for resolving them.
+          if (withinService && sources.length === 1) {
+            return assignOperationSource(serviceOp, sources[0]);
           }
           return serviceOp;
         },
@@ -103,7 +116,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       [Algebra.Types.CONSTRUCT]: {
         preVisitor: () => ({ continue: false }),
         transform: constructOp => factory.createConstruct(
-          this.assignExhaustive(factory, constructOp.input, sources, serviceSources),
+          this.assignExhaustive(factory, constructOp.input, sources, serviceSources, withinService),
           constructOp.template,
         ),
       },
@@ -132,7 +145,9 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
         transform: delInsOp => factory.createDeleteInsert(
           delInsOp.delete,
           delInsOp.insert,
-          delInsOp.where ? this.assignExhaustive(factory, delInsOp.where, sources, serviceSources) : undefined,
+          delInsOp.where ?
+            this.assignExhaustive(factory, delInsOp.where, sources, serviceSources, withinService) :
+            undefined,
         ),
       },
     });

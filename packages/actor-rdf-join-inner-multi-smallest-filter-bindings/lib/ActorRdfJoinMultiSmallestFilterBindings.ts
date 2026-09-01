@@ -7,7 +7,7 @@ import type {
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
-import { KeysInitQuery, KeysRdfJoin } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysRdfJoin } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTestWithSideData, failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -215,6 +215,12 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     const sourceWrapper: IQuerySourceWrapper | undefined = getOperationSource(second.operation);
     if (!sourceWrapper) {
       return failTest(`Actor ${this.name} can only process if entries[1] has a source`);
+    }
+    // Reject pushing bindings into the target of a SERVICE SILENT clause.
+    // Its bindings are pushed down in chunks, with one source call per chunk,
+    // so a failing source would produce one empty solution per chunk instead of exactly one.
+    if (sourceWrapper.context?.get(KeysQueryOperation.silent)) {
+      return failTest(`Actor ${this.name} can not filter bindings on the target of a SERVICE SILENT clause`);
     }
     const testingOperation = second.operation;
     const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);

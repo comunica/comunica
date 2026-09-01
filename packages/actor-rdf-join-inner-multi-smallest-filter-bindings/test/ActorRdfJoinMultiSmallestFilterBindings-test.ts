@@ -2,7 +2,7 @@ import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-inner-nestedloo
 import type { MediatorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitQuery, KeysRdfJoin } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysRdfJoin } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IQuerySourceWrapper, IJoinEntryWithMetadata } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
@@ -34,6 +34,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
     let mediatorJoin: MediatorRdfJoin;
     let actor: ActorRdfJoinMultiSmallestFilterBindings;
     let source1: IQuerySourceWrapper;
+    let sourceSilent: IQuerySourceWrapper;
     let source4: IQuerySourceWrapper;
     let source5Context: IQuerySourceWrapper;
 
@@ -75,6 +76,10 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         mediatorJoinEntriesSort,
       });
       jest.spyOn((<any> actor), 'logDebug').mockImplementation();
+      sourceSilent = <IQuerySourceWrapper> <any> {
+        source: { getSelectorShape: () => ({ type: 'operation', operation: { operationType: 'wildcard' }}) },
+        context: new ActionContext({ [KeysQueryOperation.silent.name]: true }),
+      };
       source1 = <IQuerySourceWrapper> <any> {
         source: {
           getSelectorShape() {
@@ -779,6 +784,60 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             ],
           },
         )).resolves.toFailTest(`Actor actor can only process if entries[1] has a source`);
+      });
+
+      it('throws if the entries[1] source is the target of a SERVICE SILENT clause', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{},
+                operation: assignOperationSource(AF.createNop(), sourceSilent),
+              },
+              {
+                output: <any>{},
+                operation: assignOperationSource(AF.createNop(), source1),
+              },
+              {
+                output: <any>{},
+                operation: assignOperationSource(AF.createNop(), source1),
+              },
+            ],
+            context: new ActionContext(),
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest(`Actor actor can not filter bindings on the target of a SERVICE SILENT clause`);
       });
 
       it('throws if the entries[1] source accepts no filterBindings', async() => {

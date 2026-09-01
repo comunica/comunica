@@ -6,7 +6,7 @@ import type {
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTestWithSideData, failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -168,6 +168,13 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     // Reject binding on operations with un-equal sources
     if (sources.some(source => source !== sources[0])) {
       return failTest(`Actor ${this.name} can not bind on remaining operations with non-equal source annotation`);
+    }
+
+    // Reject binding on the target of a SERVICE SILENT clause.
+    // Its bindings are pushed down in chunks, with one source call per chunk,
+    // so a failing source would produce one empty solution per chunk instead of exactly one.
+    if (sources[0]!.context?.get(KeysQueryOperation.silent)) {
+      return failTest(`Actor ${this.name} can not bind on the target of a SERVICE SILENT clause`);
     }
 
     // Reject if the source can not handle bindings

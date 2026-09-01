@@ -1,7 +1,7 @@
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper, IActionContext } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
@@ -37,6 +37,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
     let actor: ActorRdfJoinMultiBindSource;
     let logSpy: jest.SpyInstance;
     let source1: IQuerySourceWrapper;
+    let sourceSilent: IQuerySourceWrapper;
     let source2: IQuerySourceWrapper;
     let source3TriplePattern: IQuerySourceWrapper;
     let source4Context: IQuerySourceWrapper;
@@ -82,6 +83,10 @@ describe('ActorRdfJoinMultiBindSource', () => {
             });
           }),
         },
+      };
+      sourceSilent = <IQuerySourceWrapper> <any> {
+        source: source1.source,
+        context: new ActionContext({ [KeysQueryOperation.silent.name]: true }),
       };
       source2 = <IQuerySourceWrapper> <any> {
         source: {
@@ -605,6 +610,63 @@ describe('ActorRdfJoinMultiBindSource', () => {
             ],
           },
         )).resolves.toFailTest('Actor actor can not bind on remaining operations with non-equal source annotation');
+      });
+
+      it('should not test on the target of a SERVICE SILENT clause', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{},
+                operation: assignOperationSource(AF.createNop(), sourceSilent),
+              },
+              {
+                output: <any>{},
+                operation: AF.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: assignOperationSource(AF.createNop(), sourceSilent),
+              },
+            ],
+            context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                pageSize: 100,
+                requestTime: 30,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toFailTest('Actor actor can not bind on the target of a SERVICE SILENT clause');
       });
 
       it('should reject when remaining entries do not accept the operation', async() => {
