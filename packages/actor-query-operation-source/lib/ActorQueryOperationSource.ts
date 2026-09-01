@@ -5,6 +5,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
 import type {
   IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
   IQueryOperationResult,
   IQuerySourceWrapper,
 } from '@comunica/types';
@@ -39,18 +40,30 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     // Log to physical plan
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context
       .get(KeysInitQuery.physicalQueryPlanLogger);
+    let planNode: IPhysicalQueryPlanNode | undefined;
     if (physicalQueryPlanLogger) {
-      physicalQueryPlanLogger.logOperation(
-        action.operation.type,
-        undefined,
-        action.operation,
-        action.context.get(KeysInitQuery.physicalQueryPlanNode),
-        this.name,
-        {},
-      );
-      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
+      planNode = physicalQueryPlanLogger.logOperation({
+        logicalOperator: action.operation.type,
+        parentNode: action.context.get(KeysInitQuery.physicalQueryPlanNode),
+        actor: this.name,
+        operation: action.operation,
+      });
+      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, planNode);
     }
 
+    const output = await this.runDelegated(action);
+
+    // Allow consumers of this output to find the node that produced it
+    planNode?.setOutput(output);
+
+    return output;
+  }
+
+  /**
+   * Delegate the operation of the given action to its source.
+   * @param action A query operation action with a source annotation.
+   */
+  protected async runDelegated(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     const sourceWrapper: IQuerySourceWrapper = getOperationSource(action.operation)!;
     const mergedContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
 

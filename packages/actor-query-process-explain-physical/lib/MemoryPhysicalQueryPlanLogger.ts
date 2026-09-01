@@ -1,90 +1,120 @@
-import type { IPhysicalQueryPlanLogger, IPlanNode } from '@comunica/types';
+import type { ILogOperationArgs, IPhysicalQueryPlanLogger, IPhysicalQueryPlanNode } from '@comunica/types';
 import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 
 /**
+ * A single node within a physical query plan that is held in memory.
+ *
+ * Nodes are created by {@link MemoryPhysicalQueryPlanLogger#logOperation} and are the only way
+ * to refer to a plan node. Because a node is created per operation execution, and never derived
+ * from an object that the engine also uses for something else, two executions can never collide.
+ */
+export class MemoryPlanNode implements IPhysicalQueryPlanNode {
+  public readonly logger: MemoryPhysicalQueryPlanLogger;
+  public readonly actor: string;
+  public readonly logicalOperator: string;
+  public readonly physicalOperator: string | undefined;
+  public readonly operation: any;
+  public readonly children: MemoryPlanNode[] = [];
+  public parent: MemoryPlanNode | undefined;
+  public metadata: any;
+  /**
+   * If this node was adopted as an input by its parent, rather than being executed within it.
+   */
+  public isInput = false;
+
+  public constructor(logger: MemoryPhysicalQueryPlanLogger, args: ILogOperationArgs) {
+    this.logger = logger;
+    this.actor = args.actor;
+    this.logicalOperator = args.logicalOperator;
+    this.physicalOperator = args.physicalOperator;
+    this.operation = args.operation;
+    this.metadata = args.metadata ?? {};
+  }
+
+  public appendMetadata(metadata: any): void {
+    this.metadata = {
+      ...this.metadata,
+      ...metadata,
+    };
+  }
+
+  public adoptInput(node: IPhysicalQueryPlanNode): void {
+    const child = <MemoryPlanNode> node;
+    child.isInput = true;
+    if (child.parent === this) {
+      return;
+    }
+    child.detach();
+    child.attachTo(this);
+  }
+
+  /**
+   * Attach this node to the given parent.
+   * @param parent The parent to attach to.
+   */
+  public attachTo(parent: MemoryPlanNode): void {
+    this.parent = parent;
+    parent.children.push(this);
+  }
+
+  /**
+   * Detach this node from its parent, if it has one.
+   */
+  public detach(): void {
+    if (this.parent) {
+      this.parent.children.splice(this.parent.children.indexOf(this), 1);
+      this.parent = undefined;
+    }
+  }
+
+  public setOutput(output: unknown): void {
+    this.logger.registerOutput(output, this);
+  }
+}
+
+/**
  * A physical query plan logger that stores everything in memory.
  */
 export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
-  private readonly planNodes: Map<any, IPlanNode>;
-  private rootNode: IPlanNode | undefined;
+  private readonly nodesByOutput: WeakMap<any, MemoryPlanNode>;
+  private rootNode: MemoryPlanNode | undefined;
 
   public constructor() {
-    this.planNodes = new Map();
+    this.nodesByOutput = new WeakMap();
   }
 
-  public logOperation(
-    logicalOperator: string,
-    physicalOperator: string | undefined,
-    node: any,
-    parentNode: any,
-    actor: string,
-    metadata: any,
-  ): void {
-    if (this.planNodes.has(node)) {
-      throw new Error(`Detected duplicate node in the physical query plan`);
-    }
+  public logOperation(args: ILogOperationArgs): IPhysicalQueryPlanNode {
+    const planNode = new MemoryPlanNode(this, args);
 
-    const planNode: IPlanNode = {
-      actor,
-      logicalOperator,
-      physicalOperator,
-      rawNode: node,
-      children: [],
-      metadata,
-    };
-    this.planNodes.set(node, planNode);
-
-    if (this.rootNode) {
-      if (!parentNode) {
-        throw new Error(`Detected more than one parent-less node`);
-      }
-      const planParentNode = this.planNodes.get(parentNode);
-      if (!planParentNode) {
-        throw new Error(`Could not find parent node`);
-      }
-      planParentNode.children.push(planNode);
-    } else {
-      if (parentNode) {
+    if (args.parentNode) {
+      if (!this.rootNode) {
         throw new Error(`No root node has been set yet, while a parent is being referenced`);
+      }
+      planNode.attachTo(<MemoryPlanNode> args.parentNode);
+    } else {
+      if (this.rootNode) {
+        throw new Error(`Detected more than one parent-less node`);
       }
       this.rootNode = planNode;
     }
+
+    return planNode;
   }
 
-  public stashChildren(node: any, filter?: (planNodeFilter: IPlanNode) => boolean): void {
-    const planNode = this.planNodes.get(node);
-    if (!planNode) {
-      throw new Error(`Could not find plan node`);
-    }
-    planNode.children = filter ? planNode.children.filter(filter) : [];
+  public getNodeForOutput(output: unknown): IPhysicalQueryPlanNode | undefined {
+    return typeof output === 'object' && output !== null ? this.nodesByOutput.get(output) : undefined;
   }
 
-  public unstashChild(
-    node: any,
-    parentNode: any,
-  ): void {
-    const planNode = this.planNodes.get(node);
-    if (planNode) {
-      const planParentNode = this.planNodes.get(parentNode);
-      if (!planParentNode) {
-        throw new Error(`Could not find plan parent node`);
-      }
-      planParentNode.children.push(planNode);
-    }
-  }
-
-  public appendMetadata(
-    node: any,
-    metadata: any,
-  ): void {
-    const planNode = this.planNodes.get(node);
-    if (planNode) {
-      planNode.metadata = {
-        ...planNode.metadata,
-        ...metadata,
-      };
+  /**
+   * Associate a query operation output with the given node.
+   * @param output A query operation output.
+   * @param node The node that produced the output.
+   */
+  public registerOutput(output: unknown, node: MemoryPlanNode): void {
+    if (typeof output === 'object' && output !== null) {
+      this.nodesByOutput.set(output, node);
     }
   }
 
@@ -92,23 +122,28 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     return this.rootNode ? this.planNodeToJson(this.rootNode) : {};
   }
 
-  private planNodeToJson(node: IPlanNode): IPlanNodeJson {
+  private planNodeToJson(node: MemoryPlanNode): IPlanNodeJson {
     const data: IPlanNodeJson = {
       logical: node.logicalOperator,
       physical: node.physicalOperator,
-      ...this.getLogicalMetadata(node.rawNode),
+      ...this.getLogicalMetadata(node.operation),
       ...this.compactMetadata(node.metadata),
     };
 
-    if (node.children.length > 0) {
-      data.children = node.children.map(child => this.planNodeToJson(child));
-    }
+    // Inputs are adopted from elsewhere, sub-operations are executed within this node.
+    // Only the latter are ever summarized, so that an input is never hidden behind a summary.
+    const inputs = node.children.filter(child => child.isInput);
+    const subOperations = node.children.filter(child => !child.isInput);
 
-    // Special case: compact children for bind joins.
-    if (data.physical === 'bind' && data.children) {
+    // Special case: compact the repeated sub-operations of bind joins.
+    if (node.physicalOperator === 'bind' && subOperations.length > 0) {
+      if (inputs.length > 0) {
+        data.children = inputs.map(child => this.planNodeToJson(child));
+      }
+
       // Group children by query plan format
       const childrenGrouped: Record<string, IPlanNodeJson[]> = {};
-      for (const child of data.children) {
+      for (const child of subOperations.map(subOperation => this.planNodeToJson(subOperation))) {
         const lastSubChild = child.children?.at(-1) ?? child;
         const key = this.getPlanHash(lastSubChild).join(',');
         if (!childrenGrouped[key]) {
@@ -126,9 +161,9 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
         });
       }
 
-      // Replace children with compacted representation
       data.childrenCompact = childrenCompact;
-      delete data.children;
+    } else if (node.children.length > 0) {
+      data.children = node.children.map(child => this.planNodeToJson(child));
     }
 
     return data;
@@ -162,7 +197,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   private getLogicalMetadata(rawNode: any): IPlanNodeJsonLogicalMetadata {
     const data: IPlanNodeJsonLogicalMetadata = {};
 
-    if ('type' in rawNode) {
+    if (rawNode && 'type' in rawNode) {
       const operation: Algebra.Operation = rawNode;
 
       if (operation.metadata?.scopedSource) {

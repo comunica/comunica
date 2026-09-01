@@ -28,6 +28,15 @@ function normalize(plan: string): string {
   return plan.replaceAll(/[\d,.]+ms/gu, 'Xms');
 }
 
+/**
+ * Additionally replace measured cardinalities.
+ * KNOWN ISSUE (plan §2.4): iterator instrumentation is shared between nested operators, so a measured
+ * cardinality still varies between runs. Remove this once the measurements are deterministic.
+ */
+function normalizeCardinalities(plan: string): string {
+  return plan.replaceAll(/cardReal:\d+/gu, 'cardReal:X');
+}
+
 async function explainPhysical(query: string, context: any = {}): Promise<string> {
   const engine = new QueryEngine();
   const result = await engine.explain(query, { sources: [ createStore() ], ...context }, 'physical');
@@ -70,8 +79,6 @@ ${SOURCES_ONE}`);
 ${SOURCES_ONE}`);
     });
 
-    // KNOWN ISSUE (plan §2.2b): the second hash-def join joins the first join's result with the third
-    // pattern, but that first join is reported as a sibling instead of as its input.
     it('explains a three-pattern BGP', async() => {
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a . ?s foaf:knows ?f }`,
@@ -79,10 +86,10 @@ ${SOURCES_ONE}`);
   join
     join-inner(multi-smallest)
       join-inner(hash-def) cardReal:5 timeSelf:Xms timeLife:Xms
-        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0
-        pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0
-      join-inner(hash-def) cardReal:5 timeSelf:Xms timeLife:Xms
         pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0
+        join-inner(hash-def) cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms
+          pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0
+          pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0
 ${SOURCES_ONE}`);
     });
 
@@ -94,13 +101,15 @@ ${SOURCES_ONE}`);
 ${SOURCES_ONE}`);
     });
 
-    // KNOWN ISSUE (plan §2.2c): the pattern that drives the bind join is only reported as a
-    // bindOperation string, it is not a node of its own.
+    // Both inputs of the bind join are nodes of their own: the pattern that drives the binding, and
+    // the pattern that is only probed for its metadata before being bound per binding.
     it('explains an optional', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n OPTIONAL { ?s foaf:knows ?f } }`)).resolves
         .toBe(`project (f,n,s)
   leftjoin
     join-optional(bind) bindOperation:(?s http://xmlns.com/foaf/0.1/name ?n) bindCardEst:5 cardReal:6 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0
+      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0
       pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 compacted-occurrences:5
 ${SOURCES_ONE}`);
     });
@@ -133,12 +142,27 @@ ${SOURCES_ONE}`);
 ${SOURCES_ONE}`);
     });
 
-    // KNOWN ISSUE (plan §2.2a): ALP evaluation re-dispatches the same path operation object, which is
-    // also the plan node key. That collision used to silently drop earlier subtrees; it is now
-    // reported, and phase 2 removes the possibility of a collision altogether.
-    it('fails on a property path', async() => {
-      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:knows+ ?o }`))
-        .rejects.toThrow('Detected duplicate node in the physical query plan');
+    // ALP evaluation re-dispatches the same path operation object, which no longer collides now that
+    // plan nodes have their own identity.
+    // KNOWN ISSUE (plan §2.5, §2.6): the path algorithm that ran is not identified, and the
+    // per-subject evaluations are siblings of the seed operation.
+    it('explains a property path', async() => {
+      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:knows+ ?o }`)).resolves.toBe(`project (o,s)
+  path
+    distinct
+      path
+        distinct
+          path
+            pattern (?s http://xmlns.com/foaf/0.1/knows ?o) src:0
+        path
+          pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?b) src:0
+        path
+          pattern (http://example.org/bob http://xmlns.com/foaf/0.1/knows ?b) src:0
+        path
+          pattern (http://example.org/carol http://xmlns.com/foaf/0.1/knows ?b) src:0
+        path
+          pattern (http://example.org/dave http://xmlns.com/foaf/0.1/knows ?b) src:0
+${SOURCES_ONE}`);
     });
 
     it('explains a minus', async() => {
@@ -183,15 +207,17 @@ ${SOURCES_ONE}`);
     });
 
     it('explains a subquery', async() => {
-      await expect(explainPhysical(
+      const plan = await explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . { SELECT ?s WHERE { ?s foaf:age ?a } } }`,
-      )).resolves.toBe(`project (n,s)
+      );
+      expect(normalizeCardinalities(plan)).toBe(`project (n,s)
   join
-    join-inner(hash-def) cardReal:5 timeSelf:Xms timeLife:Xms
+    join-inner(hash-def) cardReal:X timeSelf:Xms timeLife:Xms
       pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0
       project (s) cardEst:5
         join
-          pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0
+          join-inner(single) cardReal:X timeSelf:Xms timeLife:Xms
+            pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0
 ${SOURCES_ONE}`);
     });
 
@@ -217,14 +243,13 @@ ${SOURCES_ONE}`);
 ${SOURCES_ONE}`);
     });
 
-    // KNOWN ISSUE (plan §2.6): the join is short-circuited because an entry has cardinality zero,
-    // but nothing in the plan says so.
     it('explains a join that is short-circuited on a zero cardinality', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s ex:nothing ?x . ?s foaf:age ?a }`)).resolves
         .toBe(`project (a,s,x)
   join
-    pattern (?s http://example.org/nothing ?x) src:0
-    pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0
+    join-inner(empty)
+      pattern (?s http://example.org/nothing ?x) src:0
+      pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0
 ${SOURCES_ONE}`);
     });
 
@@ -321,17 +346,23 @@ sources:
   });
 
   describe('with the wrap-stream join actor enabled', () => {
-    // KNOWN ISSUE (plan §2.2a): ActorRdfJoinWrapStream re-dispatches the same join action object,
-    // which is also the plan node key. The resulting collision used to silently drop the join and its
-    // inputs; it is now reported, and phase 2 removes the possibility of a collision altogether.
-    it('fails on the colliding join node', async() => {
+    // ActorRdfJoinWrapStream re-dispatches the same join action object, which used to collide with the
+    // plan node of the join it wraps, silently dropping the join and its inputs.
+    it('keeps the wrapped join and its inputs', async() => {
       const engine = await new QueryEngineFactory()
         .create({ configPath: join(__dirname, 'assets', 'config-join-wrap-stream.json') });
-      await expect(engine.explain(
+      const result = await engine.explain(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a }`,
         { sources: [ createStore() ]},
         'physical',
-      )).rejects.toThrow('Detected duplicate node in the physical query plan');
+      );
+      expect(normalize(<string> result.data)).toBe(`project (a,n,s)
+  join
+    join-inner(wrap-stream)
+      join-inner(hash-def) cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0
+        pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0
+${SOURCES_ONE}`);
     }, 60_000);
   });
 

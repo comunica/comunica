@@ -34,7 +34,6 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       physicalName: 'bind',
       limitEntries: 2,
       canHandleUndefs: true,
-      isLeaf: false,
       requiresVariableOverlap: true,
       canHandleOperationRequired: true,
     });

@@ -3,58 +3,28 @@
  */
 export interface IPhysicalQueryPlanLogger {
   /**
-   * Log an operation.
+   * Log an operation, and obtain a handle to the plan node that was created for it.
    *
-   * Important here is that the `node` and `parentNode` can be of any type,
-   * as long as they properly reference each other in subsequent calls.
-   * These node references can be used to build up a hierarchy.
+   * Every call creates a distinct node, so an operation that is executed more than once
+   * results in more than one node. Hierarchies are built by passing the handle of an
+   * earlier call as `parentNode`. Exactly one node may be logged without a parent.
    *
-   * @param logicalOperator The current logical query operator.
-   * @param physicalOperator The current physical query operator.
-   *                         This may be omitted if no physical operator applies.
-   * @param node The current operation node.
-   * @param parentNode The parent operation node.
-   * @param actor The current actor name.
-   * @param metadata Metadata to include together in the physical query plan output for this node.
+   * @param args The operation to log.
+   * @return A handle to the created node.
    */
-  logOperation: (
-    logicalOperator: string,
-    physicalOperator: string | undefined,
-    node: any,
-    parentNode: any,
-    actor: string,
-    metadata: any,
-  ) => void;
+  logOperation: (args: ILogOperationArgs) => IPhysicalQueryPlanNode;
 
   /**
-   * Remove all matching children from the given node,
-   * @param node The node to remove children from.
-   * @param filter The filter to keep children by. If undefined, all children will be removed.
+   * Obtain the node that produced the given query operation output.
+   *
+   * Nodes are associated with an output via {@link IPhysicalQueryPlanNode#setOutput},
+   * which allows operations that consume an output to find the node that produced it,
+   * without having to pass plan nodes around themselves.
+   *
+   * @param output A query operation output.
+   * @return The node that produced the output, or undefined if the output is unknown.
    */
-  stashChildren: (
-    node: any,
-    filter?: (planNodeFilter: IPlanNode) => boolean,
-  ) => void;
-
-  /**
-   * Add the given child to the given parent node.
-   * @param node A node to add to the parent.
-   * @param parentNode The parent to add to.
-   */
-  unstashChild: (
-    node: any,
-    parentNode: any,
-  ) => void;
-
-  /**
-   * Append the given metadata to the given node.
-   * @param node The node to add metadata to.
-   * @param metadata The metadata to add.
-   */
-  appendMetadata: (
-    node: any,
-    metadata: any,
-  ) => void;
+  getNodeForOutput: (output: unknown) => IPhysicalQueryPlanNode | undefined;
 
   /**
    * Serialize the collected query plan to JSON.
@@ -62,11 +32,64 @@ export interface IPhysicalQueryPlanLogger {
   toJson: () => any;
 }
 
-export interface IPlanNode {
-  actor: string;
+export interface ILogOperationArgs {
+  /**
+   * The current logical query operator.
+   */
   logicalOperator: string;
+  /**
+   * The current physical query operator.
+   * This may be omitted if no physical operator applies.
+   */
   physicalOperator?: string;
-  rawNode: any;
-  children: IPlanNode[];
-  metadata: any;
+  /**
+   * The node this operation is executed within, or undefined for the root of the plan.
+   */
+  parentNode?: IPhysicalQueryPlanNode;
+  /**
+   * The current actor name.
+   */
+  actor: string;
+  /**
+   * Metadata to include together in the physical query plan output for this node.
+   */
+  metadata?: any;
+  /**
+   * The algebra operation this node was created for, if any.
+   * This is used to derive logical details such as the triple pattern or the projected variables.
+   */
+  operation?: any;
+}
+
+/**
+ * A handle to a single node within a physical query plan.
+ */
+export interface IPhysicalQueryPlanNode {
+  /**
+   * Append the given metadata to this node.
+   * @param metadata The metadata to add.
+   */
+  appendMetadata: (metadata: any) => void;
+
+  /**
+   * Adopt the given node as an input of this node, moving it and its subtree out of its current parent.
+   *
+   * This is needed by operations that only learn which node their inputs belong under after those
+   * inputs have already been executed, such as join actors that are selected after their entries
+   * have been evaluated.
+   *
+   * Inputs are kept apart from the sub-operations that this node executes itself, so that repeated
+   * sub-operations, such as those of a bind join, can be summarized without hiding the inputs.
+   *
+   * @param node The node to adopt.
+   */
+  adoptInput: (node: IPhysicalQueryPlanNode) => void;
+
+  /**
+   * Associate the given query operation output with this node,
+   * so that consumers of the output can find this node via
+   * {@link IPhysicalQueryPlanLogger#getNodeForOutput}.
+   * @param output A query operation output.
+   */
+  setOutput: (output: unknown) => void;
 }

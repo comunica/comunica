@@ -3,7 +3,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator, TestResult } from '@comunica/core';
 import { passTestWithSideData, ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IPhysicalQueryPlanLogger, IPlanNode, MetadataVariable } from '@comunica/types';
+import type { IPhysicalQueryPlanLogger, IPhysicalQueryPlanNode, MetadataVariable } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { BufferedIterator, MultiTransformIterator, SingletonIterator } from 'asynciterator';
@@ -1148,13 +1148,21 @@ IActorRdfJoinSelectivityOutput
     });
 
     it('invokes the physicalQueryPlanLogger', async() => {
-      const parentNode = '';
-      const logger: IPhysicalQueryPlanLogger = {
-        logOperation: jest.fn(),
-        toJson: jest.fn(),
-        stashChildren: jest.fn((node, filter) => filter ? filter(<IPlanNode> { logicalOperator: 'abc' }) : undefined),
-        unstashChild: jest.fn(),
+      const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
+      const entryNodes = action.entries.map(() => (<IPhysicalQueryPlanNode> {
         appendMetadata: jest.fn(),
+        adoptInput: jest.fn(),
+        setOutput: jest.fn(),
+      }));
+      const planNode: IPhysicalQueryPlanNode = {
+        appendMetadata: jest.fn(),
+        adoptInput: jest.fn(),
+        setOutput: jest.fn(),
+      };
+      const logger: IPhysicalQueryPlanLogger = {
+        logOperation: jest.fn().mockReturnValue(planNode),
+        getNodeForOutput: jest.fn(output => entryNodes[action.entries.findIndex(e => e.output === output)]),
+        toJson: jest.fn(),
       };
       action.context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
@@ -1180,13 +1188,12 @@ IActorRdfJoinSelectivityOutput
       await result.bindingsStream.toArray();
       await new Promise(setImmediate);
 
-      expect(logger.logOperation).toHaveBeenCalledWith(
-        'join-inner',
-        'PHYSICAL',
-        action,
+      expect(logger.logOperation).toHaveBeenCalledWith({
+        logicalOperator: 'join-inner',
+        physicalOperator: 'PHYSICAL',
         parentNode,
-        'name',
-        {
+        actor: 'name',
+        metadata: {
           meta: true,
           cardinalities: [
             { type: 'estimate', value: 10 },
@@ -1199,14 +1206,20 @@ IActorRdfJoinSelectivityOutput
             requestTime: 10,
           },
         },
-      );
-      expect(logger.appendMetadata).toHaveBeenCalledWith({}, {
+      });
+
+      // The entries are adopted as inputs of the join
+      expect(planNode.adoptInput).toHaveBeenCalledWith(entryNodes[0]);
+      expect(planNode.adoptInput).toHaveBeenCalledWith(entryNodes[1]);
+      expect(planNode.setOutput).toHaveBeenCalledWith(result);
+
+      expect(entryNodes[0].appendMetadata).toHaveBeenCalledWith({
         cardinality: { type: 'estimate', value: 10 },
       });
-      expect(logger.appendMetadata).toHaveBeenCalledWith({}, {
+      expect(entryNodes[1].appendMetadata).toHaveBeenCalledWith({
         cardinality: { type: 'estimate', value: 5 },
       });
-      expect(logger.appendMetadata).toHaveBeenCalledWith(expect.anything(), {
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({
         cardinalityReal: 1,
         timeLife: expect.anything(),
         timeSelf: expect.anything(),
@@ -1215,26 +1228,27 @@ IActorRdfJoinSelectivityOutput
         ...action,
         context: new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
-          [KeysInitQuery.physicalQueryPlanNode.name]: action,
+          [KeysInitQuery.physicalQueryPlanNode.name]: planNode,
         }),
       }, sideData);
     });
 
-    it('invokes the physicalQueryPlanLogger for a non-leaf operation', async() => {
-      const parentNode = '';
-      const logger: IPhysicalQueryPlanLogger = {
-        logOperation: jest.fn(),
-        toJson: jest.fn(),
-        stashChildren: jest.fn((node, filter) => filter ? filter(<IPlanNode> { logicalOperator: 'abc' }) : undefined),
-        unstashChild: jest.fn(),
+    it('invokes the physicalQueryPlanLogger for entries without a node', async() => {
+      const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
+      const planNode: IPhysicalQueryPlanNode = {
         appendMetadata: jest.fn(),
+        adoptInput: jest.fn(),
+        setOutput: jest.fn(),
+      };
+      const logger: IPhysicalQueryPlanLogger = {
+        logOperation: jest.fn().mockReturnValue(planNode),
+        getNodeForOutput: jest.fn(),
+        toJson: jest.fn(),
       };
       action.context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
         [KeysInitQuery.physicalQueryPlanNode.name]: parentNode,
       });
-      jest.spyOn(instance, 'getOutput');
-      (<any> instance).isLeaf = false;
 
       const sideData: IActorRdfJoinTestSideData = {
         metadatas: [
@@ -1254,48 +1268,20 @@ IActorRdfJoinSelectivityOutput
       await result.bindingsStream.toArray();
       await new Promise(setImmediate);
 
-      expect(logger.logOperation).toHaveBeenCalledWith(
-        'join-inner',
-        'PHYSICAL',
-        action,
-        parentNode,
-        'name',
-        {
-          meta: true,
-          cardinalities: [
-            { type: 'estimate', value: 10 },
-            { type: 'estimate', value: 5 },
-          ],
-          joinCoefficients: {
-            iterations: 5,
-            persistedItems: 2,
-            blockingItems: 3,
-            requestTime: 10,
-          },
-        },
-      );
-      expect(logger.appendMetadata).toHaveBeenCalledWith(expect.anything(), {
-        cardinalityReal: 1,
-        timeLife: expect.anything(),
-        timeSelf: expect.anything(),
-      });
-      expect(instance.getOutput).toHaveBeenCalledWith({
-        ...action,
-        context: new ActionContext({
-          [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
-          [KeysInitQuery.physicalQueryPlanNode.name]: action,
-        }),
-      }, sideData);
+      expect(planNode.adoptInput).not.toHaveBeenCalled();
     });
 
     it('invokes the physicalQueryPlanLogger without side data', async() => {
-      const parentNode = '';
-      const logger: IPhysicalQueryPlanLogger = {
-        logOperation: jest.fn(),
-        toJson: jest.fn(),
-        stashChildren: jest.fn(),
-        unstashChild: jest.fn(),
+      const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
+      const planNode: IPhysicalQueryPlanNode = {
         appendMetadata: jest.fn(),
+        adoptInput: jest.fn(),
+        setOutput: jest.fn(),
+      };
+      const logger: IPhysicalQueryPlanLogger = {
+        logOperation: jest.fn().mockReturnValue(planNode),
+        getNodeForOutput: jest.fn(),
+        toJson: jest.fn(),
       };
       action.context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
@@ -1306,14 +1292,9 @@ IActorRdfJoinSelectivityOutput
       await result.bindingsStream.toArray();
       await new Promise(setImmediate);
 
-      expect(logger.logOperation).toHaveBeenCalledWith(
-        'join-inner',
-        'PHYSICAL',
-        action,
-        parentNode,
-        'name',
-        expect.objectContaining({ cardinalities: []}),
-      );
+      expect(logger.logOperation).toHaveBeenCalledWith(expect.objectContaining({
+        metadata: expect.objectContaining({ cardinalities: []}),
+      }));
     });
   });
 });

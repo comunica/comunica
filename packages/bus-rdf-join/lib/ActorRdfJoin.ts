@@ -10,6 +10,7 @@ import type {
   IQueryOperationResultBindings,
   MetadataBindings,
   IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
   Bindings,
   IActionContext,
   IJoinEntry,
@@ -42,7 +43,8 @@ TS
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 
   /**
-   * If this actor will be logged in the debugger and physical query plan logger
+   * If this actor will be logged in the debugger.
+   * The physical query plan always includes every join actor that runs.
    */
   public includeInLogs = true;
   public readonly logicalType: LogicalJoinType;
@@ -62,11 +64,6 @@ TS
    * If this actor can handle undefs overlapping variable bindings.
    */
   protected readonly canHandleUndefs: boolean;
-  /**
-   * If this join operator will not invoke any other join or query operations below,
-   * and can therefore be considered a leaf of the join plan.
-   */
-  protected readonly isLeaf: boolean;
   /**
    * If this join operator must only be used for join entries with (at least partially) common variables.
    */
@@ -93,7 +90,6 @@ TS
     this.limitEntries = options.limitEntries ?? Number.POSITIVE_INFINITY;
     this.limitEntriesMin = options.limitEntriesMin ?? false;
     this.canHandleUndefs = options.canHandleUndefs ?? false;
-    this.isLeaf = options.isLeaf ?? true;
     this.requiresVariableOverlap = options.requiresVariableOverlap ?? false;
     this.canHandleOperationRequired = options.canHandleOperationRequired ?? false;
   }
@@ -401,44 +397,44 @@ TS
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
   ): Promise<IQueryOperationResultBindings> {
-    // Prepare logging to physical plan
-    // This must be called before getOutput, because we need to override the plan node in the context
-    let parentPhysicalQueryPlanNode;
-    if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
-      parentPhysicalQueryPlanNode = action.context.get(KeysInitQuery.physicalQueryPlanNode);
-      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action);
-    }
-
-    // Log to physical plan
+    // Log to physical plan.
+    // This must happen before getOutput, because sub-operations need to see this node as their parent.
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context.get(KeysInitQuery
       .physicalQueryPlanLogger);
+    let planNode: IPhysicalQueryPlanNode | undefined;
     let planMetadata: any;
-    if (this.includeInLogs && physicalQueryPlanLogger) {
+    if (physicalQueryPlanLogger) {
       planMetadata = {};
-      // Stash non-join children, as they will be unstashed later in sub-joins.
-      physicalQueryPlanLogger.stashChildren(
-        parentPhysicalQueryPlanNode,
-        node => node.logicalOperator.startsWith('join'),
-      );
-      physicalQueryPlanLogger.logOperation(
-        `join-${this.logicalType}`,
-        this.physicalName,
-        action,
-        parentPhysicalQueryPlanNode,
-        this.name,
-        planMetadata,
-      );
+      planNode = physicalQueryPlanLogger.logOperation({
+        logicalOperator: `join-${this.logicalType}`,
+        physicalOperator: this.physicalName,
+        parentNode: action.context.get(KeysInitQuery.physicalQueryPlanNode),
+        actor: this.name,
+        metadata: planMetadata,
+      });
+      // The entries of this join were executed before this actor was selected,
+      // so their nodes are still attached to whatever ran them. Move them under this join.
+      for (const entry of action.entries) {
+        const entryNode = physicalQueryPlanLogger.getNodeForOutput(entry.output);
+        if (entryNode) {
+          planNode.adoptInput(entryNode);
+        }
+      }
+      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, planNode);
     }
 
     // Get action output
     const { result, physicalPlanMetadata } = await this.getOutput(action, sideData);
 
     // Fill in the physical plan metadata after determining action output
-    if (planMetadata) {
+    if (planNode) {
+      // Allow consumers of this output, such as an enclosing join, to find this node
+      planNode.setOutput(result);
+
       // eslint-disable-next-line ts/no-floating-promises
       instrumentIterator(result.bindingsStream)
         .then((counters) => {
-          physicalQueryPlanLogger!.appendMetadata(action, {
+          planNode.appendMetadata({
             cardinalityReal: counters.count,
             timeSelf: counters.timeSelf,
             timeLife: counters.timeLife,
@@ -452,16 +448,8 @@ TS
       planMetadata.cardinalities = cardinalities;
       planMetadata.joinCoefficients = (await this.getJoinCoefficients(action, sideData)).getOrThrow();
 
-      // If this is a leaf operation, include join entries in plan metadata.
-      if (this.isLeaf) {
-        for (let i = 0; i < action.entries.length; i++) {
-          const entry = action.entries[i];
-          physicalQueryPlanLogger!.unstashChild(
-            entry.operation,
-            action,
-          );
-          physicalQueryPlanLogger!.appendMetadata(entry.operation, { cardinality: cardinalities[i] });
-        }
+      for (const [ i, entry ] of action.entries.entries()) {
+        physicalQueryPlanLogger!.getNodeForOutput(entry.output)?.appendMetadata({ cardinality: cardinalities[i] });
       }
     }
 
@@ -531,12 +519,6 @@ export interface IActorRdfJoinInternalOptions {
    * Defaults to false.
    */
   canHandleUndefs?: boolean;
-  /**
-   * If this join operator will not invoke any other join or query operations below,
-   * and can therefore be considered a leaf of the join plan.
-   * Defaults to true.
-   */
-  isLeaf?: boolean;
   /**
    * If this join operator must only be used for join entries with (at least partially) common variables.
    */

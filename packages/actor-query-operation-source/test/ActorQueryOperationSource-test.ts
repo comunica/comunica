@@ -8,6 +8,7 @@ import type {
   IQueryOperationResultVoid,
   IQuerySourceWrapper,
   IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
 } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
@@ -236,13 +237,16 @@ describe('ActorQueryOperationSource', () => {
       });
 
       it('should handle bindings operations and invokes the logger', async() => {
-        const parentNode = '';
-        const logger: IPhysicalQueryPlanLogger = {
-          logOperation: jest.fn(),
-          toJson: jest.fn(),
-          stashChildren: jest.fn(),
-          unstashChild: jest.fn(),
+        const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
+        const planNode: IPhysicalQueryPlanNode = {
           appendMetadata: jest.fn(),
+          adoptInput: jest.fn(),
+          setOutput: jest.fn(),
+        };
+        const logger: IPhysicalQueryPlanLogger = {
+          logOperation: jest.fn().mockReturnValue(planNode),
+          getNodeForOutput: jest.fn(),
+          toJson: jest.fn(),
         };
         ctx = new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
@@ -259,14 +263,13 @@ describe('ActorQueryOperationSource', () => {
         });
         await expect(result.bindingsStream).toEqualBindingsStream([]);
 
-        expect(logger.logOperation).toHaveBeenCalledWith(
-          'nop',
-          undefined,
-          opIn,
+        expect(logger.logOperation).toHaveBeenCalledWith({
+          logicalOperator: 'nop',
           parentNode,
-          'actor',
-          {},
-        );
+          actor: 'actor',
+          operation: opIn,
+        });
+        expect(planNode.setOutput).toHaveBeenCalledWith(result);
       });
     });
   });

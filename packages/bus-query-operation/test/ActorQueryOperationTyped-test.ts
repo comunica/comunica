@@ -1,6 +1,6 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus, passTest } from '@comunica/core';
-import type { IPhysicalQueryPlanLogger } from '@comunica/types';
+import type { IPhysicalQueryPlanLogger, IPhysicalQueryPlanNode } from '@comunica/types';
 import { ActorQueryOperationTyped, BusQueryOperation } from '..';
 import '@comunica/utils-jest';
 
@@ -79,13 +79,16 @@ describe('ActorQueryOperationTyped', () => {
     });
 
     it('should run and invoke the physicalQueryPlanLogger', async() => {
-      const parentNode = '';
-      const logger: IPhysicalQueryPlanLogger = {
-        logOperation: jest.fn(),
-        toJson: jest.fn(),
-        stashChildren: jest.fn(),
-        unstashChild: jest.fn(),
+      const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
+      const planNode: IPhysicalQueryPlanNode = {
         appendMetadata: jest.fn(),
+        adoptInput: jest.fn(),
+        setOutput: jest.fn(),
+      };
+      const logger: IPhysicalQueryPlanLogger = {
+        logOperation: jest.fn().mockReturnValue(planNode),
+        getNodeForOutput: jest.fn(),
+        toJson: jest.fn(),
       };
       const context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
@@ -95,19 +98,18 @@ describe('ActorQueryOperationTyped', () => {
 
       const operation = { type: 'op' };
       const action = { operation, context };
-      await actor.run(action);
+      const output = await actor.run(action);
 
-      expect(logger.logOperation).toHaveBeenCalledWith(
-        'op',
-        undefined,
-        operation,
+      expect(logger.logOperation).toHaveBeenCalledWith({
+        logicalOperator: 'op',
         parentNode,
-        'actor',
-        {},
-      );
+        actor: 'actor',
+        operation,
+      });
+      expect(planNode.setOutput).toHaveBeenCalledWith(output);
       expect(actor.runOperation).toHaveBeenCalledWith(operation, new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
-        [KeysInitQuery.physicalQueryPlanNode.name]: operation,
+        [KeysInitQuery.physicalQueryPlanNode.name]: planNode,
         [KeysQueryOperation.operation.name]: operation,
       }), undefined);
     });

@@ -41,7 +41,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       logicalType: 'inner',
       physicalName: 'bind',
       canHandleUndefs: true,
-      isLeaf: false,
     });
     this.bindOrder = args.bindOrder;
     this.selectivityModifier = args.selectivityModifier;
