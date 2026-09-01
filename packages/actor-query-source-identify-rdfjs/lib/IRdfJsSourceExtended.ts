@@ -78,8 +78,11 @@ export interface IRdfJsSourceExtended extends RDF.Source {
    * The stream produces arrays where each element corresponds to a term in the termNames array.
    *
    * This will only be used if `features.indexDistinctTerms` is true.
+   *
+   * @param termNames The term names to retrieve.
+   * @param filters Optional term names that are bound to specific terms, acting as filters.
    */
-  matchDistinctTerms?: (termNames: QuadTermName[]) => EventEmitter;
+  matchDistinctTerms?: (termNames: QuadTermName[], filters?: (RDF.Term | undefined)[]) => EventEmitter;
 
   /**
    * Returns the number of distinct combinations of the specified terms.

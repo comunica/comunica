@@ -6,9 +6,13 @@ import type {
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { UriTemplate } from 'uritemplate';
 import { parse as parseUriTemplate } from 'uritemplate';
+
+const HTTP_PROTOCOL = 'http://';
+const HTTPS_PROTOCOL = 'https://';
 
 /**
  * An RDF Metadata Extract Actor that extracts all Hydra controls from the metadata stream.
@@ -40,6 +44,94 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
       const linkTargets = links && links[pageUrl];
       return [ link, linkTargets && linkTargets.length > 0 ? [ linkTargets[0] ] : [] ];
     }));
+  }
+
+  /**
+   * Determine the URL prefix under which servers with an invalidly configured base URL
+   * expose the controls of the given page.
+   *
+   * Concretely, this is the origin of the page URL with the https protocol replaced by http,
+   * including the trailing slash, so that only URLs on the host of the page are matched.
+   * @param pageUrl The page URL in which the Hydra properties are defined.
+   * @return The invalid URL prefix, or undefined if the page URL is not an https URL with a path.
+   */
+  public getInvalidUrlPrefix(pageUrl: string): string | undefined {
+    if (!pageUrl.startsWith(HTTPS_PROTOCOL)) {
+      return;
+    }
+    const authorityEnd = pageUrl.indexOf('/', HTTPS_PROTOCOL.length);
+    if (authorityEnd < 0) {
+      return;
+    }
+    return HTTP_PROTOCOL + pageUrl.slice(HTTPS_PROTOCOL.length, authorityEnd + 1);
+  }
+
+  /**
+   * Correct all URLs within the given Hydra properties that are exposed under the http protocol,
+   * while the page they were retrieved from is hosted over https.
+   *
+   * Occasionally, TPF servers are hosted over https, while their base URL is configured as http.
+   * This causes all URLs in their metadata to be exposed under the http protocol,
+   * which makes the Hydra controls unusable, as they can not be linked to the current page anymore.
+   * Since this is a common problem, we detect it, correct the invalid URLs, and emit a warning.
+   *
+   * Only URLs on the host of the page are corrected, as the controls legitimately refer to http URLs elsewhere,
+   * such as the rdf:subject, rdf:predicate and rdf:object values of hydra:property.
+   * @param pageUrl The page URL in which the Hydra properties are defined.
+   * @param hydraProperties The collected Hydra properties.
+   * @param context The action context, in which a warning will be logged upon detecting an invalid protocol.
+   * @return The Hydra properties, with all invalidly exposed URLs corrected.
+   */
+  public correctProtocolMismatches(
+    pageUrl: string,
+    hydraProperties: Record<string, Record<string, string[]>>,
+    context: IActionContext,
+  ): Record<string, Record<string, string[]>> {
+    // Detect invalid URLs before correcting them,
+    // so that nothing has to be copied for the common case of valid metadata.
+    const invalidPrefix = this.getInvalidUrlPrefix(pageUrl);
+    if (!invalidPrefix || !this.hasInvalidUrl(hydraProperties, invalidPrefix)) {
+      return hydraProperties;
+    }
+
+    const correctUrl = (url: string): string => url.startsWith(invalidPrefix) ?
+      HTTPS_PROTOCOL + url.slice(HTTP_PROTOCOL.length) :
+      url;
+    const correctedHydraProperties: Record<string, Record<string, string[]>> = {};
+    for (const [ property, subjects ] of Object.entries(hydraProperties)) {
+      const correctedSubjects: Record<string, string[]> = correctedHydraProperties[property] = {};
+      for (const [ subject, objects ] of Object.entries(subjects)) {
+        const correctedSubject = correctUrl(subject);
+        // Merge with any existing entries, as the metadata may expose the same URL under both protocols
+        correctedSubjects[correctedSubject] = [
+          ...correctedSubjects[correctedSubject] ?? [],
+          ...objects.map(object => correctUrl(object)),
+        ];
+      }
+    }
+
+    this.logWarn(context, `Invalid metadata detected in ${pageUrl}: controls are exposed under the http protocol instead of https. These have been corrected, but the server should be reconfigured with a valid base URL.`);
+    return correctedHydraProperties;
+  }
+
+  /**
+   * Check if any URL within the given Hydra properties starts with the given prefix.
+   * @param hydraProperties The collected Hydra properties.
+   * @param invalidPrefix The URL prefix of invalidly exposed controls.
+   */
+  protected hasInvalidUrl(
+    hydraProperties: Record<string, Record<string, string[]>>,
+    invalidPrefix: string,
+  ): boolean {
+    for (const property in hydraProperties) {
+      const subjects = hydraProperties[property];
+      for (const subject in subjects) {
+        if (subject.startsWith(invalidPrefix) || subjects[subject].some(object => object.startsWith(invalidPrefix))) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
@@ -129,7 +221,11 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
     const metadata: IActorRdfMetadataExtractOutput['metadata'] = {};
-    const hydraProperties = await this.getHydraProperties(action.metadata);
+    const hydraProperties = this.correctProtocolMismatches(
+      action.url,
+      await this.getHydraProperties(action.metadata),
+      action.context,
+    );
     Object.assign(metadata, this.getLinks(action.url, hydraProperties));
     metadata.searchForms = this.getSearchForms(hydraProperties);
     return { metadata };

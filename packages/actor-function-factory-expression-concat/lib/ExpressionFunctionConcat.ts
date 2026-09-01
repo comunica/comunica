@@ -7,12 +7,12 @@ import type {
 } from '@comunica/utils-expression-evaluator';
 import {
   declare,
+  dirLangString,
   InvalidArgumentTypes,
   langString,
   SparqlOperator,
   string,
 } from '@comunica/utils-expression-evaluator';
-import { dirLangString } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-concat

@@ -18,7 +18,7 @@ export class TermFunctionInequality extends TermFunctionBase {
         .set([ 'term', 'term' ], expressionEvaluator =>
           ([ first, second ]) =>
             bool(!(<BooleanLiteral> this.equalityFunction
-              .applyOnTerms([ first, second ], expressionEvaluator)).typedValue))
+              .applyOnTerms([ first, second ], expressionEvaluator)).typedValue), false)
         .collect(),
     });
   }

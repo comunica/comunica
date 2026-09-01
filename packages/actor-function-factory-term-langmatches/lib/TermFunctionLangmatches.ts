@@ -26,6 +26,10 @@ export class TermFunctionLangmatches extends TermFunctionBase {
   // https://www.ietf.org/rfc/rfc4647.txt
   // https://www.w3.org/TR/sparql11-query/#func-langMatches
   private static langMatches(tag: string, range: string): boolean {
+    if (tag === '') {
+      return false;
+    }
+
     const langTags = tag.split('-');
     const rangeTags = range.split('-');
 
@@ -36,9 +40,11 @@ export class TermFunctionLangmatches extends TermFunctionBase {
 
     let lI = 1;
     let rI = 1;
+    let encounteredWildcard = false;
     while (rI < rangeTags.length) {
       if (TermFunctionLangmatches.isWildCard(rangeTags[rI])) {
         rI++;
+        encounteredWildcard = true;
         continue;
       }
       if (lI === langTags.length) {
@@ -48,6 +54,10 @@ export class TermFunctionLangmatches extends TermFunctionBase {
         lI++;
         rI++;
         continue;
+      }
+      // If there wasn't a match and there hasn't been a wildcard encounter, it's definitely false
+      if (!encounteredWildcard) {
+        return false;
       }
       if (langTags[lI].length === 1) {
         return false;

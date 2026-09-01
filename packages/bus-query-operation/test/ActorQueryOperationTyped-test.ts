@@ -1,7 +1,7 @@
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus, passTest } from '@comunica/core';
 import type { IPhysicalQueryPlanLogger } from '@comunica/types';
-import { ActorQueryOperationTyped } from '..';
+import { ActorQueryOperationTyped, BusQueryOperation } from '..';
 import '@comunica/utils-jest';
 
 describe('ActorQueryOperationTyped', () => {
@@ -27,6 +27,32 @@ describe('ActorQueryOperationTyped', () => {
       expect(() => {
         new (<any> ActorQueryOperationTyped)({ name: 'actor', bus }, null);
       }).toThrow(`A valid "operationName" argument must be provided.`);
+    });
+  });
+
+  describe('when subscribed to a BusQueryOperation', () => {
+    // Regression guard: the operation name must already be set on the actor by the time
+    // `Actor`'s constructor subscribes it to the bus. If it is only assigned after `super(...)`,
+    // every actor is indexed as unidentified, and every action gets published to every actor.
+    it('should only be published to for actions of its own operation type', async() => {
+      const busIndexed = new BusQueryOperation({ name: 'bus-indexed' });
+      const actorOp1 = new (<any> ActorQueryOperationTyped)({ name: 'actor-op1', bus: busIndexed }, 'op1');
+      const actorOp2 = new (<any> ActorQueryOperationTyped)({ name: 'actor-op2', bus: busIndexed }, 'op2');
+      actorOp1.testOperation = () => Promise.resolve(passTest({}));
+      actorOp2.testOperation = () => Promise.resolve(passTest({}));
+
+      const replies = busIndexed.publish(<any> { operation: { type: 'op1' }, context: new ActionContext() });
+      await Promise.all(replies.map(reply => reply.reply));
+
+      expect(replies.map(reply => reply.actor.name)).toEqual([ 'actor-op1' ]);
+    });
+
+    it('should expose its operation name to the bus index', () => {
+      const busIndexed = new BusQueryOperation({ name: 'bus-indexed' });
+      const actor = new (<any> ActorQueryOperationTyped)({ name: 'actor-op1', bus: busIndexed }, 'op1');
+      expect(actor.operationName).toBe('op1');
+      expect((<any> busIndexed).actorsIndex).toHaveProperty('op1', [ actor ]);
+      expect((<any> busIndexed).actorsIndex).not.toHaveProperty('_undefined_');
     });
   });
 

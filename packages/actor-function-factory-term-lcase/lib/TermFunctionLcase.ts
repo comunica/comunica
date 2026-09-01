@@ -1,12 +1,6 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
 
-import {
-  declare,
-  langString,
-  SparqlOperator,
-  string,
-} from '@comunica/utils-expression-evaluator';
-import { dirLangString } from '@comunica/utils-expression-evaluator/lib/functions/Helpers';
+import { declare, dirLangString, langString, SparqlOperator, string } from '@comunica/utils-expression-evaluator';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-lcase
