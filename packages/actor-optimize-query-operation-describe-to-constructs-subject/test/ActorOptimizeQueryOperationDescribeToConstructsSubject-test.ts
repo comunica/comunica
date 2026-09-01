@@ -35,6 +35,33 @@ describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
         .toFailTest(`Actor actor only supports describe operations, but got some-other-type`);
     });
 
+    it('should test on a describe within a dataset', async() => {
+      const op: any = { operation: AF.createFrom(<any> { type: 'describe' }, [ DF.namedNode('g') ], []) };
+      await expect(actor.test(op)).resolves.toPassTestVoid();
+    });
+
+    it('should run on a describe within a dataset', async() => {
+      const op: any = {
+        context: new ActionContext({ name: 'context', [KeysInitQuery.dataFactory.name]: DF }),
+        operation: AF.createFrom(<any> {
+          type: 'describe',
+          terms: [ DF.namedNode('a') ],
+          input: { type: 'bgp', patterns: []},
+        }, [ DF.namedNode('g') ], []),
+      };
+      const { operation: opOut } = await actor.run(op);
+      expect(opOut).toEqual(AF.createFrom(AF.createUnion([
+        AF.createConstruct(
+          AF.createBgp([
+            AF.createPattern(DF.namedNode('a'), DF.variable('__predicate'), DF.variable('__object')),
+          ]),
+          [
+            AF.createPattern(DF.namedNode('a'), DF.variable('__predicate'), DF.variable('__object')),
+          ],
+        ),
+      ]), [ DF.namedNode('g') ], []));
+    });
+
     it('should run without variable terms', async() => {
       const op: any = {
         context: new ActionContext({ name: 'context', [KeysInitQuery.dataFactory.name]: DF }),
