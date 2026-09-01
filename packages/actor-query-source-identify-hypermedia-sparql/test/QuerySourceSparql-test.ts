@@ -1374,6 +1374,152 @@ describe('QuerySourceSparql', () => {
       });
     });
 
+    describe('when queryAccepted is defined', () => {
+      let getSource: (queryAccepted: string[], httpMediator?: any) => QuerySourceSparql;
+      let operationIn: Algebra.Operation;
+      let expectedResult: RDF.Bindings[];
+
+      beforeEach(() => {
+        getSource = (queryAccepted: string[], httpMediator: any = mediatorHttp) => new QuerySourceSparql(
+          url,
+          url,
+          ctx,
+          httpMediator,
+          mediatorQuerySerialize,
+          'values',
+          DF,
+          AF,
+          BF,
+          false,
+          64,
+          10,
+          true,
+          true,
+          0,
+          false,
+
+          { queryAccepted },
+        );
+        operationIn = AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'));
+        expectedResult = [
+          BF.fromRecord({
+            p: DF.namedNode('p1'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p2'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p3'),
+          }),
+        ];
+      });
+
+      it('should perform an HTTP QUERY request when queryAccepted includes application/sparql-query', async() => {
+        source = getSource([ 'application/sparql-query' ]);
+
+        const stream = source.queryBindings(operationIn, ctx);
+        await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves.toBeDefined();
+        await expect(stream).toEqualBindingsStream(expectedResult);
+
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          context: ctx,
+          init: {
+            body: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }',
+            headers: expect.anything(),
+            method: 'QUERY',
+          },
+          input: url,
+        });
+      });
+
+      it('should perform an HTTP POST request when queryAccepted excludes application/sparql-query', async() => {
+        source = getSource([ 'application/graphql-query' ]);
+
+        const stream = source.queryBindings(operationIn, ctx);
+        await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves.toBeDefined();
+        await expect(stream).toEqualBindingsStream(expectedResult);
+
+        expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+          context: ctx,
+          init: {
+            body: new URLSearchParams({ query: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }' }),
+            headers: expect.anything(),
+            method: 'POST',
+          },
+          input: url,
+        });
+      });
+
+      it('should fall back to POST when the endpoint rejects an HTTP QUERY request', async() => {
+        const thisMediator: any = {
+          mediate: jest.fn((action: any) => {
+            if (action.init.method === 'QUERY') {
+              return {
+                headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+                body: Readable.from([ `empty body` ]),
+                ok: false,
+                status: 405,
+                statusText: 'Method Not Allowed',
+              };
+            }
+            return mediatorHttp.mediate(action);
+          }),
+        };
+        source = getSource([ 'application/sparql-query' ], thisMediator);
+
+        const stream = source.queryBindings(operationIn, ctx);
+        await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves.toBeDefined();
+        await expect(stream).toEqualBindingsStream(expectedResult);
+
+        expect(logger.warn).toHaveBeenCalledWith(`Encountered a 405 for an HTTP QUERY request to ${url}, even though it advertises support for it via the Accept-Query header. Retrying the current and modifying future requests to use POST instead.`);
+
+        // The count query is attempted over QUERY, rejected, and retried over POST,
+        // after which the bindings query goes over POST straight away.
+        expect(thisMediator.mediate).toHaveBeenCalledTimes(3);
+        expect(thisMediator.mediate).toHaveBeenNthCalledWith(1, expect.objectContaining({
+          init: expect.objectContaining({
+            body: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }',
+            method: 'QUERY',
+          }),
+        }));
+        expect(thisMediator.mediate).toHaveBeenNthCalledWith(2, expect.objectContaining({
+          init: expect.objectContaining({
+            body: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }',
+            method: 'POST',
+          }),
+        }));
+        expect(thisMediator.mediate).toHaveBeenNthCalledWith(3, expect.objectContaining({
+          init: expect.objectContaining({ method: 'POST' }),
+        }));
+      });
+
+      it('should fall back to POST when the endpoint does not implement HTTP QUERY', async() => {
+        const thisMediator: any = {
+          mediate: jest.fn((action: any) => {
+            if (action.init.method === 'QUERY') {
+              return {
+                headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+                body: Readable.from([ `empty body` ]),
+                ok: false,
+                status: 501,
+                statusText: 'Not Implemented',
+              };
+            }
+            return mediatorHttp.mediate(action);
+          }),
+        };
+        source = getSource([ 'application/sparql-query' ], thisMediator);
+
+        const stream = source.queryBindings(operationIn, ctx);
+        await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves.toBeDefined();
+        await expect(stream).toEqualBindingsStream(expectedResult);
+
+        expect(thisMediator.mediate).toHaveBeenCalledTimes(3);
+      });
+    });
+
     it('should return data when joining bindings', async() => {
       await expect(source.queryBindings(
         AF.createPattern(iriS, DF.variable('p'), iriO),
