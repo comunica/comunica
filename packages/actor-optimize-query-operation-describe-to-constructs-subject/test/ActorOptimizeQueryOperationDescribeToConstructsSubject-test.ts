@@ -32,7 +32,7 @@ describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
     it('should not test on non-describe', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
       await expect(actor.test(op)).resolves
-        .toFailTest(`Actor actor only supports describe operations, but got some-other-type`);
+        .toFailTest(`Actor actor only supports operations containing a describe, but got some-other-type`);
     });
 
     it('should test on a describe within a dataset', async() => {
@@ -60,6 +60,61 @@ describe('ActorOptimizeQueryOperationDescribeToConstructsSubject', () => {
           ],
         ),
       ]), [ DF.namedNode('g') ], []));
+    });
+
+    it('should test on a describe within a slice', async() => {
+      const op: any = { operation: AF.createSlice(<any> { type: 'describe' }, 0, 10) };
+      await expect(actor.test(op)).resolves.toPassTestVoid();
+    });
+
+    it('should run on a describe within a slice', async() => {
+      const op: any = {
+        context: new ActionContext({ name: 'context', [KeysInitQuery.dataFactory.name]: DF }),
+        operation: AF.createSlice(<any> {
+          type: 'describe',
+          terms: [ DF.namedNode('a') ],
+          input: { type: 'bgp', patterns: []},
+        }, 0, 10),
+      };
+      const { operation: opOut } = await actor.run(op);
+      expect(opOut).toEqual(AF.createSlice(AF.createUnion([
+        AF.createConstruct(
+          AF.createBgp([
+            AF.createPattern(DF.namedNode('a'), DF.variable('__predicate'), DF.variable('__object')),
+          ]),
+          [
+            AF.createPattern(DF.namedNode('a'), DF.variable('__predicate'), DF.variable('__object')),
+          ],
+        ),
+      ]), 0, 10));
+    });
+
+    it('should run on a describe with variable terms within a dataset', async() => {
+      const input = AF.createBgp([
+        AF.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o')),
+      ]);
+      const op: any = {
+        context: new ActionContext({ name: 'context', [KeysInitQuery.dataFactory.name]: DF }),
+        operation: AF.createFrom(<any> {
+          type: 'describe',
+          terms: [ DF.variable('a') ],
+          input,
+        }, [ DF.namedNode('g') ], [ DF.namedNode('gn') ]),
+      };
+      const { operation: opOut } = await actor.run(op);
+      expect(opOut).toEqual(AF.createFrom(AF.createUnion([
+        AF.createConstruct(
+          AF.createJoin([
+            input,
+            AF.createBgp([
+              AF.createPattern(DF.variable('a'), DF.variable('__predicate0'), DF.variable('__object0')),
+            ]),
+          ]),
+          [
+            AF.createPattern(DF.variable('a'), DF.variable('__predicate0'), DF.variable('__object0')),
+          ],
+        ),
+      ]), [ DF.namedNode('g') ], [ DF.namedNode('gn') ]));
     });
 
     it('should run without variable terms', async() => {

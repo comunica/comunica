@@ -20,6 +20,8 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
   }
 
   public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
+    // Describes can be wrapped in a FROM (NAMED) dataset or a LIMIT/OFFSET slice,
+    // so they are not necessarily the outermost operation
     let found = false;
     algebraUtils.visitOperation(action.operation, {
       [Algebra.Types.DESCRIBE]: { preVisitor: () => {
@@ -28,7 +30,9 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
       } },
     });
     if (!found) {
-      return failTest(`Actor ${this.name} only supports describe operations, but got ${action.operation.type}`);
+      return failTest(
+        `Actor ${this.name} only supports operations containing a describe, but got ${action.operation.type}`,
+      );
     }
     return passTest(true);
   }
@@ -37,9 +41,12 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 
-    // Describes can be wrapped in a FROM (NAMED) dataset, so they are not necessarily the outermost operation
+    // Describes can be wrapped in a FROM (NAMED) dataset or a LIMIT/OFFSET slice,
+    // so they are not necessarily the outermost operation
     const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.DESCRIBE]: {
+        // Describes can not be nested, so there is no need to look inside of one
+        preVisitor: () => ({ continue: false }),
         transform: describe => this.describeToConstructs(describe, dataFactory, algebraFactory),
       },
     });
