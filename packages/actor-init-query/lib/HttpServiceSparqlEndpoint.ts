@@ -379,22 +379,13 @@ export class HttpServiceSparqlEndpoint {
     let queryBody: IQueryBody | undefined;
     switch (request.method) {
       case 'POST':
-        queryBody = await this.parseBody(request);
-        await this.writeQueryResult(
-          engine,
-          stdout,
-          stderr,
-          request,
-          response,
-          queryBody,
-          mediaType,
-          false,
-          false,
-          this.lastQueryId++,
-        );
-        break;
       case 'QUERY':
-        queryBody = await this.parseBody(request);
+        try {
+          queryBody = await this.parseBody(request);
+        } catch (error: unknown) {
+          this.writeBadRequest(stdout, response, (<Error> error).message);
+          return;
+        }
         await this.writeQueryResult(
           engine,
           stdout,
@@ -404,14 +395,24 @@ export class HttpServiceSparqlEndpoint {
           queryBody,
           mediaType,
           false,
-          true,
+          // QUERY is a safe method, so it may only read data
+          request.method === 'QUERY',
           this.lastQueryId++,
         );
         break;
       case 'HEAD':
       case 'GET':
+        // Updates may only be invoked through POST
+        if (requestUrl.query.update) {
+          this.writeBadRequest(stdout, response, 'SPARQL updates can only be invoked with a POST request');
+          return;
+        }
         // eslint-disable-next-line no-case-declarations
-        const queryValue = <string> requestUrl.query.query;
+        const queryValue = requestUrl.query.query;
+        if (Array.isArray(queryValue)) {
+          this.writeBadRequest(stdout, response, 'A request can only contain a single query parameter');
+          return;
+        }
         queryBody = queryValue ? { type: 'query', value: queryValue, context: undefined } : undefined;
         // eslint-disable-next-line no-case-declarations
         const headOnly = request.method === 'HEAD';
@@ -449,6 +450,21 @@ export class HttpServiceSparqlEndpoint {
         );
         response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
     }
+  }
+
+  /**
+   * Writes a 400 response with the given message.
+   * @param {module:stream.internal.Writable} stdout Output stream.
+   * @param {module:http.ServerResponse} response Response object.
+   * @param {string} message The reason why the request was rejected.
+   */
+  public writeBadRequest(stdout: Writable, response: http.ServerResponse, message: string): void {
+    stdout.write(`[400] Bad request: ${message}\n`);
+    response.writeHead(
+      400,
+      { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+    );
+    response.end(message);
   }
 
   /**
@@ -796,11 +812,15 @@ export class HttpServiceSparqlEndpoint {
                 reject(new Error(`Invalid POST body with context received ('${(<any> bodyStructure).context}'): ${(<Error> error).message}`));
               }
             }
+            // A request may only contain a single query or update
+            if (Array.isArray(bodyStructure.query) || Array.isArray(bodyStructure.update)) {
+              return reject(new Error(`Invalid request body received, it can only contain a single query or update parameter`));
+            }
             if (bodyStructure.query) {
-              return resolve({ type: 'query', value: <string> bodyStructure.query, context });
+              return resolve({ type: 'query', value: bodyStructure.query, context });
             }
             if (bodyStructure.update) {
-              return resolve({ type: 'void', value: <string> bodyStructure.update, context });
+              return resolve({ type: 'void', value: bodyStructure.update, context });
             }
           }
         }
