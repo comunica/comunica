@@ -342,6 +342,50 @@ describe('System test: QuerySparql', () => {
         });
       });
 
+      describe('handle DESCRIBE queries that are not the outermost operation', () => {
+        let store: Store;
+        const quadDefault = DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+        const quadNamed = DF
+          .quad(DF.namedNode('ex:sg'), DF.namedNode('ex:pg'), DF.namedNode('ex:og'), DF.namedNode('ex:g'));
+
+        async function describeQuads(query: string): Promise<RDF.Quad[]> {
+          return arrayifyStream(await engine.queryQuads(query, <any> { sources: [ store ]}));
+        }
+
+        beforeEach(() => {
+          store = new Store();
+          store.addQuads([ quadDefault, quadNamed ]);
+        });
+
+        it('handles a describe wrapped in a FROM dataset', async() => {
+          await expect(describeQuads('DESCRIBE <ex:sg> FROM <ex:g>')).resolves
+            .toEqualRdfQuadArray([ DF.quad(DF.namedNode('ex:sg'), DF.namedNode('ex:pg'), DF.namedNode('ex:og')) ]);
+        });
+
+        it('handles a describe wrapped in a FROM dataset that excludes the term', async() => {
+          await expect(describeQuads('DESCRIBE <ex:s> FROM <ex:g>')).resolves.toEqualRdfQuadArray([]);
+        });
+
+        it('handles a describe with variable terms wrapped in a FROM dataset', async() => {
+          await expect(describeQuads('DESCRIBE ?s FROM <ex:g> WHERE { ?s ?p ?o }')).resolves
+            .toEqualRdfQuadArray([ DF.quad(DF.namedNode('ex:sg'), DF.namedNode('ex:pg'), DF.namedNode('ex:og')) ]);
+        });
+
+        it('handles a describe wrapped in a FROM NAMED dataset with an empty default graph', async() => {
+          // SPARQL 1.1 spec (13.2): when FROM NAMED is used without a FROM, the default graph must be empty
+          await expect(describeQuads('DESCRIBE <ex:s> FROM NAMED <ex:g>')).resolves.toEqualRdfQuadArray([]);
+        });
+
+        it('handles a describe wrapped in a slice', async() => {
+          await expect(describeQuads('DESCRIBE <ex:s> LIMIT 10')).resolves.toEqualRdfQuadArray([ quadDefault ]);
+        });
+
+        it('handles a describe wrapped in both a FROM dataset and a slice', async() => {
+          await expect(describeQuads('DESCRIBE <ex:sg> FROM <ex:g> LIMIT 10')).resolves
+            .toEqualRdfQuadArray([ DF.quad(DF.namedNode('ex:sg'), DF.namedNode('ex:pg'), DF.namedNode('ex:og')) ]);
+        });
+      });
+
       describe('extension function', () => {
         let funcAllow: string;
         let store: Store;
