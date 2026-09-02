@@ -2000,6 +2000,57 @@ INSERT DATA {
         expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
       });
 
+      it('should not emit process events when the service does not run as a worker', async() => {
+        const send = process.send;
+        delete (<any> process).send;
+        try {
+          const engine = await new QueryEngineFactoryBase().create();
+          engine.query = () => ({ resultType: 'bindings' });
+
+          await expect(instance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            query,
+            '',
+            false,
+            true,
+            0,
+          )).resolves.toBeUndefined();
+
+          response.emit('close');
+        } finally {
+          (<any> process).send = send;
+        }
+      });
+
+      it('should only execute an update once', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        const execute = jest.fn(() => Promise.resolve());
+        engine.query = () => ({ resultType: 'void', execute });
+        jest.spyOn(engine, 'resultToString');
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          true,
+          0,
+        );
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        // Serializing the result may not execute the update a second time
+        await (<any> engine.resultToString).mock.calls[0][0].execute();
+        expect(execute).toHaveBeenCalledTimes(1);
+      });
+
       it('should fallback to simple for updates if media type is falsy', async() => {
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => ({ resultType: 'void', execute: () => Promise.resolve() });
