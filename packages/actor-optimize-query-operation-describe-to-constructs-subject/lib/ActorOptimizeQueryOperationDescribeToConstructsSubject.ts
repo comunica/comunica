@@ -8,7 +8,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -20,7 +20,14 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
   }
 
   public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
-    if (action.operation.type !== Algebra.Types.DESCRIBE) {
+    let found = false;
+    algebraUtils.visitOperation(action.operation, {
+      [Algebra.Types.DESCRIBE]: { preVisitor: () => {
+        found = true;
+        return { continue: false };
+      } },
+    });
+    if (!found) {
       return failTest(`Actor ${this.name} only supports describe operations, but got ${action.operation.type}`);
     }
     return passTest(true);
@@ -30,8 +37,27 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 
-    const operationOriginal: Algebra.Describe = <Algebra.Describe> action.operation;
+    // Describes can be wrapped in a FROM (NAMED) dataset, so they are not necessarily the outermost operation
+    const operation = algebraUtils.mapOperation(action.operation, {
+      [Algebra.Types.DESCRIBE]: {
+        transform: describe => this.describeToConstructs(describe, dataFactory, algebraFactory),
+      },
+    });
 
+    return { operation, context: action.context };
+  }
+
+  /**
+   * Rewrite a describe operation into a union of construct operations.
+   * @param {Algebra.Describe} operationOriginal The describe operation to rewrite.
+   * @param {ComunicaDataFactory} dataFactory The data factory.
+   * @param {AlgebraFactory} algebraFactory The algebra factory.
+   */
+  protected describeToConstructs(
+    operationOriginal: Algebra.Describe,
+    dataFactory: ComunicaDataFactory,
+    algebraFactory: AlgebraFactory,
+  ): Algebra.Operation {
     // Create separate construct queries for all non-variable terms
     const operations: Algebra.Construct[] = operationOriginal.terms
       .filter(term => term.termType !== 'Variable')
@@ -84,8 +110,6 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
     }
 
     // Union the construct operations
-    const operation = algebraFactory.createUnion(operations, false);
-
-    return { operation, context: action.context };
+    return algebraFactory.createUnion(operations, false);
   }
 }
