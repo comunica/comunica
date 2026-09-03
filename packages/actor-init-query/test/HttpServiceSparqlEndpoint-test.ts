@@ -1373,6 +1373,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         request = Readable.from([ 'default_request_content' ]);
         request.url = '/sparql';
         request.headers = { host: 'localhost:3000' };
+        request.socket = {};
         query = {
           type: 'query',
           value: 'default_test_query',
@@ -2230,15 +2231,55 @@ INSERT DATA {
       });
     });
 
+    describe('a configured base IRI', () => {
+      it('should take precedence over the base IRI of the endpoint', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        jest.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
+        const response: any = new ServerResponseMock();
+        const request: any = Readable.from([ 'default_request_content' ]);
+        request.url = '/sparql';
+        request.headers = { host: 'localhost:3000' };
+        request.socket = {};
+        instance = new HttpServiceSparqlEndpoint({
+          ...argsDefault,
+          context: { '@comunica/actor-init-query:baseIRI': 'https://example.org/sparql' },
+        });
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: 'default_test_query', context: undefined },
+          '',
+          false,
+          false,
+          0,
+        );
+
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', {
+          '@comunica/actor-init-query:baseIRI': 'https://example.org/sparql',
+        });
+      });
+    });
+
     describe('getBaseIRI', () => {
       it('should use the host and the path of the request', () => {
-        expect(HttpServiceSparqlEndpoint.getBaseIRI(<any> { headers: { host: 'example.org' }}, 3_000))
+        expect(HttpServiceSparqlEndpoint
+          .getBaseIRI(<any> { headers: { host: 'example.org' }, socket: {}}, 3_000))
           .toBe('http://example.org/sparql');
       });
 
       it('should fall back to the port of the service when the request has no host', () => {
-        expect(HttpServiceSparqlEndpoint.getBaseIRI(<any> { headers: {}}, 1_234))
+        expect(HttpServiceSparqlEndpoint.getBaseIRI(<any> { headers: {}, socket: {}}, 1_234))
           .toBe('http://localhost:1234/sparql');
+      });
+
+      it('should use https when the request was received over an encrypted socket', () => {
+        expect(HttpServiceSparqlEndpoint
+          .getBaseIRI(<any> { headers: { host: 'example.org' }, socket: { encrypted: true }}, 3_000))
+          .toBe('https://example.org/sparql');
       });
     });
 
@@ -2387,6 +2428,7 @@ INSERT DATA {
         request = Readable.from([ 'default_request_content' ]);
         request.url = '/sparql';
         request.method = 'GET';
+        request.socket = {};
         request.headers = {
           host: 'localhost:3000',
           accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',

@@ -7,6 +7,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import * as path from 'node:path';
 import * as querystring from 'node:querystring';
 import type { Writable } from 'node:stream';
+import type { TLSSocket } from 'node:tls';
 import * as url from 'node:url';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
@@ -474,7 +475,8 @@ export class HttpServiceSparqlEndpoint {
    * @return {string} The base IRI.
    */
   public static getBaseIRI(request: http.IncomingMessage, port: number): string {
-    return `http://${request.headers.host ?? `localhost:${port}`}/sparql`;
+    const protocol = (<TLSSocket> request.socket).encrypted ? 'https' : 'http';
+    return `${protocol}://${request.headers.host ?? `localhost:${port}`}/sparql`;
   }
 
   /**
