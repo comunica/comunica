@@ -2039,6 +2039,73 @@ INSERT DATA {
         expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
       });
 
+      it('should not emit process events when the service does not run as a worker', async() => {
+        const send = process.send;
+        delete (<any> process).send;
+        try {
+          const engine = await new QueryEngineFactoryBase().create();
+          engine.query = () => ({ resultType: 'bindings' });
+
+          await expect(instance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            query,
+            '',
+            false,
+            true,
+            0,
+          )).resolves.toBeUndefined();
+
+          response.emit('close');
+        } finally {
+          (<any> process).send = send;
+        }
+      });
+
+      it('should not execute an update again while serializing the result', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        // The update quads mediator consumes the quad streams of the update,
+        // so its execution only ever settles the first time it is invoked.
+        let started = false;
+        const execute = jest.fn(() => {
+          if (started) {
+            return new Promise<void>(() => {
+              // Never settles, as the quad streams have already been consumed
+            });
+          }
+          started = true;
+          return Promise.resolve();
+        });
+        engine.query = () => ({ resultType: 'void', execute });
+        // Like the simple serializer, which awaits the update before writing its response
+        engine.resultToString = (result: any) => ({
+          data: Readable.from((async function* () {
+            await result.execute();
+            yield 'ok';
+          })()),
+        });
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          true,
+          0,
+        );
+
+        // Without memoizing the execution, the response would never be ended
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(execute).toHaveBeenCalledTimes(1);
+      });
+
       it('should fallback to simple for updates if media type is falsy', async() => {
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => ({ resultType: 'void', execute: () => Promise.resolve() });

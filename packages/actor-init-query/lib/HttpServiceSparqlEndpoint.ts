@@ -507,7 +507,7 @@ export class HttpServiceSparqlEndpoint {
     stdout.write(`      Received ${queryBody.type} query: ${queryBody.value}\n`);
 
     // Send message to master process to indicate the start of an execution
-    process.send!({ type: 'start', queryId });
+    process.send?.({ type: 'start', queryId });
 
     // Determine context
     let context = {
@@ -522,9 +522,12 @@ export class HttpServiceSparqlEndpoint {
     try {
       result = await engine.query(queryBody.value, context);
 
-      // For update queries, also await the result
+      // For update queries, also await the result, so that failures are reported as a bad request.
+      // The execution is memoized, as updates may not be executed again while serializing the result.
       if (result.resultType === 'void') {
-        await result.execute();
+        const executed = result.execute();
+        await executed;
+        result = { ...result, execute: () => executed };
       }
     } catch (error: unknown) {
       this.writeBadRequest(stdout, response, (<Error> error).message);
@@ -588,7 +591,7 @@ export class HttpServiceSparqlEndpoint {
 
     // Send message to master process to indicate the end of an execution
     response.on('close', () => {
-      process.send!({ type: 'end', queryId });
+      process.send?.({ type: 'end', queryId });
     });
 
     this.stopResponse(response, queryId, process.stderr, eventEmitter);
