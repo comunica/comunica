@@ -7,6 +7,7 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import * as path from 'node:path';
 import * as querystring from 'node:querystring';
 import type { Writable } from 'node:stream';
+import type { TLSSocket } from 'node:tls';
 import * as url from 'node:url';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
@@ -468,6 +469,17 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Determine the base IRI that relative IRIs in a request are resolved against.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {number} port The port this service is running on.
+   * @return {string} The base IRI.
+   */
+  public static getBaseIRI(request: http.IncomingMessage, port: number): string {
+    const protocol = (<TLSSocket> request.socket).encrypted ? 'https' : 'http';
+    return `${protocol}://${request.headers.host ?? `localhost:${port}`}/sparql`;
+  }
+
+  /**
    * Writes the result of the given SPARQL query.
    * @param {QueryEngineBase} engine A SPARQL engine.
    * @param {module:stream.internal.Writable} stdout Output stream.
@@ -511,6 +523,7 @@ export class HttpServiceSparqlEndpoint {
 
     // Determine context
     let context = {
+      [KeysInitQuery.baseIRI.name]: HttpServiceSparqlEndpoint.getBaseIRI(request, this.port),
       ...this.context,
       ...this.contextOverride ? queryBody.context : undefined,
     };
