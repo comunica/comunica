@@ -20,6 +20,19 @@ export class SortIterator<T> extends TransformIterator<T, T> {
   // Reads the smallest item in the current sorting window
   public override _read(count: number, done: () => void): void {
     let item;
+
+    // Without a window, all items must be buffered before anything can be emitted anyway.
+    // Buffer them unsorted here and sort once in _flush, which is O(n log n).
+    // Maintaining the sorted array incrementally (below) would cost an O(n) splice per item.
+    if (this.windowLength === Number.POSITIVE_INFINITY) {
+      item = this.source!.read();
+      while (item !== null) {
+        this.sorted.push(item);
+        item = this.source!.read();
+      }
+      return done();
+    }
+
     let { length } = this.sorted;
     // Try to read items until we reach the desired window length
     while (length !== this.windowLength) {
@@ -56,6 +69,13 @@ export class SortIterator<T> extends TransformIterator<T, T> {
 
   // Flushes remaining data after the source has ended
   public override _flush(done: () => void): void {
+    if (this.windowLength === Number.POSITIVE_INFINITY) {
+      // Array.prototype.sort is stable, so sorting ascending and reversing keeps equal items
+      // in their original order once they are popped off the end below.
+      // Stability matters because ORDER BY with multiple expressions chains these iterators.
+      this.sorted.sort((left, right) => this.sort(left, right));
+      this.sorted.reverse();
+    }
     let { length } = this.sorted;
     while (length--) {
       this._push(this.sorted.pop()!);
