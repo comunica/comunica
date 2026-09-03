@@ -464,7 +464,7 @@ export class HttpServiceSparqlEndpoint {
       400,
       { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
     );
-    response.end(message);
+    response.end(`${message}\n`);
   }
 
   /**

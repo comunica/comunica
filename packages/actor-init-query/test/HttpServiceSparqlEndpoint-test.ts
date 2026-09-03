@@ -1119,7 +1119,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           400,
           { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
         );
-        expect(response.end).toHaveBeenCalledWith('Invalid request body');
+        expect(response.end).toHaveBeenCalledWith('Invalid request body\n');
       });
 
       it('should respond with 400 when an update is invoked with GET', async() => {
@@ -1132,7 +1132,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           400,
           { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
         );
-        expect(response.end).toHaveBeenCalledWith('SPARQL updates can only be invoked with a POST request');
+        expect(response.end).toHaveBeenCalledWith('SPARQL updates can only be invoked with a POST request\n');
       });
 
       it('should respond with 400 when more than one query parameter is passed', async() => {
@@ -1145,7 +1145,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           400,
           { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
         );
-        expect(response.end).toHaveBeenCalledWith('A request can only contain a single query parameter');
+        expect(response.end).toHaveBeenCalledWith('A request can only contain a single query parameter\n');
       });
 
       it('should choose a mediaType if accept header is set', async() => {
@@ -1414,7 +1414,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           0,
         );
 
-        await expect(endCalledPromise).resolves.toBe('Rejected query');
+        await expect(endCalledPromise).resolves.toBe('Rejected query\n');
         expect(response.writeHead).toHaveBeenLastCalledWith(
           400,
           { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
@@ -1437,7 +1437,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         );
 
         await expect(endCalledPromise).resolves.toBe(
-          'The response for the given query could not be serialized for the requested media type',
+          'The response for the given query could not be serialized for the requested media type\n',
         );
         expect(response.writeHead).toHaveBeenLastCalledWith(
           400,
@@ -1723,7 +1723,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
 
         await expect(endCalledPromise).resolves.toBe(
-          'The response for the given query could not be serialized for the requested media type',
+          'The response for the given query could not be serialized for the requested media type\n',
         );
         expect(response.writeHead)
           .toHaveBeenLastCalledWith(400, { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
