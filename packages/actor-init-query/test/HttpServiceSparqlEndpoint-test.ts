@@ -1109,6 +1109,45 @@ describe('HttpServiceSparqlEndpoint', () => {
         );
       });
 
+      it.each([ 'POST', 'QUERY' ])('should respond with 400 when the %s body can not be parsed', async(method) => {
+        (<any> instance).parseBody = jest.fn(() => Promise.reject(new Error('Invalid request body')));
+        request.method = method;
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(instance.writeQueryResult).not.toHaveBeenCalled();
+        expect(response.writeHead).toHaveBeenCalledWith(
+          400,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+        );
+        expect(response.end).toHaveBeenCalledWith('Invalid request body\n');
+      });
+
+      it('should respond with 400 when an update is invoked with GET', async() => {
+        request.method = 'GET';
+        request.url = 'url_sparql_update_param';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(instance.writeQueryResult).not.toHaveBeenCalled();
+        expect(response.writeHead).toHaveBeenCalledWith(
+          400,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+        );
+        expect(response.end).toHaveBeenCalledWith('SPARQL updates can only be invoked with a POST request\n');
+      });
+
+      it('should respond with 400 when more than one query parameter is passed', async() => {
+        request.method = 'GET';
+        request.url = 'url_sparql_multiple_queries';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(instance.writeQueryResult).not.toHaveBeenCalled();
+        expect(response.writeHead).toHaveBeenCalledWith(
+          400,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+        );
+        expect(response.end).toHaveBeenCalledWith('A request can only contain a single query parameter\n');
+      });
+
       it('should choose a mediaType if accept header is set', async() => {
         const chosen = 'test_chosen_mediatype';
         variants = [{ type: chosen, quality: 1 }];
@@ -1375,7 +1414,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           0,
         );
 
-        await expect(endCalledPromise).resolves.toBe('Rejected query');
+        await expect(endCalledPromise).resolves.toBe('Rejected query\n');
         expect(response.writeHead).toHaveBeenLastCalledWith(
           400,
           { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
@@ -2431,6 +2470,20 @@ INSERT DATA {
           type: 'void',
           value: testRequestBody,
         });
+      });
+
+      it('should reject more than one query parameter', async() => {
+        httpRequestMock = Readable.from([ 'query=ASK%20%7B%7D&query=SELECT%20%2A%20%7B%7D' ]);
+        httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
+        await expect(instance.parseBody(httpRequestMock)).rejects
+          .toThrow(`Invalid request body received, it can only contain a single query or update parameter`);
+      });
+
+      it('should reject more than one update parameter', async() => {
+        httpRequestMock = Readable.from([ 'update=CLEAR%20NAMED&update=CLEAR%20DEFAULT' ]);
+        httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
+        await expect(instance.parseBody(httpRequestMock)).rejects
+          .toThrow(`Invalid request body received, it can only contain a single query or update parameter`);
       });
     });
   });

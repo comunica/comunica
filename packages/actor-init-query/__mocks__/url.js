@@ -11,6 +11,18 @@ function parse(url, _parseQueryString) {
       query: {},
     };
   }
+  if (url === 'url_sparql_update_param') {
+    return {
+      pathname: '/sparql',
+      query: { update: 'CLEAR ALL' },
+    };
+  }
+  if (url === 'url_sparql_multiple_queries') {
+    return {
+      pathname: '/sparql',
+      query: { query: [ 'test_query', 'other_test_query' ]},
+    };
+  }
   return {
     pathname: 'not_sparql_path',
     query: { query: 'test_query' },
