@@ -1437,7 +1437,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         );
 
         await expect(endCalledPromise).resolves.toBe(
-          'The response for the given query could not be serialized for the requested media type\n',
+          'The response for the given query could not be serialized for the requested media type',
         );
         expect(response.writeHead).toHaveBeenLastCalledWith(
           400,
@@ -1723,7 +1723,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
 
         await expect(endCalledPromise).resolves.toBe(
-          'The response for the given query could not be serialized for the requested media type\n',
+          'The response for the given query could not be serialized for the requested media type',
         );
         expect(response.writeHead)
           .toHaveBeenLastCalledWith(400, { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });

@@ -527,12 +527,7 @@ export class HttpServiceSparqlEndpoint {
         await result.execute();
       }
     } catch (error: unknown) {
-      stdout.write('[400] Bad request\n');
-      response.writeHead(
-        400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
-      );
-      response.end((<Error> error).message);
+      this.writeBadRequest(stdout, response, (<Error> error).message);
       return;
     }
 
@@ -584,12 +579,11 @@ export class HttpServiceSparqlEndpoint {
       data.pipe(response);
       eventEmitter = data;
     } catch {
-      stdout.write('[400] Bad request, invalid media type\n');
-      response.writeHead(
-        400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+      this.writeBadRequest(
+        stdout,
+        response,
+        'The response for the given query could not be serialized for the requested media type',
       );
-      response.end('The response for the given query could not be serialized for the requested media type\n');
     }
 
     // Send message to master process to indicate the end of an execution
@@ -679,12 +673,11 @@ export class HttpServiceSparqlEndpoint {
       data.pipe(response);
       eventEmitter = data;
     } catch {
-      stdout.write('[400] Bad request, invalid media type\n');
-      response.writeHead(
-        400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+      this.writeBadRequest(
+        stdout,
+        response,
+        'The response for the given query could not be serialized for the requested media type',
       );
-      response.end('The response for the given query could not be serialized for the requested media type\n');
       return;
     }
     this.stopResponse(response, 0, process.stderr, eventEmitter);
