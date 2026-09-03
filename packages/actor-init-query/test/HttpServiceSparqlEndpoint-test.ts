@@ -2026,11 +2026,28 @@ INSERT DATA {
         }
       });
 
-      it('should only execute an update once', async() => {
+      it('should not execute an update again while serializing the result', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        const execute = jest.fn(() => Promise.resolve());
+        // The update quads mediator consumes the quad streams of the update,
+        // so its execution only ever settles the first time it is invoked.
+        let started = false;
+        const execute = jest.fn(() => {
+          if (started) {
+            return new Promise<void>(() => {
+              // Never settles, as the quad streams have already been consumed
+            });
+          }
+          started = true;
+          return Promise.resolve();
+        });
         engine.query = () => ({ resultType: 'void', execute });
-        jest.spyOn(engine, 'resultToString');
+        // Like the simple serializer, which awaits the update before writing its response
+        engine.resultToString = (result: any) => ({
+          data: Readable.from((async function* () {
+            await result.execute();
+            yield 'ok';
+          })()),
+        });
 
         await instance.writeQueryResult(
           engine,
@@ -2045,9 +2062,8 @@ INSERT DATA {
           0,
         );
 
+        // Without memoizing the execution, the response would never be ended
         await expect(endCalledPromise).resolves.toBeFalsy();
-        // Serializing the result may not execute the update a second time
-        await (<any> engine.resultToString).mock.calls[0][0].execute();
         expect(execute).toHaveBeenCalledTimes(1);
       });
 
