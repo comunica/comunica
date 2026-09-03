@@ -57,8 +57,8 @@ describe('Term', () => {
       });
 
       it('should properly format small positive decimal numbers', () => {
-        const num = new DecimalLiteral(1.23456789);
-        expect(num.toRDF(DF).value).toBe('1.23456789');
+        const num = new DecimalLiteral(0.000000000001);
+        expect(num.toRDF(DF).value).toBe('0.000000000001');
       });
 
       it('should properly format large positive decimal numbers', () => {
@@ -67,8 +67,8 @@ describe('Term', () => {
       });
 
       it('should properly format small negative decimal numbers', () => {
-        const num = new DecimalLiteral(-1.23456789);
-        expect(num.toRDF(DF).value).toBe('-1.23456789');
+        const num = new DecimalLiteral(-0.000000000001);
+        expect(num.toRDF(DF).value).toBe('-0.000000000001');
       });
 
       it('should properly format large negative decimal numbers', () => {
