@@ -2152,7 +2152,10 @@ INSERT DATA {
         );
 
         await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(engine.query).toHaveBeenCalledWith('default_test_query', { [KeysQueryOperation.readOnly.name]: true });
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', {
+          '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql',
+          [KeysQueryOperation.readOnly.name]: true,
+        });
       });
 
       it('should set not readOnly in the context if called with readOnly false', async() => {
@@ -2173,7 +2176,7 @@ INSERT DATA {
         );
 
         await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(engine.query).toHaveBeenCalledWith('default_test_query', {});
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', { '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql' });
       });
 
       it('should not override context entries by default', async() => {
@@ -2196,7 +2199,7 @@ INSERT DATA {
         );
 
         await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(engine.query).toHaveBeenCalledWith('default_test_query', {});
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', { '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql' });
       });
 
       it('should override context entries if contextOverride is enabled', async() => {
@@ -2220,7 +2223,22 @@ INSERT DATA {
         );
 
         await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(engine.query).toHaveBeenCalledWith('default_test_query', { overrideKey: 'overrideValue' });
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', {
+          '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql',
+          overrideKey: 'overrideValue',
+        });
+      });
+    });
+
+    describe('getBaseIRI', () => {
+      it('should use the host and the path of the request', () => {
+        expect(HttpServiceSparqlEndpoint.getBaseIRI(<any> { headers: { host: 'example.org' }}, 3_000))
+          .toBe('http://example.org/sparql');
+      });
+
+      it('should fall back to the port of the service when the request has no host', () => {
+        expect(HttpServiceSparqlEndpoint.getBaseIRI(<any> { headers: {}}, 1_234))
+          .toBe('http://localhost:1234/sparql');
       });
     });
 
