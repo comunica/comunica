@@ -29,35 +29,96 @@ describe('Term', () => {
 
   describe('the string representation of numeric literals', () => {
     describe('like integers', () => {
-      it('should not have a leading +', () => {
-        const num = new IntegerLiteral(1);
-        expect(num.toRDF(DF).value).toBe('1');
+      it('should property format zero', () => {
+        const num = new DecimalLiteral(0);
+        expect(num.toRDF(DF).value).toBe('0');
+      });
+
+      it('should property format small integer numbers', () => {
+        const num = new DecimalLiteral(1234);
+        expect(num.toRDF(DF).value).toBe('1234');
+      });
+
+      it('should property format large integer numbers', () => {
+        const num = new DecimalLiteral(100000000);
+        expect(num.toRDF(DF).value).toBe('100000000');
       });
     });
 
     describe('like decimals', () => {
-      it('should not always have at least one decimal', () => {
+      it('should property format zero', () => {
+        const num = new DecimalLiteral(0);
+        expect(num.toRDF(DF).value).toBe('0');
+      });
+
+      it('should not add decimal places to integer values', () => {
         const num = new DecimalLiteral(1);
         expect(num.toRDF(DF).value).toBe('1');
       });
-    });
 
-    describe('like doubles', () => {
-      it('should be formatted as an exponential', () => {
-        const num = new DoubleLiteral(0.1);
-        expect(num.toRDF(DF).value).toBe('1.0E-1');
+      it('should properly format small positive decimal numbers', () => {
+        const num = new DecimalLiteral(1.23456789);
+        expect(num.toRDF(DF).value).toBe('1.23456789');
       });
 
-      it('should not prepend a + to the exponential', () => {
-        const num = new DoubleLiteral(10);
-        expect(num.toRDF(DF).value).toBe('1.0E1');
+      it('should properly format large positive decimal numbers', () => {
+        const num = new DecimalLiteral(100000000000.3);
+        expect(num.toRDF(DF).value).toBe('100000000000.3');
+      });
+
+      it('should properly format small negative decimal numbers', () => {
+        const num = new DecimalLiteral(-1.23456789);
+        expect(num.toRDF(DF).value).toBe('-1.23456789');
+      });
+
+      it('should properly format large negative decimal numbers', () => {
+        const num = new DecimalLiteral(-100000000000.3);
+        expect(num.toRDF(DF).value).toBe('-100000000000.3');
       });
     });
 
-    describe('like floats', () => {
-      it('should not be formatted as an exponential', () => {
-        const num = new FloatLiteral(0.1);
-        expect(num.toRDF(DF).value).toBe('0.1');
+    describe.each([
+      [ 'doubles', (val: number) => new DoubleLiteral(val) ],
+      [ 'floats', (val: number) => new FloatLiteral(val) ],
+    ])('like %s', (_, createLiteral) => {
+      it('should properly format NaN', () => {
+        const num = createLiteral(Number.NaN);
+        expect(num.toRDF(DF).value).toBe('NaN');
+      });
+
+      it('should properly format positive infinity', () => {
+        const num = createLiteral(Number.POSITIVE_INFINITY);
+        expect(num.toRDF(DF).value).toBe('INF');
+      });
+
+      it('should properly format negative infinity', () => {
+        const num = createLiteral(Number.NEGATIVE_INFINITY);
+        expect(num.toRDF(DF).value).toBe('-INF');
+      });
+
+      it('should properly format zero', () => {
+        const num = createLiteral(0);
+        expect(num.toRDF(DF).value).toBe('0.0E0');
+      });
+
+      it('should properly format large positive finite values', () => {
+        const num = createLiteral(1100);
+        expect(num.toRDF(DF).value).toBe('1.1E3');
+      });
+
+      it('should properly format small positive finite values', () => {
+        const num = createLiteral(0.01);
+        expect(num.toRDF(DF).value).toBe('1.0E-2');
+      });
+
+      it('should properly format large negative finite values', () => {
+        const num = createLiteral(-1100);
+        expect(num.toRDF(DF).value).toBe('-1.1E3');
+      });
+
+      it('should properly format small negative finite values', () => {
+        const num = createLiteral(-0.01);
+        expect(num.toRDF(DF).value).toBe('-1.0E-2');
       });
     });
   });
