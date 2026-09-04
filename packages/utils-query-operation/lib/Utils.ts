@@ -102,6 +102,28 @@ export function assignOperationSource<O extends Algebra.Operation>(operation: O,
 }
 
 /**
+ * Obtain the number of results that are actually needed from the given ORDER BY operation,
+ * as annotated by {@link assignOperationSortLimit}.
+ * @param operation An algebra operation.
+ */
+export function getOperationSortLimit(operation: Algebra.Operation): number | undefined {
+  return <number | undefined> operation.metadata?.sortLimit;
+}
+
+/**
+ * Annotate the given ORDER BY operation with the number of results that are actually needed,
+ * so that it can sort within a bounded buffer instead of materializing all of its input.
+ * The operation is copied and returned.
+ * @param operation An operation.
+ * @param sortLimit The number of smallest results that will be consumed.
+ */
+export function assignOperationSortLimit<O extends Algebra.Operation>(operation: O, sortLimit: number): O {
+  operation = { ...operation };
+  operation.metadata = { ...operation.metadata, sortLimit };
+  return operation;
+}
+
+/**
  * Remove the source wrapper from the given operation.
  * The operation is mutated.
  * @param operation An operation.
