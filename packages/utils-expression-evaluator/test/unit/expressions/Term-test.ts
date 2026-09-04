@@ -30,44 +30,49 @@ describe('Term', () => {
   describe('the string representation of numeric literals', () => {
     describe('like integers', () => {
       it('should properly express zero', () => {
-        const num = new DecimalLiteral(0);
+        const num = new DecimalLiteral(0e0);
         expect(num.toRDF(DF).value).toBe('0');
       });
 
+      it('should properly express one', () => {
+        const num = new DecimalLiteral(1e0);
+        expect(num.toRDF(DF).value).toBe('1');
+      });
+
       it('should properly express small integer numbers', () => {
-        const num = new DecimalLiteral(1234);
+        const num = new DecimalLiteral(1.234e3);
         expect(num.toRDF(DF).value).toBe('1234');
       });
 
       it('should properly express large integer numbers', () => {
-        const num = new DecimalLiteral(100000000);
+        const num = new DecimalLiteral(1e8);
         expect(num.toRDF(DF).value).toBe('100000000');
       });
     });
 
     describe('like decimals', () => {
       it('should properly express zero', () => {
-        const num = new DecimalLiteral(0);
+        const num = new DecimalLiteral(0e0);
         expect(num.toRDF(DF).value).toBe('0');
       });
 
       it('should not include decimal places in integer values', () => {
-        const num = new DecimalLiteral(1);
+        const num = new DecimalLiteral(1e0);
         expect(num.toRDF(DF).value).toBe('1');
       });
 
       it('should properly express small positive decimal numbers', () => {
-        const num = new DecimalLiteral(0.000000000001);
+        const num = new DecimalLiteral(1e-12);
         expect(num.toRDF(DF).value).toBe('0.000000000001');
       });
 
       it('should properly express large positive decimal numbers', () => {
-        const num = new DecimalLiteral(100000000000.3);
-        expect(num.toRDF(DF).value).toBe('100000000000.3');
+        const num = new DecimalLiteral(100000000000.333);
+        expect(num.toRDF(DF).value).toBe('100000000000.333');
       });
 
       it('should properly express small negative decimal numbers', () => {
-        const num = new DecimalLiteral(-0.000000000001);
+        const num = new DecimalLiteral(-1e-12);
         expect(num.toRDF(DF).value).toBe('-0.000000000001');
       });
 
