@@ -181,6 +181,9 @@ export abstract class NumericLiteral extends Literal<number> {
   }
 }
 
+/**
+ * XSD integer: https://www.w3.org/TR/xmlschema-2/#integer
+ */
 export class IntegerLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -196,6 +199,9 @@ export class IntegerLiteral extends NumericLiteral {
   }
 }
 
+/**
+ * XSD decimal: https://www.w3.org/TR/xmlschema-2/#decimal
+ */
 export class DecimalLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -208,7 +214,6 @@ export class DecimalLiteral extends NumericLiteral {
 
   /**
    * Fallback formatter to produce canonical representation when no lexical value exists.
-   * This follows the specification for decimal: https://www.w3.org/TR/xmlschema-2/#double
    */
   protected specificFormatter(val: number): string {
     const jsString = val.toString();
@@ -225,6 +230,9 @@ export class DecimalLiteral extends NumericLiteral {
   }
 }
 
+/**
+ * XSD double: https://www.w3.org/TR/xmlschema-2/#double
+ */
 export class DoubleLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -237,8 +245,6 @@ export class DoubleLiteral extends NumericLiteral {
 
   /**
    * Fallback formatter to produce canonical representation when no lexical value exists.
-   * This follows the specification for double: https://www.w3.org/TR/xmlschema-2/#double
-   * The same representation is also appicable to float: https://www.w3.org/TR/xmlschema-2/#float
    */
   protected specificFormatter(val: number): string {
     if (Number.isFinite(val)) {
@@ -266,6 +272,13 @@ export class DoubleLiteral extends NumericLiteral {
   }
 }
 
+/**
+ * XSD float: https://www.w3.org/TR/xmlschema-2/#float
+ *
+ * Every float (32-bit) is stored as double (64-bit) number in JavaScript,
+ * and the canonical representations of the XSD types are identical,
+ * so the formatter implementation is shared through inheritance.
+ */
 export class FloatLiteral extends DoubleLiteral {
   public constructor(
     public override typedValue: number,
