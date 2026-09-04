@@ -44,6 +44,7 @@ export class TermFunctionXsdToString extends TermFunctionBase {
           if (val.dataType === TypeURL.XSD_DOUBLE || val.dataType === TypeURL.XSD_FLOAT) {
             // Exact zero should always be returned as "0", which differs from the
             // XSD datatype canonical representation of "0.0E0", and must therefore be handled separately.
+            // The positive and negative infinity are already correctly handled by the canonical representation.
             if (val.typedValue === 0) {
               return string('0');
             }
