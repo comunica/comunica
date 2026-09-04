@@ -23,6 +23,7 @@ export class TermFunctionXsdToString extends TermFunctionBase {
       arity: 1,
       operator: TypeURL.XSD_STRING,
       overloads: declare(TypeURL.XSD_STRING)
+        // the spec for numerics is really specific: https://www.w3.org/TR/xpath-functions/#casting-to-string . Also note that we need to go through .onNumeric1 since the spec does NOT talk about type derivations SPECIFICALLY when checking the types in the numerc check, e.g. for `xs:string` they do consider 'or a type derived from `xs:string`)
         .onNumeric1(() => (val: NumericLiteral) => {
           if (val.dataType === TypeURL.XSD_INTEGER) {
             return string(integer(val.typedValue).str());
