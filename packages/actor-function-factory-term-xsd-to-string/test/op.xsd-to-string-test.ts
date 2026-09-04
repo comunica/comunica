@@ -30,9 +30,11 @@ describe('to string', () => {
         "+1000000"^^xsd:integer = "1000000"
         "-1000000"^^xsd:integer = "-1000000"
 
+        "1"^^xsd:decimal = "1"
         "1.0"^^xsd:decimal = "1"
         "+1.0"^^xsd:decimal = "1"
         "-1.0"^^xsd:decimal = "-1"
+        "0"^^xsd:decimal = "0"
         "0.0"^^xsd:decimal = "0"
         "+0.0"^^xsd:decimal = "0"
         "-0.0"^^xsd:decimal = "0"
