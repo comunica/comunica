@@ -1,6 +1,7 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IJoinEntry } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
@@ -11,6 +12,7 @@ import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const AF = new AlgebraFactory(DF);
 
 describe('ActorQueryOperationJoin', () => {
   let bus: any;
@@ -112,6 +114,65 @@ describe('ActorQueryOperationJoin', () => {
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ]);
     });
+    it('should mark entries with a variable SERVICE target as operationRequired', async() => {
+      let entries: IJoinEntry[] = [];
+      mediatorJoin.mediate = (arg: any) => {
+        entries = arg.entries;
+        return Promise.resolve({
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
+          metadata: () => Promise.resolve({
+            state: new MetadataValidationState(),
+            cardinality: { type: 'exact', value: 0 },
+            variables: [],
+          }),
+          type: 'bindings',
+        });
+      };
+      const serviceOperation = AF.createService(
+        AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+        DF.variable('endpoint'),
+      );
+      const op: any = {
+        operation: AF.createJoin([
+          AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+          serviceOperation,
+        ]),
+        context: new ActionContext(),
+      };
+      await actor.run(op, undefined);
+      expect(entries[0].operationRequired).toBeUndefined();
+      expect(entries[1].operationRequired).toBe(true);
+    });
+
+    it('should not mark entries with a named node SERVICE target as operationRequired', async() => {
+      let entries: IJoinEntry[] = [];
+      mediatorJoin.mediate = (arg: any) => {
+        entries = arg.entries;
+        return Promise.resolve({
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
+          metadata: () => Promise.resolve({
+            state: new MetadataValidationState(),
+            cardinality: { type: 'exact', value: 0 },
+            variables: [],
+          }),
+          type: 'bindings',
+        });
+      };
+      const op: any = {
+        operation: AF.createJoin([
+          AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+          AF.createService(
+            AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+            DF.namedNode('http://example.org/sparql'),
+          ),
+        ]),
+        context: new ActionContext(),
+      };
+      await actor.run(op, undefined);
+      expect(entries[0].operationRequired).toBeUndefined();
+      expect(entries[1].operationRequired).toBeUndefined();
+    });
+
     it('should run when one of the join entries has an estimated cardinality of 0', async() => {
       mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([

@@ -91,6 +91,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
       const services: Set<string> = new Set();
       algebraUtils.visitOperation(action.operation, {
         [Algebra.Types.SERVICE]: {
+          // Nested SERVICE clauses are delegated to their parent SERVICE target, so they need no source here.
           preVisitor: () => ({ continue: false }),
           visitor: (serviceOperation) => {
             if (serviceOperation.name.termType === 'NamedNode') {

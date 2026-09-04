@@ -68,6 +68,14 @@ export function materializeOperation(
   };
 
   return algebraUtils.mapOperation(operation, {
+    [Algebra.Types.SERVICE]: {
+      transform: serviceOp => algebraFactory.createService(
+        materializeOperation(serviceOp.input, bindings, algebraFactory, bindingsFactory, options),
+        <RDF.Variable | RDF.NamedNode> materializeTerm(serviceOp.name, bindings),
+        serviceOp.silent,
+      ),
+      preVisitor: () => ({ continue: false }),
+    },
     [Algebra.Types.PATH]: {
       preVisitor: () => ({ continue: false }),
       transform: pathOp =>
