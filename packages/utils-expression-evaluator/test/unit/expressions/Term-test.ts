@@ -30,22 +30,22 @@ describe('Term', () => {
   describe('the string representation of numeric literals', () => {
     describe('like integers', () => {
       it('should properly express zero', () => {
-        const num = new DecimalLiteral(0e0);
+        const num = new IntegerLiteral(0e0);
         expect(num.toRDF(DF).value).toBe('0');
       });
 
       it('should properly express one', () => {
-        const num = new DecimalLiteral(1e0);
+        const num = new IntegerLiteral(1e0);
         expect(num.toRDF(DF).value).toBe('1');
       });
 
       it('should properly express small integer numbers', () => {
-        const num = new DecimalLiteral(1.234e3);
+        const num = new IntegerLiteral(1.234e3);
         expect(num.toRDF(DF).value).toBe('1234');
       });
 
       it('should properly express large integer numbers', () => {
-        const num = new DecimalLiteral(1e8);
+        const num = new IntegerLiteral(1e8);
         expect(num.toRDF(DF).value).toBe('100000000');
       });
     });
@@ -53,12 +53,12 @@ describe('Term', () => {
     describe('like decimals', () => {
       it('should properly express zero', () => {
         const num = new DecimalLiteral(0e0);
-        expect(num.toRDF(DF).value).toBe('0');
+        expect(num.toRDF(DF).value).toBe('0.0');
       });
 
-      it('should not include decimal places in integer values', () => {
+      it('should always include decimal point', () => {
         const num = new DecimalLiteral(1e0);
-        expect(num.toRDF(DF).value).toBe('1');
+        expect(num.toRDF(DF).value).toBe('1.0');
       });
 
       it('should properly express small positive decimal numbers', () => {
