@@ -11,6 +11,7 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { groupRepeatedSubOperations } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, BufferedIterator } from 'asynciterator';
 
@@ -50,6 +51,9 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const objectVar = operation.object;
 
       const termHashes = {};
+      // The path is walked by evaluating one sub-path per reached term,
+      // so group those evaluations in the physical query plan
+      const alpContext = groupRepeatedSubOperations(context, 'alp', this.name);
 
       const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
         results.bindingsStream,
@@ -71,7 +75,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                   subject,
                   predicate.path,
                   graph,
-                  context,
+                  alpContext,
                   termHashes,
                   {},
                   it,

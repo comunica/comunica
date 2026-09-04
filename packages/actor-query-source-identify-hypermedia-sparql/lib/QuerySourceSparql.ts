@@ -9,6 +9,7 @@ import type {
   FragmentSelectorShape,
   IActionContext,
   IDataset,
+  IPhysicalQueryPlanNode,
   IQueryBindingsOptions,
   IQuerySource,
   MetadataBindings,
@@ -57,6 +58,10 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly cache: LRUCache<string, QueryResultCardinality> | undefined;
 
   private lastSourceContext: IActionContext | undefined;
+  /**
+   * The number of HTTP requests made for each physical query plan node.
+   */
+  private readonly httpRequestsByPlanNode = new WeakMap<IPhysicalQueryPlanNode, number>();
   private httpQueryMethodRejected = false;
 
   public constructor(
@@ -107,6 +112,7 @@ export class QuerySourceSparql implements IQuerySource {
           init = { ...init, method: 'POST' };
         }
 
+        this.countHttpRequest();
         let response = await this.mediatorHttp.mediate(
           { input, init, context: this.lastSourceContext! },
         );
@@ -116,6 +122,7 @@ export class QuerySourceSparql implements IQuerySource {
           Actor.getContextLogger(this.context)?.warn(`Encountered a 404 when requesting ${this.url} according to the service description of ${this.urlBackup}. This is a server configuration issue. Retrying the current and modifying future requests to ${this.urlBackup} instead.`);
           input = (<string> input).replace(this.url, this.urlBackup);
           this.url = this.urlBackup;
+          this.countHttpRequest();
           response = await this.mediatorHttp.mediate(
             { input, init, context: this.lastSourceContext! },
           );
@@ -124,6 +131,7 @@ export class QuerySourceSparql implements IQuerySource {
         if (init?.method === 'QUERY' && (response.status === 405 || response.status === 501)) {
           Actor.getContextLogger(this.context)?.warn(`Encountered a ${response.status} for an HTTP QUERY request to ${this.url}, even though it advertises support for it via the Accept-Query header. Retrying the current and modifying future requests to use POST instead.`);
           this.httpQueryMethodRejected = true;
+          this.countHttpRequest();
           response = await this.mediatorHttp.mediate(
             { input, init: { ...init, method: 'POST' }, context: this.lastSourceContext! },
           );
@@ -205,6 +213,27 @@ export class QuerySourceSparql implements IQuerySource {
     };
   }
 
+  /**
+   * Report the query that is sent to the endpoint to the physical query plan, if one is being logged.
+   * @param context The context of the current operation.
+   * @param query The query that is sent to the endpoint.
+   */
+  protected reportSourceQuery(context: IActionContext, query: string): void {
+    context.get(KeysInitQuery.physicalQueryPlanNode)?.appendMetadata({ sourceQuery: query });
+  }
+
+  /**
+   * Count an HTTP request against the physical query plan node this source is currently working for.
+   */
+  protected countHttpRequest(): void {
+    const planNode = this.lastSourceContext?.get(KeysInitQuery.physicalQueryPlanNode);
+    if (planNode) {
+      const httpRequests = (this.httpRequestsByPlanNode.get(planNode) ?? 0) + 1;
+      this.httpRequestsByPlanNode.set(planNode, httpRequests);
+      planNode.appendMetadata({ httpRequests });
+    }
+  }
+
   public queryBindings(
     operationIn: Algebra.Operation,
     context: IActionContext,
@@ -234,6 +263,7 @@ export class QuerySourceSparql implements IQuerySource {
         await this.operationToSelectQuery(this.algebraFactory, operation, variables);
       const undefVariables = QuerySourceSparql.getOperationUndefs(operation);
 
+      this.reportSourceQuery(context, selectQuery);
       return this.queryBindingsRemote(this.url, selectQuery, variables, context, undefVariables);
     }, { autoStart: false });
     this.attachMetadata(bindings, context, operationPromise);
@@ -245,6 +275,7 @@ export class QuerySourceSparql implements IQuerySource {
     const quads = wrap<any>((async() => {
       this.lastSourceContext = this.context.merge(context);
       const query: string = context.get(KeysInitQuery.queryString) ?? await this.operationToQuery(operation);
+      this.reportSourceQuery(context, query);
       const rawStream = await this.endpointFetcher.fetchTriples(this.url, query);
       return rawStream;
     })(), { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
@@ -260,6 +291,7 @@ export class QuerySourceSparql implements IQuerySource {
     // Without propertyFeature overlap, perform the actual ASK query.
     this.lastSourceContext = this.context.merge(context);
     const query: string = context.get(KeysInitQuery.queryString) ?? await this.operationToQuery(operation);
+    this.reportSourceQuery(context, query);
     const promise = this.endpointFetcher.fetchAsk(this.url, query);
     return promise;
   }
@@ -267,6 +299,7 @@ export class QuerySourceSparql implements IQuerySource {
   public async queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
     this.lastSourceContext = this.context.merge(context);
     const query: string = context.get(KeysInitQuery.queryString) ?? await this.operationToQuery(operation);
+    this.reportSourceQuery(context, query);
     const promise = this.endpointFetcher.fetchUpdate(this.url, query);
     return promise;
   }

@@ -80,14 +80,6 @@ describe('ActorQueryProcessSequential', () => {
           .resolves.toFailTest(`actor is not able to explain queries.`);
       });
 
-      it('rejects on raw explain in context', async() => {
-        await expect(actor.test({
-          query: 'q',
-          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }).setRaw('explain', 'parsed'),
-        }))
-          .resolves.toFailTest(`actor is not able to explain queries.`);
-      });
-
       it('handles no explain in context', async() => {
         await expect(actor.test({
           query: 'q',

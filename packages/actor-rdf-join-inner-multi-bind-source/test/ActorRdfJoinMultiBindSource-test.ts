@@ -226,6 +226,8 @@ describe('ActorRdfJoinMultiBindSource', () => {
         // Validate physicalPlanMetadata
         expect(physicalPlanMetadata).toEqual({
           bindIndex: 1,
+          bindOperation: action.entries[1].operation,
+          bindOperationCardinality: { type: 'estimate', value: 3 },
         });
 
         // Validate mock calls
@@ -343,6 +345,8 @@ describe('ActorRdfJoinMultiBindSource', () => {
         // Validate physicalPlanMetadata
         expect(physicalPlanMetadata).toEqual({
           bindIndex: 1,
+          bindOperation: action.entries[1].operation,
+          bindOperationCardinality: { type: 'estimate', value: 3 },
         });
 
         // Validate mock calls

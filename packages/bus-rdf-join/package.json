@@ -46,7 +46,6 @@
     "@comunica/core": "^5.3.0",
     "@comunica/mediatortype-join-coefficients": "^5.3.0",
     "@comunica/types": "^5.3.0",
-    "@comunica/utils-iterator": "^5.0.0",
     "@comunica/utils-metadata": "^5.3.0",
     "@rdfjs/types": "*"
   }

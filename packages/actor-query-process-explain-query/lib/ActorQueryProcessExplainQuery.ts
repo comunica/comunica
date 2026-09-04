@@ -8,7 +8,7 @@ import type {
 import type { MediatorQuerySerialize } from '@comunica/bus-query-serialize';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult, IActorTest } from '@comunica/core';
-import { ActionContextKey, failTest, passTestVoid } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { Algebra, AlgebraFactory, transformer } from '@comunica/utils-algebra';
 import { getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -27,8 +27,7 @@ export class ActorQueryProcessExplainQuery extends ActorQueryProcess {
   }
 
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
-    if ((action.context.get(KeysInitQuery.explain) ??
-      action.context.get(new ActionContextKey('explain'))) !== 'query') {
+    if (action.context.get(KeysInitQuery.explain) !== 'query') {
       return failTest(`${this.name} can only explain in 'query' mode.`);
     }
     return passTestVoid();
