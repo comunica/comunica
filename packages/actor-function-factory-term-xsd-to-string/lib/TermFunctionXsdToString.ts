@@ -62,8 +62,8 @@ export class TermFunctionXsdToString extends TermFunctionBase {
               return string(double(val.typedValue).str());
             }
           }
-          // The original code used float for everything, so keeping float as fallback makes sense.
-          // This line also handles the actual float representation, when canonical float output is needed.
+          // This line handles the actual float representation, when canonical float output is needed.
+          // This also doubles as fallback for unhandled numeric types.
           return string(float(val.typedValue).str());
         })
         .onBoolean1Typed(() => val => string(bool(val).str()))
