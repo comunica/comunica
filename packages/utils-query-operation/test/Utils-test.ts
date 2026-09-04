@@ -1,7 +1,9 @@
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import {
+  assignOperationSortLimit,
   assignOperationSource,
+  getOperationSortLimit,
   getOperationSource,
   getSafeBindings,
   getSafeBoolean,
@@ -93,6 +95,40 @@ describe('utils', () => {
       expect(getOperationSource(opIn)).toBeUndefined();
       expect(getOperationSource(opOut1)).toBe(source1);
       expect(getOperationSource(opOut2)).toBe(source2);
+    });
+  });
+
+  describe('#getOperationSortLimit', () => {
+    it('should return undefined for an operation without metadata', () => {
+      expect(getOperationSortLimit(AF.createNop())).toBeUndefined();
+    });
+
+    it('should return undefined for an operation with metadata but without sort limit', () => {
+      const op: Algebra.Nop = AF.createNop();
+      op.metadata = {};
+      expect(getOperationSortLimit(op)).toBeUndefined();
+    });
+
+    it('should return for an operation with a sort limit', () => {
+      const op: Algebra.Nop = AF.createNop();
+      op.metadata = { sortLimit: 10 };
+      expect(getOperationSortLimit(op)).toBe(10);
+    });
+  });
+
+  describe('#assignOperationSortLimit', () => {
+    it('should set the sort limit for an operation', () => {
+      const opIn = AF.createNop();
+      const opOut = assignOperationSortLimit(opIn, 10);
+      expect(getOperationSortLimit(opIn)).toBeUndefined();
+      expect(getOperationSortLimit(opOut)).toBe(10);
+    });
+
+    it('should keep other metadata', () => {
+      const opIn = assignOperationSource(AF.createNop(), <any> 'abc');
+      const opOut = assignOperationSortLimit(opIn, 10);
+      expect(getOperationSource(opOut)).toBe('abc');
+      expect(getOperationSortLimit(opOut)).toBe(10);
     });
   });
 
