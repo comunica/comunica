@@ -213,8 +213,10 @@ export class DecimalLiteral extends NumericLiteral {
   protected specificFormatter(val: number): string {
     const jsString = val.toString();
 
-    // Only return the JS representation if it consists of decimal digits and a decimal point
-    if (/^-?[.0-9]+$/u.test(jsString)) {
+    // Only return the JS representation if it follows the decimal representation,
+    // by having an optional leading - and no leading +,
+    // and having at least one digit on both sides of the decimal point.
+    if (/^-?[0-9]+\.[0-9]+$/u.test(jsString)) {
       return jsString;
     }
 
