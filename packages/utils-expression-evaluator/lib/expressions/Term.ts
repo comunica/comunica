@@ -181,6 +181,9 @@ export abstract class NumericLiteral extends Literal<number> {
   }
 }
 
+/**
+ * XSD integer: https://www.w3.org/TR/xmlschema-2/#integer
+ */
 export class IntegerLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -196,6 +199,9 @@ export class IntegerLiteral extends NumericLiteral {
   }
 }
 
+/**
+ * XSD decimal: https://www.w3.org/TR/xmlschema-2/#decimal
+ */
 export class DecimalLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -206,26 +212,27 @@ export class DecimalLiteral extends NumericLiteral {
     super(typedValue, dataType ?? TypeURL.XSD_DECIMAL, strValue, language);
   }
 
+  /**
+   * Fallback formatter to produce canonical representation when no lexical value exists.
+   */
   protected specificFormatter(val: number): string {
-    return val.toString();
+    const jsString = val.toString();
+
+    // Only return the JS representation if it follows the decimal representation,
+    // by having an optional leading - and no leading +,
+    // and having at least one digit on both sides of the decimal point.
+    if (/^-?[0-9]+\.[0-9]+$/u.test(jsString)) {
+      return jsString;
+    }
+
+    // Use the longest possible decimal format with trailing zeroes removed as fallback
+    return val.toFixed(20).replace(/([0-9])0*$/u, '$1');
   }
 }
 
-export class FloatLiteral extends NumericLiteral {
-  public constructor(
-    public override typedValue: number,
-    dataType?: string,
-    public override strValue?: string,
-    public override language?: string,
-  ) {
-    super(typedValue, dataType ?? TypeURL.XSD_FLOAT, strValue, language);
-  }
-
-  protected specificFormatter(val: number): string {
-    return val.toString();
-  }
-}
-
+/**
+ * XSD double: https://www.w3.org/TR/xmlschema-2/#double
+ */
 export class DoubleLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -236,30 +243,54 @@ export class DoubleLiteral extends NumericLiteral {
     super(typedValue, dataType ?? TypeURL.XSD_DOUBLE, strValue, language);
   }
 
+  /**
+   * Fallback formatter to produce canonical representation when no lexical value exists.
+   */
   protected specificFormatter(val: number): string {
-    if (!Number.isFinite(val)) {
-      if (val > 0) {
-        return 'INF';
-      }
-      if (val < 0) {
-        return '-INF';
-      }
-      return 'NaN';
+    if (Number.isFinite(val)) {
+      // The .toExponential() call produces the JS version in form
+      // {mantissa}e(+|-){exponent} where mantissa could be decimal or integer,
+      // and the exponent will always be an integer.
+      const [ jsMantissa, jsExponent ] = val.toExponential().split('e');
+
+      // Optional "+" is prohibited in the exponent, but is always added by JS
+      const exponent = jsExponent.replace(/^\+/u, '');
+
+      // There must be at least one decimal place, but JS may produce an integer mantissa,
+      // so this uses regex to add one decimal place to every integer JS mantissa.
+      const mantissa = jsMantissa.replace(/^(-?[0-9]+)$/u, '$1.0');
+
+      // The exponent separator should be uppercase E
+      return `${mantissa}E${exponent}`;
     }
 
-    const jsExponential = val.toExponential();
-    const [ jsMantisse, jsExponent ] = jsExponential.split('e');
+    if (val < 0) {
+      return '-INF';
+    }
 
-    // Leading + must be removed for integer
-    // https://www.w3.org/TR/xmlschema-2/#integer
-    const exponent = jsExponent.replace(/\+/u, '');
+    if (val > 0) {
+      return 'INF';
+    }
 
-    // SPARQL test suite prefers trailing zero's
-    const mantisse = jsMantisse.includes('.') ?
-      jsMantisse :
-      `${jsMantisse}.0`;
+    return 'NaN';
+  }
+}
 
-    return `${mantisse}E${exponent}`;
+/**
+ * XSD float: https://www.w3.org/TR/xmlschema-2/#float
+ *
+ * Every float (32-bit) is stored as double (64-bit) number in JavaScript,
+ * and the canonical representations of the XSD types are identical,
+ * so the formatter implementation is shared through inheritance.
+ */
+export class FloatLiteral extends DoubleLiteral {
+  public constructor(
+    public override typedValue: number,
+    dataType?: string,
+    public override strValue?: string,
+    public override language?: string,
+  ) {
+    super(typedValue, dataType ?? TypeURL.XSD_FLOAT, strValue, language);
   }
 }
 
