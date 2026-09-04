@@ -22,6 +22,7 @@
     "http://www.w3.org/TR/sparql11-results-json/",
     "http://www.w3.org/TR/sparql11-federated-query/",
     "http://www.w3.org/TR/sparql11-service-description/",
+    "http://www.w3.org/TR/sparql11-protocol/",
     "https://www.w3.org/TR/sparql12-query/"
   ]
 }

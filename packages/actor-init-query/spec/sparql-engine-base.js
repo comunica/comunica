@@ -9,7 +9,7 @@ const RdfStore = require('rdf-stores').RdfStore;
 const RdfTestSuite = require('rdf-test-suite');
 const { HttpServiceSparqlEndpoint } = require('..');
 
-module.exports = function(engine, exposeServiceDescriptionEndpoint = false) {
+module.exports = function(engine, exposeEndpoints = false) {
   const testEngine = {
     parse(query, options) {
       return engine.actorInitQuery.mediatorQueryProcess.bus.actors[0].parse(query, new ActionContext({ [KeysInitQuery.baseIRI.name]: options.baseIRI }));
@@ -78,8 +78,12 @@ module.exports = function(engine, exposeServiceDescriptionEndpoint = false) {
     },
   };
 
-  if (exposeServiceDescriptionEndpoint) {
-    testEngine.startServiceDescriptionEndpoint = createServiceDescriptionEndpointStarter(engine);
+  if (exposeEndpoints) {
+    testEngine.startServiceDescriptionEndpoint = createEndpointStarter(engine);
+    testEngine.startProtocolEndpoint = createEndpointStarter(engine, () => {
+      const store = RdfStore.createDefault(true);
+      return { sources: [{ type: 'rdfjs', value: store }], destination: store };
+    });
   }
 
   return testEngine;
@@ -123,7 +127,7 @@ function extractQuery(url, init) {
     (init.body ? new URLSearchParams(String(init.body)).get('query') : null);
 }
 
-function createServiceDescriptionEndpointStarter(engine) {
+function createEndpointStarter(engine, createContext = () => ({})) {
   let server;
   let endpoint;
 
@@ -157,10 +161,10 @@ function createServiceDescriptionEndpointStarter(engine) {
     const address = server.address();
     if (!address || typeof address === 'string') {
       await close();
-      throw new Error('Could not determine the service description endpoint address.');
+      throw new Error('Could not determine the endpoint address.');
     }
 
-    const service = new HttpServiceSparqlEndpoint({ engine, port: address.port });
+    const service = new HttpServiceSparqlEndpoint({ engine, port: address.port, context: createContext() });
     server.on('request', service.handleRequest.bind(service, engine, variants, process.stdout, process.stderr));
 
     endpoint = `http://127.0.0.1:${address.port}/sparql`;

@@ -12,9 +12,10 @@ import * as url from 'node:url';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
-import { Algebra } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 
 import yargs from 'yargs';
 
@@ -33,6 +34,17 @@ const quad = require('rdf-quad');
 
 // Force type on Cluster, because there are issues with the Node.js typings since v18
 const cluster: Cluster = clusterUntyped;
+
+const DF = new DataFactory();
+
+/**
+ * The URL parameters through which the SPARQL protocol allows an RDF dataset to be specified,
+ * for query requests and update requests respectively.
+ */
+const DATASET_PARAMETERS: Record<IQueryBody['type'], { default: string; named: string }> = {
+  query: { default: 'default-graph-uri', named: 'named-graph-uri' },
+  void: { default: 'using-graph-uri', named: 'using-named-graph-uri' },
+};
 
 /**
  * An HTTP service that exposes a Comunica engine as a SPARQL endpoint.
@@ -480,6 +492,90 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Determine the RDF dataset that a request specifies through the SPARQL protocol.
+   * @param {module:url.UrlWithParsedQuery} requestUrl The parsed request URL.
+   * @param {'query' | 'void'} type The type of operation the dataset applies to.
+   * @return The graphs that form the default graph, and the named graphs.
+   */
+  public static getProtocolDataset(
+    requestUrl: url.UrlWithParsedQuery,
+    type: IQueryBody['type'],
+  ): { default: RDF.NamedNode[]; named: RDF.NamedNode[] } {
+    const parameters = DATASET_PARAMETERS[type];
+    const toGraphs = (value: string | string[] | undefined): RDF.NamedNode[] =>
+      (value === undefined ? [] : (Array.isArray(value) ? value : [ value ])).map(graph => DF.namedNode(graph));
+    return {
+      default: toGraphs(requestUrl.query[parameters.default]),
+      named: toGraphs(requestUrl.query[parameters.named]),
+    };
+  }
+
+  /**
+   * Apply the dataset that a request specifies through the SPARQL protocol to the query it contains.
+   * The query is returned unchanged if the request does not specify a dataset.
+   * @param {QueryEngineBase} engine A SPARQL engine.
+   * @param {IQueryBody} queryBody The query body.
+   * @param {module:url.UrlWithParsedQuery} requestUrl The parsed request URL.
+   * @param context The query context.
+   * @return {Promise<string | Algebra.Operation>} The query to execute.
+   */
+  public async applyProtocolDataset(
+    engine: QueryEngineBase,
+    queryBody: IQueryBody,
+    requestUrl: url.UrlWithParsedQuery,
+    context: Record<string, any>,
+  ): Promise<string | Algebra.Operation> {
+    const dataset = HttpServiceSparqlEndpoint.getProtocolDataset(requestUrl, queryBody.type);
+    if (dataset.default.length === 0 && dataset.named.length === 0) {
+      return queryBody.value;
+    }
+
+    const { data: operation } = await engine.explain(queryBody.value, <any> { ...context }, 'parsed');
+    const algebraFactory = new AlgebraFactory(DF);
+    if (queryBody.type === 'query') {
+      // The protocol-specified dataset replaces the dataset of the query itself
+      const input = operation.type === Algebra.Types.FROM ? operation.input : operation;
+      return algebraFactory.createFrom(input, dataset.default, dataset.named);
+    }
+    return HttpServiceSparqlEndpoint.applyUpdateDataset(algebraFactory, operation, dataset);
+  }
+
+  /**
+   * Apply the protocol-specified dataset to the WHERE clauses of an update operation.
+   * @param {AlgebraFactory} algebraFactory An algebra factory.
+   * @param {Algebra.Operation} operation An update operation.
+   * @param dataset The protocol-specified dataset.
+   * @param dataset.default The graphs that form the default graph.
+   * @param dataset.named The named graphs.
+   * @return {Algebra.Operation} The update operation with the dataset applied.
+   */
+  public static applyUpdateDataset(
+    algebraFactory: AlgebraFactory,
+    operation: Algebra.Operation,
+    dataset: { default: RDF.NamedNode[]; named: RDF.NamedNode[] },
+  ): Algebra.Operation {
+    if (operation.type === Algebra.Types.COMPOSITE_UPDATE) {
+      return algebraFactory.createCompositeUpdate((<Algebra.CompositeUpdate> operation).updates
+        .map(update => HttpServiceSparqlEndpoint.applyUpdateDataset(algebraFactory, update, dataset)));
+    }
+    if (operation.type === Algebra.Types.DELETE_INSERT) {
+      const deleteInsert = <Algebra.DeleteInsert> operation;
+      if (deleteInsert.where) {
+        // The protocol does not allow a request to specify the dataset in more than one way
+        if (deleteInsert.where.type === Algebra.Types.FROM) {
+          throw new Error(`A request with a using-graph-uri or using-named-graph-uri parameter can not contain a USING, USING NAMED or WITH clause`);
+        }
+        return algebraFactory.createDeleteInsert(
+          deleteInsert.delete,
+          deleteInsert.insert,
+          algebraFactory.createFrom(deleteInsert.where, dataset.default, dataset.named),
+        );
+      }
+    }
+    return operation;
+  }
+
+  /**
    * Writes the result of the given SPARQL query.
    * @param {QueryEngineBase} engine A SPARQL engine.
    * @param {module:stream.internal.Writable} stdout Output stream.
@@ -533,7 +629,12 @@ export class HttpServiceSparqlEndpoint {
 
     let result: QueryType;
     try {
-      result = await engine.query(queryBody.value, context);
+      // eslint-disable-next-line node/no-deprecated-api
+      const requestUrl = url.parse(request.url ?? '', true);
+      // The dataset that the request specifies through the protocol overrides the dataset of the query itself
+      const query = await this.applyProtocolDataset(engine, queryBody, requestUrl, context);
+
+      result = await engine.query(query, context);
 
       // For update queries, also await the result, so that failures are reported as a bad request.
       // The execution is memoized, as updates may not be executed again while serializing the result.

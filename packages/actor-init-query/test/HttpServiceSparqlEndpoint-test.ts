@@ -5,7 +5,7 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { BindingsStream } from '@comunica/types';
-import { Algebra } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
@@ -67,6 +67,15 @@ const argsDefault = {
 };
 
 const DF = new DataFactory();
+
+const bgp = { type: Algebra.Types.BGP, patterns: []};
+const ask = { type: Algebra.Types.ASK, input: bgp };
+const from = {
+  type: Algebra.Types.FROM,
+  input: ask,
+  default: [ DF.namedNode('http://example.org/g1') ],
+  named: [ DF.namedNode('http://example.org/n1'), DF.namedNode('http://example.org/n2') ],
+};
 const BF = new BindingsFactory(DF);
 
 describe('HttpServiceSparqlEndpoint', () => {
@@ -2229,6 +2238,75 @@ INSERT DATA {
           overrideKey: 'overrideValue',
         });
       });
+
+      describe('with a protocol-specified dataset', () => {
+        let engine: any;
+
+        beforeEach(async() => {
+          engine = await new QueryEngineFactoryBase().create();
+          jest.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
+        });
+
+        async function writeResult(): Promise<void> {
+          await instance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            query,
+            '',
+            false,
+            false,
+            0,
+          );
+          await expect(endCalledPromise).resolves.toBeFalsy();
+        }
+
+        it('should not modify the query when the request has no URL', async() => {
+          request.url = undefined;
+
+          await writeResult();
+
+          expect(engine.query).toHaveBeenCalledWith('default_test_query', expect.anything());
+        });
+
+        it('should wrap a query in the protocol-specified dataset', async() => {
+          request.url = 'url_sparql_dataset';
+          engine.explain = jest.fn(() => Promise.resolve({ data: ask }));
+
+          await writeResult();
+
+          expect(engine.query).toHaveBeenCalledWith(from, expect.anything());
+        });
+
+        it('should replace the dataset that the query itself defines', async() => {
+          request.url = 'url_sparql_dataset';
+          engine.explain = jest.fn(() => Promise.resolve({
+            data: { type: Algebra.Types.FROM, input: ask, default: [ DF.namedNode('http://example.org/other') ], named: []},
+          }));
+
+          await writeResult();
+
+          expect(engine.query).toHaveBeenCalledWith(from, expect.anything());
+        });
+
+        it('should apply the protocol-specified dataset to the where clause of an update', async() => {
+          request.url = 'url_sparql_using';
+          query = { type: 'void', value: 'default_test_query', context: undefined };
+          engine.explain = jest.fn(() => Promise.resolve({
+            data: { type: Algebra.Types.DELETE_INSERT, insert: [], where: bgp },
+          }));
+
+          await writeResult();
+
+          expect(engine.query).toHaveBeenCalledWith({
+            type: Algebra.Types.DELETE_INSERT,
+            insert: [],
+            where: { type: Algebra.Types.FROM, input: bgp, default: [ DF.namedNode('http://example.org/g1') ], named: []},
+          }, expect.anything());
+        });
+      });
     });
 
     describe('a configured base IRI', () => {
@@ -2261,6 +2339,72 @@ INSERT DATA {
         expect(engine.query).toHaveBeenCalledWith('default_test_query', {
           '@comunica/actor-init-query:baseIRI': 'https://example.org/sparql',
         });
+      });
+    });
+
+    describe('getProtocolDataset', () => {
+      it('should be empty when no dataset is specified', () => {
+        expect(HttpServiceSparqlEndpoint.getProtocolDataset(<any> { query: {}}, 'query'))
+          .toEqual({ default: [], named: []});
+      });
+
+      it('should handle single and repeated query dataset parameters', () => {
+        expect(HttpServiceSparqlEndpoint.getProtocolDataset(<any> { query: {
+          'default-graph-uri': 'http://example.org/g1',
+          'named-graph-uri': [ 'http://example.org/n1', 'http://example.org/n2' ],
+        }}, 'query')).toEqual({
+          default: [ DF.namedNode('http://example.org/g1') ],
+          named: [ DF.namedNode('http://example.org/n1'), DF.namedNode('http://example.org/n2') ],
+        });
+      });
+
+      it('should handle the update dataset parameters', () => {
+        expect(HttpServiceSparqlEndpoint.getProtocolDataset(<any> { query: {
+          'using-graph-uri': 'http://example.org/g1',
+          'using-named-graph-uri': 'http://example.org/n1',
+          'default-graph-uri': 'http://example.org/ignored',
+        }}, 'void')).toEqual({
+          default: [ DF.namedNode('http://example.org/g1') ],
+          named: [ DF.namedNode('http://example.org/n1') ],
+        });
+      });
+    });
+
+    describe('applyUpdateDataset', () => {
+      const algebraFactory = new AlgebraFactory(DF);
+      const dataset = { default: [ DF.namedNode('http://example.org/g1') ], named: []};
+
+      it('should apply the dataset to all updates of a composite update', () => {
+        expect(HttpServiceSparqlEndpoint.applyUpdateDataset(algebraFactory, <any> {
+          type: Algebra.Types.COMPOSITE_UPDATE,
+          updates: [{ type: Algebra.Types.DELETE_INSERT, insert: [], where: bgp }],
+        }, dataset)).toEqual({
+          type: Algebra.Types.COMPOSITE_UPDATE,
+          updates: [{
+            type: Algebra.Types.DELETE_INSERT,
+            insert: [],
+            where: { type: Algebra.Types.FROM, input: bgp, ...dataset },
+          }],
+        });
+      });
+
+      it('should not modify updates without a where clause', () => {
+        const clear = { type: Algebra.Types.CLEAR, source: 'ALL', silent: false };
+        expect(HttpServiceSparqlEndpoint.applyUpdateDataset(algebraFactory, clear, dataset)).toBe(clear);
+      });
+
+      it('should not modify delete/insert operations without a where clause', () => {
+        const deleteInsert = { type: Algebra.Types.DELETE_INSERT, insert: []};
+        expect(HttpServiceSparqlEndpoint.applyUpdateDataset(algebraFactory, deleteInsert, dataset))
+          .toBe(deleteInsert);
+      });
+
+      it('should error on updates that define their own dataset', () => {
+        expect(() => HttpServiceSparqlEndpoint.applyUpdateDataset(algebraFactory, <any> {
+          type: Algebra.Types.DELETE_INSERT,
+          insert: [],
+          where: { type: Algebra.Types.FROM, input: bgp, default: [], named: []},
+        }, dataset)).toThrow(`A request with a using-graph-uri or using-named-graph-uri parameter can not contain a USING, USING NAMED or WITH clause`);
       });
     });
 
