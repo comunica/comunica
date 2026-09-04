@@ -42,10 +42,10 @@ describe('We should respect the floor01 spec', () => {
     arity: 1,
     testTable: `
       '${n1}' = '${int('-1')}'
-      '${n2}' = '${decimal('-2')}'
-      '${n3}' = '${decimal('1')}'
+      '${n2}' = '${decimal('-2.0')}'
+      '${n3}' = '${decimal('1.0')}'
       '${n4}' = '${int('-2')}'
-      '${n5}' = '${decimal('2')}'
+      '${n5}' = '${decimal('2.0')}'
     `,
   });
 });
