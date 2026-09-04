@@ -82,6 +82,7 @@ describe('to string', () => {
         "-1.0"^^xsd:float = "-1"
         "+1.1"^^xsd:float = "1.1"
         "-1.1"^^xsd:float = "-1.1"
+        "0E0"^^xsd:float = "0"
         "0"^^xsd:float = "0"
         "0.0"^^xsd:float = "0"
         "+0.0"^^xsd:float = "0"
