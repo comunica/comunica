@@ -248,15 +248,19 @@ export class DoubleLiteral extends NumericLiteral {
    */
   protected specificFormatter(val: number): string {
     if (Number.isFinite(val)) {
-      // This produces the JS version in form "<mantissa>e(+|-)<exponent>"
+      // The .toExponential() call produces the JS version in form
+      // {mantissa}e(+|-){exponent} where mantissa could be decimal or integer,
+      // and the exponent will always be an integer.
       const [ jsMantissa, jsExponent ] = val.toExponential().split('e');
 
-      // Optional "+" is prohibited in the exponent
+      // Optional "+" is prohibited in the exponent, but is always added by JS
       const exponent = jsExponent.replace(/^\+/u, '');
 
-      // There must be at least one decimal place
+      // There must be at least one decimal place, but JS may produce an integer mantissa,
+      // so this uses regex to add one decimal place to every integer JS mantissa.
       const mantissa = jsMantissa.replace(/^(-?[0-9]+)$/u, '$1.0');
 
+      // The exponent separator should be uppercase E
       return `${mantissa}E${exponent}`;
     }
 
