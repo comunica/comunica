@@ -28,14 +28,17 @@ export class TermFunctionXsdToString extends TermFunctionBase {
         // SPECIFICALLY when checking the types in the numeric check,
         // e.g. for `xs:string` they do consider "or a type derived from `xs:string`".
         .onNumeric1(() => (val: NumericLiteral) => {
-          if (val.dataType === TypeURL.XSD_INTEGER) {
-            // Return the canonical representation of an integer.
+          if (
+            val.dataType === TypeURL.XSD_INTEGER ||
+            (val.dataType === TypeURL.XSD_DECIMAL && Number.isInteger(val.typedValue))
+          ) {
+            // Return the canonical representation for integers. The XPath cast spec also requires
+            // integer-valued decimals to be returned as canonical integer representations,
+            // which is also covered here.
             return string(integer(val.typedValue).str());
           }
           if (val.dataType === TypeURL.XSD_DECIMAL) {
-            // The canonical representation of a decimal already covers the canonical integer case,
-            // by stripping away decimals when the number can be expressed as an integer.
-            // Thus, we can simply return the canonical decimal representation.
+            // Return the canonical decimal representation for decimals.
             return string(decimal(val.typedValue).str());
           }
           if (val.dataType === TypeURL.XSD_DOUBLE || val.dataType === TypeURL.XSD_FLOAT) {
@@ -46,10 +49,15 @@ export class TermFunctionXsdToString extends TermFunctionBase {
             }
             // Decimal and float, where absolute value is in range `[0.000001, 1000000[`,
             // should be converted to decimal before casting to string, as per the spec.
+            // We also need to take into account the specific treatment of integer-valued decimals,
+            // and return them as canonical integer representation.
             if (
               (val.typedValue > -1e6 && val.typedValue <= -1e-6) ||
               (val.typedValue >= 1e-6 && val.typedValue < 1e6)
             ) {
+              if (Number.isInteger(val.typedValue)) {
+                return string(integer(val.typedValue).str());
+              }
               return string(decimal(val.typedValue).str());
             }
             // The conditions laid out by XPath spec for double and float representation do not explicitly
