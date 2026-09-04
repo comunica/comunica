@@ -183,11 +183,11 @@ export const numeric: AliasMap = {
   NaNd: '"NaN"^^xsd:double',
   '-INF': '"-INF"^^xsd:float',
 
-  '0d': '"0"^^xsd:decimal',
-  '1d': '"1"^^xsd:decimal',
-  '2d': '"2"^^xsd:decimal',
-  '3d': '"3"^^xsd:decimal',
-  '-5d': '"-5"^^xsd:decimal',
+  '0d': '"0.0"^^xsd:decimal',
+  '1d': '"1.0"^^xsd:decimal',
+  '2d': '"2.0"^^xsd:decimal',
+  '3d': '"3.0"^^xsd:decimal',
+  '-5d': '"-5.0"^^xsd:decimal',
 };
 
 export const dateTime: AliasMap = {

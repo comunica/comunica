@@ -14,7 +14,7 @@ describe('evaluation of \'+ (unary)\' like', () => {
     notation: Notation.Prefix,
     testTable: `
         "3"^^xsd:integer     = "3"^^xsd:integer
-        "3"^^xsd:decimal     = "3"^^xsd:decimal
+        "3"^^xsd:decimal     = "3.0"^^xsd:decimal
         "3"^^xsd:float       = "3.0E0"^^xsd:float
         "3"^^xsd:double      = "3.0E0"^^xsd:double
         "-10.5"^^xsd:decimal = "-10.5"^^xsd:decimal
