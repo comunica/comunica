@@ -4,12 +4,23 @@ import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation'
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
+import type { Bindings, IActionContext, IExpressionEvaluator, IQueryOperationResult } from '@comunica/types';
 import { Algebra, isKnownSubType } from '@comunica/utils-algebra';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
-import { getSafeBindings } from '@comunica/utils-query-operation';
+import { getOperationSortLimit, getSafeBindings } from '@comunica/utils-query-operation';
 import type { Term } from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import { SortIterator } from './SortIterator';
+
+/**
+ * A binding annotated with the evaluation of the ORDER BY expressions, and with its position in the
+ * input stream so that equal bindings keep their original order.
+ */
+interface IAnnotatedBindings<TResults> {
+  bindings: Bindings;
+  index: number;
+  results: TResults;
+}
 
 /**
  * A comunica OrderBy Query Operation Actor.
@@ -34,60 +45,79 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
   Promise<IQueryOperationResult> {
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
     const output = getSafeBindings(outputRaw);
+    const { bindingsStream } = output;
 
-    const options = { window: this.window };
-    let { bindingsStream } = output;
-
-    // Sorting backwards since the first one is the most important therefore should be ordered last.
     const orderByEvaluator = await this.mediatorTermComparatorFactory.mediate({ context });
+    const ascending = operation.expressions.map(expr => this.isAscending(expr));
+    const evaluators = await Promise.all(operation.expressions.map(expr => this.mediatorExpressionEvaluatorFactory
+      .mediate({ algExpr: this.extractSortExpression(expr), context })));
+    const { length } = evaluators;
 
-    for (let i = operation.expressions.length - 1; i >= 0; i--) {
-      let expr = operation.expressions[i];
-      const isAscending = this.isAscending(expr);
-      expr = this.extractSortExpression(expr);
-      // Transform the stream by annotating it with the expr result
-      const evaluator = await this.mediatorExpressionEvaluatorFactory
-        .mediate({ algExpr: expr, context });
-      interface IAnnotatedBinding {
-        bindings: Bindings;
-        result: Term | undefined;
+    // Annotate every binding with the result of each expression, in a single pass over the stream
+    let index = 0;
+    const evaluate = async(evaluator: IExpressionEvaluator, bindings: Bindings): Promise<Term | undefined> => {
+      try {
+        return await evaluator.evaluate(bindings);
+      } catch (error: unknown) {
+        // We ignore all Expression errors.
+        // Other errors (likely programming mistakes) are still propagated.
+        // I can't recall where this is defined in the spec.
+        if (!isExpressionError(<Error> error)) {
+          bindingsStream.emit('error', error);
+        }
       }
+    };
 
-      const transform = async(bindings: Bindings, next: any, push: (result: IAnnotatedBinding) => void):
-      Promise<void> => {
-        try {
-          const result = await evaluator.evaluate(bindings);
-          push({ bindings, result });
-        } catch (error: unknown) {
-          // We ignore all Expression errors.
-          // Other errors (likely programming mistakes) are still propagated.
-          // I can't recall where this is defined in the spec.
-          if (!isExpressionError(<Error> error)) {
-            bindingsStream.emit('error', error);
+    // Equal bindings keep their input order, which makes a bounded sort return exactly the
+    // first `limit` results of an unbounded one.
+    // When a LIMIT was pushed down onto this operation, only that many results have to be buffered.
+    const options = { window: this.window, limit: getOperationSortLimit(operation) };
+    let sortedStream: AsyncIterator<Bindings>;
+    if (length === 1) {
+      // Sorting on a single expression is by far the most common case, and is worth not paying for
+      // an array per solution
+      const [ evaluator ] = evaluators;
+      const [ isAscending ] = ascending;
+      const transformed = bindingsStream.transform<IAnnotatedBindings<Term | undefined>>({
+        // eslint-disable-next-line ts/no-misused-promises
+        transform: async(bindings, next, push) => {
+          push({ bindings, index: index++, results: await evaluate(evaluator, bindings) });
+          next();
+        },
+      });
+      sortedStream = new SortIterator(transformed, (left, right) => {
+        const compare = orderByEvaluator.orderTypes(left.results, right.results);
+        if (compare !== 0) {
+          return isAscending ? compare : -compare;
+        }
+        return left.index - right.index;
+      }, options).map(({ bindings }) => bindings);
+    } else {
+      const transformed = bindingsStream.transform<IAnnotatedBindings<(Term | undefined)[]>>({
+        // eslint-disable-next-line ts/no-misused-promises
+        transform: async(bindings, next, push) => {
+          const results: (Term | undefined)[] = Array.from({ length });
+          for (let i = 0; i < length; i++) {
+            results[i] = await evaluate(evaluators[i], bindings);
           }
-          push({ bindings, result: undefined });
+          push({ bindings, index: index++, results });
+          next();
+        },
+      });
+      sortedStream = new SortIterator(transformed, (left, right) => {
+        for (let i = 0; i < length; i++) {
+          const compare = orderByEvaluator.orderTypes(left.results[i], right.results[i]);
+          if (compare !== 0) {
+            return ascending[i] ? compare : -compare;
+          }
         }
-        next();
-      };
-      // eslint-disable-next-line ts/no-misused-promises
-      const transformedStream = bindingsStream.transform<IAnnotatedBinding>({ transform });
-
-      // Sort the annoted stream
-      const sortedStream = new SortIterator(transformedStream, (left, right) => {
-        let compare = orderByEvaluator.orderTypes(left.result, right.result);
-        if (!isAscending) {
-          compare *= -1;
-        }
-        return compare;
-      }, options);
-
-      // Remove the annotation
-      bindingsStream = sortedStream.map(({ bindings }) => bindings);
+        return left.index - right.index;
+      }, options).map(({ bindings }) => bindings);
     }
 
     return {
       type: 'bindings',
-      bindingsStream,
+      bindingsStream: sortedStream,
       metadata: output.metadata,
     };
   }

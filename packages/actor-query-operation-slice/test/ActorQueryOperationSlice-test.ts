@@ -13,6 +13,9 @@ const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperationSlice', () => {
+  const sliceOp = (start: number, length?: number): any =>
+    ({ type: 'project', input: { type: 'bgp' }, start, length });
+
   let bus: any;
   let mediatorQueryOperation: any;
   let mediatorQueryOperationMetaInf: any;
@@ -124,7 +127,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 0 and length 100', async() => {
-      const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(0, 100), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
@@ -142,7 +145,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 1 and length 100', async() => {
-      const op: any = { operation: { type: 'project', start: 1, length: 100 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(1, 100), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
@@ -157,7 +160,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 3 and length 100', async() => {
-      const op: any = { operation: { type: 'project', start: 3, length: 100 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(3, 100), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
@@ -169,7 +172,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 0 and length 3', async() => {
-      const op: any = { operation: { type: 'project', start: 0, length: 3 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(0, 3), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
@@ -185,7 +188,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 0 and length 2', async() => {
-      const op: any = { operation: { type: 'project', start: 0, length: 2 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(0, 2), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
@@ -200,7 +203,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 0 and length 0', async() => {
-      const op: any = { operation: { type: 'project', start: 0, length: 0 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(0, 0), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
@@ -214,7 +217,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 1 and length 3', async() => {
-      const op: any = { operation: { type: 'project', start: 1, length: 3 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(1, 3), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 2 },
@@ -229,7 +232,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 1 and length 1', async() => {
-      const op: any = { operation: { type: 'project', start: 1, length: 1 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(1, 1), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 1 },
@@ -243,7 +246,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 2 and length 1', async() => {
-      const op: any = { operation: { type: 'project', start: 2, length: 1 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(2, 1), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 1 },
@@ -257,7 +260,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 2 and length 0', async() => {
-      const op: any = { operation: { type: 'project', start: 2, length: 0 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(2, 0), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
@@ -269,7 +272,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 3 and length 1', async() => {
-      const op: any = { operation: { type: 'project', start: 3, length: 1 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(3, 1), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
@@ -280,7 +283,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 3 and length 0', async() => {
-      const op: any = { operation: { type: 'project', start: 3, length: 1 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(3, 1), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
@@ -292,7 +295,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 4 and length 1', async() => {
-      const op: any = { operation: { type: 'project', start: 4, length: 1 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(4, 1), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
@@ -304,7 +307,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 4 and length 0', async() => {
-      const op: any = { operation: { type: 'project', start: 4, length: 1 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(4, 1), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 0 },
@@ -321,7 +324,7 @@ describe('ActorQueryOperationSlice', () => {
         mediatorQueryOperation: mediatorQueryOperationMetaInf,
         name: 'actor',
       });
-      const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(0, 100), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
@@ -342,7 +345,7 @@ describe('ActorQueryOperationSlice', () => {
         mediatorQueryOperation: mediatorQueryOperationUndefs,
         name: 'actor',
       });
-      const op: any = { operation: { type: 'project', start: 0, length: 100 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(0, 100), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
@@ -357,7 +360,7 @@ describe('ActorQueryOperationSlice', () => {
     });
 
     it('should run on a stream for start 0 and no length', async() => {
-      const op: any = { operation: { type: 'project', start: 0 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(0), context: new ActionContext() };
       const output = getSafeBindings(await actor.run(op, undefined));
       await expect(output.metadata()).resolves.toEqual({
         cardinality: { type: 'estimate', value: 3 },
@@ -374,7 +377,7 @@ describe('ActorQueryOperationSlice', () => {
 
     it('should run on a stream of quads for start 0 and length 2', async() => {
       actor = new ActorQueryOperationSlice({ bus, mediatorQueryOperation: mediatorQueryOperationQuads, name: 'actor' });
-      const op: any = { operation: { type: 'project', start: 0, length: 2 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(0, 2), context: new ActionContext() };
       const output = getSafeQuads(await actor.run(op, undefined));
       await expect(output.metadata()).resolves
         .toEqual({ cardinality: { type: 'estimate', value: 2 }});
@@ -391,10 +394,60 @@ describe('ActorQueryOperationSlice', () => {
         mediatorQueryOperation: mediatorQueryOperationBoolean,
         name: 'actor',
       });
-      const op: any = { operation: { type: 'project', start: 0 }, context: new ActionContext() };
+      const op: any = { operation: sliceOp(0), context: new ActionContext() };
       const output = getSafeBoolean(await actor.run(op, undefined));
       expect(output.type).toBe('boolean');
       await expect(output.execute()).resolves.toBe(true);
+    });
+
+    describe('pushing the limit down into an ORDER BY', () => {
+      const orderBy = { type: 'orderby', input: { type: 'bgp' }, expressions: []};
+
+      const runSlice = async(input: any, start: number, length?: number): Promise<any> => {
+        const op: any = { operation: { type: 'slice', input, start, length }, context: new ActionContext() };
+        await arrayifyStream(getSafeBindings(await actor.run(op, undefined)).bindingsStream);
+        return mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+      };
+
+      it('should annotate a direct ORDER BY with the number of results that will be read', async() => {
+        await expect(runSlice(orderBy, 0, 10)).resolves.toEqual({ ...orderBy, metadata: { sortLimit: 10 }});
+      });
+
+      it('should include the offset in the annotation', async() => {
+        await expect(runSlice(orderBy, 90, 10)).resolves.toEqual({ ...orderBy, metadata: { sortLimit: 100 }});
+      });
+
+      it('should keep other metadata on the ORDER BY', async() => {
+        const annotated = { ...orderBy, metadata: { scopedSource: 'source' }};
+        await expect(runSlice(annotated, 0, 10)).resolves
+          .toEqual({ ...orderBy, metadata: { scopedSource: 'source', sortLimit: 10 }});
+      });
+
+      it('should annotate an ORDER BY below a projection', async() => {
+        const input = { type: 'project', input: orderBy, variables: []};
+        await expect(runSlice(input, 0, 10)).resolves
+          .toEqual({ ...input, input: { ...orderBy, metadata: { sortLimit: 10 }}});
+      });
+
+      it('should annotate an ORDER BY below an extend', async() => {
+        const input = { type: 'extend', input: orderBy, variable: DF.variable('a'), expression: {}};
+        await expect(runSlice(input, 0, 10)).resolves
+          .toEqual({ ...input, input: { ...orderBy, metadata: { sortLimit: 10 }}});
+      });
+
+      it('should not annotate without a limit', async() => {
+        await expect(runSlice(orderBy, 10)).resolves.toBe(orderBy);
+      });
+
+      it('should not annotate an ORDER BY below a distinct', async() => {
+        const input = { type: 'distinct', input: orderBy };
+        await expect(runSlice(input, 0, 10)).resolves.toBe(input);
+      });
+
+      it('should not annotate when there is no ORDER BY', async() => {
+        const input = { type: 'project', input: { type: 'bgp' }, variables: []};
+        await expect(runSlice(input, 0, 10)).resolves.toBe(input);
+      });
     });
   });
 });
