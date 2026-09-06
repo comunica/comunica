@@ -6,19 +6,18 @@ on:
     types: [opened, reopened]
   roles: all
 engine: copilot
-# Pin a *concrete* model rather than one of gh-aw's aliases ('auto', 'agent', 'sonnet', ...).
-# Aliases are expanded at run time against the model catalogue that the AWF API proxy fetches
-# from api.githubcopilot.com/models, and that fetch returns 403 here. With an empty catalogue
-# the Copilot harness refuses to start ("refusing to start Copilot with an unresolved alias"),
-# so the run dies before producing any output. A concrete id skips alias resolution entirely
-# and has AI-credits pricing in the built-in table.
+# Pin a concrete model rather than a gh-aw alias ('auto', 'agent', 'sonnet', ...). Aliases are
+# resolved at run time against the Copilot model catalogue, so both the model and its price can
+# change under us. A concrete id also has AI-credits pricing in the built-in table.
 model: copilot/claude-sonnet-4.5
 strict: true
 permissions:
   contents: read
   issues: read
   pull-requests: read
-  copilot-requests: write
+  # Deliberately no 'copilot-requests: write': that bills inference to the comunica org's Copilot
+  # subscription, which answers 403 (#1791). Billing goes through the COPILOT_GITHUB_TOKEN secret
+  # instead, so it is charged to that token's owner.
 network:
   allowed: [defaults, github, node]
 tools:
