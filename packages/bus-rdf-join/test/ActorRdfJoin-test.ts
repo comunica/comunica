@@ -738,6 +738,46 @@ IActorRdfJoinSelectivityOutput
     });
   });
 
+  describe('getSharedVariableJoinCardinality', () => {
+    function meta(value: number, ...names: string[]) {
+      return {
+        state: new MetadataValidationState(),
+        cardinality: { type: <const> 'estimate', value },
+        variables: names.map(name => ({ variable: DF.variable(name), canBeUndef: false })),
+      };
+    }
+
+    it('should be undefined without shared variables', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'b') ]))
+        .toBeUndefined();
+    });
+
+    it('should be undefined without variables', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10), meta(5) ]))
+        .toBeUndefined();
+    });
+
+    it('should be the smallest cardinality for two entries sharing a variable', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'a') ]))
+        .toBe(5);
+    });
+
+    it('should divide by the largest cardinality once per additional entry sharing a variable', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'a'), meta(4, 'a') ]))
+        .toBe(2);
+    });
+
+    it('should divide by the most selective shared variable only', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a', 'b'), meta(5, 'a', 'b') ]))
+        .toBe(5);
+    });
+
+    it('should keep the cross product of entries that share nothing with the others', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'a'), meta(3, 'b') ]))
+        .toBe(15);
+    });
+  });
+
   describe('constructResultMetadata', () => {
     let instance: Dummy;
 
@@ -776,7 +816,7 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
         variables: [{ variable: DF.variable('a'), canBeUndef: true }],
       });
       await expect(instance.constructResultMetadata([], [
@@ -792,7 +832,7 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
         variables: [{ variable: DF.variable('a'), canBeUndef: true }],
       });
       await expect(instance.constructResultMetadata([], [
@@ -810,7 +850,7 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
 
         variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
@@ -915,7 +955,7 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'exact', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
         variables: [
           { variable: DF.variable('a'), canBeUndef: false },
           { variable: DF.variable('b'), canBeUndef: true },
@@ -1141,7 +1181,7 @@ IActorRdfJoinSelectivityOutput
       await instance.run(action, undefined!).then(async(result: any) => {
         return await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 40 },
+          cardinality: { type: 'estimate', value: 5 },
           variables: [{ variable: DF.variable('a'), canBeUndef: true }],
         });
       });

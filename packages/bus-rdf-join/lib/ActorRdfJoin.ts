@@ -232,6 +232,42 @@ TS
   }
 
   /**
+   * Estimate the cardinality of an equi-join from the cardinalities of its entries.
+   *
+   * Under the usual uniformity assumption, joining two entries on a shared variable divides their cross product by
+   * the number of distinct values that variable takes. That number is unknown here, so it is approximated by the
+   * cardinality of the largest entry binding the variable, which is its upper bound. For two entries sharing a
+   * variable this yields the cardinality of the smaller entry.
+   *
+   * Only the most selective shared variable is taken into account. Entries sharing several variables are more
+   * selective still, but applying the approximation once per variable compounds its error, which would collapse
+   * the estimate far below the smallest entry.
+   *
+   * @param metadatas Metadata of the join entries.
+   * @return The estimated cardinality, or undefined if the entries share no variables.
+   */
+  public static getSharedVariableJoinCardinality(metadatas: MetadataBindings[]): number | undefined {
+    // Collect, per variable, the cardinalities of the entries binding it
+    const cardinalitiesByVariable: Record<string, number[]> = {};
+    for (const metadata of metadatas) {
+      for (const { variable } of metadata.variables) {
+        (cardinalitiesByVariable[variable.value] ??= []).push(metadata.cardinality.value);
+      }
+    }
+
+    let divisor = 0;
+    for (const cardinalities of Object.values(cardinalitiesByVariable)) {
+      if (cardinalities.length > 1) {
+        divisor = Math.max(divisor, Math.max(...cardinalities) ** (cardinalities.length - 1));
+      }
+    }
+    if (divisor === 0) {
+      return undefined;
+    }
+    return metadatas.reduce((acc, metadata) => acc * metadata.cardinality.value, 1) / divisor;
+  }
+
+  /**
    * Helper function to create a new metadata object for the join result.
    * For required metadata entries that are not provided, sane defaults are calculated.
    * @param entries Join entries.
@@ -266,6 +302,16 @@ TS
       // The cardinality should only be zero if one of the entries has zero cardinality, not due to float overflow
       if (!hasZeroCardinality || optional) {
         cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
+        if (!optional) {
+          // The selectivity heuristic is purely structural, so it can only scale down the cross product by a
+          // constant factor, no matter how large the entries are. Cap the estimate with one that does look at the
+          // cardinalities, so that joining two large entries on a shared variable is not estimated as their product.
+          const capped = ActorRdfJoin.getSharedVariableJoinCardinality(metadatas);
+          if (capped !== undefined && capped < cardinalityJoined.value) {
+            cardinalityJoined.value = capped;
+            cardinalityJoined.type = 'estimate';
+          }
+        }
         if (cardinalityJoined.value === 0) {
           cardinalityJoined.value = Number.MIN_VALUE;
         }

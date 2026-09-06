@@ -1166,7 +1166,7 @@ IQueryOperationResultBindings
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 240 },
+          cardinality: { type: 'estimate', value: 1 },
 
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
@@ -1335,7 +1335,7 @@ IQueryOperationResultBindings
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 240 },
+          cardinality: { type: 'estimate', value: 1 },
 
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
@@ -1446,7 +1446,7 @@ IQueryOperationResultBindings
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 240 },
+          cardinality: { type: 'estimate', value: 1 },
 
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
@@ -1542,7 +1542,7 @@ IQueryOperationResultBindings
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 240 },
+          cardinality: { type: 'estimate', value: 1 },
 
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
@@ -1664,7 +1664,7 @@ IQueryOperationResultBindings
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 96000 },
+          cardinality: { type: 'estimate', value: 0.75 },
 
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },

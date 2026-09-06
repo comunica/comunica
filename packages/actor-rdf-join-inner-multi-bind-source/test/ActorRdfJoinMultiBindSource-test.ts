@@ -216,7 +216,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 9.600_000_000_000_001 },
+          cardinality: { type: 'estimate', value: 3 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -332,7 +332,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 9.600_000_000_000_001 },
+          cardinality: { type: 'estimate', value: 3 },
 
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
