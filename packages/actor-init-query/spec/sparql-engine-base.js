@@ -165,7 +165,8 @@ function createEndpointStarter(engine, createContext = () => ({})) {
     }
 
     const service = new HttpServiceSparqlEndpoint({ engine, port: address.port, context: createContext() });
-    server.on('request', service.handleRequest.bind(service, engine, variants, process.stdout, process.stderr));
+    // The endpoint logs to stderr, so that its output does not end up in the EARL reports on stdout
+    server.on('request', service.handleRequest.bind(service, engine, variants, process.stderr, process.stderr));
 
     endpoint = `http://127.0.0.1:${address.port}/sparql`;
     return { close, endpoint };
