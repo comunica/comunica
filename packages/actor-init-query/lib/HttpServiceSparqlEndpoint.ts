@@ -891,11 +891,11 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
-   * Parses the body of a SPARQL POST or QUERY request
+   * Reads the body of a request as a UTF-8 string.
    * @param {module:http.IncomingMessage} request Request object.
-   * @return {Promise<IQueryBody>} A promise resolving to a query body object.
+   * @return {Promise<string>} A promise resolving to the request body.
    */
-  public parseBody(request: http.IncomingMessage): Promise<IQueryBody> {
+  public static readBody(request: http.IncomingMessage): Promise<string> {
     return new Promise((resolve, reject) => {
       let body = '';
       request.setEncoding('utf8');
@@ -903,40 +903,48 @@ export class HttpServiceSparqlEndpoint {
       request.on('data', (chunk) => {
         body += chunk;
       });
-      request.on('end', () => {
-        const contentType: string | undefined = request.headers['content-type'];
-        if (contentType) {
-          if (contentType.includes(HttpServiceSparqlEndpoint.MIME_SPARQL_QUERY)) {
-            return resolve({ type: 'query', value: body, context: undefined });
-          }
-          if (contentType.includes('application/sparql-update')) {
-            return resolve({ type: 'void', value: body, context: undefined });
-          }
-          if (contentType.includes('application/x-www-form-urlencoded')) {
-            const bodyStructure = querystring.parse(body);
-            let context: Record<string, any> | undefined;
-            if (bodyStructure.context) {
-              try {
-                context = JSON.parse(<string>bodyStructure.context);
-              } catch (error: unknown) {
-                reject(new Error(`Invalid POST body with context received ('${(<any> bodyStructure).context}'): ${(<Error> error).message}`));
-              }
-            }
-            // A request may only contain a single query or update
-            if (Array.isArray(bodyStructure.query) || Array.isArray(bodyStructure.update)) {
-              return reject(new Error(`Invalid request body received, it can only contain a single query or update parameter`));
-            }
-            if (bodyStructure.query) {
-              return resolve({ type: 'query', value: bodyStructure.query, context });
-            }
-            if (bodyStructure.update) {
-              return resolve({ type: 'void', value: bodyStructure.update, context });
-            }
+      request.on('end', () => resolve(body));
+    });
+  }
+
+  /**
+   * Parses the body of a SPARQL POST or QUERY request
+   * @param {module:http.IncomingMessage} request Request object.
+   * @return {Promise<IQueryBody>} A promise resolving to a query body object.
+   */
+  public async parseBody(request: http.IncomingMessage): Promise<IQueryBody> {
+    const body = await HttpServiceSparqlEndpoint.readBody(request);
+    const contentType: string | undefined = request.headers['content-type'];
+    if (contentType) {
+      if (contentType.includes(HttpServiceSparqlEndpoint.MIME_SPARQL_QUERY)) {
+        return { type: 'query', value: body, context: undefined };
+      }
+      if (contentType.includes('application/sparql-update')) {
+        return { type: 'void', value: body, context: undefined };
+      }
+      if (contentType.includes('application/x-www-form-urlencoded')) {
+        const bodyStructure = querystring.parse(body);
+        let context: Record<string, any> | undefined;
+        if (bodyStructure.context) {
+          try {
+            context = JSON.parse(<string>bodyStructure.context);
+          } catch (error: unknown) {
+            throw new Error(`Invalid POST body with context received ('${(<any> bodyStructure).context}'): ${(<Error> error).message}`);
           }
         }
-        reject(new Error(`Invalid request body received, query type could not be determined`));
-      });
-    });
+        // A request may only contain a single query or update
+        if (Array.isArray(bodyStructure.query) || Array.isArray(bodyStructure.update)) {
+          throw new TypeError(`Invalid request body received, it can only contain a single query or update parameter`);
+        }
+        if (bodyStructure.query) {
+          return { type: 'query', value: bodyStructure.query, context };
+        }
+        if (bodyStructure.update) {
+          return { type: 'void', value: bodyStructure.update, context };
+        }
+      }
+    }
+    throw new Error(`Invalid request body received, query type could not be determined`);
   }
 }
 
