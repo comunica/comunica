@@ -4371,10 +4371,10 @@ asynciterator@^3.10.0, asynciterator@^3.8.0, asynciterator@^3.8.1, asynciterator
   dependencies:
     tiny-set-immediate "^1.0.2"
 
-asyncjoin@^1.2.4:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-1.2.4.tgz#dddd1d332b7a339e72056ba9a9c1216a8487398a"
-  integrity sha512-7/1g5uV2/iTDQteJ/pxqZq6qkO5406V+vNyOCYtHJ+mo6bmvvQHHrZgd7AtU/rx+cnz08NPWlwk8daW61thnlA==
+asyncjoin@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-1.2.5.tgz#1c7570109671d0e64ce945bde8e0696d6f7c2df6"
+  integrity sha512-zOiIPVKNo1S1YvpCUkGTn4VehJEiinG2WUNsr85fhrna/UlqJrbdfZ9RQfvCkehUU2zDXj+QX3PWSd9oq3+Plg==
   dependencies:
     asynciterator "^3.9.0"
 
