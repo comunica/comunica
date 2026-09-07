@@ -1,4 +1,3 @@
-import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
@@ -26,7 +25,7 @@ describe('ActorOptimizeQueryOperationSortLimitPushdown', () => {
 
     beforeEach(() => {
       actor = new ActorOptimizeQueryOperationSortLimitPushdown({ name: 'actor', bus });
-      context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
+      context = new ActionContext({});
       pattern = factory.createPattern(DF.variable('s'), DF.namedNode('p'), DF.namedNode('o'));
       orderBy = factory.createOrderBy(pattern, [ factory.createTermExpression(DF.variable('s')) ]);
     });
