@@ -32,6 +32,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
   public readonly minMaxCardinalityRatio: number;
+  public readonly subQueryCost: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
@@ -46,6 +47,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     this.bindOrder = args.bindOrder;
     this.selectivityModifier = args.selectivityModifier;
     this.minMaxCardinalityRatio = args.minMaxCardinalityRatio;
+    this.subQueryCost = args.subQueryCost;
     this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
     this.mediatorQueryOperation = args.mediatorQueryOperation;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
@@ -315,21 +317,45 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         context: action.context,
       })).selectivity * this.selectivityModifier));
 
-    // Determine coefficients for remaining entries
+    // Determine how many rows the remaining entries produce for a single binding of the first entry.
+    // Joining two entries over a shared variable yields at most as many rows as the smaller of the two,
+    // so spread over the bindings of the first entry that is roughly one row per entry.
+    // This puts the count on the same scale as the row counts the other join actors report, unlike scaling
+    // the structural selectivity by a constant. Entries sharing no variable still fall back to that.
+    const cardinalityFirst = metadatas[0].cardinality.value;
+    let entriesWithoutSharedVariable = 0;
     const cardinalityRemaining = remainingEntries
-      .map((entry, i) => entry.metadata.cardinality.value * selectivities[i])
+      .map((entry, i) => {
+        const joined = ActorRdfJoin.getSharedVariableJoinCardinality([ metadatas[0], entry.metadata ]);
+        if (joined === undefined) {
+          entriesWithoutSharedVariable++;
+          return entry.metadata.cardinality.value * selectivities[i];
+        }
+        return joined / cardinalityFirst;
+      })
       .reduce((sum, element) => sum + element, 0);
     const receiveInitialCostRemaining = remainingRequestInitialTimes
       .reduce((sum, element) => sum + element, 0);
     const receiveItemCostRemaining = remainingRequestItemTimes
       .reduce((sum, element) => sum + element, 0);
 
+    // Every binding of the first entry makes all remaining operations be planned and executed again from
+    // scratch, which costs much more than producing a row, so charge it once per binding per operation.
+    // An operation that shares no variable with the first entry is not a lookup for such a binding: it still
+    // has to be joined with all the others, so it costs about as much again as the whole sub-plan.
+    // Sources that answer page by page are excluded. There, the alternative to binding is paging through a
+    // whole pattern, and the request time that costs is summed here as if the pages were fetched at once,
+    // so charging anything extra for binding pushes the plan the wrong way.
+    const subPlanCost = isRemoteAccess ?
+      0 :
+      this.subQueryCost * remainingEntries.length * (1 + entriesWithoutSharedVariable);
+
     return passTestWithSideData({
-      iterations: metadatas[0].cardinality.value * cardinalityRemaining,
+      iterations: cardinalityFirst * (cardinalityRemaining + subPlanCost),
       persistedItems: 0,
       blockingItems: 0,
       requestTime: requestInitialTimes[0] +
-        metadatas[0].cardinality.value * (
+        cardinalityFirst * (
           requestItemTimes[0] +
           receiveInitialCostRemaining +
           cardinalityRemaining * receiveItemCostRemaining
@@ -356,6 +382,13 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs<IActorRdfJ
    * @default {60}
    */
   minMaxCardinalityRatio: number;
+  /**
+   * The cost of planning and evaluating one bound operation, expressed in produced rows.
+   * Not applied to sources that are read page by page.
+   * @range {double}
+   * @default {100}
+   */
+  subQueryCost: number;
   /**
    * The join entries sort mediator
    */
