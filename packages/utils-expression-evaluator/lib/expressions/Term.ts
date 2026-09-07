@@ -152,8 +152,6 @@ export class Literal<T extends ISerializable> extends Term {
 }
 
 export abstract class NumericLiteral extends Literal<number> {
-  protected static readonly formatter: Intl.NumberFormat;
-
   protected constructor(
     public override typedValue: number,
     dataType: string,
@@ -162,6 +160,8 @@ export abstract class NumericLiteral extends Literal<number> {
   ) {
     super(typedValue, dataType, strValue, language);
   }
+
+  protected abstract specificFormatter(val: number): string;
 
   public override coerceEBV(): boolean {
     return Boolean(this.typedValue);
@@ -176,14 +176,8 @@ export abstract class NumericLiteral extends Literal<number> {
   }
 
   public override str(): string {
-    if (this.strValue) {
-      return this.strValue;
-    }
-    let representation = (<typeof NumericLiteral> this.constructor).formatter.format(this.typedValue);
-    if (!Number.isFinite(this.typedValue)) {
-      representation = representation.replace('∞', 'INF');
-    }
-    return representation;
+    return this.strValue ??
+      this.specificFormatter(this.typedValue);
   }
 }
 
@@ -194,7 +188,7 @@ export abstract class NumericLiteral extends Literal<number> {
  * with leading + and leading zeroes prohibited.
  */
 export class IntegerLiteral extends NumericLiteral {
-  protected static override readonly formatter = Intl.NumberFormat(undefined, {
+  protected static readonly formatter = Intl.NumberFormat(undefined, {
     maximumFractionDigits: 0,
     notation: 'standard',
     signDisplay: 'negative',
@@ -209,6 +203,11 @@ export class IntegerLiteral extends NumericLiteral {
   ) {
     super(typedValue, dataType ?? TypeURL.XSD_INTEGER, strValue, language);
   }
+
+  protected override specificFormatter(val: number): string {
+    const str = IntegerLiteral.formatter.format(val);
+    return Number.isFinite(this.typedValue) ? str : str.replace('∞', 'INF');
+  }
 }
 
 /**
@@ -219,7 +218,7 @@ export class IntegerLiteral extends NumericLiteral {
  * are prohibited, except for the single mandatory digit on both sides of the decimal point.
  */
 export class DecimalLiteral extends NumericLiteral {
-  protected static override readonly formatter = Intl.NumberFormat(undefined, {
+  protected static readonly formatter = Intl.NumberFormat(undefined, {
     minimumFractionDigits: 1,
     maximumFractionDigits: 100,
     notation: 'standard',
@@ -235,6 +234,11 @@ export class DecimalLiteral extends NumericLiteral {
   ) {
     super(typedValue, dataType ?? TypeURL.XSD_DECIMAL, strValue, language);
   }
+
+  protected override specificFormatter(val: number): string {
+    const str = DecimalLiteral.formatter.format(val);
+    return Number.isFinite(this.typedValue) ? str : str.replace('∞', 'INF');
+  }
 }
 
 /**
@@ -246,7 +250,7 @@ export class DecimalLiteral extends NumericLiteral {
  * The canonical representation of zero is `0.0E0`.
  */
 export class DoubleLiteral extends NumericLiteral {
-  protected static override readonly formatter = Intl.NumberFormat(undefined, {
+  protected static readonly formatter = Intl.NumberFormat(undefined, {
     minimumFractionDigits: 1,
     maximumFractionDigits: 100,
     notation: 'scientific',
@@ -260,6 +264,11 @@ export class DoubleLiteral extends NumericLiteral {
     public override language?: string,
   ) {
     super(typedValue, dataType ?? TypeURL.XSD_DOUBLE, strValue, language);
+  }
+
+  protected override specificFormatter(val: number): string {
+    const str = DoubleLiteral.formatter.format(val);
+    return Number.isFinite(this.typedValue) ? str : str.replace('∞', 'INF');
   }
 }
 
