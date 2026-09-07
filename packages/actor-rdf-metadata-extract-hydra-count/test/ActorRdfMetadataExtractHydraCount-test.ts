@@ -64,8 +64,10 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
     });
 
     it('should run on a stream where count is not given', async() => {
+      // No cardinality at all, rather than an invented estimate of zero, which would make every
+      // cardinality accumulated on top of this source an estimate as well.
       await expect(actor.run({ url: '', metadata: inputNone, requestTime: 0, context })).resolves
-        .toEqual({ metadata: { cardinality: { type: 'estimate', value: 0 }}});
+        .toEqual({ metadata: {}});
     });
   });
 });
