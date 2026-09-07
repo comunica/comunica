@@ -224,6 +224,11 @@ export class QuerySourceSparql implements IQuerySource {
 
   /**
    * Count an HTTP request against the physical query plan node this source is currently working for.
+   *
+   * Which node that is comes from the same field that determines the context of the request itself,
+   * so a request is always counted against the operation it is made on behalf of. When one source is
+   * asked to evaluate several operations at the same time, that field names whichever operation
+   * started last, so both the count and the request context follow that operation.
    */
   protected countHttpRequest(): void {
     const planNode = this.lastSourceContext?.get(KeysInitQuery.physicalQueryPlanNode);

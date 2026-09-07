@@ -90,9 +90,6 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
         ),
       },
       physicalPlanMetadata: {
-        bindIndex: 0,
-        bindOperation: action.entries[0].operation,
-        bindOperationCardinality: leftMetadata.cardinality,
         bindOrder: this.bindOrder,
       },
     };

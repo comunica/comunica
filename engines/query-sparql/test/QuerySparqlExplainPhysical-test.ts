@@ -44,9 +44,7 @@ async function explainPhysicalJson(query: string, context: any = {}): Promise<an
  * Regression harness for `explain physical` and `explain physical-json`.
  *
  * These tests pin down the exact physical plan for a corpus of queries, so that any change to the
- * physical query plan logger becomes visible. Several of them currently document *incorrect* output;
- * those are marked with a `KNOWN ISSUE` comment referring to the section of
- * `packages/actor-query-process-explain-physical/REFACTOR-PLAN.md` that covers them.
+ * physical query plan logger becomes visible.
  */
 describe('System test: QuerySparql explain physical', () => {
   describe('for queries over an in-memory source', () => {
@@ -124,7 +122,7 @@ actors:
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n OPTIONAL { ?s foaf:knows ?f } }`)).resolves
         .toBe(`project (f,n,s) cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms actor:0
   leftjoin cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms actor:1
-    join-optional(bind) bindIndex:0 cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms actor:2
+    join-optional(bind) cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms actor:2
       pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
       pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:0 timeSelf:Xms timeLife:Xms actor:3
       bindings actor:2
@@ -192,10 +190,6 @@ actors:
   3: urn:comunica:default:query-operation/actors#source`);
     });
 
-    // ALP evaluation re-dispatches the same path operation object, which no longer collides now that
-    // plan nodes have their own identity.
-    // KNOWN ISSUE (plan §2.5, §2.6): the path algorithm that ran is not identified, and the
-    // per-subject evaluations are siblings of the seed operation.
     it('explains a property path', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:knows+ ?o }`)).resolves.toBe(`project (o,s) cardEst:5 cardReal:10 timeSelf:Xms timeLife:Xms actor:0
   path cardEst:5 cardReal:10 timeSelf:Xms timeLife:Xms actor:1
@@ -321,8 +315,6 @@ actors:
   4: urn:comunica:default:rdf-join/actors#inner-single`);
     });
 
-    // KNOWN ISSUE (plan §2.6): every per-binding EXISTS evaluation becomes a sibling of the filter's
-    // actual input, so the plan grows linearly with the number of bindings.
     it('explains a filter with exists', async() => {
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n FILTER EXISTS { ?s foaf:knows ?f } }`,
@@ -546,6 +538,35 @@ actors:
         plans.add(await explainPhysical(query));
       }
       expect([ ...plans ]).toHaveLength(1);
+    }, 60_000);
+
+    it('produces the same plan for repeated runs of a bind join under a limit', async() => {
+      // A limit leaves the operators below it cut short. How far each of them got before the engine
+      // tore them down is up to scheduling, and only shows in whether they report as destroyed, so
+      // that is the one part of the plan that a limited query is allowed to differ in between runs.
+      const query = `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n OPTIONAL { ?s foaf:knows ?f } } LIMIT 2`;
+      const plans = new Set<string>();
+      for (let i = 0; i < 15; i++) {
+        plans.add((await explainPhysical(query)).replaceAll(' destroyed', ''));
+      }
+      expect([ ...plans ]).toEqual([ `slice cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms actor:0
+  project (f,n,s) cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms actor:1
+    leftjoin cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms actor:2
+      join-optional(bind) cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms actor:3
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:4 timeSelf:Xms timeLife:Xms actor:4
+        pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:0 timeSelf:Xms timeLife:Xms actor:4
+        bindings actor:3
+          pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms actor:4 compacted-occurrences:4 cardRealSum:4 timeSelfSum:Xms timeLifeSum:Xms
+
+sources:
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
+
+actors:
+  0: urn:comunica:default:query-operation/actors#slice
+  1: urn:comunica:default:query-operation/actors#project
+  2: urn:comunica:default:query-operation/actors#leftjoin
+  3: urn:comunica:default:rdf-join/actors#optional-bind
+  4: urn:comunica:default:query-operation/actors#source` ]);
     }, 60_000);
   });
 });

@@ -123,6 +123,48 @@ describe('instrumentIterator', () => {
     });
   });
 
+  it('should not change what an iterator produces', async() => {
+    const values = [ 1, 2, 3, 4, 5 ];
+    const expected = await new ArrayIterator(values, { autoStart: false })
+      .map(value => value * 2)
+      .transform<number>({ transform: (value, done, push) => {
+        push(value);
+        push(value + 1);
+        done();
+      } })
+      .toArray();
+
+    const it1 = new ArrayIterator(values, { autoStart: false })
+      .map(value => value * 2);
+    instrumentIterator(it1);
+    const it2 = it1.transform<number>({ transform: (value, done, push) => {
+      push(value);
+      push(value + 1);
+      done();
+    } });
+    instrumentIterator(it2);
+
+    await expect(it2.toArray()).resolves.toEqual(expected);
+  });
+
+  it('should report an iterator that ignores being destroyed as unfinished', async() => {
+    const it1 = new ArrayIterator([ 1, 2 ], { autoStart: false });
+    it1.destroy = () => {
+      // Ignore
+    };
+    const instrumented = instrumentIterator(it1);
+    it1.destroy();
+
+    instrumented.finish();
+
+    await expect(instrumented.counters).resolves.toEqual({
+      count: 0,
+      timeLife: expect.any(Number),
+      timeSelf: 0,
+      state: 'unfinished',
+    });
+  });
+
   it('should keep the counters of an iterator that already ended when finishing', async() => {
     const it1 = new ArrayIterator([ 1, 2 ], { autoStart: false });
     const instrumented = instrumentIterator(it1);

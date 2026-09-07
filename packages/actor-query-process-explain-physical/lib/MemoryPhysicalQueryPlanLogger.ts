@@ -3,7 +3,7 @@ import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
 import type { IInstrumentedIterator } from '@comunica/utils-iterator';
 import { instrumentIterator } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
-import { scheduleTask } from 'asynciterator';
+import type { AsyncIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 
 /**
@@ -75,11 +75,19 @@ export class MemoryPlanNode implements IPhysicalQueryPlanNode {
 }
 
 /**
+ * A stream that is being measured, together with the ongoing measurement of it.
+ */
+interface IMeasuredStream {
+  stream: AsyncIterator<any>;
+  measurement: IInstrumentedIterator;
+}
+
+/**
  * A physical query plan logger that stores everything in memory.
  */
 export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   private readonly nodesByOutput: WeakMap<any, MemoryPlanNode>;
-  private readonly measurements: IInstrumentedIterator[];
+  private readonly measurements: IMeasuredStream[];
   private readonly pending: Promise<void>[];
   private rootNode: MemoryPlanNode | undefined;
 
@@ -113,6 +121,12 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
 
   /**
    * Associate a query operation output with the given node, and start measuring it.
+   *
+   * An operation that passes its input's output through unchanged, such as a wrapping join,
+   * registers an output that was already registered by the operation below it. The last
+   * registration wins, which is what consumers need: they look an output up to find the
+   * operation that handed it to them, which is the outermost one.
+   *
    * @param output A query operation output.
    * @param node The node that produced the output.
    */
@@ -135,7 +149,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     }
 
     const measurement = instrumentIterator(stream);
-    this.measurements.push(measurement);
+    this.measurements.push({ stream, measurement });
     this.pending.push(measurement.counters
       .then(async(counters) => {
         node.appendMetadata({
@@ -145,9 +159,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
           ...counters.state === 'ended' ? {} : { streamState: counters.state },
         });
 
-        // Only ask for metadata of an output that reached its final state on its own,
-        // as the metadata of an output that was never consumed may never resolve.
-        if (counters.state !== 'unfinished' && node.metadata.cardinality === undefined) {
+        if (node.metadata.cardinality === undefined) {
           const metadata = await output.metadata();
           node.appendMetadata({ cardinality: metadata.cardinality });
         }
@@ -159,12 +171,18 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   }
 
   public async finalize(): Promise<void> {
-    // Let every measurement that can still settle on its own do so
-    await new Promise<void>(resolve => scheduleTask(resolve));
-    // Outputs that were never consumed and never destroyed would otherwise never settle
-    for (const measurement of this.measurements) {
+    // Operations below one that stopped early, such as a LIMIT, may still be running, and would
+    // otherwise keep going while the plan is being serialized. The whole result has been consumed
+    // by this point, so nothing is reading them anymore. Destroying them immediately, rather than
+    // first giving them time, keeps them from advancing further after the query itself is over.
+    for (const { stream } of this.measurements) {
+      stream.destroy();
+    }
+    // A stream that is neither ended nor destroyable would otherwise never settle
+    for (const { measurement } of this.measurements) {
       measurement.finish();
     }
+
     await Promise.all(this.pending);
   }
 
@@ -178,7 +196,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       physical: node.physicalOperator,
       actor: node.actor,
       ...this.getLogicalMetadata(node.operation),
-      ...this.compactMetadata(node.metadata),
+      ...node.metadata,
     };
 
     // A repetition group without children summarizes nothing, so it is left out
@@ -236,10 +254,6 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
         aggregated[`${key}Sum`] = values.reduce((sum, value) => sum + value, 0);
       }
     }
-    const sources = [ ...new Set(occurrences.map(occurrence => occurrence.source).filter(Boolean)) ];
-    if (sources.length > 1) {
-      aggregated.sources = <string[]> sources;
-    }
     return aggregated;
   }
 
@@ -257,15 +271,6 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       ];
     }
     return entries;
-  }
-
-  private compactMetadata(metadata: any): any {
-    return Object.fromEntries(Object.entries(metadata)
-      .map(([ key, value ]) => [ key, this.compactMetadataValue(value) ]));
-  }
-
-  private compactMetadataValue(value: any): any {
-    return value && typeof value === 'object' && 'termType' in value ? this.getLogicalMetadata(value) : value;
   }
 
   private getLogicalMetadata(rawNode: any): IPlanNodeJsonLogicalMetadata {
@@ -427,7 +432,6 @@ interface IPlanNodeJsonAggregated {
   cardinalityRealSum?: number;
   timeSelfSum?: number;
   timeLifeSum?: number;
-  sources?: string[];
 }
 
 interface IPlanNodeJsonLogicalMetadata {

@@ -333,6 +333,23 @@ describe('ActorQueryOperationSource', () => {
         expect(ActorQueryOperationSource.getSubOperations(filter)).toEqual([ path ]);
         expect(ActorQueryOperationSource.getSubOperations(path)).toEqual([]);
       });
+
+      it('does not return the template of a construct', () => {
+        const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+        const template = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p'), DF.variable('o'));
+        const construct = AF.createConstruct(pattern, [ template ]);
+
+        expect(ActorQueryOperationSource.getSubOperations(construct)).toEqual([ pattern ]);
+      });
+
+      it('does not return the templates of a delete-insert', () => {
+        const where = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+        const toDelete = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.variable('o'));
+        const toInsert = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o'));
+        const deleteInsert = AF.createDeleteInsert([ toDelete ], [ toInsert ], where);
+
+        expect(ActorQueryOperationSource.getSubOperations(deleteInsert)).toEqual([ where ]);
+      });
     });
   });
 });

@@ -1267,32 +1267,5 @@ IActorRdfJoinSelectivityOutput
 
       expect(planNode.adoptInput).not.toHaveBeenCalled();
     });
-
-    it('invokes the physicalQueryPlanLogger without side data', async() => {
-      const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
-      const planNode: IPhysicalQueryPlanNode = {
-        appendMetadata: jest.fn(),
-        adoptInput: jest.fn(),
-        setOutput: jest.fn(),
-      };
-      const logger: IPhysicalQueryPlanLogger = {
-        logOperation: jest.fn().mockReturnValue(planNode),
-        finalize: jest.fn(),
-        getNodeForOutput: jest.fn(),
-        toJson: jest.fn(),
-      };
-      action.context = new ActionContext({
-        [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
-        [KeysInitQuery.physicalQueryPlanNode.name]: parentNode,
-      });
-
-      const result = await instance.run(action, <any> undefined);
-      await result.bindingsStream.toArray();
-      await new Promise(setImmediate);
-
-      expect(logger.logOperation).toHaveBeenCalledWith(expect.objectContaining({
-        metadata: expect.objectContaining({ cardinalities: []}),
-      }));
-    });
   });
 });

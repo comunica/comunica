@@ -31,6 +31,17 @@ const NESTED_OPERATION_TYPES = new Set<string>(Object.values(Algebra.Types).filt
 ].includes(<any> type)));
 
 /**
+ * The keys that hold a template of quads instead of a nested operation, per operation type.
+ *
+ * A template describes what to produce or to modify, and is never evaluated as an operation,
+ * even though it is made up of values that look like patterns.
+ */
+const TEMPLATE_KEYS: Record<string, Set<string>> = {
+  [Algebra.Types.CONSTRUCT]: new Set([ 'template' ]),
+  [Algebra.Types.DELETE_INSERT]: new Set([ 'delete', 'insert' ]),
+};
+
+/**
  * A comunica Source Query Operation Actor.
  */
 export class ActorQueryOperationSource extends ActorQueryOperation {
@@ -106,14 +117,18 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
   /**
    * Obtain the operations that are directly nested within the given operation.
    *
-   * Expressions and property path symbols are not included, as those are not operations
-   * that a source evaluates separately.
+   * Expressions, property path symbols and quad templates are not included,
+   * as those are not operations that a source evaluates separately.
    *
    * @param operation An operation.
    */
   public static getSubOperations(operation: Algebra.Operation): Algebra.Operation[] {
+    const templateKeys = TEMPLATE_KEYS[operation.type];
     const subOperations: Algebra.Operation[] = [];
-    for (const value of Object.values(operation)) {
+    for (const [ key, value ] of Object.entries(operation)) {
+      if (templateKeys?.has(key)) {
+        continue;
+      }
       for (const entry of Array.isArray(value) ? value : [ value ]) {
         if (ActorQueryOperationSource.isNestedOperation(entry)) {
           subOperations.push(entry);

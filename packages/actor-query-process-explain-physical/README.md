@@ -10,9 +10,11 @@ happened: which physical operators ran, how many results each of them produced, 
 Two consequences follow from that:
 
 * Explaining an update query performs the update.
-* The results are consumed to completion, so a query that a client would only partially consume, such as
-  one with a `LIMIT`, is measured as if it were drained. Where an operator was cut short anyway, the plan
-  reports its output as `destroyed`.
+* The query's results are consumed to completion, and everything that was still running once they were
+  is stopped. A query that produces only part of what its operators could produce, such as one with a
+  `LIMIT`, therefore leaves the operators below the limit cut short: the plan reports their output as
+  `destroyed`, and `cardReal` says how far they got. How far that is depends on the order in which the
+  engine happened to schedule them, so it can differ between runs of the same query.
 
 ## Output
 
@@ -20,6 +22,12 @@ Every node of the plan reports the logical operator, the physical operator where
 that ran it, its estimated cardinality (`cardEst`), the number of results it actually produced
 (`cardReal`), the time spent in its own output iterator (`timeSelf`) and the time between its creation
 and its end (`timeLife`).
+
+Neither timing is a share of a total. `timeLife` spans of nested operators overlap by construction, as
+an operator lives at least as long as the ones it reads from. `timeSelf` excludes the operators an
+operator reads from, but an operator that hands its input's stream through unchanged is measured on that
+same stream, so it reports the same `timeSelf` as the operator below it. Use both to find where time
+goes, not to add up to the query's duration.
 
 Operations that evaluate a sub-operation once per binding, such as bind joins, `EXISTS` filters and
 arbitrary-length property paths, group those evaluations under a node of their own, in which identical

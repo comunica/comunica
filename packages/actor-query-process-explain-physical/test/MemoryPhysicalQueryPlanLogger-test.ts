@@ -172,7 +172,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       expect(logger.toJson()).toMatchObject({ cardinality: { type: 'estimate', value: 10 }});
     });
 
-    it('reports an output that was never consumed', async() => {
+    it('reports an output that was never consumed as destroyed', async() => {
       const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
       node.setOutput({
         bindingsStream: new BufferedIterator({ autoStart: false }),
@@ -180,8 +180,27 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       });
       await logger.finalize();
 
+      expect(logger.toJson()).toMatchObject({
+        streamState: 'destroyed',
+        cardinalityReal: 0,
+        cardinality: { type: 'exact', value: 0 },
+      });
+    });
+
+    it('reports an output that could not be destroyed as unfinished', async() => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
+      const bindingsStream = new BufferedIterator({ autoStart: false });
+      // Sources may hand out streams that ignore being destroyed, which would otherwise never settle
+      bindingsStream.destroy = () => {
+        // Ignore
+      };
+      node.setOutput({
+        bindingsStream,
+        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 0 }}),
+      });
+      await logger.finalize();
+
       expect(logger.toJson()).toMatchObject({ streamState: 'unfinished' });
-      expect(logger.toJson()).not.toHaveProperty('cardinality');
     });
 
     it('ignores an output whose metadata rejects', async() => {
@@ -875,14 +894,6 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
     it('omits measurements that none of the occurrences have', () => {
       expect(MemoryPhysicalQueryPlanLogger.aggregateOccurrences(<any> [{}, {}])).toEqual({});
-    });
-
-    it('reports the sources when the occurrences hit more than one', () => {
-      expect(MemoryPhysicalQueryPlanLogger.aggregateOccurrences(<any> [
-        { source: 'SRC1' },
-        { source: 'SRC2' },
-        { source: 'SRC1' },
-      ])).toEqual({ sources: [ 'SRC1', 'SRC2' ]});
     });
   });
 

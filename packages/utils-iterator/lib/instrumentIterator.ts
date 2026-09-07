@@ -70,8 +70,12 @@ export function instrumentIterator(iterator: AsyncIterator<any>): IInstrumentedI
   const countersPromise = new Promise<IteratorCounters>((resolve) => {
     resolveCounters = resolve;
   });
+  // The counters are handed out once they are resolved, so they must not change afterwards.
+  // This is separate from the state, as a measurement that was stopped stays `unfinished`.
+  let settled = false;
   const finish = (state: IteratorCounters['state']): void => {
-    if (counters.state === 'unfinished') {
+    if (!settled) {
+      settled = true;
       counters.state = state;
       counters.timeLife = performance.now() - startTime;
       resolveCounters(counters);
@@ -90,13 +94,18 @@ export function instrumentIterator(iterator: AsyncIterator<any>): IInstrumentedI
     const destroyOld: any = iterator.destroy;
     iterator.destroy = (cause?: Error) => {
       destroyOld.call(iterator, cause);
-      finish('destroyed');
+      // Destroying an iterator that is already done is a no-op, so it keeps the state it reached,
+      // and an iterator that ignores being destroyed stays unsettled until the measurement is
+      // stopped via {@link IInstrumentedIterator#finish}.
+      if (iterator.done) {
+        finish(iterator.destroyed ? 'destroyed' : 'ended');
+      }
     };
   }
 
   return {
     counters: countersPromise,
-    finish: () => finish(counters.state === 'unfinished' ? 'unfinished' : counters.state),
+    finish: () => finish('unfinished'),
   };
 }
 
@@ -134,7 +143,7 @@ function instrumentIteratorInner(iterator: AsyncIterator<any>, counters: Iterato
     const ret = readOld.call(iterator);
     const elapsed = performance.now() - startTime;
     for (const countersEntry of countersAll) {
-      if (ret) {
+      if (ret !== null) {
         countersEntry.count++;
       }
       countersEntry.timeSelf += elapsed;
