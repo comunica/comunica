@@ -205,8 +205,7 @@ export class IntegerLiteral extends NumericLiteral {
   }
 
   protected override specificFormatter(val: number): string {
-    const str = IntegerLiteral.formatter.format(val);
-    return Number.isFinite(this.typedValue) ? str : str.replace('∞', 'INF');
+    return IntegerLiteral.formatter.format(val);
   }
 }
 
@@ -236,8 +235,7 @@ export class DecimalLiteral extends NumericLiteral {
   }
 
   protected override specificFormatter(val: number): string {
-    const str = DecimalLiteral.formatter.format(val);
-    return Number.isFinite(this.typedValue) ? str : str.replace('∞', 'INF');
+    return DecimalLiteral.formatter.format(val);
   }
 }
 
