@@ -7,7 +7,7 @@ import { passTestVoid } from '@comunica/core';
 import type { Bindings, IActionContext, IExpressionEvaluator, IQueryOperationResult } from '@comunica/types';
 import { Algebra, isKnownSubType } from '@comunica/utils-algebra';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
-import { getOperationSortLimit, getSafeBindings } from '@comunica/utils-query-operation';
+import { getSafeBindings } from '@comunica/utils-query-operation';
 import type { Term } from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { SortIterator } from './SortIterator';
@@ -70,8 +70,9 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
 
     // Equal bindings keep their input order, which makes a bounded sort return exactly the
     // first `limit` results of an unbounded one.
-    // When a LIMIT was pushed down onto this operation, only that many results have to be buffered.
-    const options = { window: this.window, limit: getOperationSortLimit(operation) };
+    // When a LIMIT was pushed down onto this operation by the sort-limit-pushdown optimizer,
+    // only that many results have to be buffered.
+    const options = { window: this.window, limit: <number | undefined> operation.metadata?.sortLimit };
     let sortedStream: AsyncIterator<Bindings>;
     if (length === 1) {
       // Sorting on a single expression is by far the most common case, and is worth not paying for
