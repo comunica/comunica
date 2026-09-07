@@ -37,6 +37,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
     let actor: ActorRdfJoinMultiBindSource;
     let logSpy: jest.SpyInstance;
     let source1: IQuerySourceWrapper;
+    let sourcePatternOnly: IQuerySourceWrapper;
     let source2: IQuerySourceWrapper;
     let source3TriplePattern: IQuerySourceWrapper;
     let source4Context: IQuerySourceWrapper;
@@ -81,6 +82,26 @@ describe('ActorRdfJoinMultiBindSource', () => {
               autoStart: false,
             });
           }),
+        },
+      };
+      sourcePatternOnly = <IQuerySourceWrapper> <any> {
+        source: {
+          getSelectorShape() {
+            return {
+              type: 'operation',
+              operation: {
+                operationType: 'pattern',
+                pattern: AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+              },
+              joinBindings: true,
+            };
+          },
+          queryBindings: jest.fn((operation: any, ctx: any, options: any) => options.joinBindings.bindings
+            .transform({
+              map: (binding: RDF.Bindings): RDF.Bindings => binding
+                .merge(BF.bindings([[ operation.object, DF.namedNode('ex:bound') ]]))!,
+              autoStart: false,
+            })),
         },
       };
       source2 = <IQuerySourceWrapper> <any> {
@@ -674,6 +695,117 @@ describe('ActorRdfJoinMultiBindSource', () => {
       it('handles multiple entries by joining', () => {
         const op = AF.createNop();
         expect(actor.createOperationFromEntries(AF, [ <any>{ operation: op } ])).toBe(op);
+      });
+    });
+
+    describe('orderChain', () => {
+      function entry(card: number, ...names: string[]) {
+        return <any> {
+          operation: AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+          metadata: {
+            cardinality: { type: 'estimate', value: card },
+            variables: names.map(name => ({ variable: DF.variable(name), canBeUndef: false })),
+          },
+        };
+      }
+
+      it('should take the smallest entry when nothing is connected', () => {
+        const small = entry(5, 'x');
+        const large = entry(50, 'y');
+        expect(ActorRdfJoinMultiBindSource.orderChain([ large, small ], <any> { variables: []}))
+          .toEqual([ small, large ]);
+      });
+
+      it('should prefer a connected entry over a smaller unconnected one', () => {
+        const connected = entry(50, 'a');
+        const smaller = entry(5, 'z');
+        const seed = <any> { variables: [{ variable: DF.variable('a'), canBeUndef: false }]};
+        expect(ActorRdfJoinMultiBindSource.orderChain([ smaller, connected ], seed))
+          .toEqual([ connected, smaller ]);
+      });
+
+      it('should follow connectivity transitively', () => {
+        const first = entry(50, 'a', 'b');
+        const second = entry(80, 'b', 'c');
+        const seed = <any> { variables: [{ variable: DF.variable('a'), canBeUndef: false }]};
+        expect(ActorRdfJoinMultiBindSource.orderChain([ second, first ], seed))
+          .toEqual([ first, second ]);
+      });
+    });
+
+    describe('with a source that only accepts one pattern at a time', () => {
+      it('should chain the bindings through the remaining entries', async() => {
+        const action: IActionRdfJoin = {
+          type: 'inner',
+          entries: [
+            {
+              output: <any> {
+                type: 'bindings',
+                bindingsStream: new ArrayIterator([
+                  BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+                ], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 1 },
+                  variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+                }),
+              },
+              operation: assignOperationSource(
+                AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.namedNode('ex:o')),
+                sourcePatternOnly,
+              ),
+            },
+            {
+              output: <any> {
+                type: 'bindings',
+                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 10 },
+                  variables: [
+                    { variable: DF.variable('a'), canBeUndef: false },
+                    { variable: DF.variable('b'), canBeUndef: false },
+                  ],
+                }),
+              },
+              operation: assignOperationSource(
+                AF.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.variable('b')),
+                sourcePatternOnly,
+              ),
+            },
+            {
+              output: <any> {
+                type: 'bindings',
+                bindingsStream: new ArrayIterator([], { autoStart: false }),
+                metadata: () => Promise.resolve({
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 20 },
+                  variables: [
+                    { variable: DF.variable('b'), canBeUndef: false },
+                    { variable: DF.variable('c'), canBeUndef: false },
+                  ],
+                }),
+              },
+              operation: assignOperationSource(
+                AF.createPattern(DF.variable('b'), DF.namedNode('ex:p3'), DF.variable('c')),
+                sourcePatternOnly,
+              ),
+            },
+          ],
+          context,
+        };
+        const sideData = (await actor.test(action)).getSideData();
+        expect(sideData.chained).toBe(true);
+        const { result } = await actor.getOutput(action, sideData);
+        await expect(result.bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a1') ],
+            [ DF.variable('b'), DF.namedNode('ex:bound') ],
+            [ DF.variable('c'), DF.namedNode('ex:bound') ],
+          ]),
+        ]);
+        // One call per chained entry, not one per binding
+        expect(sourcePatternOnly.source.queryBindings).toHaveBeenCalledTimes(2);
       });
     });
   });

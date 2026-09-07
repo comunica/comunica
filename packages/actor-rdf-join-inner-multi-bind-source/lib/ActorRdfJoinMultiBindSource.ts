@@ -11,11 +11,13 @@ import type { TestResult } from '@comunica/core';
 import { passTestWithSideData, failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
+  BindingsStream,
   IJoinEntryWithMetadata,
   IQueryOperationResultBindings,
   IQuerySourceWrapper,
   IActionContext,
   ComunicaDataFactory,
+  MetadataBindings,
 } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Algebra } from '@comunica/utils-algebra';
@@ -42,6 +44,38 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     this.selectivityModifier = args.selectivityModifier;
     this.blockSize = args.blockSize;
     this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
+  }
+
+  /**
+   * Order the entries of a chained bind so every step after the first is a lookup rather than a scan.
+   *
+   * Repeatedly takes the cheapest entry that shares a variable with what is already bound. Ordering by cardinality
+   * alone lets an unrelated pattern in, and that step then becomes a full scan for every single binding.
+   */
+  public static orderChain(
+    entries: IJoinEntryWithMetadata[],
+    seed: MetadataBindings,
+  ): IJoinEntryWithMetadata[] {
+    const pending = [ ...entries ];
+    const bound = new Set(seed.variables.map(({ variable }) => variable.value));
+    const ordered: IJoinEntryWithMetadata[] = [];
+    while (pending.length > 0) {
+      let best = 0;
+      for (let i = 1; i < pending.length; i++) {
+        const connected = pending[i].metadata.variables.some(({ variable }) => bound.has(variable.value));
+        const bestConnected = pending[best].metadata.variables.some(({ variable }) => bound.has(variable.value));
+        const smaller = pending[i].metadata.cardinality.value < pending[best].metadata.cardinality.value;
+        if (connected === bestConnected ? smaller : connected) {
+          best = i;
+        }
+      }
+      const [ chosen ] = pending.splice(best, 1);
+      for (const { variable } of chosen.metadata.variables) {
+        bound.add(variable.value);
+      }
+      ordered.push(chosen);
+    }
+    return ordered;
   }
 
   public async getOutput(
@@ -90,12 +124,27 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
       { autoStart: false },
     );
 
-    // For each chunk, pass the query and the bindings to the source for execution
-    const bindingsStream = new UnionIterator(chunkedStreams.map(chunk => sourceWrapper.source.queryBindings(
-      operation,
-      sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
-      { joinBindings: { bindings: chunk, metadata: smallestMetadata }},
-    )), { autoStart: false });
+    const subContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
+    // When the source will not take the remaining entries as one operation, fold the bindings through them one at a
+    // time. Each step is still a single call into the source, so the engine is never re-entered per binding, which
+    // is the entire cost an in-engine bind join would otherwise pay.
+    const chainOrder = sideData.chained ?
+      ActorRdfJoinMultiBindSource.orderChain(remainingEntries, smallestMetadata) :
+      undefined;
+    const bindingsStream: BindingsStream = new UnionIterator<RDF.Bindings>(chunkedStreams.map((chunk) => {
+      if (!chainOrder) {
+        return sourceWrapper.source.queryBindings(operation, subContext, {
+          joinBindings: { bindings: chunk, metadata: smallestMetadata },
+        });
+      }
+      let stream: BindingsStream = chunk;
+      for (const entry of chainOrder) {
+        stream = sourceWrapper.source.queryBindings(entry.operation, subContext, {
+          joinBindings: { bindings: stream, metadata: smallestMetadata },
+        });
+      }
+      return stream;
+    }), { autoStart: false });
 
     return {
       result: {
@@ -175,10 +224,17 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     const testingOperation = this.createOperationFromEntries(algebraFactory, remainingEntries);
     const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
     const wildcardAcceptAllExtensionFunctions = action.context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
-    if (!doesShapeAcceptOperation(selectorShape, testingOperation, {
+    const acceptsWhole = doesShapeAcceptOperation(selectorShape, testingOperation, {
       joinBindings: true,
       wildcardAcceptAllExtensionFunctions,
-    })) {
+    });
+    // A source that only takes one pattern at a time can still answer all of them, one after the other
+    const chained = !acceptsWhole && remainingEntries.every(entry => doesShapeAcceptOperation(
+      selectorShape,
+      entry.operation,
+      { joinBindings: true, wildcardAcceptAllExtensionFunctions },
+    ));
+    if (!acceptsWhole && !chained) {
       return failTest(`Actor ${this.name} detected a source that can not handle passing down join bindings`);
     }
 
@@ -200,7 +256,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
       blockingItems: metadatas[0].cardinality.value,
       requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
         requestInitialTimes[1] + cardinalityRemaining * requestItemTimes[1],
-    }, { ...sideData, entriesUnsorted, entriesSorted });
+    }, { ...sideData, entriesUnsorted, entriesSorted, chained });
   }
 
   public createOperationFromEntries(
@@ -236,4 +292,8 @@ export interface IActorRdfJoinInnerMultiBindSourceArgs
 export interface IActorRdfJoinMultiBindSourceTestSideData extends IActorRdfJoinTestSideData {
   entriesUnsorted: IJoinEntryWithMetadata[];
   entriesSorted: IJoinEntryWithMetadata[];
+  /**
+   * Whether the remaining entries must be sent to the source one at a time rather than as one operation.
+   */
+  chained: boolean;
 }
