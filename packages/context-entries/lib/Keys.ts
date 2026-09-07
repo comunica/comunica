@@ -255,6 +255,12 @@ export const KeysInitQuery = {
    */
   invalidateCache: new ActionContextKey<boolean>('@comunica/actor-init-query:invalidateCache'),
   /**
+   * An opaque object that is unique to a single query execution.
+   * Actors can use it as a key into a `WeakMap` to hold state that may be reused within one query execution,
+   * but must never be reused across query executions, such as cached source cardinalities.
+   */
+  queryExecutionScope: new ActionContextKey<object>('@comunica/actor-init-query:queryExecutionScope'),
+  /**
    * The data factory for creating terms and quads.
    */
   dataFactory: new ActionContextKey<ComunicaDataFactory>('@comunica/actor-init-query:dataFactory'),
