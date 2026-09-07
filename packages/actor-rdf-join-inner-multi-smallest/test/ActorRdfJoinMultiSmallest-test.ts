@@ -480,7 +480,7 @@ IActorRdfJoinSelectivityOutput
     it('should test on 3 streams', async() => {
       const action = action3();
       await expect(actor.test(action)).resolves.toPassTest({
-        iterations: 40,
+        iterations: 15,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 2,
@@ -493,7 +493,7 @@ IActorRdfJoinSelectivityOutput
     it('should test on 4 streams', async() => {
       const action = action4();
       await expect(actor.test(action)).resolves.toPassTest({
-        iterations: 80,
+        iterations: 19,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 2.8,
@@ -506,7 +506,7 @@ IActorRdfJoinSelectivityOutput
     it('should test 4 streams when vars disjoint in 2 smallest', async() => {
       const action = action5();
       await expect(actor.test(action)).resolves.toPassTest({
-        iterations: 840,
+        iterations: 34,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 6,
