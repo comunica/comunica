@@ -125,8 +125,19 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
 
+    // This actor joins the entries one at a time, in the order they were just sorted into: it joins the first two,
+    // then joins that result with the third, and so on. Each of those joins reads both of its inputs, so the work
+    // is the size of the result so far plus the size of the entry being added to it, summed over the steps.
+    // Entries are joined on a variable they share, so a join produces at most as many rows as its smaller input.
+    let rows = metadatas[0].cardinality.value;
+    let iterations = rows;
+    for (const metadata of metadatas.slice(1)) {
+      iterations += rows + metadata.cardinality.value;
+      rows = Math.min(rows, metadata.cardinality.value);
+    }
+
     return passTestWithSideData({
-      iterations: metadatas.reduce((acc, metadata) => acc * metadata.cardinality.value, 1),
+      iterations,
       persistedItems: 0,
       blockingItems: 0,
       requestTime: metadatas.reduce((sum, metadata, i) => sum + requestInitialTimes[i] +
