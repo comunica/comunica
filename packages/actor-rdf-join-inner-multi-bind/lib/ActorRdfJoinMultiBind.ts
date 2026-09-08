@@ -336,9 +336,8 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     const receiveItemCostRemaining = remainingRequestItemTimes
       .reduce((sum, element) => sum + element, 0);
 
-    // Each binding re-plans and re-runs every remaining operation, which costs far more than a row.
-    // One sharing no variable is no lookup: it must still be joined, costing about a sub-plan again.
-    // Not charged for paged sources, where the alternative is paging a whole pattern and binding wins anyway.
+    // Each binding re-plans and re-runs every remaining operation.
+    // This does not apply to remote sources, where this cost is already incorporated into requestTime.
     const subPlanCost = isRemoteAccess ?
       0 :
       this.subQueryCost * remainingEntries.length * (1 + entriesWithoutSharedVariable);
