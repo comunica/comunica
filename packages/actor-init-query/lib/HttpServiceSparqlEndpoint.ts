@@ -557,8 +557,6 @@ export class HttpServiceSparqlEndpoint {
     return algebraTransformer({ continue: false, copy: false }).transformNode(operation, {
       [Algebra.Types.COMPOSITE_UPDATE]: { preVisitor: () => ({ continue: true, copy: true }) },
       [Algebra.Types.DELETE_INSERT]: {
-        // The delete and insert templates hold quad patterns to write, they carry no dataset of their own.
-        preVisitor: () => ({ ignoreKeys: new Set([ 'delete', 'insert', 'metadata' ]) }),
         transform: (deleteInsert) => {
           if (!deleteInsert.where) {
             return deleteInsert;

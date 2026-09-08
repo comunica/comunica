@@ -54,7 +54,7 @@ export function isKnownSubType<
 // ----------------------- manipulators --------------------
 
 type _NeedRefForReusabilityWithoutExplicitTypeDefinition = TraqulaAlgebra.Operation;
-export const defaultObjectContext: TransformContext = <const> {
+export const defaultObjectContext: TransformContext = {
   /**
    * Metadata often contains references to actors,
    * the transformer should not copy these actors, nor should it traverse the actors when visitingOperations.
@@ -64,7 +64,7 @@ export const defaultObjectContext: TransformContext = <const> {
   shallowKeys: new Set([ 'metadata' ]),
   ignoreKeys: new Set([ 'metadata' ]),
 };
-export const defaultNodePreVisitor: ConstructorParameters<typeof TransformerSubTyped<KnownOperation>>[1] = <const> {
+export const defaultNodePreVisitor: ConstructorParameters<typeof TransformerSubTyped<KnownOperation>>[1] = {
   // Optimization that causes search tree pruning
   [Types.PATTERN]: { ignoreKeys: new Set([ 'subject', 'predicate', 'object', 'graph', 'metadata' ]) },
   [Types.EXPRESSION]: { ignoreKeys: new Set([ 'name', 'term', 'wildcard', 'variable', 'metadata' ]) },
