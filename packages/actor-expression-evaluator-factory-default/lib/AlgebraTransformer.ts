@@ -4,16 +4,6 @@ import type { Expression, IActionContext, OperatorExpression } from '@comunica/t
 import { Algebra, AlgebraFactory, algebraTransformer } from '@comunica/utils-algebra';
 import * as ExprEval from '@comunica/utils-expression-evaluator';
 
-/**
- * Converting an expression only reads the algebra - the internal representation it builds is a separate
- * object graph - so this transformer neither copies nor traverses anything by default.
- * The operator-like expressions are the exception: their callback needs the already converted arguments,
- * and the traversal writes those into the node it hands them, so those two opt into both.
- *
- * Note that the `Specific` variants dispatch on the subType and therefore ignore the per-type defaults of
- * the transformer, which is why the keys holding a term are spelled out below rather than inherited from
- * the defaults of the EXPRESSION type.
- */
 const expressionTransformer = algebraTransformer<'unsafe', Expression>({ continue: false, copy: false });
 
 /**
@@ -59,9 +49,6 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
             <Expression[]> copy.args,
           ),
         },
-        // The pattern of an existence expression stays algebra: it is materialized and evaluated as a
-        // query later on, and an aggregate expression is handed to the aggregator factory as algebra too.
-        // Neither is converted nor copied, which is what this transformer does unless told otherwise.
         [Algebra.ExpressionTypes.EXISTENCE]: {
           transform: existence => AlgebraTransformer.transformExistence(existence),
         },
