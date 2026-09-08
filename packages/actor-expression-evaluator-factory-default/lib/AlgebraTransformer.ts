@@ -32,8 +32,6 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
       [Algebra.Types.EXPRESSION]: {
         [Algebra.ExpressionTypes.TERM]: { transform: term => this.transformTermExpression(term) },
         [Algebra.ExpressionTypes.OPERATOR]: {
-          // The traversal already converted the arguments, in place on the copy, while the function is
-          // resolved from those arguments as algebra, which only the original still holds.
           preVisitor: () => argumentConvertingContext,
           transform: (copy: { args: unknown }, orig) => this.buildOperator(
             orig.operator.toLowerCase(),
@@ -79,7 +77,7 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
       return this.buildOperator(
         'triple',
         this.AF.createOperatorExpression('triple', args),
-        await Promise.all(args.map(arg => this.transformAlgebra(arg))),
+        await Promise.all(args.map(arg => this.transformTermExpression(arg))),
       );
     }
     return this.transformTerm(expr);
