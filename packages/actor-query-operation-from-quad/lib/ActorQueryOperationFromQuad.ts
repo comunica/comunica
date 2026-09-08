@@ -8,6 +8,20 @@ import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comuni
 import type * as RDF from '@rdfjs/types';
 
 /**
+ * The context of a BGP, quad pattern or property path, the three operations the transformations below rewrite.
+ *
+ * Nothing below them needs rewriting - the terms and the property path predicate are re-used as-is - and the
+ * patterns of a BGP are rewritten by its own callback rather than as patterns of their own, so the traversal
+ * does not continue into them.
+ *
+ * It does not copy them either: a callback builds its result from the operation it is handed, and hands back
+ * that very operation when the graphs leave it unchanged, so the copy would only ever be discarded.
+ * Not copying is safe precisely because the traversal stops here - a copy is what keeps a traversal from
+ * writing its results into the operation it was given.
+ */
+const patternRewriteContext = { continue: false, copy: false };
+
+/**
  * A comunica From Query Operation Actor.
  */
 export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediated<Algebra.From> {
@@ -46,8 +60,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
   ): Algebra.Operation {
     return algebraUtils.mapOperation(operation, {
       [Algebra.Types.BGP]: {
-        // This callback rewrites the patterns itself, so they must not be rewritten as patterns first.
-        preVisitor: () => ({ continue: false }),
+        preVisitor: () => patternRewriteContext,
         transform: (bgp) => {
           if (bgp.patterns.length === 0) {
             return bgp;
@@ -68,8 +81,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         },
       },
       [Algebra.Types.PATH]: {
-        // The predicate is re-used as-is, nothing below a path needs rewriting.
-        preVisitor: () => ({ continue: false }),
+        preVisitor: () => patternRewriteContext,
         transform: (path) => {
           if (path.graph.termType !== 'DefaultGraph') {
             return path;
@@ -82,7 +94,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         },
       },
       [Algebra.Types.PATTERN]: {
-        preVisitor: () => ({ continue: false }),
+        preVisitor: () => patternRewriteContext,
         transform: (pattern) => {
           if (pattern.graph.termType !== 'DefaultGraph') {
             return pattern;
@@ -117,19 +129,19 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
   ): Algebra.Operation {
     return algebraUtils.mapOperation(operation, {
       [Algebra.Types.BGP]: {
-        preVisitor: () => ({ continue: false }),
+        preVisitor: () => patternRewriteContext,
         transform: bgp => bgp.patterns.length === 0 ?
           bgp :
           ActorQueryOperationFromQuad.applyNamedGraphToPattern(algebraFactory, bgp, namedGraphs, defaultGraphs),
       },
       [Algebra.Types.PATH]: {
-        preVisitor: () => ({ continue: false }),
+        preVisitor: () => patternRewriteContext,
         transform: path => ActorQueryOperationFromQuad
           .applyNamedGraphToPattern(algebraFactory, path, namedGraphs, defaultGraphs),
       },
       [Algebra.Types.PATTERN]: {
-        preVisitor: () => ({ continue: false }),
-        transform: (_copy, pattern) => ActorQueryOperationFromQuad
+        preVisitor: () => patternRewriteContext,
+        transform: pattern => ActorQueryOperationFromQuad
           .applyNamedGraphToPattern(algebraFactory, pattern, namedGraphs, defaultGraphs),
       },
       [Algebra.Types.CONSTRUCT]: { preVisitor: () => ({ ignoreKeys: new Set([ 'template', 'metadata' ]) }) },
