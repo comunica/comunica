@@ -58,6 +58,52 @@ describe('ActorQueryOperationFromQuad', () => {
     });
   });
 
+  describe('#copyOperation', () => {
+    // This function is no longer used by the actor itself, but remains part of its public API.
+    const marker = AF.createNop();
+
+    it('should recurse into sub-operations and leave other values alone', () => {
+      const operation = AF.createSlice(AF.createNop(), 10, 20);
+      const recursiveCb = jest.fn(() => marker);
+      const copied = <Algebra.Slice> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
+      expect(copied).not.toBe(operation);
+      expect(copied.input).toBe(marker);
+      expect(copied.start).toBe(10);
+      expect(copied).toHaveLength(20);
+      expect(recursiveCb).toHaveBeenCalledTimes(1);
+      expect(recursiveCb).toHaveBeenCalledWith(operation.input);
+    });
+
+    it('should recurse into every entry of an array of sub-operations', () => {
+      const operation = AF.createJoin([ AF.createNop(), AF.createBgp([]) ], false);
+      const recursiveCb = jest.fn(() => marker);
+      const copied = <Algebra.Join> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
+      expect(copied.input).toEqual([ marker, marker ]);
+      expect(recursiveCb).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not recurse into the variables of a project', () => {
+      const operation = AF.createProject(AF.createNop(), [ DF.variable('v') ]);
+      const recursiveCb = jest.fn(() => marker);
+      const copied = <Algebra.Project> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
+      expect(copied.variables).toBe(operation.variables);
+      expect(recursiveCb).toHaveBeenCalledTimes(1);
+      expect(recursiveCb).toHaveBeenCalledWith(operation.input);
+    });
+
+    it('should not recurse into the template of a construct', () => {
+      const operation = AF.createConstruct(
+        AF.createNop(),
+        [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ],
+      );
+      const recursiveCb = jest.fn(() => marker);
+      const copied = <Algebra.Construct> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
+      expect(copied.template).toBe(operation.template);
+      expect(recursiveCb).toHaveBeenCalledTimes(1);
+      expect(recursiveCb).toHaveBeenCalledWith(operation.input);
+    });
+  });
+
   describe('#applyOperationDefaultGraph', () => {
     it('should transform a BGP with a default graph pattern', () => {
       const result = <Algebra.Bgp> ActorQueryOperationFromQuad
@@ -245,6 +291,12 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.stuff[1]).toEqual({ type: 'someunknownthing', variables: [ DF.variable('V') ]});
     });
 
+    it('should not modify an empty BGP', () => {
+      const operation = AF.createBgp([]);
+      expect(ActorQueryOperationFromQuad.applyOperationDefaultGraph(AF, operation, [ DF.namedNode('g') ]))
+        .toEqual(operation);
+    });
+
     it('should not modify a nested pattern that is not in the default graph', () => {
       const operation = AF.createProject(
         AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')),
@@ -270,6 +322,12 @@ describe('ActorQueryOperationFromQuad', () => {
   });
 
   describe('#applyOperationNamedGraph', () => {
+    it('should not modify an empty BGP', () => {
+      const operation = AF.createBgp([]);
+      expect(ActorQueryOperationFromQuad.applyOperationNamedGraph(AF, operation, [ DF.namedNode('g') ], []))
+        .toEqual(operation);
+    });
+
     it('should transform a pattern with a default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
