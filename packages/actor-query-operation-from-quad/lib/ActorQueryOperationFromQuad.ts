@@ -7,8 +7,6 @@ import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from 
 import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 
-const patternRewriteContext = { continue: false, copy: false };
-
 /**
  * A comunica From Query Operation Actor.
  */
@@ -83,7 +81,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
   ): Algebra.Operation {
     return algebraUtils.mapOperation(operation, {
       [Algebra.Types.BGP]: {
-        preVisitor: () => patternRewriteContext,
+        preVisitor: () => ({ continue: false, copy: false }),
         transform: (bgp) => {
           if (bgp.patterns.length === 0) {
             return bgp;
@@ -104,7 +102,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         },
       },
       [Algebra.Types.PATH]: {
-        preVisitor: () => patternRewriteContext,
+        preVisitor: () => ({ continue: false, copy: false }),
         transform: (path) => {
           if (path.graph.termType !== 'DefaultGraph') {
             return path;
@@ -117,7 +115,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         },
       },
       [Algebra.Types.PATTERN]: {
-        preVisitor: () => patternRewriteContext,
+        preVisitor: () => ({ continue: false, copy: false }),
         transform: (pattern) => {
           if (pattern.graph.termType !== 'DefaultGraph') {
             return pattern;
@@ -152,18 +150,18 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
   ): Algebra.Operation {
     return algebraUtils.mapOperation(operation, {
       [Algebra.Types.BGP]: {
-        preVisitor: () => patternRewriteContext,
+        preVisitor: () => ({ continue: false, copy: false }),
         transform: bgp => bgp.patterns.length === 0 ?
           bgp :
           ActorQueryOperationFromQuad.applyNamedGraphToPattern(algebraFactory, bgp, namedGraphs, defaultGraphs),
       },
       [Algebra.Types.PATH]: {
-        preVisitor: () => patternRewriteContext,
+        preVisitor: () => ({ continue: false, copy: false }),
         transform: path => ActorQueryOperationFromQuad
           .applyNamedGraphToPattern(algebraFactory, path, namedGraphs, defaultGraphs),
       },
       [Algebra.Types.PATTERN]: {
-        preVisitor: () => patternRewriteContext,
+        preVisitor: () => ({ continue: false, copy: false }),
         transform: pattern => ActorQueryOperationFromQuad
           .applyNamedGraphToPattern(algebraFactory, pattern, namedGraphs, defaultGraphs),
       },
