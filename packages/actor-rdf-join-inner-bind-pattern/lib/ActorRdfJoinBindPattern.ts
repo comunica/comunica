@@ -12,12 +12,11 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTestWithSideData, failTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { BindingsStream, ComunicaDataFactory, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
+import type { BindingsStream, ComunicaDataFactory, IQuerySourceWrapper } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
-import { AlgebraFactory, Algebra as AlgebraTypes, inScopeVariables } from '@comunica/utils-algebra';
+import { AlgebraFactory, Algebra as AlgebraTypes } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getOperationSource } from '@comunica/utils-query-operation';
-import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica Bind Pattern RDF Join Actor.
@@ -27,7 +26,6 @@ import type * as RDF from '@rdfjs/types';
  */
 export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatternTestSideData> {
   public readonly bindOrder: BindOrder;
-  public readonly selectivityModifier: number;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorRdfJoinBindPatternArgs) {
@@ -40,23 +38,16 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
       isLeaf: false,
     });
     this.bindOrder = args.bindOrder;
-    this.selectivityModifier = args.selectivityModifier;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   /**
-   * Determine whether the given entry is a pattern this actor can ask a source for on its own.
+   * The source to ask for the given entry, if it is a pattern this actor can bind into.
+   * A pattern never carries the operations that binding cannot be pushed through, so nothing else is checked.
    * @param entry A join entry.
-   * @param boundVariables The variables the other entry binds.
    */
-  public static getBindableSource(
-    entry: IActionRdfJoin['entries'][0],
-    boundVariables: RDF.Variable[],
-  ): IQuerySourceWrapper | undefined {
+  public static getBindableSource(entry: IActionRdfJoin['entries'][0]): IQuerySourceWrapper | undefined {
     if (entry.operation.type !== AlgebraTypes.Types.PATTERN || entry.operationModified) {
-      return undefined;
-    }
-    if (!ActorRdfJoinMultiBind.canBindWithOperation(entry.operation, boundVariables)) {
       return undefined;
     }
     return getOperationSource(entry.operation);
@@ -114,8 +105,7 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
     // Read the entry with the fewest results, and ask the source of the other one for its pattern per binding
     const baseIndex = metadatas[0].cardinality.value <= metadatas[1].cardinality.value ? 0 : 1;
     const patternIndex = baseIndex === 0 ? 1 : 0;
-    const boundVariables = inScopeVariables(action.entries[baseIndex].operation);
-    const source = ActorRdfJoinBindPattern.getBindableSource(action.entries[patternIndex], boundVariables);
+    const source = ActorRdfJoinBindPattern.getBindableSource(action.entries[patternIndex]);
     if (!source) {
       return failTest(`Actor ${this.name} requires the largest entry to be a pattern with a source`);
     }
@@ -123,44 +113,20 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     const cardinalityBase = metadatas[baseIndex].cardinality.value;
-    const joined = await this.estimateJoinCardinality(action, metadatas, baseIndex, patternIndex);
+    // The entries always share a variable, since this actor requires that, so this is always defined.
+    const joined = ActorRdfJoin.getSharedVariableJoinCardinality(metadatas)!;
 
     return passTestWithSideData({
       // Every binding of the base entry is looked up in the source once, and every result row is produced once.
       iterations: cardinalityBase + joined,
       persistedItems: 0,
       blockingItems: 0,
-      // Every binding costs a request of its own, so a source that answers in pages is asked once per binding
-      // even when it returns a single row. That is what keeps this out of plans over such sources.
+      // Every binding costs a whole request of its own, whether or not the source answers in pages, so this
+      // only pays off against reading the pattern when the bound entry is smaller than that pattern's pages.
       requestTime: requestInitialTimes[baseIndex] +
-        cardinalityBase * (
-          requestItemTimes[baseIndex] +
-          requestInitialTimes[patternIndex] +
-          requestItemTimes[patternIndex]
-        ) +
+        cardinalityBase * (requestItemTimes[baseIndex] + (metadatas[patternIndex].requestTime ?? 0)) +
         joined * requestItemTimes[patternIndex],
     }, { ...sideData, baseIndex, patternIndex, source });
-  }
-
-  /**
-   * Estimate how many rows the join produces, from the variables the entries share where possible.
-   */
-  protected async estimateJoinCardinality(
-    action: IActionRdfJoin,
-    metadatas: MetadataBindings[],
-    baseIndex: number,
-    patternIndex: number,
-  ): Promise<number> {
-    const shared = ActorRdfJoin.getSharedVariableJoinCardinality(metadatas);
-    if (shared !== undefined) {
-      return shared;
-    }
-    const { selectivity } = await this.mediatorJoinSelectivity.mediate({
-      entries: action.entries,
-      context: action.context,
-    });
-    return metadatas[baseIndex].cardinality.value * metadatas[patternIndex].cardinality.value *
-      selectivity * this.selectivityModifier;
   }
 }
 
@@ -176,12 +142,6 @@ export interface IActorRdfJoinBindPatternArgs extends IActorRdfJoinArgs<IActorRd
    * @default {depth-first}
    */
   bindOrder: BindOrder;
-  /**
-   * Multiplier for selectivity values, only used for entries that share no variable.
-   * @range {double}
-   * @default {0.0001}
-   */
-  selectivityModifier: number;
   /**
    * A mediator for creating binding context merge handlers
    */
