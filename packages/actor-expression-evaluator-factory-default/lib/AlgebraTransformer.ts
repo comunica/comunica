@@ -1,8 +1,27 @@
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { Expression, IActionContext, OperatorExpression } from '@comunica/types';
-import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraTransformer } from '@comunica/utils-algebra';
 import * as ExprEval from '@comunica/utils-expression-evaluator';
+
+/**
+ * Converting an expression only reads the algebra - the internal representation it builds is a separate
+ * object graph - so this transformer neither copies nor traverses anything by default.
+ * The operator-like expressions are the exception: their callback needs the already converted arguments,
+ * and the traversal writes those into the node it hands them, so those two opt into both.
+ *
+ * Note that the `Specific` variants dispatch on the subType and therefore ignore the per-type defaults of
+ * the transformer, which is why the keys holding a term are spelled out below rather than inherited from
+ * the defaults of the EXPRESSION type.
+ */
+const expressionTransformer = algebraTransformer<'unsafe', Expression>({ continue: false, copy: false });
+
+/**
+ * The context of an expression whose arguments have to be converted before it can be built.
+ * Shared by the operator and named expressions: the arguments are traversed, while the `name` of a named
+ * expression is a term that is read as-is.
+ */
+const argumentConvertingContext = { continue: true, copy: true, ignoreKeys: new Set([ 'name', 'metadata' ]) };
 
 export class AlgebraTransformer extends ExprEval.TermTransformer {
   private readonly AF = new AlgebraFactory();
@@ -14,7 +33,7 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
   }
 
   public async transformAlgebra(expr: Algebra.Expression): Promise<Expression> {
-    return await algebraUtils.mapOperationSubAsyncStrict<'unsafe', Expression>(expr, {
+    return await expressionTransformer.transformNodeSpecificAsync(expr, {
       // Reached by an expression whose subType has no callback below, which is one this cannot convert.
       [Algebra.Types.EXPRESSION]: { transform: (expression) => {
         throw new Error(`Expression of type ${expression.subType} cannot be converted into internal representation of expression.`);
@@ -25,6 +44,7 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
         [Algebra.ExpressionTypes.OPERATOR]: {
           // The traversal already converted the arguments, in place on the copy, while the function is
           // resolved from those arguments as algebra, which only the original still holds.
+          preVisitor: () => argumentConvertingContext,
           transform: (copy: { args: unknown }, orig) => this.buildOperator(
             orig.operator.toLowerCase(),
             orig,
@@ -32,21 +52,20 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
           ),
         },
         [Algebra.ExpressionTypes.NAMED]: {
+          preVisitor: () => argumentConvertingContext,
           transform: (copy: { args: unknown }, orig) => this.buildOperator(
             orig.name.value,
             orig,
             <Expression[]> copy.args,
           ),
         },
+        // The pattern of an existence expression stays algebra: it is materialized and evaluated as a
+        // query later on, and an aggregate expression is handed to the aggregator factory as algebra too.
+        // Neither is converted nor copied, which is what this transformer does unless told otherwise.
         [Algebra.ExpressionTypes.EXISTENCE]: {
-          // The pattern of an existence expression stays algebra: it is materialized and evaluated as a
-          // query later on, so it must be neither converted nor copied.
-          preVisitor: () => ({ continue: false, copy: false }),
           transform: existence => AlgebraTransformer.transformExistence(existence),
         },
         [Algebra.ExpressionTypes.AGGREGATE]: {
-          // An aggregate expression stays algebra as well: the aggregator factory receives it as such.
-          preVisitor: () => ({ continue: false, copy: false }),
           transform: aggregate => AlgebraTransformer.transformAggregate(aggregate),
         },
         [Algebra.ExpressionTypes.WILDCARD]: {
