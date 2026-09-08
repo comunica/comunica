@@ -145,6 +145,7 @@ export interface IActorRdfJoinBindPatternArgs extends IActorRdfJoinArgs<IActorRd
    * @default {depth-first}
    */
   bindOrder: BindOrder;
+  // TODO: in next major, make mandatory.
   /**
    * The cost of asking the source for one bound pattern, expressed in produced rows.
    * @range {double}
