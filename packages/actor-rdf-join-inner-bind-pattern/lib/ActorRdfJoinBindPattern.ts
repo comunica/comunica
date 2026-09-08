@@ -15,6 +15,8 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type {
   BindingsStream,
   ComunicaDataFactory,
+  IActionContext,
+  IQuerySource,
   IQuerySourceWrapper,
   MetadataBindings,
 } from '@comunica/types';
@@ -22,6 +24,7 @@ import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory, Algebra as AlgebraTypes } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getOperationSource } from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica Bind Pattern RDF Join Actor.
@@ -34,7 +37,13 @@ import { getOperationSource } from '@comunica/utils-query-operation';
 export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatternTestSideData> {
   public readonly bindOrder: BindOrder;
   public readonly probeCost: number;
+  public readonly sampleSize: number;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  /**
+   * Fan-outs measured per source and pattern. They describe how a source's own data is shaped, which does not
+   * change between the joins of a query, or between queries, any more than the cardinalities it reports do.
+   */
+  private readonly fanOuts = new WeakMap<IQuerySource, Map<string, Promise<number | undefined>>>();
 
   public constructor(args: IActorRdfJoinBindPatternArgs) {
     super(args, {
@@ -47,6 +56,7 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
     });
     this.bindOrder = args.bindOrder;
     this.probeCost = args.probeCost ?? 10;
+    this.sampleSize = args.sampleSize ?? 3;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
@@ -135,6 +145,153 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
       Math.max(1, pattern.cardinality / Math.max(1, entering.cardinality.value))));
   }
 
+  /**
+   * A key that identifies measuring the given pattern's fan-out over the given variables.
+   */
+  public static fanOutKey(pattern: Algebra.Pattern, variables: string[]): string {
+    const terms = [ pattern.subject, pattern.predicate, pattern.object, pattern.graph ]
+      .map(term => `${term.termType}:${term.value}`)
+      .join(' ');
+    return `${terms}|${[ ...variables ].sort().join(',')}`;
+  }
+
+  /**
+   * The pattern with the given variables replaced by the terms the given bindings hold for them.
+   */
+  public static bindPattern(
+    algebraFactory: AlgebraFactory,
+    pattern: Algebra.Pattern,
+    bindings: RDF.Bindings,
+  ): Algebra.Pattern {
+    const bind = (term: RDF.Term): RDF.Term =>
+      (term.termType === 'Variable' ? bindings.get(term) ?? term : term);
+    return Object.assign(
+      algebraFactory.createPattern(bind(pattern.subject), bind(pattern.predicate), bind(pattern.object), pattern.graph),
+      { metadata: pattern.metadata },
+    );
+  }
+
+  /**
+   * The cardinality the source reports for the given operation, or undefined when it fails to answer.
+   *
+   * The stream is never read: a source reports the metadata of what it would produce without being consumed,
+   * so this costs the source's own count and nothing more.
+   */
+  public static async getPatternCardinality(
+    source: IQuerySourceWrapper,
+    operation: Algebra.Pattern,
+    context: IActionContext,
+  ): Promise<number | undefined> {
+    return new Promise<number | undefined>((resolve) => {
+      let settled = false;
+      const settle = (value?: number): void => {
+        if (!settled) {
+          settled = true;
+          resolve(value);
+        }
+      };
+      try {
+        const stream = source.source.queryBindings(operation, context);
+        stream.on('error', () => settle());
+        stream.getProperty('metadata', (metadata: MetadataBindings) => {
+          settle(metadata.cardinality.value);
+          stream.destroy();
+        });
+      } catch {
+        settle();
+      }
+    });
+  }
+
+  /**
+   * Measure how many rows the given pattern yields for one binding of the given variables.
+   *
+   * A pattern that is only bound in its object can fan out to many rows, like a type or a country would, and
+   * nothing in the cardinality a source reports for the unbound pattern shows that. So a few of the pattern's
+   * own rows are read, and the pattern is counted again with its variables bound to the terms each of them
+   * carries. Sampling the pattern's own rows rather than the bindings that will reach it weights the values the
+   * way the join does, because the bindings that reach it are the ones that match one of its rows.
+   * @param source The source to ask.
+   * @param pattern The pattern to measure.
+   * @param variables The variables that will already be bound when this pattern is reached.
+   * @param context The action context.
+   * @return The mean number of rows per binding, or undefined when the source did not answer.
+   */
+  public async measureFanOut(
+    source: IQuerySourceWrapper,
+    pattern: Algebra.Pattern,
+    variables: string[],
+    context: IActionContext,
+  ): Promise<number | undefined> {
+    let measured = this.fanOuts.get(source.source);
+    if (!measured) {
+      measured = new Map();
+      this.fanOuts.set(source.source, measured);
+    }
+    const key = ActorRdfJoinBindPattern.fanOutKey(pattern, variables);
+    let fanOut = measured.get(key);
+    if (!fanOut) {
+      fanOut = this.measureFanOutUncached(source, pattern, variables, context);
+      measured.set(key, fanOut);
+    }
+    return await fanOut;
+  }
+
+  private async measureFanOutUncached(
+    source: IQuerySourceWrapper,
+    pattern: Algebra.Pattern,
+    variables: string[],
+    context: IActionContext,
+  ): Promise<number | undefined> {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const algebraFactory = new AlgebraFactory(dataFactory);
+    const bound = new Set(variables);
+
+    const samples: RDF.Bindings[] = await new Promise((resolve) => {
+      const collected: RDF.Bindings[] = [];
+      let settled = false;
+      const settle = (): void => {
+        if (!settled) {
+          settled = true;
+          resolve(collected);
+        }
+      };
+      try {
+        const stream = source.source.queryBindings(pattern, context);
+        stream.on('error', () => settle());
+        stream.on('end', () => settle());
+        stream.on('data', (bindings: RDF.Bindings) => {
+          collected.push(bindings);
+          if (collected.length >= this.sampleSize) {
+            settle();
+            stream.destroy();
+          }
+        });
+      } catch {
+        settle();
+      }
+    });
+    if (samples.length === 0) {
+      return undefined;
+    }
+
+    const cardinalities = await Promise.all(samples.map(async(bindings) => {
+      // Only the variables that are bound when this pattern is reached are substituted, so what is counted is
+      // exactly the lookup the join would perform.
+      const filtered = bindings.filter((_, variable) => bound.has(variable.value));
+      return await ActorRdfJoinBindPattern.getPatternCardinality(
+        source,
+        ActorRdfJoinBindPattern.bindPattern(algebraFactory, pattern, filtered),
+        context,
+      );
+    }));
+    const measured = cardinalities.filter((cardinality): cardinality is number => cardinality !== undefined);
+    if (measured.length === 0) {
+      return undefined;
+    }
+    return measured.reduce((sum, cardinality) => sum + cardinality, 0) / measured.length;
+  }
+
   public async getOutput(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinBindPatternTestSideData,
@@ -175,10 +332,13 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
       result: {
         type: 'bindings',
         bindingsStream,
+        // The chain measured how far every pattern fans out per binding, so it knows its own result size
+        // better than the generic estimate over the entries does.
         metadata: async() => await this.constructResultMetadata(
           action.entries,
           await ActorRdfJoin.getMetadatas(action.entries),
           action.context,
+          { cardinality: { type: 'estimate', value: sideData.resultCardinality }},
         ),
       },
     };
@@ -234,7 +394,19 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
     for (const [ level, position ] of order.entries()) {
       const pattern = patterns[position];
       const index = patternIndexes[level];
-      const joined = ActorRdfJoinBindPattern.estimateJoined(entering, pattern, bound);
+      // A pattern whose subject is bound is a lookup, and the cap the estimate falls back on describes those
+      // well. One that is only bound in its object is the case the cap is blind to, so that one is measured.
+      const measured = this.sampleSize > 0 && !ActorRdfJoinBindPattern.isSubjectBound(pattern, bound) ?
+        await this.measureFanOut(
+          sources[level],
+          <Algebra.Pattern> action.entries[index].operation,
+          pattern.variables.filter(variable => bound.has(variable)),
+          action.context,
+        ) :
+        undefined;
+      const joined = measured === undefined ?
+        ActorRdfJoinBindPattern.estimateJoined(entering, pattern, bound) :
+        entering.cardinality.value * measured;
       const probes = entering.cardinality.value;
       const levelIterations = probes * (1 + this.probeCost) + joined;
       const levelRequestTime = probes * (pattern.metadata.requestTime ?? 0) + joined * requestItemTimes[index];
@@ -267,7 +439,7 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
       persistedItems: 0,
       blockingItems: 0,
       requestTime,
-    }, { ...sideData, baseIndex, patternIndexes, sources });
+    }, { ...sideData, baseIndex, patternIndexes, sources, resultCardinality: entering.cardinality.value });
   }
 }
 
@@ -297,6 +469,10 @@ export interface IActorRdfJoinBindPatternTestSideData extends IActorRdfJoinTestS
    * The source of each pattern entry, in the same order.
    */
   sources: IQuerySourceWrapper[];
+  /**
+   * The rows this chain is expected to produce, from the fan-out measured at every level.
+   */
+  resultCardinality: number;
 }
 
 export interface IActorRdfJoinBindPatternArgs extends IActorRdfJoinArgs<IActorRdfJoinBindPatternTestSideData> {
@@ -312,6 +488,14 @@ export interface IActorRdfJoinBindPatternArgs extends IActorRdfJoinArgs<IActorRd
    * @default {10}
    */
   probeCost?: number;
+  // TODO: in next major, make mandatory.
+  /**
+   * How many of a pattern's own rows to read when measuring how far it fans out per binding.
+   * Set to 0 to estimate the fan-out from cardinalities alone, without asking the source.
+   * @range {double}
+   * @default {3}
+   */
+  sampleSize?: number;
   /**
    * A mediator for creating binding context merge handlers
    */

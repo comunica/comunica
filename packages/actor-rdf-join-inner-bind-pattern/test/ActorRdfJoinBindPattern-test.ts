@@ -147,11 +147,19 @@ describe('ActorRdfJoinBindPattern', () => {
     }
 
     beforeEach(() => {
-      queryBindings = jest.fn(() => new ArrayIterator<RDF.Bindings>(
-        [ BF.bindings([[ DF.variable('b'), DF.namedNode('ex:b') ]]) ],
-        { autoStart: false },
-      ));
-      source = <any> { source: { queryBindings }, context: undefined };
+      queryBindings = jest.fn(() => {
+        const it = new ArrayIterator<RDF.Bindings>(
+          [ BF.bindings([[ DF.variable('b'), DF.namedNode('ex:b') ]]) ],
+          { autoStart: false },
+        );
+        it.setProperty('metadata', {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 1 },
+          variables: [{ variable: DF.variable('b'), canBeUndef: false }],
+        });
+        return it;
+      });
+      source = <any> { source: { queryBindings, referenceValue: 'ex:source' }, context: undefined };
       actor = new ActorRdfJoinBindPattern({
         name: 'actor',
         bus,
@@ -301,6 +309,14 @@ describe('ActorRdfJoinBindPattern', () => {
       });
 
       it('should reject when a pattern bound only in its object fans out too far', async() => {
+        actor = new ActorRdfJoinBindPattern({
+          name: 'actor',
+          bus,
+          bindOrder: 'depth-first',
+          sampleSize: 0,
+          mediatorJoinSelectivity: <any> { mediate: async() => ({ selectivity: 1 }) },
+          mediatorMergeBindingsContext,
+        });
         const action: IActionRdfJoin = <any> {
           type: 'inner',
           entries: [
@@ -359,6 +375,177 @@ describe('ActorRdfJoinBindPattern', () => {
       });
     });
 
+    describe('fan-out sampling', () => {
+      let cardinalities: number[];
+      let sampling: jest.Mock;
+
+      function samplingSource(): any {
+        // Answers the unbound pattern with rows, and every bound pattern with the next queued cardinality
+        sampling = jest.fn((operation: any) => {
+          const it = new ArrayIterator<RDF.Bindings>([
+            BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+            BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a2') ]]),
+            BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a3') ]]),
+          ], { autoStart: false });
+          const isBound = operation.object.termType !== 'Variable' || operation.subject.termType !== 'Variable';
+          it.setProperty('metadata', {
+            state: new MetadataValidationState(),
+            cardinality: { type: 'estimate', value: isBound ? cardinalities.shift() ?? 1 : 2000 },
+            variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+          });
+          return it;
+        });
+        return { source: { queryBindings: sampling, referenceValue: 'ex:sampled' }, context: undefined };
+      }
+
+      function objectBoundAction(sampled: any): IActionRdfJoin {
+        return <any> {
+          type: 'inner',
+          entries: [
+            entry(2, [ 'a' ], pattern()),
+            entry(2000, [ 'b', 'a' ], assignOperationSource(
+              FACTORY.createPattern(DF.variable('b'), DF.namedNode('ex:p'), DF.variable('a')),
+              sampled,
+            )),
+          ],
+          context,
+        };
+      }
+
+      beforeEach(() => {
+        cardinalities = [];
+      });
+
+      it('should accept a pattern the source shows does not fan out', async() => {
+        cardinalities = [ 1, 1, 1 ];
+        const sampled = samplingSource();
+        await expect(actor.test(objectBoundAction(sampled))).resolves.toPassTest({
+          // The measured fan-out of 1 leaves 2 rows, where the estimate alone would have assumed 2000
+          iterations: 2 * 11 + 2,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 0,
+        });
+        // One query for the sample rows, then one per sampled binding
+        expect(sampling).toHaveBeenCalledTimes(4);
+      });
+
+      it('should reject a pattern the source shows fans out', async() => {
+        cardinalities = [ 900, 1000, 1100 ];
+        await expect(actor.test(objectBoundAction(samplingSource()))).resolves
+          .toFailTest(`actor would bind into a pattern that is cheaper to read once`);
+      });
+
+      it('should measure a pattern only once', async() => {
+        cardinalities = [ 1, 1, 1 ];
+        const sampled = samplingSource();
+        await actor.test(objectBoundAction(sampled));
+        await actor.test(objectBoundAction(sampled));
+        expect(sampling).toHaveBeenCalledTimes(4);
+      });
+
+      it('should fall back to the estimate when the source fails to answer', async() => {
+        const failing = <any> {
+          source: {
+            referenceValue: 'ex:failing',
+            queryBindings: jest.fn(() => {
+              const it = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+              // Fail once the actor has attached its listeners, the way a source that cannot answer would
+              queueMicrotask(() => it.destroy(new Error('no')));
+              return it;
+            }),
+          },
+          context: undefined,
+        };
+        await expect(actor.test(objectBoundAction(failing))).resolves
+          .toFailTest(`actor would bind into a pattern that is cheaper to read once`);
+      });
+
+      it('should fall back to the estimate when the source throws', async() => {
+        const throwing = <any> {
+          source: {
+            referenceValue: 'ex:throwing',
+            queryBindings: jest.fn(() => {
+              throw new Error('no');
+            }),
+          },
+          context: undefined,
+        };
+        await expect(actor.test(objectBoundAction(throwing))).resolves
+          .toFailTest(`actor would bind into a pattern that is cheaper to read once`);
+      });
+
+      it('should fall back to the estimate when no sampled binding can be counted', async() => {
+        // Rows come back for the unbound pattern, but every count of a bound one fails
+        const halfFailing = <any> {
+          source: {
+            referenceValue: 'ex:half',
+            queryBindings: jest.fn((operation: any) => {
+              const it = new ArrayIterator<RDF.Bindings>(
+                [ BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]) ],
+                { autoStart: false },
+              );
+              if (operation.object.termType === 'Variable') {
+                it.setProperty('metadata', {
+                  state: new MetadataValidationState(),
+                  cardinality: { type: 'estimate', value: 2000 },
+                  variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+                });
+              } else {
+                queueMicrotask(() => it.destroy(new Error('no')));
+              }
+              return it;
+            }),
+          },
+          context: undefined,
+        };
+        await expect(actor.test(objectBoundAction(halfFailing))).resolves
+          .toFailTest(`actor would bind into a pattern that is cheaper to read once`);
+      });
+
+      it('should fall back to the estimate when counting a sampled binding throws', async() => {
+        const throwingCount = <any> {
+          source: {
+            referenceValue: 'ex:throwingCount',
+            queryBindings: jest.fn((operation: any) => {
+              if (operation.object.termType !== 'Variable') {
+                throw new Error('no');
+              }
+              const it = new ArrayIterator<RDF.Bindings>(
+                [ BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]) ],
+                { autoStart: false },
+              );
+              it.setProperty('metadata', {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2000 },
+                variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+              });
+              return it;
+            }),
+          },
+          context: undefined,
+        };
+        await expect(actor.test(objectBoundAction(throwingCount))).resolves
+          .toFailTest(`actor would bind into a pattern that is cheaper to read once`);
+      });
+
+      it('should not ask the source anything when sampling is disabled', async() => {
+        actor = new ActorRdfJoinBindPattern({
+          name: 'actor',
+          bus,
+          bindOrder: 'depth-first',
+          sampleSize: 0,
+          mediatorJoinSelectivity: <any> { mediate: async() => ({ selectivity: 1 }) },
+          mediatorMergeBindingsContext,
+        });
+        cardinalities = [ 1, 1, 1 ];
+        const sampled = samplingSource();
+        await expect(actor.test(objectBoundAction(sampled))).resolves
+          .toFailTest(`actor would bind into a pattern that is cheaper to read once`);
+        expect(sampling).not.toHaveBeenCalled();
+      });
+    });
+
     describe('getOutput', () => {
       it('should ask the source for the pattern once per binding', async() => {
         const action: IActionRdfJoin = <any> {
@@ -371,6 +558,7 @@ describe('ActorRdfJoinBindPattern', () => {
           baseIndex: 0,
           patternIndexes: [ 1 ],
           sources: [ source ],
+          resultCardinality: 3,
         });
         await expect(arrayifyStream(result.bindingsStream)).resolves.toEqualBindingsArray([
           BF.bindings([
@@ -401,6 +589,7 @@ describe('ActorRdfJoinBindPattern', () => {
           baseIndex: 0,
           patternIndexes: [ 2, 1 ],
           sources: [ source, source ],
+          resultCardinality: 3,
         });
         await expect(arrayifyStream(result.bindingsStream)).resolves.toEqualBindingsArray([
           BF.bindings([
@@ -418,7 +607,10 @@ describe('ActorRdfJoinBindPattern', () => {
 
       it('should merge the source context when it has one', async() => {
         const key = new ActionContextKey<string>('mykey');
-        source = <any> { source: { queryBindings }, context: new ActionContext().set(key, 'value') };
+        source = <any> {
+          source: { queryBindings, referenceValue: 'ex:source' },
+          context: new ActionContext().set(key, 'value'),
+        };
         const action: IActionRdfJoin = <any> {
           type: 'inner',
           entries: [ entry(3, [ 'a' ], pattern()), entry(3000, [ 'a' ], pattern()) ],
@@ -429,6 +621,7 @@ describe('ActorRdfJoinBindPattern', () => {
           baseIndex: 0,
           patternIndexes: [ 1 ],
           sources: [ source ],
+          resultCardinality: 3,
         });
         await arrayifyStream(result.bindingsStream);
         expect(queryBindings.mock.calls[0][1].get(key)).toBe('value');
