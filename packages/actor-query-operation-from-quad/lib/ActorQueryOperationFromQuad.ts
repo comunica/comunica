@@ -32,6 +32,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     operation: Algebra.Operation,
     recursiveCb: (subOperation: Algebra.Operation) => Algebra.Operation,
   ): Algebra.Operation {
+    // TODO (next major): can be removed
     const copiedOperation: Algebra.Operation = <any> {};
     for (const [ key, value ] of Object.entries(operation)) {
       const castedKey = <keyof typeof operation> key;
