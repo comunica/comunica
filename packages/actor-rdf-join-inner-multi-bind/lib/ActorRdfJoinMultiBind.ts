@@ -317,8 +317,9 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         context: action.context,
       })).selectivity * this.selectivityModifier));
 
-    // Rows each remaining entry adds per binding: a join over a shared variable yields at most the smaller
-    // cardinality, so about one row each. Entries sharing no variable fall back to the selectivity.
+    // Bindings each remaining entry adds per binding of the first: their pairwise join capped by the
+    // variables they share, spread over the first entry's cardinality, so at most one. Entries sharing no
+    // variable have no such cap and keep using the join selectivity.
     const cardinalityFirst = metadatas[0].cardinality.value;
     let entriesWithoutSharedVariable = 0;
     const cardinalityRemaining = remainingEntries
