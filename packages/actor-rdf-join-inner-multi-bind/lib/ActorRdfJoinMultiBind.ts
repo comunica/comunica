@@ -377,7 +377,7 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs<IActorRdfJ
   // TODO: in next major, make mandatory.
   /**
    * The cost of planning and evaluating one bound operation, expressed in produced rows.
-   * Not applied to sources that are read page by page.
+   * Not applied to remote sources.
    * @range {double}
    * @default {100}
    */
