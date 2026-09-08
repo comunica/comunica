@@ -106,6 +106,22 @@ IQueryOperationResultBindings
       return (await actor.test(action)).getSideData();
     }
 
+    describe('constructor', () => {
+      it('should fall back to a default sub-query cost', () => {
+        expect(new ActorRdfJoinMultiBind({
+          name: 'actor',
+          bus,
+          bindOrder: 'depth-first',
+          selectivityModifier: 0.1,
+          mediatorQueryOperation,
+          mediatorJoinSelectivity,
+          mediatorJoinEntriesSort,
+          mediatorMergeBindingsContext,
+          minMaxCardinalityRatio: 100,
+        }).subQueryCost).toBe(100);
+      });
+    });
+
     describe('static helper methods', () => {
       describe('canBindWithOperation', () => {
         describe('default without boundVariables', () => {
