@@ -96,13 +96,7 @@ export function skolemizeQuadStream(
   sourceId: string,
 ): AsyncIterator<RDF.Quad> {
   const ret = iterator.map(quad => skolemizeQuad(dataFactory, quad, sourceId));
-  function inheritMetadata(): void {
-    iterator.getProperty('metadata', (metadata: MetadataQuads) => {
-      ret.setProperty('metadata', metadata);
-      metadata.state.addInvalidateListener(inheritMetadata);
-    });
-  }
-  inheritMetadata();
+  inheritMetadataLazily<MetadataQuads>(iterator, ret);
   return ret;
 }
 
@@ -119,14 +113,38 @@ export function skolemizeBindingsStream(
   sourceId: string,
 ): BindingsStream {
   const ret = iterator.map(bindings => skolemizeBindings(dataFactory, bindings, sourceId));
+  inheritMetadataLazily<MetadataBindings>(iterator, ret);
+  return ret;
+}
+
+/**
+ * Copy the metadata of a stream onto a stream derived from it, the first time that derived stream is
+ * asked for its metadata.
+ * Sources may only determine their metadata once it is asked for, which can cost a request or a scan,
+ * so asking for it here would make every skolemized stream pay for metadata that is never used.
+ * @param iterator The stream to inherit the metadata from.
+ * @param ret The stream to set the metadata on.
+ */
+function inheritMetadataLazily<M extends MetadataQuads | MetadataBindings>(
+  iterator: AsyncIterator<any>,
+  ret: AsyncIterator<any>,
+): void {
   function inheritMetadata(): void {
-    iterator.getProperty('metadata', (metadata: MetadataBindings) => {
+    iterator.getProperty('metadata', (metadata: M) => {
       ret.setProperty('metadata', metadata);
       metadata.state.addInvalidateListener(inheritMetadata);
     });
   }
-  inheritMetadata();
-  return ret;
+
+  let inherited = false;
+  const getProperty = ret.getProperty.bind(ret);
+  ret.getProperty = <P>(propertyName: string, callback?: (value: P) => void): P | undefined => {
+    if (propertyName === 'metadata' && !inherited) {
+      inherited = true;
+      inheritMetadata();
+    }
+    return <P | undefined> getProperty(propertyName, callback);
+  };
 }
 
 /**
