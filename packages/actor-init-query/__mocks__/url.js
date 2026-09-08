@@ -33,6 +33,12 @@ function parse(url, _parseQueryString) {
       query: { 'using-graph-uri': 'http://example.org/g1' },
     };
   }
+  if (url === 'url_sparql_graph') {
+    return {
+      pathname: '/sparql',
+      query: { graph: 'http://example.org/g' },
+    };
+  }
   if (url === 'url_sparql_multiple_queries') {
     return {
       pathname: '/sparql',

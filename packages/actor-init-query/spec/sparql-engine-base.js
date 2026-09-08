@@ -80,14 +80,17 @@ module.exports = function(engine, exposeEndpoints = false) {
 
   if (exposeEndpoints) {
     testEngine.startServiceDescriptionEndpoint = createEndpointStarter(engine);
-    testEngine.startProtocolEndpoint = createEndpointStarter(engine, () => {
-      const store = RdfStore.createDefault(true);
-      return { sources: [{ type: 'rdfjs', value: store }], destination: store };
-    });
+    testEngine.startProtocolEndpoint = createEndpointStarter(engine, createStoreContext);
+    testEngine.startGraphStoreEndpoint = createEndpointStarter(engine, createStoreContext);
   }
 
   return testEngine;
 };
+
+function createStoreContext() {
+  const store = RdfStore.createDefault(true);
+  return { sources: [{ type: 'rdfjs', value: store }], destination: store };
+}
 
 function source(data) {
   const store = RdfStore.createDefault(true);
