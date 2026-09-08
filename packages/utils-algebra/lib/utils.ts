@@ -144,7 +144,8 @@ export type AlgebraTransformer<Safe extends Safeness, T> = Patch<
         'transformNode' | 'transformNodeAsync' | 'transformNodePreOrder' | 'transformNodePreOrderAsync' |
         'visitNode' | 'visitNodeAsync' |
         'transformNodeSpecific' | 'transformNodeSpecificAsync' | 'transformNodeSpecificPreOrder' |
-            'transformNodeSpecificPreOrderAsync'>,
+            'transformNodeSpecificPreOrderAsync' |
+        'visitNodeSpecific' | 'visitNodeSpecificAsync'>,
     {
       transformNode: typeof transformer.transformNode<Safe, T>;
       transformNodeAsync: typeof transformer.transformNodeAsync<Safe, T>;
