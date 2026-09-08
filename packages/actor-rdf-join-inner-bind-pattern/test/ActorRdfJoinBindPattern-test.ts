@@ -133,9 +133,9 @@ describe('ActorRdfJoinBindPattern', () => {
           context,
         };
         // The entries share ?a, so the join is estimated at the smaller cardinality of 3,
-        // and the 3 bindings of the smallest entry are each looked up once.
+        // and the 3 bindings of the smallest entry are each looked up once, at the default probe cost of 10.
         await expect(actor.test(action)).resolves.toPassTest({
-          iterations: 6,
+          iterations: 3 * 11 + 3,
           persistedItems: 0,
           blockingItems: 0,
           requestTime: 0,
@@ -149,7 +149,7 @@ describe('ActorRdfJoinBindPattern', () => {
           context,
         };
         await expect(actor.test(action)).resolves.toPassTest({
-          iterations: 6,
+          iterations: 3 * 11 + 3,
           persistedItems: 0,
           blockingItems: 0,
           requestTime: 0,
@@ -166,11 +166,33 @@ describe('ActorRdfJoinBindPattern', () => {
           context,
         };
         await expect(actor.test(action)).resolves.toPassTest({
-          iterations: 6,
+          iterations: 3 * 11 + 3,
           persistedItems: 0,
           blockingItems: 0,
           // 3 bindings, each costing a request of 20, plus 3 pages of the smallest entry and 3 result rows
           requestTime: 3 * (0.1 + 20) + 3 * 0.2,
+        });
+      });
+
+      it('should apply a configured probe cost', async() => {
+        actor = new ActorRdfJoinBindPattern({
+          name: 'actor',
+          bus,
+          bindOrder: 'depth-first',
+          probeCost: 2,
+          mediatorJoinSelectivity: <any> { mediate: async() => ({ selectivity: 1 }) },
+          mediatorMergeBindingsContext,
+        });
+        const action: IActionRdfJoin = <any> {
+          type: 'inner',
+          entries: [ entry(3, [ 'a' ], pattern()), entry(30, [ 'a' ], pattern()) ],
+          context,
+        };
+        await expect(actor.test(action)).resolves.toPassTest({
+          iterations: 3 * 3 + 3,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 0,
         });
       });
     });

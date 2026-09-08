@@ -26,6 +26,7 @@ import { getOperationSource } from '@comunica/utils-query-operation';
  */
 export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatternTestSideData> {
   public readonly bindOrder: BindOrder;
+  public readonly probeCost: number;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorRdfJoinBindPatternArgs) {
@@ -38,6 +39,7 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
       isLeaf: false,
     });
     this.bindOrder = args.bindOrder;
+    this.probeCost = args.probeCost ?? 10;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
@@ -117,8 +119,9 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
     const joined = ActorRdfJoin.getSharedVariableJoinCardinality(metadatas)!;
 
     return passTestWithSideData({
-      // Every binding of the base entry is looked up in the source once, and every result row is produced once.
-      iterations: cardinalityBase + joined,
+      // Every binding of the base entry is looked up in the source once, which costs more than a row because
+      // the source has to start answering a new pattern, and every result row is produced once.
+      iterations: cardinalityBase * (1 + this.probeCost) + joined,
       persistedItems: 0,
       blockingItems: 0,
       // Every binding costs a whole request of its own, whether or not the source answers in pages, so this
@@ -142,6 +145,12 @@ export interface IActorRdfJoinBindPatternArgs extends IActorRdfJoinArgs<IActorRd
    * @default {depth-first}
    */
   bindOrder: BindOrder;
+  /**
+   * The cost of asking the source for one bound pattern, expressed in produced rows.
+   * @range {double}
+   * @default {10}
+   */
+  probeCost?: number;
   /**
    * A mediator for creating binding context merge handlers
    */
