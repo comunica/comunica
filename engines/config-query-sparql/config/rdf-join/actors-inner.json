@@ -2,6 +2,7 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^5.0.0/components/context.jsonld",
 
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-bind-pattern/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-bind/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-bind-source/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-empty/^5.0.0/components/context.jsonld",
@@ -40,6 +41,18 @@
       "beforeActors": [
         { "@id": "urn:comunica:default:rdf-join/actors#inner-multi-smallest" },
         { "@id": "urn:comunica:default:rdf-join/actors#inner-multi-bind" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-hash-def" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-hash-undef" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-symmetric-hash" },
+        { "@id": "urn:comunica:default:rdf-join/actors#inner-nested-loop" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:rdf-join/actors#inner-bind-pattern",
+      "@type": "ActorRdfJoinBindPattern",
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
+      "beforeActors": [
         { "@id": "urn:comunica:default:rdf-join/actors#inner-hash-def" },
         { "@id": "urn:comunica:default:rdf-join/actors#inner-hash-undef" },
         { "@id": "urn:comunica:default:rdf-join/actors#inner-symmetric-hash" },
