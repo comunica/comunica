@@ -7,26 +7,48 @@ import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from 
 import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 
-/**
- * The context of a BGP, quad pattern or property path, the three operations the transformations below rewrite.
- *
- * Nothing below them needs rewriting - the terms and the property path predicate are re-used as-is - and the
- * patterns of a BGP are rewritten by its own callback rather than as patterns of their own, so the traversal
- * does not continue into them.
- *
- * It does not copy them either: a callback builds its result from the operation it is handed, and hands back
- * that very operation when the graphs leave it unchanged, so the copy would only ever be discarded.
- * Not copying is safe precisely because the traversal stops here - a copy is what keeps a traversal from
- * writing its results into the operation it was given.
- */
 const patternRewriteContext = { continue: false, copy: false };
 
 /**
  * A comunica From Query Operation Actor.
  */
 export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediated<Algebra.From> {
+  private static readonly ALGEBRA_TYPES: string[] = Object.keys(Algebra.Types).map(key => (<any> Algebra.Types)[key]);
+
   public constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, Algebra.Types.FROM);
+  }
+
+  /**
+   * Create a deep copy of the given operation.
+   *
+   * The graph transformations of this actor no longer use this: they let an algebra traversal copy the
+   * operations they rewrite. It is part of the public API of this actor though, so it stays.
+   * @param {Operation} operation An operation.
+   * @param {(subOperation: Operation) => Operation} recursiveCb A callback for recursive operation calls.
+   * @return {Operation} The copied operation.
+   */
+  public static copyOperation(
+    operation: Algebra.Operation,
+    recursiveCb: (subOperation: Algebra.Operation) => Algebra.Operation,
+  ): Algebra.Operation {
+    const copiedOperation: Algebra.Operation = <any> {};
+    for (const [ key, value ] of Object.entries(operation)) {
+      const castedKey = <keyof typeof operation> key;
+      if (Array.isArray(value) && key !== 'template') {
+        // We exclude the 'template' entry, as we don't want to modify the template value of construct operations
+        if (key === 'variables') {
+          copiedOperation[castedKey] = <any> value;
+        } else {
+          copiedOperation[castedKey] = <any> value.map(recursiveCb);
+        }
+      } else if (ActorQueryOperationFromQuad.ALGEBRA_TYPES.includes(value.type)) {
+        copiedOperation[castedKey] = <any> recursiveCb(value);
+      } else {
+        copiedOperation[castedKey] = value;
+      }
+    }
+    return copiedOperation;
   }
 
   /**
