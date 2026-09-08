@@ -7,7 +7,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { FragmentSelectorShape, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraTransformer, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import { assignOperationSource, doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { QuadTermName } from 'rdf-terms';
@@ -43,7 +43,7 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
       return shape;
     };
 
-    const operation = await algebraUtils.mapOperationAsync(action.operation, {
+    const operation = await algebraTransformer().transformNodeAsync(action.operation, {
       [Algebra.Types.DISTINCT]: {
         preVisitor: () => ({ continue: false }),
         transform: async(operation: Algebra.Distinct) => {
@@ -93,7 +93,7 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
    * @param operation An operation.
    */
   public getSources(operation: Algebra.Operation): IQuerySourceWrapper[] {
-    // TODO (next-major): we no longer need this funstion
+    // TODO (next-major): we no longer need this function
     const sources = new Set<IQuerySourceWrapper>();
     const sourceAdder = (subOperation: Algebra.Operation): boolean => {
       const src = getOperationSource(subOperation);
