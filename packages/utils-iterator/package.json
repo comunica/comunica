@@ -40,6 +40,7 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
+    "@comunica/types": "^5.0.0",
     "asynciterator": "^3.10.0"
   }
 }

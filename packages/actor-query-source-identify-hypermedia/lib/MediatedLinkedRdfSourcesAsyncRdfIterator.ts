@@ -66,30 +66,44 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     return this.linkQueue;
   }
 
-  protected async getSourceLinks(metadata: Record<string, any>, startSource: ISourceState): Promise<ILink[]> {
-    try {
-      const { links } = await this.mediatorRdfResolveHypermediaLinks.mediate({ context: this.context, metadata });
-      // Update discovery event statistic if available
-      const traversalTracker: IStatisticBase<IDiscoverEventData> | undefined =
-        this.context.get(KeysStatistics.discoveredLinks);
-      if (traversalTracker) {
-        for (const link of links) {
-          traversalTracker.updateStatistic({ url: link.url, metadata: { ...link.metadata }}, startSource.link);
-        }
-      }
+  protected override async hasSourceLinks(metadata: Record<string, any>): Promise<boolean> {
+    return (await this.resolveLinks(metadata)).length > 0;
+  }
 
-      // Filter URLs to avoid cyclic next-page loops
-      return links.filter((link) => {
-        if (this.handledUrls[link.url]) {
-          return false;
-        }
-        this.handledUrls[link.url] = true;
-        return true;
-      });
+  /**
+   * The links the hypermedia bus reports for the given metadata, as they come, without marking any
+   * of them as handled or reporting them as discovered.
+   * @param metadata The metadata of a source.
+   */
+  protected async resolveLinks(metadata: Record<string, any>): Promise<ILink[]> {
+    try {
+      return (await this.mediatorRdfResolveHypermediaLinks.mediate({ context: this.context, metadata })).links;
     } catch {
       // No next URLs may be available, for example when we've reached the end of a Hydra next-page sequence.
       return [];
     }
+  }
+
+  protected async getSourceLinks(metadata: Record<string, any>, startSource: ISourceState): Promise<ILink[]> {
+    const links = await this.resolveLinks(metadata);
+
+    // Update discovery event statistic if available
+    const traversalTracker: IStatisticBase<IDiscoverEventData> | undefined =
+      this.context.get(KeysStatistics.discoveredLinks);
+    if (traversalTracker) {
+      for (const link of links) {
+        traversalTracker.updateStatistic({ url: link.url, metadata: { ...link.metadata }}, startSource.link);
+      }
+    }
+
+    // Filter URLs to avoid cyclic next-page loops
+    return links.filter((link) => {
+      if (this.handledUrls[link.url]) {
+        return false;
+      }
+      this.handledUrls[link.url] = true;
+      return true;
+    });
   }
 
   public async accumulateMetadata(

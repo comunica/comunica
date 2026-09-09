@@ -1,31 +1,9 @@
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import type { Bindings, TermsOrder } from '@comunica/types';
+import { isSeekableBindingsStream } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import { AsyncIterator } from 'asynciterator';
-
-/**
- * A bindings stream that can skip ahead to a key, instead of being consumed one binding at a time.
- *
- * A merge join spends most of its time advancing whichever side is behind. When a source knows where a
- * key lives, for example because it is backed by a sorted array or an index it can descend, it can drop
- * everything before that key at once instead of handing them over to be compared and discarded.
- */
-export interface ISeekableBindingsIterator extends AsyncIterator<Bindings> {
-  /**
-   * Skip past every remaining binding that precedes `target` in this stream's declared order.
-   *
-   * After this call the next read returns the first binding that does not precede `target`, or nothing
-   * if the stream holds no such binding. Implementations may skip fewer bindings than they could, but
-   * must never skip one that does not precede `target`.
-   * @param target The bindings to skip ahead to.
-   */
-  seek: (target: Bindings) => void;
-}
-
-function isSeekable(iterator: AsyncIterator<Bindings>): iterator is ISeekableBindingsIterator {
-  return typeof (<ISeekableBindingsIterator> iterator).seek === 'function';
-}
 
 /**
  * Compares two bindings by the terms they bind to the given merge key.
@@ -139,7 +117,7 @@ export class MergeJoinIterator extends AsyncIterator<Bindings> {
       this.bufferedItem = undefined;
     }
     const source = fromStreamed ? this.streamed : this.buffered;
-    if (isSeekable(source)) {
+    if (isSeekableBindingsStream(source)) {
       source.seek(target);
     }
   }
