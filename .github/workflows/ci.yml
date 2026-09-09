@@ -305,11 +305,23 @@ jobs:
         # The web benchmark is omitted on pull requests, as its query set varies across runs,
         # which makes its totals incomparable between two runs.
         benchmark: ${{ github.event_name == 'pull_request' && fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-tpf"]') || fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-tpf", "web"]') }}
+    env:
+      # Pull requests benchmark their base commit on this same runner, so that the comparison
+      # in performance-compare measures the code difference rather than the hardware difference
+      # between two runners, which is the dominant source of variance on hosted runners.
+      # Forks are excluded, as performance-compare can not post their comparison anyway.
+      BENCHMARK_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v7
+      - name: Check out the base commit of the pull request
+        if: env.BENCHMARK_BASE == 'true'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base
       - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
         uses: actions/setup-node@v7
         with:
@@ -317,14 +329,36 @@ jobs:
           cache: yarn
       - name: Install dependencies and build monorepo
         run: yarn install --frozen-lockfile
+      - name: Install dependencies and build monorepo of the base commit
+        if: env.BENCHMARK_BASE == 'true'
+        run: yarn install --frozen-lockfile
+        working-directory: base
+      # The base runs first, so that the pull request results are the last thing measured,
+      # just like they are on a run without a base.
+      - name: Run benchmarks of the base commit
+        if: env.BENCHMARK_BASE == 'true'
+        run: cd base/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
+      - name: Remove containers left behind by the base commit benchmarks
+        # The TPF benchmarks run their LDF server in Docker on fixed ports,
+        # so the benchmarks below must start from the same clean state as the base ones did.
+        if: env.BENCHMARK_BASE == 'true'
+        run: docker ps -aq | xargs -r docker rm -f
       - name: Run benchmarks
         run: cd performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
       - uses: actions/upload-artifact@v7
         with:
           name: performance-benchmark-${{ matrix.benchmark }}
           path: performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
+      - uses: actions/upload-artifact@v7
+        if: env.BENCHMARK_BASE == 'true'
+        with:
+          name: performance-benchmark-base-${{ matrix.benchmark }}
+          path: base/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
       - name: Print raw output
         run: cat performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
+      - name: Print raw output of the base commit
+        if: env.BENCHMARK_BASE == 'true'
+        run: cat base/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
 
   performance-consolidate:
     name: Performance analysis
@@ -448,26 +482,69 @@ jobs:
         with:
           name: performance-benchmark-bsbm-tpf
           path: performance/benchmark-bsbm-tpf/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-base-watdiv-file
+          path: base/performance/benchmark-watdiv-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-base-watdiv-tpf
+          path: base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-base-bsbm-file
+          path: base/performance/benchmark-bsbm-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-base-bsbm-tpf
+          path: base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/
       - name: Process benchmark detailed results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF --total false --detailed true --name ghbench-detail.json
       - name: Process benchmark total results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF --total true --detailed false --name ghbench-total.json
-      - name: Fetch the benchmark results of the base branch
-        # These are read over raw.githubusercontent.com rather than the GitHub Pages site,
-        # because the latter is served from a CDN that can lag behind by several minutes.
-        # A missing baseline yields an empty data file, upon which the comparison is skipped.
+      - name: Process base commit benchmark detailed results
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF --total false --detailed true --name ghbench-base-detail.json
+      - name: Process base commit benchmark total results
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF --total true --detailed false --name ghbench-base-total.json
+      - name: Wrap the base commit results into baseline data files
+        # These emulate the data file that github-action-benchmark keeps per branch, holding a
+        # single entry: the base commit as measured by the performance job, on the same runner
+        # as the pull request results it is compared against.
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          REPO_URL: ${{ github.event.repository.html_url }}
         run: |
-          set -o pipefail
-          BASE_URL="https://raw.githubusercontent.com/comunica/comunica-performance-results/master/comunica/${GITHUB_BASE_REF}"
-          for KIND in detail total; do
-            if curl -fsSL "${BASE_URL}/benchmarks-${KIND}/data.js" | sed '1s/^window.BENCHMARK_DATA = //' > "baseline-${KIND}.json"; then
-              echo "Fetched ${KIND} baseline of ${GITHUB_BASE_REF}"
-            else
-              echo "No ${KIND} baseline found for ${GITHUB_BASE_REF}"
-              echo '{"lastUpdate":0,"repoUrl":"","entries":{}}' > "baseline-${KIND}.json"
-            fi
-          done
-      # The two comparison steps below read the last entry of the base branch as their baseline,
+          set -eu
+          wrap () {
+            jq -n \
+              --slurpfile benches "ghbench-base-$1.json" \
+              --arg name "$2" \
+              --arg sha "$BASE_SHA" \
+              --arg repo "$REPO_URL" \
+              --argjson date "$(date +%s000)" \
+              '{
+                lastUpdate: $date,
+                repoUrl: $repo,
+                entries: {
+                  ($name): [{
+                    commit: {
+                      author: { name: "", username: "", email: "" },
+                      committer: { name: "", username: "", email: "" },
+                      id: $sha,
+                      message: "Base commit of the pull request",
+                      timestamp: ($date / 1000 | todate),
+                      url: "\($repo)/commit/\($sha)"
+                    },
+                    date: $date,
+                    tool: "customSmallerIsBetter",
+                    benches: $benches[0]
+                  }]
+                }
+              }' > "baseline-$1.json"
+          }
+          wrap detail 'Benchmarks detailed results'
+          wrap total 'Benchmarks total results'
+      # The two comparison steps below read the single entry of the base commit as their baseline,
       # and leave a self-updating comment on the pull request. Passing save-data-file disables
       # the only write these perform, so pull request measurements are never stored.
       - name: Compare benchmark detailed results
