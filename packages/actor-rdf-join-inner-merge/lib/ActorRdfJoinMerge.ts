@@ -110,8 +110,10 @@ export class ActorRdfJoinMerge extends ActorRdfJoin<IActorRdfJoinMergeTestSideDa
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     return passTestWithSideData({
-      // Both entries are read exactly once, sequentially, with no lookups in between.
-      iterations: metadatas[0].cardinality.value + metadatas[1].cardinality.value,
+      // Both entries are read exactly once, sequentially, with no lookups in between. The same 0.8 factor
+      // as the non-undef hash join is applied: measured on identical pre-sorted inputs, this actor runs at
+      // 0.66x to 0.98x of that hash join, so claiming parity per iteration is the conservative reading.
+      iterations: (metadatas[0].cardinality.value + metadatas[1].cardinality.value) * 0.8,
       // Only one run of equal keys from the smallest entry is held in memory. The number of distinct keys is
       // estimated as the cardinality of the largest entry, matching the assumption that
       // `ActorRdfJoin.getSharedVariableJoinCardinality` already makes. This underestimates skewed keys.

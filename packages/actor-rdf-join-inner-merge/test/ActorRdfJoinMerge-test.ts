@@ -186,7 +186,7 @@ describe('ActorRdfJoinMerge', () => {
         context,
       };
       await expect(actor.test(action)).resolves.toPassTest({
-        iterations: 9,
+        iterations: 7.2,
         persistedItems: 0.8,
         blockingItems: 0,
         requestTime: 1.3,
@@ -204,7 +204,7 @@ describe('ActorRdfJoinMerge', () => {
       };
       const result = await actor.test(action);
       await expect(actor.test(action)).resolves.toPassTest({
-        iterations: 12,
+        iterations: 9.600000000000001,
         persistedItems: 3 / 9,
         blockingItems: 0,
         // The largest entry (requestTime 20) is streamed, so it is charged first.
