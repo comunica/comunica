@@ -60,6 +60,7 @@ export interface IQueryContextCommon {
   extensionFunctionsAlwaysPushdown?: boolean;
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode)
   => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
+  serviceExecutors?: Record<string, (operation: any, bindingsStream: any, context: any) => any>;
   functionArgumentsCache?: FunctionArgumentsCache;
   explain?: QueryExplainMode;
   nonLexicalComparison?: boolean;

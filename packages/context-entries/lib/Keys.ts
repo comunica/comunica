@@ -20,6 +20,7 @@ import type {
   IDiscoverEventData,
   PartialResult,
   ILink,
+  ServiceExecutorCallback,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -228,6 +229,13 @@ export const KeysInitQuery = {
     '@comunica/actor-init-query:extensionFunctionsAlwaysPushdown',
   ),
   /**
+   * Dictionary of custom SERVICE executors.
+   * Key is the IRI of the service, and value is the service executor callback.
+   */
+  serviceExecutors: new ActionContextKey<Record<string, ServiceExecutorCallback>>(
+    '@comunica/actor-init-query:serviceExecutors',
+  ),
+  /**
    * Enables manipulation of the CLI arguments and their processing.
    */
   cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-query:cliArgsHandlers'),
@@ -347,6 +355,12 @@ export const KeysQueryOperation = {
    */
   serviceSources: new ActionContextKey<Record<string, IQuerySourceWrapper>>(
     '@comunica/bus-query-operation:serviceSources',
+  ),
+  /**
+   * A mapping of SERVICE targets to custom executors.
+   */
+  serviceExecutors: new ActionContextKey<Record<string, ServiceExecutorCallback>>(
+    '@comunica/bus-query-operation:serviceExecutors',
   ),
 };
 

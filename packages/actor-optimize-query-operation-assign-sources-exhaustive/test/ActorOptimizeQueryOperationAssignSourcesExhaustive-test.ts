@@ -317,6 +317,41 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource(operationOut)).toBeUndefined();
       });
 
+      it('for service with a custom serviceExecutor should assign synthetic source', async() => {
+        const executorMock = jest.fn((op, bindings, ctx) => 'mockStream');
+        const operationIn = AF.createService(
+          AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.namedNode('customService1'),
+        );
+        const operationOut = actor.assignExhaustive(AF, operationIn, [], {}, { customService1: executorMock });
+        expect(operationOut.type).toEqual(Algebra.Types.PATTERN);
+        const sourceWrapper = getOperationSource(operationOut);
+        expect(sourceWrapper).toBeDefined();
+        expect(sourceWrapper!.source.referenceValue).toBe('customService1');
+        const customRes = (sourceWrapper!.source as any).queryBindings(operationIn, new ActionContext());
+        expect(executorMock).toHaveBeenCalledTimes(1);
+        expect(customRes).toBe('mockStream');
+      });
+
+      it('for service with a custom serviceExecutor and run context should optimize properly', async() => {
+        const executorMock = jest.fn(() => 'mockStream');
+        const operationIn = AF.createService(
+          AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.namedNode('customService1'),
+        );
+        const { operation: operationOut } = await actor.run({
+          operation: operationIn,
+          context: new ActionContext({
+            [KeysInitQuery.dataFactory.name]: DF,
+            [KeysInitQuery.serviceExecutors.name]: { customService1: executorMock },
+          }),
+        });
+        expect(operationOut.type).toEqual(Algebra.Types.PATTERN);
+        const sourceWrapper = getOperationSource(operationOut);
+        expect(sourceWrapper).toBeDefined();
+        expect(sourceWrapper!.source.referenceValue).toBe('customService1');
+      });
+
       it('for a construct query', async() => {
         const operationIn = AF.createConstruct(
           AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),

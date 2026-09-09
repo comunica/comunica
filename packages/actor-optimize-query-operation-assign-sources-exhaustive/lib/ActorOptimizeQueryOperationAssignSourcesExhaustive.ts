@@ -7,7 +7,14 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { ActionContext, passTestVoid } from '@comunica/core';
-import type { ComunicaDataFactory, IQuerySourceWrapper } from '@comunica/types';
+import type {
+  ComunicaDataFactory,
+  IActionContext,
+  IQueryBindingsOptions,
+  IQuerySource,
+  IQuerySourceWrapper,
+  ServiceExecutorCallback,
+} from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
@@ -32,7 +39,9 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
 
     const sources = action.context.get(KeysQueryOperation.querySources) ?? [];
     const serviceSources = action.context.get(KeysQueryOperation.serviceSources) ?? {};
-    if (sources.length === 0 && Object.keys(serviceSources).length === 0) {
+    const serviceExecutors = action.context.get(KeysQueryOperation.serviceExecutors) ??
+      action.context.get(KeysInitQuery.serviceExecutors) ?? {};
+    if (sources.length === 0 && Object.keys(serviceSources).length === 0 && Object.keys(serviceExecutors).length === 0) {
       return { operation: action.operation, context: action.context };
     }
     if (await passFullOperationToSource(action.operation, sources, action.context)) {
@@ -42,7 +51,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       };
     }
     return {
-      operation: this.assignExhaustive(algebraFactory, action.operation, sources, serviceSources),
+      operation: this.assignExhaustive(algebraFactory, action.operation, sources, serviceSources, serviceExecutors),
       // We only keep queryString in the context if we only have a single source that accepts the full operation.
       // In that case, the queryString can be sent to the source as-is.
       context: action.context
@@ -58,12 +67,14 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
    * @param operation The input operation.
    * @param sources The sources to assign.
    * @param serviceSources Mapping of SERVICE names to sources.
+   * @param serviceExecutors Mapping of SERVICE names to custom executors.
    */
   public assignExhaustive(
     factory: AlgebraFactory,
     operation: Algebra.Operation,
     sources: IQuerySourceWrapper[],
     serviceSources: Record<string, IQuerySourceWrapper>,
+    serviceExecutors: Record<string, ServiceExecutorCallback> = {},
   ): Algebra.Operation {
     return algebraUtils.mapOperation(operation, {
       [Algebra.Types.PATTERN]: {
@@ -80,7 +91,35 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
         preVisitor: () => ({ continue: false }),
         transform: (serviceOp) => {
           if (serviceOp.name.termType === 'NamedNode') {
-            let source = serviceSources[serviceOp.name.value];
+            const serviceIri = serviceOp.name.value;
+            let source = serviceSources[serviceIri];
+            if (!source && serviceExecutors[serviceIri]) {
+              const executor = serviceExecutors[serviceIri];
+              const customSource: IQuerySource = {
+                referenceValue: serviceIri,
+                getFilterFactor: async() => 1,
+                getSelectorShape: async() => ({
+                  type: 'operation',
+                  operation: {
+                    type: Algebra.Types.SERVICE,
+                  },
+                }),
+                queryBindings: (_op: Algebra.Operation, context: IActionContext, options?: IQueryBindingsOptions) => {
+                  return executor(serviceOp, options?.joinBindings, context) as any;
+                },
+                queryQuads: () => {
+                  throw new Error('SERVICE sources do not support quads queries.');
+                },
+                queryVoid: () => {
+                  throw new Error('SERVICE sources do not support void queries.');
+                },
+                queryBoolean: async() => {
+                  throw new Error('SERVICE sources do not support boolean queries.');
+                },
+                toString: () => `ServiceExecutorSource(${serviceIri})`,
+              };
+              source = { source: customSource };
+            }
             if (source) {
               if (serviceOp.silent) {
                 source = {
@@ -92,7 +131,8 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
                 factory,
                 serviceOp.input,
                 [ source ],
-                // Pass empty serviceSources to ensure nested SERVICE clauses are not transformed.
+                // Pass empty serviceSources and serviceExecutors to ensure nested SERVICE clauses are not transformed.
+                {},
                 {},
               );
             }
@@ -103,7 +143,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       [Algebra.Types.CONSTRUCT]: {
         preVisitor: () => ({ continue: false }),
         transform: constructOp => factory.createConstruct(
-          this.assignExhaustive(factory, constructOp.input, sources, serviceSources),
+          this.assignExhaustive(factory, constructOp.input, sources, serviceSources, serviceExecutors),
           constructOp.template,
         ),
       },
@@ -132,7 +172,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
         transform: delInsOp => factory.createDeleteInsert(
           delInsOp.delete,
           delInsOp.insert,
-          delInsOp.where ? this.assignExhaustive(factory, delInsOp.where, sources, serviceSources) : undefined,
+          delInsOp.where ? this.assignExhaustive(factory, delInsOp.where, sources, serviceSources, serviceExecutors) : undefined,
         ),
       },
     });
