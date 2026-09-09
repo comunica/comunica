@@ -3,7 +3,7 @@ import { AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { GraphStoreHttpProtocol } from '../lib/GraphStoreHttpProtocol';
+import { HttpServiceGraphStore } from '../lib/HttpServiceGraphStore';
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);
@@ -29,11 +29,11 @@ function parseUrl(url: string): any {
   return { pathname: parsed.pathname, query };
 }
 
-describe('GraphStoreHttpProtocol', () => {
+describe('HttpServiceGraphStore', () => {
   let engine: any;
   let quads: RDF.Quad[];
   let exists: boolean;
-  let protocol: GraphStoreHttpProtocol;
+  let protocol: HttpServiceGraphStore;
   const context = { sources: [ 'store' ]};
 
   beforeEach(() => {
@@ -47,12 +47,12 @@ describe('GraphStoreHttpProtocol', () => {
       queryBoolean: jest.fn(async() => exists),
       queryVoid: jest.fn(async() => undefined),
     };
-    protocol = new GraphStoreHttpProtocol(context);
+    protocol = new HttpServiceGraphStore(context);
   });
 
   describe('getTarget', () => {
     function getTarget(method: string, url: string, contentType?: string): any {
-      return GraphStoreHttpProtocol.getTarget(makeRequest(method, url, contentType), parseUrl(url), endpointIri);
+      return HttpServiceGraphStore.getTarget(makeRequest(method, url, contentType), parseUrl(url), endpointIri);
     }
 
     it('should identify a graph directly through the request path', () => {
@@ -99,7 +99,7 @@ describe('GraphStoreHttpProtocol', () => {
     });
 
     it('should not apply to a request without a path', () => {
-      expect(GraphStoreHttpProtocol
+      expect(HttpServiceGraphStore
         .getTarget(makeRequest('GET', '/sparql'), <any> { query: {}}, endpointIri)).toBeUndefined();
     });
 
@@ -128,11 +128,11 @@ describe('GraphStoreHttpProtocol', () => {
 
   describe('getMediaType', () => {
     it('should remove the parameters of a content type', () => {
-      expect(GraphStoreHttpProtocol.getMediaType('text/turtle; charset=utf-8')).toBe('text/turtle');
+      expect(HttpServiceGraphStore.getMediaType('text/turtle; charset=utf-8')).toBe('text/turtle');
     });
 
     it('should keep a content type without parameters', () => {
-      expect(GraphStoreHttpProtocol.getMediaType('text/turtle')).toBe('text/turtle');
+      expect(HttpServiceGraphStore.getMediaType('text/turtle')).toBe('text/turtle');
     });
   });
 
@@ -152,31 +152,31 @@ describe('GraphStoreHttpProtocol', () => {
     ].join('\r\n');
 
     it('should split the parts of a payload', () => {
-      expect(GraphStoreHttpProtocol.splitMultipart(body, 'multipart/form-data; boundary=BOUNDARY')).toEqual([
+      expect(HttpServiceGraphStore.splitMultipart(body, 'multipart/form-data; boundary=BOUNDARY')).toEqual([
         { contentType: 'text/turtle; charset=utf-8', body: '<http://example.org/s> <http://example.org/p> "a" .' },
         { contentType: 'application/n-triples', body: '<http://example.org/s> <http://example.org/p> "b" .' },
       ]);
     });
 
     it('should accept a quoted boundary', () => {
-      expect(GraphStoreHttpProtocol.splitMultipart(body, 'multipart/form-data; boundary="BOUNDARY"'))
+      expect(HttpServiceGraphStore.splitMultipart(body, 'multipart/form-data; boundary="BOUNDARY"'))
         .toHaveLength(2);
     });
 
     it('should require a boundary', () => {
-      expect(() => GraphStoreHttpProtocol.splitMultipart(body, 'multipart/form-data'))
+      expect(() => HttpServiceGraphStore.splitMultipart(body, 'multipart/form-data'))
         .toThrow('must declare a boundary');
     });
 
     it('should require a header section in every part', () => {
       const withoutHeaders = '--BOUNDARY\r\nno headers\r\n--BOUNDARY--\r\n';
-      expect(() => GraphStoreHttpProtocol.splitMultipart(withoutHeaders, 'multipart/form-data; boundary=BOUNDARY'))
+      expect(() => HttpServiceGraphStore.splitMultipart(withoutHeaders, 'multipart/form-data; boundary=BOUNDARY'))
         .toThrow('missing a header section');
     });
 
     it('should require a content type in every part', () => {
       const withoutType = '--BOUNDARY\r\nContent-Disposition: form-data\r\n\r\nbody\r\n--BOUNDARY--\r\n';
-      expect(() => GraphStoreHttpProtocol.splitMultipart(withoutType, 'multipart/form-data; boundary=BOUNDARY'))
+      expect(() => HttpServiceGraphStore.splitMultipart(withoutType, 'multipart/form-data; boundary=BOUNDARY'))
         .toThrow('missing a content type');
     });
   });

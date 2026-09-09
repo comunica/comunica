@@ -66,7 +66,7 @@ export interface IGraphStoreResult {
  * Graphs are identified directly through the request path, such as `/sparql/person/1.ttl`,
  * and indirectly through the `graph` and `default` parameters on the endpoint itself.
  */
-export class GraphStoreHttpProtocol {
+export class HttpServiceGraphStore {
   public readonly context: any;
 
   public constructor(context: any) {
@@ -96,6 +96,14 @@ export class GraphStoreHttpProtocol {
       return;
     }
 
+    // The endpoint IRI is shared with the SPARQL protocol, whose requests are never graph store requests,
+    // not even when they carry a graph parameter. A GET without any of these returns the service description.
+    const contentType = request.headers['content-type'];
+    if (requestUrl.query.query !== undefined || requestUrl.query.update !== undefined ||
+      (contentType !== undefined && !HttpServiceGraphStore.isGraphPayload(contentType))) {
+      return;
+    }
+
     // Indirect graph identification: a parameter on the endpoint identifies the graph
     const graph = requestUrl.query.graph;
     if (Array.isArray(graph)) {
@@ -112,17 +120,17 @@ export class GraphStoreHttpProtocol {
     if (request.method === 'PUT' || request.method === 'DELETE') {
       return { error: 'A request must identify a graph through its path, a graph parameter or a default parameter' };
     }
-    if (request.method === 'POST' && GraphStoreHttpProtocol.isGraphPayload(request.headers['content-type'])) {
+    if (request.method === 'POST' && contentType !== undefined) {
       return {};
     }
   }
 
   /**
    * Determine if a request body contains an RDF graph, rather than a request of the SPARQL protocol.
-   * @param {string | undefined} contentType The content type of the request body.
+   * @param {string} contentType The content type of the request body.
    */
-  public static isGraphPayload(contentType: string | undefined): boolean {
-    return contentType !== undefined && !SPARQL_PROTOCOL_TYPES.some(type => contentType.includes(type));
+  public static isGraphPayload(contentType: string): boolean {
+    return !SPARQL_PROTOCOL_TYPES.some(type => contentType.includes(type));
   }
 
   /**
@@ -213,7 +221,7 @@ export class GraphStoreHttpProtocol {
     if (!await this.graphExists(engine, graph)) {
       return { status: 404, message: `The graph ${graph.value} does not exist.` };
     }
-    const result = <QueryQuads> await engine.query(GraphStoreHttpProtocol.constructGraph(graph), this.context);
+    const result = <QueryQuads> await engine.query(HttpServiceGraphStore.constructGraph(graph), this.context);
     return { status: 200, result };
   }
 
@@ -229,7 +237,7 @@ export class GraphStoreHttpProtocol {
     if (!await this.graphExists(engine, graph)) {
       return { status: 404, message: `The graph ${graph.value} does not exist.` };
     }
-    await engine.queryVoid(GraphStoreHttpProtocol.dropGraph(graph), this.context);
+    await engine.queryVoid(HttpServiceGraphStore.dropGraph(graph), this.context);
     return { status: 204 };
   }
 
@@ -263,7 +271,7 @@ export class GraphStoreHttpProtocol {
 
     const updates: Algebra.Operation[] = [];
     if (replace) {
-      updates.push(GraphStoreHttpProtocol.dropGraph(created));
+      updates.push(HttpServiceGraphStore.dropGraph(created));
     }
     if (quads.length > 0) {
       updates.push(AF.createDeleteInsert(undefined, quads
@@ -293,18 +301,18 @@ export class GraphStoreHttpProtocol {
     baseIRI: string,
   ): Promise<RDF.Quad[]> {
     const parts = contentType.includes('multipart/form-data') ?
-      GraphStoreHttpProtocol.splitMultipart(body, contentType) :
+      HttpServiceGraphStore.splitMultipart(body, contentType) :
         [{ body, contentType }];
 
     const quads: RDF.Quad[] = [];
     for (const part of parts) {
       const result = <QueryQuads> await engine.query(
-        GraphStoreHttpProtocol.constructGraph(DF.defaultGraph()),
+        HttpServiceGraphStore.constructGraph(DF.defaultGraph()),
         {
           sources: [{
             type: 'serialized',
             value: part.body,
-            mediaType: GraphStoreHttpProtocol.getMediaType(part.contentType),
+            mediaType: HttpServiceGraphStore.getMediaType(part.contentType),
             baseIRI,
           }],
         },
@@ -324,7 +332,7 @@ export class GraphStoreHttpProtocol {
       return true;
     }
     return await engine.queryBoolean(
-      AF.createAsk(AF.createBgp([ GraphStoreHttpProtocol.createGraphPattern(graph) ])),
+      AF.createAsk(AF.createBgp([ HttpServiceGraphStore.createGraphPattern(graph) ])),
       this.context,
     );
   }
@@ -335,7 +343,7 @@ export class GraphStoreHttpProtocol {
    */
   public static constructGraph(graph: RDF.NamedNode | RDF.DefaultGraph): Algebra.Operation {
     return AF.createConstruct(
-      AF.createBgp([ GraphStoreHttpProtocol.createGraphPattern(graph) ]),
+      AF.createBgp([ HttpServiceGraphStore.createGraphPattern(graph) ]),
       [ AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')) ],
     );
   }

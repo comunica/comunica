@@ -25,8 +25,8 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
-import type { IGraphStoreResult } from './GraphStoreHttpProtocol';
-import { GraphStoreHttpProtocol } from './GraphStoreHttpProtocol';
+import type { IGraphStoreResult } from './HttpServiceGraphStore';
+import { HttpServiceGraphStore } from './HttpServiceGraphStore';
 import { VoidMetadataEmitter } from './VoidMetadataEmitter';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
@@ -62,7 +62,11 @@ export class HttpServiceSparqlEndpoint {
   /**
    * The HTTP methods this service handles, as advertised via the `Allow` and `Access-Control-Allow-Methods` headers.
    */
-  public static readonly ALLOWED_METHODS = 'DELETE, GET, HEAD, OPTIONS, POST, PUT, QUERY';
+  public static readonly ALLOWED_METHODS = 'GET, HEAD, OPTIONS, POST, QUERY';
+  /**
+   * The HTTP methods this service handles when the Graph Store HTTP Protocol is enabled.
+   */
+  public static readonly ALLOWED_METHODS_GRAPH_STORE = 'DELETE, GET, HEAD, OPTIONS, POST, PUT, QUERY';
 
   public readonly engine: Promise<QueryEngineBase>;
 
@@ -76,7 +80,8 @@ export class HttpServiceSparqlEndpoint {
   public readonly emitVoid: boolean;
 
   public readonly voidMetadataEmitter: VoidMetadataEmitter;
-  public readonly graphStoreProtocol: GraphStoreHttpProtocol;
+  public readonly graphStore: HttpServiceGraphStore | undefined;
+  public readonly allowedMethods: string;
 
   public lastQueryId = 0;
 
@@ -89,7 +94,10 @@ export class HttpServiceSparqlEndpoint {
     this.contextOverride = Boolean(args.contextOverride);
     this.emitVoid = Boolean(args.emitVoid);
     this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
-    this.graphStoreProtocol = new GraphStoreHttpProtocol(this.context);
+    this.graphStore = args.graphStore ? new HttpServiceGraphStore(this.context) : undefined;
+    this.allowedMethods = this.graphStore ?
+      HttpServiceSparqlEndpoint.ALLOWED_METHODS_GRAPH_STORE :
+      HttpServiceSparqlEndpoint.ALLOWED_METHODS;
 
     this.engine = args.engine ?
       Promise.resolve(args.engine) :
@@ -189,6 +197,7 @@ export class HttpServiceSparqlEndpoint {
     const freshWorkerPerQuery: boolean = args.freshWorker;
     const contextOverride: boolean = args.contextOverride;
     const emitVoid: boolean = args.emitVoid;
+    const graphStore: boolean = args.graphStore;
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
@@ -203,6 +212,7 @@ export class HttpServiceSparqlEndpoint {
       freshWorkerPerQuery,
       contextOverride,
       emitVoid,
+      graphStore,
       moduleRootPath,
       mainModulePath: moduleRootPath,
       port,
@@ -382,23 +392,25 @@ export class HttpServiceSparqlEndpoint {
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
     }
-    // Requests that identify an RDF graph are handled through the Graph Store HTTP Protocol
-    const endpointIri = HttpServiceSparqlEndpoint.getBaseIRI(request, this.port);
-    const graphStoreTarget = GraphStoreHttpProtocol.getTarget(request, requestUrl, endpointIri);
-    if (graphStoreTarget && request.method === 'OPTIONS') {
-      this.writePreflightResponse(stdout, request, response);
-      return;
-    }
-    if (graphStoreTarget) {
-      const result = await this.graphStoreProtocol.handleRequest(
-        engine,
-        request,
-        graphStoreTarget,
-        endpointIri,
-        () => HttpServiceSparqlEndpoint.readBody(request),
-      );
-      await this.writeGraphStoreResult(engine, stdout, request, response, result, mediaType);
-      return;
+    // Requests that identify an RDF graph are handled through the Graph Store HTTP Protocol, when it is enabled
+    if (this.graphStore) {
+      const endpointIri = HttpServiceSparqlEndpoint.getBaseIRI(request, this.port);
+      const graphStoreTarget = HttpServiceGraphStore.getTarget(request, requestUrl, endpointIri);
+      if (graphStoreTarget && request.method === 'OPTIONS') {
+        this.writePreflightResponse(stdout, request, response);
+        return;
+      }
+      if (graphStoreTarget) {
+        const result = await this.graphStore.handleRequest(
+          engine,
+          request,
+          graphStoreTarget,
+          endpointIri,
+          () => HttpServiceSparqlEndpoint.readBody(request),
+        );
+        await this.writeGraphStoreResult(engine, stdout, request, response, result, mediaType);
+        return;
+      }
     }
 
     if (requestUrl.pathname !== '/sparql') {
@@ -475,7 +487,7 @@ export class HttpServiceSparqlEndpoint {
           HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({
             'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
             'Access-Control-Allow-Origin': '*',
-          }),
+          }, this.allowedMethods),
         );
         response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
     }
@@ -498,7 +510,7 @@ export class HttpServiceSparqlEndpoint {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
       'Access-Control-Max-Age': '86400',
-    }));
+    }, this.allowedMethods));
     response.end();
   }
 
@@ -828,7 +840,7 @@ export class HttpServiceSparqlEndpoint {
       'Access-Control-Allow-Origin': '*',
       // Without this, browser clients are not allowed to read the QUERY advertisement.
       'Access-Control-Expose-Headers': 'Accept-Query, Allow',
-    }));
+    }, this.allowedMethods));
 
     if (headOnly) {
       response.end();
@@ -979,13 +991,17 @@ export class HttpServiceSparqlEndpoint {
   /**
    * Determines the headers with which this service advertises the HTTP methods and query formats it supports.
    * @param headers The headers to extend.
+   * @param allowedMethods The HTTP methods to advertise.
    * @return {Record<string, string>} The given headers, extended with the method advertisement headers.
    */
-  public static getMethodAdvertisementHeaders(headers: Record<string, string>): Record<string, string> {
+  public static getMethodAdvertisementHeaders(
+    headers: Record<string, string>,
+    allowedMethods: string = HttpServiceSparqlEndpoint.ALLOWED_METHODS,
+  ): Record<string, string> {
     return {
       ...headers,
-      'Access-Control-Allow-Methods': HttpServiceSparqlEndpoint.ALLOWED_METHODS,
-      Allow: HttpServiceSparqlEndpoint.ALLOWED_METHODS,
+      'Access-Control-Allow-Methods': allowedMethods,
+      Allow: allowedMethods,
       'Accept-Query': HttpServiceSparqlEndpoint.MIME_SPARQL_QUERY,
     };
   }
@@ -1063,6 +1079,7 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   freshWorkerPerQuery?: boolean;
   contextOverride?: boolean;
   emitVoid?: boolean;
+  graphStore?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
 }
