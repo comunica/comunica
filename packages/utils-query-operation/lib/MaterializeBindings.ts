@@ -191,6 +191,7 @@ export function materializeOperation(
       },
     },
     [Algebra.Types.VALUES]: {
+      preVisitor: () => ({ continue: !options.strictTargetVariables }),
       transform: (valuesOp) => {
         // Materialize a values operation.
         // If strictTargetVariables is true, we throw if the values target variable is attempted to be bound.

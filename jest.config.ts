@@ -5,8 +5,6 @@ const config: Config.InitialOptions = {
   coveragePathIgnorePatterns: [
     '/test/',
     '/node_modules/',
-    // Locally linked TRAQULA checkout: its sources resolve outside of node_modules
-    '<rootDir>/traqula/',
     'engine-default.js',
     'index.js',
   ],
