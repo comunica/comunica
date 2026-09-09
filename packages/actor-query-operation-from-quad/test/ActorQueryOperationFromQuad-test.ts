@@ -60,6 +60,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
   describe('#copyOperation', () => {
     // This function is no longer used by the actor itself, but remains part of its public API.
+    // TODO (next major): may also remove these tests.
     const marker = AF.createNop();
 
     it('should recurse into sub-operations and leave other values alone', () => {
