@@ -88,6 +88,9 @@ export interface IRdfJsSourceExtended extends RDF.Source {
    * Returns the number of distinct combinations of the specified terms.
    *
    * This will only be used if `features.indexDistinctTerms` is true.
+   *
+   * @param termNames The term names to count combinations of.
+   * @param filters Optional term names that are bound to specific terms, acting as filters.
    */
-  countDistinctTerms?: (termNames: QuadTermName[]) => number;
+  countDistinctTerms?: (termNames: QuadTermName[], filters?: (RDF.Term | undefined)[]) => number;
 }

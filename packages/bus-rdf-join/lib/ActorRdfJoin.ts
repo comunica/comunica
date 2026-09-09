@@ -247,18 +247,22 @@ TS
    * @return The estimated cardinality, or undefined if the entries share no variables.
    */
   public static getSharedVariableJoinCardinality(metadatas: MetadataBindings[]): number | undefined {
-    // Collect, per variable, the cardinalities of the entries binding it
-    const cardinalitiesByVariable: Record<string, number[]> = {};
+    // Collect, per variable, the cardinalities of the entries binding it and their distinct value counts
+    const valuesByVariable: Record<string, { cardinalities: number[]; distinctValues: (number | undefined)[] }> = {};
     for (const metadata of metadatas) {
-      for (const { variable } of metadata.variables) {
-        (cardinalitiesByVariable[variable.value] ??= []).push(metadata.cardinality.value);
+      for (const { variable, distinctValues } of metadata.variables) {
+        const values = valuesByVariable[variable.value] ??= { cardinalities: [], distinctValues: []};
+        values.cardinalities.push(metadata.cardinality.value);
+        values.distinctValues.push(distinctValues);
       }
     }
 
     let divisor = 0;
-    for (const cardinalities of Object.values(cardinalitiesByVariable)) {
+    for (const { cardinalities, distinctValues } of Object.values(valuesByVariable)) {
       if (cardinalities.length > 1) {
-        divisor = Math.max(divisor, Math.max(...cardinalities) ** (cardinalities.length - 1));
+        // Only usable when every entry reports them; the cardinality assumes one value per binding
+        const values = distinctValues.every(value => value !== undefined) ? distinctValues : cardinalities;
+        divisor = Math.max(divisor, Math.max(...values) ** (values.length - 1));
       }
     }
     if (divisor === 0) {

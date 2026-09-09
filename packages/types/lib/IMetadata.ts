@@ -66,6 +66,11 @@ export type MetadataVariable = {
    * If this is false, then values for this variable are guaranteed to be defined in the bindingsStream.
    */
   canBeUndef: boolean;
+  /**
+   * The number of distinct values this variable takes in the bindings stream.
+   * Only set by sources that can determine it cheaply; the cardinality is the fallback upper bound.
+   */
+  distinctValues?: number;
 };
 export type MetadataQuads = IMetadata<RDF.QuadTermName>;
 
