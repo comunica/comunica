@@ -16,6 +16,18 @@ this actor never applies unless a source is extended to declare its order.
 The output stays sorted on the key that was merged on, so merge joins can be chained over a star pattern without
 re-sorting in between.
 
+Sources may additionally expose a `seek(target)` method on the bindings stream they return
+(`ISeekableBindingsIterator`), which skips past every remaining binding preceding `target` in the stream's declared
+order. A merge join spends most of its time advancing whichever side is behind, so a source that can descend an
+index or binary-search a sorted array turns that scan into a jump. On a selective join this changes how much of the
+larger side is read at all: joining 6 bindings against 447k read 566 bindings with `seek` instead of 447,539
+without it.
+
+Note that the join calls the term comparator once per comparison, and the SPARQL order semantics that the `order`
+metadata is defined against are expensive to evaluate (~0.6us per comparison, against ~0.04us for a plain string
+compare). On a scan-shaped join that cost dominates, which is why the reported coefficients do not assume this
+actor beats a hash join.
+
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 

@@ -6,7 +6,7 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
-import { createKeyComparator, MergeJoinIterator, readOrWait } from '../lib/MergeJoinIterator';
+import { createKeyComparator, MergeJoinIterator } from '../lib/MergeJoinIterator';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -26,11 +26,28 @@ const termComparator = {
 
 const ASC_A = [{ term: DF.variable('a'), direction: <const> 'asc' }];
 const DESC_A = [{ term: DF.variable('a'), direction: <const> 'desc' }];
+const compare = createKeyComparator(termComparator, ASC_A);
 
 function bindA(a: number, other: string, otherValue: string): Bindings {
   return BF.bindings([
     [ DF.variable('a'), DF.literal(String(a)) ],
     [ DF.variable(other), DF.literal(otherValue) ],
+  ]);
+}
+
+// Keys are compared lexicographically, so wide numeric ranges must be zero-padded to stay sorted.
+function bindPadded(a: number, other: string, otherValue: string): Bindings {
+  return BF.bindings([
+    [ DF.variable('a'), DF.literal(String(a).padStart(6, '0')) ],
+    [ DF.variable(other), DF.literal(otherValue) ],
+  ]);
+}
+
+function joined(a: number, b: string, c: string): Bindings {
+  return BF.bindings([
+    [ DF.variable('a'), DF.literal(String(a)) ],
+    [ DF.variable('b'), DF.literal(b) ],
+    [ DF.variable('c'), DF.literal(c) ],
   ]);
 }
 
@@ -53,90 +70,75 @@ class ControlledIterator extends BufferedIterator<Bindings> {
   public fail(error: Error): void {
     this.emit('error', error);
   }
+}
 
-  public poke(): void {
-    this.emit('readable');
+/**
+ * A sorted source that can skip ahead to a key by binary search instead of being read one by one.
+ */
+class SeekableIterator extends ArrayIterator<Bindings> {
+  public seeks = 0;
+  public skipped = 0;
+  private position = 0;
+  private readonly items: Bindings[];
+
+  public constructor(items: Bindings[]) {
+    super(items, { autoStart: false });
+    this.items = items;
+  }
+
+  public override read(): Bindings | null {
+    if (this.position >= this.items.length) {
+      this.close();
+      return null;
+    }
+    return this.items[this.position++];
+  }
+
+  public seek(target: Bindings): void {
+    this.seeks++;
+    let low = this.position;
+    let high = this.items.length;
+    while (low < high) {
+      const mid = (low + high) >>> 1;
+      if (compare(this.items[mid], target) < 0) {
+        low = mid + 1;
+      } else {
+        high = mid;
+      }
+    }
+    this.skipped += low - this.position;
+    this.position = low;
   }
 }
 
 describe('createKeyComparator', () => {
   it('orders ascending on the key', () => {
-    const compare = createKeyComparator(termComparator, ASC_A);
     expect(compare(bindA(1, 'b', 'x'), bindA(2, 'b', 'x'))).toBe(-1);
     expect(compare(bindA(2, 'b', 'x'), bindA(1, 'b', 'x'))).toBe(1);
   });
 
   it('inverts the comparison for descending keys', () => {
-    const compare = createKeyComparator(termComparator, DESC_A);
-    expect(compare(bindA(1, 'b', 'x'), bindA(2, 'b', 'x'))).toBe(1);
-    expect(compare(bindA(2, 'b', 'x'), bindA(1, 'b', 'x'))).toBe(-1);
+    const descending = createKeyComparator(termComparator, DESC_A);
+    expect(descending(bindA(1, 'b', 'x'), bindA(2, 'b', 'x'))).toBe(1);
+    expect(descending(bindA(2, 'b', 'x'), bindA(1, 'b', 'x'))).toBe(-1);
   });
 
   it('considers bindings with equal keys but different other values equal', () => {
-    const compare = createKeyComparator(termComparator, ASC_A);
     expect(compare(bindA(1, 'b', 'x'), bindA(1, 'b', 'y'))).toBe(0);
   });
 
   it('falls through to the next key of a composite order', () => {
-    const compare = createKeyComparator(termComparator, [
+    const composite = createKeyComparator(termComparator, [
       { term: DF.variable('a'), direction: 'asc' },
       { term: DF.variable('b'), direction: 'asc' },
     ]);
-    expect(compare(bindA(1, 'b', 'x'), bindA(1, 'b', 'y'))).toBe(-1);
-    expect(compare(bindA(1, 'b', 'y'), bindA(1, 'b', 'x'))).toBe(1);
-    expect(compare(bindA(1, 'b', 'x'), bindA(1, 'b', 'x'))).toBe(0);
-  });
-});
-
-describe('readOrWait', () => {
-  it('reads a buffered item synchronously', () => {
-    const iterator = new ArrayIterator<Bindings>([ bindA(1, 'b', 'x') ], { autoStart: false });
-    expect(<Bindings> readOrWait(iterator)).toEqualBindings(bindA(1, 'b', 'x'));
-    iterator.destroy();
-  });
-
-  it('returns null synchronously for an iterator that already ended', async() => {
-    const iterator = new ArrayIterator<Bindings>([], { autoStart: false });
-    await arrayifyStream(iterator);
-    expect(iterator.done).toBe(true);
-    expect(readOrWait(iterator)).toBeNull();
-  });
-
-  it('waits for an item that is not available yet', async() => {
-    const iterator = new ControlledIterator();
-    const pending = readOrWait(iterator);
-    iterator.add(bindA(1, 'b', 'x'));
-    await expect(pending).resolves.toEqualBindings(bindA(1, 'b', 'x'));
-    iterator.destroy();
-  });
-
-  it('keeps waiting when readable fires without an item being available', async() => {
-    const iterator = new ControlledIterator();
-    const pending = readOrWait(iterator);
-    iterator.poke();
-    iterator.add(bindA(1, 'b', 'x'));
-    await expect(pending).resolves.toEqualBindings(bindA(1, 'b', 'x'));
-    iterator.destroy();
-  });
-
-  it('resolves to null when the iterator ends while waiting', async() => {
-    const iterator = new ControlledIterator();
-    const pending = readOrWait(iterator);
-    iterator.finish();
-    await expect(pending).resolves.toBeNull();
-  });
-
-  it('rejects when the iterator errors while waiting', async() => {
-    const iterator = new ControlledIterator();
-    const pending = readOrWait(iterator);
-    iterator.fail(new Error('readOrWait error'));
-    await expect(pending).rejects.toThrow('readOrWait error');
+    expect(composite(bindA(1, 'b', 'x'), bindA(1, 'b', 'y'))).toBe(-1);
+    expect(composite(bindA(1, 'b', 'y'), bindA(1, 'b', 'x'))).toBe(1);
+    expect(composite(bindA(1, 'b', 'x'), bindA(1, 'b', 'x'))).toBe(0);
   });
 });
 
 describe('MergeJoinIterator', () => {
-  const compare = createKeyComparator(termComparator, ASC_A);
-
   it('merges runs of equal keys as a cross product, skipping non-matching keys', async() => {
     // Keys 1 and 4 only occur left, key 3 only occurs right, key 2 occurs twice on both sides.
     const streamed = new ArrayIterator<Bindings>([
@@ -152,26 +154,10 @@ describe('MergeJoinIterator', () => {
     ], { autoStart: false });
 
     await expect(arrayifyStream(new MergeJoinIterator(streamed, buffered, compare))).resolves.toEqualBindingsArray([
-      BF.bindings([
-        [ DF.variable('a'), DF.literal('2') ],
-        [ DF.variable('b'), DF.literal('l2') ],
-        [ DF.variable('c'), DF.literal('r1') ],
-      ]),
-      BF.bindings([
-        [ DF.variable('a'), DF.literal('2') ],
-        [ DF.variable('b'), DF.literal('l2') ],
-        [ DF.variable('c'), DF.literal('r2') ],
-      ]),
-      BF.bindings([
-        [ DF.variable('a'), DF.literal('2') ],
-        [ DF.variable('b'), DF.literal('l3') ],
-        [ DF.variable('c'), DF.literal('r1') ],
-      ]),
-      BF.bindings([
-        [ DF.variable('a'), DF.literal('2') ],
-        [ DF.variable('b'), DF.literal('l3') ],
-        [ DF.variable('c'), DF.literal('r2') ],
-      ]),
+      joined(2, 'l2', 'r1'),
+      joined(2, 'l2', 'r2'),
+      joined(2, 'l3', 'r1'),
+      joined(2, 'l3', 'r2'),
     ]);
   });
 
@@ -183,42 +169,20 @@ describe('MergeJoinIterator', () => {
     ], { autoStart: false });
 
     await expect(arrayifyStream(new MergeJoinIterator(streamed, buffered, compare))).resolves.toEqualBindingsArray([
-      BF.bindings([
-        [ DF.variable('a'), DF.literal('2') ],
-        [ DF.variable('b'), DF.literal('l1') ],
-        [ DF.variable('c'), DF.literal('r1') ],
-      ]),
-      BF.bindings([
-        [ DF.variable('a'), DF.literal('2') ],
-        [ DF.variable('b'), DF.literal('l1') ],
-        [ DF.variable('c'), DF.literal('r2') ],
-      ]),
+      joined(2, 'l1', 'r1'),
+      joined(2, 'l1', 'r2'),
     ]);
   });
 
   it('drops bindings within a run that disagree on a non-key variable', async() => {
-    const streamed = new ArrayIterator<Bindings>([
-      BF.bindings([
-        [ DF.variable('a'), DF.literal('2') ],
-        [ DF.variable('b'), DF.literal('shared') ],
-      ]),
-    ], { autoStart: false });
+    const streamed = new ArrayIterator<Bindings>([ bindA(2, 'b', 'shared') ], { autoStart: false });
     const buffered = new ArrayIterator<Bindings>([
-      BF.bindings([
-        [ DF.variable('a'), DF.literal('2') ],
-        [ DF.variable('b'), DF.literal('other') ],
-      ]),
-      BF.bindings([
-        [ DF.variable('a'), DF.literal('2') ],
-        [ DF.variable('b'), DF.literal('shared') ],
-      ]),
+      bindA(2, 'b', 'other'),
+      bindA(2, 'b', 'shared'),
     ], { autoStart: false });
 
     await expect(arrayifyStream(new MergeJoinIterator(streamed, buffered, compare))).resolves.toEqualBindingsArray([
-      BF.bindings([
-        [ DF.variable('a'), DF.literal('2') ],
-        [ DF.variable('b'), DF.literal('shared') ],
-      ]),
+      bindA(2, 'b', 'shared'),
     ]);
   });
 
@@ -234,6 +198,14 @@ describe('MergeJoinIterator', () => {
     await expect(arrayifyStream(new MergeJoinIterator(streamed, buffered, compare))).resolves.toEqualBindingsArray([]);
   });
 
+  it('returns null when read after it has ended', async() => {
+    const streamed = new ArrayIterator<Bindings>([ bindA(1, 'b', 'l1') ], { autoStart: false });
+    const buffered = new ArrayIterator<Bindings>([ bindA(1, 'c', 'r1') ], { autoStart: false });
+    const merged = new MergeJoinIterator(streamed, buffered, compare);
+    await arrayifyStream(merged);
+    expect(merged.read()).toBeNull();
+  });
+
   it('destroys both sources once it ends', async() => {
     const streamed = new ArrayIterator<Bindings>([ bindA(1, 'b', 'l1') ], { autoStart: false });
     const buffered = new ArrayIterator<Bindings>([ bindA(1, 'c', 'r1') ], { autoStart: false });
@@ -242,26 +214,45 @@ describe('MergeJoinIterator', () => {
     expect(buffered.done).toBe(true);
   });
 
-  it('emits errors from a source', async() => {
+  it('emits errors from the streamed source', async() => {
     const streamed = new ControlledIterator();
     const buffered = new ArrayIterator<Bindings>([ bindA(1, 'c', 'r1') ], { autoStart: false });
-    const iterator = new MergeJoinIterator(streamed, buffered, compare);
-    const result = arrayifyStream(iterator);
+    const result = arrayifyStream(new MergeJoinIterator(streamed, buffered, compare));
     await new Promise(resolve => setImmediate(resolve));
     streamed.fail(new Error('merge source error'));
     await expect(result).rejects.toThrow('merge source error');
   });
 
+  it('waits for sources that have nothing buffered yet', async() => {
+    const streamed = new ControlledIterator();
+    const buffered = new ControlledIterator();
+    const result = arrayifyStream(new MergeJoinIterator(streamed, buffered, compare));
+    // Feed both sides in stages, so every read has to pause and resume at least once.
+    await new Promise(resolve => setImmediate(resolve));
+    streamed.add(bindA(1, 'b', 'l1'));
+    await new Promise(resolve => setImmediate(resolve));
+    buffered.add(bindA(1, 'c', 'r1'));
+    await new Promise(resolve => setImmediate(resolve));
+    buffered.add(bindA(1, 'c', 'r2'));
+    await new Promise(resolve => setImmediate(resolve));
+    streamed.add(bindA(1, 'b', 'l2'));
+    await new Promise(resolve => setImmediate(resolve));
+    streamed.finish();
+    buffered.finish();
+    await expect(result).resolves.toEqualBindingsArray([
+      joined(1, 'l1', 'r1'),
+      joined(1, 'l1', 'r2'),
+      joined(1, 'l2', 'r1'),
+      joined(1, 'l2', 'r2'),
+    ]);
+  });
+
   it('merges more items than fit in a single buffer fill', async() => {
-    const items = 20;
-    const streamed = new ArrayIterator<Bindings>(
-      [ ...Array.from({ length: items }).keys() ].map(i => bindA(i, 'b', `l${i}`)),
-      { autoStart: false },
-    );
-    const buffered = new ArrayIterator<Bindings>(
-      [ ...Array.from({ length: items }).keys() ].map(i => bindA(i, 'c', `r${i}`)),
-      { autoStart: false },
-    );
+    const items = 200;
+    const build = (other: string): Bindings[] =>
+      [ ...Array.from({ length: items }).keys() ].map(i => bindPadded(i, other, `v${i}`));
+    const streamed = new ArrayIterator<Bindings>(build('b'), { autoStart: false });
+    const buffered = new ArrayIterator<Bindings>(build('c'), { autoStart: false });
     await expect(arrayifyStream(new MergeJoinIterator(streamed, buffered, compare))).resolves.toHaveLength(items);
   });
 
@@ -289,9 +280,9 @@ describe('MergeJoinIterator', () => {
     const expected: Bindings[] = [];
     for (const leftItem of leftItems) {
       for (const rightItem of rightItems) {
-        const joined = ActorRdfJoin.joinBindings(leftItem, rightItem);
-        if (joined !== null) {
-          expected.push(joined);
+        const result = ActorRdfJoin.joinBindings(leftItem, rightItem);
+        if (result !== null) {
+          expected.push(result);
         }
       }
     }
@@ -307,5 +298,37 @@ describe('MergeJoinIterator', () => {
       .map(item => [ ...item ].map(([ key, value ]) => `${key.value}=${value.value}`).sort().join('|'))
       .sort();
     expect(asMultiset(actual)).toEqual(asMultiset(expected));
+  });
+
+  describe('with a seekable source', () => {
+    it('skips ahead on both sides instead of reading every binding', async() => {
+      // Two sparse key sets that only meet at 500, so almost everything can be skipped.
+      const streamed = new SeekableIterator(
+        [ ...Array.from({ length: 1000 }).keys() ].map(i => bindPadded(i * 2, 'b', `l${i}`)),
+      );
+      const buffered = new SeekableIterator(
+        [ ...Array.from({ length: 1000 }).keys() ].map(i => bindPadded(i * 2 + 1, 'c', `r${i}`)),
+      );
+      const merged = new MergeJoinIterator(streamed, buffered, compare);
+      await expect(arrayifyStream(merged)).resolves.toEqualBindingsArray([]);
+      expect(streamed.seeks + buffered.seeks).toBeGreaterThan(0);
+    });
+
+    it('produces the same results as a non-seekable source', async() => {
+      const left = [ ...Array.from({ length: 300 }).keys() ].map(i => bindPadded(i * 3, 'b', `l${i}`));
+      const right = [ ...Array.from({ length: 300 }).keys() ].map(i => bindPadded(i * 2, 'c', `r${i}`));
+      const withSeek = await arrayifyStream(new MergeJoinIterator(
+        new SeekableIterator(left),
+        new SeekableIterator(right),
+        compare,
+      ));
+      const withoutSeek = await arrayifyStream(new MergeJoinIterator(
+        new ArrayIterator<Bindings>(left, { autoStart: false }),
+        new ArrayIterator<Bindings>(right, { autoStart: false }),
+        compare,
+      ));
+      expect(withSeek).toEqualBindingsArray(withoutSeek);
+      expect(withSeek.length).toBeGreaterThan(0);
+    });
   });
 });
