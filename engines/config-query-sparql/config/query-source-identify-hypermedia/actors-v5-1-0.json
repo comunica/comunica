@@ -28,7 +28,8 @@
     {
       "@id": "urn:comunica:default:query-source-identify-hypermedia/actors#none",
       "@type": "ActorQuerySourceIdentifyHypermediaNone",
-      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
+      "mediatorTermComparatorFactory": { "@id": "urn:comunica:default:term-comparator-factory/mediators#main" }
     }
   ]
 }

@@ -7,6 +7,7 @@ import type {
   IActorQuerySourceIdentifyHypermediaTest,
 } from '@comunica/bus-query-source-identify-hypermedia';
 import { ActorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
+import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
@@ -20,10 +21,12 @@ import { RdfStore } from 'rdf-stores';
  */
 export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIdentifyHypermedia {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  public readonly mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaNoneArgs) {
     super(args, 'file');
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
+    this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;
   }
 
   public async testMetadata(
@@ -35,8 +38,17 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {
     this.logInfo(action.context, `Identified as file source: ${action.url}`);
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const store = await ActorQuerySourceIdentifyHypermediaNone.storeStream(action.quads);
+
+    // PROTOTYPE: order the indexes by the same comparator that consumers compare with, so that scans
+    // of this store report the order they produce and can be asked to skip ahead within it.
+    if (process.env.COMUNICA_SORTED_STORE === '1') {
+      const termComparator = await this.mediatorTermComparatorFactory.mediate({ context: action.context });
+      (<any> store).sortIndexes((termA: RDF.Term, termB: RDF.Term) => termComparator.orderTypes(termA, termB));
+    }
+
     const source = new QuerySourceRdfJs(
-      await ActorQuerySourceIdentifyHypermediaNone.storeStream(action.quads),
+      store,
       dataFactory,
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
     );
@@ -46,7 +58,20 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
   }
 
   public static storeStream<Q extends RDF.BaseQuad = RDF.Quad>(stream: RDF.Stream<Q>): Promise<RDF.Store<Q>> {
-    const store: RDF.Store<Q> = <RDF.Store<Q>> <RDF.Store> RdfStore.createDefault(true);
+    // PROTOTYPE: with COMUNICA_SORTED_STORE, index on (graph, predicate, subject, object) as well, so
+    // that a bound-predicate scan is answered by an index that walks subjects and therefore comes back
+    // in subject order. GPOS is kept after it, for predicate-and-object-bound patterns.
+    const store: RDF.Store<Q> = process.env.COMUNICA_SORTED_STORE === '1' ?
+      <RDF.Store<Q>> <any> new RdfStore<any, any>({
+        ...RdfStore.createDefault(true).options,
+        indexCombinations: [
+          [ 'graph', 'subject', 'predicate', 'object' ],
+          [ 'graph', 'predicate', 'subject', 'object' ],
+          [ 'graph', 'object', 'subject', 'predicate' ],
+          [ 'graph', 'predicate', 'object', 'subject' ],
+        ],
+      }) :
+      <RDF.Store<Q>> <RDF.Store> RdfStore.createDefault(true);
     return new Promise((resolve, reject) => store.import(stream)
       .on('error', reject)
       .once('end', () => resolve(store)));
@@ -58,4 +83,8 @@ export interface IActorQuerySourceIdentifyHypermediaNoneArgs extends IActorQuery
    * A mediator for creating binding context merge handlers
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  /**
+   * A mediator for creating term comparators
+   */
+  mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 }

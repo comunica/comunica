@@ -25,6 +25,17 @@ const mediatorMergeBindingsContext: any = {
   mediate: () => ({}),
 };
 
+const mediatorTermComparatorFactory: any = {
+  mediate: () => ({
+    orderTypes: (termA: any, termB: any) => {
+      if (termA.value === termB.value) {
+        return 0;
+      }
+      return termA.value < termB.value ? -1 : 1;
+    },
+  }),
+};
+
 describe('ActorQuerySourceIdentifyHypermediaNone', () => {
   let bus: any;
 
@@ -37,7 +48,12 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
     let context: IActionContext;
 
     beforeEach(() => {
-      actor = new ActorQuerySourceIdentifyHypermediaNone({ name: 'actor', bus, mediatorMergeBindingsContext });
+      actor = new ActorQuerySourceIdentifyHypermediaNone({
+        name: 'actor',
+        bus,
+        mediatorMergeBindingsContext,
+        mediatorTermComparatorFactory,
+      });
       context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     });
 
@@ -112,6 +128,36 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
           v2: DF.namedNode('p2'),
         }),
       ]);
+    });
+
+    it('should order the store with COMUNICA_SORTED_STORE, using the SPARQL comparator', async() => {
+      process.env.COMUNICA_SORTED_STORE = '1';
+      try {
+        const quads = streamifyArray([
+          quad('s2', 'p1', 'o1'),
+          quad('s1', 'p1', 'o2'),
+        ]);
+        const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
+        const store: any = (<any> source).source;
+
+        // Four indexes, so that a bound-predicate scan is answered by one that walks subjects.
+        expect(store.indexesWrapped.map((index: any) => index.componentOrder.join(',')))
+          .toEqual([
+            'graph,subject,predicate,object',
+            'graph,predicate,subject,object',
+            'graph,object,subject,predicate',
+            'graph,predicate,object,subject',
+          ]);
+
+        // And that scan comes back in subject order, rather than in insertion order.
+        const bindings = await source.queryBindings(
+          AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.variable('o')),
+          new ActionContext(),
+        ).toArray();
+        expect(bindings.map(b => b.get(DF.variable('s'))!.value)).toEqual([ 's1', 's2' ]);
+      } finally {
+        delete process.env.COMUNICA_SORTED_STORE;
+      }
     });
 
     it('should run and delegate error events', async() => {

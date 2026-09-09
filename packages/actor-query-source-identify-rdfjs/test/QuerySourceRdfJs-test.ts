@@ -172,6 +172,92 @@ describe('QuerySourceRdfJs', () => {
         .toEqual({ a: 1 });
     });
 
+    it('should report the order a scan varies over, and forward a seek to it', async() => {
+      const sought: [string, string][] = [];
+      (<any> store).matchBindings = () => {
+        const it: any = new ArrayIterator([
+          BF.bindings([[ DF.variable('s'), DF.namedNode('s1') ], [ DF.variable('o'), DF.namedNode('o1') ]]),
+        ], { autoStart: false });
+        it.resultOrder = [ 'subject', 'object' ];
+        it.seekTo = (component: string, term: any) => sought.push([ component, term.value ]);
+        return it;
+      };
+
+      const data: any = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toMatchObject({
+          order: [
+            { term: DF.variable('s'), direction: 'asc' },
+            { term: DF.variable('o'), direction: 'asc' },
+          ],
+        });
+
+      // The seek goes to the first component of that order, in the store's own terms.
+      data.seek(BF.bindings([[ DF.variable('s'), DF.namedNode('s9') ]]));
+      expect(sought).toEqual([[ 'subject', 's9' ]]);
+
+      // A target that binds nothing the scan is ordered on has nothing to skip to.
+      data.seek(BF.bindings([[ DF.variable('other'), DF.namedNode('x') ]]));
+      expect(sought).toEqual([[ 'subject', 's9' ]]);
+    });
+
+    it('should stop the reported order at a variable the pattern repeats', async() => {
+      (<any> store).matchBindings = () => {
+        const it: any = new ArrayIterator([], { autoStart: false });
+        it.resultOrder = [ 'subject', 'object' ];
+        return it;
+      };
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('s')),
+        ctx,
+      );
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toMatchObject({ order: [{ term: DF.variable('s'), direction: 'asc' }]});
+    });
+
+    it('should report no order when the scan varies over nothing the pattern binds', async() => {
+      (<any> store).matchBindings = () => {
+        const it: any = new ArrayIterator([], { autoStart: false });
+        it.resultOrder = [ 'predicate' ];
+        it.seekTo = () => {
+          throw new Error('should not be sought');
+        };
+        return it;
+      };
+
+      const data: any = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toMatchObject({ order: undefined });
+      expect(data.seek).toBeUndefined();
+    });
+
+    it('should not expose a seek once something has wrapped the scan', async() => {
+      (<any> store).matchBindings = () => {
+        const it: any = new ArrayIterator([], { autoStart: false });
+        it.resultOrder = [ 'graph', 'subject' ];
+        it.seekTo = () => {
+          throw new Error('should not be sought');
+        };
+        return it;
+      };
+
+      // A variable graph without union default graph semantics filters the scan.
+      const data: any = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'), DF.variable('g')),
+        ctx,
+      );
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toMatchObject({ order: undefined });
+      expect(data.seek).toBeUndefined();
+    });
+
     it('should return triples in the default graph when matchBindings is unavailable', async() => {
       (<any> store).matchBindings = undefined;
       store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
