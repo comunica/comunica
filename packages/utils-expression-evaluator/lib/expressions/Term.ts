@@ -176,8 +176,7 @@ export abstract class NumericLiteral extends Literal<number> {
   }
 
   public override str(): string {
-    return this.strValue ??
-      this.specificFormatter(this.typedValue);
+    return this.strValue ?? this.specificFormatter(this.typedValue).replace('Infinity', 'INF');
   }
 }
 
@@ -188,13 +187,6 @@ export abstract class NumericLiteral extends Literal<number> {
  * with leading + and leading zeroes prohibited.
  */
 export class IntegerLiteral extends NumericLiteral {
-  protected static readonly formatter = Intl.NumberFormat(undefined, {
-    maximumFractionDigits: 0,
-    notation: 'standard',
-    signDisplay: 'negative',
-    useGrouping: false,
-  });
-
   public constructor(
     public override typedValue: number,
     dataType?: string,
@@ -205,7 +197,7 @@ export class IntegerLiteral extends NumericLiteral {
   }
 
   protected override specificFormatter(val: number): string {
-    return IntegerLiteral.formatter.format(val);
+    return val.toFixed(0);
   }
 }
 
@@ -217,14 +209,6 @@ export class IntegerLiteral extends NumericLiteral {
  * are prohibited, except for the single mandatory digit on both sides of the decimal point.
  */
 export class DecimalLiteral extends NumericLiteral {
-  protected static readonly formatter = Intl.NumberFormat(undefined, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 100,
-    notation: 'standard',
-    signDisplay: 'negative',
-    useGrouping: false,
-  });
-
   public constructor(
     public override typedValue: number,
     dataType?: string,
@@ -235,7 +219,16 @@ export class DecimalLiteral extends NumericLiteral {
   }
 
   protected override specificFormatter(val: number): string {
-    return DecimalLiteral.formatter.format(val);
+    let str = val.toString(10);
+
+    // When the number is so small that JavaScript forces exponential representation,
+    // the value must be forced into decimal format, and trailing zeroes must be stripped.
+    // This does not address accuracy issues, but it does ensure the output is a valid decimal.
+    if (!/^-?[0-9]+\.[0-9]+$/u.test(str)) {
+      str = val.toFixed(20).replace(/([0-9])0*$/u, '$1');
+    }
+
+    return str;
   }
 }
 
@@ -248,13 +241,6 @@ export class DecimalLiteral extends NumericLiteral {
  * The canonical representation of zero is `0.0E0`.
  */
 export class DoubleLiteral extends NumericLiteral {
-  protected static readonly formatter = Intl.NumberFormat(undefined, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 100,
-    notation: 'scientific',
-    signDisplay: 'negative',
-  });
-
   public constructor(
     public override typedValue: number,
     dataType?: string,
@@ -265,8 +251,21 @@ export class DoubleLiteral extends NumericLiteral {
   }
 
   protected override specificFormatter(val: number): string {
-    const str = DoubleLiteral.formatter.format(val);
-    return Number.isFinite(this.typedValue) ? str : str.replace('∞', 'INF');
+    if (Number.isFinite(val)) {
+      let [ mantissa, exponent ] = val.toExponential().split('e');
+
+      // Remove leading + from the exponent
+      exponent = exponent.replace(/^\+/u, '');
+
+      // Make sure the mantissa has a decimal slot
+      mantissa = mantissa.replace(/^(-?[0-9]+)$/u, '$1.0');
+
+      return `${mantissa}E${exponent}`;
+    }
+
+    // Additional replacements are handled by the `str` function
+    // of NumericLiteral, such as Infinity -> INF
+    return val.toString();
   }
 }
 
