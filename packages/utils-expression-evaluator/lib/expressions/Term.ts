@@ -208,6 +208,8 @@ export class IntegerLiteral extends NumericLiteral {
 
   protected override specificFormatter(val: number): string {
     if (Number.isFinite(val)) {
+      // Force the number to not be represented as an exponential,
+      // even when large enough for JS to automatically try it.
       return val.toFixed(0);
     }
 
@@ -244,6 +246,11 @@ export class DecimalLiteral extends NumericLiteral {
       // This does not address accuracy issues, but it does ensure the output is a valid decimal.
       if (str.includes('e')) {
         str = val.toFixed(20).replace(/([0-9])0*$/u, '$1');
+      }
+
+      // Ensure there is at least one decimal place.
+      if (!str.includes('.')) {
+        str += '.0';
       }
 
       return str;
