@@ -30,9 +30,48 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
   public async update(
     quadStreams: { insert?: AsyncIterator<RDF.Quad>; delete?: AsyncIterator<RDF.Quad> },
   ): Promise<void> {
+    // The quads to delete are collected before the request is started, so that quads that can not be deleted
+    // are reported as an error, instead of resulting in a partially written request body.
+    const quadsToDelete = quadStreams.delete && await quadStreams.delete.toArray();
+    if (quadsToDelete) {
+      for (const quad of quadsToDelete) {
+        // SPARQL does not allow blank nodes inside DELETE DATA blocks, as a blank node label can not be used
+        // to refer to a blank node in the destination.
+        // Replacing them by variables in a DELETE ... WHERE ... operation is not a valid alternative,
+        // as such a pattern also matches other blank nodes and terms,
+        // by which more would be deleted than was asked for.
+        if (QuadDestinationPatchSparqlUpdate.hasBlankNode(quad)) {
+          throw new Error(`Unable to delete '${QuadDestinationPatchSparqlUpdate.tripleToString(quad)}' via a SPARQL Update patch, as blank nodes can not be referred to by label. Consider replacing the contents of the destination instead.`);
+        }
+      }
+    }
+
     // Create combined query stream with quads to insert and delete
-    const queryStream = this.createCombinedQuadsQuery(quadStreams.insert, quadStreams.delete);
+    const queryStream = this.createCombinedQuadsQuery(
+      quadStreams.insert,
+      quadsToDelete && new ArrayIterator<RDF.Quad>(quadsToDelete, { autoStart: false }),
+    );
     await this.wrapSparqlUpdateRequest(queryStream);
+  }
+
+  /**
+   * Check if the given term is a blank node, or contains one inside a quoted triple.
+   */
+  private static hasBlankNode(term: RDF.Term): boolean {
+    if (term.termType === 'BlankNode') {
+      return true;
+    }
+    if (term.termType === 'Quad') {
+      return QuadDestinationPatchSparqlUpdate.hasBlankNode(term.subject) ||
+        QuadDestinationPatchSparqlUpdate.hasBlankNode(term.predicate) ||
+        QuadDestinationPatchSparqlUpdate.hasBlankNode(term.object) ||
+        QuadDestinationPatchSparqlUpdate.hasBlankNode(term.graph);
+    }
+    return false;
+  }
+
+  private static tripleToString(quad: RDF.Quad): string {
+    return `${termToString(quad.subject)} ${termToString(quad.predicate)} ${termToString(quad.object)} .`;
   }
 
   private createCombinedQuadsQuery(
@@ -52,7 +91,7 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
     // Wrap triples in DATA block
     return quads
       .map((quad: RDF.Quad) => {
-        let stringQuad = `${termToString(quad.subject)} ${termToString(quad.predicate)} ${termToString(quad.object)} .`;
+        let stringQuad = QuadDestinationPatchSparqlUpdate.tripleToString(quad);
         if (quad.graph.termType === 'DefaultGraph') {
           stringQuad = `  ${stringQuad}\n`;
         } else {
