@@ -214,6 +214,7 @@
     "@comunica/actor-rdf-join-entries-sort-cardinality": "^5.3.0",
     "@comunica/actor-rdf-join-entries-sort-selectivity": "^5.3.0",
     "@comunica/actor-rdf-join-inner-hash": "^5.3.0",
+    "@comunica/actor-rdf-join-inner-merge": "^5.3.0",
     "@comunica/actor-rdf-join-inner-multi-bind": "^5.3.0",
     "@comunica/actor-rdf-join-inner-multi-bind-source": "^5.3.0",
     "@comunica/actor-rdf-join-inner-multi-empty": "^5.3.0",
