@@ -234,8 +234,16 @@ export class HttpServiceSparqlEndpoint {
 
     // Attach listeners to each new worker
     cluster.on('listening', (worker) => {
+      // Handle worker timeouts
+      const workerTimeouts: Record<number, NodeJS.Timeout> = {};
+
       // Respawn crashed workers
       worker.once('exit', (code, signal) => {
+        // Drop the timeouts of the queries this worker was running, as they can only fire on a dead worker
+        for (const workerTimeout of Object.values(workerTimeouts)) {
+          clearTimeout(workerTimeout);
+        }
+
         if (!worker.exitedAfterDisconnect) {
           if (code === 9 || signal === 'SIGKILL') {
             stderr.write(`Worker ${worker.process.pid} forcefully killed with ${code || signal}. Killing main process as well.\n`);
@@ -247,8 +255,6 @@ export class HttpServiceSparqlEndpoint {
         }
       });
 
-      // Handle worker timeouts
-      const workerTimeouts: Record<number, NodeJS.Timeout> = {};
       worker.on('message', ({ type, queryId }) => {
         if (type === 'start') {
           stderr.write(`Worker ${worker.process.pid} got assigned a new query (${queryId}).\n`);
@@ -617,6 +623,14 @@ export class HttpServiceSparqlEndpoint {
     // Send message to master process to indicate the start of an execution
     process.send?.({ type: 'start', queryId });
 
+    // Send message to master process to indicate the end of an execution.
+    // This is attached before the query runs, because the response can close at any point after this:
+    // the client may disconnect, or the query may fail. A start that is never followed by an end leaves
+    // the master with a timeout that fires later and kills a worker that is serving unrelated queries.
+    response.on('close', () => {
+      process.send?.({ type: 'end', queryId });
+    });
+
     // Determine context
     let context = {
       [KeysInitQuery.baseIRI.name]: HttpServiceSparqlEndpoint.getBaseIRI(request, this.port),
@@ -702,11 +716,6 @@ export class HttpServiceSparqlEndpoint {
         'The response for the given query could not be serialized for the requested media type',
       );
     }
-
-    // Send message to master process to indicate the end of an execution
-    response.on('close', () => {
-      process.send?.({ type: 'end', queryId });
-    });
 
     this.stopResponse(response, queryId, process.stderr, eventEmitter);
   }

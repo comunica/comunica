@@ -2049,6 +2049,59 @@ INSERT DATA {
         expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
       });
 
+      it('should emit the process end event when the client disconnects during the query', async() => {
+        jest.spyOn(process, 'send').mockImplementation();
+        const engine = await new QueryEngineFactoryBase().create();
+        // A query that never settles, so that the response closes while the execution is still running
+        engine.query = () => new Promise(() => {
+          // Do nothing
+        });
+
+        const written = instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          true,
+          0,
+        );
+        await new Promise(setImmediate);
+
+        expect(process.send).toHaveBeenCalledWith({ type: 'start', queryId: 0 });
+
+        response.emit('close');
+        expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
+        expect(written).toBeInstanceOf(Promise);
+      });
+
+      it('should emit the process end event for a query that fails', async() => {
+        jest.spyOn(process, 'send').mockImplementation();
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = () => Promise.reject(new Error('Query failure'));
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          true,
+          0,
+        );
+
+        expect(process.send).toHaveBeenCalledWith({ type: 'start', queryId: 0 });
+
+        response.emit('close');
+        expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
+      });
+
       it('should not emit process events when the service does not run as a worker', async() => {
         const send = process.send;
         delete (<any> process).send;
