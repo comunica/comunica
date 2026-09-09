@@ -29,6 +29,26 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
       return 1;
     }
 
+    // Two IRIs are ordered by their value, which is exactly what the general path below computes for them,
+    // but reaching that conclusion there costs transforming both terms and evaluating the SPARQL `<`
+    // operator twice. Terms of any other type keep the general path: notably `xsd:string` literals are
+    // compared with `localeCompare`, which a value comparison would not reproduce.
+    if (termA.termType === 'NamedNode' && termB.termType === 'NamedNode') {
+      if (termA.value === termB.value) {
+        return 0;
+      }
+      return termA.value < termB.value ? -1 : 1;
+    }
+
+    return this.orderTypesGeneral(termA, termB);
+  }
+
+  /**
+   * Order two defined terms by evaluating the SPARQL `<` operator in both directions.
+   * @param termA the first term
+   * @param termB the second term
+   */
+  private orderTypesGeneral(termA: RDF.Term, termB: RDF.Term): -1 | 0 | 1 {
     const myTermA: Eval.Term = this.internalEvaluator.transformer.transformRDFTermUnsafe(termA);
     const myTermB: Eval.Term = this.internalEvaluator.transformer.transformRDFTermUnsafe(termB);
 

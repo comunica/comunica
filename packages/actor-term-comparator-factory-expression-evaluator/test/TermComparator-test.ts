@@ -222,3 +222,62 @@ describe('terms order', () => {
     );
   });
 });
+
+describe('the IRI fast path', () => {
+  // Every pair the fast path answers must get the same answer as the general path it short-circuits.
+  const terms: RDF.Term[] = [
+    DF.namedNode('ex:a'),
+    DF.namedNode('ex:b'),
+    DF.namedNode('ex:B'),
+    DF.namedNode('ex:aa'),
+    DF.namedNode('ex:a/b'),
+    DF.namedNode('http://example.org/1'),
+    DF.namedNode('http://example.org/10'),
+    DF.namedNode('http://example.org/2'),
+    DF.namedNode(''),
+    DF.namedNode('_:looksLikeABlankNode'),
+    DF.blankNode('a'),
+    DF.blankNode('b'),
+    DF.literal('a'),
+    DF.literal('b'),
+    string('a'),
+    string('B'),
+    int('1'),
+    int('10'),
+    int('2'),
+    bool('true'),
+    dateTime('2001-01-01T00:00:00Z'),
+    DF.literal('a', 'en'),
+    DF.literal('b', 'nl'),
+    DF.defaultGraph(),
+    DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+  ];
+
+  it('agrees with the general path for every pair of terms', () => {
+    const evaluator = orderByFactory();
+    const general = (a: RDF.Term, b: RDF.Term): number => (<any> evaluator).orderTypesGeneral(a, b);
+    // Only distinct objects reach either path, since orderTypes short-circuits on reference equality.
+    const pairs = terms.flatMap(termA => terms
+      .filter(termB => termA !== termB)
+      .map(termB => ({ termA, termB })));
+    const actual = pairs.map(({ termA, termB }) =>
+      `${termA.value}|${termB.value}|${evaluator.orderTypes(termA, termB)}`);
+    const expected = pairs.map(({ termA, termB }) => `${termA.value}|${termB.value}|${general(termA, termB)}`);
+    expect(actual).toEqual(expected);
+    expect(pairs.filter(({ termA, termB }) => termA.termType === 'NamedNode' && termB.termType === 'NamedNode'))
+      .not.toHaveLength(0);
+  });
+
+  it('orders IRIs by their value', () => {
+    const evaluator = orderByFactory();
+    expect(evaluator.orderTypes(DF.namedNode('ex:a'), DF.namedNode('ex:b'))).toBe(-1);
+    expect(evaluator.orderTypes(DF.namedNode('ex:b'), DF.namedNode('ex:a'))).toBe(1);
+    expect(evaluator.orderTypes(DF.namedNode('ex:a'), DF.namedNode('ex:a'))).toBe(0);
+  });
+
+  it('keeps blank nodes before IRIs and IRIs before literals', () => {
+    const evaluator = orderByFactory();
+    expect(evaluator.orderTypes(DF.blankNode('z'), DF.namedNode('ex:a'))).toBe(-1);
+    expect(evaluator.orderTypes(DF.namedNode('ex:z'), DF.literal('a'))).toBe(-1);
+  });
+});
