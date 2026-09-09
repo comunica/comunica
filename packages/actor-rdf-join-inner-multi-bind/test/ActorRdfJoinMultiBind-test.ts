@@ -31,6 +31,41 @@ describe('ActorRdfJoinMultiBind', () => {
     bus = new Bus({ name: 'bus' });
   });
 
+  describe('bindConcurrency', () => {
+    it('should default to 64', () => {
+      expect(new ActorRdfJoinMultiBind(<any> {
+        name: 'actor',
+        bus: new Bus({ name: 'bus' }),
+        bindOrder: 'depth-first',
+      }).bindConcurrency).toBe(64);
+    });
+
+    it('should take a configured value', () => {
+      expect(new ActorRdfJoinMultiBind(<any> {
+        name: 'actor',
+        bus: new Bus({ name: 'bus' }),
+        bindOrder: 'depth-first',
+        bindConcurrency: 8,
+      }).bindConcurrency).toBe(8);
+    });
+  });
+
+  describe('getBindConcurrency', () => {
+    function meta(extra: Record<string, any> = {}): any {
+      return { cardinality: { type: 'estimate', value: 10 }, variables: [], ...extra };
+    }
+
+    it('should use the configured concurrency for sources that answer locally', () => {
+      expect(ActorRdfJoinMultiBind.getBindConcurrency(64, [ meta(), meta() ])).toBe(64);
+    });
+
+    it('should stay conservative for sources that answer over the network', () => {
+      // A page size and a request time is how a source that answers per request describes itself
+      expect(ActorRdfJoinMultiBind.getBindConcurrency(64, [ meta(), meta({ pageSize: 100, requestTime: 10 }) ]))
+        .toBe(4);
+    });
+  });
+
   describe('An ActorRdfJoinMultiBind instance', () => {
     let mediatorJoinSelectivity: Mediator<
     Actor<IActionRdfJoinSelectivity, IActorTest, IActorRdfJoinSelectivityOutput>,

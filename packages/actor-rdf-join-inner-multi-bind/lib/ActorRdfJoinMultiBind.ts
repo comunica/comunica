@@ -18,6 +18,7 @@ import type {
   ComunicaDataFactory,
   IJoinEntryWithMetadata,
   IQueryOperationResultBindings,
+  MetadataBindings,
 } from '@comunica/types';
 import { AlgebraFactory, Algebra, algebraUtils, inScopeVariables } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -33,6 +34,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
   public readonly selectivityModifier: number;
   public readonly minMaxCardinalityRatio: number;
   public readonly subQueryCost: number;
+  public readonly bindConcurrency: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
@@ -48,6 +50,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     this.selectivityModifier = args.selectivityModifier;
     this.minMaxCardinalityRatio = args.minMaxCardinalityRatio;
     this.subQueryCost = args.subQueryCost ?? 100;
+    this.bindConcurrency = args.bindConcurrency ?? 64;
     this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
     this.mediatorQueryOperation = args.mediatorQueryOperation;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
@@ -64,6 +67,19 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
    * @param optional If the original bindings should be emitted when the resulting bindings stream is empty.
    * @return {BindingsStream}
    */
+  /**
+   * How many bindings to look up at the same time.
+   *
+   * Looking several up at once keeps a source that answers asynchronously busy while their results are being
+   * consumed. Sources that are reached over the network are left alone: there, every lookup is a request, and
+   * asking for many at once means opening that many connections to somebody else's server.
+   * @param concurrency The configured concurrency.
+   * @param metadatas The metadata of the join entries.
+   */
+  public static getBindConcurrency(concurrency: number, metadatas: MetadataBindings[]): number {
+    return ActorRdfJoin.getRequestItemTimes(metadatas).some(time => time > 0) ? 4 : concurrency;
+  }
+
   public static createBindStream(
     bindOrder: BindOrder,
     baseStream: BindingsStream,
@@ -73,6 +89,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     optional: boolean,
     algebraFactory: AlgebraFactory,
     bindingsFactory: BindingsFactory,
+    concurrency = 4,
   ): BindingsStream {
     // Enable auto-start on sub-bindings during depth-first binding for best performance.
     const autoStartSubBindings = bindOrder === 'depth-first';
@@ -96,7 +113,12 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     // Create an iterator that binds elements from the base stream in different orders
     switch (bindOrder) {
       case 'depth-first':
-        return new MultiTransformIterator(baseStream, { autoStart: false, multiTransform: binder, optional });
+        return new MultiTransformIterator(baseStream, {
+          autoStart: false,
+          multiTransform: binder,
+          optional,
+          maxBufferSize: concurrency,
+        });
       case 'breadth-first':
         return new UnionIterator(baseStream.transform({
           map: binder,
@@ -167,6 +189,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       false,
       algebraFactory,
       bindingsFactory,
+      ActorRdfJoinMultiBind.getBindConcurrency(this.bindConcurrency, sideData.metadatas),
     );
 
     return {
@@ -383,6 +406,13 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs<IActorRdfJ
    * @default {100}
    */
   subQueryCost?: number;
+  // TODO: in next major, make mandatory.
+  /**
+   * How many bindings to look up at the same time, for sources that do not answer over the network.
+   * @range {double}
+   * @default {64}
+   */
+  bindConcurrency?: number;
   /**
    * The join entries sort mediator
    */

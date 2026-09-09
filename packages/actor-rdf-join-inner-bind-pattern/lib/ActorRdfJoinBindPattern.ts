@@ -37,6 +37,7 @@ import type * as RDF from '@rdfjs/types';
 export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatternTestSideData> {
   public readonly bindOrder: BindOrder;
   public readonly probeCost: number;
+  public readonly bindConcurrency: number;
   public readonly sampleSize: number;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   /**
@@ -56,6 +57,7 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
     });
     this.bindOrder = args.bindOrder;
     this.probeCost = args.probeCost ?? 10;
+    this.bindConcurrency = args.bindConcurrency ?? 64;
     this.sampleSize = args.sampleSize ?? 3;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
@@ -325,6 +327,7 @@ export class ActorRdfJoinBindPattern extends ActorRdfJoin<IActorRdfJoinBindPatte
         false,
         algebraFactory,
         bindingsFactory,
+        ActorRdfJoinMultiBind.getBindConcurrency(this.bindConcurrency, sideData.metadatas),
       );
     }
 
@@ -488,6 +491,13 @@ export interface IActorRdfJoinBindPatternArgs extends IActorRdfJoinArgs<IActorRd
    * @default {10}
    */
   probeCost?: number;
+  // TODO: in next major, make mandatory.
+  /**
+   * How many bindings to look up at the same time, for sources that do not answer over the network.
+   * @range {double}
+   * @default {64}
+   */
+  bindConcurrency?: number;
   // TODO: in next major, make mandatory.
   /**
    * How many of a pattern's own rows to read when measuring how far it fans out per binding.
