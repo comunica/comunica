@@ -297,17 +297,14 @@ jobs:
 
   performance:
     name: Performance benchmarks
-    if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')
+    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        benchmark:
-          - watdiv-file
-          - watdiv-tpf
-          - bsbm-file
-          - bsbm-tpf
-          - web
+        # The web benchmark is omitted on pull requests, as its query set varies across runs,
+        # which makes its totals incomparable between two runs.
+        benchmark: ${{ github.event_name == 'pull_request' && fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-tpf"]') || fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-tpf", "web"]') }}
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
@@ -331,6 +328,8 @@ jobs:
 
   performance-consolidate:
     name: Performance analysis
+    # Pull request results are compared in performance-compare instead, and are never stored.
+    if: github.event_name != 'pull_request'
     needs:
       - misc
       - test
@@ -413,6 +412,85 @@ jobs:
         uses: peter-evans/commit-comment@v4
         with:
           body-path: ./commit-comment-body.txt
+
+  performance-compare:
+    name: Performance comparison
+    # Forks receive a read-only GITHUB_TOKEN, which can not post the comparison onto the pull request.
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    needs:
+      - performance
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION_HIGHEST }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-watdiv-file
+          path: performance/benchmark-watdiv-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-watdiv-tpf
+          path: performance/benchmark-watdiv-tpf/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-bsbm-file
+          path: performance/benchmark-bsbm-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-bsbm-tpf
+          path: performance/benchmark-bsbm-tpf/combinations/combination_0/output/
+      - name: Process benchmark detailed results
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF --total false --detailed true --name ghbench-detail.json
+      - name: Process benchmark total results
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF --total true --detailed false --name ghbench-total.json
+      - name: Fetch the benchmark results of the base branch
+        # These are read over raw.githubusercontent.com rather than the GitHub Pages site,
+        # because the latter is served from a CDN that can lag behind by several minutes.
+        # A missing baseline yields an empty data file, upon which the comparison is skipped.
+        run: |
+          set -o pipefail
+          BASE_URL="https://raw.githubusercontent.com/comunica/comunica-performance-results/master/comunica/${GITHUB_BASE_REF}"
+          for KIND in detail total; do
+            if curl -fsSL "${BASE_URL}/benchmarks-${KIND}/data.js" | sed '1s/^window.BENCHMARK_DATA = //' > "baseline-${KIND}.json"; then
+              echo "Fetched ${KIND} baseline of ${GITHUB_BASE_REF}"
+            else
+              echo "No ${KIND} baseline found for ${GITHUB_BASE_REF}"
+              echo '{"lastUpdate":0,"repoUrl":"","entries":{}}' > "baseline-${KIND}.json"
+            fi
+          done
+      # The two comparison steps below read the last entry of the base branch as their baseline,
+      # and leave a self-updating comment on the pull request. Passing save-data-file disables
+      # the only write these perform, so pull request measurements are never stored.
+      - name: Compare benchmark detailed results
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Benchmarks detailed results
+          tool: customSmallerIsBetter
+          output-file-path: ghbench-detail.json
+          external-data-json-path: baseline-detail.json
+          save-data-file: false
+          comment-always: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Compare benchmark total results
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Benchmarks total results
+          tool: customSmallerIsBetter
+          output-file-path: ghbench-total.json
+          external-data-json-path: baseline-total.json
+          save-data-file: false
+          comment-always: true
+          summary-always: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   documentation:
     name: Prepare documentation
