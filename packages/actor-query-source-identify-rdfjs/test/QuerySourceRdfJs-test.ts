@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
@@ -1040,6 +1040,104 @@ describe('QuerySourceRdfJs', () => {
             requestTime: 0,
           });
       });
+    });
+  });
+
+  describe('cardinality caching', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'));
+
+    async function cardinalityOf(data: any): Promise<number> {
+      const metadata: any = await new Promise(resolve => data.getProperty('metadata', resolve));
+      return metadata.cardinality.value;
+    }
+
+    beforeEach(() => {
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+    });
+
+    it('should not count the same pattern twice within one query execution', async() => {
+      const countQuads = jest.spyOn(<any> store, 'countQuads');
+      const scoped = new ActionContext({ [KeysInitQuery.queryExecutionScope.name]: {}});
+
+      await expect(cardinalityOf(source.queryBindings(pattern, scoped))).resolves.toBe(2);
+      await expect(cardinalityOf(source.queryBindings(pattern, scoped))).resolves.toBe(2);
+
+      expect(countQuads).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not reuse counts across query executions', async() => {
+      const countQuads = jest.spyOn(<any> store, 'countQuads');
+
+      await expect(cardinalityOf(source.queryBindings(
+        pattern,
+        new ActionContext({ [KeysInitQuery.queryExecutionScope.name]: {}}),
+      ))).resolves.toBe(2);
+      store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('p'), DF.namedNode('o3')));
+      await expect(cardinalityOf(source.queryBindings(
+        pattern,
+        new ActionContext({ [KeysInitQuery.queryExecutionScope.name]: {}}),
+      ))).resolves.toBe(3);
+
+      expect(countQuads).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not cache without a query execution scope in the context', async() => {
+      const countQuads = jest.spyOn(<any> store, 'countQuads');
+
+      await expect(cardinalityOf(source.queryBindings(pattern, ctx))).resolves.toBe(2);
+      await expect(cardinalityOf(source.queryBindings(pattern, ctx))).resolves.toBe(2);
+
+      expect(countQuads).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not cache patterns that are cheap to count', async() => {
+      const countQuads = jest.spyOn(<any> store, 'countQuads');
+      const scoped = new ActionContext({ [KeysInitQuery.queryExecutionScope.name]: {}});
+      const bound = AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o'));
+
+      await expect(cardinalityOf(source.queryBindings(bound, scoped))).resolves.toBe(1);
+      await expect(cardinalityOf(source.queryBindings(bound, scoped))).resolves.toBe(1);
+
+      expect(countQuads).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('isCardinalityCacheable', () => {
+    it('should be true for patterns with at least two wildcards', () => {
+      expect(QuerySourceRdfJs.isCardinalityCacheable(undefined, DF.namedNode('p'), undefined, DF.defaultGraph()))
+        .toBe(true);
+      expect(QuerySourceRdfJs.isCardinalityCacheable(undefined, undefined, undefined, undefined)).toBe(true);
+    });
+
+    it('should be false for patterns with at most one wildcard', () => {
+      expect(QuerySourceRdfJs.isCardinalityCacheable(DF.namedNode('s'), DF.namedNode('p'), undefined, DF
+        .defaultGraph())).toBe(false);
+      expect(QuerySourceRdfJs.isCardinalityCacheable(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF
+        .defaultGraph())).toBe(false);
+    });
+  });
+
+  describe('getCardinalityCacheKey', () => {
+    it('should distinguish terms of different types and values', () => {
+      const keys = [
+        QuerySourceRdfJs.getCardinalityCacheKey(DF.namedNode('a')),
+        QuerySourceRdfJs.getCardinalityCacheKey(DF.namedNode('b')),
+        QuerySourceRdfJs.getCardinalityCacheKey(DF.blankNode('a')),
+        QuerySourceRdfJs.getCardinalityCacheKey(DF.literal('a')),
+        QuerySourceRdfJs.getCardinalityCacheKey(DF.literal('a', 'en')),
+        QuerySourceRdfJs.getCardinalityCacheKey(DF.literal('a', DF.namedNode('http://ex.org/dt'))),
+        QuerySourceRdfJs.getCardinalityCacheKey(DF.defaultGraph()),
+        QuerySourceRdfJs.getCardinalityCacheKey(DF.variable('a')),
+        QuerySourceRdfJs.getCardinalityCacheKey(undefined),
+      ];
+      expect(new Set(keys).size).toBe(keys.length);
+    });
+
+    it('should not produce a key for patterns containing quoted triples', () => {
+      expect(QuerySourceRdfJs.getCardinalityCacheKey(
+        DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+      )).toBeUndefined();
     });
   });
 

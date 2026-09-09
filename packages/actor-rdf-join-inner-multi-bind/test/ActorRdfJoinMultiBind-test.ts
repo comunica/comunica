@@ -92,6 +92,7 @@ IQueryOperationResultBindings
         bus,
         bindOrder: 'depth-first',
         selectivityModifier: 0.1,
+        subQueryCost: 100,
         mediatorQueryOperation,
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
@@ -104,6 +105,22 @@ IQueryOperationResultBindings
     async function getSideData(action: IActionRdfJoin): Promise<IActorRdfJoinMultiBindTestSideData> {
       return (await actor.test(action)).getSideData();
     }
+
+    describe('constructor', () => {
+      it('should fall back to a default sub-query cost', () => {
+        expect(new ActorRdfJoinMultiBind({
+          name: 'actor',
+          bus,
+          bindOrder: 'depth-first',
+          selectivityModifier: 0.1,
+          mediatorQueryOperation,
+          mediatorJoinSelectivity,
+          mediatorJoinEntriesSort,
+          mediatorMergeBindingsContext,
+          minMaxCardinalityRatio: 100,
+        }).subQueryCost).toBe(100);
+      });
+    });
 
     describe('static helper methods', () => {
       describe('canBindWithOperation', () => {
@@ -250,10 +267,71 @@ IQueryOperationResultBindings
             ],
           },
         )).resolves.toPassTest({
-          iterations: 80.48000000000002,
+          iterations: 4,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 32.592000000000006,
+          requestTime: 2,
+        });
+      });
+      it('should handle three entries where one shares no variable', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+              {
+                output: <any>{},
+                operation: FACTORY.createNop(),
+              },
+            ],
+            context: new ActionContext(),
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 10,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 20,
+
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 500 },
+                pageSize: 100,
+                requestTime: 30,
+
+                variables: [
+                  { variable: DF.variable('b'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves.toPassTest({
+          iterations: 82.00000000000001,
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 33.2,
         });
       });
 
@@ -315,10 +393,10 @@ IQueryOperationResultBindings
             ],
           },
         )).resolves.toPassTest({
-          iterations: 80.48000000000002,
+          iterations: 4,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 32.592000000000006,
+          requestTime: 2,
         });
       });
 
@@ -503,10 +581,10 @@ IQueryOperationResultBindings
             ],
           },
         )).resolves.toPassTest({
-          iterations: 48.00000000000001,
+          iterations: 2,
           persistedItems: 0,
           blockingItems: 0,
-          requestTime: 5.200000000000001,
+          requestTime: 0.6000000000000001,
         });
       });
 
@@ -723,7 +801,7 @@ IQueryOperationResultBindings
             ],
           },
         )).resolves.toPassTest({
-          iterations: 32.64,
+          iterations: 404,
           persistedItems: 0,
           blockingItems: 0,
           requestTime: 0,
@@ -1353,6 +1431,7 @@ IQueryOperationResultBindings
           bus,
           bindOrder: 'breadth-first',
           selectivityModifier: 0.1,
+          subQueryCost: 100,
           minMaxCardinalityRatio: 100,
           mediatorQueryOperation,
           mediatorJoinSelectivity,

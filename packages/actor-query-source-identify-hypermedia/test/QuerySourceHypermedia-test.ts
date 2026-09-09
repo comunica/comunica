@@ -519,6 +519,42 @@ describe('QuerySourceHypermedia', () => {
         const src2 = source.getSourceCached({ url: 'cachepolicyfalse' }, {}, context);
         await expect(src1).resolves.not.toBe(await src2);
       });
+
+      it('should not cache sources that could not be resolved', async() => {
+        const spy = jest.spyOn(utilMediators.mediatorQuerySourceDereferenceLink, 'mediate');
+        spy.mockClear();
+        spy.mockRejectedValueOnce(new Error('Source does not exist'));
+
+        await expect(source.getSourceCached({ url: 'startUrl' }, {}, context)).rejects
+          .toThrow('Source does not exist');
+        await expect(source.getSourceCached({ url: 'startUrl' }, {}, context)).resolves.toMatchObject({
+          link: { url: 'startUrl' },
+          metadata: { a: 1 },
+        });
+        expect(spy).toHaveBeenCalledTimes(2);
+
+        spy.mockRestore();
+      });
+
+      it('should not remove a newer cache entry when an older source could not be resolved', async() => {
+        const spy = jest.spyOn(utilMediators.mediatorQuerySourceDereferenceLink, 'mediate');
+        spy.mockClear();
+        let rejectFirst: (error: Error) => void;
+        spy.mockReturnValueOnce(<any> new Promise((_resolve, reject) => {
+          rejectFirst = reject;
+        }));
+
+        const srcFailing = source.getSourceCached({ url: 'startUrl' }, {}, context);
+        // Replace the cache entry before the first source fails
+        source.sourcesState.delete('startUrl');
+        const srcNew = source.getSourceCached({ url: 'startUrl' }, {}, context);
+        rejectFirst!(new Error('Source does not exist'));
+
+        await expect(srcFailing).rejects.toThrow('Source does not exist');
+        expect(source.sourcesState.get('startUrl')).toBe(srcNew);
+
+        spy.mockRestore();
+      });
     });
   });
 });
