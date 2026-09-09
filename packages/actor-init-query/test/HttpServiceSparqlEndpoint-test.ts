@@ -825,6 +825,35 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
       });
 
+      it('should drop pending query timeouts when a worker exits', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker: any = new EventEmitter();
+        dummyWorker.send = jest.fn();
+        dummyWorker.isConnected = jest.fn(() => true);
+        dummyWorker.process = {
+          pid: 123,
+        };
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate start event
+        dummyWorker.emit('message', { type: 'start', queryId: 0 });
+
+        expect(setTimeout).toHaveBeenCalledTimes(1);
+        expect(clearTimeout).not.toHaveBeenCalled();
+
+        // Simulate exit event, which should drop the timeout of the running query
+        dummyWorker.emit('exit', 15, undefined);
+
+        expect(clearTimeout).toHaveBeenCalledTimes(1);
+
+        // Simulate timeout is passed
+        jest.runAllTimers();
+
+        expect(dummyWorker.send).not.toHaveBeenCalled();
+      });
+
       it('should handle worker end messages before timeout is reached', async() => {
         await instance.run(stdout, stderr);
 
