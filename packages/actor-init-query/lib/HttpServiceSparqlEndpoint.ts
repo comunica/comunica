@@ -934,10 +934,7 @@ export class HttpServiceSparqlEndpoint {
         }
         // A request may only contain a single query or update
         if (Array.isArray(bodyStructure.query) || Array.isArray(bodyStructure.update)) {
-          // The class of this error is observable to callers of this public method, so it stays the plain
-          // Error the promise rejected with before the body parsing became async.
-          // eslint-disable-next-line unicorn/prefer-type-error
-          throw new Error(`Invalid request body received, it can only contain a single query or update parameter`);
+          throw new TypeError(`Invalid request body received, it can only contain a single query or update parameter`);
         }
         if (bodyStructure.query) {
           return { type: 'query', value: bodyStructure.query, context };
