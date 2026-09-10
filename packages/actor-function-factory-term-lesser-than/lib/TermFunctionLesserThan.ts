@@ -41,9 +41,6 @@ export class TermFunctionLesserThan extends TermFunctionBase {
    *
    * SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say
    * < defaultGraph: https://www.w3.org/TR/sparql11-query/#modOrderBy
-   *
-   * Public so that a comparator that short-circuits this operator orders differing types by the same
-   * table rather than by its own copy of it.
    */
   public static readonly TERM_ORDERING_PRIORITY = {
     blankNode: 0,

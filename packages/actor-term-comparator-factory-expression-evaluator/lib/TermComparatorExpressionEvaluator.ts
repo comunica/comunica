@@ -49,10 +49,7 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
     }
 
     if (termA.termType === termB.termType) {
-      // Two IRIs, or two blank nodes, are ordered by their value, which is exactly what the general path
-      // below computes for them, at the cost of transforming both terms and evaluating `<` twice. Every
-      // other type keeps that path: notably `xsd:string` literals are compared with `localeCompare`,
-      // which a value comparison would not reproduce.
+      // Fast path to order two IRIs or two blank nodes by their value.
       if (termA.termType === 'NamedNode' || termA.termType === 'BlankNode') {
         if (termA.value === termB.value) {
           return 0;
@@ -60,8 +57,7 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
         return termA.value < termB.value ? -1 : 1;
       }
     } else {
-      // Terms of differing types are ordered by type alone, by the same table the `<` implementation
-      // orders them with, so that the two cannot drift apart.
+      // Fast path to order terms of differing types.
       const priorityA = EVALUATOR_TERM_TYPES[termA.termType];
       const priorityB = EVALUATOR_TERM_TYPES[termB.termType];
       if (priorityA !== undefined && priorityB !== undefined) {
