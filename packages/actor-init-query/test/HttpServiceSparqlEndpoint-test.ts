@@ -825,6 +825,35 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
       });
 
+      it('should drop pending query timeouts when a worker exits', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker: any = new EventEmitter();
+        dummyWorker.send = jest.fn();
+        dummyWorker.isConnected = jest.fn(() => true);
+        dummyWorker.process = {
+          pid: 123,
+        };
+        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate start event
+        dummyWorker.emit('message', { type: 'start', queryId: 0 });
+
+        expect(setTimeout).toHaveBeenCalledTimes(1);
+        expect(clearTimeout).not.toHaveBeenCalled();
+
+        // Simulate exit event, which should drop the timeout of the running query
+        dummyWorker.emit('exit', 15, undefined);
+
+        expect(clearTimeout).toHaveBeenCalledTimes(1);
+
+        // Simulate timeout is passed
+        jest.runAllTimers();
+
+        expect(dummyWorker.send).not.toHaveBeenCalled();
+      });
+
       it('should handle worker end messages before timeout is reached', async() => {
         await instance.run(stdout, stderr);
 
@@ -2046,6 +2075,59 @@ INSERT DATA {
 
         response.emit('close');
         expect(process.send).toHaveBeenCalledTimes(2);
+        expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
+      });
+
+      it('should emit the process end event when the client disconnects during the query', async() => {
+        jest.spyOn(process, 'send').mockImplementation();
+        const engine = await new QueryEngineFactoryBase().create();
+        // A query that never settles, so that the response closes while the execution is still running
+        engine.query = () => new Promise(() => {
+          // Do nothing
+        });
+
+        const written = instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          true,
+          0,
+        );
+        await new Promise(setImmediate);
+
+        expect(process.send).toHaveBeenCalledWith({ type: 'start', queryId: 0 });
+
+        response.emit('close');
+        expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
+        expect(written).toBeInstanceOf(Promise);
+      });
+
+      it('should emit the process end event for a query that fails', async() => {
+        jest.spyOn(process, 'send').mockImplementation();
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = () => Promise.reject(new Error('Query failure'));
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          true,
+          0,
+        );
+
+        expect(process.send).toHaveBeenCalledWith({ type: 'start', queryId: 0 });
+
+        response.emit('close');
         expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
       });
 
