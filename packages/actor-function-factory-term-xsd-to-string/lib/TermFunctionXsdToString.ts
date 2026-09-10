@@ -40,18 +40,18 @@ export class TermFunctionXsdToString extends TermFunctionBase {
     });
   }
 
-  private static castAsInteger<T extends NumericLiteral>([ val ]: [T]): StringLiteral {
+  private static castAsInteger([ val ]: [NumericLiteral]): StringLiteral {
     return string(integer(val.typedValue).str());
   }
 
-  private static castAsDecimal<T extends NumericLiteral>([ val ]: [T]): StringLiteral {
+  private static castAsDecimal([ val ]: [NumericLiteral]): StringLiteral {
     // Specification requires integer-valued decimals to be cast as integers.
     return Number.isInteger(val.typedValue) ?
       TermFunctionXsdToString.castAsInteger([ val ]) :
       string(decimal(val.typedValue).str());
   }
 
-  private static castAsDouble<T extends NumericLiteral>([ val ]: [T]): StringLiteral {
+  private static castAsDouble([ val ]: [NumericLiteral]): StringLiteral {
     // Specification requires exact 0 to be returned as "0" which differs from canonical "0.0E0"
     if (val.typedValue === 0) {
       return string('0');
