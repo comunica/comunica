@@ -30,10 +30,6 @@ export class QuerySourceRdfJs implements IQuerySource {
    * execution is garbage-collected, and are never reused across query executions.
    */
   private readonly cardinalityCache = new WeakMap<object, Map<string, number>>();
-  /**
-   * Distinct value counts already determined during a query execution, scoped like the cardinality cache.
-   */
-  private readonly distinctValuesCache = new WeakMap<object, Map<string, number>>();
 
   public constructor(
     source: RDF.Source | RDF.DatasetCore,
@@ -304,14 +300,12 @@ export class QuerySourceRdfJs implements IQuerySource {
    * @param operation The pattern being evaluated.
    * @param variable A variable of that pattern.
    * @param cardinality The cardinality of that pattern.
-   * @param context The action context.
    * @param quotedTripleFiltering If the source supports quoted triple filtering.
    */
   protected getDistinctValues(
     operation: Algebra.Pattern,
     variable: RDF.Variable,
     cardinality: number,
-    context: IActionContext,
     quotedTripleFiltering: boolean,
   ): number | undefined {
     // Values of a variable that occurs multiple times are constrained by all of its positions at once
@@ -341,37 +335,10 @@ export class QuerySourceRdfJs implements IQuerySource {
       return undefined;
     }
 
-    const cache = this.getDistinctValuesCache(context);
-    const cacheKey = cache && QuerySourceRdfJs.getCardinalityCacheKey(undefined, predicate, undefined, graph);
-    const cached = cacheKey === undefined ? undefined : cache!.get(cacheKey);
-    if (cached !== undefined) {
-      return cached;
-    }
-    const distinctValues = this.source.countDistinctTerms(
+    return this.source.countDistinctTerms(
       [ 'graph', 'predicate', 'object' ],
       [ undefined, predicate, undefined, graph ],
     );
-    if (cacheKey !== undefined) {
-      cache!.set(cacheKey, distinctValues);
-    }
-    return distinctValues;
-  }
-
-  /**
-   * Obtain the distinct values cache for the query execution that the given context belongs to.
-   * @param context The action context.
-   */
-  protected getDistinctValuesCache(context: IActionContext): Map<string, number> | undefined {
-    const scope = context.get(KeysInitQuery.queryExecutionScope);
-    if (!scope) {
-      return undefined;
-    }
-    let cache = this.distinctValuesCache.get(scope);
-    if (!cache) {
-      cache = new Map();
-      this.distinctValuesCache.set(scope, cache);
-    }
-    return cache;
   }
 
   /**
@@ -485,7 +452,7 @@ export class QuerySourceRdfJs implements IQuerySource {
         ...extraMetadata,
         variables: variables.map((variable) => {
           const distinctValues = this
-            .getDistinctValues(operation, variable.variable, cardinality, context, quotedTripleFiltering);
+            .getDistinctValues(operation, variable.variable, cardinality, quotedTripleFiltering);
           return distinctValues === undefined ? variable : { ...variable, distinctValues };
         }),
       };
