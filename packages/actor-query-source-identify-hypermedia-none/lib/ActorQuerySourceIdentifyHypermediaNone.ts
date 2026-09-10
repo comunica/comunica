@@ -45,6 +45,13 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     if (process.env.COMUNICA_SORTED_STORE === '1' && process.env.COMUNICA_STORE_SORT !== '0') {
       const termComparator = await this.mediatorTermComparatorFactory.mediate({ context: action.context });
       (<any> store).sortIndexes((termA: RDF.Term, termB: RDF.Term) => termComparator.orderTypes(termA, termB));
+      if (process.env.COMUNICA_STORE_SORT === 'drop') {
+        // Keep the ordered indexes but release the tables that only skipping needs, to tell the cost of
+        // holding them apart from the cost of having reordered the indexes at all.
+        for (const field of [ 'sortedEncodings', 'sortedDecoded', 'termRank' ]) {
+          (<any> store)[field] = undefined;
+        }
+      }
     }
 
     const source = new QuerySourceRdfJs(

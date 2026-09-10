@@ -175,6 +175,28 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       }
     });
 
+    it('releases the ranking tables with COMUNICA_STORE_SORT=drop', async() => {
+      process.env.COMUNICA_SORTED_STORE = '1';
+      process.env.COMUNICA_STORE_SORT = 'drop';
+      try {
+        const quads = streamifyArray([ quad('s2', 'p1', 'o1'), quad('s1', 'p1', 'o2') ]);
+        const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
+        const store: any = (<any> source).source;
+        // The indexes stay in the order they were put into, without the tables that only skipping needs.
+        for (const field of [ 'sortedEncodings', 'sortedDecoded', 'termRank' ]) {
+          expect(store[field]).toBeUndefined();
+        }
+        const bindings = await source.queryBindings(
+          AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.variable('o')),
+          new ActionContext(),
+        ).toArray();
+        expect(bindings.map(b => b.get(DF.variable('s'))!.value)).toEqual([ 's1', 's2' ]);
+      } finally {
+        delete process.env.COMUNICA_SORTED_STORE;
+        delete process.env.COMUNICA_STORE_SORT;
+      }
+    });
+
     it('should run and delegate error events', async() => {
       const quads = streamifyArray([
         quad('s1', 'p1', 'o1'),
