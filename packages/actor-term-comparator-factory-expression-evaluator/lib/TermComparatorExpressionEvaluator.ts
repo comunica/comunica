@@ -29,10 +29,7 @@ export class TermComparatorExpressionEvaluator implements ITermComparator {
       return 1;
     }
 
-    // Two IRIs are ordered by their value, which is exactly what the general path below computes for them,
-    // but reaching that conclusion there costs transforming both terms and evaluating the SPARQL `<`
-    // operator twice. Terms of any other type keep the general path: notably `xsd:string` literals are
-    // compared with `localeCompare`, which a value comparison would not reproduce.
+    // Fast path for the common case of IRI comparison.
     if (termA.termType === 'NamedNode' && termB.termType === 'NamedNode') {
       if (termA.value === termB.value) {
         return 0;
