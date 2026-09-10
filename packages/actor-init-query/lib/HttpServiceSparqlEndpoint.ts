@@ -624,9 +624,6 @@ export class HttpServiceSparqlEndpoint {
     process.send?.({ type: 'start', queryId });
 
     // Send message to master process to indicate the end of an execution.
-    // This is attached before the query runs, because the response can close at any point after this:
-    // the client may disconnect, or the query may fail. A start that is never followed by an end leaves
-    // the master with a timeout that fires later and kills a worker that is serving unrelated queries.
     response.on('close', () => {
       process.send?.({ type: 'end', queryId });
     });
