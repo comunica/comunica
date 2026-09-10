@@ -128,7 +128,29 @@ describe('QuerySourceRdfJs', () => {
           state: expect.any(MetadataValidationState),
           variables: [
             { variable: DF.variable('s'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false, distinctValues: 2 },
+          ],
+          requestTime: 0,
+        });
+    });
+
+    it('should not count distinct values of a variable that occurs multiple times', async() => {
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('s1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('s')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({ s: DF.namedNode('s1') }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'estimate', value: 2 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
           ],
           requestTime: 0,
         });
@@ -227,7 +249,7 @@ describe('QuerySourceRdfJs', () => {
           state: expect.any(MetadataValidationState),
           variables: [
             { variable: DF.variable('s'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false, distinctValues: 1 },
           ],
           requestTime: 0,
         });
@@ -489,7 +511,7 @@ describe('QuerySourceRdfJs', () => {
           state: expect.any(MetadataValidationState),
           variables: [
             { variable: DF.variable('s'), canBeUndef: false },
-            { variable: DF.variable('o'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false, distinctValues: 2 },
           ],
           requestTime: 0,
         });
@@ -610,7 +632,7 @@ describe('QuerySourceRdfJs', () => {
               state: expect.any(MetadataValidationState),
               variables: [
                 { variable: DF.variable('s'), canBeUndef: false },
-                { variable: DF.variable('o'), canBeUndef: false },
+                { variable: DF.variable('o'), canBeUndef: false, distinctValues: 3 },
               ],
               requestTime: 0,
             });
