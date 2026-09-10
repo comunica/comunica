@@ -410,11 +410,12 @@ function isOrdered(metadata: MetadataBindings): boolean {
 }
 
 /**
- * Withdraw a claim about the order of the bindings.
+ * Withdraw a claim about the order of the bindings, and with it the ability to skip within that order.
  */
 function dropOrder(metadata: MetadataBindings): void {
   metadata.order = undefined;
   metadata.availableOrders = undefined;
+  metadata.canSeek = undefined;
 }
 
 /**

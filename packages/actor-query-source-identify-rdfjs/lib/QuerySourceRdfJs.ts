@@ -263,9 +263,14 @@ export class QuerySourceRdfJs implements IQuerySource {
       // Determine metadata
       if (!it.getProperty('metadata')) {
         const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
+        // Only stated when there is something to state, so that a source that reports neither leaves
+        // the metadata it produced before this exactly as it was.
         this.setMetadata(it, operation, context, forceEstimateCardinality, {
           variables,
-          order: ordered?.map(([ , variable ]) => ({ term: variable, direction: <const> 'asc' })),
+          ...ordered && {
+            order: ordered.map(([ , variable ]) => ({ term: variable, direction: <const> 'asc' })),
+            canSeek: typeof (<ISeekableBindingsStream> <any> it).seek === 'function',
+          },
         }).catch(error => it.destroy(error));
       }
 

@@ -47,6 +47,17 @@ export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermNam
    * All available alternative orders.
    */
   availableOrders?: RDF.QueryOperationOrder<OrderItemsType>[];
+
+  /**
+   * Whether the stream can skip ahead within its `order` instead of being read one binding at a time.
+   *
+   * Only meaningful together with `order`. A consumer that plans around skipping needs to know before it
+   * reads anything, which is why this is declared here rather than discovered from the stream: the stream
+   * a join actor is handed at planning time is the one it will read, but the capability may be several
+   * wrappers down. The stream itself remains the authority at execution time.
+   * @see ISeekableBindingsStream
+   */
+  canSeek?: boolean;
 }
 
 export type TermsOrder<OrderItemsType> = { term: OrderItemsType; direction: 'asc' | 'desc' }[];

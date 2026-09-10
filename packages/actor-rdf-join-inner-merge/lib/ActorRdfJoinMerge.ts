@@ -21,6 +21,25 @@ import { createKeyComparator, MergeJoinIterator } from './MergeJoinIterator';
  * but it is only applicable when both entries advertise a compatible `order` in their metadata.
  */
 export class ActorRdfJoinMerge extends ActorRdfJoin<IActorRdfJoinMergeTestSideData> {
+  /**
+   * The cost of reading one binding, relative to the 0.8 the non-undef hash join claims per binding.
+   *
+   * Set to 1 so that a merge join which cannot skip never wins: the hash join's advantage of 0.8 per
+   * binding always outweighs the memory and blocking this actor saves, whatever the two cardinalities.
+   * A merge join is then chosen only on the strength of what skipping saves.
+   */
+  public static readonly ITERATION_COST = 1;
+
+  /**
+   * The cost of reading one binding when both entries are ordered sources.
+   *
+   * Equal to the hash join's, so that a merge between two such entries is chosen on the strength of
+   * holding only one run instead of a whole entry, and of not blocking. Its output is ordered, which no
+   * pairwise cost can express: a chain of merges is what carries an order down to an entry large enough
+   * for skipping to pay, and costing the first link above the hash join breaks the chain.
+   */
+  public static readonly ITERATION_COST_ORDERED = 0.8;
+
   public readonly mediatorTermComparatorFactory: MediatorTermComparatorFactory;
 
   public constructor(args: IActorRdfJoinMergeArgs) {
@@ -109,19 +128,38 @@ export class ActorRdfJoinMerge extends ActorRdfJoin<IActorRdfJoinMergeTestSideDa
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
+    const cardinalityBig = metadatas[0].cardinality.value;
+    const cardinalitySmall = metadatas[1].cardinality.value;
+
+    // Reading both entries in order costs a comparison per binding, against a hash probe per binding
+    // for the hash join. Measured on join inputs that are themselves joins, that comparison is the more
+    // expensive of the two, so a merge that has to read both entries in full is never the cheaper plan.
+    //
+    // What makes it cheaper is skipping. A sorted entry that can seek drops the bindings between one
+    // match and the next without producing them, so the large entry is read down to roughly the size of
+    // the join result: over a scan of 447539 bindings that produced 181401 results, 182881 were read.
+    const joined = ActorRdfJoin.getSharedVariableJoinCardinality(metadatas) ?? cardinalitySmall;
+    const readBig = metadatas[0].canSeek ? Math.min(cardinalityBig, joined) : cardinalityBig;
+
+    // When both entries are ordered sources, the merge is at parity per binding with the hash join and
+    // its output stays ordered, which is what lets a chain of merges reach a large entry that can skip.
+    // Costing that first merge above the hash join breaks the chain and loses the skip entirely, so it
+    // is charged the same per binding as the hash join rather than the premium above.
+    const perBinding = metadatas[0].canSeek && metadatas[1].canSeek ?
+      ActorRdfJoinMerge.ITERATION_COST_ORDERED :
+      ActorRdfJoinMerge.ITERATION_COST;
+    const iterations = (readBig + cardinalitySmall) * perBinding;
+
     return passTestWithSideData({
-      // Both entries are read exactly once, sequentially, with no lookups in between. The same 0.8 factor
-      // as the non-undef hash join is applied: measured on identical pre-sorted inputs, this actor runs at
-      // 0.66x to 0.98x of that hash join, so claiming parity per iteration is the conservative reading.
-      iterations: (metadatas[0].cardinality.value + metadatas[1].cardinality.value) * 0.8,
+      iterations,
       // Only one run of equal keys from the smallest entry is held in memory. The number of distinct keys is
       // estimated as the cardinality of the largest entry, matching the assumption that
       // `ActorRdfJoin.getSharedVariableJoinCardinality` already makes. This underestimates skewed keys.
-      persistedItems: metadatas[1].cardinality.value / Math.max(1, metadatas[0].cardinality.value),
+      persistedItems: cardinalitySmall / Math.max(1, cardinalityBig),
       // Results are emitted while both entries are still being read, so nothing is blocking.
       blockingItems: 0,
-      requestTime: requestInitialTimes[0] + metadatas[0].cardinality.value * requestItemTimes[0] +
-        requestInitialTimes[1] + metadatas[1].cardinality.value * requestItemTimes[1],
+      requestTime: requestInitialTimes[0] + cardinalityBig * requestItemTimes[0] +
+        requestInitialTimes[1] + cardinalitySmall * requestItemTimes[1],
     }, { ...sideData, metadatas, entriesSorted, mergeKey });
   }
 }

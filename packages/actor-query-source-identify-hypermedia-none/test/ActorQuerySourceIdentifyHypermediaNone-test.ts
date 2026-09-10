@@ -130,6 +130,21 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       ]);
     });
 
+    it('selects the index set to build from COMUNICA_STORE_INDEXES', () => {
+      const join = (): string => ActorQuerySourceIdentifyHypermediaNone.indexCombinations()
+        .map(order => order.map((component: string) => component[0]).join('')).join(' ');
+      try {
+        process.env.COMUNICA_STORE_INDEXES = '3';
+        expect(join()).toBe('gspo gpos gosp');
+        process.env.COMUNICA_STORE_INDEXES = '4gpos';
+        expect(join()).toBe('gspo gpos gosp gpso');
+        delete process.env.COMUNICA_STORE_INDEXES;
+        expect(join()).toBe('gspo gpso gosp gpos');
+      } finally {
+        delete process.env.COMUNICA_STORE_INDEXES;
+      }
+    });
+
     it('should order the store with COMUNICA_SORTED_STORE, using the SPARQL comparator', async() => {
       process.env.COMUNICA_SORTED_STORE = '1';
       try {

@@ -233,8 +233,8 @@ describe('QuerySourceRdfJs', () => {
         AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
         ctx,
       );
-      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
-        .toMatchObject({ order: undefined });
+      const metadata: any = await new Promise(resolve => data.getProperty('metadata', resolve));
+      expect(metadata.order).toBeUndefined();
       expect(data.seek).toBeUndefined();
     });
 
@@ -253,8 +253,8 @@ describe('QuerySourceRdfJs', () => {
         AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'), DF.variable('g')),
         ctx,
       );
-      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
-        .toMatchObject({ order: undefined });
+      const metadata: any = await new Promise(resolve => data.getProperty('metadata', resolve));
+      expect(metadata.order).toBeUndefined();
       expect(data.seek).toBeUndefined();
     });
 

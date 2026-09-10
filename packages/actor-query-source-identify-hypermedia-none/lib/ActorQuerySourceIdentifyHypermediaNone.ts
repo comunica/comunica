@@ -42,7 +42,7 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
 
     // PROTOTYPE: order the indexes by the same comparator that consumers compare with, so that scans
     // of this store report the order they produce and can be asked to skip ahead within it.
-    if (process.env.COMUNICA_SORTED_STORE === '1') {
+    if (process.env.COMUNICA_SORTED_STORE === '1' && process.env.COMUNICA_STORE_SORT !== '0') {
       const termComparator = await this.mediatorTermComparatorFactory.mediate({ context: action.context });
       (<any> store).sortIndexes((termA: RDF.Term, termB: RDF.Term) => termComparator.orderTypes(termA, termB));
     }
@@ -57,6 +57,25 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     return { source };
   }
 
+  /**
+   * PROTOTYPE: the index set to build, so that the cost of the extra index and of where it sits can be
+   * measured apart from the cost of ordering.
+   */
+  public static indexCombinations(): any[] {
+    const gspo = [ 'graph', 'subject', 'predicate', 'object' ];
+    const gpso = [ 'graph', 'predicate', 'subject', 'object' ];
+    const gosp = [ 'graph', 'object', 'subject', 'predicate' ];
+    const gpos = [ 'graph', 'predicate', 'object', 'subject' ];
+    switch (process.env.COMUNICA_STORE_INDEXES) {
+      case '3':
+        return [ gspo, gpos, gosp ];
+      case '4gpos':
+        return [ gspo, gpos, gosp, gpso ];
+      default:
+        return [ gspo, gpso, gosp, gpos ];
+    }
+  }
+
   public static storeStream<Q extends RDF.BaseQuad = RDF.Quad>(stream: RDF.Stream<Q>): Promise<RDF.Store<Q>> {
     // PROTOTYPE: with COMUNICA_SORTED_STORE, index on (graph, predicate, subject, object) as well, so
     // that a bound-predicate scan is answered by an index that walks subjects and therefore comes back
@@ -64,12 +83,7 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     const store: RDF.Store<Q> = process.env.COMUNICA_SORTED_STORE === '1' ?
       <RDF.Store<Q>> <any> new RdfStore<any, any>({
         ...RdfStore.createDefault(true).options,
-        indexCombinations: [
-          [ 'graph', 'subject', 'predicate', 'object' ],
-          [ 'graph', 'predicate', 'subject', 'object' ],
-          [ 'graph', 'object', 'subject', 'predicate' ],
-          [ 'graph', 'predicate', 'object', 'subject' ],
-        ],
+        indexCombinations: ActorQuerySourceIdentifyHypermediaNone.indexCombinations(),
       }) :
       <RDF.Store<Q>> <RDF.Store> RdfStore.createDefault(true);
     return new Promise((resolve, reject) => store.import(stream)
