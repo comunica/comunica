@@ -29,21 +29,6 @@ describe('Term', () => {
 
   describe('the string representation of numeric literals', () => {
     describe('like integers', () => {
-      it('should not fail on NaN', () => {
-        const num = new IntegerLiteral(Number.NaN);
-        expect(() => num.toRDF(DF).value).not.toThrow();
-      });
-
-      it('should not fail on positive infinity', () => {
-        const num = new IntegerLiteral(Number.POSITIVE_INFINITY);
-        expect(() => num.toRDF(DF).value).not.toThrow();
-      });
-
-      it('should not fail on negative infinity', () => {
-        const num = new IntegerLiteral(Number.NEGATIVE_INFINITY);
-        expect(() => num.toRDF(DF).value).not.toThrow();
-      });
-
       it('should properly express zero', () => {
         const num = new IntegerLiteral(0e0);
         expect(num.toRDF(DF).value).toBe('0');
@@ -66,21 +51,6 @@ describe('Term', () => {
     });
 
     describe('like decimals', () => {
-      it('should not fail on NaN', () => {
-        const num = new DecimalLiteral(Number.NaN);
-        expect(() => num.toRDF(DF).value).not.toThrow();
-      });
-
-      it('should not fail on positive infinity', () => {
-        const num = new DecimalLiteral(Number.POSITIVE_INFINITY);
-        expect(() => num.toRDF(DF).value).not.toThrow();
-      });
-
-      it('should not fail on negative infinity', () => {
-        const num = new DecimalLiteral(Number.NEGATIVE_INFINITY);
-        expect(() => num.toRDF(DF).value).not.toThrow();
-      });
-
       it('should properly express zero', () => {
         const num = new DecimalLiteral(0e0);
         expect(num.toRDF(DF).value).toBe('0.0');

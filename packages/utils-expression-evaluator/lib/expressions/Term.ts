@@ -176,17 +176,7 @@ export abstract class NumericLiteral extends Literal<number> {
   }
 
   public override str(): string {
-    if (this.strValue) {
-      return this.strValue;
-    }
-
-    const str = this.specificFormatter(this.typedValue);
-
-    if (!Number.isFinite(this.typedValue)) {
-      return str.replace('Infinity', 'INF');
-    }
-
-    return str;
+    return this.strValue ?? this.specificFormatter(this.typedValue);
   }
 }
 
@@ -207,16 +197,9 @@ export class IntegerLiteral extends NumericLiteral {
   }
 
   protected override specificFormatter(val: number): string {
-    if (Number.isFinite(val)) {
-      // Force the number to not be represented as an exponential,
-      // even when large enough for JS to automatically try it.
-      return val.toFixed(0);
-    }
-
-    // The integer in XSD spec cannot be infinity or NaN, because they are not real numbers,
-    // but this is a value space and not a string representation issue.
-    // Thus, return a fallback string representation here.
-    return val.toString();
+    // Force the number to not be represented as an exponential,
+    // even when large enough for JS to automatically try it.
+    return val.toFixed(0);
   }
 }
 
@@ -238,28 +221,21 @@ export class DecimalLiteral extends NumericLiteral {
   }
 
   protected override specificFormatter(val: number): string {
-    if (Number.isFinite(val)) {
-      let str = val.toString(10);
+    let str = val.toString(10);
 
-      // When the number is so small that JavaScript forces exponential representation,
-      // the value must be forced into decimal format, and trailing zeroes must be stripped.
-      // This does not address accuracy issues, but it does ensure the output is a valid decimal.
-      if (str.includes('e')) {
-        str = val.toFixed(20).replace(/([0-9])0*$/u, '$1');
-      }
-
-      // Ensure there is at least one decimal place.
-      if (!str.includes('.')) {
-        str += '.0';
-      }
-
-      return str;
+    // When the number is so small that JavaScript forces exponential representation,
+    // the value must be forced into decimal format, and trailing zeroes must be stripped.
+    // This does not address accuracy issues, but it does ensure the output is a valid decimal.
+    if (str.includes('e')) {
+      str = val.toFixed(20).replace(/([0-9])0*$/u, '$1');
     }
 
-    // The decimal in XSD spec cannot be infinity or NaN, because they are not real numbers,
-    // but this is a value space and not a string representation issue.
-    // Thus, return a fallback string representation here.
-    return val.toString();
+    // Ensure there is at least one decimal place.
+    if (!str.includes('.')) {
+      str += '.0';
+    }
+
+    return str;
   }
 }
 
@@ -298,9 +274,15 @@ export class DoubleLiteral extends NumericLiteral {
       return `${mantissa}E${exponent}`;
     }
 
-    // Return '-Infinity', 'Infinity', or 'NaN' here.
-    // The 'Infinity' -> 'INF' fix-up is applied in str() of NumericLiteral.
-    return val.toString();
+    if (val < 0) {
+      return '-INF';
+    }
+
+    if (val > 0) {
+      return 'INF';
+    }
+
+    return 'NaN';
   }
 }
 
