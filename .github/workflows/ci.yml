@@ -340,18 +340,19 @@ jobs:
         if: env.BENCHMARK_BASE == 'true'
         run: yarn install --frozen-lockfile
         working-directory: base
-      # The base runs first, so that the pull request results are the last thing measured,
-      # just like they are on a run without a base.
+      # TEMPORARY, TO BE REVERTED: the run order is swapped, head first and base second, to
+      # measure whether the second-measured version being consistently faster on the TPF
+      # benchmarks is an effect of the order alone.
+      - name: Run benchmarks
+        run: cd head/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
+      - name: Remove containers left behind by the benchmarks
+        # The TPF benchmarks run their LDF server in Docker on fixed ports,
+        # so the benchmarks below must start from the same clean state as the ones above did.
+        if: env.BENCHMARK_BASE == 'true'
+        run: docker ps -aq | xargs -r docker rm -f
       - name: Run benchmarks of the base commit
         if: env.BENCHMARK_BASE == 'true'
         run: cd base/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
-      - name: Remove containers left behind by the base commit benchmarks
-        # The TPF benchmarks run their LDF server in Docker on fixed ports,
-        # so the benchmarks below must start from the same clean state as the base ones did.
-        if: env.BENCHMARK_BASE == 'true'
-        run: docker ps -aq | xargs -r docker rm -f
-      - name: Run benchmarks
-        run: cd head/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
       - uses: actions/upload-artifact@v7
         with:
           name: performance-benchmark-${{ matrix.benchmark }}
