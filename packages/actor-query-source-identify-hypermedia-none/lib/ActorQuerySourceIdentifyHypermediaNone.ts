@@ -21,7 +21,7 @@ import { RdfStore } from 'rdf-stores';
  */
 export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIdentifyHypermedia {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
-  public readonly mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  public readonly mediatorTermComparatorFactory?: MediatorTermComparatorFactory;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaNoneArgs) {
     super(args, 'file');
@@ -43,6 +43,9 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     // PROTOTYPE: order the indexes by the same comparator that consumers compare with, so that scans
     // of this store report the order they produce and can be asked to skip ahead within it.
     if (process.env.COMUNICA_SORTED_STORE === '1' && process.env.COMUNICA_STORE_SORT !== '0') {
+      if (!this.mediatorTermComparatorFactory) {
+        throw new Error(`${this.name} can only order its store when a term comparator mediator is configured`);
+      }
       const termComparator = await this.mediatorTermComparatorFactory.mediate({ context: action.context });
       (<any> store).sortIndexes((termA: RDF.Term, termB: RDF.Term) => termComparator.orderTypes(termA, termB));
       if (process.env.COMUNICA_STORE_SORT === 'drop') {
@@ -105,7 +108,10 @@ export interface IActorQuerySourceIdentifyHypermediaNoneArgs extends IActorQuery
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   /**
-   * A mediator for creating term comparators
+   * A mediator for creating term comparators, needed only to order the store's indexes.
+   *
+   * Optional so that a configuration predating it keeps working: without it the store is left in
+   * insertion order, which is what it was before ordering was possible.
    */
-  mediatorTermComparatorFactory: MediatorTermComparatorFactory;
+  mediatorTermComparatorFactory?: MediatorTermComparatorFactory;
 }

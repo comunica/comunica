@@ -175,6 +175,22 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       }
     });
 
+    it('says so when asked to order its store without a term comparator', async() => {
+      process.env.COMUNICA_SORTED_STORE = '1';
+      try {
+        const unconfigured = new ActorQuerySourceIdentifyHypermediaNone({
+          name: 'actor',
+          bus,
+          mediatorMergeBindingsContext,
+        });
+        const quads = streamifyArray([ quad('s1', 'p1', 'o1') ]);
+        await expect(unconfigured.run({ metadata: <any> null, quads, url: '', context })).rejects
+          .toThrow('actor can only order its store when a term comparator mediator is configured');
+      } finally {
+        delete process.env.COMUNICA_SORTED_STORE;
+      }
+    });
+
     it('releases the ranking tables with COMUNICA_STORE_SORT=drop', async() => {
       process.env.COMUNICA_SORTED_STORE = '1';
       process.env.COMUNICA_STORE_SORT = 'drop';
