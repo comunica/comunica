@@ -30,28 +30,28 @@ export class TermFunctionXsdToString extends TermFunctionBase {
         // The numeric types (xsd:decimal, xsd:double, xsd:float), as well as xsd:integer,
         // are handled individually, covering all cases of .onNumeric1, based on `extensionTableInput`.
         // Specification treats floats the same as doubles, and thy share formatter code, as well.
-        .set<DecimalLiteral>([ TypeURL.XSD_DECIMAL ], () => TermFunctionXsdToString.castAsDecimal)
-        .set<IntegerLiteral>([ TypeURL.XSD_INTEGER ], () => TermFunctionXsdToString.castAsInteger)
-        .set<DoubleLiteral>([ TypeURL.XSD_DOUBLE ], () => TermFunctionXsdToString.castAsDouble)
-        .set<FloatLiteral>([ TypeURL.XSD_FLOAT ], () => TermFunctionXsdToString.castAsDouble)
+        .set<DecimalLiteral>([ TypeURL.XSD_DECIMAL ], () => ([ val ]) => TermFunctionXsdToString.castAsDecimal(val))
+        .set<IntegerLiteral>([ TypeURL.XSD_INTEGER ], () => ([ val ]) => TermFunctionXsdToString.castAsInteger(val))
+        .set<DoubleLiteral>([ TypeURL.XSD_DOUBLE ], () => ([ val ]) => TermFunctionXsdToString.castAsDouble(val))
+        .set<FloatLiteral>([ TypeURL.XSD_FLOAT ], () => ([ val ]) => TermFunctionXsdToString.castAsDouble(val))
         .onBoolean1Typed(() => val => string(bool(val).str()))
         .onTerm1(() => (val: StringLiteral) => string(val.str()))
         .collect(),
     });
   }
 
-  private static castAsInteger([ val ]: [NumericLiteral]): StringLiteral {
+  private static castAsInteger(val: NumericLiteral): StringLiteral {
     return string(integer(val.typedValue).str());
   }
 
-  private static castAsDecimal([ val ]: [NumericLiteral]): StringLiteral {
+  private static castAsDecimal(val: NumericLiteral): StringLiteral {
     // Specification requires integer-valued decimals to be cast as integers.
     return Number.isInteger(val.typedValue) ?
-      TermFunctionXsdToString.castAsInteger([ val ]) :
+      TermFunctionXsdToString.castAsInteger(val) :
       string(decimal(val.typedValue).str());
   }
 
-  private static castAsDouble([ val ]: [NumericLiteral]): StringLiteral {
+  private static castAsDouble(val: NumericLiteral): StringLiteral {
     // Specification requires exact 0 to be returned as "0" which differs from canonical "0.0E0"
     if (val.typedValue === 0) {
       return string('0');
@@ -63,7 +63,7 @@ export class TermFunctionXsdToString extends TermFunctionBase {
       (val.typedValue > -1e6 && val.typedValue <= -1e-6) ||
       (val.typedValue >= 1e-6 && val.typedValue < 1e6)
     ) {
-      return TermFunctionXsdToString.castAsDecimal([ val ]);
+      return TermFunctionXsdToString.castAsDecimal(val);
     }
 
     // Other cases should be handled as canonical doubles.
