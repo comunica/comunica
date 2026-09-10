@@ -1,8 +1,8 @@
-# Benchmark BSBM File Large
+# Benchmark BSBM File 10k
 
 This internal package benchmarks Comunica File using the [BSBM](http://wbsg.informatik.uni-mannheim.de/bizer/berlinsparqlbenchmark/) benchmark,
-at a dataset an order of magnitude larger than [`benchmark-bsbm-file`](../benchmark-bsbm-file):
-10 000 products instead of 1 000, which is 3 564 773 triples instead of 374 911.
+at 10 000 products instead of the 1 000 used by [`benchmark-bsbm-file`](../benchmark-bsbm-file),
+which is 3 564 773 triples instead of 374 911.
 
 The smaller variant stays as it is. It gives fast feedback and a long history, and the two answer
 different questions: at 1 000 products the whole query set runs in a fifth of a second, so what it
