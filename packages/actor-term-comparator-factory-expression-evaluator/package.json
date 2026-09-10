@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "@comunica/actor-expression-evaluator-factory-default": "^5.3.0",
+    "@comunica/actor-function-factory-term-lesser-than": "^5.0.0",
     "@comunica/bus-function-factory": "^5.3.0",
     "@comunica/bus-term-comparator-factory": "^5.3.0",
     "@comunica/context-entries": "^5.3.0",
