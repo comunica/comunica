@@ -189,7 +189,7 @@ const bindingsStream = await myEngine.queryBindings(`...`, {
   sources: [
     'http://fragments.dbpedia.org/2015/en',
     {
-      type: 'hypermedia',
+      type: 'qpf',
       value: 'http://fragments.dbpedia.org/2016/en'
     },
     {
