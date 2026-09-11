@@ -101,11 +101,8 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
         },
       },
       [Algebra.Types.CONSTRUCT]: {
-        preVisitor: () => ({ continue: false }),
-        transform: constructOp => factory.createConstruct(
-          this.assignExhaustive(factory, constructOp.input, sources, serviceSources),
-          constructOp.template,
-        ),
+        // The template holds quad patterns to produce, not patterns to match, so it gets no source.
+        preVisitor: () => ({ ignoreKeys: new Set([ 'template', 'metadata' ]) }),
       },
       [Algebra.Types.LINK]: {
         preVisitor: () => ({ continue: false }),
@@ -128,12 +125,8 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
         },
       },
       [Algebra.Types.DELETE_INSERT]: {
-        preVisitor: () => ({ continue: false }),
-        transform: delInsOp => factory.createDeleteInsert(
-          delInsOp.delete,
-          delInsOp.insert,
-          delInsOp.where ? this.assignExhaustive(factory, delInsOp.where, sources, serviceSources) : undefined,
-        ),
+        // The delete and insert templates hold quad patterns to write, not to match, so they get no source.
+        preVisitor: () => ({ ignoreKeys: new Set([ 'delete', 'insert', 'metadata' ]) }),
       },
     });
   }

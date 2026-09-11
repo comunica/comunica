@@ -2832,44 +2832,44 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
-"@traqula/algebra-sparql-1-1@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@traqula/algebra-sparql-1-1/-/algebra-sparql-1-1-1.2.1.tgz#7b1696d346024aa6b608cdb0067fb4e6120fed3e"
-  integrity sha512-i65jF9i51vfKgQjAcg5myBSHDLoB0HCYU58tW2ydhJC3RiUwHzh/PKB1RWQxz78nYXxTjy21+2icoDy5BBqBcg==
+"@traqula/algebra-sparql-1-1@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@traqula/algebra-sparql-1-1/-/algebra-sparql-1-1-1.3.0.tgz#f0693f3505452f7cfb20aed7ee4a89e56ebd398f"
+  integrity sha512-azsfS7rRlqUzkPruzVhRwh6UZTnoKLxdU4CQ53UqhGq6R/xcdiDC4zNKjnlyhj9lrDziAszjrpVr0kebyM6YKg==
   dependencies:
-    "@traqula/algebra-transformations-1-1" "^1.2.1"
-    "@traqula/core" "^1.2.0"
-    "@traqula/rules-sparql-1-1" "^1.2.1"
+    "@traqula/algebra-transformations-1-1" "^1.3.0"
+    "@traqula/core" "^1.3.0"
+    "@traqula/rules-sparql-1-1" "^1.3.0"
 
-"@traqula/algebra-sparql-1-2@^1.0.0", "@traqula/algebra-sparql-1-2@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@traqula/algebra-sparql-1-2/-/algebra-sparql-1-2-1.2.1.tgz#b300c6ab0b891cf3c96ae8eaf453b80e01c7d2a1"
-  integrity sha512-srkCTSLldixhGiNfcOAWjW0U5O86nsJ3LVDbOR19agCwwG6+xH9vfBO1BXU5I7fBRrOOwUvtIlF7KSLmMKMEag==
+"@traqula/algebra-sparql-1-2@^1.0.0", "@traqula/algebra-sparql-1-2@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@traqula/algebra-sparql-1-2/-/algebra-sparql-1-2-1.3.0.tgz#88d5c84fc6267e84758b733dbf0976c4cec23630"
+  integrity sha512-uvcrLTVX21aaxmV8Y8QPAVtuzasS6rIahLUqI9n/FHg0c4ruVImzElq3Js/srgWwdfbLlM4iK6T8iBssVY9zQQ==
   dependencies:
-    "@traqula/algebra-sparql-1-1" "^1.2.1"
-    "@traqula/algebra-transformations-1-1" "^1.2.1"
-    "@traqula/algebra-transformations-1-2" "^1.2.1"
-    "@traqula/core" "^1.2.0"
+    "@traqula/algebra-sparql-1-1" "^1.3.0"
+    "@traqula/algebra-transformations-1-1" "^1.3.0"
+    "@traqula/algebra-transformations-1-2" "^1.3.0"
+    "@traqula/core" "^1.3.0"
 
-"@traqula/algebra-transformations-1-1@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@traqula/algebra-transformations-1-1/-/algebra-transformations-1-1-1.2.1.tgz#4bfe8382696445cd201a85c3d5299d82e3833ed9"
-  integrity sha512-tqsokMOsbjpL7gvLUHuP/iGkoiWRayPD/ogSzlaUBKI97uHCRvMTXGLYfy48UdtHHuo2KV5XRCK2lbbaLfrxVA==
+"@traqula/algebra-transformations-1-1@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@traqula/algebra-transformations-1-1/-/algebra-transformations-1-1-1.3.0.tgz#2f244fd4bf0b769f3add65809dc115a913e945e1"
+  integrity sha512-XQ+Lck4RVIE7S+pR1/09eKPVCgBdUNALqJPx3gAfEJOPvk91sRevevXw9CJO2sLx49vMKjfScP+5vHvuy/D89g==
   dependencies:
-    "@traqula/core" "^1.2.0"
-    "@traqula/rules-sparql-1-1" "^1.2.1"
+    "@traqula/core" "^1.3.0"
+    "@traqula/rules-sparql-1-1" "^1.3.0"
     fast-deep-equal "^3.1.3"
     rdf-data-factory "^2.0.1"
     rdf-isomorphic "^2.0.0"
     rdf-string "^2.0.0"
 
-"@traqula/algebra-transformations-1-2@^1.0.0", "@traqula/algebra-transformations-1-2@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@traqula/algebra-transformations-1-2/-/algebra-transformations-1-2-1.2.1.tgz#d94d44be6d5f3560b4117582bfc1e7070bd0a762"
-  integrity sha512-V5/OIjcSKs3mQxYf2/gzLtV0aV3jjw8gZccCrLvKtq8v/kJU85jD1+AMEi/rn8Ig5HzOhfMv9JQ6MiftH2HCkA==
+"@traqula/algebra-transformations-1-2@^1.0.0", "@traqula/algebra-transformations-1-2@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@traqula/algebra-transformations-1-2/-/algebra-transformations-1-2-1.3.0.tgz#3977a0ee25ed6359f08fe448808af408474c1888"
+  integrity sha512-L+JcA7Dk+s77ciKDlVr4jx7VF49XE1YBGDaqlV8DvIlNY52fxpbI1nsFekyPQd8xDqOyMz8o2YLbAMpEfI9c5A==
   dependencies:
-    "@traqula/algebra-transformations-1-1" "^1.2.1"
-    "@traqula/rules-sparql-1-2" "^1.2.1"
+    "@traqula/algebra-transformations-1-1" "^1.3.0"
+    "@traqula/rules-sparql-1-2" "^1.3.0"
     rdf-string "^2.0.0"
 
 "@traqula/chevrotain@^1.1.0":
@@ -2877,65 +2877,65 @@
   resolved "https://registry.yarnpkg.com/@traqula/chevrotain/-/chevrotain-1.1.0.tgz#1ebd234481e63091eeed3f2d5cca8de7f3990044"
   integrity sha512-VpcoQKb2ZnsOQPlPO2mE9hfR0Aidp7drwTCtaXfpdRHGkXeQ5Nv4rnxmxwUoEDRzu6b/3z4n8oTd+sYhe4fAaA==
 
-"@traqula/core@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@traqula/core/-/core-1.2.0.tgz#ec1f24817bc832da0bc95c2ef0e8090337c2edbc"
-  integrity sha512-4NEYjNKD31u1DMbccRNXBnpEQsoeVrTTrJfxbDU11/5zHQdcyrXYlJ7Dq2t3hlZgStMbVJrZbZJsr6p+lZBeZA==
+"@traqula/core@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@traqula/core/-/core-1.3.0.tgz#accb07dd611f6368cdc3497152ae43c04b18609f"
+  integrity sha512-xVp6sblElVsZeeXIQQ8KNRiUFqobNT/IfgWNymlUlICi69aLJWydSWsKcH+TnS5Sz7LW2BoFpoQiIcErXaXPfQ==
   dependencies:
     "@traqula/chevrotain" "^1.1.0"
 
-"@traqula/generator-sparql-1-1@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@traqula/generator-sparql-1-1/-/generator-sparql-1-1-1.2.1.tgz#8a058b3c29c18eed6fb613434bf12a2eeb5ea2d6"
-  integrity sha512-pgmQ1gDUAtqsZlN3rhg9lQpDzOoq1QmKwn+Iy6szxK1eVfHx0MkLkOVQTPYDfo8jeYq2+uFTE0gCooBDSJznJA==
+"@traqula/generator-sparql-1-1@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@traqula/generator-sparql-1-1/-/generator-sparql-1-1-1.3.0.tgz#fb14ceacb2e416e712bf6f3b94acd19a8b029dc0"
+  integrity sha512-SgwWbZxVzEeDI2ZzoYCX1sXRfsfoz+Qw1ydo3dXFkDSTuiS1UXsv8+m1hYeBs9L0holuXH5m8k8KBVpGSF8Hng==
   dependencies:
-    "@traqula/core" "^1.2.0"
-    "@traqula/rules-sparql-1-1" "^1.2.1"
+    "@traqula/core" "^1.3.0"
+    "@traqula/rules-sparql-1-1" "^1.3.0"
 
-"@traqula/generator-sparql-1-2@^1.0.0", "@traqula/generator-sparql-1-2@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@traqula/generator-sparql-1-2/-/generator-sparql-1-2-1.2.1.tgz#68737d92ec5ee41931f222b3d569c1d9292f0a3b"
-  integrity sha512-AJyb+sXSrrSOFvfIdd6DYWFPT/I6i/TwlKmWDyI7UEPzNS2ThLoY9aqQqUqGiHVLBxznAtkGVFK6VwBJ5nPPAQ==
+"@traqula/generator-sparql-1-2@^1.0.0", "@traqula/generator-sparql-1-2@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@traqula/generator-sparql-1-2/-/generator-sparql-1-2-1.3.0.tgz#852a4b834e5ffe00cb5d4bcd76d56e73fefca7bf"
+  integrity sha512-NIfUH9i89qjiOVmbwfRYf6f9GDOLginbIeskmBnXHS15zxgklKT2AmDaxRH9dureGD2EEVbSzSaHfN4IF2pwkw==
   dependencies:
-    "@traqula/core" "^1.2.0"
-    "@traqula/generator-sparql-1-1" "^1.2.1"
-    "@traqula/rules-sparql-1-1" "^1.2.1"
-    "@traqula/rules-sparql-1-2" "^1.2.1"
+    "@traqula/core" "^1.3.0"
+    "@traqula/generator-sparql-1-1" "^1.3.0"
+    "@traqula/rules-sparql-1-1" "^1.3.0"
+    "@traqula/rules-sparql-1-2" "^1.3.0"
 
-"@traqula/parser-sparql-1-1@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@traqula/parser-sparql-1-1/-/parser-sparql-1-1-1.2.1.tgz#ae3d98f80aa1d073c3f94b5f849e458bffd5c997"
-  integrity sha512-z6t9pzGpScFqBnJcGAbCdh24EnxDpZjirobpJ1Y73Q17T1/qtb6L8T9DaEysX2e7i3O6qnbbiaOdLDKKte4PuA==
+"@traqula/parser-sparql-1-1@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@traqula/parser-sparql-1-1/-/parser-sparql-1-1-1.3.0.tgz#af39f58e99576640abd27b5fcfb043f3f2a0c156"
+  integrity sha512-0OH8H1e3C77W6O4kzpL8NheegjjetMerZJvxSWJFTpjs4X/9IhstA1GOJzDe4YtxyQe0MhqRuzLSWyQA435l6w==
   dependencies:
-    "@traqula/core" "^1.2.0"
-    "@traqula/rules-sparql-1-1" "^1.2.1"
+    "@traqula/core" "^1.3.0"
+    "@traqula/rules-sparql-1-1" "^1.3.0"
 
-"@traqula/parser-sparql-1-2@^1.0.0", "@traqula/parser-sparql-1-2@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@traqula/parser-sparql-1-2/-/parser-sparql-1-2-1.2.1.tgz#708d147092c940e60871eb9186c9faf2da758a58"
-  integrity sha512-tYt9gFY75fqd17nXQN3cS0viauaNykFXWbM0SWCQvNWrFPwvRk/eUxt7yvTM9IpujK2205FYO7uPTSZOjUTSVQ==
+"@traqula/parser-sparql-1-2@^1.0.0", "@traqula/parser-sparql-1-2@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@traqula/parser-sparql-1-2/-/parser-sparql-1-2-1.3.0.tgz#fa804962d8451839da5c29f892a0d91c19498a0b"
+  integrity sha512-DuWxkjA2yaotgruYxAYodC0DnpPhgB5oaRdLvae/wX1Q6dlJakesVi1veDC+IzLaGMa6jYwfqFN9VydWjHLxqg==
   dependencies:
-    "@traqula/core" "^1.2.0"
-    "@traqula/parser-sparql-1-1" "^1.2.1"
-    "@traqula/rules-sparql-1-1" "^1.2.1"
-    "@traqula/rules-sparql-1-2" "^1.2.1"
+    "@traqula/core" "^1.3.0"
+    "@traqula/parser-sparql-1-1" "^1.3.0"
+    "@traqula/rules-sparql-1-1" "^1.3.0"
+    "@traqula/rules-sparql-1-2" "^1.3.0"
     rdf-data-factory "^2.0.1"
 
-"@traqula/rules-sparql-1-1@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-1/-/rules-sparql-1-1-1.2.1.tgz#aa44e9ddd2ac9c1d7494f88d09d6a434163b5daa"
-  integrity sha512-rSf/Lck9taQgz5r/6Hds4uBDiL8UVbF05aT8Tv7no9NvqAbGfRA01nyzYTVU+p+JLMnbjfZWaS1ZPOSBnh00zg==
+"@traqula/rules-sparql-1-1@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-1/-/rules-sparql-1-1-1.3.0.tgz#b4342c698fa1a935600cc3c6fe8e63326e226bcb"
+  integrity sha512-gH33RiH7enfowRVGG95IalM+icTQxVZ/bD0WeTK/235PpjzSiUK0jTd/N3CpNc1BJOUZf6I/VHrqnMPjNf51Mg==
   dependencies:
     "@traqula/chevrotain" "^1.1.0"
-    "@traqula/core" "^1.2.0"
+    "@traqula/core" "^1.3.0"
 
-"@traqula/rules-sparql-1-2@^1.0.0", "@traqula/rules-sparql-1-2@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-2/-/rules-sparql-1-2-1.2.1.tgz#300ebdcb29b114a5a5a65b38d0e85f79f0cb35bf"
-  integrity sha512-4RlakXIDca0shH1rRJyZyjHooTSJVK6kWgoX1hKj8x0NHTQaIBV0JDTnHlQh5u9TsF9uMcuKwqUoutIqkBxEIA==
+"@traqula/rules-sparql-1-2@^1.0.0", "@traqula/rules-sparql-1-2@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@traqula/rules-sparql-1-2/-/rules-sparql-1-2-1.3.0.tgz#1786adf15423a3db079425ef7bd4e98aa7aba29d"
+  integrity sha512-99msP9fLH7Q3pxE4qsELFFQK14batpdC4IRyqWB6FMqcqZ80fl2eFcfg5e5mPzJ9dj7K5+kMpt9lKYvFmIXwxw==
   dependencies:
-    "@traqula/core" "^1.2.0"
-    "@traqula/rules-sparql-1-1" "^1.2.1"
+    "@traqula/core" "^1.3.0"
+    "@traqula/rules-sparql-1-1" "^1.3.0"
 
 "@tsconfig/node10@^1.0.7":
   version "1.0.11"

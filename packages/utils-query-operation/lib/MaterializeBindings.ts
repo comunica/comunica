@@ -67,6 +67,13 @@ export function materializeOperation(
     originalBindings: options.originalBindings ?? bindings,
   };
 
+  // A filter is only materialized when there are bindings to re-inject and its expression is one this
+  // function knows how to handle. When it is not, its descendants are left untouched as well, so this
+  // decides both whether to traverse into a filter and what to do with it afterwards.
+  const materializesFilter = (filterOp: Algebra.Filter): boolean =>
+    (<Bindings> options.originalBindings).size > 0 &&
+    (filterOp.expression.subType === 'existence' || filterOp.expression.subType === 'operator');
+
   return algebraUtils.mapOperation(operation, {
     [Algebra.Types.PATH]: {
       preVisitor: () => ({ continue: false }),
@@ -92,17 +99,14 @@ export function materializeOperation(
         ), { metadata: patternOp.metadata }),
     },
     [Algebra.Types.JOIN]: {
-      preVisitor: () => ({ continue: false }),
-      transform: op =>
+      transform: (op, origOp) =>
       // Materialize join operation, and ensure metadata is taken into account.
-      // Join entries with metadata should not be flattened.
-        Object.assign(algebraFactory.createJoin(op.input.map(input => materializeOperation(
-          input,
-          bindings,
-          algebraFactory,
-          bindingsFactory,
-          options,
-        )), op.input.every(input => !input.metadata)), { metadata: op.metadata }),
+      // Join entries with metadata should not be flattened, which is decided by the entries as they were
+      // before materialization, since materializing an entry may drop its metadata.
+        Object.assign(
+          algebraFactory.createJoin(op.input, origOp.input.every(input => !input.metadata)),
+          { metadata: op.metadata },
+        ),
     },
     [Algebra.Types.EXTEND]: { transform: (extendOp) => {
       // Materialize an extend operation.
@@ -112,7 +116,7 @@ export function materializeOperation(
         if (options.strictTargetVariables) {
           throw new Error(`Tried to bind variable ${termToString(extendOp.variable)} in a BIND operator.`);
         } else {
-          return materializeOperation(extendOp.input, bindings, algebraFactory, bindingsFactory, options);
+          return extendOp.input;
         }
       }
       return extendOp;
@@ -137,72 +141,40 @@ export function materializeOperation(
       );
     } },
     [Algebra.Types.FILTER]: {
-      preVisitor: () => ({ continue: false }),
-      transform: (filterOp) => {
-        const originalBindings: Bindings = <Bindings> options.originalBindings;
-        if (originalBindings.size === 0) {
-          return filterOp;
+      preVisitor: filterOp => ({ continue: materializesFilter(filterOp) }),
+      transform: (filterOp, origFilterOp) => {
+        if (!materializesFilter(origFilterOp)) {
+          return origFilterOp;
         }
 
-        if (filterOp.expression.subType === 'existence') {
-          // For existence expressions (EXISTS/NOT EXISTS), materialize the filter input and expression
+        if (origFilterOp.expression.subType === 'existence') {
+          // For existence expressions (EXISTS/NOT EXISTS), the filter input and expression are materialized
           // without adding VALUES clauses, since existence evaluation handles bindings directly.
-          const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
-            filterOp.expression,
-            bindings,
-            algebraFactory,
-            bindingsFactory,
-            options,
-          );
-          const recursionResultInput: Algebra.Operation = materializeOperation(
-            filterOp.input,
-            bindings,
-            algebraFactory,
-            bindingsFactory,
-            options,
-          );
-          return algebraFactory.createFilter(recursionResultInput, recursionResultExpression);
+          return algebraFactory.createFilter(filterOp.input, filterOp.expression);
         }
 
-        if (filterOp.expression.subType !== 'operator') {
-          return filterOp;
-        }
-
+        // The expression is an operator one, the only other kind materializesFilter accepts.
         // Make a values clause for the variables from originalBindings that are used by this filter operation:
         // the variables in scope of its input, and the variables its expression refers to.
-        // Bound variables that are not used here don't have to be re-injected.
-        const values: Algebra.Operation[] = createValuesFromBindings(algebraFactory, originalBindings, [
-          ...algebraUtils.inScopeVariables(filterOp.input),
-          ...getExpressionVariables(filterOp.expression),
-        ]);
-
-        // Recursively materialize the filter expression
-        const recursionResultExpression: Algebra.Expression = <Algebra.Expression> materializeOperation(
-          filterOp.expression,
-          bindings,
+        // Both are read from the operation as it was before materialization, since materializing replaces the
+        // bound variables with their terms, which would leave nothing to re-inject.
+        const values: Algebra.Operation[] = createValuesFromBindings(
           algebraFactory,
-          bindingsFactory,
-          options,
+          <Bindings> options.originalBindings,
+          [
+            ...algebraUtils.inScopeVariables(origFilterOp.input),
+            ...getExpressionVariables(origFilterOp.expression),
+          ],
         );
 
-        // Recursively materialize the filter input
-        let recursionResultInput: Algebra.Operation = materializeOperation(
-          filterOp.input,
-          bindings,
-          algebraFactory,
-          bindingsFactory,
-          options,
-        );
+        const subOperation = values.length > 0 ?
+          algebraFactory.createJoin([ ...values, filterOp.input ]) :
+          filterOp.input;
 
-        if (values.length > 0) {
-          recursionResultInput = algebraFactory.createJoin([ ...values, recursionResultInput ]);
-        }
-
-        return algebraFactory.createFilter(recursionResultInput, recursionResultExpression);
+        return algebraFactory.createFilter(subOperation, filterOp.expression);
       },
     },
     [Algebra.Types.PROJECT]: {
-      preVisitor: () => ({ continue: false }),
       transform: (projectOp) => {
       // Materialize a project operation.
 
@@ -211,19 +183,11 @@ export function materializeOperation(
         const values: Algebra.Operation[] =
           createValuesFromBindings(algebraFactory, <Bindings> options.originalBindings, projectOp.variables);
 
-        let recursionResult: Algebra.Operation = materializeOperation(
-          projectOp.input,
-          bindings,
-          algebraFactory,
-          bindingsFactory,
-          options,
-        );
+        const subOperation = values.length > 0 ?
+          algebraFactory.createJoin([ ...values, projectOp.input ]) :
+          projectOp.input;
 
-        if (values.length > 0) {
-          recursionResult = algebraFactory.createJoin([ ...values, recursionResult ]);
-        }
-
-        return algebraFactory.createProject(recursionResult, projectOp.variables);
+        return algebraFactory.createProject(subOperation, projectOp.variables);
       },
     },
     [Algebra.Types.VALUES]: {

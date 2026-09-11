@@ -3,7 +3,7 @@ import type { Algebra as TraqulaAlgebra } from '@traqula/algebra-transformations
 import { algebraUtils, Types } from '@traqula/algebra-transformations-1-2';
 
 // eslint-disable-next-line unused-imports/no-unused-imports,unused-imports/no-unused-imports-ts
-import type { TransformContext, VisitContext } from '@traqula/core';
+import type { Patch, PreOrderMappingReturn, Safeness, TransformContext, VisitContext } from '@traqula/core';
 import { TransformerSubTyped } from '@traqula/core';
 import type { KnownOperation, Operation } from './Algebra';
 import { TypesComunica } from './TypesComunica';
@@ -54,7 +54,7 @@ export function isKnownSubType<
 // ----------------------- manipulators --------------------
 
 type _NeedRefForReusabilityWithoutExplicitTypeDefinition = TraqulaAlgebra.Operation;
-export const transformer = new TransformerSubTyped<KnownOperation>({
+export const defaultObjectContext: TransformContext = {
   /**
    * Metadata often contains references to actors,
    * the transformer should not copy these actors, nor should it traverse the actors when visitingOperations.
@@ -63,7 +63,8 @@ export const transformer = new TransformerSubTyped<KnownOperation>({
    */
   shallowKeys: new Set([ 'metadata' ]),
   ignoreKeys: new Set([ 'metadata' ]),
-}, {
+};
+export const defaultNodePreVisitor: ConstructorParameters<typeof TransformerSubTyped<KnownOperation>>[1] = {
   // Optimization that causes search tree pruning
   [Types.PATTERN]: { ignoreKeys: new Set([ 'subject', 'predicate', 'object', 'graph', 'metadata' ]) },
   [Types.EXPRESSION]: { ignoreKeys: new Set([ 'name', 'term', 'wildcard', 'variable', 'metadata' ]) },
@@ -86,7 +87,9 @@ export const transformer = new TransformerSubTyped<KnownOperation>({
   [Types.MOVE]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
   [Types.COPY]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
   [TypesComunica.NODES]: { ignoreKeys: new Set([ 'variable', 'metadata' ]) },
-});
+};
+
+export const transformer = new TransformerSubTyped<KnownOperation>(defaultObjectContext, defaultNodePreVisitor);
 
 /**
  * Transform a single operation, similar to {@link mapOperation}, but using stricter typings.
@@ -133,6 +136,42 @@ export const transformer = new TransformerSubTyped<KnownOperation>({
  * using a transformer that works its way back up from the descendant to the startObject.
  */
 export const mapOperationStrict = transformer.transformNode.bind(transformer);
+
+export type AlgebraTransformer<Safe extends Safeness, T> = Patch<
+    Pick<typeof transformer, 'clone' | 'cloneObj' |
+        'transformObject' | 'transformObjectAsync' | 'transformObjectPreOrder' | 'transformObjectPreOrderAsync' |
+        'visitObject' | 'visitObjectAsync' |
+        'transformNode' | 'transformNodeAsync' | 'transformNodePreOrder' | 'transformNodePreOrderAsync' |
+        'visitNode' | 'visitNodeAsync' |
+        'transformNodeSpecific' | 'transformNodeSpecificAsync' | 'transformNodeSpecificPreOrder' |
+            'transformNodeSpecificPreOrderAsync' |
+        'visitNodeSpecific' | 'visitNodeSpecificAsync'>,
+    {
+      transformNode: typeof transformer.transformNode<Safe, T>;
+      transformNodeAsync: typeof transformer.transformNodeAsync<Safe, T>;
+      transformNodePreOrder: typeof transformer.transformNodePreOrder<Safe, T>;
+      transformNodePreOrderAsync: typeof transformer.transformNodePreOrderAsync<Safe, T>;
+      transformNodeSpecific: typeof transformer.transformNodeSpecific<Safe, T>;
+      transformNodeSpecificAsync: typeof transformer.transformNodeSpecificAsync<Safe, T>;
+      transformNodeSpecificPreOrder: typeof transformer.transformNodeSpecificPreOrder<Safe, T>;
+      transformNodeSpecificPreOrderAsync: typeof transformer.transformNodeSpecificPreOrderAsync<Safe, T>;
+    }
+>;
+
+export function algebraTransformer<Safe extends Safeness = 'unsafe', T = Operation>(
+  objectConfig?: typeof defaultObjectContext & { useDefaults?: boolean },
+  nodePreVisitor?: typeof defaultNodePreVisitor & { useDefaults?: boolean },
+): AlgebraTransformer<Safe, T> {
+  if (!objectConfig && !nodePreVisitor) {
+    return transformer;
+  }
+  const { useDefaults: objUseDef, ...objConf } = objectConfig ?? {};
+  const { useDefaults: nodesUseDef, ...nodeConf } = nodePreVisitor ?? {};
+  return new TransformerSubTyped<KnownOperation>(
+    objUseDef ?? true ? { ...defaultObjectContext, ...objConf } : objConf,
+    nodesUseDef ?? true ? { ...defaultNodePreVisitor, ...nodeConf } : nodeConf,
+  );
+}
 
 /**
  * Transform a single operation.

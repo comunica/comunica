@@ -883,6 +883,32 @@ describe('materializeOperation', () => {
       ));
   });
 
+  it('should modify a filter expression wrapping a filter expression without operator as expression', () => {
+    // The inner filter is left untouched, so the outer one has to be materialized on its own merits.
+    expect(materializeOperation(
+      AF.createFilter(
+        AF.createFilter(
+          AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+          AF.createTermExpression(termVariableB),
+        ),
+        AF.createOperatorExpression('!', [ AF.createTermExpression(termVariableA) ]),
+      ),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createFilter(
+        AF.createJoin([
+          AF.createValues([ termVariableA ], [ valuesBindingsA ]),
+          AF.createFilter(
+            AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+            AF.createTermExpression(termVariableB),
+          ),
+        ]),
+        AF.createOperatorExpression('!', [ AF.createTermExpression(valueA) ]),
+      ));
+  });
+
   it('should not modify a filter expression without matching variables', () => {
     const filterOp = AF.createFilter(
       AF.createBgp([
