@@ -71,7 +71,22 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
   public override publish(action: I): IActorReply<A, I, T, O>[] {
     const actionId = this.getActionIdentifier(action);
     if (actionId) {
-      const actors = [ ...this.actorsIndex[actionId] || [], ...this.actorsIndex._undefined_ || [] ];
+      const indexMatches = this.actorsIndex[actionId];
+      const undefMatches = this.actorsIndex._undefined_;
+      // Avoid concatenating the two actor lists when at most one of them is non-empty (the common case),
+      // as the concatenation would otherwise allocate an intermediate array on this hot path.
+      // `map` is only ever called on the index lists directly, never mutating them.
+      let actors: A[];
+      if (!indexMatches || indexMatches.length === 0) {
+        if (!undefMatches) {
+          return [];
+        }
+        actors = undefMatches;
+      } else if (!undefMatches || undefMatches.length === 0) {
+        actors = indexMatches;
+      } else {
+        actors = [ ...indexMatches, ...undefMatches ];
+      }
       return actors.map((actor: A): IActorReply<A, I, T, O> => ({ actor, reply: actor.test(action) }));
     }
     return super.publish(action);
