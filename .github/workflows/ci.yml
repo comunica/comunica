@@ -333,8 +333,6 @@ jobs:
         if: env.BENCHMARK_BASE == 'true'
         run: yarn install --frozen-lockfile
         working-directory: base
-      # The base runs first, so that the pull request results are the last thing measured,
-      # just like they are on a run without a base.
       - name: Run benchmarks of the base commit
         if: env.BENCHMARK_BASE == 'true'
         run: cd base/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
