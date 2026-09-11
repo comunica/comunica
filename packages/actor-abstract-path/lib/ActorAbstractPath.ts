@@ -16,7 +16,12 @@ import type {
 import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
 import type { AlgebraFactory } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { assignOperationSource, getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
+import {
+  assignOperationSource,
+  getOperationSource,
+  getSafeBindings,
+  groupRepeatedSubOperations,
+} from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import {
@@ -184,6 +189,10 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     algebraFactory: AlgebraFactory,
     bindingsFactory: BindingsFactory,
   ): Promise<IPathResultStream> {
+    // The path is walked by evaluating one sub-path per reached term,
+    // so group those evaluations in the physical query plan
+    context = groupRepeatedSubOperations(context, 'alp', this.name);
+
     if (graph.termType === 'Variable') {
       return this
         .predicateStarGraphVariable(subject, object, predicate, graph, context, algebraFactory, bindingsFactory);

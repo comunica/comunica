@@ -1,6 +1,7 @@
-import type { IQuerySource } from '@comunica/types';
+import type { IPhysicalQueryPlanNode, IQuerySource } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { assignOperationSource } from '@comunica/utils-query-operation';
+import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { MemoryPhysicalQueryPlanLogger } from '../lib/MemoryPhysicalQueryPlanLogger';
 
@@ -9,237 +10,298 @@ const DF = new DataFactory();
 
 describe('MemoryPhysicalQueryPlanLogger', () => {
   let logger: MemoryPhysicalQueryPlanLogger;
+  /**
+   * Plan nodes by the operation they were logged for, so that tests can refer to a parent
+   * by its operation instead of having to thread node handles through every call.
+   */
+  let nodes: Map<any, IPhysicalQueryPlanNode>;
+
   beforeEach(() => {
     logger = new MemoryPhysicalQueryPlanLogger();
+    nodes = new Map();
   });
 
-  describe('logOperation with invalid sequences', () => {
-    it('referencing a parent without a root being set', () => {
-      expect(() => logger.logOperation(
-        'pattern',
-        undefined,
-        factory.createPattern(
-          DF.namedNode('ex:s1'),
-          DF.namedNode('ex:p1'),
-          DF.variable('o1'),
-          DF.namedNode('ex:g1'),
-        ),
-        {},
-        'actor-pattern',
-        {},
-      )).toThrow('No root node has been set yet, while a parent is being referenced');
+  function logOperation(
+    logicalOperator: string,
+    physicalOperator: string | undefined,
+    operation: any,
+    parentOperation: any,
+    actor: string,
+    metadata: any,
+    repeated = false,
+  ): IPhysicalQueryPlanNode {
+    const node = logger.logOperation({
+      logicalOperator,
+      physicalOperator,
+      parentNode: parentOperation === undefined ? undefined : nodes.get(parentOperation),
+      actor,
+      metadata,
+      operation,
+      repeated,
+    });
+    nodes.set(operation, node);
+    return node;
+  }
+
+  /**
+   * Consume the given stream, so that it reaches its end like it would during query execution.
+   */
+  async function consume(stream: any): Promise<void> {
+    stream.on('data', () => {
+      // Go into flow-mode.
+    });
+    await new Promise(resolve => stream.on('end', resolve));
+  }
+
+  function createPattern(suffix = '1', graph = DF.namedNode(`ex:g${suffix}`)): any {
+    return factory.createPattern(
+      DF.namedNode(`ex:s${suffix}`),
+      DF.namedNode(`ex:p${suffix}`),
+      DF.variable(`o${suffix}`),
+      graph,
+    );
+  }
+
+  describe('logOperation', () => {
+    it('throws when referencing a parent without a root being set', () => {
+      const orphan = logger.logOperation({ logicalOperator: 'pattern', actor: 'actor-pattern' });
+      const otherLogger = new MemoryPhysicalQueryPlanLogger();
+
+      expect(() => otherLogger.logOperation({
+        logicalOperator: 'pattern',
+        parentNode: orphan,
+        actor: 'actor-pattern',
+      })).toThrow('No root node has been set yet, while a parent is being referenced');
     });
 
-    it('referencing no parent while a root was already set', () => {
-      logger.logOperation(
-        'pattern',
-        undefined,
-        factory.createPattern(
-          DF.namedNode('ex:s1'),
-          DF.namedNode('ex:p1'),
-          DF.variable('o1'),
-          DF.namedNode('ex:g1'),
-        ),
-        undefined,
-        'actor-pattern',
-        {},
-      );
+    it('throws when referencing no parent while a root was already set', () => {
+      logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
 
-      expect(() => logger.logOperation(
-        'pattern',
-        undefined,
-        factory.createPattern(
-          DF.namedNode('ex:s1'),
-          DF.namedNode('ex:p1'),
-          DF.variable('o1'),
-          DF.namedNode('ex:g1'),
-        ),
-        undefined,
-        'actor-pattern',
-        {},
-      )).toThrow('Detected more than one parent-less node');
+      expect(() => logger.logOperation({ logicalOperator: 'pattern', actor: 'actor-pattern' }))
+        .toThrow('Detected more than one parent-less node');
     });
 
-    it('referencing an unknown parent', () => {
-      logger.logOperation(
-        'pattern',
-        undefined,
-        factory.createPattern(
-          DF.namedNode('ex:s1'),
-          DF.namedNode('ex:p1'),
-          DF.variable('o1'),
-          DF.namedNode('ex:g1'),
-        ),
-        undefined,
-        'actor-pattern',
-        {},
-      );
+    it('creates a separate node each time the same operation is logged', () => {
+      const operation = createPattern();
+      const root = logOperation('join', undefined, {}, undefined, 'actor-join', {});
+      const first = logger.logOperation({
+        logicalOperator: 'pattern',
+        parentNode: root,
+        actor: 'actor-pattern',
+        operation,
+      });
+      const second = logger.logOperation({
+        logicalOperator: 'pattern',
+        parentNode: root,
+        actor: 'actor-pattern',
+        operation,
+      });
 
-      expect(() => logger.logOperation(
-        'pattern',
-        undefined,
-        factory.createPattern(
-          DF.namedNode('ex:s1'),
-          DF.namedNode('ex:p1'),
-          DF.variable('o1'),
-          DF.namedNode('ex:g1'),
-        ),
-        {},
-        'actor-pattern',
-        {},
-      )).toThrow('Could not find parent node');
-    });
-  });
-
-  describe('stashChildren', () => {
-    it('throws for a non-existing parent node', () => {
-      expect(() => logger.stashChildren({})).toThrow(`Could not find plan node`);
-    });
-
-    it('removes children', () => {
-      const root = factory.createPattern(
-        DF.namedNode('ex:s1'),
-        DF.namedNode('ex:p1'),
-        DF.variable('o1'),
-        DF.namedNode('ex:g1'),
-      );
-      logger.logOperation(
-        'pattern',
-        undefined,
-        root,
-        undefined,
-        'actor-pattern',
-        {},
-      );
-      logger.logOperation(
-        'pattern',
-        undefined,
-        {},
-        root,
-        'actor-sub',
-        {},
-      );
-
-      logger.stashChildren(root);
-
-      expect((<any> logger).rootNode.children).toHaveLength(0);
-    });
-
-    it('removes children with filter', () => {
-      const root = factory.createPattern(
-        DF.namedNode('ex:s1'),
-        DF.namedNode('ex:p1'),
-        DF.variable('o1'),
-        DF.namedNode('ex:g1'),
-      );
-      logger.logOperation(
-        'pattern',
-        undefined,
-        root,
-        undefined,
-        'actor-pattern',
-        {},
-      );
-      logger.logOperation(
-        'pattern',
-        undefined,
-        {},
-        root,
-        'actor-sub',
-        {},
-      );
-
-      logger.stashChildren(root, () => false);
-
-      expect((<any> logger).rootNode.children).toHaveLength(0);
+      expect(first).not.toBe(second);
+      expect(logger.toJson()).toEqual({
+        logical: 'join',
+        actor: 'actor-join',
+        children: [
+          { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+          { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+        ],
+      });
     });
   });
 
-  describe('unstashChild', () => {
-    it('ignores a non-existing node', () => {
-      expect(() => logger.unstashChild({}, {})).not.toThrow();
+  describe('getNodeForOutput', () => {
+    it('returns undefined for an unknown output', () => {
+      expect(logger.getNodeForOutput({})).toBeUndefined();
     });
 
-    it('throws for a non-existing parent node', () => {
-      const root = factory.createPattern(
-        DF.namedNode('ex:s1'),
-        DF.namedNode('ex:p1'),
-        DF.variable('o1'),
-        DF.namedNode('ex:g1'),
-      );
-      logger.logOperation(
-        'pattern',
-        undefined,
-        root,
-        undefined,
-        'actor-pattern',
-        {},
-      );
-
-      expect(() => logger.unstashChild(root, {})).toThrow(`Could not find plan parent node`);
+    it('returns undefined for a non-object output', () => {
+      expect(logger.getNodeForOutput('abc')).toBeUndefined();
+      expect(logger.getNodeForOutput(undefined)).toBeUndefined();
     });
 
-    it('adds node to parent', () => {
-      const root = factory.createPattern(
-        DF.namedNode('ex:s1'),
-        DF.namedNode('ex:p1'),
-        DF.variable('o1'),
-        DF.namedNode('ex:g1'),
-      );
-      logger.logOperation(
-        'pattern',
-        undefined,
-        root,
-        undefined,
-        'actor-pattern',
-        {},
-      );
+    it('returns the node that set the output', () => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
+      const output = {};
+      node.setOutput(output);
 
-      const child = factory.createPattern(
-        DF.namedNode('ex:s1C'),
-        DF.namedNode('ex:p1C'),
-        DF.variable('o1C'),
-        DF.namedNode('ex:g1C'),
-      );
-      logger.logOperation(
-        'pattern',
-        undefined,
-        child,
-        root,
-        'actor-pattern',
-        {},
-      );
+      expect(logger.getNodeForOutput(output)).toBe(node);
+    });
 
-      logger.stashChildren(root);
-      expect((<any> logger).rootNode.children).toHaveLength(0);
-      logger.unstashChild(child, root);
-      expect((<any> logger).rootNode.children).toHaveLength(1);
+    it('ignores a non-object output', () => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
+      node.setOutput('abc');
+
+      expect(logger.getNodeForOutput('abc')).toBeUndefined();
+    });
+  });
+
+  describe('setOutput', () => {
+    it('measures an output stream', async() => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
+      const bindingsStream = new ArrayIterator([ 'a', 'b' ], { autoStart: false });
+      node.setOutput({
+        bindingsStream,
+        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 2 }}),
+      });
+      await consume(bindingsStream);
+      await logger.finalize();
+
+      expect(logger.toJson()).toEqual({
+        logical: 'pattern',
+        actor: 'actor-pattern',
+        pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
+        cardinality: { type: 'exact', value: 2 },
+        cardinalityReal: 2,
+        timeSelf: expect.any(Number),
+        timeLife: expect.any(Number),
+      });
+    });
+
+    it('keeps a cardinality that was already recorded', async() => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {
+        cardinality: { type: 'estimate', value: 10 },
+      });
+      const bindingsStream = new ArrayIterator([ 'a' ], { autoStart: false });
+      node.setOutput({
+        bindingsStream,
+        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 1 }}),
+      });
+      await consume(bindingsStream);
+      await logger.finalize();
+
+      expect(logger.toJson()).toMatchObject({ cardinality: { type: 'estimate', value: 10 }});
+    });
+
+    it('reports an output that was never consumed as destroyed', async() => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
+      node.setOutput({
+        bindingsStream: new BufferedIterator({ autoStart: false }),
+        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 0 }}),
+      });
+      await logger.finalize();
+
+      expect(logger.toJson()).toMatchObject({
+        streamState: 'destroyed',
+        cardinalityReal: 0,
+        cardinality: { type: 'exact', value: 0 },
+      });
+    });
+
+    it('reports an output that could not be destroyed as unfinished', async() => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
+      const bindingsStream = new BufferedIterator({ autoStart: false });
+      // Sources may hand out streams that ignore being destroyed, which would otherwise never settle
+      bindingsStream.destroy = () => {
+        // Ignore
+      };
+      node.setOutput({
+        bindingsStream,
+        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 0 }}),
+      });
+      await logger.finalize();
+
+      expect(logger.toJson()).toMatchObject({ streamState: 'unfinished' });
+    });
+
+    it('ignores an output whose metadata rejects', async() => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', {});
+      const bindingsStream = new ArrayIterator([ 'a' ], { autoStart: false });
+      node.setOutput({
+        bindingsStream,
+        metadata: () => Promise.reject(new Error('Metadata failure')),
+      });
+      await consume(bindingsStream);
+      await logger.finalize();
+
+      expect(logger.toJson()).not.toHaveProperty('cardinality');
+    });
+
+    it('ignores an output without a stream', async() => {
+      const node = logOperation('ask', undefined, {}, undefined, 'actor-ask', {});
+      node.setOutput({ execute: () => Promise.resolve(true) });
+      await logger.finalize();
+
+      expect(logger.toJson()).toEqual({ logical: 'ask', actor: 'actor-ask' });
+    });
+
+    it('measures a quad stream', async() => {
+      const node = logOperation('construct', undefined, {}, undefined, 'actor-construct', {});
+      const quadStream = new ArrayIterator([ 'a' ], { autoStart: false });
+      node.setOutput({
+        quadStream,
+        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 1 }}),
+      });
+      await consume(quadStream);
+      await logger.finalize();
+
+      expect(logger.toJson()).toMatchObject({ cardinalityReal: 1 });
+    });
+  });
+
+  describe('adoptInput', () => {
+    it('moves a node to another parent', () => {
+      const rootOperation = {};
+      logOperation('join', undefined, rootOperation, undefined, 'actor-join', {});
+      const child = logOperation('pattern', undefined, createPattern('1'), rootOperation, 'actor-pattern', {});
+      const newParent = logOperation('join', 'hash', {}, rootOperation, 'actor-join-hash', {});
+
+      newParent.adoptInput(child);
+
+      expect(logger.toJson()).toEqual({
+        logical: 'join',
+        actor: 'actor-join',
+        children: [
+          {
+            logical: 'join',
+            physical: 'hash',
+            actor: 'actor-join-hash',
+            children: [
+              { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('is a no-op when the node is already a child of the given parent', () => {
+      const rootOperation = {};
+      logOperation('join', undefined, rootOperation, undefined, 'actor-join', {});
+      const child = logOperation('pattern', undefined, createPattern('1'), rootOperation, 'actor-pattern', {});
+
+      nodes.get(rootOperation)!.adoptInput(child);
+      nodes.get(rootOperation)!.adoptInput(child);
+
+      expect(logger.toJson()).toEqual({
+        logical: 'join',
+        actor: 'actor-join',
+        children: [
+          { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+        ],
+      });
     });
   });
 
   describe('appendMetadata', () => {
-    it('ignores a non-existing node', () => {
-      expect(() => logger.appendMetadata({}, {})).not.toThrow();
+    it('adds metadata to a node', () => {
+      const node = logOperation('pattern', undefined, createPattern(), undefined, 'actor-pattern', { b: 1 });
+
+      node.appendMetadata({ a: true });
+
+      expect(logger.toJson()).toEqual({
+        logical: 'pattern',
+        actor: 'actor-pattern',
+        pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
+        a: true,
+        b: 1,
+      });
     });
 
-    it('adds metadata to a node', () => {
-      const root = factory.createPattern(
-        DF.namedNode('ex:s1'),
-        DF.namedNode('ex:p1'),
-        DF.variable('o1'),
-        DF.namedNode('ex:g1'),
-      );
-      logger.logOperation(
-        'pattern',
-        undefined,
-        root,
-        undefined,
-        'actor-pattern',
-        { b: 1 },
-      );
+    it('defaults to empty metadata', () => {
+      const node = logger.logOperation({ logicalOperator: 'pattern', actor: 'actor-pattern' });
 
-      logger.appendMetadata(root, { a: true });
-      expect((<any> logger).rootNode.metadata).toEqual({ a: true, b: 1 });
+      node.appendMetadata({ a: true });
+
+      expect(logger.toJson()).toEqual({ logical: 'pattern', actor: 'actor-pattern', a: true });
     });
   });
 
@@ -249,7 +311,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
     });
 
     it('for a single pattern', () => {
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -265,12 +327,13 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
+        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
       });
     });
 
     it('for a single pattern with source', () => {
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         assignOperationSource(
@@ -289,13 +352,14 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
+        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
         source: 'SRC',
       });
     });
 
     it('for a single pattern in the default graph', () => {
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -311,12 +375,13 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
+        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1',
       });
     });
 
     it('for a single pattern with metadata', () => {
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -334,6 +399,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
+        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
         metaKey: 'metaValue',
       });
@@ -341,7 +407,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
     it('for a BGP and patterns', () => {
       const bgpNode = {};
-      logger.logOperation(
+      logOperation(
         'bgp',
         undefined,
         bgpNode,
@@ -349,7 +415,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         'actor-bgp',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -362,7 +428,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         'actor-pattern',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -378,13 +444,16 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'bgp',
+        actor: 'actor-bgp',
         children: [
           {
             logical: 'pattern',
+            actor: 'actor-pattern',
             pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
           },
           {
             logical: 'pattern',
+            actor: 'actor-pattern',
             pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
           },
         ],
@@ -396,7 +465,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         DF.variable('varA'),
         DF.variable('varB'),
       ]);
-      logger.logOperation(
+      logOperation(
         'project',
         undefined,
         projectNode,
@@ -406,7 +475,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       );
 
       const bgpNode = {};
-      logger.logOperation(
+      logOperation(
         'bgp',
         undefined,
         bgpNode,
@@ -414,7 +483,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         'actor-bgp',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -427,7 +496,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         'actor-pattern',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -443,6 +512,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'project',
+        actor: 'actor-bgp',
         variables: [
           'varA',
           'varB',
@@ -450,13 +520,16 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         children: [
           {
             logical: 'bgp',
+            actor: 'actor-bgp',
             children: [
               {
                 logical: 'pattern',
+                actor: 'actor-pattern',
                 pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
               },
               {
                 logical: 'pattern',
+                actor: 'actor-pattern',
                 pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
               },
             ],
@@ -467,7 +540,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
     it('for a bind join', () => {
       const joinNode = factory.createJoin([]);
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         joinNode,
@@ -477,24 +550,18 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       );
 
       const bjNode = {};
-      logger.logOperation(
-        'join-inner',
-        'bind',
+      logOperation(
+        'bindings',
+        undefined,
         bjNode,
         joinNode,
         'actor-bind',
-        {
-          bindOperation: factory.createPattern(
-            DF.namedNode('ex:s2'),
-            DF.namedNode('ex:p2'),
-            DF.variable('o2'),
-            DF.namedNode('ex:g2'),
-          ),
-        },
+        {},
+        true,
       );
 
       const subJoinNode1 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subJoinNode1,
@@ -502,7 +569,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         'actor-join',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -517,7 +584,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       );
 
       const subJoinNode2 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subJoinNode2,
@@ -525,7 +592,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         'actor-join',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -540,7 +607,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       );
 
       const subJoinNode3 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subJoinNode3,
@@ -548,7 +615,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         'actor-join',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'bgp',
         undefined,
         factory.createBgp([]),
@@ -559,35 +626,36 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
+        actor: 'actor-join',
         children: [
           {
-            logical: 'join-inner',
-            physical: 'bind',
-            bindOperation: {
-              pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
-            },
+            logical: 'bindings',
+            actor: 'actor-bind',
+            children: [
+              {
+                logical: 'join',
+                actor: 'actor-join',
+                children: [
+                  {
+                    logical: 'bgp',
+                    actor: 'actor-bgp',
+                  },
+                ],
+              },
+            ],
             childrenCompact: [
               {
                 occurrences: 2,
                 firstOccurrence: {
+                  logical: 'join',
+                  actor: 'actor-join',
                   children: [
                     {
                       logical: 'pattern',
+                      actor: 'actor-pattern',
                       pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
                     },
                   ],
-                  logical: 'join',
-                },
-              },
-              {
-                occurrences: 1,
-                firstOccurrence: {
-                  children: [
-                    {
-                      logical: 'bgp',
-                    },
-                  ],
-                  logical: 'join',
                 },
               },
             ],
@@ -598,7 +666,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
     it('for a bind join with nesting', () => {
       const joinNode = factory.createJoin([]);
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         joinNode,
@@ -608,17 +676,18 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       );
 
       const bjNode = {};
-      logger.logOperation(
-        'join-inner',
-        'bind',
+      logOperation(
+        'bindings',
+        undefined,
         bjNode,
         joinNode,
         'actor-bind',
         {},
+        true,
       );
 
       const subJoinNode1 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subJoinNode1,
@@ -626,7 +695,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         'actor-join',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -641,7 +710,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       );
 
       const subJoinNode2 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subJoinNode2,
@@ -650,17 +719,18 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         {},
       );
       const subBjNode1 = {};
-      logger.logOperation(
-        'join-inner',
-        'bind',
+      logOperation(
+        'bindings',
+        undefined,
         subBjNode1,
         subJoinNode2,
         'actor-bind',
         {},
+        true,
       );
 
       const subSubJoinNode1 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subSubJoinNode1,
@@ -668,7 +738,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         'actor-join',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -684,48 +754,45 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
+        actor: 'actor-join',
         children: [
           {
-            logical: 'join-inner',
-            physical: 'bind',
-            childrenCompact: [
+            logical: 'bindings',
+            actor: 'actor-bind',
+            children: [
               {
-                occurrences: 1,
-                firstOccurrence: {
-                  logical: 'join',
-                  children: [
-                    {
-                      logical: 'pattern',
-                      pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
-                    },
-                  ],
-                },
+                logical: 'join',
+                actor: 'actor-join',
+                children: [
+                  {
+                    logical: 'pattern',
+                    actor: 'actor-pattern',
+                    pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
+                  },
+                ],
               },
               {
-                occurrences: 1,
-                firstOccurrence: {
-                  children: [
-                    {
-                      logical: 'join-inner',
-                      physical: 'bind',
-                      childrenCompact: [
-                        {
-                          occurrences: 1,
-                          firstOccurrence: {
-                            logical: 'join',
-                            children: [
-                              {
-                                logical: 'pattern',
-                                pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
-                              },
-                            ],
+                logical: 'join',
+                actor: 'actor-join',
+                children: [
+                  {
+                    logical: 'bindings',
+                    actor: 'actor-bind',
+                    children: [
+                      {
+                        logical: 'join',
+                        actor: 'actor-join',
+                        children: [
+                          {
+                            logical: 'pattern',
+                            actor: 'actor-pattern',
+                            pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
                           },
-                        },
-                      ],
-                    },
-                  ],
-                  logical: 'join',
-                },
+                        ],
+                      },
+                    ],
+                  },
+                ],
               },
             ],
           },
@@ -735,7 +802,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
     it('for a bind join with nesting without intermediary join node', () => {
       const joinNode = factory.createJoin([]);
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         joinNode,
@@ -745,16 +812,17 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       );
 
       const bjNode = {};
-      logger.logOperation(
-        'join-inner',
-        'bind',
+      logOperation(
+        'bindings',
+        undefined,
         bjNode,
         joinNode,
         'actor-bind',
         {},
+        true,
       );
 
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -769,16 +837,17 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       );
 
       const subBjNode1 = {};
-      logger.logOperation(
-        'join-inner',
-        'bind',
+      logOperation(
+        'bindings',
+        undefined,
         subBjNode1,
         bjNode,
         'actor-bind',
         {},
+        true,
       );
 
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -794,23 +863,18 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
+        actor: 'actor-join',
         children: [
           {
-            logical: 'join-inner',
-            physical: 'bind',
+            logical: 'bindings',
+            actor: 'actor-bind',
             childrenCompact: [
               {
                 occurrences: 2,
                 firstOccurrence: {
                   logical: 'pattern',
+                  actor: 'actor-pattern',
                   pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
-                },
-              },
-              {
-                occurrences: 1,
-                firstOccurrence: {
-                  logical: 'join-inner',
-                  physical: 'bind',
                 },
               },
             ],
@@ -820,13 +884,52 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
     });
   });
 
+  describe('aggregateOccurrences', () => {
+    it('sums the measurements of the occurrences', () => {
+      expect(MemoryPhysicalQueryPlanLogger.aggregateOccurrences(<any> [
+        { cardinalityReal: 2, timeSelf: 1, timeLife: 3 },
+        { cardinalityReal: 3, timeSelf: 2, timeLife: 4 },
+      ])).toEqual({ cardinalityRealSum: 5, timeSelfSum: 3, timeLifeSum: 7 });
+    });
+
+    it('omits measurements that none of the occurrences have', () => {
+      expect(MemoryPhysicalQueryPlanLogger.aggregateOccurrences(<any> [{}, {}])).toEqual({});
+    });
+  });
+
   describe('toCompactString', () => {
     it('for an empty sequence', () => {
       expect(logger.toCompactString()).toBe('Empty');
     });
 
+    it('for an operation that a source handled itself', () => {
+      const root = assignOperationSource(
+        factory.createProject(factory.createJoin([]), []),
+        { source: <IQuerySource> { toString: () => 'SRC' }},
+      );
+      logOperation('project', undefined, root, undefined, 'actor-source', {
+        sourceQuery: 'SELECT * WHERE {\n  ?s ?p ?o\n}',
+        httpRequests: 2,
+      });
+      logOperation('join', undefined, root.input, root, 'actor-source', { delegated: true });
+
+      expect(logger.toCompactString()).toBe(`project () src:0 srcQuery:0 httpRequests:2 actor:0
+  join delegated actor:0
+
+sources:
+  0: SRC
+
+actors:
+  0: actor-source
+
+source queries:
+  0: SELECT * WHERE {
+       ?s ?p ?o
+     }`);
+    });
+
     it('for a single pattern', () => {
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -840,11 +943,14 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         {},
       );
 
-      expect(logger.toCompactString()).toBe('pattern (ex:s1 ex:p1 ?o1 ex:g1)');
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:0
+
+actors:
+  0: actor-pattern`);
     });
 
     it('for a single pattern with source', () => {
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         assignOperationSource(
@@ -861,14 +967,17 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0 actor:0
 
 sources:
-  0: SRC`);
+  0: SRC
+
+actors:
+  0: actor-pattern`);
     });
 
     it('for a single pattern in the default graph', () => {
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -882,11 +991,14 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe('pattern (ex:s1 ex:p1 ?o1)');
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1) actor:0
+
+actors:
+  0: actor-pattern`);
     });
 
     it('for a single pattern with metadata', () => {
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -906,11 +1018,14 @@ sources:
         },
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:~3 cardReal:1 timeSelf:0.123ms timeLife:0.679ms`);
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:~3 cardReal:1 timeSelf:0.123ms timeLife:0.679ms actor:0
+
+actors:
+  0: actor-pattern`);
     });
 
     it('for a single pattern with metadata and exact cardinality', () => {
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -927,12 +1042,15 @@ sources:
         },
       );
 
-      expect(logger.toCompactString()).toBe('pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:3');
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:3 actor:0
+
+actors:
+  0: actor-pattern`);
     });
 
     it('for a BGP and patterns', () => {
       const bgpNode = {};
-      logger.logOperation(
+      logOperation(
         'bgp',
         undefined,
         bgpNode,
@@ -940,7 +1058,7 @@ sources:
         'actor-bgp',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -953,7 +1071,7 @@ sources:
         'actor-pattern',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -967,9 +1085,13 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`bgp
-  pattern (ex:s1 ex:p1 ?o1 ex:g1)
-  pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
+      expect(logger.toCompactString()).toBe(`bgp actor:0
+  pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:1
+  pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:1
+
+actors:
+  0: actor-bgp
+  1: actor-pattern`);
     });
 
     it('for a project, BGP and patterns', () => {
@@ -977,7 +1099,7 @@ sources:
         DF.variable('varA'),
         DF.variable('varB'),
       ]);
-      logger.logOperation(
+      logOperation(
         'project',
         undefined,
         projectNode,
@@ -987,7 +1109,7 @@ sources:
       );
 
       const bgpNode = {};
-      logger.logOperation(
+      logOperation(
         'bgp',
         undefined,
         bgpNode,
@@ -995,7 +1117,7 @@ sources:
         'actor-bgp',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -1008,7 +1130,7 @@ sources:
         'actor-pattern',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -1022,15 +1144,19 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`project (varA,varB)
-  bgp
-    pattern (ex:s1 ex:p1 ?o1 ex:g1)
-    pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
+      expect(logger.toCompactString()).toBe(`project (varA,varB) actor:0
+  bgp actor:0
+    pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:1
+    pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:1
+
+actors:
+  0: actor-bgp
+  1: actor-pattern`);
     });
 
     it('for a bind join', () => {
       const joinNode = factory.createJoin([]);
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         joinNode,
@@ -1040,25 +1166,18 @@ sources:
       );
 
       const bjNode = {};
-      logger.logOperation(
-        'join-inner',
-        'bind',
+      logOperation(
+        'bindings',
+        undefined,
         bjNode,
         joinNode,
         'actor-bind',
-        {
-          bindOperation: factory.createPattern(
-            DF.namedNode('ex:s2'),
-            DF.namedNode('ex:p2'),
-            DF.variable('o2'),
-            DF.namedNode('ex:g2'),
-          ),
-          bindOperationCardinality: { type: 'estimate', value: 3 },
-        },
+        { bindIndex: 1 },
+        true,
       );
 
       const subJoinNode1 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subJoinNode1,
@@ -1066,7 +1185,7 @@ sources:
         'actor-join',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -1081,7 +1200,7 @@ sources:
       );
 
       const subJoinNode2 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subJoinNode2,
@@ -1089,7 +1208,7 @@ sources:
         'actor-join',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -1104,7 +1223,7 @@ sources:
       );
 
       const subJoinNode3 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subJoinNode3,
@@ -1112,7 +1231,7 @@ sources:
         'actor-join',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'bgp',
         undefined,
         factory.createBgp([]),
@@ -1121,17 +1240,23 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`join
-  join-inner(bind) bindOperation:(ex:s2 ex:p2 ?o2 ex:g2) bindCardEst:~3
-    join compacted-occurrences:2
-      pattern (ex:s2 ex:p2 ?o2 ex:g2)
-    join compacted-occurrences:1
-      bgp`);
+      expect(logger.toCompactString()).toBe(`join actor:0
+  bindings bindIndex:1 actor:1
+    join actor:0
+      bgp actor:2
+    join actor:0 compacted-occurrences:2
+      pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:3
+
+actors:
+  0: actor-join
+  1: actor-bind
+  2: actor-bgp
+  3: actor-pattern`);
     });
 
     it('for a bind join with nesting', () => {
       const joinNode = factory.createJoin([]);
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         joinNode,
@@ -1141,25 +1266,18 @@ sources:
       );
 
       const bjNode = {};
-      logger.logOperation(
-        'join-inner',
-        'bind',
+      logOperation(
+        'bindings',
+        undefined,
         bjNode,
         joinNode,
         'actor-bind',
-        {
-          bindOperation: factory.createPattern(
-            DF.namedNode('ex:s2'),
-            DF.namedNode('ex:p2'),
-            DF.variable('o2'),
-            DF.namedNode('ex:g2'),
-          ),
-          bindOperationCardinality: { type: 'exact', value: 3 },
-        },
+        { bindIndex: 1 },
+        true,
       );
 
       const subJoinNode1 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subJoinNode1,
@@ -1167,7 +1285,7 @@ sources:
         'actor-join',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -1182,7 +1300,7 @@ sources:
       );
 
       const subJoinNode2 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subJoinNode2,
@@ -1191,17 +1309,18 @@ sources:
         {},
       );
       const subBjNode1 = {};
-      logger.logOperation(
-        'join-inner',
-        'bind',
+      logOperation(
+        'bindings',
+        undefined,
         subBjNode1,
         subJoinNode2,
         'actor-bind',
         {},
+        true,
       );
 
       const subSubJoinNode1 = {};
-      logger.logOperation(
+      logOperation(
         'join',
         undefined,
         subSubJoinNode1,
@@ -1209,7 +1328,7 @@ sources:
         'actor-join',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         factory.createPattern(
@@ -1223,14 +1342,19 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`join
-  join-inner(bind) bindOperation:(ex:s2 ex:p2 ?o2 ex:g2) bindCardEst:3
-    join compacted-occurrences:1
-      pattern (ex:s2 ex:p2 ?o2 ex:g2)
-    join compacted-occurrences:1
-      join-inner(bind)
-        join compacted-occurrences:1
-          pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
+      expect(logger.toCompactString()).toBe(`join actor:0
+  bindings bindIndex:1 actor:1
+    join actor:0
+      pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:2
+    join actor:0
+      bindings actor:1
+        join actor:0
+          pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:2
+
+actors:
+  0: actor-join
+  1: actor-bind
+  2: actor-pattern`);
     });
 
     it('for two patterns with the same source', () => {
@@ -1241,7 +1365,7 @@ sources:
         DF.variable('o1'),
         DF.namedNode('ex:g1'),
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         parent,
@@ -1249,7 +1373,7 @@ sources:
         'actor-pattern',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         assignOperationSource(
@@ -1265,7 +1389,7 @@ sources:
         'actor-pattern',
         {},
       );
-      logger.logOperation(
+      logOperation(
         'pattern',
         undefined,
         assignOperationSource(
@@ -1282,12 +1406,15 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1)
-  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
-  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:0
+  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0 actor:0
+  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0 actor:0
 
 sources:
-  0: SRC`);
+  0: SRC
+
+actors:
+  0: actor-pattern`);
     });
   });
 });

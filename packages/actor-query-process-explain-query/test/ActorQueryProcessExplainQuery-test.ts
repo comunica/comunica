@@ -78,11 +78,6 @@ describe('ActorQueryProcessExplainQuery', () => {
         })).resolves
           .toPassTestVoid();
       });
-
-      it('handles query explain in raw context', async() => {
-        await expect(actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'query') })).resolves
-          .toPassTestVoid();
-      });
     });
 
     describe('run', () => {

@@ -1,6 +1,6 @@
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
+import { ActionContext, ActionContextKey } from '@comunica/core';
 import type {
   IActionContext,
   IQueryOperationResult,
@@ -20,6 +20,12 @@ import type {
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { ActorInitQueryBase } from './ActorInitQueryBase';
+
+/**
+ * The shortcut under which the explain mode may be passed in a raw query context.
+ * @see KeysInitQuery.explain
+ */
+const KEY_CONTEXT_EXPLAIN_SHORTCUT = new ActionContextKey<QueryExplainMode>('explain');
 
 /**
  * Base implementation of a Comunica query engine.
@@ -124,7 +130,15 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     query: QueryFormatTypeInner,
     context?: QueryFormatTypeInner extends string ? QueryStringContextInner : QueryAlgebraContextInner,
   ): Promise<QueryType | IQueryExplained> {
-    const actionContext: IActionContext = ActionContext.ensureActionContext(context);
+    let actionContext: IActionContext = ActionContext.ensureActionContext(context);
+
+    // The explain mode determines which query processor handles the query, so unlike the other context
+    // shortcuts, it cannot wait for the context preprocessing that happens during query processing.
+    if (actionContext.has(KEY_CONTEXT_EXPLAIN_SHORTCUT)) {
+      actionContext = actionContext
+        .set(KeysInitQuery.explain, actionContext.getSafe(KEY_CONTEXT_EXPLAIN_SHORTCUT))
+        .delete(KEY_CONTEXT_EXPLAIN_SHORTCUT);
+    }
 
     // Invalidate caches if cache argument is set to false
     if (actionContext.get(KeysInitQuery.invalidateCache)) {

@@ -5,12 +5,41 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
 import type {
   IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
   IQueryOperationResult,
   IQuerySourceWrapper,
 } from '@comunica/types';
 import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
+
+/**
+ * The operation types that are reported when a source handles an operation itself.
+ */
+const NESTED_OPERATION_TYPES = new Set<string>(Object.values(Algebra.Types).filter(type => ![
+  // Expressions are part of an operation, not operations of their own
+  Algebra.Types.EXPRESSION,
+  // Property path symbols describe a path, they are not evaluated separately
+  Algebra.Types.ALT,
+  Algebra.Types.INV,
+  Algebra.Types.LINK,
+  Algebra.Types.NPS,
+  Algebra.Types.ONE_OR_MORE_PATH,
+  Algebra.Types.SEQ,
+  Algebra.Types.ZERO_OR_MORE_PATH,
+  Algebra.Types.ZERO_OR_ONE_PATH,
+].includes(<any> type)));
+
+/**
+ * The keys that hold a template of quads instead of a nested operation, per operation type.
+ *
+ * A template describes what to produce or to modify, and is never evaluated as an operation,
+ * even though it is made up of values that look like patterns.
+ */
+const TEMPLATE_KEYS: Record<string, Set<string>> = {
+  [Algebra.Types.CONSTRUCT]: new Set([ 'template' ]),
+  [Algebra.Types.DELETE_INSERT]: new Set([ 'delete', 'insert' ]),
+};
 
 /**
  * A comunica Source Query Operation Actor.
@@ -39,18 +68,89 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     // Log to physical plan
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context
       .get(KeysInitQuery.physicalQueryPlanLogger);
+    let planNode: IPhysicalQueryPlanNode | undefined;
     if (physicalQueryPlanLogger) {
-      physicalQueryPlanLogger.logOperation(
-        action.operation.type,
-        undefined,
-        action.operation,
-        action.context.get(KeysInitQuery.physicalQueryPlanNode),
-        this.name,
-        {},
-      );
-      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
+      planNode = physicalQueryPlanLogger.logOperation({
+        logicalOperator: action.operation.type,
+        parentNode: action.context.get(KeysInitQuery.physicalQueryPlanNode),
+        actor: this.name,
+        operation: action.operation,
+      });
+      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, planNode);
+
+      // The source handles the whole operation itself, so no actor below reports what it contains.
+      // Record the shape that was handed to it, so that the plan does not stop at a single node.
+      this.logDelegatedOperations(physicalQueryPlanLogger, planNode, action.operation);
     }
 
+    const output = await this.runDelegated(action);
+
+    // Allow consumers of this output to find the node that produced it
+    planNode?.setOutput(output);
+
+    return output;
+  }
+
+  /**
+   * Log the operations below the given one, which the source handles itself.
+   * @param logger The physical query plan logger.
+   * @param parentNode The node of the operation that was delegated.
+   * @param operation The operation that was delegated.
+   */
+  protected logDelegatedOperations(
+    logger: IPhysicalQueryPlanLogger,
+    parentNode: IPhysicalQueryPlanNode,
+    operation: Algebra.Operation,
+  ): void {
+    for (const subOperation of ActorQueryOperationSource.getSubOperations(operation)) {
+      const node = logger.logOperation({
+        logicalOperator: subOperation.type,
+        parentNode,
+        actor: this.name,
+        operation: subOperation,
+        metadata: { delegated: true },
+      });
+      this.logDelegatedOperations(logger, node, subOperation);
+    }
+  }
+
+  /**
+   * Obtain the operations that are directly nested within the given operation.
+   *
+   * Expressions, property path symbols and quad templates are not included,
+   * as those are not operations that a source evaluates separately.
+   *
+   * @param operation An operation.
+   */
+  public static getSubOperations(operation: Algebra.Operation): Algebra.Operation[] {
+    const templateKeys = TEMPLATE_KEYS[operation.type];
+    const subOperations: Algebra.Operation[] = [];
+    for (const [ key, value ] of Object.entries(operation)) {
+      if (templateKeys?.has(key)) {
+        continue;
+      }
+      for (const entry of Array.isArray(value) ? value : [ value ]) {
+        if (ActorQueryOperationSource.isNestedOperation(entry)) {
+          subOperations.push(entry);
+        }
+      }
+    }
+    return subOperations;
+  }
+
+  /**
+   * If the given value is an operation that can be nested within another operation.
+   * @param value Any value occurring within an operation.
+   */
+  public static isNestedOperation(value: any): value is Algebra.Operation {
+    return Boolean(value) && typeof value === 'object' && NESTED_OPERATION_TYPES.has(value.type);
+  }
+
+  /**
+   * Delegate the operation of the given action to its source.
+   * @param action A query operation action with a source annotation.
+   */
+  protected async runDelegated(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     const sourceWrapper: IQuerySourceWrapper = getOperationSource(action.operation)!;
     const mergedContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
 

@@ -163,6 +163,65 @@ describe('QuerySourceSparql', () => {
     });
   });
 
+  describe('when a physical query plan is logged', () => {
+    let planNode: any;
+    let planContext: IActionContext;
+
+    beforeEach(() => {
+      planNode = { appendMetadata: jest.fn(), adoptInput: jest.fn(), setOutput: jest.fn() };
+      planContext = ctx.set(KeysInitQuery.physicalQueryPlanNode, planNode);
+    });
+
+    it('should report the query that is sent for bindings', async() => {
+      await source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), planContext).toArray();
+
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({
+        sourceQuery: `SELECT ?p WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }`,
+      });
+    });
+
+    it('should report the query that is sent for quads', async() => {
+      // The stubbed endpoint always answers with bindings, which the quad parser rejects
+      await source.queryQuads(AF.createConstruct(
+        AF.createPattern(iriS, DF.variable('p'), iriO),
+        [ AF.createPattern(iriS, DF.variable('p'), iriO) ],
+      ), planContext).toArray().catch(() => {
+        // Ignore
+      });
+
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({ sourceQuery: expect.stringContaining('CONSTRUCT') });
+    });
+
+    it('should report the query that is sent for a boolean', async() => {
+      // The stubbed endpoint always answers with bindings, which the ASK parser rejects
+      await source.queryBoolean(<any> AF.createAsk(AF.createPattern(iriS, DF.variable('p'), iriO)), planContext)
+        .catch(() => {
+          // Ignore
+        });
+
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({ sourceQuery: expect.stringContaining('ASK') });
+    });
+
+    it('should report the query that is sent for a void operation', async() => {
+      await source.queryVoid(AF.createDeleteInsert([ AF.createPattern(iriS, iriP, iriO) ]), planContext);
+
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({ sourceQuery: expect.stringContaining('DELETE') });
+    });
+
+    it('should count the HTTP requests it makes', async() => {
+      await source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), planContext).toArray();
+
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({ httpRequests: 1 });
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({ httpRequests: 2 });
+    });
+
+    it('should not count HTTP requests without a plan node', async() => {
+      await source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), ctx).toArray();
+
+      expect(planNode.appendMetadata).not.toHaveBeenCalled();
+    });
+  });
+
   describe('queryBindings', () => {
     it('should return data', async() => {
       await expect(source.queryBindings(AF.createPattern(
