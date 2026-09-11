@@ -1,6 +1,6 @@
 # Comunica Term Function Replace Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-replace.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-replace)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-replace.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-replace)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)

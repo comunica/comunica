@@ -12,10 +12,8 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/bus-utils-expression-evaluator-factory
+$ yarn add @comunica/bus-expression-evaluator-factory
 ```
-
-## Usage
 
 ## Bus usage
 
@@ -24,4 +22,4 @@ $ yarn add @comunica/bus-utils-expression-evaluator-factory
 
 ## Creating actors on this bus
 
-Actors extending [`ActorExpressionEvaluatorFactory`](TODO:jsdoc_url) are automatically subscribed to this bus.
+Actors extending [`ActorExpressionEvaluatorFactory`](https://comunica.github.io/comunica/classes/_comunica_bus-expression-evaluator-factory.ActorExpressionEvaluatorFactory.html) are automatically subscribed to this bus.

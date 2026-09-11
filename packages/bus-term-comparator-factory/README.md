@@ -15,8 +15,6 @@ and should only be used by [developers that want to build their own query engine
 $ yarn add @comunica/bus-term-comparator-factory
 ```
 
-## Usage
-
 ## Bus usage
 
 * **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-term-comparator-factory/^1.0.0/components/context.jsonld"`
@@ -24,4 +22,4 @@ $ yarn add @comunica/bus-term-comparator-factory
 
 ## Creating actors on this bus
 
-Actors extending [`ActorTermComparatorFactory`](TODO:jsdoc_url) are automatically subscribed to this bus.
+Actors extending [`ActorTermComparatorFactory`](https://comunica.github.io/comunica/classes/_comunica_bus-term-comparator-factory.ActorTermComparatorFactory.html) are automatically subscribed to this bus.

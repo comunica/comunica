@@ -1,0 +1,25 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/expressions-sparql/^5.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "ccqs:config/config-expressions.json"
+  ],
+  "@id": "urn:comunica:default:Runner",
+  "@type": "Runner",
+  "actors": [
+    {
+      "@id": "urn:comunica:default:expressions/actors#main",
+      "@type": "ActorInitExpressions",
+      "mediatorExpressionEvaluatorFactory": {
+        "@id": "urn:comunica:default:expression-evaluator-factory/mediators#main"
+      },
+      "mediatorTermComparatorFactory": { "@id": "urn:comunica:default:term-comparator-factory/mediators#main" },
+      "mediatorBindingsAggregatorFactory": {
+        "@id": "urn:comunica:default:bindings-aggregator-factory/mediators#main"
+      }
+    }
+  ]
+}

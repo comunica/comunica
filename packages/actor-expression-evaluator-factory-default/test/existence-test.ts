@@ -1,4 +1,5 @@
 import type { ActorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import type { IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Algebra } from '@comunica/utils-algebra';
@@ -98,5 +99,42 @@ describe('should be able to handle EXIST filters', () => {
     );
     const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
     await expect(evaluator.evaluateAsEBV(BF.bindings())).rejects.toBeTruthy();
+  });
+
+  describe('with an existenceResolver in the context', () => {
+    let existenceResolver: jest.Mock;
+
+    beforeEach(() => {
+      existenceResolver = jest.fn().mockResolvedValue(true);
+      context = context.set(KeysExpressionEvaluator.existenceResolver, existenceResolver);
+      mediatorQueryOperation.mediate = () => {
+        throw new Error('mediatorQueryOperation must not be reached');
+      };
+    });
+
+    it('delegates to the resolver, without materializing the operation', async() => {
+      const expr = factory.createExistenceExpression(false, factory.createBgp([]));
+      const bindings = BF.bindings([[ DF.variable('a'), DF.literal('1') ]]);
+
+      const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
+      await expect(evaluator.evaluateAsEBV(bindings)).resolves.toBe(true);
+      expect(existenceResolver).toHaveBeenCalledWith(expr, bindings);
+    });
+
+    it('leaves the not flag to the resolver', async() => {
+      existenceResolver.mockResolvedValue(false);
+      const expr = factory.createExistenceExpression(true, factory.createBgp([]));
+
+      const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
+      await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(false);
+    });
+
+    it('propagates errors thrown by the resolver', async() => {
+      existenceResolver.mockRejectedValue(new Error('Resolver error'));
+      const expr = factory.createExistenceExpression(false, factory.createBgp([]));
+
+      const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
+      await expect(evaluator.evaluateAsEBV(BF.bindings())).rejects.toThrow('Resolver error');
+    });
   });
 });

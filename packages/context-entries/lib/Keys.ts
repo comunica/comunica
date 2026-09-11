@@ -2,6 +2,7 @@ import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
 import type {
   AsyncExtensionFunctionCreator,
   Bindings,
+  ExistenceResolver,
   FunctionArgumentsCache,
   IActionContext,
   ICliArgsHandler,
@@ -281,6 +282,13 @@ export const KeysExpressionEvaluator = {
     '@comunica/utils-expression-evaluator:extensionFunctionCreator',
   ),
   superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/utils-expression-evaluator:superTypeProvider'),
+  /**
+   * Resolves `EXISTS` and `NOT EXISTS` expressions.
+   * When absent, the expression evaluator falls back to its query operation mediator.
+   */
+  existenceResolver: new ActionContextKey<ExistenceResolver>(
+    '@comunica/utils-expression-evaluator:existenceResolver',
+  ),
   defaultTimeZone: new ActionContextKey<ITimeZoneRepresentation>(
     '@comunica/utils-expression-evaluator:defaultTimeZone',
   ),

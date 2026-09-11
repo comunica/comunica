@@ -124,3 +124,44 @@ expect(new ArrayIterator([
   ]),
 ]);
 ```
+
+## Expression evaluation test tables
+
+Tests for [expression evaluation](https://comunica.dev/docs/modify/advanced/expression-evaluator/) functions
+are written as tables, where every line is one test.
+`runFuncTestTable` registers the function factory actors under test, and runs the table against them:
+
+```typescript
+import { bool, merge, numeric, Notation, runFuncTestTable } from '@comunica/utils-jest';
+import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
+
+runFuncTestTable({
+  registeredActors: [ args => new ActorFunctionFactoryTermEquality(args) ],
+  testTable: `
+    3i 3i = true
+    3i -5i = false
+    -0f 0f = true
+    NaN NaN = false
+  `,
+  arity: 2,
+  operation: '=',
+  aliases: merge(numeric, bool),
+  notation: Notation.Infix,
+});
+```
+
+Aliases map the short names in the table to full RDF terms; the ones above are exported by this package.
+Instead of a `testTable`, an `errorTable` asserts that evaluation throws, where `''` accepts any error:
+
+```typescript
+runFuncTestTable({
+  errorTable: `3i 3i = 'Unknown named operator'`,
+  arity: 2,
+  operation: '<https://example.org/functions#equal>',
+  aliases: numeric,
+  notation: Notation.Infix,
+});
+```
+
+The remaining options are documented on the `FuncTestTableConfig` type.
+When a table is too restrictive, use `generalEvaluate` instead, which evaluates a full expression string.
