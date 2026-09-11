@@ -86,6 +86,15 @@ WHERE {
         const context: QueryStringContext = { sources: [{ value: source }], serviceAllowFileTargets: true };
         await expect(arrayifyStream(await engine.queryBindings(query, context))).resolves.toHaveLength(2);
       });
+
+      it('should not block file sources that are passed as query sources', async() => {
+        const queryCombined = `SELECT * WHERE {
+          ?s ?p ?o.
+          OPTIONAL { SERVICE SILENT <${serviceTarget}> { ?s2 ?p2 ?o2. } }
+        }`;
+        const context: QueryStringContext = { sources: [{ value: source }]};
+        await expect(arrayifyStream(await engine.queryBindings(queryCombined, context))).resolves.toHaveLength(5);
+      });
     });
   });
 });
