@@ -2340,10 +2340,8 @@ WHERE { }
         )).rejects.toThrow('none of the configured actors were able to handle the operation type pattern');
       });
 
-      it('appends the FROM IRI as a real source when fromNamedAsSources is true', async() => {
-        const originalFetch = globalThis.fetch;
-
-        globalThis.fetch = <typeof globalThis.fetch> jest.fn(async(input: string, init?: RequestInit) => {
+      it('appends the FROM IRI as a real source when dereferenceFromNamed is true', async() => {
+        const mockedFetch = <typeof globalThis.fetch> jest.fn(async(input: string, init?: RequestInit) => {
           if (input === datasetIri) {
             return <Response> {
               status: 200,
@@ -2353,7 +2351,7 @@ WHERE { }
               url: input,
             };
           }
-          return originalFetch(input, init);
+          return fetch(input, init);
         });
 
         // No sources in context
@@ -2361,7 +2359,8 @@ WHERE { }
           `SELECT * FROM <${datasetIri}> WHERE { ?s ?p ?o }`,
           {
             sources: [],
-            fromNamedAsSources: true,
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
           },
         );
         const bindings = await bindingsStream.toArray();
@@ -2380,12 +2379,10 @@ WHERE { }
           ]),
         ]);
 
-        expect(globalThis.fetch).toHaveBeenCalledWith(
+        expect(mockedFetch).toHaveBeenCalledWith(
           datasetIri,
           expect.anything(),
         );
-
-        globalThis.fetch = originalFetch;
       });
     });
 

@@ -20,6 +20,13 @@ export type QueryStringContext = RDF.QueryStringContext & IQueryContextCommon;
 export type QueryAlgebraContext = RDF.QueryAlgebraContext & IQueryContextCommon;
 
 /**
+ * What to do when a FROM NAMED source already contains a named graph of its own, instead of only
+ * default-graph quads: 'error' refuses to load the source, 'overwrite' discards the existing named
+ * graph, 'merge' leaves it untouched (so the source ends up exposing multiple named graphs).
+ */
+export type DereferenceFromNamedConflictMode = 'error' | 'overwrite' | 'merge';
+
+/**
  * Common query context interface
  */
 export interface IQueryContextCommon {
@@ -70,7 +77,8 @@ export interface IQueryContextCommon {
   dataFactory?: ComunicaDataFactory;
   distinctConstruct?: boolean;
   rdfSerializationPrefixes?: Record<string, string>;
-  fromNamedAsSources?: boolean;
+  dereferenceFromNamed?: boolean;
+  dereferenceFromNamedConflictMode?: DereferenceFromNamedConflictMode;
 
   sources: SourceType[];
 }

@@ -20,6 +20,7 @@ import type {
   IDiscoverEventData,
   PartialResult,
   ILink,
+  DereferenceFromNamedConflictMode,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -343,10 +344,28 @@ export const KeysQueryOperation = {
     '@comunica/bus-query-operation:serviceSources',
   ),
   /**
-   * A boolean denoting if datasets/graphs in FROM (NAMED) clauses should be set as sources (default: false).
+   * Dereferences IRIs in FROM (NAMED) clauses and merges their content into query dataset. (default: false)
    */
-  fromNamedAsSources: new ActionContextKey<boolean>(
-    '@comunica/bus-query-operation:fromNamedAsSources',
+  dereferenceFromNamed: new ActionContextKey<boolean>(
+    '@comunica/bus-query-operation:dereferenceFromNamed',
+  ),
+  /**
+   * If set on a query source's own context, that source's dereferenced quads should have their
+   * graph component rewritten to this term, as declared via a SPARQL FROM NAMED clause, instead
+   * of keeping whatever graph the source's serialization assigned them.
+   */
+  sourceAsNamedGraph: new ActionContextKey<RDF.NamedNode>(
+    '@comunica/bus-query-operation:sourceAsNamedGraph',
+  ),
+  /**
+   * What happens when FROM NAMED source data already contains a quad in a
+   * named graph:
+   * - error: refuse to load source.
+   * - overwrite: rewrite every quad's graph, discarding the original one.
+   * - merge: rewrite only default-graph quads, quads already in a named graph keep their own graph
+   */
+  dereferenceFromNamedConflictMode: new ActionContextKey<DereferenceFromNamedConflictMode>(
+    '@comunica/bus-query-operation:dereferenceFromNamedConflictMode',
   ),
 };
 
