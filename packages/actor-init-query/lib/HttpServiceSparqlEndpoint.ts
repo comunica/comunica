@@ -25,6 +25,8 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
+import type { IGraphStoreResult } from './HttpServiceGraphStore';
+import { HttpServiceGraphStore } from './HttpServiceGraphStore';
 import { VoidMetadataEmitter } from './VoidMetadataEmitter';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
@@ -74,6 +76,7 @@ export class HttpServiceSparqlEndpoint {
   public readonly emitVoid: boolean;
 
   public readonly voidMetadataEmitter: VoidMetadataEmitter;
+  public readonly graphStore: HttpServiceGraphStore | undefined;
 
   public lastQueryId = 0;
 
@@ -86,6 +89,7 @@ export class HttpServiceSparqlEndpoint {
     this.contextOverride = Boolean(args.contextOverride);
     this.emitVoid = Boolean(args.emitVoid);
     this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
+    this.graphStore = args.graphStore ? new HttpServiceGraphStore(this.context) : undefined;
 
     this.engine = args.engine ?
       Promise.resolve(args.engine) :
@@ -185,6 +189,7 @@ export class HttpServiceSparqlEndpoint {
     const freshWorkerPerQuery: boolean = args.freshWorker;
     const contextOverride: boolean = args.contextOverride;
     const emitVoid: boolean = args.emitVoid;
+    const graphStore: boolean = args.graphStore;
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
@@ -199,6 +204,7 @@ export class HttpServiceSparqlEndpoint {
       freshWorkerPerQuery,
       contextOverride,
       emitVoid,
+      graphStore,
       moduleRootPath,
       mainModulePath: moduleRootPath,
       port,
@@ -384,6 +390,32 @@ export class HttpServiceSparqlEndpoint {
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
     }
+    // Requests to the graph store are handled through the Graph Store HTTP Protocol, when it is enabled
+    if (this.graphStore) {
+      const graphStoreIri = HttpServiceSparqlEndpoint.getBaseIRI(request, this.port, HttpServiceGraphStore.PATH);
+      const graphStoreTarget = HttpServiceGraphStore.getTarget(request, requestUrl, graphStoreIri);
+      if (graphStoreTarget && request.method === 'OPTIONS') {
+        this.writePreflightResponse(
+          stdout,
+          request,
+          response,
+          HttpServiceGraphStore.getMethodAdvertisementHeaders(graphStoreTarget),
+        );
+        return;
+      }
+      if (graphStoreTarget) {
+        const result = await this.graphStore.handleRequest(
+          engine,
+          request,
+          graphStoreTarget,
+          graphStoreIri,
+          () => HttpServiceSparqlEndpoint.readBody(request),
+        );
+        await this.writeGraphStoreResult(engine, stdout, request, response, result, mediaType);
+        return;
+      }
+    }
+
     if (requestUrl.pathname !== '/sparql') {
       stdout.write('[404] Resource not found. Queries are accepted on /sparql.\n');
       response.writeHead(
@@ -449,14 +481,12 @@ export class HttpServiceSparqlEndpoint {
         );
         break;
       case 'OPTIONS':
-        // Answer CORS preflight requests, which browsers always send for QUERY, as it is never a simple method.
-        stdout.write(`[204] ${request.method} to ${request.url}\n`);
-        response.writeHead(204, HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
-          'Access-Control-Max-Age': '86400',
-        }));
-        response.end();
+        this.writePreflightResponse(
+          stdout,
+          request,
+          response,
+          HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({}),
+        );
         break;
       default:
         stdout.write(`[405] ${request.method} to ${request.url}\n`);
@@ -469,6 +499,30 @@ export class HttpServiceSparqlEndpoint {
         );
         response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
     }
+  }
+
+  /**
+   * Answers a CORS preflight request, which browsers always send for the methods that are not simple:
+   * QUERY, and the PUT and DELETE of the Graph Store HTTP Protocol.
+   * @param {module:stream.internal.Writable} stdout Output stream.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {module:http.ServerResponse} response Response object.
+   * @param {Record<string, string>} methodAdvertisementHeaders The headers that advertise the allowed methods.
+   */
+  public writePreflightResponse(
+    stdout: Writable,
+    request: http.IncomingMessage,
+    response: http.ServerResponse,
+    methodAdvertisementHeaders: Record<string, string>,
+  ): void {
+    stdout.write(`[204] ${request.method} to ${request.url}\n`);
+    response.writeHead(204, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
+      'Access-Control-Max-Age': '86400',
+      ...methodAdvertisementHeaders,
+    });
+    response.end();
   }
 
   /**
@@ -490,11 +544,12 @@ export class HttpServiceSparqlEndpoint {
    * Determine the base IRI that relative IRIs in a request are resolved against.
    * @param {module:http.IncomingMessage} request Request object.
    * @param {number} port The port this service is running on.
+   * @param {string} path The path of the service on this server.
    * @return {string} The base IRI.
    */
-  public static getBaseIRI(request: http.IncomingMessage, port: number): string {
+  public static getBaseIRI(request: http.IncomingMessage, port: number, path = '/sparql'): string {
     const protocol = (<TLSSocket> request.socket).encrypted ? 'https' : 'http';
-    return `${protocol}://${request.headers.host ?? `localhost:${port}`}/sparql`;
+    return `${protocol}://${request.headers.host ?? `localhost:${port}`}${path}`;
   }
 
   /**
@@ -715,6 +770,69 @@ export class HttpServiceSparqlEndpoint {
     }
 
     this.stopResponse(response, queryId, process.stderr, eventEmitter);
+  }
+
+  /**
+   * Writes the outcome of a request of the Graph Store HTTP Protocol.
+   * @param {QueryEngineBase} engine A SPARQL engine.
+   * @param {module:stream.internal.Writable} stdout Output stream.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {module:http.ServerResponse} response Response object.
+   * @param {IGraphStoreResult} result The outcome of the request.
+   * @param {string} mediaType The requested response media type.
+   */
+  public async writeGraphStoreResult(
+    engine: QueryEngineBase,
+    stdout: Writable,
+    request: http.IncomingMessage,
+    response: http.ServerResponse,
+    result: IGraphStoreResult,
+    mediaType: string,
+  ): Promise<void> {
+    if (!result.result) {
+      stdout.write(`[${result.status}] ${request.method} to ${request.url}\n`);
+      response.writeHead(result.status, {
+        'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN,
+        'Access-Control-Allow-Origin': '*',
+        ...result.headers,
+      });
+      response.end(result.message ? `${result.message}\n` : undefined);
+      return;
+    }
+
+    // Graphs are served as Turtle unless the request asks for another RDF serialization
+    mediaType = mediaType || 'text/turtle';
+    stdout.write(`[${result.status}] ${request.method} to ${request.url}\n`);
+    stdout.write(`      Resolved to result media type: ${mediaType}\n`);
+    response.writeHead(result.status, {
+      'content-type': mediaType,
+      'Access-Control-Allow-Origin': '*',
+      ...result.headers,
+    });
+
+    // Stop further processing for HEAD requests
+    if (request.method === 'HEAD') {
+      response.end();
+      return;
+    }
+
+    let eventEmitter: EventEmitter;
+    try {
+      const { data } = await engine.resultToString(result.result, mediaType);
+      data.on('error', (error: Error) => {
+        stdout.write(`[500] Server error in results: ${error.message} \n`);
+        if (!response.writableEnded) {
+          response.end('An internal server error occurred.\n');
+        }
+      });
+      data.pipe(response);
+      eventEmitter = data;
+    } catch {
+      stdout.write(`      The graph could not be serialized for the requested media type\n`);
+      response.end('The graph could not be serialized for the requested media type.\n');
+      return;
+    }
+    this.stopResponse(response, this.lastQueryId++, process.stderr, eventEmitter);
   }
 
   public async writeServiceDescription(
@@ -969,6 +1087,7 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   freshWorkerPerQuery?: boolean;
   contextOverride?: boolean;
   emitVoid?: boolean;
+  graphStore?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
 }
