@@ -1,0 +1,18 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^5.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "ccqs:config/bindings-aggregator-factory/actors.json",
+    "ccqs:config/bindings-aggregator-factory/mediators.json",
+    "ccqs:config/expression-evaluator-factory/actors.json",
+    "ccqs:config/expression-evaluator-factory/mediators.json",
+    "ccqs:config/function-factory/actors.json",
+    "ccqs:config/function-factory/mediators.json",
+    "ccqs:config/merge-bindings-context/actors.json",
+    "ccqs:config/merge-bindings-context/mediators.json",
+    "ccqs:config/query-operation/mediators.json",
+    "ccqs:config/term-comparator-factory/actors.json",
+    "ccqs:config/term-comparator-factory/mediators.json"
+  ]
+}

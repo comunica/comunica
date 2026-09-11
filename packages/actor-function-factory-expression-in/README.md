@@ -1,6 +1,6 @@
 # Comunica Expression Function In Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-in.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-in)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-in.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-in)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs an [expression function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)
