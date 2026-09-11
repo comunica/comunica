@@ -1,6 +1,6 @@
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, Expression, IActionContext, TermExpression } from '@comunica/types';
 import { ExpressionType } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
@@ -65,6 +65,12 @@ export class InternalEvaluator {
   }
 
   private async evalExistence(expr: Eval.Existence, mapping: RDF.Bindings): Promise<Eval.Term> {
+    // A resolver takes over the whole expression, including its `not` flag, so nothing is materialized here.
+    const existenceResolver = this.context.get(KeysExpressionEvaluator.existenceResolver);
+    if (existenceResolver) {
+      return new Eval.BooleanLiteral(await existenceResolver(expr.expression, mapping));
+    }
+
     const dataFactory: ComunicaDataFactory = this.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
     const operation = materializeOperation(expr.expression.input, mapping, algebraFactory, this.bindingsFactory);

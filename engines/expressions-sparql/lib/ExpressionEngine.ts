@@ -1,8 +1,13 @@
 import type { IBindingsAggregator } from '@comunica/bus-bindings-aggregator-factory';
 import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { FunctionArgumentsCache, IActionContext, IExpressionEvaluator } from '@comunica/types';
+import type {
+  ExistenceResolver,
+  FunctionArgumentsCache,
+  IActionContext,
+  IExpressionEvaluator,
+} from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import type { ActorInitExpressions } from './ActorInitExpressions';
@@ -11,6 +16,14 @@ import type { ActorInitExpressions } from './ActorInitExpressions';
 const engineDefault = require('../engine-default.js');
 
 const DF = new DataFactory();
+
+/**
+ * Used when the caller did not provide an existence resolver.
+ * This engine configures no query operations, so it cannot evaluate the sub-query of an EXISTS itself.
+ */
+const unsupportedExistence: ExistenceResolver = () => {
+  throw new Error(`Evaluating EXISTS requires a ${KeysExpressionEvaluator.existenceResolver.name} in the context`);
+};
 
 /**
  * A Comunica engine for evaluating SPARQL expressions, without executing queries.
@@ -61,6 +74,7 @@ export class ExpressionEngine {
     return context
       .setDefault(KeysInitQuery.dataFactory, DF)
       .setDefault(KeysInitQuery.queryTimestamp, new Date())
-      .setDefault(KeysInitQuery.functionArgumentsCache, this.functionArgumentsCache);
+      .setDefault(KeysInitQuery.functionArgumentsCache, this.functionArgumentsCache)
+      .setDefault(KeysExpressionEvaluator.existenceResolver, unsupportedExistence);
   }
 }

@@ -1,7 +1,10 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { materializeOperation } from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ExpressionEngine } from '../lib/ExpressionEngine';
 
@@ -47,6 +50,48 @@ describe('ExpressionEngine', () => {
         '2009-02-13T23:31:30Z',
         DF.namedNode('http://www.w3.org/2001/XMLSchema#dateTime'),
       ));
+    });
+  });
+
+  describe('EXISTS', () => {
+    const expression = AF.createExistenceExpression(false, AF.createBgp([]));
+
+    it('rejects without an existenceResolver, before materializing anything.', async() => {
+      const evaluator = await engine.createEvaluator(expression);
+      await expect(evaluator.evaluateAsEBV(BF.bindings())).rejects
+        .toThrow('Evaluating EXISTS requires a @comunica/utils-expression-evaluator:existenceResolver in the context');
+    });
+
+    it('delegates to a provided existenceResolver.', async() => {
+      const evaluator = await engine.createEvaluator(expression, new ActionContext({
+        [KeysExpressionEvaluator.existenceResolver.name]: async() => true,
+      }));
+      await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(true);
+    });
+
+    it('leaves the not flag to the resolver.', async() => {
+      const resolver = jest.fn(async(expr: Algebra.ExistenceExpression) => expr.not);
+      const evaluator = await engine.createEvaluator(
+        AF.createExistenceExpression(true, AF.createBgp([])),
+        new ActionContext({ [KeysExpressionEvaluator.existenceResolver.name]: resolver }),
+      );
+      await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(true);
+    });
+
+    it('lets the resolver materialize the operation itself.', async() => {
+      const evaluator = await engine.createEvaluator(
+        AF.createExistenceExpression(false, AF.createBgp([
+          AF.createPattern(DF.variable('s'), DF.namedNode('ex:p'), DF.variable('o')),
+        ])),
+        new ActionContext({
+          [KeysExpressionEvaluator.existenceResolver.name]:
+            async(expr: Algebra.ExistenceExpression, mapping: RDF.Bindings) => {
+              const operation = <Algebra.Bgp> materializeOperation(expr.input, mapping, AF, BF);
+              return operation.patterns[0].subject.equals(DF.namedNode('ex:s'));
+            },
+        }),
+      );
+      await expect(evaluator.evaluateAsEBV(BF.fromRecord({ s: DF.namedNode('ex:s') }))).resolves.toBe(true);
     });
   });
 

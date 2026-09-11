@@ -81,7 +81,30 @@ const evaluator = await engine.createEvaluator(expression, new ActionContext({
 }));
 ```
 
+### EXISTS
+
+This engine configures no query operations, so it cannot evaluate the sub-query of an `EXISTS` itself.
+Supply a `KeysExpressionEvaluator.existenceResolver` to answer them; without one, evaluating an `EXISTS`
+throws. The resolver receives the expression as it appears in the algebra, which makes it responsible for
+applying `expression.not` and, if it needs them, for substituting the bindings with `materializeOperation`:
+
+```typescript
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { materializeOperation } from '@comunica/utils-query-operation';
+
+const evaluator = await engine.createEvaluator(expression, new ActionContext({
+  [KeysExpressionEvaluator.existenceResolver.name]:
+    async(expr: Algebra.ExistenceExpression, bindings: RDF.Bindings) => {
+      const operation = materializeOperation(expr.input, bindings, AF, BF);
+      const exists = await myStore.ask(operation);
+      return expr.not ? !exists : exists;
+    },
+}));
+```
+
+Throw an `ExpressionError` from the resolver to have the failure treated as a SPARQL error, so that `FILTER`
+drops the bindings rather than failing the whole evaluation.
+
 ### Limitations
 
 * Evaluation is asynchronous only; there is no synchronous evaluator.
-* `EXISTS` is not supported, as this engine configures no query operations.

@@ -43,6 +43,20 @@ export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) =
 Promise<AsyncExtensionFunction | undefined>;
 
 /**
+ * Resolves a SPARQL `EXISTS` or `NOT EXISTS` expression against the given bindings.
+ *
+ * The resolver receives the expression as it appears in the algebra, so it is responsible for both
+ * materializing `expression.input` against the bindings (see `materializeOperation` in
+ * `@comunica/utils-query-operation`) and for applying `expression.not`.
+ * Throw an `ExpressionError` to have the failure treated as a SPARQL error, for example so that
+ * `FILTER` drops the bindings instead of failing the query.
+ */
+export type ExistenceResolver = (
+  expression: Algebra.ExistenceExpression,
+  mapping: RDF.Bindings,
+) => Promise<boolean>;
+
+/**
  * The key 'term' is not included in these keys. Something that is just a term will map to number 0.
  */
 export type GeneralSuperTypeDict = Record<string, number> & { __depth: number };
