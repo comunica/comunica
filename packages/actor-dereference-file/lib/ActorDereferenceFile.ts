@@ -35,8 +35,7 @@ export class ActorDereferenceFile extends ActorDereference {
     // Dereferencing local files can be blocked within certain scopes, such as SERVICE targets.
     if (context.get(KeysDereference.blockFileAccess)) {
       return this.handleDereferenceErrors(action, new Error(
-        `Dereferencing the local file '${url}' is not allowed within this scope. ` +
-        `Within SERVICE clauses, this can be allowed via the 'serviceAllowFileTargets' context entry.`,
+        `Dereferencing the local file '${url}' is not allowed within this scope. `,
       ));
     }
 
