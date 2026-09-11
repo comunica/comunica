@@ -6,6 +6,16 @@ Comunica SPARQL is a SPARQL query engine for JavaScript for querying local and r
 
 This module is part of the [Comunica framework](https://comunica.dev/).
 
+Since this engine can read local files,
+`SERVICE` clauses are not allowed to target local files by default,
+as queries from untrusted parties could otherwise read arbitrary files from the local file system.
+If all queries originate from trusted parties,
+this can be enabled via the `serviceAllowFileTargets` context entry:
+
+```bash
+$ comunica-sparql-file path/to/my/file.ttl -c '{ "serviceAllowFileTargets": true }' "SELECT * WHERE { ... }"
+```
+
 ## Install
 
 ```bash

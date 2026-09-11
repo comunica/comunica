@@ -1,6 +1,7 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 import * as path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import type { QueryStringContext } from '@comunica/types';
 import 'jest-rdf';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -55,6 +56,35 @@ WHERE {
 
         const result = await arrayifyStream(await engine.queryBindings(query, context));
         expect(result).toEqualBindingsArray(expectedResult);
+      });
+    });
+
+    describe('SERVICE clauses targeting files', () => {
+      let source: string;
+      let serviceTarget: string;
+      let query: string;
+
+      beforeEach(() => {
+        source = path.join(path.relative(process.cwd(), __dirname), 'assets/dummy.ttl');
+        serviceTarget = pathToFileURL(path.join(__dirname, 'assets/dummy.jsonld')).href;
+        query = `SELECT * WHERE { SERVICE <${serviceTarget}> { ?s ?p ?o. } }`;
+      });
+
+      it('should not be allowed by default', async() => {
+        const context: QueryStringContext = { sources: [{ value: source }]};
+        await expect(async() => arrayifyStream(await engine.queryBindings(query, context))).rejects
+          .toThrow(`Dereferencing the local file '${serviceTarget}' is not allowed within this scope.`);
+      });
+
+      it('should produce no results by default when silent', async() => {
+        const querySilent = `SELECT * WHERE { SERVICE SILENT <${serviceTarget}> { ?s ?p ?o. } }`;
+        const context: QueryStringContext = { sources: [{ value: source }]};
+        await expect(arrayifyStream(await engine.queryBindings(querySilent, context))).resolves.toHaveLength(0);
+      });
+
+      it('should be allowed with serviceAllowFileTargets', async() => {
+        const context: QueryStringContext = { sources: [{ value: source }], serviceAllowFileTargets: true };
+        await expect(arrayifyStream(await engine.queryBindings(query, context))).resolves.toHaveLength(2);
       });
     });
   });
