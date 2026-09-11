@@ -310,9 +310,6 @@ jobs:
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
-      # Both checkouts live in a directory of their own. Nx scans the whole tree below the
-      # monorepo root, so a second copy of the monorepo nested inside the first one makes
-      # every package in it a duplicate project name, and lerna refuses to build.
       - name: Check out repository
         uses: actions/checkout@v7
         with:
