@@ -101,7 +101,7 @@ describe('SumAggregator', () => {
         BF.bindings([[ DF.variable('x'), float('3') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) ]]),
       ];
-      await expect(runAggregator(aggregator, input)).resolves.toEqual(float('10'));
+      await expect(runAggregator(aggregator, input)).resolves.toEqual(float('1.0E1'));
     });
 
     it('with accurate results', async() => {

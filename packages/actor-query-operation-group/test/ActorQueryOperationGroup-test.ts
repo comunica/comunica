@@ -991,7 +991,7 @@ describe('ActorQueryOperationGroup', () => {
       const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([
-          [ DF.variable('s'), float('10') ],
+          [ DF.variable('s'), float('1.0E1') ],
         ]),
       ]);
       await expect(output.metadata()).resolves
@@ -1112,7 +1112,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([
-        BF.bindings([[ DF.variable('a'), float('2.5') ]]),
+        BF.bindings([[ DF.variable('a'), float('2.5E0') ]]),
       ]);
       await expect(output.metadata()).resolves
         .toEqual({ cardinality: 4, variables: [

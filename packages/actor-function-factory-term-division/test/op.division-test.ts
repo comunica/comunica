@@ -56,7 +56,7 @@ describe('evaluation of \'/\' like', () => {
       discoverer: () => Eval.TypeURL.XSD_INTEGER,
     }),
     testTable: `
-      "2"^^example:int "2"^^example:int = ${decimal('1')}
+      "2"^^example:int "2"^^example:int = ${decimal('1.0')}
     `,
     errorTable: `
       "2"^^example:int "0"^^example:int = 'Integer division by 0'
