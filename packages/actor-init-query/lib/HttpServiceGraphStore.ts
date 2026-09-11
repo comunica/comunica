@@ -13,15 +13,6 @@ import type { QueryEngineBase } from '..';
 const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);
 
-/**
- * The content types through which the SPARQL protocol, rather than the Graph Store protocol, is invoked.
- */
-const SPARQL_PROTOCOL_TYPES = [
-  'application/sparql-query',
-  'application/sparql-update',
-  'application/x-www-form-urlencoded',
-];
-
 const BOUNDARY_REGEX = /;\s*boundary=(?:"([^"]*)"|([^\s;]+))/iu;
 
 const CONTENT_TYPE_REGEX = /^content-type\s*:(.*)$/iu;
@@ -60,13 +51,25 @@ export interface IGraphStoreResult {
 }
 
 /**
- * An implementation of the SPARQL 1.1 Graph Store HTTP Protocol,
- * which is exposed on the same path as the SPARQL protocol.
+ * An implementation of the SPARQL 1.1 Graph Store HTTP Protocol.
  *
- * Graphs are identified directly through the request path, such as `/sparql/person/1.ttl`,
- * and indirectly through the `graph` and `default` parameters on the endpoint itself.
+ * Graphs are identified directly through the request path, such as `/store/person/1.ttl`,
+ * and indirectly through the `graph` and `default` parameters on the graph store itself.
  */
 export class HttpServiceGraphStore {
+  /**
+   * The path on which the graph store is served.
+   */
+  public static readonly PATH = '/store';
+  /**
+   * The HTTP methods a graph handles, as advertised via the `Allow` and `Access-Control-Allow-Methods` headers.
+   */
+  public static readonly ALLOWED_METHODS = 'DELETE, GET, HEAD, OPTIONS, POST, PUT';
+  /**
+   * The HTTP methods the graph store itself handles, which only accepts new graphs.
+   */
+  public static readonly ALLOWED_METHODS_STORE = 'OPTIONS, POST';
+
   public readonly context: any;
 
   public constructor(context: any) {
@@ -77,34 +80,25 @@ export class HttpServiceGraphStore {
    * Determine the graph that a request applies to, if it is a Graph Store HTTP Protocol request.
    * @param {module:http.IncomingMessage} request Request object.
    * @param {module:url.UrlWithParsedQuery} requestUrl The parsed request URL.
-   * @param {string} endpointIri The IRI of this endpoint.
+   * @param {string} graphStoreIri The IRI of the graph store.
    * @return {IGraphStoreTarget | undefined} The graph, or undefined if this is not a graph store request.
    */
   public static getTarget(
     request: http.IncomingMessage,
     requestUrl: url.UrlWithParsedQuery,
-    endpointIri: string,
+    graphStoreIri: string,
   ): IGraphStoreTarget | undefined {
-    const endpointPath = new URL(endpointIri).pathname;
     const pathname = requestUrl.pathname ?? '';
 
     // Direct graph identification: the request IRI itself identifies the graph
-    if (pathname.startsWith(`${endpointPath}/`)) {
-      return { graph: DF.namedNode(endpointIri + pathname.slice(endpointPath.length)) };
+    if (pathname.startsWith(`${HttpServiceGraphStore.PATH}/`)) {
+      return { graph: DF.namedNode(graphStoreIri + pathname.slice(HttpServiceGraphStore.PATH.length)) };
     }
-    if (pathname !== endpointPath) {
+    if (pathname !== HttpServiceGraphStore.PATH) {
       return;
     }
 
-    // The endpoint IRI is shared with the SPARQL protocol, whose requests are never graph store requests,
-    // not even when they carry a graph parameter. A GET without any of these returns the service description.
-    const contentType = request.headers['content-type'];
-    if (requestUrl.query.query !== undefined || requestUrl.query.update !== undefined ||
-      (contentType !== undefined && !HttpServiceGraphStore.isGraphPayload(contentType))) {
-      return;
-    }
-
-    // Indirect graph identification: a parameter on the endpoint identifies the graph
+    // Indirect graph identification: a parameter on the graph store identifies the graph
     const graph = requestUrl.query.graph;
     if (Array.isArray(graph)) {
       return { error: 'A request can only contain a single graph parameter' };
@@ -116,21 +110,23 @@ export class HttpServiceGraphStore {
       return { graph: DF.defaultGraph() };
     }
 
-    // Without graph identification, only requests that the SPARQL protocol does not define apply to the graph store
-    if (request.method === 'PUT' || request.method === 'DELETE') {
-      return { error: 'A request must identify a graph through its path, a graph parameter or a default parameter' };
-    }
-    if (request.method === 'POST' && contentType !== undefined) {
-      return {};
-    }
+    // Without graph identification, the request applies to the graph store itself
+    return {};
   }
 
   /**
-   * Determine if a request body contains an RDF graph, rather than a request of the SPARQL protocol.
-   * @param {string} contentType The content type of the request body.
+   * Determines the headers with which this service advertises the HTTP methods that a resource supports.
+   * @param {IGraphStoreTarget} target The graph, or the graph store itself, that a request applies to.
+   * @return {Record<string, string>} The method advertisement headers.
    */
-  public static isGraphPayload(contentType: string): boolean {
-    return !SPARQL_PROTOCOL_TYPES.some(type => contentType.includes(type));
+  public static getMethodAdvertisementHeaders(target: IGraphStoreTarget): Record<string, string> {
+    const allowedMethods = target.graph ?
+      HttpServiceGraphStore.ALLOWED_METHODS :
+      HttpServiceGraphStore.ALLOWED_METHODS_STORE;
+    return {
+      'Access-Control-Allow-Methods': allowedMethods,
+      Allow: allowedMethods,
+    };
   }
 
   /**
@@ -175,7 +171,7 @@ export class HttpServiceGraphStore {
    * @param {QueryEngineBase} engine A SPARQL engine.
    * @param {module:http.IncomingMessage} request Request object.
    * @param {IGraphStoreTarget} target The graph the request applies to.
-   * @param {string} endpointIri The IRI of this endpoint.
+   * @param {string} graphStoreIri The IRI of the graph store.
    * @param {() => Promise<string>} readBody A callback that reads the request body.
    * @return {Promise<IGraphStoreResult>} The outcome of the request.
    */
@@ -183,11 +179,20 @@ export class HttpServiceGraphStore {
     engine: QueryEngineBase,
     request: http.IncomingMessage,
     target: IGraphStoreTarget,
-    endpointIri: string,
+    graphStoreIri: string,
     readBody: () => Promise<string>,
   ): Promise<IGraphStoreResult> {
     if (target.error) {
       return { status: 400, message: target.error };
+    }
+
+    // The graph store itself only accepts new graphs, every other request must identify a graph
+    if (!target.graph && request.method !== 'POST') {
+      return {
+        status: 405,
+        headers: HttpServiceGraphStore.getMethodAdvertisementHeaders(target),
+        message: 'Only POST requests may address the graph store itself, other requests must identify a graph',
+      };
     }
 
     try {
@@ -198,11 +203,15 @@ export class HttpServiceGraphStore {
         case 'DELETE':
           return await this.deleteGraph(engine, target.graph!);
         case 'PUT':
-          return await this.writeGraph(engine, target.graph, true, await readBody(), request, endpointIri);
+          return await this.writeGraph(engine, target.graph, true, await readBody(), request, graphStoreIri);
         case 'POST':
-          return await this.writeGraph(engine, target.graph, false, await readBody(), request, endpointIri);
+          return await this.writeGraph(engine, target.graph, false, await readBody(), request, graphStoreIri);
         default:
-          return { status: 405, message: 'Incorrect HTTP method' };
+          return {
+            status: 405,
+            headers: HttpServiceGraphStore.getMethodAdvertisementHeaders(target),
+            message: 'Incorrect HTTP method',
+          };
       }
     } catch (error: unknown) {
       return { status: 400, message: (<Error> error).message };
@@ -249,7 +258,7 @@ export class HttpServiceGraphStore {
    * @param {boolean} replace If the previous contents of the graph must be replaced instead of merged with.
    * @param {string} body The request body.
    * @param {module:http.IncomingMessage} request Request object.
-   * @param {string} endpointIri The IRI of this endpoint.
+   * @param {string} graphStoreIri The IRI of the graph store, under which new graphs are created.
    */
   public async writeGraph(
     engine: QueryEngineBase,
@@ -257,16 +266,16 @@ export class HttpServiceGraphStore {
     replace: boolean,
     body: string,
     request: http.IncomingMessage,
-    endpointIri: string,
+    graphStoreIri: string,
   ): Promise<IGraphStoreResult> {
-    const created = graph ?? DF.namedNode(`${endpointIri}/${randomUUID()}`);
+    const created = graph ?? DF.namedNode(`${graphStoreIri}/${randomUUID()}`);
     const contentType = request.headers['content-type'];
     if (!contentType) {
       throw new Error('A request with an RDF payload must declare its content type');
     }
 
     const quads = await this
-      .parsePayload(engine, body, contentType, new URL(request.url ?? '', endpointIri).href);
+      .parsePayload(engine, body, contentType, new URL(request.url ?? '', graphStoreIri).href);
     const exists = graph !== undefined && await this.graphExists(engine, created);
 
     const updates: Algebra.Operation[] = [];

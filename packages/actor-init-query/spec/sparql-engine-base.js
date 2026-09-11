@@ -7,7 +7,7 @@ const { ActionContext } = require('@comunica/core');
 const { stringify: stringifyStream } = require('@jeswr/stream-to-string');
 const RdfStore = require('rdf-stores').RdfStore;
 const RdfTestSuite = require('rdf-test-suite');
-const { HttpServiceSparqlEndpoint } = require('..');
+const { HttpServiceGraphStore, HttpServiceSparqlEndpoint } = require('..');
 
 module.exports = function(engine, exposeEndpoints = false) {
   const testEngine = {
@@ -81,7 +81,7 @@ module.exports = function(engine, exposeEndpoints = false) {
   if (exposeEndpoints) {
     testEngine.startServiceDescriptionEndpoint = createEndpointStarter(engine);
     testEngine.startProtocolEndpoint = createEndpointStarter(engine, createStoreContext);
-    testEngine.startGraphStoreEndpoint = createEndpointStarter(engine, createStoreContext);
+    testEngine.startGraphStoreEndpoint = createEndpointStarter(engine, createStoreContext, { graphStore: true });
   }
 
   return testEngine;
@@ -130,7 +130,7 @@ function extractQuery(url, init) {
     (init.body ? new URLSearchParams(String(init.body)).get('query') : null);
 }
 
-function createEndpointStarter(engine, createContext = () => ({})) {
+function createEndpointStarter(engine, createContext = () => ({}), options = {}) {
   let server;
   let endpoint;
 
@@ -167,11 +167,11 @@ function createEndpointStarter(engine, createContext = () => ({})) {
       throw new Error('Could not determine the endpoint address.');
     }
 
-    const service = new HttpServiceSparqlEndpoint({ engine, port: address.port, context: createContext(), graphStore: true });
+    const service = new HttpServiceSparqlEndpoint({ engine, port: address.port, context: createContext(), ...options });
     // The endpoint logs to stderr, so that its output does not end up in the EARL reports on stdout
     server.on('request', service.handleRequest.bind(service, engine, variants, process.stderr, process.stderr));
 
-    endpoint = `http://127.0.0.1:${address.port}/sparql`;
+    endpoint = `http://127.0.0.1:${address.port}${options.graphStore ? HttpServiceGraphStore.PATH : '/sparql'}`;
     return { close, endpoint };
   };
 }

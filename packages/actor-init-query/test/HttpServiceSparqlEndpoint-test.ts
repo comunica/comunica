@@ -1377,7 +1377,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         it('should let the graph store handle a request that identifies a graph', async() => {
           request.method = 'PUT';
-          request.url = 'url_sparql_graph';
+          request.url = 'url_store_graph';
           request.headers['content-type'] = 'text/turtle';
           jest.spyOn(graphStoreInstance.graphStore!, 'handleRequest')
             .mockImplementation(async(...args: any[]) => ({ status: 204, message: await args[4]() }));
@@ -1388,7 +1388,7 @@ describe('HttpServiceSparqlEndpoint', () => {
             engine,
             request,
             { graph: DF.namedNode('http://example.org/g') },
-            'http://localhost:3000/sparql',
+            'http://localhost:3000/store',
             expect.any(Function),
           );
           expect(response.writeHead).toHaveBeenCalledWith(204, {
@@ -1399,18 +1399,37 @@ describe('HttpServiceSparqlEndpoint', () => {
           expect(graphStoreInstance.writeQueryResult).not.toHaveBeenCalled();
         });
 
-        it('should respond with 400 to a DELETE that does not identify a graph', async() => {
+        it('should respond with 405 to a DELETE on the graph store itself', async() => {
           request.method = 'DELETE';
-          request.url = 'url_undefined_query';
+          request.url = 'url_store';
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(405, {
+            'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN,
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS, POST',
+            Allow: 'OPTIONS, POST',
+          });
+        });
+
+        it('should answer a CORS preflight request for OPTIONS on the graph store itself', async() => {
+          request.method = 'OPTIONS';
+          request.url = 'url_store';
           await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
 
           expect(response.writeHead).toHaveBeenCalledWith(
-            400,
-            { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+            204,
+            {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
+              'Access-Control-Max-Age': '86400',
+              'Access-Control-Allow-Methods': 'OPTIONS, POST',
+              Allow: 'OPTIONS, POST',
+            },
           );
         });
 
-        it('should not handle a request that carries a SPARQL protocol query', async() => {
+        it('should leave the SPARQL endpoint to the SPARQL protocol', async() => {
           request.method = 'GET';
           request.url = 'url_sparql';
           await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
@@ -1431,7 +1450,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         it('should answer a CORS preflight request for OPTIONS on a graph', async() => {
           request.method = 'OPTIONS';
-          request.url = 'url_sparql_graph';
+          request.url = 'url_store_graph';
           await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
 
           expect(response.writeHead).toHaveBeenCalledWith(
@@ -1440,15 +1459,14 @@ describe('HttpServiceSparqlEndpoint', () => {
               'Access-Control-Allow-Origin': '*',
               'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
               'Access-Control-Max-Age': '86400',
-              'Access-Control-Allow-Methods': 'DELETE, GET, HEAD, OPTIONS, POST, PUT, QUERY',
-              Allow: 'DELETE, GET, HEAD, OPTIONS, POST, PUT, QUERY',
-              'Accept-Query': 'application/sparql-query',
+              'Access-Control-Allow-Methods': 'DELETE, GET, HEAD, OPTIONS, POST, PUT',
+              Allow: 'DELETE, GET, HEAD, OPTIONS, POST, PUT',
             },
           );
           expect(graphStoreInstance.writeQueryResult).not.toHaveBeenCalled();
         });
 
-        it('should respond with 404 to an OPTIONS request outside of the endpoint', async() => {
+        it('should respond with 404 to an OPTIONS request outside of both services', async() => {
           request.method = 'OPTIONS';
           request.url = 'not_urlsparql';
           await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
@@ -1457,15 +1475,6 @@ describe('HttpServiceSparqlEndpoint', () => {
             404,
             { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' },
           );
-        });
-
-        it('should advertise the graph store methods in the service description', async() => {
-          request.method = 'OPTIONS';
-          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
-
-          expect(response.writeHead).toHaveBeenCalledWith(204, expect.objectContaining({
-            Allow: 'DELETE, GET, HEAD, OPTIONS, POST, PUT, QUERY',
-          }));
         });
       });
     });
@@ -2525,6 +2534,12 @@ INSERT DATA {
           .toBe('http://localhost:1234/sparql');
       });
 
+      it('should use the given path', () => {
+        expect(HttpServiceSparqlEndpoint
+          .getBaseIRI(<any> { headers: { host: 'example.org' }, socket: {}}, 3_000, '/store'))
+          .toBe('http://example.org/store');
+      });
+
       it('should use https when the request was received over an encrypted socket', () => {
         expect(HttpServiceSparqlEndpoint
           .getBaseIRI(<any> { headers: { host: 'example.org' }, socket: { encrypted: true }}, 3_000))
@@ -2644,16 +2659,6 @@ INSERT DATA {
         );
 
         await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
-      });
-    });
-
-    describe('getMethodAdvertisementHeaders', () => {
-      it('should advertise the methods of the SPARQL protocol by default', () => {
-        expect(HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({})).toEqual({
-          'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
-          Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
-          'Accept-Query': 'application/sparql-query',
-        });
       });
     });
 

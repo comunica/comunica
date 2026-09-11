@@ -63,10 +63,6 @@ export class HttpServiceSparqlEndpoint {
    * The HTTP methods this service handles, as advertised via the `Allow` and `Access-Control-Allow-Methods` headers.
    */
   public static readonly ALLOWED_METHODS = 'GET, HEAD, OPTIONS, POST, QUERY';
-  /**
-   * The HTTP methods this service handles when the Graph Store HTTP Protocol is enabled.
-   */
-  public static readonly ALLOWED_METHODS_GRAPH_STORE = 'DELETE, GET, HEAD, OPTIONS, POST, PUT, QUERY';
 
   public readonly engine: Promise<QueryEngineBase>;
 
@@ -81,7 +77,6 @@ export class HttpServiceSparqlEndpoint {
 
   public readonly voidMetadataEmitter: VoidMetadataEmitter;
   public readonly graphStore: HttpServiceGraphStore | undefined;
-  public readonly allowedMethods: string;
 
   public lastQueryId = 0;
 
@@ -95,9 +90,6 @@ export class HttpServiceSparqlEndpoint {
     this.emitVoid = Boolean(args.emitVoid);
     this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
     this.graphStore = args.graphStore ? new HttpServiceGraphStore(this.context) : undefined;
-    this.allowedMethods = this.graphStore ?
-      HttpServiceSparqlEndpoint.ALLOWED_METHODS_GRAPH_STORE :
-      HttpServiceSparqlEndpoint.ALLOWED_METHODS;
 
     this.engine = args.engine ?
       Promise.resolve(args.engine) :
@@ -392,12 +384,17 @@ export class HttpServiceSparqlEndpoint {
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
     }
-    // Requests that identify an RDF graph are handled through the Graph Store HTTP Protocol, when it is enabled
+    // Requests to the graph store are handled through the Graph Store HTTP Protocol, when it is enabled
     if (this.graphStore) {
-      const endpointIri = HttpServiceSparqlEndpoint.getBaseIRI(request, this.port);
-      const graphStoreTarget = HttpServiceGraphStore.getTarget(request, requestUrl, endpointIri);
+      const graphStoreIri = HttpServiceSparqlEndpoint.getBaseIRI(request, this.port, HttpServiceGraphStore.PATH);
+      const graphStoreTarget = HttpServiceGraphStore.getTarget(request, requestUrl, graphStoreIri);
       if (graphStoreTarget && request.method === 'OPTIONS') {
-        this.writePreflightResponse(stdout, request, response);
+        this.writePreflightResponse(
+          stdout,
+          request,
+          response,
+          HttpServiceGraphStore.getMethodAdvertisementHeaders(graphStoreTarget),
+        );
         return;
       }
       if (graphStoreTarget) {
@@ -405,7 +402,7 @@ export class HttpServiceSparqlEndpoint {
           engine,
           request,
           graphStoreTarget,
-          endpointIri,
+          graphStoreIri,
           () => HttpServiceSparqlEndpoint.readBody(request),
         );
         await this.writeGraphStoreResult(engine, stdout, request, response, result, mediaType);
@@ -478,7 +475,12 @@ export class HttpServiceSparqlEndpoint {
         );
         break;
       case 'OPTIONS':
-        this.writePreflightResponse(stdout, request, response);
+        this.writePreflightResponse(
+          stdout,
+          request,
+          response,
+          HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({}),
+        );
         break;
       default:
         stdout.write(`[405] ${request.method} to ${request.url}\n`);
@@ -487,7 +489,7 @@ export class HttpServiceSparqlEndpoint {
           HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({
             'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
             'Access-Control-Allow-Origin': '*',
-          }, this.allowedMethods),
+          }),
         );
         response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
     }
@@ -499,18 +501,21 @@ export class HttpServiceSparqlEndpoint {
    * @param {module:stream.internal.Writable} stdout Output stream.
    * @param {module:http.IncomingMessage} request Request object.
    * @param {module:http.ServerResponse} response Response object.
+   * @param {Record<string, string>} methodAdvertisementHeaders The headers that advertise the allowed methods.
    */
   public writePreflightResponse(
     stdout: Writable,
     request: http.IncomingMessage,
     response: http.ServerResponse,
+    methodAdvertisementHeaders: Record<string, string>,
   ): void {
     stdout.write(`[204] ${request.method} to ${request.url}\n`);
-    response.writeHead(204, HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({
+    response.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
       'Access-Control-Max-Age': '86400',
-    }, this.allowedMethods));
+      ...methodAdvertisementHeaders,
+    });
     response.end();
   }
 
@@ -533,11 +538,12 @@ export class HttpServiceSparqlEndpoint {
    * Determine the base IRI that relative IRIs in a request are resolved against.
    * @param {module:http.IncomingMessage} request Request object.
    * @param {number} port The port this service is running on.
+   * @param {string} path The path of the service on this server.
    * @return {string} The base IRI.
    */
-  public static getBaseIRI(request: http.IncomingMessage, port: number): string {
+  public static getBaseIRI(request: http.IncomingMessage, port: number, path = '/sparql'): string {
     const protocol = (<TLSSocket> request.socket).encrypted ? 'https' : 'http';
-    return `${protocol}://${request.headers.host ?? `localhost:${port}`}/sparql`;
+    return `${protocol}://${request.headers.host ?? `localhost:${port}`}${path}`;
   }
 
   /**
@@ -840,7 +846,7 @@ export class HttpServiceSparqlEndpoint {
       'Access-Control-Allow-Origin': '*',
       // Without this, browser clients are not allowed to read the QUERY advertisement.
       'Access-Control-Expose-Headers': 'Accept-Query, Allow',
-    }, this.allowedMethods));
+    }));
 
     if (headOnly) {
       response.end();
@@ -991,17 +997,13 @@ export class HttpServiceSparqlEndpoint {
   /**
    * Determines the headers with which this service advertises the HTTP methods and query formats it supports.
    * @param headers The headers to extend.
-   * @param allowedMethods The HTTP methods to advertise.
    * @return {Record<string, string>} The given headers, extended with the method advertisement headers.
    */
-  public static getMethodAdvertisementHeaders(
-    headers: Record<string, string>,
-    allowedMethods: string = HttpServiceSparqlEndpoint.ALLOWED_METHODS,
-  ): Record<string, string> {
+  public static getMethodAdvertisementHeaders(headers: Record<string, string>): Record<string, string> {
     return {
       ...headers,
-      'Access-Control-Allow-Methods': allowedMethods,
-      Allow: allowedMethods,
+      'Access-Control-Allow-Methods': HttpServiceSparqlEndpoint.ALLOWED_METHODS,
+      Allow: HttpServiceSparqlEndpoint.ALLOWED_METHODS,
       'Accept-Query': HttpServiceSparqlEndpoint.MIME_SPARQL_QUERY,
     };
   }
