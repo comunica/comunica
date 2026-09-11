@@ -38,6 +38,7 @@ export interface IQueryContextCommon {
   queryTimestampHighResolution?: DOMHighResTimeStamp;
   httpProxyHandler?: IProxyHandler;
   lenient?: boolean;
+  serviceAllowFileTargets?: boolean;
   parseUnsupportedVersions?: boolean;
   httpIncludeCredentials?: boolean;
   httpAuth?: string;

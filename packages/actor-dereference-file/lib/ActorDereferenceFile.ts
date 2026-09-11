@@ -2,7 +2,7 @@ import { accessSync, createReadStream, constants } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import type { IActionDereference, IActorDereferenceArgs, IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference } from '@comunica/bus-dereference';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysDereference, KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 
@@ -29,7 +29,16 @@ export class ActorDereferenceFile extends ActorDereference {
     return URIRegex.exec(str) !== null;
   }
 
-  public async run({ url, context }: IActionDereference): Promise<IActorDereferenceOutput> {
+  public async run(action: IActionDereference): Promise<IActorDereferenceOutput> {
+    const { url, context } = action;
+
+    // Dereferencing local files can be blocked within certain scopes, such as SERVICE targets.
+    if (context.get(KeysDereference.blockFileAccess)) {
+      return this.handleDereferenceErrors(action, new Error(
+        `Dereferencing the local file '${url}' is not allowed within this scope. `,
+      ));
+    }
+
     const requestTimeStart = Date.now();
     return {
       data: createReadStream(getPath(url)),

@@ -9,6 +9,9 @@ It will store all query sources in the context using `KeysQueryOperation.querySo
 and sources corresponding to the SERVICE clauses within the query will be stored
 using `KeysQueryOperation.serviceSources`.
 
+Sources of SERVICE clauses are not allowed to be dereferenced from the local file system,
+unless the `serviceAllowFileTargets` context entry is enabled.
+
 This actor also contains a cache so that identical sources will be reused across multiple query executions.
 This cache can be invalidated via `engine.invalidateHttpCache()`.
 
@@ -43,6 +46,12 @@ After installing, this package can be added to your engine's configuration as fo
   ]
 }
 ```
+
+### Context Parameters
+
+* `serviceAllowFileTargets`: Optional flag indicating if SERVICE clauses may target local files, defaults to `false`.
+  Enabling this allows queries to read arbitrary local files,
+  which should only be done if all queries originate from trusted parties.
 
 ### Config Parameters
 

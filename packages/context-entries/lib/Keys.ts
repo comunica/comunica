@@ -160,6 +160,12 @@ export const KeysInitQuery = {
    */
   lenient: new ActionContextKey<boolean>('@comunica/actor-init-query:lenient'),
   /**
+   * If SERVICE clauses are allowed to target local files.
+   * This is disabled by default, as queries could otherwise read arbitrary local files,
+   * which is problematic when queries originate from untrusted parties.
+   */
+  serviceAllowFileTargets: new ActionContextKey<boolean>('@comunica/actor-init-query:serviceAllowFileTargets'),
+  /**
    * By default, errors will be emitted if parsers encounter unsupported versions.
    * Setting this flag to true will silence those checks.
    * Errors may still be emitted if unsupported grammar is encountered.
@@ -397,6 +403,15 @@ export const KeysQuerySourceIdentify = {
    * This means that sources annotated with this flag are considered incomplete until all links have been traversed.
    */
   traverse: new ActionContextKey<boolean>('@comunica/bus-query-source-identify:traverse'),
+};
+
+export const KeysDereference = {
+  /**
+   * If local files may not be dereferenced within the current scope.
+   * This is for example set when dereferencing SERVICE targets,
+   * to avoid exposing local files to queries from untrusted parties.
+   */
+  blockFileAccess: new ActionContextKey<boolean>('@comunica/bus-dereference:blockFileAccess'),
 };
 
 export const KeysRdfUpdateQuads = {

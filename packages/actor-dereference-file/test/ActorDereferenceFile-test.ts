@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { IActorDereferenceOutput } from '@comunica/bus-dereference';
 import { ActorDereference } from '@comunica/bus-dereference';
+import { KeysDereference, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { stringify as streamToString } from '@jeswr/stream-to-string';
@@ -91,6 +92,23 @@ describe('ActorDereferenceFile', () => {
           url: pathToFileURL(p).href,
         },
       );
+    });
+
+    it('should not run when file access is blocked', async() => {
+      const p = path.join(__dirname, 'dummy.ttl');
+      context = context.set(KeysDereference.blockFileAccess, true);
+      await expect(actor.run({ url: p, context })).rejects
+        .toThrow(`Dereferencing the local file '${p}' is not allowed within this scope.`);
+    });
+
+    it('should run with an empty stream when file access is blocked in lenient mode', async() => {
+      const p = path.join(__dirname, 'dummy.ttl');
+      context = context
+        .set(KeysDereference.blockFileAccess, true)
+        .set(KeysInitQuery.lenient, true);
+      const result = await actor.run({ url: p, context });
+      await expect(streamToString(result.data)).resolves.toBe('');
+      expect(result).toMatchObject<Partial<IActorDereferenceOutput>>({ exists: false, status: 404 });
     });
 
     it('should run for file:/// paths', async() => {
