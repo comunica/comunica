@@ -331,6 +331,12 @@ export const KeysQueryOperation = {
    */
   readOnly: new ActionContextKey<boolean>('@comunica/bus-query-operation:readOnly'),
   /**
+   * Flag on a query source context indicating that this source is the target of a `SERVICE SILENT` clause.
+   * Errors from such a source must be swallowed, and replaced by a single empty solution,
+   * as mandated by SPARQL 1.1 Federated Query.
+   */
+  silent: new ActionContextKey<boolean>('@comunica/bus-query-operation:silent'),
+  /**
    * An internal context entry to mark that a property path with arbitrary length and a distinct key is being processed.
    */
   isPathArbitraryLengthDistinctKey: new ActionContextKey<boolean>(

@@ -1,4 +1,4 @@
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type {
   IActionContext,
@@ -10,8 +10,9 @@ import type {
   IPhysicalQueryPlanLogger,
 } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { assignOperationSource } from '@comunica/utils-query-operation';
-import { ArrayIterator } from 'asynciterator';
+import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationSource } from '../lib/ActorQueryOperationSource';
 import 'jest-rdf';
@@ -19,6 +20,7 @@ import '@comunica/utils-jest';
 
 const AF = new AlgebraFactory();
 const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorQueryOperationSource', () => {
   let bus: any;
@@ -101,6 +103,97 @@ describe('ActorQueryOperationSource', () => {
       it('should not handle operations without top-level source', async() => {
         await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() }))
           .resolves.toFailTest(`Actor actor requires an operation with source annotation.`);
+      });
+    });
+
+    describe('run over a silent source', () => {
+      const DFF = DF;
+
+      function silentSource(makeStream: () => any): IQuerySourceWrapper {
+        return <any> {
+          source: { referenceValue: 'silent', queryBindings: jest.fn(makeStream) },
+          context: new ActionContext({ [KeysQueryOperation.silent.name]: true }),
+        };
+      }
+
+      function silentContext(): IActionContext {
+        return new ActionContext({ [KeysInitQuery.dataFactory.name]: DFF });
+      }
+
+      it('should pass results through when the source succeeds', async() => {
+        const wrapper = silentSource(() => {
+          const stream = new ArrayIterator(
+            [ BF.bindings([[ DFF.variable('x'), DFF.literal('1') ]]) ],
+            { autoStart: false },
+          );
+          stream.setProperty('metadata', { cardinality: { type: 'exact', value: 1 }, variables: []});
+          return stream;
+        });
+        const output = <IQueryOperationResultBindings> await actor.run({
+          context: silentContext(),
+          operation: assignOperationSource(AF.createNop(), <any> wrapper),
+        });
+        await expect(output.metadata()).resolves.toEqual({
+          cardinality: { type: 'exact', value: 1 },
+          variables: [],
+        });
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DFF.variable('x'), DFF.literal('1') ]]),
+        ]);
+      });
+
+      it('should pass results through when the source produces them asynchronously', async() => {
+        const wrapper = silentSource(() => {
+          const stream = new TransformIterator<any>(
+            () => new Promise(resolve => setImmediate(() => resolve(
+              new ArrayIterator([ BF.bindings([[ DFF.variable('x'), DFF.literal('1') ]]) ], { autoStart: false }),
+            ))),
+            { autoStart: false },
+          );
+          stream.setProperty('metadata', { cardinality: { type: 'exact', value: 1 }, variables: []});
+          return stream;
+        });
+        const output = <IQueryOperationResultBindings> await actor.run({
+          context: silentContext(),
+          operation: assignOperationSource(AF.createNop(), <any> wrapper),
+        });
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DFF.variable('x'), DFF.literal('1') ]]),
+        ]);
+      });
+
+      it('should emit a single empty solution when the source errors', async() => {
+        const wrapper = silentSource(() =>
+          new TransformIterator(() => Promise.reject(new Error('Source down')), { autoStart: false }));
+        const output = <IQueryOperationResultBindings> await actor.run({
+          context: silentContext(),
+          operation: assignOperationSource(AF.createNop(), <any> wrapper),
+        });
+        await expect(output.bindingsStream).toEqualBindingsStream([ BF.bindings() ]);
+        await expect(output.metadata()).resolves.toEqual({
+          state: expect.anything(),
+          cardinality: { type: 'exact', value: 1 },
+          variables: [],
+        });
+      });
+
+      it('should keep results emitted before the source errors', async() => {
+        const wrapper = silentSource(() => {
+          const stream = new ArrayIterator(
+            [ BF.bindings([[ DFF.variable('x'), DFF.literal('1') ]]) ],
+            { autoStart: false },
+          );
+          stream.setProperty('metadata', { cardinality: { type: 'exact', value: 1 }, variables: []});
+          stream.on('end', () => stream.emit('error', new Error('Source down')));
+          return stream;
+        });
+        const output = <IQueryOperationResultBindings> await actor.run({
+          context: silentContext(),
+          operation: assignOperationSource(AF.createNop(), <any> wrapper),
+        });
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DFF.variable('x'), DFF.literal('1') ]]),
+        ]);
       });
     });
 

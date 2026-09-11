@@ -4,7 +4,7 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type {
@@ -201,6 +201,12 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
 
     // Traversal contexts should never be considered empty at optimization time.
     if (mergedContext.get(KeysQuerySourceIdentify.traverse)) {
+      return true;
+    }
+
+    // The target of a SERVICE SILENT clause must never be pruned:
+    // if it fails, it must produce a single empty solution rather than no results at all.
+    if (mergedContext.get(KeysQueryOperation.silent)) {
       return true;
     }
 

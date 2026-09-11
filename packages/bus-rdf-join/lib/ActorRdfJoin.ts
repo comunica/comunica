@@ -2,7 +2,7 @@ import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-
 import type {
   MediatorRdfJoinSelectivity,
 } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IAction, IActorArgs, Mediate, TestResult } from '@comunica/core';
 import { passTest, failTest, Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -20,6 +20,7 @@ import type {
 } from '@comunica/types';
 import { instrumentIterator } from '@comunica/utils-iterator';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/utils-metadata';
+import { getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -76,6 +77,10 @@ TS
    * This will typically only be true for bind-join-like operators.
    */
   protected readonly canHandleOperationRequired?: boolean;
+  /**
+   * If this actor pushes bindings of one entry into the source of another entry.
+   */
+  protected readonly pushesBindingsToSource?: boolean;
 
   /* eslint-disable max-len */
   /**
@@ -96,6 +101,7 @@ TS
     this.isLeaf = options.isLeaf ?? true;
     this.requiresVariableOverlap = options.requiresVariableOverlap ?? false;
     this.canHandleOperationRequired = options.canHandleOperationRequired ?? false;
+    this.pushesBindingsToSource = options.pushesBindingsToSource ?? false;
   }
 
   /**
@@ -399,12 +405,6 @@ TS
       return failTest(`${this.name} requires at least two join entries.`);
     }
 
-    // Check if operationRequired is supported.
-    const someOperationRequired = action.entries.some(entry => entry.operationRequired);
-    if (!this.canHandleOperationRequired && someOperationRequired) {
-      return failTest(`${this.name} does not work with operationRequired.`);
-    }
-
     // Check if this actor can handle the given number of streams
     if (this.limitEntriesMin ? action.entries.length < this.limitEntries : action.entries.length > this.limitEntries) {
       return failTest(`${this.name} requires ${this.limitEntries
@@ -418,6 +418,20 @@ TS
         // eslint-disable-next-line ts/restrict-template-expressions
         return failTest(`Invalid type of a join entry: Expected 'bindings' but got '${entry.output.type}'`);
       }
+    }
+
+    // Check if operationRequired is supported.
+    const someOperationRequired = action.entries.some(entry => entry.operationRequired);
+    if (!this.canHandleOperationRequired && someOperationRequired) {
+      return failTest(`${this.name} does not work with operationRequired.`);
+    }
+
+    // Pushing bindings into a source happens in chunks, with one source invocation per chunk.
+    // The target of a SERVICE SILENT clause must produce exactly one empty solution when it fails,
+    // which it could not do if it were invoked once per chunk.
+    if (this.pushesBindingsToSource && action.entries
+      .some(entry => getOperationSource(entry.operation)?.context?.get(KeysQueryOperation.silent))) {
+      return failTest(`${this.name} can not push bindings into the target of a SERVICE SILENT clause.`);
     }
 
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
@@ -594,6 +608,12 @@ export interface IActorRdfJoinInternalOptions {
    * This will typically only be true for bind-join-like operators.
    */
   canHandleOperationRequired?: boolean;
+  /**
+   * If this actor pushes bindings of one entry into the source of another entry,
+   * which it does in chunks, resulting in one source invocation per chunk.
+   * Defaults to false.
+   */
+  pushesBindingsToSource?: boolean;
 }
 
 export interface IActionRdfJoin extends IAction {
