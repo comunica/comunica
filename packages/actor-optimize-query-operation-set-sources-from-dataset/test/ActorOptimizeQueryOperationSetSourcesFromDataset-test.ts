@@ -1,12 +1,14 @@
 import type { IActionOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { Algebra } from '@comunica/utils-algebra';
+import type { IActionContext } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationSetSourcesFromDataset } from '../lib/index';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
+const AF = new AlgebraFactory();
 
 describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
   let bus: any;
@@ -18,19 +20,19 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
   });
 
   describe('test', () => {
-    it('fails if fromNamedAsSources is false', async() => {
+    it('fails if dereferenceFromNamed is false', async() => {
       const action: IActionOptimizeQueryOperation = {
         context: new ActionContext(),
-        operation: <any> {},
+        operation: AF.createNop(),
       };
       await expect(actor.test(action)).resolves.toFailTest(
-        'This actor can only be used when fromNamedAsSources is enabled.',
+        'This actor can only be used when dereferenceFromNamed is enabled.',
       );
     });
-    it('passes if fromNamedAsSources is true', async() => {
+    it('passes if dereferenceFromNamed is true', async() => {
       const action: IActionOptimizeQueryOperation = {
-        context: new ActionContext().set(KeysQueryOperation.fromNamedAsSources, true),
-        operation: <any> {},
+        context: new ActionContext().set(KeysQueryOperation.dereferenceFromNamed, true),
+        operation: AF.createNop(),
       };
       await expect(actor.test(action)).resolves.toPassTestVoid();
     });
@@ -49,7 +51,7 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
         const clauses = ActorOptimizeQueryOperationSetSourcesFromDataset.extractDatasetClauses(operation);
         expect(clauses).toEqual({
           defaultGraphs: [ 'http://example.org/default.ttl' ],
-          namedGraphs: [ 'http://example.org/named.ttl' ],
+          namedGraphs: [ DF.namedNode('http://example.org/named.ttl') ],
         });
       });
 
@@ -61,23 +63,29 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
     });
 
     describe('appendSources', () => {
-      it('should append new sources and deduplicate existing ones in context', () => {
+      it('should append new sources and deduplicate existing default graph sources in context', () => {
         const context = new ActionContext({
           [KeysInitQuery.querySourcesUnidentified.name]: [ 'http://example.org/default.ttl' ],
         });
 
         const clauses = {
           defaultGraphs: [ 'http://example.org/default.ttl' ],
-          namedGraphs: [ 'http://example.org/named.ttl' ],
+          namedGraphs: [ DF.namedNode('http://example.org/named.ttl') ],
         };
 
         const newContext = ActorOptimizeQueryOperationSetSourcesFromDataset.appendSources(context, clauses);
-        const sources = newContext.get(KeysInitQuery.querySourcesUnidentified);
+        const sources = newContext.get(KeysInitQuery.querySourcesUnidentified)!;
 
         expect(sources).toEqual([
           'http://example.org/default.ttl',
-          'http://example.org/named.ttl',
+          {
+            value: 'http://example.org/named.ttl',
+            context: expect.any(ActionContext),
+          },
         ]);
+        const namedSourceContext = <IActionContext> (<any> sources[1]).context;
+        expect(namedSourceContext.get(KeysQueryOperation.sourceAsNamedGraph))
+          .toEqual(DF.namedNode('http://example.org/named.ttl'));
       });
     });
 
@@ -124,7 +132,10 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
       expect(output.operation).toEqual(innerOperation);
       expect(output.context.get(KeysInitQuery.querySourcesUnidentified)).toEqual([
         'http://example.org/default.ttl',
-        'http://example.org/named.ttl',
+        {
+          value: 'http://example.org/named.ttl',
+          context: expect.any(ActionContext),
+        },
       ]);
     });
   });

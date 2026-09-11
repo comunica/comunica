@@ -933,9 +933,9 @@ LIMIT 100
         });
       });
 
-      it('handles the --fromNamedAsSources flag', async() => {
+      it('handles the --dereferenceFromNamed flag', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
-          argv: [ sourceHypermedia, '-q', queryString, '--fromNamedAsSources' ],
+          argv: [ sourceHypermedia, '-q', queryString, '--dereferenceFromNamed' ],
           env: {},
           stdin: <Readable><any> new PassThrough(),
           context,
@@ -945,7 +945,7 @@ LIMIT 100
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
           sources: [{ value: sourceHypermedia }],
           log: expect.any(LoggerPretty),
-          [KeysQueryOperation.fromNamedAsSources.name]: true,
+          [KeysQueryOperation.dereferenceFromNamed.name]: true,
         });
       });
 

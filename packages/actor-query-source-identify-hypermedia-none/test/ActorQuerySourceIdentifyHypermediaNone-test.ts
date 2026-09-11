@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
@@ -136,6 +136,110 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
         });
         stream.on('end', () => reject(new Error('Got no error event.')));
       })).resolves.toEqual(new Error('Dummy error'));
+    });
+
+    describe('with a sourceAsNamedGraph-tagged context', () => {
+      const namedGraph = DF.namedNode('http://example.org/g');
+
+      beforeEach(() => {
+        context = context.set(KeysQueryOperation.sourceAsNamedGraph, namedGraph);
+      });
+
+      it('should rewrite default-graph quads to the tagged named graph', async() => {
+        const quads = streamifyArray([
+          quad('s1', 'p1', 'o1'),
+          quad('s2', 'p2', 'o2'),
+        ]);
+        const { source } = await actor.run({ metadata: <any> null, quads, url: 'URL', context });
+
+        // Hidden from plain (default graph) patterns.
+        await expect(source.queryBindings(AF.createPattern(v1, v2, v3), new ActionContext()))
+          .toEqualBindingsStream([]);
+
+        // Visible through GRAPH <namedGraph> { ... }.
+        await expect(source.queryBindings(AF.createPattern(v1, v2, v3, namedGraph), new ActionContext()))
+          .toEqualBindingsStream([
+            BF.fromRecord({ v1: DF.namedNode('s1'), v2: DF.namedNode('p1'), v3: DF.namedNode('o1') }),
+            BF.fromRecord({ v1: DF.namedNode('s2'), v2: DF.namedNode('p2'), v3: DF.namedNode('o2') }),
+          ]);
+      });
+
+      it('should reject when the source already contains a named graph (default conflict mode)', async() => {
+        const quads = streamifyArray([
+          quad('s1', 'p1', 'o1'),
+          quad('s2', 'p2', 'o2', 'http://example.org/existing-graph'),
+        ]);
+        await expect(actor.run({ metadata: <any> null, quads, url: 'URL', context }))
+          .rejects.toThrow(/existing named graph 'http:\/\/example\.org\/existing-graph'/u);
+      });
+
+      describe('with dereferenceFromNamedConflictMode set to "error"', () => {
+        beforeEach(() => {
+          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, 'error');
+        });
+
+        it('should reject when the source already contains a named graph', async() => {
+          const quads = streamifyArray([
+            quad('s1', 'p1', 'o1'),
+            quad('s2', 'p2', 'o2', 'http://example.org/existing-graph'),
+          ]);
+          await expect(actor.run({ metadata: <any> null, quads, url: 'URL', context }))
+            .rejects.toThrow(/existing named graph 'http:\/\/example\.org\/existing-graph'/u);
+        });
+      });
+
+      describe('with dereferenceFromNamedConflictMode set to "overwrite"', () => {
+        beforeEach(() => {
+          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, 'overwrite');
+        });
+
+        it('should rewrite an existing named graph to the tagged named graph too', async() => {
+          const existingGraph = DF.namedNode('http://example.org/existing-graph');
+          const quads = streamifyArray([
+            quad('s1', 'p1', 'o1'),
+            quad('s2', 'p2', 'o2', existingGraph.value),
+          ]);
+          const { source } = await actor.run({ metadata: <any> null, quads, url: 'URL', context });
+
+          // Both quads now live under the tagged named graph.
+          await expect(source.queryBindings(AF.createPattern(v1, v2, v3, namedGraph), new ActionContext()))
+            .toEqualBindingsStream([
+              BF.fromRecord({ v1: DF.namedNode('s1'), v2: DF.namedNode('p1'), v3: DF.namedNode('o1') }),
+              BF.fromRecord({ v1: DF.namedNode('s2'), v2: DF.namedNode('p2'), v3: DF.namedNode('o2') }),
+            ]);
+
+          // Nothing is left under the original named graph.
+          await expect(source.queryBindings(AF.createPattern(v1, v2, v3, existingGraph), new ActionContext()))
+            .toEqualBindingsStream([]);
+        });
+      });
+
+      describe('with dereferenceFromNamedConflictMode set to "merge"', () => {
+        beforeEach(() => {
+          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, 'merge');
+        });
+
+        it('should rewrite default-graph quads but leave an existing named graph untouched', async() => {
+          const existingGraph = DF.namedNode('http://example.org/existing-graph');
+          const quads = streamifyArray([
+            quad('s1', 'p1', 'o1'),
+            quad('s2', 'p2', 'o2', existingGraph.value),
+          ]);
+          const { source } = await actor.run({ metadata: <any> null, quads, url: 'URL', context });
+
+          // The default-graph quad moved to the tagged named graph.
+          await expect(source.queryBindings(AF.createPattern(v1, v2, v3, namedGraph), new ActionContext()))
+            .toEqualBindingsStream([
+              BF.fromRecord({ v1: DF.namedNode('s1'), v2: DF.namedNode('p1'), v3: DF.namedNode('o1') }),
+            ]);
+
+          // The already-named-graph quad stayed under its own, original graph.
+          await expect(source.queryBindings(AF.createPattern(v1, v2, v3, existingGraph), new ActionContext()))
+            .toEqualBindingsStream([
+              BF.fromRecord({ v1: DF.namedNode('s2'), v2: DF.namedNode('p2'), v3: DF.namedNode('o2') }),
+            ]);
+        });
+      });
     });
   });
 });
