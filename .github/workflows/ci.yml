@@ -306,10 +306,6 @@ jobs:
         # which makes its totals incomparable between two runs.
         benchmark: ${{ github.event_name == 'pull_request' && fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf"]') || fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "web"]') }}
     env:
-      # Pull requests benchmark their base commit on this same runner, so that the comparison
-      # in performance-compare measures the code difference rather than the hardware difference
-      # between two runners, which is the dominant source of variance on hosted runners.
-      # Forks are excluded, as performance-compare can not post their comparison anyway.
       BENCHMARK_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Ensure line endings are consistent
