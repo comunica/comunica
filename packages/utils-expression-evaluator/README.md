@@ -4,7 +4,6 @@
 
 The building blocks that the SPARQL expression evaluation actors of Comunica are made of:
 the internal term representation, the type system, and the errors of expression evaluation.
-Previously called sparqlee.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -32,7 +31,7 @@ $ yarn add @comunica/utils-expression-evaluator
 * The type system: `TypeURL`, `TypeAlias`, `KnownLiteralTypes`, `isSubTypeOf` and `typedLiteral`.
 * The operator names known to Comunica: `SparqlOperator`, `NamedOperator`, `KnownOperator` and `GeneralOperator`.
 * `ExpressionError` and its subclasses, together with `isExpressionError` to recognize them.
-  These are the errors that are expected during evaluation, and that `FILTER` and `ORDER BY` may ignore.
+  These are the errors that are expected during evaluation, and that `FILTER` and `ORDER BY` respond to differently.
 * Lexical form parsers and date arithmetic: `parseDateTime`, `parseDuration`, `toUTCDate`,
   `addDurationToDateTime`, ...
 * `prepareEvaluatorActionContext`: derives the context entries an evaluator needs from the ones it was given.

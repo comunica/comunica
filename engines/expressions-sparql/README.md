@@ -4,7 +4,6 @@
 
 Comunica SPARQL Expressions evaluates SPARQL expressions, aggregates and term ordering
 without setting up a query engine.
-It is the standalone successor of [sparqlee](https://github.com/comunica/sparqlee).
 
 This module is part of the [Comunica framework](https://comunica.dev/).
 

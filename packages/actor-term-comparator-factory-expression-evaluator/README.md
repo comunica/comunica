@@ -3,7 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-term-comparator-factory-expression-evaluator.svg)](https://www.npmjs.com/package/@comunica/actor-term-comparator-factory-expression-evaluator)
 
 A [term comparator factory](https://github.com/comunica/comunica/tree/master/packages/bus-term-comparator-factory) actor
-that orders terms by evaluating the `<` and `=` functions of the expression evaluator.
+that orders terms by evaluating the `<` function of the expression evaluator in both directions.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
