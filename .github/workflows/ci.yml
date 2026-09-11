@@ -517,9 +517,6 @@ jobs:
       - name: Process base commit benchmark total results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total true --detailed false --name ghbench-base-total.json
       - name: Wrap the base commit results into baseline data files
-        # These emulate the data file that github-action-benchmark keeps per branch, holding a
-        # single entry: the base commit as measured by the performance job, on the same runner
-        # as the pull request results it is compared against.
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           REPO_URL: ${{ github.event.repository.html_url }}
