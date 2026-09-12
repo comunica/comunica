@@ -217,6 +217,28 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
     return [ ...sources ];
   }
 
+  /**
+   * Check if the given operation contains a SERVICE clause of which the target is a variable.
+   * Such clauses can only be evaluated once a bind-join has bound their target,
+   * so they must remain direct entries of their join.
+   * @param operation An operation.
+   */
+  public static hasVariableServiceTarget(operation: Algebra.Operation): boolean {
+    let found = false;
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.SERVICE]: {
+        preVisitor: (serviceOperation) => {
+          if (serviceOperation.name.termType === 'Variable') {
+            found = true;
+            return { shortcut: true };
+          }
+          return {};
+        },
+      },
+    });
+    return found;
+  }
+
   protected getOverlappingOperations(
     operation: Algebra.Union | Algebra.Join,
     expressionVariables: RDF.Variable[],
@@ -299,6 +321,13 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         return [ false, factory.createFilter(operation, expression) ];
       }
 
+      // Don't push down into an entry that must be bound by this join, such as a SERVICE clause with a variable
+      // target. Wrapping such an entry in a filter would leave no join actor able to bind it.
+      if (operation.input
+        .some(input => ActorOptimizeQueryOperationFilterPushdown.hasVariableServiceTarget(input))) {
+        return [ false, factory.createFilter(operation, expression) ];
+      }
+
       // Determine overlapping operations
       const {
         fullyOverlapping,
@@ -351,6 +380,11 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         partiallyOverlapping,
         notOverlapping,
       } = this.getOverlappingOperations(operation, expressionVariables);
+
+      if (operation.input
+        .some(input => ActorOptimizeQueryOperationFilterPushdown.hasVariableServiceTarget(input))) {
+        return [ false, factory.createFilter(operation, expression) ];
+      }
 
       const unions: Algebra.Operation[] = [];
       let isModified = false;

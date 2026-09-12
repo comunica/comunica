@@ -1043,6 +1043,17 @@ IActorRdfJoinSelectivityOutput
       await expect(instance.test(action)).resolves.toFailTest(`name does not work with operationRequired.`);
     });
 
+    it('should throw an error if the metadata of an entry requests operationRequired', async() => {
+      action.entries[1].output.metadata = async() => ({
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: 5 },
+        variables: variables1,
+        operationRequired: true,
+      });
+      instance = new Dummy(mediatorJoinSelectivity, 99);
+      await expect(instance.test(action)).resolves.toFailTest(`name does not work with operationRequired.`);
+    });
+
     it('should throw an error if bindings are pushed into the target of a SERVICE SILENT clause', async() => {
       action.entries[1].operation = assignOperationSource(AF.createNop(), <any> {
         source: {},

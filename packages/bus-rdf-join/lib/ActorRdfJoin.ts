@@ -105,6 +105,18 @@ TS
   }
 
   /**
+   * Check if the operation of the given join entry must be pushed into the join,
+   * instead of using its output stream directly.
+   * Next to entries that explicitly request this, this holds for entries whose metadata requests it,
+   * such as SERVICE clauses of which the target is still an unbound variable.
+   * @param entry A join entry.
+   * @param metadata The metadata of that entry.
+   */
+  public static isOperationRequired(entry: IJoinEntry, metadata: MetadataBindings): boolean {
+    return Boolean(entry.operationRequired ?? metadata.operationRequired);
+  }
+
+  /**
    * Returns an array containing all the variable names that occur in all bindings streams.
    * @param {MetadataBindings[]} metadatas An array of optional metadata objects for the entries.
    * @returns {RDF.Variable[]} An array of variables.
@@ -420,8 +432,11 @@ TS
       }
     }
 
+    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+
     // Check if operationRequired is supported.
-    const someOperationRequired = action.entries.some(entry => entry.operationRequired);
+    const someOperationRequired = action.entries
+      .some((entry, i) => ActorRdfJoin.isOperationRequired(entry, metadatas[i]));
     if (!this.canHandleOperationRequired && someOperationRequired) {
       return failTest(`${this.name} does not work with operationRequired.`);
     }
@@ -433,8 +448,6 @@ TS
       .some(entry => getOperationSource(entry.operation)?.context?.get(KeysQueryOperation.silent))) {
       return failTest(`${this.name} can not push bindings into the target of a SERVICE SILENT clause.`);
     }
-
-    const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
     // Check if this actor can handle undefs (for overlapping variables)
     let overlappingVariables: MetadataVariable[] | undefined;

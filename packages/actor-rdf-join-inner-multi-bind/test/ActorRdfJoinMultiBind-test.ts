@@ -400,6 +400,95 @@ IQueryOperationResultBindings
         });
       });
 
+      /**
+       * Two entries of which only the given index requires operation pushdown,
+       * ordered so that the entry sorting keeps them as given.
+       */
+      function actionWithOperationRequired(requiredIndex: number) {
+        mediatorJoinEntriesSort.mediate = <any> (async(sortAction: IActionRdfJoinEntriesSort) =>
+          ({ entries: [ ...sortAction.entries ]}));
+        const cardinalities = [ Number.POSITIVE_INFINITY, 2 ];
+        const entries = cardinalities.map((value, i) => ({
+          output: <any>{ metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value }}) },
+          operation: <any>{ index: i },
+          ...i === requiredIndex && { operationRequired: <const> true },
+        }));
+        const metadatas = cardinalities.map(value => ({
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value },
+          pageSize: 100,
+          requestTime: 10,
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+          ],
+        }));
+        return [{ type: 'inner', entries, context: new ActionContext() }, { metadatas }];
+      }
+
+      it('should move an entry with operationRequired out of the first position', async() => {
+        const [ action, sideData ] = actionWithOperationRequired(0);
+        const result = await actor.getJoinCoefficients(<any> action, <any> sideData);
+        expect(result.isPassed()).toBeTruthy();
+        // The entry that does not require pushdown is now first, so that it can bind the other
+        expect(result.getSideData().entriesSorted.map(entry => (<any> entry.operation).index)).toEqual([ 1, 0 ]);
+      });
+
+      it('should not reorder entries when the first entry does not require operationRequired', async() => {
+        const [ action, sideData ] = actionWithOperationRequired(1);
+        const result = await actor.getJoinCoefficients(<any> action, <any> sideData);
+        expect(result.isPassed()).toBeTruthy();
+        // No reordering is needed, so the sorted order is left untouched
+        expect(result.getSideData().entriesSorted.map(entry => (<any> entry.operation).index)).toEqual([ 0, 1 ]);
+      });
+
+      it('should reject when all entries have operationRequired', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{
+                  metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 2 }}),
+                },
+                operation: <any>{},
+                operationRequired: true,
+              },
+              {
+                output: <any>{
+                  metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }}),
+                },
+                operation: <any>{},
+                operationRequired: true,
+              },
+            ],
+            context: new ActionContext(),
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves
+          .toFailTest('Actor actor requires at least one entry of which the operation does not need to be pushed down');
+      });
+
       it('should reject on a right stream of type extend', async() => {
         await expect(actor.getJoinCoefficients(
           {

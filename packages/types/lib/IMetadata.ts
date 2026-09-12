@@ -47,6 +47,14 @@ export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermNam
    * All available alternative orders.
    */
   availableOrders?: RDF.QueryOperationOrder<OrderItemsType>[];
+
+  /**
+   * If the operation that produced this stream must be pushed into a join
+   * instead of reading this stream directly, as `IJoinEntry.operationRequired` expresses for join entries.
+   * This is for example set for SERVICE clauses of which the target is still an unbound variable,
+   * which can only be evaluated once a bind-join has bound that target.
+   */
+  operationRequired?: boolean;
 }
 
 export type TermsOrder<OrderItemsType> = { term: OrderItemsType; direction: 'asc' | 'desc' }[];

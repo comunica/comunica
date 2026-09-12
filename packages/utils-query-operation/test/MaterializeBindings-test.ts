@@ -171,6 +171,37 @@ describe('materializeTerm', () => {
 });
 
 describe('materializeOperation', () => {
+  it('should materialize the variable target of a service operation', () => {
+    const endpoint = DF.namedNode('http://example.org/sparql');
+    expect(materializeOperation(
+      AF.createService(AF.createPattern(termVariableB, termNamedNode, termVariableC), termVariableA),
+      BF.bindings([[ DF.variable('a'), endpoint ]]),
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createService(AF.createPattern(termVariableB, termNamedNode, termVariableC), endpoint));
+  });
+
+  it('should keep an unbound variable target of a service operation', () => {
+    expect(materializeOperation(
+      AF.createService(AF.createPattern(termVariableB, termNamedNode, termVariableC), termVariableD, true),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createService(AF.createPattern(termVariableB, termNamedNode, termVariableC), termVariableD, true));
+  });
+
+  it('should materialize within the body of a service operation', () => {
+    expect(materializeOperation(
+      AF.createService(AF.createPattern(termVariableA, termNamedNode, termVariableC), termNamedNode),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createService(AF.createPattern(valueA, termNamedNode, termVariableC), termNamedNode));
+  });
+
   it('should materialize a quad pattern with empty bindings', () => {
     expect(materializeOperation(
       AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),

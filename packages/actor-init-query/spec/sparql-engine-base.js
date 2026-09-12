@@ -46,6 +46,8 @@ module.exports = function(engine, exposeEndpoints = false) {
         httpRetryCount: 3,
         httpRetryDelayFallback: 10,
         httpRetryDelayLimit: 100,
+        // The spec test suite covers SERVICE clauses with a variable target
+        serviceAllowVariableTargets: true,
         nonLexicalComparison: options.nonLexicalComparison,
         fullTermComparison: options.fullTermComparison,
       });

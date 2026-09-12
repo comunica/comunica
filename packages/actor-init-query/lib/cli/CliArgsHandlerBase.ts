@@ -119,6 +119,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If failing requests and parsing errors should be logged instead of causing a hard crash',
         },
+        serviceAllowVariableTargets: {
+          type: 'boolean',
+          describe: 'If SERVICE clauses are allowed to have a variable as target, ' +
+            'which lets the queried data determine what is dereferenced',
+        },
         parseUnsupportedVersions: {
           type: 'boolean',
           describe: 'If no error should be emitted on unsupported versions',
@@ -274,6 +279,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define lenient-mode
     if (args.lenient) {
       context[KeysInitQuery.lenient.name] = true;
+    }
+
+    // Define if SERVICE clauses may have a variable as target
+    if (args.serviceAllowVariableTargets) {
+      context[KeysInitQuery.serviceAllowVariableTargets.name] = true;
     }
 
     // Define parseUnsupportedVersions

@@ -42,6 +42,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       logicalType: 'inner',
       physicalName: 'bind',
       canHandleUndefs: true,
+      canHandleOperationRequired: true,
       isLeaf: false,
     });
     this.bindOrder = args.bindOrder;
@@ -277,6 +278,17 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       return entriesTest;
     }
     const entriesSorted = entriesTest.get();
+
+    // Find the first entry that does not require operation pushdown.
+    const bindableIndex = entriesSorted
+      .findIndex(entry => !ActorRdfJoin.isOperationRequired(entry, entry.metadata));
+    if (bindableIndex < 0) {
+      return failTest(`Actor ${this.name} requires at least one entry of which the operation does not need to be pushed down`);
+    }
+    if (bindableIndex > 0) {
+      entriesSorted.unshift(...entriesSorted.splice(bindableIndex, 1));
+    }
+
     metadatas = entriesSorted.map(entry => entry.metadata);
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
