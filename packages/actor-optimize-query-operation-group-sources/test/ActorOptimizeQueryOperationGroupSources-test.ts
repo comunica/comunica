@@ -1,8 +1,8 @@
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
-import { assignOperationSource, getOperationSource } from '@comunica/utils-query-operation';
+import { assignOperationSource, getOperationSource, markExistenceWithinService } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationGroupSources } from '../lib/ActorOptimizeQueryOperationGroupSources';
 import '@comunica/utils-jest';
@@ -167,6 +167,18 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
           );
           const opOut = await actor.groupOperation(opIn, ctx);
           expect(getOperationSource(opOut)).toBe(source1);
+        });
+
+        it('should group the input of a Filter with an EXISTS that the caller resolves itself', async() => {
+          const pattern = AF.createPattern(DF.namedNode('s'), DF.namedNode('s'), DF.namedNode('s'));
+          const opIn = AF.createFilter(
+            AF.createJoin([ assignOperationSource(pattern, source1), assignOperationSource(pattern, source1) ]),
+            AF.createExistenceExpression(false, assignOperationSource(pattern, source1)),
+          );
+          const opOut = <Algebra.Filter> await actor.groupOperation(opIn, ctx
+            .set(KeysExpressionEvaluator.existenceResolver, async() => true));
+          expect(getOperationSource(opOut)).toBeUndefined();
+          expect(getOperationSource(opOut.input)).toBe(source1);
         });
 
         it('should not group a singular sub-input for Filter if its EXISTS is over another source', async() => {
@@ -727,16 +739,24 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
     describe('canSourceEvaluateExpressions', () => {
       const pattern = AF.createPattern(DF.namedNode('s'), DF.namedNode('s'), DF.namedNode('s'));
 
+      const existenceFilter = AF.createFilter(
+        assignOperationSource(pattern, source1),
+        AF.createExistenceExpression(false, assignOperationSource(pattern, source1)),
+      );
+      const resolverContext = new ActionContext({
+        [KeysExpressionEvaluator.existenceResolver.name]: async() => true,
+      });
+
       it('should return true for operations without expressions', () => {
-        expect(actor.canSourceEvaluateExpressions(assignOperationSource(pattern, source1), source1)).toBeTruthy();
-        expect(actor.canSourceEvaluateExpressions(AF.createNop(), source1)).toBeTruthy();
+        expect(actor.canSourceEvaluateExpressions(assignOperationSource(pattern, source1), source1, ctx)).toBeTruthy();
+        expect(actor.canSourceEvaluateExpressions(AF.createNop(), source1, ctx)).toBeTruthy();
       });
 
       it('should return true for expressions over the same source or without source', () => {
         expect(actor.canSourceEvaluateExpressions(AF.createFilter(
           assignOperationSource(pattern, source1),
           AF.createExistenceExpression(false, AF.createJoin([ assignOperationSource(pattern, source1), pattern ])),
-        ), source1)).toBeTruthy();
+        ), source1, ctx)).toBeTruthy();
       });
 
       it('should return false for expressions over another source', () => {
@@ -745,7 +765,18 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
           AF.createOperatorExpression('!', [
             AF.createExistenceExpression(false, AF.createJoin([ assignOperationSource(pattern, source2) ])),
           ]),
-        ), source1)).toBeFalsy();
+        ), source1, ctx)).toBeFalsy();
+      });
+
+      it('should return false for an existence expression when an existence resolver is set', () => {
+        expect(actor.canSourceEvaluateExpressions(existenceFilter, source1, resolverContext)).toBeFalsy();
+      });
+
+      it('should return true for an existence expression from a SERVICE clause with an existence resolver', () => {
+        expect(actor.canSourceEvaluateExpressions(AF.createFilter(
+          assignOperationSource(pattern, source1),
+          markExistenceWithinService(AF.createExistenceExpression(false, assignOperationSource(pattern, source1))),
+        ), source1, resolverContext)).toBeTruthy();
       });
     });
   });

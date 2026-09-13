@@ -1,12 +1,13 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
-import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysHttpWayback, KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { Logger } from '@comunica/types';
-import type { QueryBindings, QueryStringContext } from '@comunica/types';
-import { AlgebraFactory } from '@comunica/utils-algebra';
+import type { ExistenceResolver, QueryBindings, QueryStringContext } from '@comunica/types';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
+import { getOperationSource } from '@comunica/utils-query-operation';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -3790,6 +3791,156 @@ CONSTRUCT {
 
       // The inner SELECT DISTINCT should have been optimized
       expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  /**
+   * Regression tests for the interaction between the existence resolver and query source pushdown.
+   *
+   * A SPARQL endpoint accepts any operation, so without this guard the whole `FILTER EXISTS` was
+   * handed to the endpoint, which answered the `EXISTS` against its own data while the resolver
+   * that the caller installed for exactly that purpose was never called.
+   * The body of a SERVICE clause is exempt, as it is up to the target of that clause to evaluate it.
+   */
+  describe('existence resolver', () => {
+    const endpoint = 'http://example.org/existence/sparql';
+    const serviceEndpoint = 'http://example.org/existence-service/sparql';
+    const bindingsResponse = JSON.stringify({
+      head: { vars: [ 's', 'o' ]},
+      results: {
+        bindings: [
+          { s: { type: 'uri', value: 'http://ex.org/s1' }, o: { type: 'uri', value: 'http://ex.org/o' }},
+          { s: { type: 'uri', value: 'http://ex.org/s2' }, o: { type: 'uri', value: 'http://ex.org/o' }},
+        ],
+      },
+    });
+
+    let requests: { endpoint: string; query: string }[];
+    let existenceResolver: jest.Mock<ReturnType<ExistenceResolver>, Parameters<ExistenceResolver>>;
+
+    /**
+     * Endpoints answering every query with the two bindings above, recording what they were asked.
+     */
+    const mockedFetch: typeof fetch = async(input, init) => {
+      const url = new URL(input instanceof Request ? input.url : input);
+      const query = url.searchParams.get('query') ??
+        (init?.body ? new URLSearchParams(String(init.body)).get('query') : null);
+      // Requests without a query are service description lookups
+      if (!query) {
+        return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
+      }
+      requests.push({ endpoint: `${url.origin}${url.pathname}`, query });
+      // Queries over multiple sources first check whether each source has results
+      return new Response(/\bASK\b/u.test(query) ? JSON.stringify({ head: {}, boolean: true }) : bindingsResponse, {
+        status: 200,
+        headers: { 'content-type': 'application/sparql-results+json' },
+      });
+    };
+
+    /**
+     * The endpoints that were asked a query containing an `EXISTS`.
+     */
+    function endpointsAskedExists(): string[] {
+      return requests.filter(request => request.query.includes('EXISTS')).map(request => request.endpoint);
+    }
+
+    async function querySubjects(query: string, context: QueryStringContext): Promise<string[]> {
+      const bindings = await (await engine.queryBindings(query, { ...context, fetch: mockedFetch })).toArray();
+      return bindings.map(entry => entry.get('s')!.value);
+    }
+
+    beforeEach(async() => {
+      // The tests below query the same endpoint URLs, so their query sources would otherwise be reused
+      await engine.invalidateHttpCache();
+      requests = [];
+      // Accepts only one of the two solutions, while the endpoints let both through, to show which one answered
+      existenceResolver = jest.fn<ReturnType<ExistenceResolver>, Parameters<ExistenceResolver>>(
+        async(_expression, mapping) => mapping.get('s')!.value === 'http://ex.org/s2',
+      );
+    });
+
+    it.each([
+      [ 'a FILTER', `SELECT ?s WHERE { ?s <http://ex.org/p> ?o . FILTER EXISTS { ?s <http://ex.org/q> ?x } }` ],
+      [ 'a HAVING clause', `SELECT ?s WHERE { ?s <http://ex.org/p> ?o } GROUP BY ?s
+        HAVING (EXISTS { ?s <http://ex.org/q> ?x })` ],
+      [ 'a FILTER over a DISTINCT subquery', `SELECT ?s WHERE {
+        { SELECT DISTINCT ?s WHERE { ?s <http://ex.org/p> ?o } }
+        FILTER EXISTS { ?s <http://ex.org/q> ?x }
+      }` ],
+    ])('should answer EXISTS in %s with the resolver instead of delegating it to the endpoint', async(_, query) => {
+      await expect(querySubjects(query, { sources: [{ type: 'sparql', value: endpoint }], existenceResolver }))
+        .resolves.toEqual([ 'http://ex.org/s2' ]);
+      expect(existenceResolver).toHaveBeenCalledTimes(2);
+      expect(endpointsAskedExists()).toEqual([]);
+    });
+
+    it('should give the resolver the context, to tell apart the sources that its input targets', async() => {
+      const targets = new Set<number>();
+      existenceResolver.mockImplementation(async(expression, _mapping, context) => {
+        const sources = context.getSafe(KeysQueryOperation.querySources);
+        algebraUtils.visitOperation(expression.input, {
+          [Algebra.Types.PATTERN]: { visitor: pattern => targets.add(sources.indexOf(getOperationSource(pattern)!)) },
+        });
+        return true;
+      });
+
+      await expect(querySubjects(
+        `SELECT ?s WHERE { ?s <http://ex.org/p> ?o . FILTER EXISTS { ?s <http://ex.org/q> ?x } }`,
+        {
+          sources: [{ type: 'sparql', value: endpoint }, { type: 'sparql', value: serviceEndpoint }],
+          existenceResolver,
+        },
+      )).resolves.toHaveLength(4);
+      expect(targets).toEqual(new Set([ 0, 1 ]));
+    });
+
+    it('should still delegate EXISTS to the endpoint without a resolver', async() => {
+      await expect(querySubjects(
+        `SELECT ?s WHERE { ?s <http://ex.org/p> ?o . FILTER EXISTS { ?s <http://ex.org/q> ?x } }`,
+        { sources: [{ type: 'sparql', value: endpoint }]},
+      )).resolves.toEqual([ 'http://ex.org/s1', 'http://ex.org/s2' ]);
+      expect(endpointsAskedExists()).toEqual([ endpoint ]);
+    });
+
+    it('should leave EXISTS in the body of a SERVICE clause to the target of that clause', async() => {
+      await expect(querySubjects(`SELECT ?s WHERE {
+        SERVICE <${serviceEndpoint}> { ?s <http://ex.org/p> ?o FILTER EXISTS { ?s <http://ex.org/q> ?x } }
+      }`, { sources: [ RdfStore.createDefault() ], existenceResolver }))
+        .resolves.toEqual([ 'http://ex.org/s1', 'http://ex.org/s2' ]);
+      expect(existenceResolver).not.toHaveBeenCalled();
+      expect(endpointsAskedExists()).toEqual([ serviceEndpoint ]);
+    });
+
+    it('should still delegate the whole query when only a SERVICE clause contains EXISTS', async() => {
+      await expect(querySubjects(`SELECT ?s WHERE {
+        ?s <http://ex.org/p> ?o
+        SERVICE <${serviceEndpoint}> { ?s <http://ex.org/p> ?o FILTER EXISTS { ?s <http://ex.org/q> ?x } }
+      }`, { sources: [{ type: 'sparql', value: endpoint }], existenceResolver }))
+        .resolves.toEqual([ 'http://ex.org/s1', 'http://ex.org/s2' ]);
+      expect(existenceResolver).not.toHaveBeenCalled();
+      expect(requests.map(request => request.endpoint)).toEqual([ endpoint ]);
+    });
+
+    it('should answer EXISTS outside a SERVICE clause with the resolver, and within it by its target', async() => {
+      await expect(querySubjects(`SELECT ?s WHERE {
+        ?s <http://ex.org/p> ?o
+        FILTER EXISTS { ?s <http://ex.org/q> ?x }
+        SERVICE <${serviceEndpoint}> { ?s <http://ex.org/p> ?o FILTER EXISTS { ?s <http://ex.org/r> ?y } }
+      }`, { sources: [{ type: 'sparql', value: endpoint }], existenceResolver }))
+        .resolves.toEqual([ 'http://ex.org/s2' ]);
+      expect(existenceResolver).toHaveBeenCalledTimes(2);
+      expect(endpointsAskedExists()).toEqual([ serviceEndpoint ]);
+    });
+
+    it('should answer EXISTS of which the body is a SERVICE clause with the resolver', async() => {
+      // The EXISTS itself is not in the body of a SERVICE clause, even though it would go to the same target
+      await expect(querySubjects(`SELECT ?s WHERE {
+        SERVICE <${serviceEndpoint}> { ?s <http://ex.org/p> ?o }
+        FILTER EXISTS { SERVICE <${serviceEndpoint}> { ?s <http://ex.org/q> ?x } }
+      }`, { sources: [ RdfStore.createDefault() ], existenceResolver }))
+        .resolves.toEqual([ 'http://ex.org/s2' ]);
+      expect(existenceResolver).toHaveBeenCalledTimes(2);
+      expect(endpointsAskedExists()).toEqual([]);
     });
   });
 

@@ -68,7 +68,7 @@ export class InternalEvaluator {
     // A resolver takes over the whole expression, including its `not` flag, so nothing is materialized here.
     const existenceResolver = this.context.get(KeysExpressionEvaluator.existenceResolver);
     if (existenceResolver) {
-      return new Eval.BooleanLiteral(await existenceResolver(expr.expression, mapping));
+      return new Eval.BooleanLiteral(await existenceResolver(expr.expression, mapping, this.context));
     }
 
     const dataFactory: ComunicaDataFactory = this.context.getSafe(KeysInitQuery.dataFactory);

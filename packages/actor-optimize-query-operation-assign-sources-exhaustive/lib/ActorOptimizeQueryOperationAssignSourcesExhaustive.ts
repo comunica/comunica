@@ -8,9 +8,10 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { ActionContext, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils, isKnownSubType } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
+  markExistenceWithinService,
   passFullOperationToSource,
 } from '@comunica/utils-query-operation';
 
@@ -112,6 +113,12 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
           }
           return serviceOp;
         },
+      },
+      [Algebra.Types.EXPRESSION]: {
+        // The SERVICE clause is replaced by its body, so mark what remains of it that is not for the sources above.
+        transform: expressionOp => withinService && isKnownSubType(expressionOp, Algebra.ExpressionTypes.EXISTENCE) ?
+          markExistenceWithinService(expressionOp) :
+          expressionOp,
       },
       [Algebra.Types.CONSTRUCT]: {
         // The template holds quad patterns to produce, not patterns to match, so it gets no source.

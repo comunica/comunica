@@ -18,6 +18,7 @@ import {
 } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
+  containsCallerResolvedExistence,
   doesShapeAcceptOperation,
   getOperationSource,
   removeOperationSource,
@@ -178,7 +179,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     source: IQuerySourceWrapper | undefined,
     context: IActionContext,
   ): Promise<O> {
-    if (source && this.canSourceEvaluateExpressions(operation, source) &&
+    if (source && this.canSourceEvaluateExpressions(operation, source, context) &&
       this.isPossibleToMoveSourceAnnotationUpwards(operation, await source.source.getSelectorShape(context), context)) {
       this.logDebug(context, `Hoist ${inputs.length} source-specific operations into a single ${operation.type} operation for ${source.source.toString()}`);
       operation = assignOperationSource(operation, source);
@@ -217,13 +218,21 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
   }
 
   /**
-   * Checks if the given source can evaluate the expressions in the given operation.
-   * This is not the case if an expression contains an operation that is assigned to another source,
-   * such as the pattern of an `EXISTS` over other sources, as this source would evaluate it over its own data instead.
+   * Checks if the given source can evaluate the expressions in the given operation, using the following rules:
+   * - If an expression contains an operation that is assigned to another source,
+   *   such as the pattern of an `EXISTS` over other sources, then it can't,
+   *   as this source would evaluate that operation over its own data instead.
+   * - If the operation contains an `EXISTS` that the caller resolves itself, then it can't,
+   *   as this source would answer that `EXISTS` itself, bypassing the caller's existence resolver.
    * @param operation A grouped operation consisting of operations that share the given source.
    * @param source The common source.
+   * @param context The action context.
    */
-  public canSourceEvaluateExpressions(operation: Algebra.Operation, source: IQuerySourceWrapper): boolean {
+  public canSourceEvaluateExpressions(
+    operation: Algebra.Operation,
+    source: IQuerySourceWrapper,
+    context: IActionContext,
+  ): boolean {
     let otherSource = false;
     const sourceChecker = {
       preVisitor: (subOperation: Algebra.Operation) => {
@@ -239,6 +248,10 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     // as the other operations have either been grouped into this source, or had no source to begin with.
     const types = [ ...Object.values(Algebra.Types), ...Object.values(TypesComunica) ];
     algebraUtils.visitOperation(operation, Object.fromEntries(types.map(type => [ type, sourceChecker ])));
-    return !otherSource;
+    if (otherSource) {
+      return false;
+    }
+
+    return !containsCallerResolvedExistence(operation, context);
   }
 }

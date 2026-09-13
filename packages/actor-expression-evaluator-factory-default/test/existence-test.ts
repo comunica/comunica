@@ -118,7 +118,7 @@ describe('should be able to handle EXIST filters', () => {
 
       const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
       await expect(evaluator.evaluateAsEBV(bindings)).resolves.toBe(true);
-      expect(existenceResolver).toHaveBeenCalledWith(expr, bindings);
+      expect(existenceResolver).toHaveBeenCalledWith(expr, bindings, evaluator.context);
     });
 
     it('leaves the not flag to the resolver', async() => {

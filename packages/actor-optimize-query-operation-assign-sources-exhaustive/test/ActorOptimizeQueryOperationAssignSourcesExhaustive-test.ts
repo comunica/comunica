@@ -315,6 +315,23 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource((<any> operationOut).input[1])).toBe(source1);
       });
 
+      it('for service with a known source should mark the existence expressions in its body', async() => {
+        const pattern = AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'));
+        const operationIn = AF.createFilter(
+          AF.createService(
+            AF.createFilter(pattern, AF.createExistenceExpression(false, pattern)),
+            DF.namedNode('source1'),
+          ),
+          AF.createExistenceExpression(false, AF.createService(pattern, DF.namedNode('source1'))),
+        );
+        const operationOut = <any> actor.assignExhaustive(AF, operationIn, [ source1 ], { source1 });
+        // Only the EXISTS within the SERVICE clause is up to its target, not the one of which the body is a SERVICE
+        expect(operationOut.input.expression.metadata?.withinService).toBeTruthy();
+        expect(getOperationSource(operationOut.input.expression.input)).toBe(source1);
+        expect(operationOut.expression.metadata?.withinService).toBeUndefined();
+        expect(getOperationSource(operationOut.expression.input)).toBe(source1);
+      });
+
       it('for service with variable should not assign', async() => {
         source1.context = new ActionContext({ a: 'b' });
         const operationIn = AF.createService(
