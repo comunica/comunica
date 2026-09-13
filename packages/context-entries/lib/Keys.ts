@@ -300,6 +300,8 @@ export const KeysExpressionEvaluator = {
   /**
    * Resolves `EXISTS` and `NOT EXISTS` expressions.
    * When absent, the expression evaluator falls back to its query operation mediator.
+   * Inside a query engine, setting this also stops operations that contain an `EXISTS` from being
+   * delegated to a query source, because such a source would answer the `EXISTS` itself.
    */
   existenceResolver: new ActionContextKey<ExistenceResolver>(
     '@comunica/utils-expression-evaluator:existenceResolver',

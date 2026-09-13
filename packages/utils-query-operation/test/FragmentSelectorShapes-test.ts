@@ -1,7 +1,13 @@
-import type { FragmentSelectorShape } from '@comunica/types';
+import { KeysExpressionEvaluator } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
+import type { FragmentSelectorShape, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
-import { doesShapeAcceptOperation } from '../lib/FragmentSelectorShapes';
+import {
+  containsCallerResolvedExistence,
+  doesShapeAcceptOperation,
+  passFullOperationToSource,
+} from '../lib/FragmentSelectorShapes';
 
 const AF = new AlgebraFactory();
 
@@ -1130,6 +1136,73 @@ describe('FragmentSelectorShapes', () => {
 
         expect(doesShapeAcceptOperation(SHAPE_RDFJS, construct)).toBeFalsy();
       });
+    });
+  });
+
+  describe('#containsCallerResolvedExistence', () => {
+    const pattern = AF.createPattern(
+      AF.dataFactory.variable!('s'),
+      AF.dataFactory.namedNode('ex:p'),
+      AF.dataFactory.variable!('o'),
+    );
+    const existenceFilter = AF.createFilter(
+      pattern,
+      AF.createExistenceExpression(false, pattern),
+    );
+
+    it('returns false without an existence resolver in the context', () => {
+      expect(containsCallerResolvedExistence(existenceFilter, new ActionContext())).toBeFalsy();
+    });
+
+    it('returns false for an operation without existence expressions', () => {
+      const context = new ActionContext({
+        [KeysExpressionEvaluator.existenceResolver.name]: async() => true,
+      });
+      const filter = AF.createFilter(
+        pattern,
+        AF.createTermExpression(AF.dataFactory.variable!('o')),
+      );
+      expect(containsCallerResolvedExistence(filter, context)).toBeFalsy();
+      expect(containsCallerResolvedExistence(pattern, context)).toBeFalsy();
+    });
+
+    it('returns true for an operation containing an existence expression', () => {
+      const context = new ActionContext({
+        [KeysExpressionEvaluator.existenceResolver.name]: async() => true,
+      });
+      expect(containsCallerResolvedExistence(existenceFilter, context)).toBeTruthy();
+      expect(containsCallerResolvedExistence(AF.createProject(existenceFilter, []), context)).toBeTruthy();
+    });
+  });
+
+  describe('#passFullOperationToSource', () => {
+    const pattern = AF.createPattern(
+      AF.dataFactory.variable!('s'),
+      AF.dataFactory.namedNode('ex:p'),
+      AF.dataFactory.variable!('o'),
+    );
+    let source: IQuerySourceWrapper;
+
+    beforeEach(() => {
+      source = <any> { source: { getSelectorShape: () => SHAPE_SPARQL_1_1 }};
+    });
+
+    it('passes an accepted operation to a single source', async() => {
+      await expect(passFullOperationToSource(pattern, [ source ], new ActionContext())).resolves.toBeTruthy();
+    });
+
+    it('does not pass to multiple sources', async() => {
+      await expect(passFullOperationToSource(pattern, [ source, source ], new ActionContext()))
+        .resolves.toBeFalsy();
+    });
+
+    it('does not pass an operation with an existence expression when a resolver is set', async() => {
+      const filter = AF.createFilter(pattern, AF.createExistenceExpression(false, pattern));
+      await expect(passFullOperationToSource(filter, [ source ], new ActionContext()))
+        .resolves.toBeTruthy();
+      await expect(passFullOperationToSource(filter, [ source ], new ActionContext({
+        [KeysExpressionEvaluator.existenceResolver.name]: async() => true,
+      }))).resolves.toBeFalsy();
     });
   });
 });

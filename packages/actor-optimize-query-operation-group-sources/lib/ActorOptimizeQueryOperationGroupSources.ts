@@ -11,6 +11,7 @@ import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuery
 import { Algebra, AlgebraFactory, isKnownOperation, isKnownSubType } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
+  containsCallerResolvedExistence,
   doesShapeAcceptOperation,
   getOperationSource,
   removeOperationSource,
@@ -187,6 +188,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
 
   /**
    * Checks if it's possible to move the source annotation upwards using the following rules:
+   * - If the operation contains an `EXISTS` that the caller resolves itself, then it's not possible.
    * - If the shape doesn't accept the operation, then it's not possible.
    * - If it does and the operation does not contain extension functions or
    *   comunica doesn't support them, then it's possible.
@@ -200,6 +202,10 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     shape: FragmentSelectorShape,
     context: IActionContext,
   ): boolean {
+    // The source would answer such an `EXISTS` itself, which would bypass the caller's existence resolver.
+    if (containsCallerResolvedExistence(operation, context)) {
+      return false;
+    }
     const wildcardAcceptAllExtensionFunctions = context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
     if (doesShapeAcceptOperation(shape, operation, { wildcardAcceptAllExtensionFunctions })) {
       const extensionFunctions = context.get(KeysInitQuery.extensionFunctions);
