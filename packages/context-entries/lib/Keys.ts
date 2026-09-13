@@ -185,6 +185,8 @@ export const KeysInitQuery = {
   /**
    * Object to cache function argument overload resolutions.
    * Defaults to an object that is reused across query executions.
+   * Resolutions depend on the `superTypeProvider` they were made under,
+   * so a different super-type provider requires a fresh cache.
    */
   functionArgumentsCache: new ActionContextKey<FunctionArgumentsCache>(
     '@comunica/actor-init-query:functionArgumentsCache',
@@ -275,6 +277,11 @@ export const KeysExpressionEvaluator = {
   extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator>(
     '@comunica/utils-expression-evaluator:extensionFunctionCreator',
   ),
+  /**
+   * Discovers the super type of a type unknown to the system.
+   * Changing this between evaluations requires a fresh `functionArgumentsCache`,
+   * as overload resolutions are cached without it.
+   */
   superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/utils-expression-evaluator:superTypeProvider'),
   /**
    * Resolves `EXISTS` and `NOT EXISTS` expressions.

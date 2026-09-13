@@ -151,15 +151,17 @@ runFuncTestTable({
 ```
 
 Aliases map the short names in the table to full RDF terms; the ones above are exported by this package.
-Instead of a `testTable`, an `errorTable` asserts that evaluation throws, where `''` accepts any error:
+Instead of a `testTable`, an `errorTable` asserts that evaluation throws, where `''` accepts any error.
+Note that a named operator has to be written in function notation:
 
 ```typescript
 runFuncTestTable({
-  errorTable: `3i 3i = 'Unknown named operator'`,
+  registeredActors: [ args => new ActorFunctionFactoryExpressionExtensions(args) ],
+  errorTable: `3i 3i = 'All actors over bus test-bus-function-factory failed to handle an action'`,
   arity: 2,
   operation: '<https://example.org/functions#equal>',
   aliases: numeric,
-  notation: Notation.Infix,
+  notation: Notation.Function,
 });
 ```
 

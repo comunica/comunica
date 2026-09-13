@@ -1,10 +1,12 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import type { GeneralSuperTypeDict } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
 import { ExpressionEngine } from '../lib/ExpressionEngine';
 
@@ -13,6 +15,20 @@ const BF = new BindingsFactory(DF);
 const AF = new AlgebraFactory(DF);
 
 const XSD_INTEGER = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
+
+/**
+ * A context whose super-type provider makes the given datatype a subtype of xsd:integer,
+ * paired with the fresh cache that a changed provider requires.
+ */
+function superTypeContext(datatype: RDF.NamedNode): ActionContext {
+  return new ActionContext({
+    [KeysExpressionEvaluator.superTypeProvider.name]: {
+      cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
+      discoverer: (type: string) => type === datatype.value ? XSD_INTEGER.value : 'term',
+    },
+    [KeysInitQuery.functionArgumentsCache.name]: {},
+  });
+}
 
 describe('ExpressionEngine', () => {
   let engine: ExpressionEngine;
@@ -56,7 +72,7 @@ describe('ExpressionEngine', () => {
   describe('EXISTS', () => {
     const expression = AF.createExistenceExpression(false, AF.createBgp([]));
 
-    it('rejects without an existenceResolver, before materializing anything.', async() => {
+    it('rejects without an existenceResolver.', async() => {
       const evaluator = await engine.createEvaluator(expression);
       await expect(evaluator.evaluateAsEBV(BF.bindings())).rejects
         .toThrow('Evaluating EXISTS requires a @comunica/utils-expression-evaluator:existenceResolver in the context');
@@ -104,10 +120,13 @@ describe('ExpressionEngine', () => {
     });
 
     it('honours the provided context.', async() => {
-      const comparator = await engine.createTermComparator(
-        new ActionContext({ [KeysExpressionEvaluator.fullTermComparison.name]: true }),
-      );
-      expect(comparator.orderTypes(DF.blankNode('a'), DF.namedNode('ex:a'))).toBe(-1);
+      const custom = DF.namedNode('http://example.org/num');
+      // Without the provider the values are compared as strings, so '10' sorts before '9'.
+      await expect(engine.createTermComparator().then(comparator =>
+        comparator.orderTypes(DF.literal('10', custom), DF.literal('9', custom)))).resolves.toBe(-1);
+
+      const comparator = await engine.createTermComparator(superTypeContext(custom));
+      expect(comparator.orderTypes(DF.literal('10', custom), DF.literal('9', custom))).toBe(1);
     });
   });
 
@@ -121,6 +140,21 @@ describe('ExpressionEngine', () => {
       await aggregator.putBindings(BF.fromRecord({ x: DF.literal('1', XSD_INTEGER) }));
       await aggregator.putBindings(BF.fromRecord({ x: DF.literal('2', XSD_INTEGER) }));
       await expect(aggregator.result()).resolves.toEqual(DF.literal('3', XSD_INTEGER));
+    });
+
+    it('honours the provided context.', async() => {
+      const custom = DF.namedNode('http://example.org/num');
+      const expression = AF.createAggregateExpression('sum', AF.createTermExpression(DF.variable('x')), false);
+      const bindings = BF.fromRecord({ x: DF.literal('1', custom) });
+
+      // Summing an unknown datatype yields no result until the provider makes it numeric.
+      const bare = await engine.createAggregator(expression);
+      await bare.putBindings(bindings);
+      await expect(bare.result()).resolves.toBeUndefined();
+
+      const aggregator = await engine.createAggregator(expression, superTypeContext(custom));
+      await aggregator.putBindings(bindings);
+      await expect(aggregator.result()).resolves.toEqual(DF.literal('1', custom));
     });
   });
 });

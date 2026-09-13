@@ -19,7 +19,11 @@ $ yarn add @comunica/expressions-sparql
 
 All inputs are [SPARQL algebra](https://github.com/comunica/comunica/tree/master/packages/utils-algebra#readme)
 expressions, and all evaluation is asynchronous.
-Create the engine once and reuse it, as it caches resolved function overloads.
+Create the engine once and reuse it, as it shares a `functionArgumentsCache` across everything it creates.
+Callers that vary the `superTypeProvider` between calls must not share that cache, see [Context](#context).
+
+The examples below also use `@comunica/utils-bindings-factory`, `@comunica/utils-query-operation`,
+`@comunica/context-entries`, `@comunica/core` and `@traqula/*`; install the ones you need alongside this package.
 
 ```typescript
 import { ExpressionEngine } from '@comunica/expressions-sparql';
@@ -72,6 +76,18 @@ The [expression evaluator documentation](https://comunica.dev/docs/modify/advanc
 lists all keys.
 Entries that are required but absent (`dataFactory`, `queryTimestamp` and `functionArgumentsCache`) are defaulted.
 
+The `functionArgumentsCache` defaults to one instance shared by every evaluator, comparator and aggregator this
+engine creates. That cache records which function implementation a combination of argument datatypes resolved to,
+and that resolution depends on `KeysExpressionEvaluator.superTypeProvider`. Passing a different super-type
+provider therefore requires a fresh cache, or the first provider's resolutions are served to the second one:
+
+```typescript
+const evaluator = await engine.createEvaluator(expression, new ActionContext({
+  [KeysExpressionEvaluator.superTypeProvider.name]: myProvider,
+  [KeysInitQuery.functionArgumentsCache.name]: {},
+}));
+```
+
 ```typescript
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
@@ -102,8 +118,9 @@ const evaluator = await engine.createEvaluator(expression, new ActionContext({
 }));
 ```
 
-Throw an `ExpressionError` from the resolver to have the failure treated as a SPARQL error, so that `FILTER`
-drops the bindings rather than failing the whole evaluation.
+A resolver may throw an `ExpressionError` (from `@comunica/utils-expression-evaluator`) to mark the failure as a
+SPARQL error rather than a programmer error. This engine evaluates no `FILTER` of its own, so acting on that
+distinction is up to the caller, through `isExpressionError`.
 
 ### Limitations
 

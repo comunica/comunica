@@ -76,7 +76,7 @@ Or jump right into one of the available query engines:
    * [Comunica SPARQL Reasoning](https://github.com/comunica/comunica-feature-reasoning/tree/master/engines/query-sparql-reasoning): Engine that adds support for reasoning
    * [Comunica SPARQL Reasoning File](https://github.com/comunica/comunica-feature-reasoning/tree/master/engines/query-sparql-file-reasoning): Engine to query over local RDF files with support for reasoning
 
- - Engines that expose a part of Comunica on its own:
+ - Engines that expose a part of Comunica on their own:
    * [Comunica SPARQL Expressions](https://github.com/comunica/comunica/tree/master/engines/expressions-sparql#readme): Engine to evaluate SPARQL expressions, aggregates and term ordering without querying.
 
 ## Modify or Extend Comunica

@@ -112,7 +112,7 @@ describe('should be able to handle EXIST filters', () => {
       };
     });
 
-    it('delegates to the resolver, without materializing the operation', async() => {
+    it('delegates to the resolver instead of the query operation mediator', async() => {
       const expr = factory.createExistenceExpression(false, factory.createBgp([]));
       const bindings = BF.bindings([[ DF.variable('a'), DF.literal('1') ]]);
 

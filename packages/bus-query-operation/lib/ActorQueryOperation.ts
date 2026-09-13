@@ -71,7 +71,8 @@ export interface IAsyncExpressionContext extends IBaseExpressionContext {
   exists?: (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean>;
 }
 
-// TODO (next major): remove, unused leftovers of the sparqlee evaluator context.
+// TODO (next major): remove, superseded by the copy in @comunica/utils-query-operation,
+// which is the one actually used and which additionally carries wildcardAcceptAllExtensionFunctions.
 export type FragmentSelectorShapeTestFlags = {
   joinBindings?: boolean;
   filterBindings?: boolean;
