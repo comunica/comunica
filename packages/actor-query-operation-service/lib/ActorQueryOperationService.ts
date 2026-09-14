@@ -50,9 +50,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
   }
 
   public async runOperation(operation: Algebra.Service, context: IActionContext): Promise<IQueryOperationResult> {
-    // A target that is still a variable can not be queried yet.
-    // We return a placeholder output, which join actors use to determine that a bind-join is required,
-    // which materializes the target into an IRI before this operation is executed again.
+    // We replace variable targets with a placeholder that should be bound later in the bind-join.
     if (operation.name.termType !== 'NamedNode') {
       if (!context.get(KeysInitQuery.serviceAllowVariableTargets)) {
         throw new Error(`SERVICE clauses with a variable target are not allowed by default, as they let the queried data determine what is dereferenced. Enable them via the serviceAllowVariableTargets context entry.`);
