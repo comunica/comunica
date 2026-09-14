@@ -105,8 +105,7 @@ TS
   }
 
   /**
-   * Check if the operation of the given join entry must be pushed into the join,
-   * instead of using its output stream directly.
+   * Check if the operation of the given join entry must be pushed into the join.
    * Next to entries that explicitly request this, this holds for entries whose metadata requests it,
    * such as SERVICE clauses of which the target is still an unbound variable.
    * @param entry A join entry.
