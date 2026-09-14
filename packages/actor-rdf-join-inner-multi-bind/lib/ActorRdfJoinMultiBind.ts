@@ -285,6 +285,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     if (bindableIndex < 0) {
       return failTest(`Actor ${this.name} requires at least one entry of which the operation does not need to be pushed down`);
     }
+    // This case could occur for variable SERVICE targets, which need to be bound later.
     if (bindableIndex > 0) {
       entriesSorted.unshift(...entriesSorted.splice(bindableIndex, 1));
     }
