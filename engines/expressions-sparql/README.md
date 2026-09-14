@@ -22,9 +22,6 @@ expressions, and all evaluation is asynchronous.
 Create the engine once and reuse it, as it shares a `functionArgumentsCache` across everything it creates.
 Callers that vary the `superTypeProvider` between calls must not share that cache, see [Context](#context).
 
-The examples below also use `@comunica/utils-bindings-factory`, `@comunica/utils-query-operation`,
-`@comunica/context-entries`, `@comunica/core` and `@traqula/*`; install the ones you need alongside this package.
-
 ```typescript
 import { ExpressionEngine } from '@comunica/expressions-sparql';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';

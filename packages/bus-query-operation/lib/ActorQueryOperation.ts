@@ -72,7 +72,7 @@ export interface IAsyncExpressionContext extends IBaseExpressionContext {
 }
 
 // TODO (next major): remove, superseded by the copy in @comunica/utils-query-operation,
-// which is the one actually used and which additionally carries wildcardAcceptAllExtensionFunctions.
+//  which is the one actually used and which additionally carries wildcardAcceptAllExtensionFunctions.
 export type FragmentSelectorShapeTestFlags = {
   joinBindings?: boolean;
   filterBindings?: boolean;
