@@ -1,6 +1,6 @@
 # Comunica Expression Function Not In Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-not-in.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-not-in)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-not-in.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-not-in)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs an [expression function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)
