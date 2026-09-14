@@ -12,7 +12,10 @@
         "feature/optimize-sparql-fed",
         "feature/*"
       ],
-      "npmClient": "npm"
+      "npmClient": "npm",
+      "throttle": true,
+      "throttleSize": 1,
+      "throttleDelay": 1
     }
   },
   "packages": [
@@ -20,7 +23,7 @@
     "packages/*",
     "performance/*"
   ],
-  "version": "5.3.0",
+  "version": "5.4.0",
   "loglevel": "success",
   "registry": "https://registry.npmjs.org/",
   "npmClient": "yarn",

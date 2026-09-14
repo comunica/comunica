@@ -1,6 +1,57 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.4.0"></a>
+## [v5.4.0](https://github.com/comunica/comunica/compare/v5.3.0...v5.4.0) - 2026-09-14
+
+### Added
+* [Support variables as the target of SERVICE clauses (#1815)](https://github.com/comunica/comunica/commit/5c72c408c930543f54f1b4850c2f36f5c529c8b6)
+* [Support the HTTP QUERY method (RFC 10008) (#1778)](https://github.com/comunica/comunica/commit/fab17488fc5946e0b5f5f97fcc269a94d0c505cf)
+* [Implement nonLexical- and fullTermComparison for (in)equality (#1751)](https://github.com/comunica/comunica/commit/dda2c7b1fdaf45f640f501a678feb1bed14b2e68)
+* [Add options to enable comparison over invalid and non-literals (#1735)](https://github.com/comunica/comunica/commit/d651ed0fe95f036cfac4390d6495a2d479aa012b)
+* [Detect and correct TPF metadata with an invalid protocol (#1744)](https://github.com/comunica/comunica/commit/d8c074bb953b8bf5dc9e276c835b1c2c7544ad45)
+* [Add `minimalErrorMessages` flag to SPARQL parse actor (#1731)](https://github.com/comunica/comunica/commit/d3f4297b0a84b7bda071c1ab98c7e9944bad1167)
+
+### Changed
+* Performance improvements:
+  * [Optimize comparison of IRIs, blank nodes, and different term types (#1806)](https://github.com/comunica/comunica/commit/4d6870ea7e8a9c2aca4907e640bf14ca2a8c60ce)
+  * [Estimate join cardinality from distinct values where sources know them (#1805)](https://github.com/comunica/comunica/commit/a4cc8c448e40d7e5a384ed64e145aad80c3ceac7)
+  * [Optimize ORDER BY with LIMIT above it (#1789)](https://github.com/comunica/comunica/commit/5b3d7a43e43684d35731434c14c34e0ad07f5734)
+  * [Report no cardinality when a source has none, instead of an estimated zero](https://github.com/comunica/comunica/commit/1f5e31e308694b20c4622d305f413d7917e6d644)
+  * [Reuse pattern cardinalities within a query execution over RDF/JS sources](https://github.com/comunica/comunica/commit/46844ce7a3d920b40ae9713f4dd1bd87a74e57fd)
+  * [Improve accuracy of costs in multi-bind actor (#1798)](https://github.com/comunica/comunica/commit/95f2d4907a5e503cbb5a7e402024966caaa3628c)
+  * [Improve accuracy of costs in multi-smallest actor (#1797)](https://github.com/comunica/comunica/commit/a36cfef159324081ce0d27f8bbc87a76ce2c5d2e)
+  * [Bump asyncjoin to 1.2.5 to improve performance](https://github.com/comunica/comunica/commit/fdaf691dc03925fe66c09edbdf0214ef4a205449)
+  * [Cap join cardinality estimates using the entries' shared variables (#1792)](https://github.com/comunica/comunica/commit/764ce28a8bf296c67c5046fe8a1e6214f842af36)
+  * [Sort ORDER BY results in O(n log n) instead of O(n^2) (#1788)](https://github.com/comunica/comunica/commit/17e0d1820cfc360cf52fa201a1907e3d3200f32a)
+  * [Update to rdf-stores 2.5.0 with matchBindings performance improvements](https://github.com/comunica/comunica/commit/a92c46a3d8b714f400c5bd02cbd12dd7ff757537)
+  * [Fix DISTINCT optimization ignoring constants in patterns](https://github.com/comunica/comunica/commit/deb2cea2fd3dfc10dbe6a1bdb5d49a62d8332332)
+  * [Fix OPTIONAL bind-join producing a cross join instead of a correlated left join (#1734)](https://github.com/comunica/comunica/commit/ecc30c0f345ea9ad037359c2c4f88413d195f041)
+* [Better support for SERVICE SILENT and nested SERVICE clauses (#1779)](https://github.com/comunica/comunica/commit/88ed6e9be952475d580f462907505afbcca10543)
+* [Stop advertising hypermedia as a source type that can be enforced (#1780)](https://github.com/comunica/comunica/commit/5860d992feb9d5828e0b4a42ebd854615cfaa803)
+* [Disallow SERVICE clauses from targeting local files by default (#1808)](https://github.com/comunica/comunica/commit/b5afaa3e2a7ee761a2cee4d5c552d562489c41a2)
+* [Improve `xsd:string` function and numeric literal representations (#1787)](https://github.com/comunica/comunica/commit/1f504900fb6fdeefc4e2beeeb79205900cd8fab2)
+* [Use Traqula's new preOrder and async mapOperation (#1796)](https://github.com/comunica/comunica/commit/f369347f58a57e5589d03144d383c1ede496f266)
+* [Send the query end event to the master on every response close (#1804)](https://github.com/comunica/comunica/commit/20b16fd99f0482cfcd178160c4af2e7cd24dbc9a)
+* [Emit an error when a SPARQL endpoint drops the response body (#1777)](https://github.com/comunica/comunica/commit/c517279878407e341d4c4296deec3500c11a5870)
+
+### Fixed
+* [Throw when deleting quads with blank nodes via SPARQL Update patches (#1799)](https://github.com/comunica/comunica/commit/7616661f00b7d5aaa3d6b618e0dcc247b753b8e4)
+* [Do not cache sources that could not be dereferenced (#1763)](https://github.com/comunica/comunica/commit/19f2cba88faa8e593b5c078cddb4eaaed0adb8ac)
+* [Parse SPARQL endpoint request bodies with async/await](https://github.com/comunica/comunica/commit/399cfc864dc26fe9fb7f252bd0203c0318b7b41b)
+* [Resolve relative IRIs in endpoint requests against the endpoint baseIRI (#1786)](https://github.com/comunica/comunica/commit/7d35ac0a813ef06da1341cdda15ee8fe0cee62ea)
+* [Fix the SPARQL endpoint hanging on updates with a WHERE clause (#1785)](https://github.com/comunica/comunica/commit/31de14ee6a031572a8ebdb37064bd5d7a7640cd9)
+* [Respond with 400 to invalid SPARQL endpoint requests (#1784)](https://github.com/comunica/comunica/commit/1a551226bd6f4c89abf4a52c7b3e4572d7915165)
+* [Fix DESCRIBE queries with a FROM (NAMED) dataset (#1782)](https://github.com/comunica/comunica/commit/e5efbeda62ded8996b440bf49c9277de9159daed)
+* [Only inject VALUES clauses in filters that use the bound variables (#1762)](https://github.com/comunica/comunica/commit/90da970884a46d9b2c1e911c5c95b6a2917cbef8)
+* [Don't bind-join on FILTER that aren't direct children of OPTIONAL (#1756)](https://github.com/comunica/comunica/commit/d7b39738da89bc6b5aa467b458d598e138741e97)
+* [Fix invalid variable name in link emptiness checks (#1766)](https://github.com/comunica/comunica/commit/0e57e12aebb8ae7afea324d095e55db40b573bbe)
+* [Fix deskolemization for destinations wrapped in a source object (#1761)](https://github.com/comunica/comunica/commit/38bbca45dc0b9d831031312f53f561ad4c105e3f)
+* [Fix ActorQueryOperationTyped bus indexing by passing operationName in args (#1752)](https://github.com/comunica/comunica/commit/60dabd3f4894740a6ea5acad7e3d3dbbce0f381d)
+* [Restrict bind joins on LeftJoin and Minus (#1747)](https://github.com/comunica/comunica/commit/81f95766a224a45ba08461a308f8f5c148cd69f3)
+* [Swap definitions of VOID_DISTINCT_OBJECTS and VOID_DISTINCT_SUBJECTS](https://github.com/comunica/comunica/commit/77a549162cba7a3f3a813c5996eae8ec7aa92a3e)
+* [Fix langMatches issues with wildcards and empty tags (#1741)](https://github.com/comunica/comunica/commit/b7128e8e97af0e8a73ab9147f8455702a8e76147)
+
 <a name="v5.3.0"></a>
 ## [v5.3.0](https://github.com/comunica/comunica/compare/v5.2.4...v5.3.0) - 2026-07-10
 

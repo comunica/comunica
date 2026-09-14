@@ -39,10 +39,10 @@ describe('We should respect the seconds-01 spec', () => {
     operation: 'SECONDS',
     notation: Notation.Function,
     testTable: `
-      '${d1}' = '${decimal('1')}'
-      '${d2}' = '${decimal('2')}'
-      '${d3}' = '${decimal('0')}'
-      '${d4}' = '${decimal('3')}'
+      '${d1}' = '${decimal('1.0')}'
+      '${d2}' = '${decimal('2.0')}'
+      '${d3}' = '${decimal('0.0')}'
+      '${d4}' = '${decimal('3.0')}'
     `,
   });
 });

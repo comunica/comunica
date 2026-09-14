@@ -73,5 +73,24 @@ describe('ActorOptimizeQueryOperationRewriteAdd', () => {
         AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.defaultGraph()),
       ], AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.defaultGraph())));
     });
+
+    it('should run with every ADD of a composite update', async() => {
+      const op = {
+        operation: AF.createCompositeUpdate([
+          AF.createAdd(DF.namedNode('SOURCE1'), DF.namedNode('DEST1'), false),
+          AF.createAdd(DF.namedNode('SOURCE2'), DF.namedNode('DEST2'), false),
+        ]),
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
+      const { operation } = await actor.run(op);
+      expect(operation).toEqual(AF.createCompositeUpdate([
+        AF.createDeleteInsert(undefined, [
+          AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.namedNode('DEST1')),
+        ], AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.namedNode('SOURCE1'))),
+        AF.createDeleteInsert(undefined, [
+          AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.namedNode('DEST2')),
+        ], AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'), DF.namedNode('SOURCE2'))),
+      ]));
+    });
   });
 });

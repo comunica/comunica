@@ -161,6 +161,20 @@ export const KeysInitQuery = {
    */
   lenient: new ActionContextKey<boolean>('@comunica/actor-init-query:lenient'),
   /**
+   * If SERVICE clauses are allowed to target local files.
+   * This is disabled by default, as queries could otherwise read arbitrary local files,
+   * which is problematic when queries originate from untrusted parties.
+   */
+  serviceAllowFileTargets: new ActionContextKey<boolean>('@comunica/actor-init-query:serviceAllowFileTargets'),
+  /**
+   * If SERVICE clauses are allowed to have a variable as target.
+   * This is disabled by default, as the targets are then determined by the queried data,
+   * which would allow queries from untrusted parties to dereference arbitrary sources.
+   */
+  serviceAllowVariableTargets: new ActionContextKey<boolean>(
+    '@comunica/actor-init-query:serviceAllowVariableTargets',
+  ),
+  /**
    * By default, errors will be emitted if parsers encounter unsupported versions.
    * Setting this flag to true will silence those checks.
    * Errors may still be emitted if unsupported grammar is encountered.
@@ -340,6 +354,12 @@ export const KeysQueryOperation = {
    */
   readOnly: new ActionContextKey<boolean>('@comunica/bus-query-operation:readOnly'),
   /**
+   * Flag on a query source context indicating that this source is the target of a `SERVICE SILENT` clause.
+   * Errors from such a source must be swallowed, and replaced by a single empty solution,
+   * as mandated by SPARQL 1.1 Federated Query.
+   */
+  silent: new ActionContextKey<boolean>('@comunica/bus-query-operation:silent'),
+  /**
    * An internal context entry to mark that a property path with arbitrary length and a distinct key is being processed.
    */
   isPathArbitraryLengthDistinctKey: new ActionContextKey<boolean>(
@@ -412,6 +432,15 @@ export const KeysQuerySourceIdentify = {
    * This means that sources annotated with this flag are considered incomplete until all links have been traversed.
    */
   traverse: new ActionContextKey<boolean>('@comunica/bus-query-source-identify:traverse'),
+};
+
+export const KeysDereference = {
+  /**
+   * If local files may not be dereferenced within the current scope.
+   * This is for example set when dereferencing SERVICE targets,
+   * to avoid exposing local files to queries from untrusted parties.
+   */
+  blockFileAccess: new ActionContextKey<boolean>('@comunica/bus-dereference:blockFileAccess'),
 };
 
 export const KeysRdfUpdateQuads = {
