@@ -10,11 +10,6 @@ const ENDPOINT2 = 'http://endpoint2.example.org/sparql';
 
 /**
  * System tests for SERVICE clauses of which the target is a variable.
- *
- * Such clauses can only be evaluated once another operation has bound their target,
- * so they require the query planner to defer them to a bind-join.
- * These tests place the clause in different positions relative to the operation binding its target,
- * to make sure the planner handles that deferral no matter where the clause occurs.
  */
 describe('System test: QuerySparql with a variable SERVICE target', () => {
   let engine: QueryEngine;
