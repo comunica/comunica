@@ -1,10 +1,11 @@
 import { Readable } from 'node:stream';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { BindingsStream, IActionContext } from '@comunica/types';
+import type { BindingsStream, DereferenceFromNamedConflictMode, IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { streamifyArray } from 'streamify-array';
 import {
@@ -173,9 +174,9 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
           .rejects.toThrow(/existing named graph 'http:\/\/example\.org\/existing-graph'/u);
       });
 
-      describe('with dereferenceFromNamedConflictMode set to "error"', () => {
+      describe('with dereferenceFromNamedConflictMode resolving to "error"', () => {
         beforeEach(() => {
-          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, 'error');
+          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, () => 'error');
         });
 
         it('should reject when the source already contains a named graph', async() => {
@@ -188,9 +189,9 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
         });
       });
 
-      describe('with dereferenceFromNamedConflictMode set to "overwrite"', () => {
+      describe('with dereferenceFromNamedConflictMode resolving to "mergeNamedInSourceGraph"', () => {
         beforeEach(() => {
-          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, 'overwrite');
+          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, () => 'mergeNamedInSourceGraph');
         });
 
         it('should rewrite an existing named graph to the tagged named graph too', async() => {
@@ -214,9 +215,9 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
         });
       });
 
-      describe('with dereferenceFromNamedConflictMode set to "merge"', () => {
+      describe('with dereferenceFromNamedConflictMode resolving to "keepSourceGraphs"', () => {
         beforeEach(() => {
-          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, 'merge');
+          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, () => 'keepSourceGraphs');
         });
 
         it('should rewrite default-graph quads but leave an existing named graph untouched', async() => {
@@ -238,6 +239,47 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
             .toEqualBindingsStream([
               BF.fromRecord({ v1: DF.namedNode('s2'), v2: DF.namedNode('p2'), v3: DF.namedNode('o2') }),
             ]);
+        });
+      });
+
+      describe('with a resolver that differentiates per named graph', () => {
+        it('should apply a different conflict mode to each distinct existing named graph', async() => {
+          const graphA = DF.namedNode('http://example.org/graph-a');
+          const graphB = DF.namedNode('http://example.org/graph-b');
+          const resolveConflictMode = jest.fn(
+            (name: RDF.Term): DereferenceFromNamedConflictMode =>
+              name.equals(graphA) ? 'keepSourceGraphs' : 'mergeNamedInSourceGraph',
+          );
+          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, resolveConflictMode);
+
+          const quads = streamifyArray([
+            quad('s1', 'p1', 'o1', graphA.value),
+            quad('s2', 'p2', 'o2', graphA.value),
+            quad('s3', 'p3', 'o3', graphB.value),
+            quad('s4', 'p4', 'o4', graphB.value),
+          ]);
+          const { source } = await actor.run({ metadata: <any> null, quads, url: 'URL', context });
+
+          // GraphA's quads stay under their own graph.
+          await expect(source.queryBindings(AF.createPattern(v1, v2, v3, graphA), new ActionContext()))
+            .toEqualBindingsStream([
+              BF.fromRecord({ v1: DF.namedNode('s1'), v2: DF.namedNode('p1'), v3: DF.namedNode('o1') }),
+              BF.fromRecord({ v1: DF.namedNode('s2'), v2: DF.namedNode('p2'), v3: DF.namedNode('o2') }),
+            ]);
+
+          // GraphB's quads are rewritten into the tagged named graph instead.
+          await expect(source.queryBindings(AF.createPattern(v1, v2, v3, namedGraph), new ActionContext()))
+            .toEqualBindingsStream([
+              BF.fromRecord({ v1: DF.namedNode('s3'), v2: DF.namedNode('p3'), v3: DF.namedNode('o3') }),
+              BF.fromRecord({ v1: DF.namedNode('s4'), v2: DF.namedNode('p4'), v3: DF.namedNode('o4') }),
+            ]);
+
+          // GraphB no longer exists on its own.
+          await expect(source.queryBindings(AF.createPattern(v1, v2, v3, graphB), new ActionContext()))
+            .toEqualBindingsStream([]);
+
+          // The resolver is invoked once per distinct graph (2), not once per quad (4).
+          expect(resolveConflictMode).toHaveBeenCalledTimes(2);
         });
       });
     });

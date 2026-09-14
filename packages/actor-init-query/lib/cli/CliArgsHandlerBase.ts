@@ -202,13 +202,6 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'When true, dereferences IRIs in FROM (NAMED) clauses and merges their content into query dataset.',
         },
-        dereferenceFromNamedConflictMode: {
-          type: 'string',
-          choices: [ 'error', 'overwrite', 'merge' ],
-          describe: 'What to do when a FROM NAMED IRI already contains a named graph of its ' +
-            'own: "error" (default) refuses to load it, "overwrite" discards the existing ' +
-            'graph and replaces it, "merge" leaves it untouched',
-        },
       })
       .exitProcess(false)
       .fail(false)
@@ -388,13 +381,6 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // When true, dereferences the IRIs in FROM/FROM NAMED clauses and merges their content into the query dataset
     if (args.dereferenceFromNamed) {
       context[KeysQueryOperation.dereferenceFromNamed.name] = true;
-    }
-
-    // What to do when a FROM NAMED IRI resolves to content that already contains
-    // a named graph of its own ("error" refuses to load it, "overwrite" replaces the existing
-    // graph, "merge" combines the incoming triples with the existing graph's triples)
-    if (args.dereferenceFromNamedConflictMode) {
-      context[KeysQueryOperation.dereferenceFromNamedConflictMode.name] = args.dereferenceFromNamedConflictMode;
     }
   }
 }

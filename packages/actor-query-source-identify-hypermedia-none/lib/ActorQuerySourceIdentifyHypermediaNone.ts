@@ -10,7 +10,11 @@ import { ActorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-i
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
-import type { ComunicaDataFactory, DereferenceFromNamedConflictMode } from '@comunica/types';
+import type {
+  ComunicaDataFactory,
+  DereferenceFromNamedConflictMode,
+  DereferenceFromNamedConflictModeResolver,
+} from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { RdfStore } from 'rdf-stores';
@@ -36,11 +40,12 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     this.logInfo(action.context, `Identified as file source: ${action.url}`);
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const namedGraph = action.context.get(KeysQueryOperation.sourceAsNamedGraph);
-    const conflictMode = action.context.get(KeysQueryOperation.dereferenceFromNamedConflictMode) ?? 'error';
+    const resolveConflictMode = action.context.get(KeysQueryOperation.dereferenceFromNamedConflictMode) ??
+      ((): DereferenceFromNamedConflictMode => 'error');
     const source = new QuerySourceRdfJs(
       await ActorQuerySourceIdentifyHypermediaNone.storeStream(
         action.quads,
-        namedGraph ? { dataFactory, graph: namedGraph, url: action.url, conflictMode } : undefined,
+        namedGraph ? { dataFactory, graph: namedGraph, url: action.url, resolveConflictMode } : undefined,
       ),
       dataFactory,
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
@@ -56,7 +61,7 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
       dataFactory: ComunicaDataFactory;
       graph: RDF.NamedNode;
       url: string;
-      conflictMode: DereferenceFromNamedConflictMode;
+      resolveConflictMode: DereferenceFromNamedConflictModeResolver;
     },
   ): Promise<RDF.Store<Q>> {
     const store: RdfStore<any, Q> = <RdfStore<any, Q>><unknown>RdfStore.createDefault(true);
@@ -67,23 +72,32 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
         .once('end', () => resolve(store)));
     }
 
+    const conflictModeCache = new Map<string, DereferenceFromNamedConflictMode>();
+
     for await (const quad of <AsyncIterable<RDF.Quad>><unknown>stream) {
       const hasExistingNamedGraph = quad.graph.termType !== 'DefaultGraph';
 
-      if (hasExistingNamedGraph && rewrite.conflictMode === 'error') {
-        throw new Error(
-          `Detected an existing named graph '${quad.graph.value}' while loading ${rewrite.url} as a FROM ` +
-          `NAMED source. Refusing to overwrite it with <${rewrite.graph.value}>, as that would lose data.`,
-        );
+      if (hasExistingNamedGraph) {
+        const cacheKey = `${quad.graph.termType} ${quad.graph.value}`;
+        let conflictMode = conflictModeCache.get(cacheKey);
+        if (conflictMode === undefined) {
+          conflictMode = rewrite.resolveConflictMode(quad.graph);
+          conflictModeCache.set(cacheKey, conflictMode);
+        }
+
+        if (conflictMode === 'error') {
+          throw new Error(
+            `Detected an existing named graph '${quad.graph.value}' while loading ${rewrite.url} as a FROM ` +
+            `NAMED source. Refusing to overwrite it with <${rewrite.graph.value}>, as that would lose data.`,
+          );
+        }
+
+        if (conflictMode === 'keepSourceGraphs') {
+          store.addQuad(<Q><unknown>quad);
+          continue;
+        }
       }
 
-      if (hasExistingNamedGraph && rewrite.conflictMode === 'merge') {
-        // Keep this quad under its own existing named graph, unchanged.
-        store.addQuad(<Q><unknown>quad);
-        continue;
-      }
-
-      // Either the quad is already in the default graph, or conflictMode is 'overwrite'.
       const rewritten = rewrite.dataFactory.quad(
         quad.subject,
         quad.predicate,

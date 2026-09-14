@@ -20,11 +20,19 @@ export type QueryStringContext = RDF.QueryStringContext & IQueryContextCommon;
 export type QueryAlgebraContext = RDF.QueryAlgebraContext & IQueryContextCommon;
 
 /**
- * What to do when a FROM NAMED source already contains a named graph of its own, instead of only
- * default-graph quads: 'error' refuses to load the source, 'overwrite' discards the existing named
- * graph, 'merge' leaves it untouched (so the source ends up exposing multiple named graphs).
+ * The possible decisions for a single named graph that a FROM NAMED source's own dereferenced data already exposes under its own name:
+ * - error: refuse to load the source.
+ * - mergeNamedInSourceGraph: rewrite this graph's quads into the FROM NAMED graph too, discarding it.
+ * - keepSourceGraphs: leave this graph exactly as-is, so the source ends up exposing it alongside the
+ *   FROM NAMED graph.
  */
-export type DereferenceFromNamedConflictMode = 'error' | 'overwrite' | 'merge';
+export type DereferenceFromNamedConflictMode = 'error' | 'mergeNamedInSourceGraph' | 'keepSourceGraphs';
+
+/**
+ * Resolves, per named graph a FROM NAMED source already has of its own, whether to error (default),
+ * merge it into the FROM NAMED graph, or keep it as-is.
+ */
+export type DereferenceFromNamedConflictModeResolver = (name: RDF.Term) => DereferenceFromNamedConflictMode;
 
 /**
  * Common query context interface
@@ -78,7 +86,7 @@ export interface IQueryContextCommon {
   distinctConstruct?: boolean;
   rdfSerializationPrefixes?: Record<string, string>;
   dereferenceFromNamed?: boolean;
-  dereferenceFromNamedConflictMode?: DereferenceFromNamedConflictMode;
+  dereferenceFromNamedConflictMode?: DereferenceFromNamedConflictModeResolver;
 
   sources: SourceType[];
 }

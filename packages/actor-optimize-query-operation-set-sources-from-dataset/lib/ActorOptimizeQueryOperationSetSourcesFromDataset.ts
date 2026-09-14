@@ -58,13 +58,15 @@ export class ActorOptimizeQueryOperationSetSourcesFromDataset extends ActorOptim
 
   public static appendSources(context: IActionContext, clauses: IDatasetClauses): IActionContext {
     const existingSources: SourceType[] = context.get(KeysInitQuery.querySourcesUnidentified) ?? [];
-    const conflictMode = context.get(KeysQueryOperation.dereferenceFromNamedConflictMode);
+    const conflictModeResolver = context.get(KeysQueryOperation.dereferenceFromNamedConflictMode);
 
     const namedGraphSources: SourceType[] = clauses.namedGraphs.map(namedNode => ({
       value: namedNode.value,
       context: new ActionContext({
         [KeysQueryOperation.sourceAsNamedGraph.name]: namedNode,
-        ...(conflictMode && { [KeysQueryOperation.dereferenceFromNamedConflictMode.name]: conflictMode }),
+        ...(conflictModeResolver && {
+          [KeysQueryOperation.dereferenceFromNamedConflictMode.name]: conflictModeResolver,
+        }),
       }),
     }));
 

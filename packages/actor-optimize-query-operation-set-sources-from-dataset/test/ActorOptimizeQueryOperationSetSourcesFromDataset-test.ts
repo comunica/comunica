@@ -1,7 +1,7 @@
 import type { IActionOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext } from '@comunica/types';
+import type { DereferenceFromNamedConflictMode, IActionContext } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationSetSourcesFromDataset } from '../lib/index';
@@ -86,6 +86,25 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
         const namedSourceContext = <IActionContext> (<any> sources[1]).context;
         expect(namedSourceContext.get(KeysQueryOperation.sourceAsNamedGraph))
           .toEqual(DF.namedNode('http://example.org/named.ttl'));
+      });
+
+      it('should forward a dereferenceFromNamedConflictMode resolver to each named-graph source', () => {
+        const resolveConflictMode = (): DereferenceFromNamedConflictMode => 'keepSourceGraphs';
+        const context = new ActionContext({
+          [KeysInitQuery.querySourcesUnidentified.name]: [],
+          [KeysQueryOperation.dereferenceFromNamedConflictMode.name]: resolveConflictMode,
+        });
+
+        const clauses = {
+          defaultGraphs: [],
+          namedGraphs: [ DF.namedNode('http://example.org/named.ttl') ],
+        };
+
+        const newContext = ActorOptimizeQueryOperationSetSourcesFromDataset.appendSources(context, clauses);
+        const sources = newContext.get(KeysInitQuery.querySourcesUnidentified)!;
+        const namedSourceContext = <IActionContext> (<any> sources[0]).context;
+
+        expect(namedSourceContext.get(KeysQueryOperation.dereferenceFromNamedConflictMode)).toBe(resolveConflictMode);
       });
     });
 
