@@ -12,7 +12,10 @@
         "feature/optimize-sparql-fed",
         "feature/*"
       ],
-      "npmClient": "npm"
+      "npmClient": "npm",
+      "throttle": true,
+      "throttleSize": 1,
+      "throttleDelay": 1
     }
   },
   "packages": [
