@@ -79,6 +79,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
 
   /**
    * Identify the SERVICE target as a query source.
+   * This logic is similar to that in ActorOptimizeQueryOperationAssignSourcesExhaustive#assignExhaustive
    */
   protected async identifyTarget(
     operation: Algebra.Service,
