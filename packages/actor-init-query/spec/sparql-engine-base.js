@@ -1,11 +1,16 @@
+/* eslint-disable import/no-nodejs-modules */
+const http = require('node:http');
+/* eslint-enable import/no-nodejs-modules */
 const ProxyHandlerStatic = require('@comunica/actor-http-proxy').ProxyHandlerStatic;
 const { KeysInitQuery } = require('@comunica/context-entries');
 const { ActionContext } = require('@comunica/core');
+const { stringify: stringifyStream } = require('@jeswr/stream-to-string');
 const RdfStore = require('rdf-stores').RdfStore;
 const RdfTestSuite = require('rdf-test-suite');
+const { HttpServiceSparqlEndpoint } = require('..');
 
-module.exports = function(engine) {
-  return {
+module.exports = function(engine, exposeEndpoints = false) {
+  const testEngine = {
     parse(query, options) {
       return engine.actorInitQuery.mediatorQueryProcess.bus.actors[0].parse(query, new ActionContext({ [KeysInitQuery.baseIRI.name]: options.baseIRI }));
     },
@@ -32,13 +37,17 @@ module.exports = function(engine) {
         }
         return source;
       });
+      const serviceFetch = createServiceFetch(engine, options.serviceData);
       const result = await engine.query(queryString, {
         baseIRI: options.baseIRI,
         sources,
+        ...(serviceFetch && { fetch: serviceFetch }),
         httpProxyHandler: proxyUrl ? new ProxyHandlerStatic(proxyUrl) : null,
         httpRetryCount: 3,
         httpRetryDelayFallback: 10,
         httpRetryDelayLimit: 100,
+        // The spec test suite covers SERVICE clauses with a variable target
+        serviceAllowVariableTargets: true,
         nonLexicalComparison: options.nonLexicalComparison,
         fullTermComparison: options.fullTermComparison,
       });
@@ -70,6 +79,16 @@ module.exports = function(engine) {
       return store.getQuads();
     },
   };
+
+  if (exposeEndpoints) {
+    testEngine.startServiceDescriptionEndpoint = createEndpointStarter(engine);
+    testEngine.startProtocolEndpoint = createEndpointStarter(engine, () => {
+      const store = RdfStore.createDefault(true);
+      return { sources: [{ type: 'rdfjs', value: store }], destination: store };
+    });
+  }
+
+  return testEngine;
 };
 
 function source(data) {
@@ -78,4 +97,81 @@ function source(data) {
     store.addQuad(quad);
   }
   return store;
+}
+
+function createServiceFetch(engine, serviceData) {
+  if (!serviceData) {
+    return;
+  }
+
+  const stores = Object.fromEntries(Object.entries(serviceData)
+    .map(([ endpoint, data ]) => [ endpoint, source(data) ]));
+
+  async function serviceFetch(input, init) {
+    const url = new URL(input);
+    const store = stores[`${url.origin}${url.pathname}`];
+    const query = extractQuery(url, init);
+    if (!store || !query) {
+      return new Response(null, { status: 404 });
+    }
+
+    // Pass the same fetch function, so that this endpoint can resolve nested SERVICE clauses.
+    const result = await engine.query(query, { sources: [ store ], fetch: serviceFetch });
+    const mediaType = 'application/sparql-results+json';
+    const body = await stringifyStream((await engine.resultToString(result, mediaType)).data);
+    return new Response(body, { status: 200, headers: { 'content-type': mediaType }});
+  }
+
+  return serviceFetch;
+}
+
+function extractQuery(url, init) {
+  return url.searchParams.get('query') ??
+    (init.body ? new URLSearchParams(String(init.body)).get('query') : null);
+}
+
+function createEndpointStarter(engine, createContext = () => ({})) {
+  let server;
+  let endpoint;
+
+  async function close() {
+    if (!server) {
+      return;
+    }
+    const serverToClose = server;
+    server = undefined;
+    endpoint = undefined;
+    await new Promise((resolve, reject) => serverToClose.close(error => error ? reject(error) : resolve()));
+  }
+
+  return async function() {
+    if (endpoint) {
+      return { close, endpoint };
+    }
+
+    const mediaTypes = await engine.getResultMediaTypes();
+    const variants = Object.entries(mediaTypes).map(([ type, quality ]) => ({ type, quality }));
+
+    server = http.createServer();
+    await new Promise((resolve, reject) => {
+      server.once('error', reject);
+      server.listen(0, '127.0.0.1', () => {
+        server.removeListener('error', reject);
+        resolve();
+      });
+    });
+
+    const address = server.address();
+    if (!address || typeof address === 'string') {
+      await close();
+      throw new Error('Could not determine the endpoint address.');
+    }
+
+    const service = new HttpServiceSparqlEndpoint({ engine, port: address.port, context: createContext() });
+    // The endpoint logs to stderr, so that its output does not end up in the EARL reports on stdout
+    server.on('request', service.handleRequest.bind(service, engine, variants, process.stderr, process.stderr));
+
+    endpoint = `http://127.0.0.1:${address.port}/sparql`;
+    return { close, endpoint };
+  };
 }

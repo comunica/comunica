@@ -4,7 +4,7 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type {
@@ -54,13 +54,17 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         return { continue: false };
       } },
       [Algebra.Types.SERVICE]: { preVisitor: () => ({ continue: false }) },
+      // Operations within FROM (NAMED) are evaluated over a different dataset than the source's default dataset.
+      // Their graphs are only rewritten when the FROM operation is executed,
+      // so emptiness checks against the source would be done on the wrong graphs here.
+      [Algebra.Types.FROM]: { preVisitor: () => ({ continue: false }) },
     });
 
     // Determine in an async manner whether or not these sources return non-empty results
     const emptyOperations: Set<Algebra.Operation> = new Set();
     await Promise.all(collectedOperations.map(async(collectedOperation) => {
       const checkOperation = collectedOperation.type === Algebra.Types.LINK ?
-        algebraFactory.createPattern(dataFactory.variable('s'), collectedOperation.iri, dataFactory.variable('?o')) :
+        algebraFactory.createPattern(dataFactory.variable('s'), collectedOperation.iri, dataFactory.variable('o')) :
         collectedOperation;
       if (!await this.hasSourceResults(
         algebraFactory,
@@ -197,6 +201,12 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
 
     // Traversal contexts should never be considered empty at optimization time.
     if (mergedContext.get(KeysQuerySourceIdentify.traverse)) {
+      return true;
+    }
+
+    // The target of a SERVICE SILENT clause must never be pruned:
+    // if it fails, it must produce a single empty solution rather than no results at all.
+    if (mergedContext.get(KeysQueryOperation.silent)) {
       return true;
     }
 

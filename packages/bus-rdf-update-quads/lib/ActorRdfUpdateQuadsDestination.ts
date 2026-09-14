@@ -3,6 +3,7 @@ import { KeysInitQuery, KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@com
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
+import { getDataDestinationValue } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from './ActorRdfUpdateQuads';
@@ -21,7 +22,11 @@ AsyncIterator<RDF.Quad> | undefined {
 export function deskolemize(action: IActionRdfUpdateQuads): IActionRdfUpdateQuads {
   const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
   const destination = action.context.get(KeysRdfUpdateQuads.destination);
-  const id = action.context.get<Map<any, string>>(KeysQuerySourceIdentify.sourceIds)?.get(destination);
+  if (!destination) {
+    return action;
+  }
+  const id = action.context.get<Map<any, string>>(KeysQuerySourceIdentify.sourceIds)
+    ?.get(getDataDestinationValue(destination));
   if (!id) {
     return action;
   }

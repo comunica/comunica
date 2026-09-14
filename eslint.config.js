@@ -217,6 +217,8 @@ module.exports = config([
       'engines/*/comunica-browser-vite.js',
       // The performance combination files are auto-generated
       'performance/*/combinations/**',
+      // The agentic workflow lock files are compiled from their .md sources by 'gh aw compile'
+      '.github/workflows/*.lock.yml',
       // TODO: Remove this once solid-client-authn supports node 18.
       'engines/query-sparql/test/QuerySparql-solid-test.ts',
       // Dev-only files that are not checked in

@@ -49,7 +49,7 @@
     "@comunica/utils-bindings-index": "^5.3.0",
     "@comunica/utils-iterator": "^5.0.0",
     "asynciterator": "^3.10.0",
-    "asyncjoin": "^1.2.4",
+    "asyncjoin": "^1.2.5",
     "rdf-string": "^2.0.1"
   }
 }

@@ -58,6 +58,53 @@ describe('ActorQueryOperationFromQuad', () => {
     });
   });
 
+  describe('#copyOperation', () => {
+    // This function is no longer used by the actor itself, but remains part of its public API.
+    // TODO (next major): may also remove these tests.
+    const marker = AF.createNop();
+
+    it('should recurse into sub-operations and leave other values alone', () => {
+      const operation = AF.createSlice(AF.createNop(), 10, 20);
+      const recursiveCb = jest.fn(() => marker);
+      const copied = <Algebra.Slice> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
+      expect(copied).not.toBe(operation);
+      expect(copied.input).toBe(marker);
+      expect(copied.start).toBe(10);
+      expect(copied).toHaveLength(20);
+      expect(recursiveCb).toHaveBeenCalledTimes(1);
+      expect(recursiveCb).toHaveBeenCalledWith(operation.input);
+    });
+
+    it('should recurse into every entry of an array of sub-operations', () => {
+      const operation = AF.createJoin([ AF.createNop(), AF.createBgp([]) ], false);
+      const recursiveCb = jest.fn(() => marker);
+      const copied = <Algebra.Join> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
+      expect(copied.input).toEqual([ marker, marker ]);
+      expect(recursiveCb).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not recurse into the variables of a project', () => {
+      const operation = AF.createProject(AF.createNop(), [ DF.variable('v') ]);
+      const recursiveCb = jest.fn(() => marker);
+      const copied = <Algebra.Project> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
+      expect(copied.variables).toBe(operation.variables);
+      expect(recursiveCb).toHaveBeenCalledTimes(1);
+      expect(recursiveCb).toHaveBeenCalledWith(operation.input);
+    });
+
+    it('should not recurse into the template of a construct', () => {
+      const operation = AF.createConstruct(
+        AF.createNop(),
+        [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ],
+      );
+      const recursiveCb = jest.fn(() => marker);
+      const copied = <Algebra.Construct> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
+      expect(copied.template).toBe(operation.template);
+      expect(recursiveCb).toHaveBeenCalledTimes(1);
+      expect(recursiveCb).toHaveBeenCalledWith(operation.input);
+    });
+  });
+
   describe('#applyOperationDefaultGraph', () => {
     it('should transform a BGP with a default graph pattern', () => {
       const result = <Algebra.Bgp> ActorQueryOperationFromQuad
@@ -139,6 +186,19 @@ describe('ActorQueryOperationFromQuad', () => {
         );
       expect(result.type).toBe('path');
       expect(quad('s', 'p', 'o', 'gother').equals(result)).toBeTruthy();
+    });
+
+    it('should transform a Path with a default graph pattern and keep metadata', () => {
+      const metadata = { a: 'b' };
+      const result = <Algebra.Path> ActorQueryOperationFromQuad
+        .applyOperationDefaultGraph(
+          AF,
+          Object.assign(quad('s', 'p', 'o'), { type: 'path', metadata }),
+          [ DF.namedNode('g') ],
+        );
+      expect(result.type).toBe('path');
+      expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
+      expect(result.metadata).toBe(metadata);
     });
 
     it('should transform a Path with default graph patterns', () => {
@@ -231,9 +291,44 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(quad('s', 'p', 'o', 'g').equals(result.stuff[0].input)).toBeTruthy();
       expect(result.stuff[1]).toEqual({ type: 'someunknownthing', variables: [ DF.variable('V') ]});
     });
+
+    it('should not modify an empty BGP', () => {
+      const operation = AF.createBgp([]);
+      expect(ActorQueryOperationFromQuad.applyOperationDefaultGraph(AF, operation, [ DF.namedNode('g') ]))
+        .toEqual(operation);
+    });
+
+    it('should not modify a nested pattern that is not in the default graph', () => {
+      const operation = AF.createProject(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')),
+        [ DF.variable('s') ],
+      );
+      expect(ActorQueryOperationFromQuad.applyOperationDefaultGraph(AF, operation, [ DF.namedNode('gd') ]))
+        .toEqual(operation);
+    });
+
+    it('should not modify a nested path that is not in the default graph', () => {
+      const operation = AF.createProject(
+        AF.createPath(
+          DF.variable('s'),
+          AF.createLink(DF.namedNode('p')),
+          DF.namedNode('o'),
+          DF.namedNode('g'),
+        ),
+        [ DF.variable('s') ],
+      );
+      expect(ActorQueryOperationFromQuad.applyOperationDefaultGraph(AF, operation, [ DF.namedNode('gd') ]))
+        .toEqual(operation);
+    });
   });
 
   describe('#applyOperationNamedGraph', () => {
+    it('should not modify an empty BGP', () => {
+      const operation = AF.createBgp([]);
+      expect(ActorQueryOperationFromQuad.applyOperationNamedGraph(AF, operation, [ DF.namedNode('g') ], []))
+        .toEqual(operation);
+    });
+
     it('should transform a pattern with a default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
@@ -242,7 +337,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
     it('should transform a pattern with a variable graph pattern', () => {
@@ -262,6 +357,19 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(quad('s', 'p', 'o', 'g').equals((<Algebra.Bgp>result.input[1]).patterns[0])).toBeTruthy();
     });
 
+    it('should transform a pattern with a variable graph pattern and keep metadata', () => {
+      const metadata = { a: 'b' };
+      const result = <Algebra.Join> ActorQueryOperationFromQuad
+        .applyOperationNamedGraph(
+          AF,
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern', metadata }) ]),
+          [ DF.namedNode('g') ],
+          [],
+        );
+      expect(result.type).toBe('join');
+      expect((<Algebra.Bgp> result.input[1]).patterns[0].metadata).toBe(metadata);
+    });
+
     it('should transform a pattern with a non-available non-default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
@@ -270,19 +378,31 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
-    it('should not transform a pattern with a non-available non-default graph pattern but available as default', () => {
-      const result = <Algebra.Bgp> ActorQueryOperationFromQuad
+    it('should transform a pattern with a graph pattern that is only available as default graph to a no-op', () => {
+      // Graphs that are only selected in a FROM are not available as named graph
+      const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
           AF,
           AF.createBgp([ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ]),
           [ DF.namedNode('g') ],
           [ DF.namedNode('gother') ],
         );
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
+    });
+
+    it('should not transform a default graph pattern if default graphs are available', () => {
+      const result = <Algebra.Bgp> ActorQueryOperationFromQuad
+        .applyOperationNamedGraph(
+          AF,
+          AF.createBgp([ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ]),
+          [ DF.namedNode('g') ],
+          [ DF.namedNode('gother') ],
+        );
       expect(result.type).toBe('bgp');
-      expect(quad('s', 'p', 'o', 'gother').equals(result.patterns[0])).toBeTruthy();
+      expect(quad('s', 'p', 'o').equals(result.patterns[0])).toBeTruthy();
     });
 
     it('should not transform a pattern with an available non-default graph pattern', () => {
@@ -305,7 +425,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
     it('should transform a pattern with variable graph patterns', () => {
@@ -350,7 +470,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
     it('should transform a pattern with available non-default graph patterns', () => {
@@ -373,7 +493,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
     it('should transform a Path with a variable graph pattern', () => {
@@ -394,6 +514,31 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(quad('s', 'p', 'o', 'g').equals(result.input[1])).toBeTruthy();
     });
 
+    it('should transform a Path with a variable graph pattern and keep metadata', () => {
+      const metadata = { a: 'b' };
+      const result = <Algebra.Join> ActorQueryOperationFromQuad
+        .applyOperationNamedGraph(
+          AF,
+          Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path', metadata }),
+          [ DF.namedNode('g') ],
+          [],
+        );
+      expect(result.type).toBe('join');
+      expect(result.input[1].type).toBe('path');
+      expect(result.input[1].metadata).toBe(metadata);
+    });
+
+    it('should transform a Path with a variable graph pattern without any named graphs to a no-op', () => {
+      const result = <Algebra.Join> ActorQueryOperationFromQuad
+        .applyOperationNamedGraph(
+          AF,
+          Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }),
+          [],
+          [ DF.namedNode('g') ],
+        );
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
+    });
+
     it('should transform a Path with a non-available non-default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
@@ -402,7 +547,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
     it('should transform a Path with an available non-default graph pattern', () => {
@@ -425,7 +570,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
     it('should transform a Path with variable graph patterns', () => {
@@ -481,7 +626,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
     it('should transform a Pattern with a default graph pattern to a no-op', () => {
@@ -492,7 +637,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
     it('should transform a Pattern with a variable graph pattern', () => {
@@ -514,6 +659,21 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(quad('s', 'p', 'o', 'g').equals(pattern)).toBeTruthy();
     });
 
+    it('should transform a Pattern with a variable graph pattern and keep metadata', () => {
+      const metadata = { a: 'b' };
+      const result = <Algebra.Join> ActorQueryOperationFromQuad
+        .applyOperationNamedGraph(
+          AF,
+          Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern', metadata }),
+          [ DF.namedNode('g') ],
+          [],
+        );
+      expect(result.type).toBe('join');
+      const pattern = <Algebra.Pattern> result.input[1];
+      expect(pattern.type).toBe('pattern');
+      expect(pattern.metadata).toBe(metadata);
+    });
+
     it('should transform a Pattern with a non-available non-default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad
         .applyOperationNamedGraph(
@@ -522,7 +682,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
     it('should transform a Pattern with an available non-default graph pattern', () => {
@@ -545,7 +705,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
     it('should transform a Pattern with variable graph patterns', () => {
@@ -601,7 +761,7 @@ describe('ActorQueryOperationFromQuad', () => {
           [ DF.namedNode('g'), DF.namedNode('h') ],
           [],
         );
-      expect(result).toEqual({ type: Algebra.Types.BGP, patterns: []});
+      expect(result).toEqual({ type: Algebra.Types.VALUES, bindings: [], variables: []});
     });
 
     it('should transform other types of operations', () => {
@@ -773,9 +933,10 @@ describe('ActorQueryOperationFromQuad', () => {
         named: [],
         type: 'from',
       };
-      const result = <Algebra.Bgp> ActorQueryOperationFromQuad.createOperation(AF, pattern);
-      expect(result.type).toBe('bgp');
-      expect(result.patterns).toEqual([]);
+      const result = <Algebra.Values> ActorQueryOperationFromQuad.createOperation(AF, pattern);
+      expect(result.type).toBe('values');
+      expect(result.variables).toEqual([]);
+      expect(result.bindings).toEqual([]);
     });
 
     it('should transform without default graphs and with one variable named graph', () => {
@@ -816,9 +977,10 @@ describe('ActorQueryOperationFromQuad', () => {
         named: [ DF.namedNode('g2') ],
         type: 'from',
       };
-      const result = <Algebra.Bgp> ActorQueryOperationFromQuad.createOperation(AF, pattern);
-      expect(result.type).toBe('bgp');
-      expect(result.patterns).toEqual([]);
+      const result = <Algebra.Values> ActorQueryOperationFromQuad.createOperation(AF, pattern);
+      expect(result.type).toBe('values');
+      expect(result.variables).toEqual([]);
+      expect(result.bindings).toEqual([]);
     });
 
     it('should transform without default graphs and with two variable named graphs', () => {
@@ -874,10 +1036,11 @@ describe('ActorQueryOperationFromQuad', () => {
         named: [ DF.namedNode('g2'), DF.namedNode('g3') ],
         type: 'from',
       };
-      const result = <Algebra.Bgp> ActorQueryOperationFromQuad.createOperation(AF, pattern);
+      const result = <Algebra.Values> ActorQueryOperationFromQuad.createOperation(AF, pattern);
 
-      expect(result.type).toBe('bgp');
-      expect(result.patterns).toEqual([]);
+      expect(result.type).toBe('values');
+      expect(result.variables).toEqual([]);
+      expect(result.bindings).toEqual([]);
     });
 
     it('should transform with one default graph and with one variable named graph', () => {
@@ -984,9 +1147,10 @@ describe('ActorQueryOperationFromQuad', () => {
       const result = <Algebra.Join> ActorQueryOperationFromQuad.createOperation(AF, pattern);
       expect(result.type).toBe('join');
 
-      const res0 = <Algebra.Bgp> result.input[0];
-      expect(res0.type).toBe('bgp');
-      expect(res0.patterns).toEqual([]);
+      const res0 = <Algebra.Values> result.input[0];
+      expect(res0.type).toBe('values');
+      expect(res0.variables).toEqual([]);
+      expect(res0.bindings).toEqual([]);
 
       const res1 = <Algebra.Bgp> result.input[1];
       expect(res1.type).toBe('bgp');

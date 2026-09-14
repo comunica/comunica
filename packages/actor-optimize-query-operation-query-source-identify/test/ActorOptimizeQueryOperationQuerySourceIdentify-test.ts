@@ -1,7 +1,7 @@
 import type { ActorHttpInvalidateListenable } from '@comunica/bus-http-invalidate';
 import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { IActionQuerySourceIdentify, MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysInitQuery, KeysQueryOperation, KeysStatistics }
+import { KeysDereference, KeysInitQuery, KeysQueryOperation, KeysStatistics }
   from '@comunica/context-entries';
 import type { IAction } from '@comunica/core';
 import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
@@ -16,6 +16,9 @@ import '@comunica/utils-jest';
 
 const AF = new AlgebraFactory();
 const DF = new DataFactory();
+
+// The source context that SERVICE targets are identified with by default
+const serviceContextBlocked = new ActionContext().set(KeysDereference.blockFileAccess, true);
 
 describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
   let bus: any;
@@ -123,10 +126,54 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
         });
         expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(2);
-        expect(mediatorQuerySourceIdentify.mediate)
-          .toHaveBeenCalledWith({ querySourceUnidentified: { value: 'source1' }, context: expect.anything() });
-        expect(mediatorQuerySourceIdentify.mediate)
-          .toHaveBeenCalledWith({ querySourceUnidentified: { value: 'source2' }, context: expect.anything() });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
+          querySourceUnidentified: { value: 'source1', context: serviceContextBlocked },
+          context: expect.anything(),
+        });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
+          querySourceUnidentified: { value: 'source2', context: serviceContextBlocked },
+          context: expect.anything(),
+        });
+      });
+
+      it('with SERVICE clauses and allowed file targets', async() => {
+        contextIn = contextIn.set(KeysInitQuery.serviceAllowFileTargets, true);
+        await actor.run({ context: contextIn, operation: operationService });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
+          querySourceUnidentified: { value: 'source1', context: undefined },
+          context: expect.anything(),
+        });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
+          querySourceUnidentified: { value: 'source2', context: undefined },
+          context: expect.anything(),
+        });
+      });
+
+      it('should not reuse cache entries of SERVICE targets for regular sources', async() => {
+        const { context: contextOutService } = await actor.run({
+          context: contextIn,
+          operation: operationService,
+        });
+        const { context: contextOutSource } = await actor.run({
+          context: contextIn.set(KeysInitQuery.querySourcesUnidentified, [ 'source1' ]),
+          operation,
+        });
+        expect(contextOutService.get<Record<string, IQuerySourceWrapper>>(KeysQueryOperation.serviceSources)!.source1)
+          .not.toBe(contextOutSource.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+      });
+
+      it('should allow cache invalidation of SERVICE targets for a specific url', async() => {
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation: operationService });
+
+        listener({ url: 'source1' });
+
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation: operationService });
+
+        const services1 = contextOut1.get<Record<string, IQuerySourceWrapper>>(KeysQueryOperation.serviceSources)!;
+        const services2 = contextOut2.get<Record<string, IQuerySourceWrapper>>(KeysQueryOperation.serviceSources)!;
+        expect(services1.source1).not.toBe(services2.source1);
+        expect(services1.source2).toBe(services2.source2);
       });
 
       it('with SERVICE clauses but the single source accepts the full query', async() => {
@@ -431,11 +478,11 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       });
       expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(2);
       expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
-        querySourceUnidentified: { type: 'sparql', value: 'source1' },
+        querySourceUnidentified: { type: 'sparql', value: 'source1', context: serviceContextBlocked },
         context: expect.anything(),
       });
       expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
-        querySourceUnidentified: { type: 'sparql', value: 'source2' },
+        querySourceUnidentified: { type: 'sparql', value: 'source2', context: serviceContextBlocked },
         context: expect.anything(),
       });
     });

@@ -32,6 +32,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
   public readonly minMaxCardinalityRatio: number;
+  public readonly subQueryCost: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
@@ -41,11 +42,13 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       logicalType: 'inner',
       physicalName: 'bind',
       canHandleUndefs: true,
+      canHandleOperationRequired: true,
       isLeaf: false,
     });
     this.bindOrder = args.bindOrder;
     this.selectivityModifier = args.selectivityModifier;
     this.minMaxCardinalityRatio = args.minMaxCardinalityRatio;
+    this.subQueryCost = args.subQueryCost ?? 100;
     this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
     this.mediatorQueryOperation = args.mediatorQueryOperation;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
@@ -200,7 +203,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         preVisitor: (op: Algebra.LeftJoin) => {
           // Default: valid
           if (!boundVariables) {
-            return {};
+            return { shortcut: false };
           }
 
           const leftOp = op.input[0];
@@ -221,7 +224,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         preVisitor: (op: Algebra.Minus) => {
           // Default: valid
           if (!boundVariables) {
-            return {};
+            return { shortcut: false };
           }
 
           const rightOp = op.input[1];
@@ -231,6 +234,26 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
           if (conflict) {
             valid = false;
             return { shortcut: true };
+          }
+          return { shortcut: false };
+        },
+      },
+      [Algebra.Types.FILTER]: {
+        preVisitor: (op: Algebra.Filter) => {
+          // Conflict when FILTER is not a direct child of LEFT_JOIN
+          if (!op.metadata?.isHoistedLeftJoinFilter) {
+            valid = false;
+            return { shortcut: true };
+          }
+          return { shortcut: false };
+        },
+      },
+      [Algebra.Types.EXPRESSION]: {
+        preVisitor: (op: Algebra.Expression) => {
+          // Don't descend into the sub-pattern of a FILTER (NOT) EXISTS:
+          // it is evaluated as its own independent query
+          if (op.subType === Algebra.ExpressionTypes.EXISTENCE) {
+            return { continue: false };
           }
           return { shortcut: false };
         },
@@ -255,6 +278,18 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       return entriesTest;
     }
     const entriesSorted = entriesTest.get();
+
+    // Find the first entry that does not require operation pushdown.
+    const bindableIndex = entriesSorted
+      .findIndex(entry => !ActorRdfJoin.isOperationRequired(entry, entry.metadata));
+    if (bindableIndex < 0) {
+      return failTest(`Actor ${this.name} requires at least one entry of which the operation does not need to be pushed down`);
+    }
+    // This case could occur for variable SERVICE targets, which need to be bound later.
+    if (bindableIndex > 0) {
+      entriesSorted.unshift(...entriesSorted.splice(bindableIndex, 1));
+    }
+
     metadatas = entriesSorted.map(entry => entry.metadata);
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
@@ -295,21 +330,38 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         context: action.context,
       })).selectivity * this.selectivityModifier));
 
-    // Determine coefficients for remaining entries
+    // Bindings each remaining entry adds per binding of the first: their pairwise join capped by the
+    // variables they share, spread over the first entry's cardinality, so at most one. Entries sharing no
+    // variable have no such cap and keep using the join selectivity.
+    const cardinalityFirst = metadatas[0].cardinality.value;
+    let entriesWithoutSharedVariable = 0;
     const cardinalityRemaining = remainingEntries
-      .map((entry, i) => entry.metadata.cardinality.value * selectivities[i])
+      .map((entry, i) => {
+        const joined = ActorRdfJoin.getSharedVariableJoinCardinality([ metadatas[0], entry.metadata ]);
+        if (joined === undefined) {
+          entriesWithoutSharedVariable++;
+          return entry.metadata.cardinality.value * selectivities[i];
+        }
+        return joined / cardinalityFirst;
+      })
       .reduce((sum, element) => sum + element, 0);
     const receiveInitialCostRemaining = remainingRequestInitialTimes
       .reduce((sum, element) => sum + element, 0);
     const receiveItemCostRemaining = remainingRequestItemTimes
       .reduce((sum, element) => sum + element, 0);
 
+    // Each binding re-plans and re-runs every remaining operation.
+    // This does not apply to remote sources, where this cost is already incorporated into requestTime.
+    const subPlanCost = isRemoteAccess ?
+      0 :
+      this.subQueryCost * remainingEntries.length * (1 + entriesWithoutSharedVariable);
+
     return passTestWithSideData({
-      iterations: metadatas[0].cardinality.value * cardinalityRemaining,
+      iterations: cardinalityFirst * (cardinalityRemaining + subPlanCost),
       persistedItems: 0,
       blockingItems: 0,
       requestTime: requestInitialTimes[0] +
-        metadatas[0].cardinality.value * (
+        cardinalityFirst * (
           requestItemTimes[0] +
           receiveInitialCostRemaining +
           cardinalityRemaining * receiveItemCostRemaining
@@ -336,6 +388,14 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs<IActorRdfJ
    * @default {60}
    */
   minMaxCardinalityRatio: number;
+  // TODO: in next major, make mandatory.
+  /**
+   * The cost of planning and evaluating one bound operation, expressed in produced rows.
+   * Not applied to remote sources.
+   * @range {double}
+   * @default {100}
+   */
+  subQueryCost?: number;
   /**
    * The join entries sort mediator
    */

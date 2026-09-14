@@ -12,6 +12,6 @@
   "endpointUrl": "http://host.docker.internal:3001/sparql",
   "endpointUrlExternal": "http://localhost:3001/sparql",
   "warmupRuns": 5,
-  "runs": 10,
+  "runs": 15,
   "hookSparqlEndpoint": %FACTOR-hookSparqlEndpoint%
 }

@@ -493,7 +493,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 1.6 },
+          cardinality: { type: 'estimate', value: 1 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -583,7 +583,7 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 1.6 },
+          cardinality: { type: 'estimate', value: 1 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },

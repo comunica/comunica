@@ -1,4 +1,4 @@
-import { KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
@@ -329,6 +329,23 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           ]));
         });
 
+        it('should check links via patterns with valid variables', async() => {
+          const opIn = AF.createAlt([
+            assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+            assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+          ]);
+          await actor.run({ operation: opIn, context: ctx });
+          expect(source1.source.queryBindings).toHaveBeenCalledTimes(2);
+          expect(source1.source.queryBindings).toHaveBeenCalledWith(
+            AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.variable('o')),
+            ctx,
+          );
+          expect(source1.source.queryBindings).toHaveBeenCalledWith(
+            AF.createPattern(DF.variable('s'), DF.namedNode('empty'), DF.variable('o')),
+            ctx,
+          );
+        });
+
         it('should not prune for no empty children', async() => {
           const opIn = AF.createAlt([
             assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
@@ -506,6 +523,42 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
               ]),
             ]),
             DF.namedNode('source'),
+          ));
+        });
+      });
+
+      describe('with from operations', () => {
+        it('should not modify children', async() => {
+          // The graphs of the patterns within a FROM are only rewritten when that FROM is executed,
+          // so their emptiness may not be determined against the source's dataset here.
+          const opIn = AF.createFrom(
+            AF.createUnion([
+              assignOperationSource(AF
+                .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
+              assignOperationSource(AF
+                .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
+              AF.createAlt([
+                assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              ]),
+            ]),
+            [ DF.namedNode('g1') ],
+            [ DF.namedNode('g2') ],
+          );
+          const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+          expect(opOut).toEqual(AF.createFrom(
+            AF.createUnion([
+              assignOperationSource(AF
+                .createPattern(DF.namedNode('s'), DF.namedNode('p1'), DF.namedNode('o')), source1),
+              assignOperationSource(AF
+                .createPattern(DF.namedNode('s'), DF.namedNode('empty'), DF.namedNode('o')), source1),
+              AF.createAlt([
+                assignOperationSource(AF.createLink(DF.namedNode('p1')), source1),
+                assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+              ]),
+            ]),
+            [ DF.namedNode('g1') ],
+            [ DF.namedNode('g2') ],
           ));
         });
       });
@@ -882,6 +935,16 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
 
         it('should be true for 0 cardinality on source with traversal enabled', async() => {
           source1.context = new ActionContext().set(KeysQuerySourceIdentify.traverse, true);
+          source1.source.queryBindings = () => {
+            const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+            bindingsStream.setProperty('metadata', { cardinality: { type: 'exact', value: 0 }});
+            return bindingsStream;
+          };
+          await expect(actor.hasSourceResults(AF, source1, AF.createNop(), ctx)).resolves.toBeTruthy();
+        });
+
+        it('should be true for 0 cardinality on the target of a SERVICE SILENT clause', async() => {
+          source1.context = new ActionContext().set(KeysQueryOperation.silent, true);
           source1.source.queryBindings = () => {
             const bindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
             bindingsStream.setProperty('metadata', { cardinality: { type: 'exact', value: 0 }});

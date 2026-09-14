@@ -40,6 +40,17 @@ describe('ActorRdfMetadataAccumulateCardinality', () => {
         })).resolves.toEqual({ metadata: { cardinality: { type: 'exact', value: 5 }}});
       });
 
+      it('should handle appending onto metadata without a cardinality', async() => {
+        // Sources that report no cardinality of their own accumulate from the same value as
+        // `initialize`, so an exact appending cardinality stays exact
+        await expect(actor.run({
+          context,
+          mode: 'append',
+          accumulatedMetadata: <any> {},
+          appendingMetadata: <any> { cardinality: { type: 'exact', value: 3 }},
+        })).resolves.toEqual({ metadata: { cardinality: { type: 'exact', value: 3 }}});
+      });
+
       it('should handle appending with estimate cardinalities', async() => {
         await expect(actor.run({
           context,

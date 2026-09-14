@@ -36,6 +36,20 @@ import type {
 type Tuple<T> = readonly [T, T];
 
 export class TermFunctionLesserThan extends TermFunctionBase {
+  /**
+   * The order this operator puts terms of different types in.
+   *
+   * SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say
+   * < defaultGraph: https://www.w3.org/TR/sparql11-query/#modOrderBy
+   */
+  public static readonly TERM_ORDERING_PRIORITY = {
+    blankNode: 0,
+    namedNode: 1,
+    literal: 2,
+    quad: 3,
+    defaultGraph: 4,
+  };
+
   // TODO: remove in next major, as it's unused
   public constructor(private readonly equalityFunction: ITermFunction) {
     super({
@@ -199,7 +213,8 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
 
     // Order terms with different types according to a priority mapping
     if (termA.termType !== termB.termType) {
-      return this._TERM_ORDERING_PRIORITY[termA.termType] < this._TERM_ORDERING_PRIORITY[termB.termType];
+      return TermFunctionLesserThan.TERM_ORDERING_PRIORITY[termA.termType] <
+        TermFunctionLesserThan.TERM_ORDERING_PRIORITY[termB.termType];
     }
 
     // Comparison of literals with different or unknown data types: handle non-lexicals and first check dataType
@@ -230,14 +245,4 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
   private comparePrimitives<T>(valueA: T, valueB: T): -1 | 0 | 1 {
     return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
   }
-
-  // SPARQL specifies that blankNode < namedNode < literal. Sparql star expands with < quads and we say < defaultGraph:
-  // https://www.w3.org/TR/sparql11-query/#modOrderBy
-  private readonly _TERM_ORDERING_PRIORITY = {
-    blankNode: 0,
-    namedNode: 1,
-    literal: 2,
-    quad: 3,
-    defaultGraph: 4,
-  };
 }

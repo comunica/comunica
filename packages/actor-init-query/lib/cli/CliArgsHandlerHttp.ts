@@ -11,7 +11,7 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
       .example([
         [ `$0 https://fragments.dbpedia.org/2016-04/en`, '' ],
         [ `$0 https://fragments.dbpedia.org/2016-04/en https://query.wikidata.org/sparql`, '' ],
-        [ `$0 hypermedia@https://fragments.dbpedia.org/2016-04/en sparql@https://query.wikidata.org/sparql`, '' ],
+        [ `$0 qpf@https://fragments.dbpedia.org/2016-04/en sparql@https://query.wikidata.org/sparql`, '' ],
       ])
       .options({
         port: {

@@ -1,11 +1,13 @@
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator, TestResult } from '@comunica/core';
 import { passTestWithSideData, ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { IPhysicalQueryPlanLogger, IPlanNode, MetadataVariable } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import { BufferedIterator, MultiTransformIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { IActionRdfJoin, IActorRdfJoinTestSideData } from '../lib/ActorRdfJoin';
@@ -13,6 +15,7 @@ import '@comunica/utils-jest';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
 
 const DF = new DataFactory();
+const AF = new AlgebraFactory(DF);
 const BF = new BindingsFactory(DF);
 
 // Dummy class to test instance of abstract class
@@ -28,6 +31,7 @@ IActorRdfJoinSelectivityOutput
     limitEntries?: number,
     limitEntriesMin?: boolean,
     canHandleUndefs?: boolean,
+    pushesBindingsToSource?: boolean,
   ) {
     super(
       { name: 'name', bus: new Bus({ name: 'bus' }), mediatorJoinSelectivity },
@@ -37,6 +41,7 @@ IActorRdfJoinSelectivityOutput
         limitEntries,
         limitEntriesMin,
         canHandleUndefs,
+        pushesBindingsToSource,
       },
     );
   }
@@ -738,6 +743,46 @@ IActorRdfJoinSelectivityOutput
     });
   });
 
+  describe('getSharedVariableJoinCardinality', () => {
+    function meta(value: number, ...names: string[]) {
+      return {
+        state: new MetadataValidationState(),
+        cardinality: { type: <const> 'estimate', value },
+        variables: names.map(name => ({ variable: DF.variable(name), canBeUndef: false })),
+      };
+    }
+
+    it('should be undefined without shared variables', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'b') ]))
+        .toBeUndefined();
+    });
+
+    it('should be undefined without variables', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10), meta(5) ]))
+        .toBeUndefined();
+    });
+
+    it('should be the smallest cardinality for two entries sharing a variable', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'a') ]))
+        .toBe(5);
+    });
+
+    it('should divide by the largest cardinality once per additional entry sharing a variable', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'a'), meta(4, 'a') ]))
+        .toBe(2);
+    });
+
+    it('should divide by the most selective shared variable only', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a', 'b'), meta(5, 'a', 'b') ]))
+        .toBe(5);
+    });
+
+    it('should keep the cross product of entries that share nothing with the others', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'a'), meta(3, 'b') ]))
+        .toBe(15);
+    });
+  });
+
   describe('constructResultMetadata', () => {
     let instance: Dummy;
 
@@ -776,7 +821,7 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
         variables: [{ variable: DF.variable('a'), canBeUndef: true }],
       });
       await expect(instance.constructResultMetadata([], [
@@ -792,7 +837,7 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
         variables: [{ variable: DF.variable('a'), canBeUndef: true }],
       });
       await expect(instance.constructResultMetadata([], [
@@ -810,7 +855,7 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
 
         variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
@@ -915,7 +960,7 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'exact', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
         variables: [
           { variable: DF.variable('a'), canBeUndef: false },
           { variable: DF.variable('b'), canBeUndef: true },
@@ -996,6 +1041,36 @@ IActorRdfJoinSelectivityOutput
       action.entries[1].operationRequired = true;
       instance = new Dummy(mediatorJoinSelectivity, 99);
       await expect(instance.test(action)).resolves.toFailTest(`name does not work with operationRequired.`);
+    });
+
+    it('should throw an error if the metadata of an entry requests operationRequired', async() => {
+      action.entries[1].output.metadata = async() => ({
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: 5 },
+        variables: variables1,
+        operationRequired: true,
+      });
+      instance = new Dummy(mediatorJoinSelectivity, 99);
+      await expect(instance.test(action)).resolves.toFailTest(`name does not work with operationRequired.`);
+    });
+
+    it('should throw an error if bindings are pushed into the target of a SERVICE SILENT clause', async() => {
+      action.entries[1].operation = assignOperationSource(AF.createNop(), <any> {
+        source: {},
+        context: new ActionContext({ [KeysQueryOperation.silent.name]: true }),
+      });
+      instance = new Dummy(mediatorJoinSelectivity, 99, false, false, true);
+      await expect(instance.test(action)).resolves
+        .toFailTest(`name can not push bindings into the target of a SERVICE SILENT clause.`);
+    });
+
+    it('should not throw an error if bindings are not pushed into a source', async() => {
+      action.entries[1].operation = assignOperationSource(AF.createNop(), <any> {
+        source: {},
+        context: new ActionContext({ [KeysQueryOperation.silent.name]: true }),
+      });
+      instance = new Dummy(mediatorJoinSelectivity, 99);
+      await expect(instance.test(action)).resolves.toPassTest(expect.anything());
     });
 
     it('should return a value if both metadata objects are present', async() => {
@@ -1141,7 +1216,7 @@ IActorRdfJoinSelectivityOutput
       await instance.run(action, undefined!).then(async(result: any) => {
         return await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 40 },
+          cardinality: { type: 'estimate', value: 5 },
           variables: [{ variable: DF.variable('a'), canBeUndef: true }],
         });
       });
