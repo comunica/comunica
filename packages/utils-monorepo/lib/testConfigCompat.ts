@@ -6,7 +6,7 @@ import * as Path from 'node:path';
 
 // eslint-disable-next-line import/no-nodejs-modules
 import * as util from 'node:util';
-import { readdir, pathExists, readFile, emptyDir } from 'fs-extra';
+import { readdir, pathExists, readFile, emptyDir, copy } from 'fs-extra';
 import semver from 'semver';
 
 const exec = util.promisify(exec0);
@@ -17,8 +17,11 @@ const exec = util.promisify(exec0);
  * and it will determine the current and previous versions of their config files.
  * For each of these config files, relevant previous versions of this engine package will be determined.
  * Then, each of those previous engine versions will be installed locally from npm in a temporary directory,
- * and the config file from the current monorepo will be injected into it.
- * Then, the QueryEngineFactory will be used to validate if this config is still valid in that engine.
+ * and the config package from the current monorepo will be injected into it.
+ * The whole config package must be injected, and not just the entry config file,
+ * because Components.js resolves the imports within a config file against the installed config package.
+ * Then, the QueryEngineFactory will be used to validate if this config is still valid in that engine,
+ * which only holds if every actor in the config is a dependency of that engine version.
  * This script will throw an error as soon as one of the configs is not backwards-compatible.
  *
  * See engines/config-query-sparql/README.md for more details on config versioning.
@@ -28,14 +31,16 @@ const exec = util.promisify(exec0);
 export async function testConfigCompat(monorepoDir: string): Promise<void> {
   const folders = await readdir(`${monorepoDir}/engines`, { withFileTypes: true });
 
-  // Get available configs
+  // Get available configs, and the monorepo directory of each config package
   const availableConfigs: EngineConfig[] = [];
+  const configPackageDirs: Record<string, string> = {};
   for (const folder of folders) {
     if (folder.isDirectory()) {
       const enginePath = Path.join(folder.parentPath, folder.name);
       const packageJson = JSON.parse(await readFile(Path.join(enginePath, 'package.json'), 'utf8'));
       if (!packageJson.files.includes('engine-default.js')) {
         // This is a config package
+        configPackageDirs[packageJson.name] = enginePath;
         const configPaths = await readdir(`${enginePath}/config`, { withFileTypes: true });
         for (const configPath of configPaths) {
           if (configPath.isFile() && configPath.name.startsWith('config-')) {
@@ -43,6 +48,8 @@ export async function testConfigCompat(monorepoDir: string): Promise<void> {
             if (version) {
               availableConfigs.push({
                 path: Path.join(configPath.parentPath, configPath.name),
+                relativePath: Path.join('config', configPath.name),
+                packageName: packageJson.name,
                 version,
               });
             }
@@ -67,6 +74,7 @@ export async function testConfigCompat(monorepoDir: string): Promise<void> {
             if (version && version.semver) {
               await testPreviousVersionsOfEngine(
                 availableConfigs,
+                configPackageDirs,
                 packageJson.name,
                 version,
               );
@@ -80,6 +88,7 @@ export async function testConfigCompat(monorepoDir: string): Promise<void> {
 
 async function testPreviousVersionsOfEngine(
   availableConfigs: EngineConfig[],
+  configPackageDirs: Record<string, string>,
   engineName: string,
   currentConfigVersion: ConfigSemVer,
 ): Promise<void> {
@@ -101,7 +110,7 @@ async function testPreviousVersionsOfEngine(
     const versions = <string[]> JSON.parse((await exec(`npm view ${engineName} versions --json`, { encoding: 'utf8' })).stdout);
     const firstVersion = semver.minSatisfying(versions, `>${semVerToString(configTestRange.minExclusive)}`);
     if (firstVersion) {
-      await testEngine(engineName, firstVersion, configTestRange.config);
+      await testEngine(engineName, firstVersion, configTestRange.config, configPackageDirs);
     } else {
       // eslint-disable-next-line no-console
       console.log(`    Could not find a version higher than ${semVerToString(configTestRange.minExclusive)} for engine ${engineName} on npm`);
@@ -114,7 +123,7 @@ async function testPreviousVersionsOfEngine(
       secondVersion = semver.maxSatisfying(versions, `>${semVerToString(currentConfigVersion.semver!)}`);
     }
     if (secondVersion) {
-      await testEngine(engineName, secondVersion, configTestRange.config);
+      await testEngine(engineName, secondVersion, configTestRange.config, configPackageDirs);
     }
   }
 }
@@ -123,6 +132,7 @@ async function testEngine(
   engineName: string,
   version: string,
   config: EngineConfig,
+  configPackageDirs: Record<string, string>,
 ): Promise<void> {
   // Install package
   // eslint-disable-next-line no-console
@@ -131,36 +141,91 @@ async function testEngine(
   await emptyDir(installPath);
   await exec(`npm install ${engineName}@${version}`, { cwd: installPath, encoding: 'utf8' });
 
-  // Install lowest possible config packages
-  const installedPackageJsonPath = Path.join(installPath, `node_modules/${engineName}/package.json`);
-  // eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
-  const actualDependencies = require(installedPackageJsonPath).dependencies;
-  // Remove loaded package.json from cache for next iterations!
-  delete require.cache[require.resolve(installedPackageJsonPath)];
-  const configPackageNames = Object.keys(actualDependencies).filter(name => name.startsWith('@comunica/config-'));
-  for (const configPackageName of configPackageNames) {
-    const versionOverride = actualDependencies[configPackageName].slice(1);
+  const installedConfigPaths = await findInstalledPackages(installPath, config.packageName);
+  if (installedConfigPaths.length === 0) {
     // eslint-disable-next-line no-console
-    console.log(`      Overriding installation of '${configPackageName}' to version ${versionOverride}`);
-    // Uninstall the current config package, and reinstall at the LOWEST possible version.
-    // This is necessary, because npm by default will install the HIGHEST possible version.
-    await exec(`npm rm ${configPackageName} && npm install ${configPackageName}@${versionOverride}`, { cwd: installPath, encoding: 'utf8' });
+    console.log(`      Skipping, as '${engineName}' at version ${version} does not depend on '${config.packageName}'`);
+    return;
+  }
+
+  // Skip configs that this engine version could not have been using yet,
+  // as those are only meant for the upcoming release.
+  if (!await pathExists(Path.join(installedConfigPaths[0], config.relativePath))) {
+    // eslint-disable-next-line no-console
+    console.log(`      Skipping, as '${config.relativePath}' was not published yet in '${config.packageName}'`);
+    return;
+  }
+
+  // Replace the installed config packages by the one from this monorepo.
+  // The whole package must be replaced, and not just the entry config file,
+  // because Components.js resolves the imports within a config file against the installed config package.
+  const monorepoConfigPath = configPackageDirs[config.packageName];
+  if (!await pathExists(Path.join(monorepoConfigPath, 'components'))) {
+    throw new Error(`Config package '${config.packageName}' has no built components, run the build first`);
+  }
+  for (const installedConfigPath of installedConfigPaths) {
+    // eslint-disable-next-line no-console
+    console.log(`      Injecting the monorepo '${config.packageName}' into ${installedConfigPath}`);
+    await emptyDir(installedConfigPath);
+    await copy(monorepoConfigPath, installedConfigPath, {
+      filter: source => Path.basename(source) !== 'node_modules',
+    });
   }
 
   // Run engine factory of the installed engine with the config from the current monorepo as test
   // eslint-disable-next-line no-console
   console.log(`    Running engine factory for '${engineName}' at version ${version}`);
+  const injectedConfigPath = Path.join(installedConfigPaths[0], config.relativePath);
   await exec(`node -e '
     import { QueryEngineFactory } from "${engineName}";
     const factory = new QueryEngineFactory();
     const engine = await factory.create({
-      configPath: "${config.path}",
+      configPath: "${injectedConfigPath}",
     });
     await engine.getResultMediaTypes();
   '`, {
     cwd: installPath,
     encoding: 'utf8',
   });
+}
+
+/**
+ * Find all installed copies of the given package.
+ * npm may keep both a hoisted and a nested copy, and Components.js can pick up either of them.
+ * @param installPath An installation root directory.
+ * @param packageName A package name.
+ */
+async function findInstalledPackages(installPath: string, packageName: string): Promise<string[]> {
+  const modulesPath = Path.join(installPath, 'node_modules');
+  const moduleRoots: string[] = [ modulesPath ];
+  for (const entry of await readdir(modulesPath, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    const packagePaths: string[] = [];
+    if (entry.name.startsWith('@')) {
+      const scopePath = Path.join(modulesPath, entry.name);
+      for (const scopedEntry of await readdir(scopePath, { withFileTypes: true })) {
+        if (scopedEntry.isDirectory()) {
+          packagePaths.push(Path.join(scopePath, scopedEntry.name));
+        }
+      }
+    } else {
+      packagePaths.push(Path.join(modulesPath, entry.name));
+    }
+    for (const packagePath of packagePaths) {
+      moduleRoots.push(Path.join(packagePath, 'node_modules'));
+    }
+  }
+
+  const installedPaths: string[] = [];
+  for (const moduleRoot of moduleRoots) {
+    const installedPath = Path.join(moduleRoot, packageName);
+    if (await pathExists(installedPath)) {
+      installedPaths.push(installedPath);
+    }
+  }
+  return installedPaths;
 }
 
 function semVerToString(version: SemVer): string {
@@ -225,6 +290,14 @@ export type SemVer = {
 
 export type EngineConfig = {
   path: string;
+  /**
+   * The path of this config file relative to the root of its config package.
+   */
+  relativePath: string;
+  /**
+   * The name of the config package containing this config file.
+   */
+  packageName: string;
   version: ConfigSemVer;
 };
 
