@@ -58,6 +58,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
       return this.unboundPlaceholder(operation, context);
     }
 
+    // Also handle IRIs, which can occur when variable targets are bound at a later stage.
     try {
       const querySource = await this.identifyTarget(operation, operation.name, context);
       const output = getSafeBindings(await this.mediatorQueryOperation.mediate({
