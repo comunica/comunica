@@ -54,7 +54,6 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     // We return a placeholder output, which join actors use to determine that a bind-join is required,
     // which materializes the target into an IRI before this operation is executed again.
     if (operation.name.termType !== 'NamedNode') {
-      // Variable targets are determined by the queried data, so they are only allowed when explicitly enabled.
       if (!context.get(KeysInitQuery.serviceAllowVariableTargets)) {
         throw new Error(`SERVICE clauses with a variable target are not allowed by default, as they let the queried data determine what is dereferenced. Enable them via the serviceAllowVariableTargets context entry.`);
       }
