@@ -3,8 +3,8 @@ import type {
 } from '@comunica/bus-expression-evaluator-factory';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { IBindingsAggregator as IBindingsAggregatorType } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
-import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica actor for creating Binding-Aggregator-factories.
@@ -42,21 +42,10 @@ export interface IActionBindingsAggregatorFactory extends IAction {
 }
 
 /**
- * Instances of this interface perform a specific aggregation of bindings.
- * You can put bindings and when all bindings have been put, request the result.
+ * An aggregator of RDF bindings.
+ * Defined in `@comunica/types`, and exposed here for backwards compatibility.
  */
-export interface IBindingsAggregator {
-  /**
-   * Registers bindings to the aggregator. Each binding you put has the ability to change the aggregation result.
-   * @param bindings the bindings to put.
-   */
-  putBindings: (bindings: RDF.Bindings) => Promise<void>;
-
-  /**
-   * Request the result term of aggregating the bindings you have put in the aggregator.
-   */
-  result: () => Promise<RDF.Term | undefined>;
-}
+export type IBindingsAggregator = IBindingsAggregatorType;
 
 export interface IActorBindingsAggregatorFactoryOutput extends IActorOutput, IBindingsAggregator {}
 

@@ -19,6 +19,7 @@ $ yarn add @comunica/expressions-sparql
 
 All inputs are [SPARQL algebra](https://github.com/comunica/comunica/tree/master/packages/utils-algebra#readme)
 expressions, and all evaluation is asynchronous.
+`ExpressionEngine` implements `IExpressionEngine` from `@comunica/types`, which is what your own code should depend on.
 Create the engine once and reuse it, as it shares a `functionArgumentsCache` across everything it creates.
 Callers that vary the `superTypeProvider` between calls must not share that cache, see [Context](#context).
 

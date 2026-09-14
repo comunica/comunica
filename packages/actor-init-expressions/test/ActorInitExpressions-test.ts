@@ -30,6 +30,6 @@ describe('ActorInitExpressions', () => {
 
   it('rejects being run.', async() => {
     await expect(actor.run(<any> {})).rejects
-      .toThrow('ActorInitExpressions#run is not supported, use an ExpressionEngine instead.');
+      .toThrow('ActorInitExpressions#run is not supported, use an ExpressionEngineBase instead.');
   });
 });

@@ -88,6 +88,35 @@ export interface IExpressionEvaluator extends IInternalEvaluator {
   evaluateAsEvaluatorExpression: (mapping: RDF.Bindings) => Promise<TermExpression>;
 }
 
+/**
+ * Orders RDF terms.
+ */
+export interface ITermComparator {
+  /**
+   * Orders two RDF terms according to: https://www.w3.org/TR/sparql11-query/#modOrderBy
+   * @param termA the first term
+   * @param termB the second term
+   */
+  orderTypes: (termA: RDF.Term | undefined, termB: RDF.Term | undefined) => -1 | 0 | 1;
+}
+
+/**
+ * Instances of this interface perform a specific aggregation of bindings.
+ * You can put bindings and when all bindings have been put, request the result.
+ */
+export interface IBindingsAggregator {
+  /**
+   * Registers bindings to the aggregator. Each binding you put has the ability to change the aggregation result.
+   * @param bindings the bindings to put.
+   */
+  putBindings: (bindings: RDF.Bindings) => Promise<void>;
+
+  /**
+   * Request the result term of aggregating the bindings you have put in the aggregator.
+   */
+  result: () => Promise<RDF.Term | undefined>;
+}
+
 export interface IInternalEvaluator {
   evaluatorExpressionEvaluation: (expr: Expression, mapping: RDF.Bindings) => Promise<TermExpression>;
 

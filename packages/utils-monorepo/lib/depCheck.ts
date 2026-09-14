@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-nodejs-modules
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 
 // eslint-disable-next-line import/no-nodejs-modules
 import { join } from 'node:path';
@@ -64,6 +64,17 @@ async function depInfo(pckg: any): Promise<any> {
       dependency: configPackage,
       dependant: join(pckg.dir, 'engine-default.js'),
     });
+    // An engine can also build upon other config packages, which are only referenced by its config
+    const configPath = join(pckg.dir, 'config', 'config-default.json');
+    if (existsSync(configPath)) {
+      const { '@context': contexts = []} = JSON.parse(readFileSync(configPath, 'utf8'));
+      for (const context of contexts) {
+        const match = /bundles\/npm\/(@comunica\/config-[^/]+)\//u.exec(context);
+        if (match) {
+          ensureDependency({ checkedDeps, dependency: match[1], dependant: configPath });
+        }
+      }
+    }
   } else {
     ignore = files ? folders.filter(elem => files.every((file: any) => !file.startsWith(elem.name))) : folders;
     ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name);

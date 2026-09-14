@@ -3,7 +3,7 @@ import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor } from '@comunica/core';
-import type * as RDF from '@rdfjs/types';
+import type { ITermComparator as ITermComparatorType } from '@comunica/types';
 
 /**
  * A comunica actor for term-comparator-factory events.
@@ -39,14 +39,11 @@ export interface IActionTermComparatorFactory extends IAction {
 
 }
 
-export interface ITermComparator {
-  /**
-   * Orders two RDF terms according to: https://www.w3.org/TR/sparql11-query/#modOrderBy
-   * @param termA the first term
-   * @param termB the second term
-   */
-  orderTypes: (termA: RDF.Term | undefined, termB: RDF.Term | undefined) => -1 | 0 | 1;
-}
+/**
+ * An object that can order RDF terms.
+ * Defined in `@comunica/types`, and exposed here for backwards compatibility.
+ */
+export type ITermComparator = ITermComparatorType;
 
 export interface IActorTermComparatorFactoryOutput extends IActorOutput, ITermComparator {}
 

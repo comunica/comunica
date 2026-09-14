@@ -8,7 +8,7 @@ import { passTestVoid } from '@comunica/core';
 
 /**
  * The entrypoint of a compiled expression evaluation config.
- * It only holds the mediators needed for expression evaluation, and is wrapped by an ExpressionEngine.
+ * It only holds the mediators needed for expression evaluation, and is wrapped by an ExpressionEngineBase.
  */
 export class ActorInitExpressions extends ActorInit {
   public readonly mediatorExpressionEvaluatorFactory: MediatorExpressionEvaluatorFactory;
@@ -27,7 +27,7 @@ export class ActorInitExpressions extends ActorInit {
   }
 
   public async run(_action: IActionInit): Promise<IActorOutputInit> {
-    throw new Error('ActorInitExpressions#run is not supported, use an ExpressionEngine instead.');
+    throw new Error('ActorInitExpressions#run is not supported, use an ExpressionEngineBase instead.');
   }
 }
 
