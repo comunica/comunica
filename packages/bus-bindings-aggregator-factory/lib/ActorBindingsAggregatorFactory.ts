@@ -44,7 +44,9 @@ export interface IActionBindingsAggregatorFactory extends IAction {
 /**
  * An aggregator of RDF bindings.
  * Defined in `@comunica/types`, and exposed here for backwards compatibility.
+ * @deprecated use export from `@comunica/types` instead.
  */
+// TODO (next major): remove
 export type IBindingsAggregator = IBindingsAggregatorType;
 
 export interface IActorBindingsAggregatorFactoryOutput extends IActorOutput, IBindingsAggregator {}

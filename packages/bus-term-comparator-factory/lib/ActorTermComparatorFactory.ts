@@ -42,7 +42,9 @@ export interface IActionTermComparatorFactory extends IAction {
 /**
  * An object that can order RDF terms.
  * Defined in `@comunica/types`, and exposed here for backwards compatibility.
+ * @deprecated use export from `@comunica/types` instead.
  */
+// TODO (next major): remove
 export type ITermComparator = ITermComparatorType;
 
 export interface IActorTermComparatorFactoryOutput extends IActorOutput, ITermComparator {}
