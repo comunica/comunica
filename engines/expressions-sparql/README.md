@@ -46,6 +46,33 @@ const term = await evaluator.evaluate(BF.fromRecord({ o: DF.literal('Ceci n\'est
 const ebv = await evaluator.evaluateAsEBV(BF.fromRecord({ o: DF.literal('This is not a pipe', 'en') }));
 ```
 
+Expressions can also be parsed on their own, as Traqula can start parsing from any grammar rule,
+and translate any part of the resulting syntax tree to algebra:
+
+```typescript
+import { toAlgebra12Builder } from '@traqula/algebra-sparql-1-2';
+import { createAlgebraContext } from '@traqula/algebra-transformations-1-2';
+import { sparql12ParserBuilder } from '@traqula/parser-sparql-1-2';
+import { completeParseContext, lex } from '@traqula/rules-sparql-1-2';
+
+// Build the parser once and reuse it, as building it is expensive
+const parser = sparql12ParserBuilder.build({ tokenVocabulary: lex.sparql12LexerBuilder.tokenVocabulary });
+const translator = toAlgebra12Builder.build();
+
+// Parse from the Expression grammar rule, and translate the result
+const prefixes = { xsd: 'http://www.w3.org/2001/XMLSchema#' };
+const ast = parser.expression('xsd:integer(?age) >= 18', completeParseContext({ prefixes }));
+const expression = translator.translateExpression(createAlgebraContext({ prefixes }), ast);
+
+const isAdult = await engine.createEvaluator(expression);
+await isAdult.evaluateAsEBV(BF.fromRecord({ age: DF.literal('21') })); // true
+```
+
+Prefixes are checked while parsing and expanded while translating, so both contexts need them.
+An aggregate such as `SUM(?x)` only parses if the `parseMode` of the parse context includes `canParseAggregate`.
+`createAlgebraContext` ignores the `quads` and `blankToVariable` options that `toAlgebra` applies,
+so the pattern of an `EXISTS` keeps its `GRAPH` operations and blank nodes.
+
 Terms can be ordered as `ORDER BY` does:
 
 ```typescript
