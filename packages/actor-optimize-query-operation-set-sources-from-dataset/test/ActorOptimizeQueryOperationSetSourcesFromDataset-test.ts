@@ -122,6 +122,14 @@ describe('ActorOptimizeQueryOperationSetSourcesFromDataset', () => {
 
         expect(stripped).toEqual(innerOperation);
       });
+
+      it('should return the operation unchanged if it is not a "from" operation', () => {
+        const operation: Algebra.Bgp = { type: Algebra.Types.BGP, patterns: []};
+
+        const stripped = ActorOptimizeQueryOperationSetSourcesFromDataset.stripDatasetClauses(operation);
+
+        expect(stripped).toBe(operation);
+      });
     });
   });
 

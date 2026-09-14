@@ -20,7 +20,8 @@ export type QueryStringContext = RDF.QueryStringContext & IQueryContextCommon;
 export type QueryAlgebraContext = RDF.QueryAlgebraContext & IQueryContextCommon;
 
 /**
- * The possible decisions for a single named graph that a FROM NAMED source's own dereferenced data already exposes under its own name:
+ * The possible decisions for a single named graph that a FROM NAMED source's own dereferenced data
+ * already exposes under its own name:
  * - error: refuse to load the source.
  * - mergeNamedInSourceGraph: rewrite this graph's quads into the FROM NAMED graph too, discarding it.
  * - keepSourceGraphs: leave this graph exactly as-is, so the source ends up exposing it alongside the
