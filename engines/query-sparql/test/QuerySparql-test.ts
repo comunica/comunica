@@ -2530,6 +2530,9 @@ WHERE { }
           datasetIri,
           expect.anything(),
         );
+      });
+    });
+
     describe('RDF dataset construction with FROM and FROM NAMED', () => {
       // These cases are defined by https://www.w3.org/TR/sparql11-query/#specifyingDataset
       const G1 = 'http://example.org/g1';
