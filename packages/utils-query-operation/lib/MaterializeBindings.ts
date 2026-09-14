@@ -75,6 +75,15 @@ export function materializeOperation(
     (filterOp.expression.subType === 'existence' || filterOp.expression.subType === 'operator');
 
   return algebraUtils.mapOperation(operation, {
+    [Algebra.Types.SERVICE]: {
+      // Materialize the target of a SERVICE clause, which is not traversed by default.
+      transform: serviceOp => algebraFactory.createService(
+        materializeOperation(serviceOp.input, bindings, algebraFactory, bindingsFactory, options),
+        <RDF.Variable | RDF.NamedNode> materializeTerm(serviceOp.name, bindings),
+        serviceOp.silent,
+      ),
+      preVisitor: () => ({ continue: false }),
+    },
     [Algebra.Types.PATH]: {
       preVisitor: () => ({ continue: false }),
       transform: pathOp =>

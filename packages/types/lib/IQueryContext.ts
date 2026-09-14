@@ -39,6 +39,7 @@ export interface IQueryContextCommon {
   httpProxyHandler?: IProxyHandler;
   lenient?: boolean;
   serviceAllowFileTargets?: boolean;
+  serviceAllowVariableTargets?: boolean;
   parseUnsupportedVersions?: boolean;
   httpIncludeCredentials?: boolean;
   httpAuth?: string;

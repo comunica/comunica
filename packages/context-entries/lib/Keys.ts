@@ -166,6 +166,14 @@ export const KeysInitQuery = {
    */
   serviceAllowFileTargets: new ActionContextKey<boolean>('@comunica/actor-init-query:serviceAllowFileTargets'),
   /**
+   * If SERVICE clauses are allowed to have a variable as target.
+   * This is disabled by default, as the targets are then determined by the queried data,
+   * which would allow queries from untrusted parties to dereference arbitrary sources.
+   */
+  serviceAllowVariableTargets: new ActionContextKey<boolean>(
+    '@comunica/actor-init-query:serviceAllowVariableTargets',
+  ),
+  /**
    * By default, errors will be emitted if parsers encounter unsupported versions.
    * Setting this flag to true will silence those checks.
    * Errors may still be emitted if unsupported grammar is encountered.

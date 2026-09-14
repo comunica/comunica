@@ -57,6 +57,7 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "httpProxyHandler": "@comunica/actor-http-proxy:httpProxyHandler",
    *   "lenient": "@comunica/actor-init-query:lenient",
    *   "serviceAllowFileTargets": "@comunica/actor-init-query:serviceAllowFileTargets",
+   *   "serviceAllowVariableTargets": "@comunica/actor-init-query:serviceAllowVariableTargets",
    *   "parseUnsupportedVersions": "@comunica/actor-init-query:parseUnsupportedVersions",
    *   "httpIncludeCredentials": "@comunica/bus-http:include-credentials",
    *   "httpAuth": "@comunica/bus-http:auth",
