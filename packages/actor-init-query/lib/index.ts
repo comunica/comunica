@@ -4,6 +4,7 @@ export * from './ActorInitQuery';
 export { QueryEngineBase } from './QueryEngineBase';
 
 // These exports are not for the browser
+export * from './HttpServiceGraphStore';
 export * from './HttpServiceSparqlEndpoint';
 export * from './cli/CliArgsHandlerBase';
 export * from './cli/CliArgsHandlerHttp';

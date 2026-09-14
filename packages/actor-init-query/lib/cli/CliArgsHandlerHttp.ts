@@ -58,6 +58,10 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
           type: 'boolean',
           describe: 'Generate VoID descriptions and include them in the service description',
         },
+        graphStore: {
+          type: 'boolean',
+          describe: 'Expose the SPARQL Graph Store HTTP Protocol, which reads and writes whole RDF graphs',
+        },
       })
       .check((args) => {
         if (args.version) {
