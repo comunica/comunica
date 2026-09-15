@@ -1,4 +1,4 @@
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
@@ -699,6 +699,23 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
           AF.createNamedExpression(DF.namedNode('ex:f'), []),
           { type: 'operation', operation: { operationType: 'wildcard' }},
           ctx,
+        )).toBeFalsy();
+      });
+
+      it('should return false for an existence expression when an existence resolver is set', () => {
+        const operation = AF.createFilter(
+          AF.createNop(),
+          AF.createExistenceExpression(false, AF.createNop()),
+        );
+        expect(actor.isPossibleToMoveSourceAnnotationUpwards(
+          operation,
+          { type: 'operation', operation: { operationType: 'wildcard' }},
+          new ActionContext(),
+        )).toBeTruthy();
+        expect(actor.isPossibleToMoveSourceAnnotationUpwards(
+          operation,
+          { type: 'operation', operation: { operationType: 'wildcard' }},
+          new ActionContext({ [KeysExpressionEvaluator.existenceResolver.name]: async() => true }),
         )).toBeFalsy();
       });
     });

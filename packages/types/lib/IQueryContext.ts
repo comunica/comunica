@@ -1,6 +1,6 @@
 import type * as RDF from '@rdfjs/types';
 import type { ComunicaDataFactory } from './ComunicaDataFactory';
-import type { FunctionArgumentsCache } from './ExpressionEvaluator';
+import type { ExistenceResolver, FunctionArgumentsCache } from './ExpressionEvaluator';
 import type { IDataDestination } from './IDataDestination';
 import type { IProxyHandler } from './IProxyHandler';
 import type { SourceType } from './IQueryEngine';
@@ -66,6 +66,7 @@ export interface IQueryContextCommon {
   explain?: QueryExplainMode;
   nonLexicalComparison?: boolean;
   fullTermComparison?: boolean;
+  existenceResolver?: ExistenceResolver;
   unionDefaultGraph?: boolean;
   traverse?: boolean;
   invalidateCache?: boolean;

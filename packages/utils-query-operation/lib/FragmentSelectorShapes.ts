@@ -1,4 +1,4 @@
-import { KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { FragmentSelectorShape, IActionContext, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, algebraUtils, isKnownSubType } from '@comunica/utils-algebra';
 import { getDataDestinationValue } from './Utils';
@@ -215,12 +215,40 @@ export type FragmentSelectorShapeTestFlags = {
   wildcardAcceptAllExtensionFunctions?: boolean;
 };
 
+/**
+ * Check if the given operation contains an `EXISTS` or `NOT EXISTS` that the caller resolves itself,
+ * through a `KeysExpressionEvaluator.existenceResolver` in the context.
+ *
+ * Such an operation must not be delegated to a query source: the source would answer the `EXISTS`
+ * against its own data, which silently bypasses the resolver that the caller installed for it.
+ * @param operation An operation to inspect.
+ * @param context The action context, which may hold an existence resolver.
+ */
+export function containsCallerResolvedExistence(operation: Algebra.Operation, context: IActionContext): boolean {
+  if (!context.get(KeysExpressionEvaluator.existenceResolver)) {
+    return false;
+  }
+  let found = false;
+  algebraUtils.visitOperation(operation, {
+    [Algebra.Types.EXPRESSION]: {
+      preVisitor: (expression: Algebra.Expression) => {
+        if (isKnownSubType(expression, Algebra.ExpressionTypes.EXISTENCE)) {
+          found = true;
+          return { shortcut: true };
+        }
+        return { shortcut: false };
+      },
+    },
+  });
+  return found;
+}
+
 export async function passFullOperationToSource(
   operation: Algebra.Operation,
   sources: IQuerySourceWrapper[],
   context: IActionContext,
 ): Promise<boolean> {
-  if (sources.length === 1) {
+  if (sources.length === 1 && !containsCallerResolvedExistence(operation, context)) {
     const sourceWrapper = sources[0];
     const destination: IDataDestination | undefined = context.get(KeysRdfUpdateQuads.destination);
     if (!destination || sourceWrapper.source.referenceValue === getDataDestinationValue(destination)) {
