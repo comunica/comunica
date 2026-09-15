@@ -203,6 +203,10 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If extension functions must always be pushed down',
         },
+        dereferenceFromNamed: {
+          type: 'boolean',
+          describe: 'When true, dereferences IRIs in FROM (NAMED) clauses and merges their content into query dataset.',
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -382,6 +386,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Pushing down of extension functions
     if (args.extensionFunctionsAlwaysPushdown) {
       context[KeysInitQuery.extensionFunctionsAlwaysPushdown.name] = true;
+    }
+
+    // When true, dereferences the IRIs in FROM/FROM NAMED clauses and merges their content into the query dataset
+    if (args.dereferenceFromNamed) {
+      context[KeysQueryOperation.dereferenceFromNamed.name] = true;
     }
   }
 }
