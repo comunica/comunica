@@ -94,6 +94,11 @@ describe('ActorDereferenceFile', () => {
       );
     });
 
+    it('should report no request time, as local files have no request latency', async() => {
+      const result = await actor.run({ url: path.join(__dirname, 'dummy.ttl'), context });
+      expect(result.requestTime).toBe(0);
+    });
+
     it('should not run when file access is blocked', async() => {
       const p = path.join(__dirname, 'dummy.ttl');
       context = context.set(KeysDereference.blockFileAccess, true);

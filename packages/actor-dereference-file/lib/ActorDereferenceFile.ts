@@ -39,11 +39,13 @@ export class ActorDereferenceFile extends ActorDereference {
       ));
     }
 
-    const requestTimeStart = Date.now();
     return {
       data: createReadStream(getPath(url)),
-      // This should always be after the creation of the read stream
-      requestTime: Date.now() - requestTimeStart,
+      // Local files have no request latency, and `createReadStream` returns before the file is opened,
+      // so timing it only measures clock granularity. The 0 or 1 it yields is then reported as the
+      // per-request time of every pattern over this source, where bind joins multiply it by the
+      // cardinality of the stream they bind, making a plan flip on a millisecond of measurement noise.
+      requestTime: 0,
       status: 200,
       exists: true,
       url: ActorDereferenceFile.isURI(url) ? url : pathToFileURL(url).href,
