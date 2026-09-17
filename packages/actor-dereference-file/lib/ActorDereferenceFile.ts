@@ -41,10 +41,7 @@ export class ActorDereferenceFile extends ActorDereference {
 
     return {
       data: createReadStream(getPath(url)),
-      // Local files have no request latency, and `createReadStream` returns before the file is opened,
-      // so timing it only measures clock granularity. The 0 or 1 it yields is then reported as the
-      // per-request time of every pattern over this source, where bind joins multiply it by the
-      // cardinality of the stream they bind, making a plan flip on a millisecond of measurement noise.
+      // Local files have no request latency
       requestTime: 0,
       status: 200,
       exists: true,
