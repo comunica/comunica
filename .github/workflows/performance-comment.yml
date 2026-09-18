@@ -10,7 +10,7 @@ on:
       - completed
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.event }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
 
 jobs:
@@ -32,7 +32,11 @@ jobs:
           set -eu
           count=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts?name=performance-comparison" \
             --jq '[ .artifacts[] | select(.name == "performance-comparison") ] | length')
-          echo "found=$([ "$count" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          if [ "$count" -gt 0 ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Download the performance comparison
         if: steps.check.outputs.found == 'true'
         uses: actions/download-artifact@v8
@@ -49,6 +53,10 @@ jobs:
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           set -eu
+          if [ ! -f comparison-pull-request.txt ]; then
+            echo "The artifact carries no pull request number, skipping the comment."
+            exit 0
+          fi
           number=$(tr -cd '0-9' < comparison-pull-request.txt)
           head=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number:-0}" --jq '.head.sha' 2> /dev/null || true)
           if [ "$head" = "$HEAD_SHA" ]; then

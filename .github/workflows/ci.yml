@@ -525,27 +525,27 @@ jobs:
           set -eu
           table () {
             jq -rn \
-              --slurpfile current "ghbench-$1.json" \
-              --slurpfile base "ghbench-base-$1.json" \
-              --arg head "$HEAD_SHA" \
-              --arg baseCommit "$BASE_SHA" \
+              --slurpfile headResults "ghbench-$1.json" \
+              --slurpfile baseResults "ghbench-base-$1.json" \
+              --arg headSha "$HEAD_SHA" \
+              --arg baseSha "$BASE_SHA" \
               '
                 def row: "| " + join(" | ") + " |";
                 # Ratios are rounded to two decimals, and are below 1 when the pull request is faster
                 def ratio($current; $previous):
                   if $previous == 0
-                  then (if $current == 0 then "1.00" else "" end)
+                  then (if $current == 0 then "1.00" else "\u221e" end)
                   else ($current * 100 / $previous | round)
                     | "\(. / 100 | floor).\(. % 100 | tostring | if length == 1 then "0\(.)" else . end)"
                   end;
-                ($base[0] | INDEX(.name)) as $previous
-                | [ ([ "Benchmark suite", "Current: \($head)", "Base: \($baseCommit)", "Ratio" ] | row), "|-|-|-|-|" ]
-                  + ($current[0] | map(
-                      $previous[.name] as $prev
+                ($baseResults[0] | INDEX(.name)) as $base
+                | [ ([ "Benchmark suite", "Current: \($headSha)", "Base: \($baseSha)", "Ratio" ] | row), "|-|-|-|-|" ]
+                  + ($headResults[0] | map(
+                      $base[.name] as $baseEntry
                       | [ "`\(.name)`", "`\(.value)` \(.unit)" ] + (
-                          if $prev == null
+                          if $baseEntry == null
                           then [ "", "" ]
-                          else [ "`\($prev.value)` \($prev.unit)", (ratio(.value; $prev.value) | if . == "" then "" else "`\(.)`" end) ]
+                          else [ "`\($baseEntry.value)` \($baseEntry.unit)", "`\(ratio(.value; $baseEntry.value))`" ]
                           end)
                       | row))
                 | join("\n")
@@ -556,7 +556,8 @@ jobs:
             table total
             printf '\n\n<details>\n<summary>Show detailed results</summary>\n\n'
             table detail
-            printf '\n\n</details>\n'
+            printf '\n\n</details>\n\nMeasured by [this CI run](%s/%s/actions/runs/%s).\n' \
+              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
           } > comparison-comment.md
           echo "$PULL_REQUEST_NUMBER" > comparison-pull-request.txt
           cat comparison-comment.md >> "$GITHUB_STEP_SUMMARY"
