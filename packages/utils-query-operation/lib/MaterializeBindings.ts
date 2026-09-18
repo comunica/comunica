@@ -77,11 +77,11 @@ export function materializeOperation(
   return algebraUtils.mapOperation(operation, {
     [Algebra.Types.SERVICE]: {
       // Materialize the target of a SERVICE clause, which is not traversed by default.
-      transform: serviceOp => algebraFactory.createService(
+      transform: serviceOp => Object.assign(algebraFactory.createService(
         materializeOperation(serviceOp.input, bindings, algebraFactory, bindingsFactory, options),
         <RDF.Variable | RDF.NamedNode> materializeTerm(serviceOp.name, bindings),
         serviceOp.silent,
-      ),
+      ), { metadata: serviceOp.metadata }),
       preVisitor: () => ({ continue: false }),
     },
     [Algebra.Types.PATH]: {
