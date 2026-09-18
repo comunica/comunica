@@ -1,8 +1,7 @@
 name: Performance comment
 
-# Pull requests from forks run the CI workflow with a read-only GITHUB_TOKEN, so their
-# performance comparison is uploaded as an artifact instead of being commented on the pull request.
-# This workflow runs in the context of the base repository, where it can post that comparison.
+# CI runs of pull requests from forks receive a read-only GITHUB_TOKEN, so they upload their
+# performance comparison as an artifact, which this workflow posts from the base repository.
 on:
   workflow_run:
     workflows:
@@ -40,9 +39,7 @@ jobs:
           name: performance-comparison
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      # The artifact originates from the pull request workflow, of which forks control the
-      # definition, so its number is only accepted when that pull request is indeed the one
-      # whose commit was benchmarked.
+      # Forks control the artifact contents, so only accept a pull request at the benchmarked commit.
       - name: Determine the pull request to comment on
         id: pull-request
         if: steps.check.outputs.found == 'true'
@@ -65,7 +62,7 @@ jobs:
         with:
           issue-number: ${{ steps.pull-request.outputs.number }}
           comment-author: github-actions[bot]
-          body-includes: '<!-- performance-comparison -->'
+          body-includes: <!-- performance-comparison -->
       - name: Comment the performance comparison on the pull request
         if: steps.pull-request.outputs.number != ''
         uses: peter-evans/create-or-update-comment@v5

@@ -514,83 +514,48 @@ jobs:
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total false --detailed true --name ghbench-base-detail.json
       - name: Process base commit benchmark total results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total true --detailed false --name ghbench-base-total.json
-      - name: Wrap the base commit results into baseline data files
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          REPO_URL: ${{ github.event.repository.html_url }}
-        run: |
-          set -eu
-          wrap () {
-            jq -n \
-              --slurpfile benches "ghbench-base-$1.json" \
-              --arg name "$2" \
-              --arg sha "$BASE_SHA" \
-              --arg repo "$REPO_URL" \
-              --argjson date "$(date +%s000)" \
-              '{
-                lastUpdate: $date,
-                repoUrl: $repo,
-                entries: {
-                  ($name): [{
-                    commit: {
-                      author: { name: "", username: "", email: "" },
-                      committer: { name: "", username: "", email: "" },
-                      id: $sha,
-                      message: "Base commit of the pull request",
-                      timestamp: ($date / 1000 | todate),
-                      url: "\($repo)/commit/\($sha)"
-                    },
-                    date: $date,
-                    tool: "customSmallerIsBetter",
-                    benches: $benches[0]
-                  }]
-                }
-              }' > "baseline-$1.json"
-          }
-          wrap detail 'Benchmarks detailed results'
-          wrap total 'Benchmarks total results'
-      # The two comparison steps below read the single entry of the base commit as their baseline.
-      # Passing save-data-file disables the only write these perform, so pull request measurements
-      # are never stored. Their comparison tables are written to files by pointing the job summary
-      # of those steps to a path of our own, so that the performance-comment workflow can post them
-      # onto the pull request. This job can not post them itself, because pull requests from forks
-      # receive a read-only GITHUB_TOKEN.
-      - name: Prepare the comparison table files
-        # The summaries are only written when their target file already exists.
-        run: touch comparison-detail.md comparison-total.md
-      - name: Compare benchmark detailed results
-        uses: benchmark-action/github-action-benchmark@v1
-        env:
-          GITHUB_STEP_SUMMARY: ${{ github.workspace }}/comparison-detail.md
-        with:
-          name: Benchmarks detailed results
-          tool: customSmallerIsBetter
-          output-file-path: ghbench-detail.json
-          external-data-json-path: baseline-detail.json
-          save-data-file: false
-          summary-always: true
-      - name: Compare benchmark total results
-        uses: benchmark-action/github-action-benchmark@v1
-        env:
-          GITHUB_STEP_SUMMARY: ${{ github.workspace }}/comparison-total.md
-        with:
-          name: Benchmarks total results
-          tool: customSmallerIsBetter
-          output-file-path: ghbench-total.json
-          external-data-json-path: baseline-total.json
-          save-data-file: false
-          summary-always: true
       - name: Assemble the comparison comment
+        # Posted by the performance-comment workflow, as this job
+        # receives a read-only GITHUB_TOKEN on pull requests from forks.
         env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set -eu
+          table () {
+            jq -rn \
+              --slurpfile current "ghbench-$1.json" \
+              --slurpfile base "ghbench-base-$1.json" \
+              --arg head "$HEAD_SHA" \
+              --arg baseCommit "$BASE_SHA" \
+              '
+                def row: "| " + join(" | ") + " |";
+                # Ratios are rounded to two decimals, and are below 1 when the pull request is faster
+                def ratio($current; $previous):
+                  if $previous == 0
+                  then (if $current == 0 then "1.00" else "" end)
+                  else ($current * 100 / $previous | round)
+                    | "\(. / 100 | floor).\(. % 100 | tostring | if length == 1 then "0\(.)" else . end)"
+                  end;
+                ($base[0] | INDEX(.name)) as $previous
+                | [ ([ "Benchmark suite", "Current: \($head)", "Base: \($baseCommit)", "Ratio" ] | row), "|-|-|-|-|" ]
+                  + ($current[0] | map(
+                      $previous[.name] as $prev
+                      | [ "`\(.name)`", "`\(.value)` \(.unit)" ] + (
+                          if $prev == null
+                          then [ "", "" ]
+                          else [ "`\($prev.value)` \($prev.unit)", (ratio(.value; $prev.value) | if . == "" then "" else "`\(.)`" end) ]
+                          end)
+                      | row))
+                | join("\n")
+              '
+          }
           {
-            printf '<!-- performance-comparison -->\n\n'
-            cat comparison-total.md
+            printf '<!-- performance-comparison -->\n\n# Benchmarks total results\n\n'
+            table total
             printf '\n\n<details>\n<summary>Show detailed results</summary>\n\n'
-            # The footer of the detailed table repeats the one of the total table above.
-            sed '/^This comment was automatically generated by /d' comparison-detail.md
+            table detail
             printf '\n\n</details>\n'
           } > comparison-comment.md
           echo "$PULL_REQUEST_NUMBER" > comparison-pull-request.txt
