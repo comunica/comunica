@@ -202,6 +202,23 @@ describe('materializeOperation', () => {
       .toEqual(AF.createService(AF.createPattern(valueA, termNamedNode, termVariableC), termNamedNode));
   });
 
+  it('should materialize a service operation and keep metadata', () => {
+    const metadata = { a: 'b' };
+    expect(materializeOperation(
+      Object.assign(
+        AF.createService(AF.createPattern(termVariableA, termNamedNode, termVariableC), termNamedNode),
+        { metadata },
+      ),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(Object.assign(
+        AF.createService(AF.createPattern(valueA, termNamedNode, termVariableC), termNamedNode),
+        { metadata },
+      ));
+  });
+
   it('should materialize a quad pattern with empty bindings', () => {
     expect(materializeOperation(
       AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
