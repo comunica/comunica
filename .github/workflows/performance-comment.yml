@@ -30,7 +30,8 @@ jobs:
           RUN_ID: ${{ github.event.workflow_run.id }}
         run: |
           set -eu
-          count=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts?name=performance-comparison" --jq '.total_count')
+          count=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts?name=performance-comparison" \
+            --jq '[ .artifacts[] | select(.name == "performance-comparison") ] | length')
           echo "found=$([ "$count" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
       - name: Download the performance comparison
         if: steps.check.outputs.found == 'true'
