@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.4.1"></a>
+## [v5.4.1](https://github.com/comunica/comunica/compare/v5.4.0...v5.4.1) - 2026-09-14
+
+### Fixed
+* [Name the new rdfjs configs after the current version (#1819)](https://github.com/comunica/comunica/commit/306e8d31c866f9f1a5c66886916d086a313a4a30)
+* [Fix incorrect sort-limit-pushdown config versioning in 5.4.0 release (#1817)](https://github.com/comunica/comunica/commit/f4971364ed11c7737bd0eb3dc35e2301eed7efa2)
+
 <a name="v5.4.0"></a>
 ## [v5.4.0](https://github.com/comunica/comunica/compare/v5.3.0...v5.4.0) - 2026-09-14
 

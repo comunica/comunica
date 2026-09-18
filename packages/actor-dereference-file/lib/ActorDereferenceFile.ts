@@ -39,11 +39,10 @@ export class ActorDereferenceFile extends ActorDereference {
       ));
     }
 
-    const requestTimeStart = Date.now();
     return {
       data: createReadStream(getPath(url)),
-      // This should always be after the creation of the read stream
-      requestTime: Date.now() - requestTimeStart,
+      // Local files have no request latency
+      requestTime: 0,
       status: 200,
       exists: true,
       url: ActorDereferenceFile.isURI(url) ? url : pathToFileURL(url).href,
