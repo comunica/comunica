@@ -230,6 +230,7 @@
     "@comunica/actor-query-source-identify-hypermedia": "^5.4.0",
     "@comunica/actor-query-source-identify-hypermedia-sparql": "^5.4.0",
     "@comunica/actor-query-source-identify-rdfjs": "^5.4.0",
+    "@comunica/actor-query-source-identify-service-executor": "^5.4.1",
     "@comunica/actor-rdf-join-entries-sort-cardinality": "^5.4.0",
     "@comunica/actor-rdf-join-entries-sort-selectivity": "^5.4.0",
     "@comunica/actor-rdf-join-inner-hash": "^5.4.0",

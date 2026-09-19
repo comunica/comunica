@@ -188,6 +188,56 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         ]);
       });
 
+      it('with SERVICE clauses and custom SERVICE executors when the single source accepts the full query', async() => {
+        contextIn = contextIn
+          .set(KeysInitQuery.querySourcesUnidentified, [ 'sourceSparql' ])
+          .set(KeysInitQuery.serviceExecutors, {});
+        const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+        expect(contextOut.get(KeysQueryOperation.serviceSources)).toEqual({
+          source1: { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
+          source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+        });
+      });
+
+      it('with SERVICE clauses and an executor creator when the single source accepts the full query', async() => {
+        contextIn = contextIn
+          .set(KeysInitQuery.querySourcesUnidentified, [ 'sourceSparql' ])
+          .set(KeysInitQuery.serviceExecutorCreator, () => undefined);
+        const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+        expect(contextOut.get(KeysQueryOperation.serviceSources)).toEqual({
+          source1: { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
+          source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+        });
+      });
+
+      it('should throw when both custom SERVICE executors and an executor creator are configured', async() => {
+        contextIn = contextIn
+          .set(KeysInitQuery.serviceExecutors, {})
+          .set(KeysInitQuery.serviceExecutorCreator, () => undefined);
+        await expect(actor.run({ context: contextIn, operation }))
+          .rejects.toThrow('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
+      });
+
+      it('should not cache SERVICE targets when custom SERVICE executors are configured', async() => {
+        contextIn = contextIn.set(KeysInitQuery.serviceExecutors, {});
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation: operationService });
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation: operationService });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(4);
+        const services1 = contextOut1.get<Record<string, IQuerySourceWrapper>>(KeysQueryOperation.serviceSources)!;
+        const services2 = contextOut2.get<Record<string, IQuerySourceWrapper>>(KeysQueryOperation.serviceSources)!;
+        expect(services1.source1).not.toBe(services2.source1);
+        expect(services1.source2).not.toBe(services2.source2);
+      });
+
+      it('should still cache regular sources when custom SERVICE executors are configured', async() => {
+        contextIn = contextIn
+          .set(KeysInitQuery.querySourcesUnidentified, [ 'source1' ])
+          .set(KeysInitQuery.serviceExecutors, {});
+        await actor.run({ context: contextIn, operation });
+        await actor.run({ context: contextIn, operation });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(1);
+      });
+
       it('with SERVICE clauses and multiple sources', async() => {
         const source3 = RdfStore.createDefault();
         contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [

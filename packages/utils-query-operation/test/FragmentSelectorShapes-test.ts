@@ -1,9 +1,11 @@
 import type { FragmentSelectorShape } from '@comunica/types';
 import { Algebra, AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
-import { doesShapeAcceptOperation } from '../lib/FragmentSelectorShapes';
+import { DataFactory } from 'rdf-data-factory';
+import { doesShapeAcceptOperation, doesShapeAcceptWholeServiceClause } from '../lib/FragmentSelectorShapes';
 
 const AF = new AlgebraFactory();
+const DF = new DataFactory();
 
 // Shape for QuerySourceSparql
 const SHAPE_SPARQL_1_1: FragmentSelectorShape = {
@@ -1130,6 +1132,59 @@ describe('FragmentSelectorShapes', () => {
 
         expect(doesShapeAcceptOperation(SHAPE_RDFJS, construct)).toBeFalsy();
       });
+    });
+  });
+
+  describe('#doesShapeAcceptWholeServiceClause', () => {
+    const shapeService: FragmentSelectorShape = {
+      type: 'operation',
+      operation: { operationType: 'type', type: Algebra.Types.SERVICE },
+      children: [
+        { type: 'operation', operation: { operationType: 'wildcard' }},
+      ],
+    };
+    const shapePattern: FragmentSelectorShape = {
+      type: 'operation',
+      operation: { operationType: 'type', type: Algebra.Types.PATTERN },
+    };
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const extensionFilter = AF.createFilter(
+      pattern,
+      AF.createOperatorExpression('!', [ AF.createNamedExpression(DF.namedNode('ex:fn'), []) ]),
+    );
+
+    it('should be true for a shape that only accepts SERVICE clauses', () => {
+      expect(doesShapeAcceptWholeServiceClause(shapeService, AF.createService(pattern, DF.namedNode('ex:s'))))
+        .toBe(true);
+    });
+
+    it('should be true for a shape that only accepts SERVICE clauses with extension functions in the body', () => {
+      expect(doesShapeAcceptWholeServiceClause(shapeService, AF.createService(extensionFilter, DF.namedNode('ex:s'))))
+        .toBe(true);
+    });
+
+    it('should be false for a wildcard shape', () => {
+      expect(doesShapeAcceptWholeServiceClause(SHAPE_SPARQL_1_1, AF.createService(pattern, DF.namedNode('ex:s'))))
+        .toBe(false);
+    });
+
+    it('should be false for a wildcard shape with extension functions in the body', () => {
+      expect(doesShapeAcceptWholeServiceClause(
+        SHAPE_SPARQL_1_1,
+        AF.createService(extensionFilter, DF.namedNode('ex:s')),
+      )).toBe(false);
+    });
+
+    it('should be false for a shape that accepts neither the clause nor its body', () => {
+      expect(doesShapeAcceptWholeServiceClause(
+        shapePattern,
+        AF.createService(AF.createJoin([ pattern, pattern ]), DF.namedNode('ex:s')),
+      )).toBe(false);
+    });
+
+    it('should be false for a shape that only accepts the body', () => {
+      expect(doesShapeAcceptWholeServiceClause(shapePattern, AF.createService(pattern, DF.namedNode('ex:s'))))
+        .toBe(false);
     });
   });
 });

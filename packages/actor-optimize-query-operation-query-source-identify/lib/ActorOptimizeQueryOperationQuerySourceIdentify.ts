@@ -97,8 +97,17 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
         .set(KeysQueryOperation.querySources, querySources);
     }
 
-    // Identify sources of SERVICE targets, unless the whole query is passed to the source (e.g. for SPARQL endpoints)
-    if (!await passFullOperationToSource(action.operation, querySources ?? [], context)) {
+    // Identify sources of SERVICE targets, unless the whole query is passed to the source (e.g. for SPARQL endpoints).
+    // Custom SERVICE executors are an exception to this, as their SERVICE clauses must be intercepted
+    // before the query could be passed to a source as a whole.
+    const hasServiceExecutors = context.has(KeysInitQuery.serviceExecutors);
+    const hasServiceExecutorCreator = context.has(KeysInitQuery.serviceExecutorCreator);
+    if (hasServiceExecutors && hasServiceExecutorCreator) {
+      throw new Error('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
+    }
+    const hasCustomServiceExecutors = hasServiceExecutors || hasServiceExecutorCreator;
+    if (hasCustomServiceExecutors ||
+      !await passFullOperationToSource(action.operation, querySources ?? [], context)) {
       const services: Set<string> = new Set();
       algebraUtils.visitOperation(action.operation, {
         [Algebra.Types.SERVICE]: {
@@ -121,7 +130,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
           type: this.serviceForceSparqlEndpoint ? 'sparql' : undefined,
           value: service,
           context: serviceContext,
-        }, context, KEY_PREFIX_SERVICE) ])));
+        }, context, KEY_PREFIX_SERVICE, !hasCustomServiceExecutors) ])));
       if (services.size > 0) {
         context = context.set(KeysQueryOperation.serviceSources, serviceSources);
       }
@@ -142,16 +151,24 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
     };
   }
 
+  /**
+   * Identify the given source, and cache it if possible.
+   * @param querySourceUnidentified The source to identify.
+   * @param context The action context.
+   * @param cacheKeyPrefix A prefix for the cache key of the source.
+   * @param cache If the source may be read from and written to the cache.
+   */
   public identifySource(
     querySourceUnidentified: QuerySourceUnidentifiedExpanded,
     context: IActionContext,
     cacheKeyPrefix = '',
+    cache = true,
   ): Promise<IQuerySourceWrapper> {
     let sourcePromise: Promise<IQuerySourceWrapper> | undefined;
 
     // Try to read from cache
     // Only sources based on string values (e.g. URLs) are supported!
-    const cacheKey = typeof querySourceUnidentified.value === 'string' ?
+    const cacheKey = cache && typeof querySourceUnidentified.value === 'string' ?
       cacheKeyPrefix + querySourceUnidentified.value :
       undefined;
     if (cacheKey !== undefined && this.cache) {

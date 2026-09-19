@@ -209,6 +209,12 @@ function isExtensionFunction(operation: Algebra.Operation): operation is Algebra
     isKnownSubType(operation, Algebra.ExpressionTypes.NAMED) && !isStandardSparqlFunction(operation.name.value);
 }
 
+export function doesShapeAcceptWholeServiceClause(shape: FragmentSelectorShape, operation: Algebra.Service): boolean {
+  const options: FragmentSelectorShapeTestFlags = { wildcardAcceptAllExtensionFunctions: true };
+  return !doesShapeAcceptOperation(shape, operation.input, options) &&
+    doesShapeAcceptOperation(shape, operation, options);
+}
+
 export type FragmentSelectorShapeTestFlags = {
   joinBindings?: boolean;
   filterBindings?: boolean;
