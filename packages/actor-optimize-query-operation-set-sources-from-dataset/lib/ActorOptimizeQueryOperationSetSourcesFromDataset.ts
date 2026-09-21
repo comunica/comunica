@@ -1,96 +1,58 @@
 import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
-  IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import { ActionContext, failTest, passTestVoid, type IActorTest, type TestResult } from '@comunica/core';
+import type { IActorTest, TestResult } from '@comunica/core';
+import { ActionContext, failTest, passTestVoid } from '@comunica/core';
 import type { IActionContext, SourceType } from '@comunica/types';
-import type { Algebra } from '@comunica/utils-algebra';
-import type * as RDF from '@rdfjs/types';
+import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
 
 /**
- * A comunica Optimize Query Operation Set Sources From Dataset Optimize Query Operation Actor.
+ * A comunica Set Sources From Dataset Optimize Query Operation Actor.
+ *
+ * It appends the IRIs of the query's FROM and FROM NAMED clauses as sources to the context,
+ * and removes the dataset clauses from the query afterwards.
+ * FROM NAMED sources are tagged so that their data is exposed under the named graph of their IRI.
  */
 export class ActorOptimizeQueryOperationSetSourcesFromDataset extends ActorOptimizeQueryOperation {
-  public constructor(args: IActorOptimizeQueryOperationArgs) {
-    super(args);
-  }
-
   public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
-    if (!action.context.get(KeysQueryOperation.dereferenceFromNamed)) {
+    if (!action.context.get(KeysInitQuery.dereferenceFromNamed)) {
       return failTest('This actor can only be used when dereferenceFromNamed is enabled.');
+    }
+    if (!isKnownOperation(action.operation, Algebra.Types.FROM)) {
+      return failTest('This actor can only be used on queries with a FROM or FROM NAMED clause.');
     }
     return passTestVoid();
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    const datasetClauses = ActorOptimizeQueryOperationSetSourcesFromDataset.extractDatasetClauses(action.operation);
-
-    if (datasetClauses.defaultGraphs.length === 0 && datasetClauses.namedGraphs.length === 0) {
-      return { operation: action.operation, context: action.context };
-    }
-
-    const context = ActorOptimizeQueryOperationSetSourcesFromDataset.appendSources(action.context, datasetClauses);
-    const operation =
-      ActorOptimizeQueryOperationSetSourcesFromDataset.stripDatasetClauses(action.operation);
-
-    return { operation, context };
-  }
-
-  public static extractDatasetClauses(operation: Algebra.Operation): IDatasetClauses {
-    const defaultGraphs: string[] = [];
-    const namedGraphs: RDF.NamedNode[] = [];
-
-    if (operation.type === 'from') {
-      const fromOp = <Algebra.From> operation;
-      if (fromOp.default) {
-        defaultGraphs.push(...fromOp.default.map((graph: RDF.NamedNode) => graph.value));
-      }
-      if (fromOp.named) {
-        namedGraphs.push(...fromOp.named);
-      }
-    }
-
-    return { defaultGraphs, namedGraphs };
-  }
-
-  public static appendSources(context: IActionContext, clauses: IDatasetClauses): IActionContext {
-    const existingSources: SourceType[] = context.get(KeysInitQuery.querySourcesUnidentified) ?? [];
-    const conflictModeResolver = context.get(KeysQueryOperation.dereferenceFromNamedConflictMode);
-
-    const namedGraphSources: SourceType[] = clauses.namedGraphs.map(namedNode => ({
-      value: namedNode.value,
-      context: new ActionContext({
-        [KeysQueryOperation.sourceAsNamedGraph.name]: namedNode,
-        ...(conflictModeResolver && {
-          [KeysQueryOperation.dereferenceFromNamedConflictMode.name]: conflictModeResolver,
-        }),
-      }),
-    }));
-
-    const mergedSources = [
-      ...new Set([ ...existingSources, ...clauses.defaultGraphs ]),
-      ...namedGraphSources,
-    ];
-
-    return context.set(KeysInitQuery.querySourcesUnidentified, mergedSources);
+    // The operation type has been asserted in test()
+    const operation = <Algebra.From> action.operation;
+    return {
+      operation: operation.input,
+      context: ActorOptimizeQueryOperationSetSourcesFromDataset.appendSources(action.context, operation),
+    };
   }
 
   /**
-   * According to SPARQL 1.2 grammar, a FROM and FROM named clause can only appear in the top level Query
+   * Append the dataset clauses of the given operation as sources to the given context.
+   * @param context The context to append the sources to.
+   * @param operation The FROM operation to read the dataset clauses from.
    */
+  public static appendSources(context: IActionContext, operation: Algebra.From): IActionContext {
+    const existingSources: SourceType[] = context.get(KeysInitQuery.querySourcesUnidentified) ?? [];
 
-  public static stripDatasetClauses(operation: Algebra.Operation): Algebra.Operation {
-    if (operation.type === 'from') {
-      return (<Algebra.From> operation).input;
-    }
-    return operation;
+    // FROM NAMED sources are tagged, so that they expose their data under the named graph of their IRI
+    const namedSources: SourceType[] = operation.named.map(graph => ({
+      value: graph.value,
+      context: new ActionContext({ [KeysQueryOperation.sourceAsNamedGraph.name]: graph }),
+    }));
+
+    return context.set(KeysInitQuery.querySourcesUnidentified, [
+      ...new Set([ ...existingSources, ...operation.default.map(graph => graph.value) ]),
+      ...namedSources,
+    ]);
   }
-}
-
-export interface IDatasetClauses {
-  defaultGraphs: string[];
-  namedGraphs: RDF.NamedNode[];
 }

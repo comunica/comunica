@@ -151,7 +151,10 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
 
     // Try to read from cache
     // Only sources based on string values (e.g. URLs) are supported!
-    const cacheKey = typeof querySourceUnidentified.value === 'string' ?
+    // Sources that must be exposed under a named graph are never cached,
+    // as their data differs from the plain source with the same URL.
+    const cacheKey = typeof querySourceUnidentified.value === 'string' &&
+      !querySourceUnidentified.context?.has(KeysQueryOperation.sourceAsNamedGraph) ?
       cacheKeyPrefix + querySourceUnidentified.value :
       undefined;
     if (cacheKey !== undefined && this.cache) {

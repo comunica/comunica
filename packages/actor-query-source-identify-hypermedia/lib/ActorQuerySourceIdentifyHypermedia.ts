@@ -12,7 +12,7 @@ import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-r
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, failTest, passTestVoid } from '@comunica/core';
 import type { IActorTest, TestResult } from '@comunica/core';
-import type { ComunicaDataFactory, ILink } from '@comunica/types';
+import type { ComunicaDataFactory } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { QuerySourceHypermedia } from './QuerySourceHypermedia';
 
@@ -50,20 +50,16 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
     const querySourceContext = action.querySourceUnidentified.context ?? new ActionContext();
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
 
-    const firstLink: ILink = {
-      url: <string> action.querySourceUnidentified.value,
-      forceSourceType: action.querySourceUnidentified.type,
-    };
-
-    if (action.querySourceUnidentified.context) {
-      firstLink.context = querySourceContext;
-    }
-
     return {
       querySource: {
         source: new QuerySourceHypermedia(
           this.cacheSize,
-          firstLink,
+          {
+            url: <string> action.querySourceUnidentified.value,
+            forceSourceType: action.querySourceUnidentified.type,
+            // The source's own context must also be available while dereferencing it
+            context: querySourceContext,
+          },
           this.maxIterators,
           {
             mediatorMetadataAccumulate: this.mediatorMetadataAccumulate,

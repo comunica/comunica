@@ -176,7 +176,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
 
       describe('with dereferenceFromNamedConflictMode resolving to "error"', () => {
         beforeEach(() => {
-          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, () => 'error');
+          context = context.set(KeysInitQuery.dereferenceFromNamedConflictMode, () => 'error');
         });
 
         it('should reject when the source already contains a named graph', async() => {
@@ -189,9 +189,9 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
         });
       });
 
-      describe('with dereferenceFromNamedConflictMode resolving to "mergeNamedInSourceGraph"', () => {
+      describe('with dereferenceFromNamedConflictMode resolving to "preferNamed"', () => {
         beforeEach(() => {
-          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, () => 'mergeNamedInSourceGraph');
+          context = context.set(KeysInitQuery.dereferenceFromNamedConflictMode, () => 'preferNamed');
         });
 
         it('should rewrite an existing named graph to the tagged named graph too', async() => {
@@ -215,9 +215,9 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
         });
       });
 
-      describe('with dereferenceFromNamedConflictMode resolving to "keepSourceGraphs"', () => {
+      describe('with dereferenceFromNamedConflictMode resolving to "keepSource"', () => {
         beforeEach(() => {
-          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, () => 'keepSourceGraphs');
+          context = context.set(KeysInitQuery.dereferenceFromNamedConflictMode, () => 'keepSource');
         });
 
         it('should rewrite default-graph quads but leave an existing named graph untouched', async() => {
@@ -242,15 +242,15 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
         });
       });
 
-      describe('with a resolver that differentiates per named graph', () => {
-        it('should apply a different conflict mode to each distinct existing named graph', async() => {
+      describe('with a resolver that differentiates per quad', () => {
+        it('should apply a different conflict mode to each existing named graph', async() => {
           const graphA = DF.namedNode('http://example.org/graph-a');
           const graphB = DF.namedNode('http://example.org/graph-b');
           const resolveConflictMode = jest.fn(
-            (name: RDF.Term): DereferenceFromNamedConflictMode =>
-              name.equals(graphA) ? 'keepSourceGraphs' : 'mergeNamedInSourceGraph',
+            (quad: RDF.Quad): DereferenceFromNamedConflictMode =>
+              quad.graph.equals(graphA) ? 'keepSource' : 'preferNamed',
           );
-          context = context.set(KeysQueryOperation.dereferenceFromNamedConflictMode, resolveConflictMode);
+          context = context.set(KeysInitQuery.dereferenceFromNamedConflictMode, resolveConflictMode);
 
           const quads = streamifyArray([
             quad('s1', 'p1', 'o1', graphA.value),
@@ -278,8 +278,8 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
           await expect(source.queryBindings(AF.createPattern(v1, v2, v3, graphB), new ActionContext()))
             .toEqualBindingsStream([]);
 
-          // The resolver is invoked once per distinct graph (2), not once per quad (4).
-          expect(resolveConflictMode).toHaveBeenCalledTimes(2);
+          // The resolver is invoked for every quad that has a named graph of its own.
+          expect(resolveConflictMode).toHaveBeenCalledTimes(4);
         });
       });
     });

@@ -2477,8 +2477,21 @@ WHERE { }
         ex:s1 ex:p1 ex:o1 .
         ex:s2 ex:p2 ex:o2 .
       `;
+      const mockFetch = (body: string, contentType = 'text/turtle'): typeof globalThis.fetch =>
+        <typeof globalThis.fetch> jest.fn(async(input: string, init?: RequestInit) => {
+          if (input === datasetIri) {
+            return <Response> {
+              status: 200,
+              ok: true,
+              headers: new Headers({ 'content-type': contentType }),
+              body: stringToStream(body),
+              url: input,
+            };
+          }
+          return fetch(input, init);
+        });
 
-      it('does not append FROM IRI as a real source when fromNamedSources is false (default)', async() => {
+      it('does not append FROM IRI as a real source when dereferenceFromNamed is false (default)', async() => {
         await expect(engine.queryBindings(
           `SELECT * FROM <${datasetIri}> WHERE { ?s ?p ?o }`,
           {
@@ -2488,18 +2501,7 @@ WHERE { }
       });
 
       it('appends the FROM IRI as a real source when dereferenceFromNamed is true', async() => {
-        const mockedFetch = <typeof globalThis.fetch> jest.fn(async(input: string, init?: RequestInit) => {
-          if (input === datasetIri) {
-            return <Response> {
-              status: 200,
-              ok: true,
-              headers: new Headers({ 'content-type': 'text/turtle' }),
-              body: stringToStream(datasetTurtle),
-              url: input,
-            };
-          }
-          return fetch(input, init);
-        });
+        const mockedFetch = mockFetch(datasetTurtle);
 
         // No sources in context
         const bindingsStream = await engine.queryBindings(
@@ -2530,6 +2532,99 @@ WHERE { }
           datasetIri,
           expect.anything(),
         );
+      });
+
+      it('exposes the FROM NAMED IRI as a named graph when dereferenceFromNamed is true', async() => {
+        const mockedFetch = mockFetch(datasetTurtle);
+
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { GRAPH ?g { ?s ?p ?o } }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
+          },
+        );
+
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode(datasetIri) ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p1') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode(datasetIri) ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
+          ]),
+        ]);
+      });
+
+      it('does not expose FROM NAMED data in the default graph', async() => {
+        const mockedFetch = mockFetch(datasetTurtle);
+
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { ?s ?p ?o }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
+          },
+        );
+
+        await expect(bindingsStream).toEqualBindingsStream([]);
+      });
+
+      it('errors on a FROM NAMED source that already contains named graphs', async() => {
+        const mockedFetch = mockFetch(`
+          @prefix ex: <http://example.org/> .
+          ex:s1 ex:p1 ex:o1 .
+          ex:g1 { ex:s2 ex:p2 ex:o2 . }
+        `, 'application/trig');
+
+        await expect(engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { GRAPH ?g { ?s ?p ?o } }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
+          },
+        )).rejects.toThrow(`Detected an existing named graph 'http://example.org/g1'`);
+      });
+
+      it('keeps the source\'s own named graphs when the conflict mode says so', async() => {
+        const mockedFetch = mockFetch(`
+          @prefix ex: <http://example.org/> .
+          ex:s1 ex:p1 ex:o1 .
+          ex:g1 { ex:s2 ex:p2 ex:o2 . }
+        `, 'application/trig');
+
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { GRAPH ?g { ?s ?p ?o } }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            dereferenceFromNamedConflictMode: () => 'keepSource',
+            fetch: mockedFetch,
+          },
+        );
+
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode(datasetIri) ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p1') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode('http://example.org/g1') ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
+          ]),
+        ]);
       });
     });
 

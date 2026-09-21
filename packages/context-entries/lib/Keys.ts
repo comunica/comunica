@@ -283,6 +283,19 @@ export const KeysInitQuery = {
    * A boolean value denoting whether results should be deduplicated or not.
    */
   distinctConstruct: new ActionContextKey<boolean>('@comunica/actor-init-query:distinctConstruct'),
+  /**
+   * If the IRIs within FROM (NAMED) clauses must be dereferenced,
+   * and added as sources to the query. (default: false)
+   */
+  dereferenceFromNamed: new ActionContextKey<boolean>('@comunica/actor-init-query:dereferenceFromNamed'),
+  /**
+   * Resolves, per named graph that a FROM NAMED source already contains of its own,
+   * whether to error (default), rewrite it into the FROM NAMED graph, or keep it as-is.
+   * This only has an effect when `dereferenceFromNamed` is enabled.
+   */
+  dereferenceFromNamedConflictMode: new ActionContextKey<DereferenceFromNamedConflictModeResolver>(
+    '@comunica/actor-init-query:dereferenceFromNamedConflictMode',
+  ),
 };
 
 export const KeysExpressionEvaluator = {
@@ -370,25 +383,11 @@ export const KeysQueryOperation = {
     '@comunica/bus-query-operation:serviceSources',
   ),
   /**
-   * Dereferences IRIs in FROM (NAMED) clauses and merges their content into query dataset. (default: false)
-   */
-  dereferenceFromNamed: new ActionContextKey<boolean>(
-    '@comunica/bus-query-operation:dereferenceFromNamed',
-  ),
-  /**
    * If set on a query source's own context, that source's dereferenced quads should have their
-   * graph component rewritten to this term, as declared via a SPARQL FROM NAMED clause, instead
-   * of keeping whatever graph the source's serialization assigned them.
+   * graph component rewritten to this term.
    */
   sourceAsNamedGraph: new ActionContextKey<RDF.NamedNode>(
     '@comunica/bus-query-operation:sourceAsNamedGraph',
-  ),
-  /**
-   * Resolves, per named graph a FROM NAMED source already has of its own, whether to error (default),
-   * merge it into the FROM NAMED graph, or keep it as-is.
-   */
-  dereferenceFromNamedConflictMode: new ActionContextKey<DereferenceFromNamedConflictModeResolver>(
-    '@comunica/bus-query-operation:dereferenceFromNamedConflictMode',
   ),
 };
 

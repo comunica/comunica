@@ -40,7 +40,7 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     this.logInfo(action.context, `Identified as file source: ${action.url}`);
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const namedGraph = action.context.get(KeysQueryOperation.sourceAsNamedGraph);
-    const resolveConflictMode = action.context.get(KeysQueryOperation.dereferenceFromNamedConflictMode) ??
+    const resolveConflictMode = action.context.get(KeysInitQuery.dereferenceFromNamedConflictMode) ??
       ((): DereferenceFromNamedConflictMode => 'error');
     const source = new QuerySourceRdfJs(
       await ActorQuerySourceIdentifyHypermediaNone.storeStream(
@@ -55,7 +55,7 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     return { source };
   }
 
-  public static async storeStream<Q extends RDF.BaseQuad = RDF.Quad>(
+  public static storeStream<Q extends RDF.BaseQuad = RDF.Quad>(
     stream: RDF.Stream<Q>,
     rewrite?: {
       dataFactory: ComunicaDataFactory;
@@ -64,7 +64,7 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
       resolveConflictMode: DereferenceFromNamedConflictModeResolver;
     },
   ): Promise<RDF.Store<Q>> {
-    const store: RdfStore<any, Q> = <RdfStore<any, Q>><unknown>RdfStore.createDefault(true);
+    const store: RdfStore<any, Q> = <RdfStore<any, Q>><unknown> RdfStore.createDefault(true);
 
     if (!rewrite) {
       return new Promise((resolve, reject) => store.import(stream)
@@ -72,43 +72,39 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
         .once('end', () => resolve(store)));
     }
 
-    const conflictModeCache = new Map<string, DereferenceFromNamedConflictMode>();
+    return new Promise((resolve, reject) => {
+      stream
+        .on('error', reject)
+        .on('data', (rawQuad: Q) => {
+          const quad = <RDF.Quad><unknown> rawQuad;
+          // Quads that the source already exposes under a named graph of its own conflict with the
+          // graph this FROM NAMED source must be exposed under, so the conflict mode decides their fate.
+          if (quad.graph.termType !== 'DefaultGraph') {
+            const conflictMode = rewrite.resolveConflictMode(quad);
+            if (conflictMode === 'error') {
+              reject(new Error(
+                `Detected an existing named graph '${quad.graph.value}' while loading ${rewrite.url} as a FROM ` +
+                `NAMED source. Refusing to overwrite it with <${rewrite.graph.value}>, as that would lose data. ` +
+                `Set the 'dereferenceFromNamedConflictMode' context entry to a resolver returning ` +
+                `'preferNamed' or 'keepSource' to allow this.`,
+              ));
+              return;
+            }
+            if (conflictMode === 'keepSource') {
+              store.addQuad(rawQuad);
+              return;
+            }
+          }
 
-    for await (const quad of <AsyncIterable<RDF.Quad>><unknown>stream) {
-      const hasExistingNamedGraph = quad.graph.termType !== 'DefaultGraph';
-
-      if (hasExistingNamedGraph) {
-        const cacheKey = `${quad.graph.termType} ${quad.graph.value}`;
-        let conflictMode = conflictModeCache.get(cacheKey);
-        if (conflictMode === undefined) {
-          conflictMode = rewrite.resolveConflictMode(quad.graph);
-          conflictModeCache.set(cacheKey, conflictMode);
-        }
-
-        if (conflictMode === 'error') {
-          throw new Error(
-            `Detected an existing named graph '${quad.graph.value}' while loading ${rewrite.url} as a FROM ` +
-            `NAMED source. Refusing to overwrite it with <${rewrite.graph.value}>, as that would lose data.`,
-          );
-        }
-
-        if (conflictMode === 'keepSourceGraphs') {
-          store.addQuad(<Q><unknown>quad);
-          continue;
-        }
-      }
-
-      const rewritten = rewrite.dataFactory.quad(
-        quad.subject,
-        quad.predicate,
-        quad.object,
-        rewrite.graph,
-      );
-
-      store.addQuad(<Q><unknown>rewritten);
-    }
-
-    return store;
+          store.addQuad(<Q><unknown> rewrite.dataFactory.quad(
+            quad.subject,
+            quad.predicate,
+            quad.object,
+            rewrite.graph,
+          ));
+        })
+        .on('end', () => resolve(store));
+    });
   }
 }
 

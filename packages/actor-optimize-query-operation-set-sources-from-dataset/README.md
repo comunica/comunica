@@ -4,6 +4,13 @@
 
 A comunica Set Sources From Dataset Optimize Query Operation Actor.
 
+This actor appends the IRIs of the query's `FROM` and `FROM NAMED` clauses as sources to the context,
+and removes the dataset clauses from the query afterwards.
+IRIs from `FROM NAMED` clauses are tagged so that their data is exposed under the named graph of that IRI,
+while IRIs from `FROM` clauses are queried as regular sources.
+
+This actor is only enabled when the `dereferenceFromNamed` context entry is set to `true`.
+
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 
