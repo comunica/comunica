@@ -20,6 +20,7 @@ import type {
   IDiscoverEventData,
   PartialResult,
   ILink,
+  DereferenceFromNamedConflictModeResolver,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -367,6 +368,27 @@ export const KeysQueryOperation = {
    */
   serviceSources: new ActionContextKey<Record<string, IQuerySourceWrapper>>(
     '@comunica/bus-query-operation:serviceSources',
+  ),
+  /**
+   * Dereferences IRIs in FROM (NAMED) clauses and merges their content into query dataset. (default: false)
+   */
+  dereferenceFromNamed: new ActionContextKey<boolean>(
+    '@comunica/bus-query-operation:dereferenceFromNamed',
+  ),
+  /**
+   * If set on a query source's own context, that source's dereferenced quads should have their
+   * graph component rewritten to this term, as declared via a SPARQL FROM NAMED clause, instead
+   * of keeping whatever graph the source's serialization assigned them.
+   */
+  sourceAsNamedGraph: new ActionContextKey<RDF.NamedNode>(
+    '@comunica/bus-query-operation:sourceAsNamedGraph',
+  ),
+  /**
+   * Resolves, per named graph a FROM NAMED source already has of its own, whether to error (default),
+   * merge it into the FROM NAMED graph, or keep it as-is.
+   */
+  dereferenceFromNamedConflictMode: new ActionContextKey<DereferenceFromNamedConflictModeResolver>(
+    '@comunica/bus-query-operation:dereferenceFromNamedConflictMode',
   ),
 };
 
