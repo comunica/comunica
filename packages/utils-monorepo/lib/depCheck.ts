@@ -64,7 +64,9 @@ async function depInfo(pckg: any): Promise<any> {
       dependency: configPackage,
       dependant: join(pckg.dir, 'engine-default.js'),
     });
-    // An engine can also build upon other config packages, which are only referenced by its config
+    // The compiled engine-default.js requires actor packages only, never the config packages it was
+    // compiled from, which is why configPackage is ensured above. An engine built on another config
+    // package references that one solely from the @context of its own config.
     const configPath = join(pckg.dir, 'config', 'config-default.json');
     if (existsSync(configPath)) {
       const { '@context': contexts = []} = JSON.parse(readFileSync(configPath, 'utf8'));

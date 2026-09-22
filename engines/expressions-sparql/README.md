@@ -5,6 +5,11 @@
 Comunica SPARQL Expressions evaluates SPARQL expressions, aggregates and term ordering
 without setting up a query engine.
 
+Because it configures no query operations, sources, parsers or result serializers,
+this package bundles to a fraction of the size of a full query engine such as
+[Comunica SPARQL](https://github.com/comunica/comunica/tree/master/engines/query-sparql#readme).
+At the time of writing, the minified size of this package is 866.63 KB (183.89 KB when gzipped).
+
 This module is part of the [Comunica framework](https://comunica.dev/).
 
 **[Learn more about expression evaluation](https://comunica.dev/docs/modify/advanced/expression-evaluator/).**
@@ -23,27 +28,47 @@ expressions, and all evaluation is asynchronous.
 Create the engine once and reuse it, as it shares a `functionArgumentsCache` across everything it creates.
 Callers that vary the `superTypeProvider` between calls must not share that cache, see [Context](#context).
 
+Expressions can be constructed by hand with `AlgebraFactory`, which extends the algebra factory of
+[Traqula](https://github.com/comunica/traqula#readme), so that no parser has to be bundled:
+
 ```typescript
 import { ExpressionEngine } from '@comunica/expressions-sparql';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { toAlgebra } from '@traqula/algebra-sparql-1-2';
-import { Parser } from '@traqula/parser-sparql-1-2';
 import { DataFactory } from 'rdf-data-factory';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const AF = new AlgebraFactory(DF);
 const engine = new ExpressionEngine();
+
+// langMatches(lang(?o), "FR"); operator names are lowercase in the algebra
+const evaluator = await engine.createEvaluator(AF.createOperatorExpression('langmatches', [
+  AF.createOperatorExpression('lang', [ AF.createTermExpression(DF.variable('o')) ]),
+  AF.createTermExpression(DF.literal('FR')),
+]));
+
+// Evaluate bindings as a term, ...
+const term = await evaluator.evaluate(BF.fromRecord({ o: DF.literal('Ceci n\'est pas une pipe', 'fr') }));
+// ... or as an effective boolean value, as FILTER does
+const ebv = await evaluator.evaluateAsEBV(BF.fromRecord({ o: DF.literal('This is not a pipe', 'en') }));
+```
+
+Next to `createOperatorExpression` and `createTermExpression`, the factory offers `createNamedExpression`
+for calls of a function IRI such as `xsd:integer(?age)`, `createAggregateExpression` for aggregates,
+and `createExistenceExpression` for `EXISTS`.
+
+The same expression can instead be taken out of a parsed query:
+
+```typescript
+import { toAlgebra } from '@traqula/algebra-sparql-1-2';
+import { Parser } from '@traqula/parser-sparql-1-2';
 
 // Parse a query, and take the expression of its FILTER clause
 const query: any = toAlgebra(new Parser().parse(`
   SELECT * WHERE { ?s ?p ?o FILTER(langMatches(lang(?o), "FR")) }
 `));
 const evaluator = await engine.createEvaluator(query.input.expression);
-
-// Evaluate bindings as a term, ...
-const term = await evaluator.evaluate(BF.fromRecord({ o: DF.literal('Ceci n\'est pas une pipe', 'fr') }));
-// ... or as an effective boolean value, as FILTER does
-const ebv = await evaluator.evaluateAsEBV(BF.fromRecord({ o: DF.literal('This is not a pipe', 'en') }));
 ```
 
 Expressions can also be parsed on their own, as Traqula can start parsing from any grammar rule,
@@ -83,9 +108,6 @@ comparator.orderTypes(DF.literal('a'), DF.literal('b')); // -1
 And bindings can be aggregated:
 
 ```typescript
-import { AlgebraFactory } from '@comunica/utils-algebra';
-
-const AF = new AlgebraFactory(DF);
 const aggregator = await engine.createAggregator(
   AF.createAggregateExpression('sum', AF.createTermExpression(DF.variable('x')), false),
 );
