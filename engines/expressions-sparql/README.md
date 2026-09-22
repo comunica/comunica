@@ -8,7 +8,7 @@ without setting up a query engine.
 Because it configures no query operations, sources, parsers or result serializers,
 this package bundles to a fraction of the size of a full query engine such as
 [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/engines/query-sparql#readme).
-At the time of writing, the minified size of this package is 866.63 KB (183.89 KB when gzipped).
+At the time of writing, the minified size of this package is 866.69 KB (183.28 KB when gzipped).
 
 This module is part of the [Comunica framework](https://comunica.dev/).
 
