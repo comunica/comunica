@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-nodejs-modules
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 
 // eslint-disable-next-line import/no-nodejs-modules
 import { join } from 'node:path';
@@ -9,8 +9,6 @@ import checkDeps = require('depcheck');
 
 // eslint-disable-next-line ts/no-var-requires,ts/no-require-imports
 const { getPackages } = require('@manypkg/get-packages');
-
-const configPackage = process.argv[2];
 
 function ensureDependency({ checkedDeps, dependency, dependant }: any): void {
   if (!checkedDeps.dependencies.includes(dependency)) {
@@ -59,22 +57,11 @@ async function depInfo(pckg: any): Promise<any> {
       dependency: '@comunica/runner',
       dependant: join(pckg.dir, 'engine-default.js'),
     });
-    ensureDependency({
-      checkedDeps,
-      dependency: configPackage,
-      dependant: join(pckg.dir, 'engine-default.js'),
-    });
-    // The compiled engine-default.js requires actor packages only, never the config packages it was
-    // compiled from, which is why configPackage is ensured above. An engine built on another config
-    // package references that one solely from the @context of its own config.
-    const configPath = join(pckg.dir, 'config', 'config-default.json');
-    if (existsSync(configPath)) {
-      const { '@context': contexts = []} = JSON.parse(readFileSync(configPath, 'utf8'));
-      for (const context of contexts) {
-        const match = /bundles\/npm\/(@comunica\/config-[^/]+)\//u.exec(context);
-        if (match) {
-          ensureDependency({ checkedDeps, dependency: match[1], dependant: configPath });
-        }
+    // Config packages are referenced from the engine's config through JSON-LD contexts, which depcheck
+    // cannot read, and never from the compiled engine-default.js, which requires actor packages only.
+    for (const dependency of Object.keys(pckg.packageJson.dependencies ?? {})) {
+      if (dependency.startsWith('@comunica/config-')) {
+        checkedDeps.using[dependency] = [ join(pckg.dir, 'config', 'config-default.json') ];
       }
     }
   } else {

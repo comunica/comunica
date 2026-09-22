@@ -20,7 +20,7 @@
     "build-watch:ts": "tsc --watch",
     "clean": "git clean -dfx",
     "dedupe": "npx yarn-deduplicate yarn.lock --scopes",
-    "depcheck": "depcheckTask @comunica/config-query-sparql",
+    "depcheck": "depcheckTask",
     "doc": "packages/utils-monorepo/sh/typedoc-json.sh create && typedoc && packages/utils-monorepo/sh/typedoc-json.sh remove",
     "lint": "eslint . --cache",
     "lint-fix": "eslint . --fix",
