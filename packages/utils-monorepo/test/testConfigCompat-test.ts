@@ -3,17 +3,21 @@ import * as Path from 'node:path';
 import { copy, emptyDir, pathExists, readdir, readFile } from 'fs-extra';
 import { isSemVerEqual, testConfigCompat } from '../lib/testConfigCompat';
 
-jest.mock('node:child_process', () => ({
-  exec: jest.fn(),
-}));
+jest.mock<typeof import('node:child_process')>('node:child_process', () => {
+  return <any> {
+    exec: jest.fn(),
+  };
+});
 
-jest.mock('fs-extra', () => ({
-  readdir: jest.fn(),
-  pathExists: jest.fn(),
-  readFile: jest.fn(),
-  emptyDir: jest.fn(),
-  copy: jest.fn(),
-}));
+jest.mock<typeof import('fs-extra')>('fs-extra', () => {
+  return <any> {
+    readdir: jest.fn(),
+    pathExists: jest.fn(),
+    readFile: jest.fn(),
+    emptyDir: jest.fn(),
+    copy: jest.fn(),
+  };
+});
 
 const MONOREPO = '/repo';
 const INSTALL_PATH = '/tmp/comunica-test-previous-engines/';
@@ -194,7 +198,7 @@ describe('testConfigCompat', () => {
     it('should not inject nested node_modules of the monorepo config package', async() => {
       await testConfigCompat(MONOREPO);
 
-      const { filter } = jest.mocked(copy).mock.calls[0][2]!;
+      const { filter } = jest.mocked(copy).mock.calls[0][2];
       expect(filter!('/a/node_modules', '/b/node_modules')).toBe(false);
       expect(filter!('/a/config/config-default.json', '/b/config/config-default.json')).toBe(true);
     });
