@@ -306,7 +306,7 @@ jobs:
         # which makes its totals incomparable between two runs.
         benchmark: ${{ github.event_name == 'pull_request' && fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf"]') || fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "web"]') }}
     env:
-      BENCHMARK_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+      BENCHMARK_BASE: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
@@ -451,14 +451,12 @@ jobs:
 
   performance-compare:
     name: Performance comparison
-    # Forks receive a read-only GITHUB_TOKEN, which can not post the comparison onto the pull request.
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event_name == 'pull_request'
     needs:
       - performance
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: write
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
@@ -516,65 +514,59 @@ jobs:
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total false --detailed true --name ghbench-base-detail.json
       - name: Process base commit benchmark total results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total true --detailed false --name ghbench-base-total.json
-      - name: Wrap the base commit results into baseline data files
+      - name: Assemble the comparison comment
+        # Posted by the performance-comment workflow, as this job
+        # receives a read-only GITHUB_TOKEN on pull requests from forks.
         env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          REPO_URL: ${{ github.event.repository.html_url }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set -eu
-          wrap () {
-            jq -n \
-              --slurpfile benches "ghbench-base-$1.json" \
-              --arg name "$2" \
-              --arg sha "$BASE_SHA" \
-              --arg repo "$REPO_URL" \
-              --argjson date "$(date +%s000)" \
-              '{
-                lastUpdate: $date,
-                repoUrl: $repo,
-                entries: {
-                  ($name): [{
-                    commit: {
-                      author: { name: "", username: "", email: "" },
-                      committer: { name: "", username: "", email: "" },
-                      id: $sha,
-                      message: "Base commit of the pull request",
-                      timestamp: ($date / 1000 | todate),
-                      url: "\($repo)/commit/\($sha)"
-                    },
-                    date: $date,
-                    tool: "customSmallerIsBetter",
-                    benches: $benches[0]
-                  }]
-                }
-              }' > "baseline-$1.json"
+          table () {
+            jq -rn \
+              --slurpfile headResults "ghbench-$1.json" \
+              --slurpfile baseResults "ghbench-base-$1.json" \
+              --arg headSha "$HEAD_SHA" \
+              --arg baseSha "$BASE_SHA" \
+              '
+                def row: "| " + join(" | ") + " |";
+                # Ratios are rounded to two decimals, and are below 1 when the pull request is faster
+                def ratio($current; $previous):
+                  if $previous == 0
+                  then (if $current == 0 then "1.00" else "\u221e" end)
+                  else ($current * 100 / $previous | round)
+                    | "\(. / 100 | floor).\(. % 100 | tostring | if length == 1 then "0\(.)" else . end)"
+                  end;
+                ($baseResults[0] | INDEX(.name)) as $base
+                | [ ([ "Benchmark suite", "Current: \($headSha)", "Base: \($baseSha)", "Ratio" ] | row), "|-|-|-|-|" ]
+                  + ($headResults[0] | map(
+                      $base[.name] as $baseEntry
+                      | [ "`\(.name)`", "`\(.value)` \(.unit)" ] + (
+                          if $baseEntry == null
+                          then [ "", "" ]
+                          else [ "`\($baseEntry.value)` \($baseEntry.unit)", "`\(ratio(.value; $baseEntry.value))`" ]
+                          end)
+                      | row))
+                | join("\n")
+              '
           }
-          wrap detail 'Benchmarks detailed results'
-          wrap total 'Benchmarks total results'
-      # The two comparison steps below read the single entry of the base commit as their baseline,
-      # and leave a self-updating comment on the pull request. Passing save-data-file disables
-      # the only write these perform, so pull request measurements are never stored.
-      - name: Compare benchmark detailed results
-        uses: benchmark-action/github-action-benchmark@v1
+          {
+            printf '<!-- performance-comparison -->\n\n# Benchmarks total results\n\n'
+            table total
+            printf '\n\n<details>\n<summary>Show detailed results</summary>\n\n'
+            table detail
+            printf '\n\n</details>\n\nMeasured by [this CI run](%s/%s/actions/runs/%s).\n' \
+              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
+          } > comparison-comment.md
+          echo "$PULL_REQUEST_NUMBER" > comparison-pull-request.txt
+          cat comparison-comment.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
         with:
-          name: Benchmarks detailed results
-          tool: customSmallerIsBetter
-          output-file-path: ghbench-detail.json
-          external-data-json-path: baseline-detail.json
-          save-data-file: false
-          comment-always: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Compare benchmark total results
-        uses: benchmark-action/github-action-benchmark@v1
-        with:
-          name: Benchmarks total results
-          tool: customSmallerIsBetter
-          output-file-path: ghbench-total.json
-          external-data-json-path: baseline-total.json
-          save-data-file: false
-          comment-always: true
-          summary-always: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          name: performance-comparison
+          path: |
+            comparison-comment.md
+            comparison-pull-request.txt
 
   documentation:
     name: Prepare documentation
