@@ -3969,6 +3969,30 @@ CONSTRUCT {
         },
       )).resolves.toHaveLength(4);
       expect(targets).toEqual(new Set([ 0, 1 ]));
+      // The sources are not asked whether they have results for the pattern of the EXISTS
+      expect(requests.filter(request => request.query.includes('<http://ex.org/q>'))).toEqual([]);
+    });
+
+    it('should give the resolver the patterns of EXISTS, even if none of the sources has results for them', async() => {
+      let input: Algebra.Operation | undefined;
+      existenceResolver.mockImplementation(async(expression) => {
+        input = expression.input;
+        return true;
+      });
+      const createStore = (): RdfStore => {
+        const store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('http://ex.org/s1'), DF.namedNode('http://ex.org/p'), DF.namedNode('ex:o')));
+        return store;
+      };
+
+      await expect(querySubjects(
+        `SELECT ?s WHERE { ?s <http://ex.org/p> ?o . FILTER EXISTS { ?s <http://ex.org/q> ?x } }`,
+        { sources: [ createStore(), createStore() ], existenceResolver },
+      )).resolves.toEqual([ 'http://ex.org/s1', 'http://ex.org/s1' ]);
+      // One pattern per source
+      const patterns: Algebra.Operation[] = [];
+      algebraUtils.visitOperation(input!, { [Algebra.Types.PATTERN]: { visitor: pattern => patterns.push(pattern) }});
+      expect(patterns).toHaveLength(2);
     });
 
     it('should still delegate EXISTS to the endpoint without a resolver', async() => {

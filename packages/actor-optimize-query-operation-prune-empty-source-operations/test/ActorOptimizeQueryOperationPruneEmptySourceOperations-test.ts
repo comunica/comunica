@@ -1,8 +1,13 @@
-import { KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import {
+  KeysExpressionEvaluator,
+  KeysInitQuery,
+  KeysQueryOperation,
+  KeysQuerySourceIdentify,
+} from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
-import { assignOperationSource } from '@comunica/utils-query-operation';
+import { assignOperationSource, markExistenceWithinService } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -923,6 +928,21 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
               context: ctx,
             });
             expect((<Algebra.Project> opOut).input.type).toBe(Algebra.Types.LEFT_JOIN);
+          });
+
+          it('should only prune within an EXISTS that the caller does not resolve itself', async() => {
+            const resolverContext = ctx.set(KeysExpressionEvaluator.existenceResolver, async() => true);
+            const opIn = AF.createProject(AF.createFilter(
+              unionOf('nonEmpty'),
+              AF.createOperatorExpression('&&', [
+                AF.createExistenceExpression(false, unionOf('empty')),
+                markExistenceWithinService(AF.createExistenceExpression(false, unionOf('empty'))),
+              ]),
+            ), [ variable ]);
+            const { operation: opOut } = await actor.run({ operation: opIn, context: resolverContext });
+            const [ resolved, withinService ] = (<any> opOut).input.expression.args;
+            expect(resolved.input).toEqual(unionOf('empty'));
+            expect(withinService.input).toEqual(AF.createUnion([]));
           });
 
           it.each(<[string, (path: Algebra.Operation) => Algebra.Operation][]> [

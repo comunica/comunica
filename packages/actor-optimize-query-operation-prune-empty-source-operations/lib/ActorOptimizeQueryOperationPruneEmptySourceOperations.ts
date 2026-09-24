@@ -14,8 +14,12 @@ import type {
   MetadataBindings,
   QueryResultCardinality,
 } from '@comunica/types';
-import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
-import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
+import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation, isKnownSubType } from '@comunica/utils-algebra';
+import {
+  containsCallerResolvedExistence,
+  doesShapeAcceptOperation,
+  getOperationSource,
+} from '@comunica/utils-query-operation';
 
 /**
  * A comunica Prune Empty Source Operations Optimize Query Operation Actor.
@@ -62,6 +66,14 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
       // Their graphs are only rewritten when the FROM operation is executed,
       // so emptiness checks against the source would be done on the wrong graphs here.
       [Algebra.Types.FROM]: { preVisitor: () => ({ continue: false }) },
+      // The caller's existence resolver answers such an `EXISTS` without the sources,
+      // and should receive its operation as it is.
+      [Algebra.Types.EXPRESSION]: {
+        preVisitor: expression => isKnownSubType(expression, Algebra.ExpressionTypes.EXISTENCE) &&
+          containsCallerResolvedExistence(expression, action.context) ?
+            { continue: false } :
+            {},
+      },
     });
 
     // Determine in an async manner whether or not these sources return non-empty results
