@@ -28,17 +28,37 @@ const HOISTED = `${MODULES}/${CONFIG_PACKAGE}`;
 const NESTED = `${MODULES}/rdf-parse/node_modules/${CONFIG_PACKAGE}`;
 
 /**
- * Directories of the virtual file system, as a mapping from path to entry names.
- * Entry names ending in a slash are directories, all others are files.
+ * A config file, as far as backwards-compatibility is concerned:
+ * the config files it imports, and the actors it instantiates.
  */
-let dirs: Record<string, string[]>;
+interface IConfigFile {
+  imports?: string[];
+  actors?: string[];
+}
+type ConfigPackage = Record<string, IConfigFile>;
 /**
- * Files of the virtual file system, as a mapping from path to contents.
+ * The actors that each published engine version declares as a dependency.
  */
+type Releases = Record<string, string[]>;
+
+/**
+ * The config package in the working tree, which is what the check is validating.
+ */
+let monorepoConfigs: ConfigPackage;
+/**
+ * The config package as currently published on npm, which is what gets installed.
+ */
+let publishedConfigs: ConfigPackage;
+/**
+ * The config package inside each installed copy, which injection replaces.
+ */
+let installedConfigs: Record<string, ConfigPackage>;
+let releases: Releases;
+let installedVersion: string;
+let instantiations: { version: string; config: string }[];
+
+let dirs: Record<string, string[]>;
 let files: Record<string, string>;
-let execCommands: string[];
-let npmVersions: string[];
-let failingCommand: RegExp | undefined;
 
 /**
  * Paths are declared with forward slashes, while the code under test builds them with Path.join,
@@ -58,27 +78,120 @@ function dirent(parentPath: string, entry: string): any {
   };
 }
 
-/**
- * Declare the installed package tree that findInstalledPackages has to walk.
- * It holds a hoisted and a nested copy of the config package, a package without either,
- * and a plain file that is not a package at all.
- */
-function setUpInstalledPackages(): void {
-  dirs[MODULES] = [ '@comunica/', 'rdf-parse/', '.package-lock.json' ];
-  dirs[`${MODULES}/@comunica`] = [ 'config-query-sparql/', 'query-sparql/' ];
-  dirs[HOISTED] = [];
-  dirs[`${MODULES}/@comunica/query-sparql`] = [];
-  dirs[NESTED] = [];
+function removeUnder(path: string): void {
+  const prefix = path.endsWith('/') ? path.slice(0, -1) : path;
+  for (const key of Object.keys(dirs)) {
+    if (key === prefix || key.startsWith(`${prefix}/`)) {
+      delete dirs[key];
+    }
+  }
+  for (const key of Object.keys(files)) {
+    if (key.startsWith(`${prefix}/`)) {
+      delete files[key];
+    }
+  }
+  for (const key of Object.keys(installedConfigs)) {
+    if (key === prefix || key.startsWith(`${prefix}/`)) {
+      delete installedConfigs[key];
+    }
+  }
 }
 
 /**
- * Declare a monorepo with one config package and one engine importing the given config file.
+ * Lay out the packages that npm installs for the given engine version.
+ * The config package ends up both hoisted and nested below another package,
+ * next to a package holding neither and a file that is not a package at all.
  */
-function setUpMonorepo(configNames: string[], engineImport: string): void {
-  dirs[`${MONOREPO}/engines`] = [ 'config-query-sparql/', 'query-sparql/' ];
+function installEngine(version: string): void {
+  installedVersion = version;
+  dirs[MODULES] = [ '@comunica/', 'rdf-parse/', '.package-lock.json' ];
+  dirs[`${MODULES}/@comunica`] = [ 'config-query-sparql/', 'query-sparql/' ];
+  dirs[`${MODULES}/@comunica/query-sparql`] = [];
+  for (const installed of [ HOISTED, NESTED ]) {
+    dirs[installed] = [];
+    installedConfigs[installed] = { ...publishedConfigs };
+    for (const relative of Object.keys(publishedConfigs)) {
+      files[`${installed}/${relative}`] = '{}';
+    }
+  }
+}
 
-  dirs[`${CONFIG_DIR}/config`] = configNames;
+function installedCopyOf(path: string): string | undefined {
+  return [ HOISTED, NESTED ].find(installed => path.startsWith(`${installed}/`));
+}
+
+/**
+ * Instantiate an engine on a config file, the way the check asks the installed engine to.
+ * This fails exactly when the config needs an actor that the engine version does not depend on,
+ * which is what makes a config change backwards-incompatible.
+ */
+function instantiateEngine(configPath: string): void {
+  const installed = installedCopyOf(configPath);
+  const entryPackage = installed ? installedConfigs[installed] : monorepoConfigs;
+  const entry = configPath.slice(`${installed ?? CONFIG_DIR}/`.length);
+  instantiations.push({ version: installedVersion, config: entry });
+
+  // Components.js resolves the imports of a config file through the installed config package,
+  // wherever npm happens to have put it, and not through the file the entry was read from
+  const importedPackage = installedConfigs[NESTED];
+  const required = new Set<string>();
+  const visited = new Set<string>();
+  const visit = (relative: string, configPackage: ConfigPackage): void => {
+    if (visited.has(relative)) {
+      return;
+    }
+    visited.add(relative);
+    const config = configPackage[relative];
+    if (!config) {
+      throw new Error(`Error while parsing file "${configPath}": ${relative} does not exist`);
+    }
+    for (const actor of config.actors ?? []) {
+      required.add(actor);
+    }
+    for (const imported of config.imports ?? []) {
+      visit(imported, importedPackage);
+    }
+  };
+  visit(entry, entryPackage);
+
+  for (const actor of required) {
+    if (!releases[installedVersion].includes(actor)) {
+      throw new Error(`Error while parsing file "${configPath}": Failed to load remote context ` +
+        `https://linkedsoftwaredependencies.org/bundles/npm/@comunica/${actor}/^5.0.0/components/context.jsonld`);
+    }
+  }
+}
+
+/**
+ * Declare a monorepo holding one config package and one engine, against a published npm state.
+ * @param options A scenario.
+ * @param options.configs The config package in the working tree.
+ * @param options.published The config package as published on npm.
+ * @param options.releases The published engine versions, and the actors each depends on.
+ * @param options.engineConfig The config file that the engine in the working tree imports.
+ */
+function setUpScenario(options: {
+  configs: ConfigPackage;
+  published: ConfigPackage;
+  releases: Releases;
+  engineConfig: string;
+}): void {
+  monorepoConfigs = options.configs;
+  publishedConfigs = options.published;
+  releases = options.releases;
+
+  dirs[`${MONOREPO}/engines`] = [ 'config-query-sparql/', 'query-sparql/', 'README.md' ];
   dirs[`${CONFIG_DIR}/components`] = [];
+  // Only the config files at the root of the config directory are entry points,
+  // next to files and directories that are not config files at all
+  dirs[`${CONFIG_DIR}/config`] = [
+    ...Object.keys(options.configs)
+      .filter(relative => /^config\/config-[^/]+$/u.test(relative))
+      .map(relative => relative.slice('config/'.length)),
+    'README.md',
+    'config-9.json',
+    'optimize/',
+  ];
   files[`${CONFIG_DIR}/package.json`] = JSON.stringify({
     name: CONFIG_PACKAGE,
     files: [ 'components', 'config' ],
@@ -89,51 +202,44 @@ function setUpMonorepo(configNames: string[], engineImport: string): void {
     files: [ 'engine-default.js' ],
   });
   files[`${MONOREPO}/engines/query-sparql/config/config-default.json`] = JSON.stringify({
-    import: [ engineImport ],
+    import: [ `ccqs:${options.engineConfig}` ],
   });
 }
 
+const ACTORS_UNVERSIONED = 'config/optimize/actors.json';
+const ACTORS_V5_1_3 = 'config/optimize/actors-v5-1-3.json';
+const ACTORS_V5_3_0 = 'config/optimize/actors-v5-3-0.json';
+const CONFIG_UNVERSIONED = 'config/config-default.json';
+const CONFIG_V5_1_3 = 'config/config-default-v5-1-3.json';
+const CONFIG_V5_3_0 = 'config/config-default-v5-3-0.json';
+
 /**
- * The config files that the installed package is expected to already contain.
+ * The state of the world before any change: two config generations, four published engines.
+ * Engines from 5.2.0 onwards use the v5-1-3 config and depend on its extra actor,
+ * while the older ones use the unversioned config.
  */
-function setUpPublishedConfigs(configNames: string[]): void {
-  for (const installed of [ HOISTED, NESTED ]) {
-    for (const configName of configNames) {
-      files[`${installed}/config/${configName}`] = '{}';
-    }
-  }
+function releasedState(): { published: ConfigPackage; releases: Releases } {
+  return {
+    published: {
+      [CONFIG_UNVERSIONED]: { imports: [ ACTORS_UNVERSIONED ]},
+      [CONFIG_V5_1_3]: { imports: [ ACTORS_V5_1_3 ]},
+      [ACTORS_UNVERSIONED]: { actors: [ 'actor-join-bgp' ]},
+      [ACTORS_V5_1_3]: { actors: [ 'actor-join-bgp', 'actor-group-sources' ]},
+    },
+    releases: {
+      '5.0.1': [ 'actor-join-bgp' ],
+      '5.1.3': [ 'actor-join-bgp' ],
+      '5.2.0': [ 'actor-join-bgp', 'actor-group-sources' ],
+      '5.3.0': [ 'actor-join-bgp', 'actor-group-sources' ],
+    },
+  };
 }
 
 /**
- * The paths that were passed as configPath to the installed engine, in order.
+ * A working tree that matches what is published, which is the state between releases.
  */
-function invokedConfigPaths(): string[] {
-  return execCommands
-    .filter(command => command.startsWith('node -e'))
-    .map(command => normalize(/configPath: "([^"]*)"/u.exec(command)![1]));
-}
-
-/**
- * The engine versions that were installed from npm, in order.
- */
-function installedVersions(): string[] {
-  return execCommands
-    .filter(command => command.startsWith('npm install'))
-    .map(command => command.slice(`npm install ${ENGINE}@`.length));
-}
-
-/**
- * The directories that were cleared, in order.
- */
-function emptiedPaths(): string[] {
-  return jest.mocked(emptyDir).mock.calls.map(call => normalize(call[0]));
-}
-
-/**
- * The source and target of every injection, in order.
- */
-function copiedPaths(): string[][] {
-  return jest.mocked(copy).mock.calls.map(call => [ normalize(call[0]), normalize(call[1]) ]);
+function unchangedConfigs(): ConfigPackage {
+  return releasedState().published;
 }
 
 describe('testConfigCompat', () => {
@@ -142,9 +248,9 @@ describe('testConfigCompat', () => {
 
     dirs = {};
     files = {};
-    execCommands = [];
-    npmVersions = [ '5.0.0', '5.0.1', '5.1.3', '5.2.0', '5.3.0' ];
-    failingCommand = undefined;
+    installedConfigs = {};
+    instantiations = [];
+    installedVersion = '';
 
     jest.spyOn(console, 'log').mockImplementation(() => {
       // Keep the test output clean
@@ -166,20 +272,42 @@ describe('testConfigCompat', () => {
     }));
     jest.mocked(pathExists).mockImplementation(<any> (async(path: string) =>
       normalize(path) in files || normalize(path) in dirs));
-    jest.mocked(emptyDir).mockImplementation(<any> (async() => {
-      // Nothing to clear in the virtual file system
+    jest.mocked(emptyDir).mockImplementation(<any> (async(path: string) => {
+      removeUnder(normalize(path));
     }));
-    jest.mocked(copy).mockImplementation(<any> (async() => {
-      // Nothing to copy in the virtual file system
+    jest.mocked(copy).mockImplementation(<any> (async(source: string, target: string, options: any) => {
+      const to = normalize(target);
+      dirs[to] = [];
+      // Copying does not remove what is already there, which is why the target is emptied first
+      installedConfigs[to] = { ...installedConfigs[to], ...monorepoConfigs };
+      // The filter also runs on every directory, and a rejected one takes its whole subtree with it
+      const included = (relative: string): boolean => relative.split('/').every((_, index, segments) => {
+        const prefix = segments.slice(0, index + 1).join('/');
+        return options.filter(`${normalize(source)}/${prefix}`, `${to}/${prefix}`);
+      });
+      for (const relative of [ ...Object.keys(monorepoConfigs), 'node_modules/nested-package' ]) {
+        if (included(relative)) {
+          files[`${to}/${relative}`] = '{}';
+        }
+      }
     }));
 
     jest.mocked(exec).mockImplementation(<any> ((command: string, options: any, callback: any) => {
-      execCommands.push(command);
-      if (failingCommand?.test(command)) {
-        callback(new Error(`Command failed: ${command}`));
-        return;
+      try {
+        if (command.startsWith('npm view')) {
+          callback(null, { stdout: JSON.stringify(Object.keys(releases)), stderr: '' });
+          return;
+        }
+        if (command.startsWith('npm install')) {
+          installEngine(command.slice(`npm install ${ENGINE}@`.length));
+          callback(null, { stdout: '', stderr: '' });
+          return;
+        }
+        instantiateEngine(normalize(/configPath: "([^"]*)"/u.exec(command)![1]));
+        callback(null, { stdout: '', stderr: '' });
+      } catch (error: unknown) {
+        callback(error);
       }
-      callback(null, { stdout: command.startsWith('npm view') ? JSON.stringify(npmVersions) : '', stderr: '' });
     }));
   });
 
@@ -187,62 +315,187 @@ describe('testConfigCompat', () => {
     jest.restoreAllMocks();
   });
 
-  describe('for a single versioned config', () => {
+  describe('for a config package that did not change since its release', () => {
     beforeEach(() => {
-      setUpMonorepo([ 'config-default-v5-1-3.json' ], 'ccqs:config/config-default-v5-1-3.json');
-      setUpInstalledPackages();
-      setUpPublishedConfigs([ 'config-default-v5-1-3.json' ]);
+      setUpScenario({ configs: unchangedConfigs(), ...releasedState(), engineConfig: CONFIG_V5_1_3 });
     });
 
-    it('should instantiate the engine with the config file inside the installed config package', async() => {
+    it('should accept it', async() => {
+      await expect(testConfigCompat(MONOREPO)).resolves.toBeUndefined();
+    });
+
+    it('should test each config against the engine versions that use it', async() => {
       await testConfigCompat(MONOREPO);
 
-      // Resolving the config from the monorepo path would leave the sub-configs coming from npm
-      expect(invokedConfigPaths()).toEqual([
-        `${HOISTED}/config/config-default-v5-1-3.json`,
-        `${HOISTED}/config/config-default-v5-1-3.json`,
+      expect(instantiations).toEqual([
+        { version: '5.2.0', config: CONFIG_V5_1_3 },
+        { version: '5.3.0', config: CONFIG_V5_1_3 },
+        { version: '5.0.1', config: CONFIG_UNVERSIONED },
+        { version: '5.1.3', config: CONFIG_UNVERSIONED },
       ]);
-      for (const configPath of invokedConfigPaths()) {
-        expect(configPath).not.toContain(CONFIG_DIR);
-      }
     });
 
-    it('should inject the monorepo config package into every installed copy', async() => {
+    it('should inject the working tree over every installed copy, without its node_modules', async() => {
       await testConfigCompat(MONOREPO);
 
-      // Both the hoisted and the nested copy, since Components.js may resolve through either
-      expect(copiedPaths()).toEqual([
-        [ CONFIG_DIR, HOISTED ],
-        [ CONFIG_DIR, NESTED ],
-        [ CONFIG_DIR, HOISTED ],
-        [ CONFIG_DIR, NESTED ],
-      ]);
-      expect(emptiedPaths()).toContain(HOISTED);
-      expect(emptiedPaths()).toContain(NESTED);
+      expect(installedConfigs[HOISTED]).toEqual(monorepoConfigs);
+      expect(installedConfigs[NESTED]).toEqual(monorepoConfigs);
+      expect(files[`${HOISTED}/node_modules/nested-package`]).toBeUndefined();
+    });
+  });
+
+  describe('when an actor is added to an unversioned config', () => {
+    beforeEach(() => {
+      // The sort-limit-pushdown regression of 5.4.0: the actor landed in the config that
+      // external packages keep resolving to, rather than only in a new versioned copy
+      const configs = unchangedConfigs();
+      configs[ACTORS_UNVERSIONED] = { actors: [ 'actor-join-bgp', 'actor-sort-limit-pushdown' ]};
+      setUpScenario({ configs, ...releasedState(), engineConfig: CONFIG_V5_1_3 });
     });
 
-    it('should not inject nested node_modules of the monorepo config package', async() => {
+    it('should reject, as the engines on that config do not depend on the new actor', async() => {
+      await expect(testConfigCompat(MONOREPO)).rejects
+        .toThrow('@comunica/actor-sort-limit-pushdown/^5.0.0/components/context.jsonld');
+    });
+
+    it('should reject on the oldest engine version that uses the config', async() => {
+      await expect(testConfigCompat(MONOREPO)).rejects
+        .toThrow('@comunica/actor-sort-limit-pushdown/^5.0.0/components/context.jsonld');
+
+      expect(instantiations.at(-1)).toEqual({ version: '5.0.1', config: CONFIG_UNVERSIONED });
+    });
+  });
+
+  describe('when an actor is added to a versioned config that already shipped', () => {
+    beforeEach(() => {
+      // Editing a config that a newer engine version already pins itself to
+      const configs = unchangedConfigs();
+      configs[ACTORS_V5_1_3] = { actors: [ 'actor-join-bgp', 'actor-group-sources', 'actor-nodes' ]};
+      setUpScenario({ configs, ...releasedState(), engineConfig: CONFIG_V5_1_3 });
+    });
+
+    it('should reject, as the engines pinned to that config do not depend on the new actor', async() => {
+      await expect(testConfigCompat(MONOREPO)).rejects
+        .toThrow('@comunica/actor-nodes/^5.0.0/components/context.jsonld');
+    });
+  });
+
+  describe('when an actor is added through a new versioned config', () => {
+    beforeEach(() => {
+      // The documented way to add an actor: a new versioned copy, leaving the older ones alone
+      const configs = unchangedConfigs();
+      configs[CONFIG_V5_3_0] = { imports: [ ACTORS_V5_3_0 ]};
+      configs[ACTORS_V5_3_0] = { actors: [ 'actor-join-bgp', 'actor-group-sources', 'actor-sort-limit-pushdown' ]};
+      setUpScenario({ configs, ...releasedState(), engineConfig: CONFIG_V5_3_0 });
+    });
+
+    it('should accept it', async() => {
+      await expect(testConfigCompat(MONOREPO)).resolves.toBeUndefined();
+    });
+
+    it('should not test the new config, as no published engine uses it yet', async() => {
       await testConfigCompat(MONOREPO);
 
-      const { filter } = jest.mocked(copy).mock.calls[0][2];
-      expect(filter!('/a/node_modules', '/b/node_modules')).toBe(false);
-      expect(filter!('/a/config/config-default.json', '/b/config/config-default.json')).toBe(true);
+      expect(instantiations.map(instantiation => instantiation.config)).not.toContain(CONFIG_V5_3_0);
+    });
+  });
+
+  describe('when a newer versioned config exists that this engine does not use yet', () => {
+    beforeEach(() => {
+      // Another engine moved on to the new config, while this one still imports the older one
+      const configs = unchangedConfigs();
+      configs[CONFIG_V5_3_0] = { imports: [ ACTORS_V5_3_0 ]};
+      configs[ACTORS_V5_3_0] = { actors: [ 'actor-join-bgp', 'actor-group-sources', 'actor-sort-limit-pushdown' ]};
+      setUpScenario({ configs, ...releasedState(), engineConfig: CONFIG_V5_1_3 });
     });
 
-    it('should install the engine from npm before injecting', async() => {
-      await testConfigCompat(MONOREPO);
+    it('should accept it, and skip the config that was not published yet', async() => {
+      await expect(testConfigCompat(MONOREPO)).resolves.toBeUndefined();
 
-      expect(installedVersions()).toEqual([ '5.2.0', '5.3.0' ]);
-      expect(emptiedPaths()).toContain(INSTALL_PATH);
+      expect(instantiations.map(instantiation => instantiation.config)).not.toContain(CONFIG_V5_3_0);
+    });
+  });
+
+  describe('when the new versioned config and its engine are published', () => {
+    beforeEach(() => {
+      const { published, releases: published5 } = releasedState();
+      published[CONFIG_V5_3_0] = { imports: [ ACTORS_V5_3_0 ]};
+      published[ACTORS_V5_3_0] = { actors: [ 'actor-join-bgp', 'actor-group-sources', 'actor-sort-limit-pushdown' ]};
+      setUpScenario({
+        configs: { ...published },
+        published,
+        releases: { ...published5, '5.4.0': [ 'actor-join-bgp', 'actor-group-sources', 'actor-sort-limit-pushdown' ]},
+        engineConfig: CONFIG_V5_3_0,
+      });
     });
 
-    it('should reject when the engine can not instantiate the config', async() => {
-      failingCommand = /^node -e/u;
+    it('should accept it, and test it against the engine that uses it', async() => {
+      await expect(testConfigCompat(MONOREPO)).resolves.toBeUndefined();
 
-      await expect(testConfigCompat(MONOREPO)).rejects.toThrow('Command failed: node -e');
+      expect(instantiations).toContainEqual({ version: '5.4.0', config: CONFIG_V5_3_0 });
+    });
+  });
+
+  describe('when an engine is published without an actor that its config needs', () => {
+    beforeEach(() => {
+      const { published, releases: published5 } = releasedState();
+      published[CONFIG_V5_3_0] = { imports: [ ACTORS_V5_3_0 ]};
+      published[ACTORS_V5_3_0] = { actors: [ 'actor-join-bgp', 'actor-group-sources', 'actor-sort-limit-pushdown' ]};
+      setUpScenario({
+        configs: { ...published },
+        published,
+        // The engine shipped without declaring the actor its own config instantiates
+        releases: { ...published5, '5.4.0': [ 'actor-join-bgp', 'actor-group-sources' ]},
+        engineConfig: CONFIG_V5_3_0,
+      });
     });
 
-    it('should reject when the config package has no built components', async() => {
+    it('should reject', async() => {
+      await expect(testConfigCompat(MONOREPO)).rejects
+        .toThrow('@comunica/actor-sort-limit-pushdown/^5.0.0/components/context.jsonld');
+    });
+  });
+
+  describe('when a config changes without touching which actors it needs', () => {
+    beforeEach(() => {
+      // Parameters and instantiations may change freely within a major range
+      const configs = unchangedConfigs();
+      configs[ACTORS_UNVERSIONED] = { actors: [ 'actor-join-bgp', 'actor-join-bgp' ]};
+      setUpScenario({ configs, ...releasedState(), engineConfig: CONFIG_V5_1_3 });
+    });
+
+    it('should accept it', async() => {
+      await expect(testConfigCompat(MONOREPO)).resolves.toBeUndefined();
+    });
+  });
+
+  describe('when an imported config file is removed from the working tree', () => {
+    beforeEach(() => {
+      const configs = unchangedConfigs();
+      delete configs[ACTORS_UNVERSIONED];
+      setUpScenario({ configs, ...releasedState(), engineConfig: CONFIG_V5_1_3 });
+    });
+
+    it('should reject, rather than fall back to the published file', async() => {
+      await expect(testConfigCompat(MONOREPO)).rejects.toThrow(`${ACTORS_UNVERSIONED} does not exist`);
+    });
+  });
+
+  describe('when a config imports a file that does not exist', () => {
+    beforeEach(() => {
+      const configs = unchangedConfigs();
+      configs[CONFIG_UNVERSIONED] = { imports: [ 'config/optimize/actors-typo.json' ]};
+      setUpScenario({ configs, ...releasedState(), engineConfig: CONFIG_V5_1_3 });
+    });
+
+    it('should reject', async() => {
+      await expect(testConfigCompat(MONOREPO)).rejects.toThrow('config/optimize/actors-typo.json does not exist');
+    });
+  });
+
+  describe('for a working tree that cannot be checked', () => {
+    it('should reject when the config package has not been built', async() => {
+      setUpScenario({ configs: unchangedConfigs(), ...releasedState(), engineConfig: CONFIG_V5_1_3 });
       delete dirs[`${CONFIG_DIR}/components`];
 
       await expect(testConfigCompat(MONOREPO)).rejects
@@ -250,113 +503,52 @@ describe('testConfigCompat', () => {
     });
 
     it('should skip engine versions that do not depend on the config package', async() => {
-      delete dirs[HOISTED];
-      delete dirs[NESTED];
+      setUpScenario({ configs: unchangedConfigs(), ...releasedState(), engineConfig: CONFIG_V5_1_3 });
+      const withoutConfigPackage = jest.mocked(exec).getMockImplementation()!;
+      jest.mocked(exec).mockImplementation(<any> ((command: string, options: any, callback: any) => {
+        withoutConfigPackage(command, options, callback);
+        if (command.startsWith('npm install')) {
+          delete dirs[HOISTED];
+          delete dirs[NESTED];
+        }
+      }));
 
       await testConfigCompat(MONOREPO);
 
+      expect(instantiations).toEqual([]);
       expect(copy).not.toHaveBeenCalled();
-      expect(invokedConfigPaths()).toEqual([]);
-    });
-
-    it('should skip config files that the installed package does not contain yet', async() => {
-      delete files[`${HOISTED}/config/config-default-v5-1-3.json`];
-
-      await testConfigCompat(MONOREPO);
-
-      expect(copy).not.toHaveBeenCalled();
-      expect(invokedConfigPaths()).toEqual([]);
     });
   });
 
-  describe('for a chain of versioned and unversioned configs', () => {
+  describe('for engines that cannot be checked', () => {
     beforeEach(() => {
-      setUpMonorepo([
-        'config-default.json',
-        'config-default-v5-1-3.json',
-        'config-default-v5-3-0.json',
-        'config-rdfjs.json',
-        'config-9.json',
-        'README.md',
-        'subdirectory/',
-      ], 'ccqs:config/config-default-v5-3-0.json');
-      setUpInstalledPackages();
-      setUpPublishedConfigs([ 'config-default.json', 'config-default-v5-1-3.json', 'config-default-v5-3-0.json' ]);
-    });
-
-    it('should test each config against the engine versions that use it', async() => {
-      await testConfigCompat(MONOREPO);
-
-      // The newest config has no published engine above it, the others are bounded by the next config
-      expect(installedVersions()).toEqual([ '5.2.0', '5.3.0', '5.0.1', '5.1.3' ]);
-      expect(invokedConfigPaths()).toEqual([
-        `${HOISTED}/config/config-default-v5-1-3.json`,
-        `${HOISTED}/config/config-default-v5-1-3.json`,
-        `${HOISTED}/config/config-default.json`,
-        `${HOISTED}/config/config-default.json`,
-      ]);
-    });
-
-    it('should test the newest config once a higher engine version is published', async() => {
-      npmVersions = [ ...npmVersions, '5.4.0' ];
-
-      await testConfigCompat(MONOREPO);
-
-      expect(installedVersions()).toEqual([ '5.4.0', '5.4.0', '5.2.0', '5.3.0', '5.0.1', '5.1.3' ]);
-      expect(invokedConfigPaths().slice(0, 2)).toEqual([
-        `${HOISTED}/config/config-default-v5-3-0.json`,
-        `${HOISTED}/config/config-default-v5-3-0.json`,
-      ]);
-    });
-
-    it('should only consider configs of the same type as the engine config', async() => {
-      await testConfigCompat(MONOREPO);
-
-      for (const configPath of invokedConfigPaths()) {
-        expect(configPath).not.toContain('config-rdfjs');
-      }
-    });
-  });
-
-  describe('for engines without a testable config', () => {
-    beforeEach(() => {
-      setUpInstalledPackages();
-      setUpPublishedConfigs([ 'config-default-v5-1-3.json' ]);
+      setUpScenario({ configs: unchangedConfigs(), ...releasedState(), engineConfig: CONFIG_V5_1_3 });
     });
 
     it('should skip engines without a default config', async() => {
-      setUpMonorepo([ 'config-default-v5-1-3.json' ], 'ccqs:config/config-default-v5-1-3.json');
       delete files[`${MONOREPO}/engines/query-sparql/config/config-default.json`];
 
       await testConfigCompat(MONOREPO);
 
-      expect(execCommands).toEqual([]);
+      expect(instantiations).toEqual([]);
     });
 
     it('should skip engines whose default config imports nothing', async() => {
-      setUpMonorepo([ 'config-default-v5-1-3.json' ], 'ccqs:config/config-default-v5-1-3.json');
       files[`${MONOREPO}/engines/query-sparql/config/config-default.json`] = JSON.stringify({});
 
       await testConfigCompat(MONOREPO);
 
-      expect(execCommands).toEqual([]);
+      expect(instantiations).toEqual([]);
     });
 
     it('should skip engines that import an unversioned config', async() => {
-      setUpMonorepo([ 'config-rdfjs.json' ], 'ccqs:config/config-rdfjs.json');
+      files[`${MONOREPO}/engines/query-sparql/config/config-default.json`] = JSON.stringify({
+        import: [ `ccqs:${CONFIG_UNVERSIONED}` ],
+      });
 
       await testConfigCompat(MONOREPO);
 
-      expect(execCommands).toEqual([]);
-    });
-
-    it('should ignore entries in the engines directory that are not directories', async() => {
-      setUpMonorepo([ 'config-default-v5-1-3.json' ], 'ccqs:config/config-default-v5-1-3.json');
-      dirs[`${MONOREPO}/engines`] = [ ...dirs[`${MONOREPO}/engines`], 'README.md' ];
-
-      await testConfigCompat(MONOREPO);
-
-      expect(installedVersions()).toEqual([ '5.2.0', '5.3.0' ]);
+      expect(instantiations).toEqual([]);
     });
   });
 
