@@ -308,6 +308,22 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
       });
 
+      it('should only flag the cache as holding named-graph sources once one is cached', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [ 'source1' ]);
+        await actor.run({ context: contextIn, operation });
+        expect(actor.cacheHasNamedGraphSources).toBeFalsy();
+
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [{
+          value: 'source2',
+          context: new ActionContext().set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('source2')),
+        }]);
+        await actor.run({ context: contextIn, operation });
+        expect(actor.cacheHasNamedGraphSources).toBeTruthy();
+
+        listener({});
+        expect(actor.cacheHasNamedGraphSources).toBeFalsy();
+      });
+
       it('should allow cache invalidation of named-graph sources for a specific url', async() => {
         const namedGraphSource = {
           value: 'source1',

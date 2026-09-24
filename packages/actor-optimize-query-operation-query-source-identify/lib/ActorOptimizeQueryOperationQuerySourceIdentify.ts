@@ -41,6 +41,8 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
   public readonly mediatorContextPreprocess: MediatorContextPreprocess;
   public readonly cache?: LRUCache<string, Promise<IQuerySourceWrapper>>;
+  // If the cache may hold sources that are exposed under a named graph.
+  public cacheHasNamedGraphSources = false;
 
   public constructor(args: IActorOptimizeQueryOperationQuerySourceIdentifyArgs) {
     super(args);
@@ -57,15 +59,17 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
           if (url) {
             cache.delete(url);
             cache.delete(KEY_PREFIX_SERVICE + url);
-            // Keys of sources that are exposed under a named graph also contain that graph,
-            // so they can only be found by scanning.
-            for (const key of cache.keys()) {
-              if (key.endsWith(KEY_SEPARATOR_NAMED_GRAPH + url)) {
-                cache.delete(key);
+            // Keys of named graph sources also contain that graph, so they can only be found by scanning.
+            if (this.cacheHasNamedGraphSources) {
+              for (const key of cache.keys()) {
+                if (key.endsWith(KEY_SEPARATOR_NAMED_GRAPH + url)) {
+                  cache.delete(key);
+                }
               }
             }
           } else {
             cache.clear();
+            this.cacheHasNamedGraphSources = false;
           }
         },
       );
@@ -180,6 +184,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
       // Set in cache
       if (cacheKey !== undefined && this.cache) {
         this.cache.set(cacheKey, sourcePromise);
+        this.cacheHasNamedGraphSources ||= Boolean(namedGraph);
       }
     }
 
