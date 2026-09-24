@@ -4009,6 +4009,31 @@ CONSTRUCT {
       expect(endpointsAskedExists()).toEqual([ serviceEndpoint ]);
     });
 
+    it('should evaluate EXISTS over its target when the body of its SERVICE clause is split up', async() => {
+      // The equality filter is pushed into the pattern, so the body is no longer handed to its target as a whole
+      await expect(querySubjects(`SELECT ?s WHERE {
+        SERVICE <${serviceEndpoint}> {
+          ?s <http://ex.org/p> ?o FILTER(?o = <http://ex.org/o>) FILTER EXISTS { ?s <http://ex.org/q> ?x }
+        }
+      }`, { sources: [ RdfStore.createDefault() ], existenceResolver }))
+        .resolves.toEqual([ 'http://ex.org/s1', 'http://ex.org/s2' ]);
+      expect(existenceResolver).not.toHaveBeenCalled();
+      expect(requests.some(request => request.endpoint === serviceEndpoint && request.query.includes('<http://ex.org/q>')))
+        .toBeTruthy();
+    });
+
+    it('should evaluate EXISTS over its target when a filter outside its SERVICE clause is merged into it', async() => {
+      await expect(querySubjects(`SELECT ?s WHERE {
+        SERVICE <${serviceEndpoint}> { ?s <http://ex.org/p> ?o FILTER EXISTS { ?s <http://ex.org/q> ?x } }
+        FILTER EXISTS { ?s <http://ex.org/r> ?y }
+      }`, { sources: [ RdfStore.createDefault() ], existenceResolver }))
+        .resolves.toEqual([ 'http://ex.org/s2' ]);
+      // Only the EXISTS outside the SERVICE clause is up to the resolver
+      expect(existenceResolver).toHaveBeenCalledTimes(2);
+      expect(existenceResolver.mock.calls.every(([ expression ]) => !expression.metadata?.withinService)).toBeTruthy();
+      expect(requests.some(request => request.query.includes('<http://ex.org/q>'))).toBeTruthy();
+    });
+
     it('should answer EXISTS of which the body is a SERVICE clause with the resolver', async() => {
       // The EXISTS itself is not in the body of a SERVICE clause, even though it would go to the same target
       await expect(querySubjects(`SELECT ?s WHERE {

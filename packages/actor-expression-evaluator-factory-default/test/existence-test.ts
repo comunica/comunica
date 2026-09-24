@@ -5,6 +5,7 @@ import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
+import { markExistenceWithinService } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 
@@ -119,6 +120,22 @@ describe('should be able to handle EXIST filters', () => {
       const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
       await expect(evaluator.evaluateAsEBV(bindings)).resolves.toBe(true);
       expect(existenceResolver).toHaveBeenCalledWith(expr, bindings, evaluator.context);
+    });
+
+    it('evaluates an EXISTS from the body of a SERVICE clause itself', async() => {
+      const mediate = jest.spyOn(mediatorQueryOperation, 'mediate').mockImplementation(async(arg: any) => ({
+        bindingsStream: new ArrayIterator([ BF.bindings() ], { autoStart: false }),
+        metadata: () => Promise.resolve({ cardinality: 1, canContainUndefs: false }),
+        operated: arg,
+        type: 'bindings',
+        variables: [],
+      }));
+      const expr = markExistenceWithinService(factory.createExistenceExpression(false, factory.createBgp([])));
+
+      const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
+      await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(true);
+      expect(mediate).toHaveBeenCalledTimes(1);
+      expect(existenceResolver).not.toHaveBeenCalled();
     });
 
     it('leaves the not flag to the resolver', async() => {

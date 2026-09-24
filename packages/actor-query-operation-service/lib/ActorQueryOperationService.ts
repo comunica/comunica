@@ -12,13 +12,14 @@ import type {
   IQueryOperationResultBindings,
   IQuerySourceWrapper,
 } from '@comunica/types';
-import { Algebra, algebraUtils, inScopeVariables } from '@comunica/utils-algebra';
+import { Algebra, algebraUtils, inScopeVariables, isKnownSubType } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import {
   assignOperationSource,
   doesShapeAcceptOperation,
   getSafeBindings,
+  markExistenceWithinService,
 } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { SingletonIterator, TransformIterator } from 'asynciterator';
@@ -131,6 +132,12 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
       [Algebra.Types.PATTERN]: leafHandler,
       [Algebra.Types.LINK]: leafHandler,
       [Algebra.Types.NPS]: leafHandler,
+      // The remainder is evaluated locally, so mark each EXISTS in there as coming from this clause.
+      [Algebra.Types.EXPRESSION]: {
+        transform: expressionOp => isKnownSubType(expressionOp, Algebra.ExpressionTypes.EXISTENCE) ?
+          markExistenceWithinService(expressionOp) :
+          expressionOp,
+      },
     });
   }
 

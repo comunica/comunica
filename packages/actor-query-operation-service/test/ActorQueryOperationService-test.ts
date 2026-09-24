@@ -3,7 +3,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
+import { getOperationSource, getSafeBindings, isExistenceWithinService } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationService } from '../lib/ActorQueryOperationService';
@@ -218,6 +218,19 @@ describe('ActorQueryOperationService', () => {
       expect(getOperationSource(operated)).toBeUndefined();
       expect(getOperationSource(operated.input[0])).toBe(querySource);
       expect(getOperationSource(operated.input[1])).toBe(querySource);
+    });
+
+    it('should mark the EXISTS in the body if the source does not accept the whole operation', async() => {
+      wildcardShape = false;
+      const filter = AF.createFilter(
+        pattern(),
+        AF.createOperatorExpression('!', [ AF.createExistenceExpression(false, pattern()) ]),
+      );
+      const op: any = { operation: AF.createService(filter, endpoint), context: context() };
+      await createActor().run(op, undefined);
+      const existence = mediatorQueryOperation.mediate.mock.calls[0][0].operation.expression.args[0];
+      expect(isExistenceWithinService(existence)).toBeTruthy();
+      expect(getOperationSource(existence.input)).toBe(querySource);
     });
 
     it('should propagate errors for non-silent clauses', async() => {

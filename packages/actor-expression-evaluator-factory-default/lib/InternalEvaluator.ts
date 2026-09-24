@@ -6,7 +6,7 @@ import { ExpressionType } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as Eval from '@comunica/utils-expression-evaluator';
-import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
+import { getSafeBindings, isExistenceWithinService, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { AlgebraTransformer } from './AlgebraTransformer';
 
@@ -66,8 +66,9 @@ export class InternalEvaluator {
 
   private async evalExistence(expr: Eval.Existence, mapping: RDF.Bindings): Promise<Eval.Term> {
     // A resolver takes over the whole expression, including its `not` flag, so nothing is materialized here.
+    // It does not know the data of the target of a SERVICE clause, which is in scope in the body of that clause.
     const existenceResolver = this.context.get(KeysExpressionEvaluator.existenceResolver);
-    if (existenceResolver) {
+    if (existenceResolver && !isExistenceWithinService(expr.expression)) {
       return new Eval.BooleanLiteral(await existenceResolver(expr.expression, mapping, this.context));
     }
 

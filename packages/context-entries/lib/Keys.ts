@@ -305,7 +305,8 @@ export const KeysExpressionEvaluator = {
    * delegated to a query source, because such a source would answer the `EXISTS` itself.
    * More of the query is then evaluated locally, calling this resolver once per solution,
    * and the source no longer applies an update atomically.
-   * The body of a SERVICE clause is exempt, and is delegated to its target as usual.
+   * The body of a SERVICE clause is exempt, as it has the data of its target in scope:
+   * an `EXISTS` in there is left to that target, and never passed to this resolver.
    */
   existenceResolver: new ActionContextKey<ExistenceResolver>(
     '@comunica/utils-expression-evaluator:existenceResolver',

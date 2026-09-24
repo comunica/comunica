@@ -1,7 +1,11 @@
 import { KeysExpressionEvaluator } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { AlgebraFactory } from '@comunica/utils-algebra';
-import { containsCallerResolvedExistence, markExistenceWithinService } from '../lib/Existence';
+import {
+  containsCallerResolvedExistence,
+  isExistenceWithinService,
+  markExistenceWithinService,
+} from '../lib/Existence';
 
 const AF = new AlgebraFactory();
 
@@ -101,6 +105,14 @@ describe('Existence', () => {
         metadata: { other: true, withinService: true },
       });
       expect(expression.metadata).toEqual({ other: true });
+    });
+  });
+
+  describe('#isExistenceWithinService', () => {
+    it('only holds for marked expressions', () => {
+      const expression = AF.createExistenceExpression(false, AF.createNop());
+      expect(isExistenceWithinService(expression)).toBeFalsy();
+      expect(isExistenceWithinService(markExistenceWithinService(expression))).toBeTruthy();
     });
   });
 });
