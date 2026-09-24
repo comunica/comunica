@@ -21,6 +21,7 @@ import type {
   IDiscoverEventData,
   PartialResult,
   ILink,
+  DereferenceFromNamedConflictModeResolver,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -285,6 +286,19 @@ export const KeysInitQuery = {
    * A boolean value denoting whether results should be deduplicated or not.
    */
   distinctConstruct: new ActionContextKey<boolean>('@comunica/actor-init-query:distinctConstruct'),
+  /**
+   * If the IRIs within FROM (NAMED) clauses must be dereferenced,
+   * and added as sources to the query. (default: false)
+   */
+  dereferenceFromNamed: new ActionContextKey<boolean>('@comunica/actor-init-query:dereferenceFromNamed'),
+  /**
+   * Resolves, per named graph that a FROM NAMED source already contains of its own,
+   * whether to error (default), rewrite it into the FROM NAMED graph, or keep it as-is.
+   * This only has an effect when `dereferenceFromNamed` is enabled.
+   */
+  dereferenceFromNamedConflictMode: new ActionContextKey<DereferenceFromNamedConflictModeResolver>(
+    '@comunica/actor-init-query:dereferenceFromNamedConflictMode',
+  ),
 };
 
 export const KeysExpressionEvaluator = {
@@ -382,6 +396,13 @@ export const KeysQueryOperation = {
    */
   serviceSources: new ActionContextKey<Record<string, IQuerySourceWrapper>>(
     '@comunica/bus-query-operation:serviceSources',
+  ),
+  /**
+   * If set on a query source's own context, that source's dereferenced quads should have their
+   * graph component rewritten to this term.
+   */
+  sourceAsNamedGraph: new ActionContextKey<RDF.NamedNode>(
+    '@comunica/bus-query-operation:sourceAsNamedGraph',
   ),
 };
 

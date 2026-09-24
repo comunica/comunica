@@ -20,6 +20,22 @@ export type QueryStringContext = RDF.QueryStringContext & IQueryContextCommon;
 export type QueryAlgebraContext = RDF.QueryAlgebraContext & IQueryContextCommon;
 
 /**
+ * The possible decisions for a single named graph that a FROM NAMED source's own dereferenced data
+ * already exposes under its own name:
+ * - error: refuse to load the source.
+ * - preferNamed: rewrite this graph's quads into the FROM NAMED graph too, discarding the source's graph.
+ * - keepSource: leave this graph exactly as-is, so the source ends up exposing it alongside the
+ *   FROM NAMED graph.
+ */
+export type DereferenceFromNamedConflictMode = 'error' | 'preferNamed' | 'keepSource';
+
+/**
+ * Resolves, per quad that a FROM NAMED source exposes under a named graph of its own,
+ * whether to error (default), rewrite it into the FROM NAMED graph, or keep it as-is.
+ */
+export type DereferenceFromNamedConflictModeResolver = (quad: RDF.Quad) => DereferenceFromNamedConflictMode;
+
+/**
  * Common query context interface
  */
 export interface IQueryContextCommon {
@@ -73,6 +89,8 @@ export interface IQueryContextCommon {
   dataFactory?: ComunicaDataFactory;
   distinctConstruct?: boolean;
   rdfSerializationPrefixes?: Record<string, string>;
+  dereferenceFromNamed?: boolean;
+  dereferenceFromNamedConflictMode?: DereferenceFromNamedConflictModeResolver;
 
   sources: SourceType[];
 }

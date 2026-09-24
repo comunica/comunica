@@ -12,7 +12,7 @@ import {
 } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
-import type { IActionContext, ICliArgsHandler } from '@comunica/types';
+import type { DereferenceFromNamedConflictMode, IActionContext, ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
 
 const process: NodeJS.Process = require('process/');
@@ -203,6 +203,15 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
           type: 'boolean',
           describe: 'If extension functions must always be pushed down',
         },
+        dereferenceFromNamed: {
+          type: 'boolean',
+          describe: 'If the IRIs within FROM (NAMED) clauses must be dereferenced, and added as sources to the query',
+        },
+        dereferenceFromNamedConflictMode: {
+          type: 'string',
+          choices: [ 'error', 'preferNamed', 'keepSource' ],
+          describe: 'How to handle named graphs that a FROM NAMED source already contains of its own',
+        },
       })
       .exitProcess(false)
       .fail(false)
@@ -382,6 +391,16 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Pushing down of extension functions
     if (args.extensionFunctionsAlwaysPushdown) {
       context[KeysInitQuery.extensionFunctionsAlwaysPushdown.name] = true;
+    }
+
+    // Dereferencing of the IRIs within FROM (NAMED) clauses
+    if (args.dereferenceFromNamed) {
+      context[KeysInitQuery.dereferenceFromNamed.name] = true;
+    }
+    if (args.dereferenceFromNamedConflictMode) {
+      const conflictMode = <DereferenceFromNamedConflictMode> args.dereferenceFromNamedConflictMode;
+      context[KeysInitQuery.dereferenceFromNamedConflictMode.name] = (): DereferenceFromNamedConflictMode =>
+        conflictMode;
     }
   }
 }
