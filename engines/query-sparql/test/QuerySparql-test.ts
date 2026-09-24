@@ -1362,8 +1362,9 @@ WHERE {
           ?s <ex:p> ?o OPTIONAL { ?s <ex:p> ?y FILTER NOT EXISTS { ?s <ex:q> ?x } }
         }`, [ 'ex:s' ]],
       ])('with a %s over a pattern that none of the SPARQL endpoints has results for', async(_, query, expected) => {
-        // The first endpoint only has results for <ex:p>, the second has none at all
-        const endpoints = [ 'http://example.org/pruned1/sparql', 'http://example.org/pruned2/sparql' ];
+        // The first endpoint only has results for <ex:p>, the second has none at all.
+        // Their hosts are not shared with other tests, which would otherwise affect the rate limiting of requests.
+        const endpoints = [ 'http://pruned1.example.org/sparql', 'http://pruned2.example.org/sparql' ];
         const mockedFetch: typeof fetch = async(input, init) => {
           const url = new URL(input instanceof Request ? input.url : input);
           const query = url.searchParams.get('query') ??
@@ -1423,8 +1424,8 @@ WHERE {
 
         await expect(engine.queryBoolean('ASK { ?s <ex:p> ?o FILTER NOT EXISTS { ?s <ex:q> ?x } }', {
           sources: [
-            { type: 'sparql', value: 'http://example.org/pruned-ask1/sparql' },
-            { type: 'sparql', value: 'http://example.org/pruned-ask2/sparql' },
+            { type: 'sparql', value: 'http://pruned-ask1.example.org/sparql' },
+            { type: 'sparql', value: 'http://pruned-ask2.example.org/sparql' },
           ],
           fetch: mockedFetch,
         })).resolves.toBe(true);
