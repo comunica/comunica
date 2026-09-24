@@ -11,8 +11,9 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { groupRepeatedSubOperations } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { MultiTransformIterator, TransformIterator, BufferedIterator } from 'asynciterator';
+import { MultiTransformIterator, TransformIterator } from 'asynciterator';
 
 /**
  * A comunica Path ZeroOrMore Query Operation Actor.
@@ -49,8 +50,9 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const subjectVar = operation.subject;
       const objectVar = operation.object;
 
-      const termHashes = {};
-
+      // The path is walked by evaluating one sub-path per reached term,
+      // so group those evaluations in the physical query plan
+      const alpContext = groupRepeatedSubOperations(context, 'alp', this.name);
       const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
         results.bindingsStream,
         {
@@ -61,25 +63,18 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
               operation.graph;
             return new TransformIterator<Bindings>(
               async() => {
-                // Set up an iterator to which getSubjectAndObjectBindingsPredicateStar will push solutions
-                const it = new BufferedIterator<Bindings>();
-                const counter = { count: 0 };
-                await this.getSubjectAndObjectBindingsPredicateStar(
-                  subjectVar,
-                  objectVar,
-                  subject,
+                const pathResult = await this.getObjectsPredicateStarEval(
                   subject,
                   predicate.path,
+                  objectVar,
                   graph,
-                  context,
-                  termHashes,
-                  {},
-                  it,
-                  counter,
+                  alpContext,
+                  true,
                   algebraFactory,
                   bindingsFactory,
                 );
-                return it.map<Bindings>((item) => {
+                return pathResult.bindingsStream.map<Bindings>((item) => {
+                  item = item.set(subjectVar, subject);
                   // If the graph was a variable, fill in it's binding (we got it from the ?s ?p ?o binding)
                   if (operation.graph.termType === 'Variable') {
                     item = item.set(operation.graph, graph);

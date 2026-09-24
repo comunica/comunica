@@ -414,6 +414,39 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ]);
     });
 
+    it('should propagate recursive mediation errors for paths with 2 variables', async() => {
+      const error = new Error(`Attempted to assign zero sources to a pattern during property path handling`);
+      mediatorQueryOperation.mediate.mockImplementation(async({ operation }: any) => {
+        if (operation.type === 'nodes') {
+          return {
+            type: 'bindings',
+            bindingsStream: new ArrayIterator([
+              BF.bindings([[ operation.variable, DF.namedNode('s') ]]),
+            ], { autoStart: false }),
+            metadata: async() => ({
+              cardinality: { type: 'exact', value: 1 },
+              variables: [{ variable: operation.variable, canBeUndef: false }],
+            }),
+          };
+        }
+        throw error;
+      });
+
+      const op: any = { operation: factory.createPath(
+        DF.variable('x'),
+        factory.createZeroOrMorePath(
+          assignOperationSource(factory.createLink(DF.namedNode('p')), source1),
+        ),
+        DF.variable('y'),
+      ), context: new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysQueryOperation.isPathArbitraryLengthDistinctKey.name]: true,
+      }) };
+      const output = getSafeBindings(await actor.run(op, undefined));
+
+      await expect(output.bindingsStream.toArray()).rejects.toThrow(error);
+    });
+
     it('should support zeroOrMore paths with 2 variables with variable graph', async() => {
       const op: any = { operation: factory.createPath(
         DF.variable('x'),
