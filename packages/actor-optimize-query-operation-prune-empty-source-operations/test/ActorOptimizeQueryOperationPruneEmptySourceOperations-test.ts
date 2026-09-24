@@ -904,11 +904,25 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             ) ],
             [ 'minus right', () => AF.createMinus(unionOf('nonEmpty'), unionOf('empty')) ],
             [ 'group without keys', () => AF.createGroup(unionOf('empty'), [], [ count ]) ],
-            [ 'values', () => AF.createJoin([ unionOf('nonEmpty'), AF.createValues([], [{}]) ]) ],
           ])('should not prune if the projection has an empty %s', async(_, createOperation) => {
             const { operation: opOut } = await actor
               .run({ operation: AF.createProject(createOperation(), [ variable ]), context: ctx });
             expect(opOut.type).toBe(Algebra.Types.PROJECT);
+          });
+
+          it.each(<[string, () => Algebra.Operation][]> [
+            [ 'minus right', () => AF.createMinus(unionOf('nonEmpty'), unionOf('empty')) ],
+            [ 'filter expression', () => AF.createFilter(
+              unionOf('nonEmpty'),
+              AF.createExistenceExpression(true, unionOf('empty')),
+            ) ],
+            [ 'group without keys', () => AF.createGroup(unionOf('empty'), [], [ count ]) ],
+          ])('should keep a left join whose right operation has an empty %s', async(_, createOperation) => {
+            const { operation: opOut } = await actor.run({
+              operation: AF.createProject(AF.createLeftJoin(unionOf('nonEmpty'), createOperation()), [ variable ]),
+              context: ctx,
+            });
+            expect((<Algebra.Project> opOut).input.type).toBe(Algebra.Types.LEFT_JOIN);
           });
 
           it.each(<[string, (path: Algebra.Operation) => Algebra.Operation][]> [

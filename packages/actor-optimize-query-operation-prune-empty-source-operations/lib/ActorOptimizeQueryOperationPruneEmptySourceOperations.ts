@@ -151,7 +151,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
           hasEmptyOperation((<Algebra.Group> operation).input);
       case Algebra.Types.PATH:
         return hasEmptyOperation((<Algebra.Path> operation).predicate);
-      // Unlike zero-or-more and zero-or-one paths, these produce no zero-length results that need no path at all
+      // Unlike zero-or-more and zero-or-one paths, these have no zero-length results
       case Algebra.Types.INV:
       case Algebra.Types.ONE_OR_MORE_PATH:
         return hasEmptyOperation((<Algebra.Inv | Algebra.OneOrMorePath> operation).path);
