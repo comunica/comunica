@@ -409,13 +409,6 @@ export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer)
 /**
  * Visit the values held directly by the given operation, without descending into them.
  *
- * The other visitors walk a whole subtree, which is what you want to reach every operation of a
- * kind. This is the single-level counterpart, for taking one operation apart: it visits the values
- * of its own keys, and an array is visited element by element rather than as a whole.
- *
- * The keys that {@link defaultObjectContext} and {@link defaultNodePreVisitor} leave alone are
- * skipped, so a caller sees the same members a traversal would descend into.
- *
  * @param operation The operation to take apart.
  * @param visitor Called with each value, in the order the keys occur.
  * @param ignoreKeys Keys to skip on top of the ones that are skipped anyway.
