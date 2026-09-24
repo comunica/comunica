@@ -509,3 +509,22 @@ export const KeysStatistics = {
     '@comunica/statistic:intermediateResults',
   ),
 };
+
+/**
+ * Context keys that need their values different during source caching.
+ */
+export const CONTEXT_KEYS_QUERY_SOURCE_CACHE: ActionContextKey<any>[] = [
+  // Sources that are exposed under a named graph contain different data than the plain source.
+  KeysQueryOperation.sourceAsNamedGraph,
+  // Sources may not be used by queries that do not have the same credentials, or the same way of sending requests.
+  KeysHttp.auth,
+  KeysHttp.fetch,
+  KeysHttp.includeCredentials,
+  KeysHttpProxy.httpProxyHandler,
+  // Sources that may not read local files (such as SERVICE targets) must not be shared with sources that may.
+  KeysDereference.blockFileAccess,
+  // Sources that are dereferenced at another time contain different data.
+  KeysHttpMemento.datetime,
+  // Sources that do not follow links contain different data than sources that do.
+  KeysQuerySourceIdentify.traverse,
+];
