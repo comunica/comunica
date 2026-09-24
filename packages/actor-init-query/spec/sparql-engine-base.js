@@ -15,7 +15,12 @@ module.exports = function(engine, exposeEndpoints = false) {
       return engine.actorInitQuery.mediatorQueryProcess.bus.actors[0].parse(query, new ActionContext({ [KeysInitQuery.baseIRI.name]: options.baseIRI }));
     },
     query(data, queryString, options) {
-      return this.queryLdf([{ type: 'rdfjs', value: source(data) }], null, queryString, options);
+      // Query evaluation tests only run over local data, so they must never reach the network,
+      // not even when they target a SERVICE endpoint without service data (e.g. to test SERVICE SILENT).
+      return this.queryLdf([{ type: 'rdfjs', value: source(data) }], null, queryString, {
+        ...options,
+        serviceData: options.serviceData ?? {},
+      });
     },
     async queryResultFormat(data, queryString, mediaType, options) {
       const result = await engine.query(queryString, {
