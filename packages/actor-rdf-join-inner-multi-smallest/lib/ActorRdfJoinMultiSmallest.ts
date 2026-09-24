@@ -35,7 +35,6 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin<IActorRdfJoinMultiSm
       limitEntries: 3,
       limitEntriesMin: true,
       canHandleUndefs: true,
-      isLeaf: false,
     });
     this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
     this.mediatorJoin = args.mediatorJoin;

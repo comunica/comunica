@@ -26,6 +26,10 @@ import { LRUCache } from 'lru-cache';
 // Cache key prefix for sources that are identified as SERVICE targets,
 // as these are identified with a different source context than regular sources.
 const KEY_PREFIX_SERVICE = 'service:';
+// Cache key separator between a source's named graph and its url,
+// as sources that are exposed under a named graph contain different data than the plain source.
+// Whitespace can not occur in IRIs, so this never clashes with a url.
+const KEY_SEPARATOR_NAMED_GRAPH = '\n';
 
 /**
  * A comunica Query Source Identify Optimize Query Operation Actor.
@@ -37,6 +41,8 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
   public readonly mediatorContextPreprocess: MediatorContextPreprocess;
   public readonly cache?: LRUCache<string, Promise<IQuerySourceWrapper>>;
+  // If the cache may hold sources that are exposed under a named graph.
+  public cacheHasNamedGraphSources = false;
 
   public constructor(args: IActorOptimizeQueryOperationQuerySourceIdentifyArgs) {
     super(args);
@@ -53,8 +59,17 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
           if (url) {
             cache.delete(url);
             cache.delete(KEY_PREFIX_SERVICE + url);
+            // Keys of named graph sources also contain that graph, so they can only be found by scanning.
+            if (this.cacheHasNamedGraphSources) {
+              for (const key of cache.keys()) {
+                if (key.endsWith(KEY_SEPARATOR_NAMED_GRAPH + url)) {
+                  cache.delete(key);
+                }
+              }
+            }
           } else {
             cache.clear();
+            this.cacheHasNamedGraphSources = false;
           }
         },
       );
@@ -151,8 +166,11 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
 
     // Try to read from cache
     // Only sources based on string values (e.g. URLs) are supported!
+    const namedGraph = querySourceUnidentified.context?.get(KeysQueryOperation.sourceAsNamedGraph);
     const cacheKey = typeof querySourceUnidentified.value === 'string' ?
-      cacheKeyPrefix + querySourceUnidentified.value :
+      cacheKeyPrefix +
+      (namedGraph ? namedGraph.value + KEY_SEPARATOR_NAMED_GRAPH : '') +
+      querySourceUnidentified.value :
       undefined;
     if (cacheKey !== undefined && this.cache) {
       sourcePromise = this.cache.get(cacheKey)!;
@@ -166,6 +184,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
       // Set in cache
       if (cacheKey !== undefined && this.cache) {
         this.cache.set(cacheKey, sourcePromise);
+        this.cacheHasNamedGraphSources ||= Boolean(namedGraph);
       }
     }
 

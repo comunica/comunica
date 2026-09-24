@@ -511,17 +511,27 @@ test.describe('System test: QuerySparql', () => {
           return JSON.parse(JSON.stringify(await engine.explain(query, context, 'physical-json')));
         }, { query, context });
 
+        // The document is fetched live, so neither its size, nor whether its count is exact,
+        // nor the time spent on it is fixed
         expect(result).toEqual({
           explain: true,
           type: 'physical-json',
           data: {
             logical: 'project',
             variables: [ 'o', 'p', 's' ],
+            cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
+            cardinalityReal: expect.any(Number),
+            timeSelf: expect.any(Number),
+            timeLife: expect.any(Number),
             children: [
               {
                 logical: 'pattern',
                 pattern: '?s ?p ?o',
                 source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
+                cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
+                cardinalityReal: expect.any(Number),
+                timeSelf: expect.any(Number),
+                timeLife: expect.any(Number),
               },
             ],
           },

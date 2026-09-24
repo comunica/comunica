@@ -21,7 +21,7 @@ import type {
 } from '@comunica/types';
 import { AlgebraFactory, Algebra, algebraUtils, inScopeVariables } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
+import { getSafeBindings, groupRepeatedSubOperations, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 
@@ -43,7 +43,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       physicalName: 'bind',
       canHandleUndefs: true,
       canHandleOperationRequired: true,
-      isLeaf: false,
     });
     this.bindOrder = args.bindOrder;
     this.selectivityModifier = args.selectivityModifier;
@@ -147,7 +146,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     remainingEntries.splice(0, 1);
 
     // Bind the remaining patterns for each binding in the stream
-    const subContext = action.context
+    const subContext = groupRepeatedSubOperations(action.context, 'bindings', this.name)
       .set(KeysQueryOperation.joinLeftMetadata, entries[0].metadata)
       .set(KeysQueryOperation.joinRightMetadatas, remainingEntries.map(entry => entry.metadata));
     const bindingsStream: BindingsStream = ActorRdfJoinMultiBind.createBindStream(
@@ -178,8 +177,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       },
       physicalPlanMetadata: {
         bindIndex: sideData.entriesUnsorted.indexOf(entries[0]),
-        bindOperation: entries[0].operation,
-        bindOperationCardinality: entries[0].metadata.cardinality,
         bindOrder: this.bindOrder,
       },
     };

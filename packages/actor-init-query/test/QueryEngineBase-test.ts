@@ -203,6 +203,15 @@ describe('QueryEngineBase', () => {
         expect((<ActionContext> result.context).getRaw('the-answer')).toBe(42);
       });
 
+      it('should expand the explain shortcut before processing the query', async() => {
+        jest.spyOn(mediatorQueryProcess, 'mediate');
+        await (<any> queryEngine).queryOrExplain('SELECT * WHERE { ?s ?p ?o }', { explain: 'parsed' });
+
+        const { context } = (mediatorQueryProcess.mediate).mock.calls[0][0];
+        expect(context.get(KeysInitQuery.explain)).toBe('parsed');
+        expect(context.getRaw('explain')).toBeUndefined();
+      });
+
       it('should return a rejected promise on an invalid request', async() => {
         const ctx: QueryStringContext = { sources: [ 'abc' ]};
         // Make it reject instead of reading input
