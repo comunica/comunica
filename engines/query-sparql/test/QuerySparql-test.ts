@@ -465,6 +465,36 @@ describe('System test: QuerySparql', () => {
             .toThrow('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
         });
 
+        it('handles an extension function in a HAVING clause over a SPARQL endpoint', async() => {
+          // The endpoint does not support the function, so it is only handed the grouping below the HAVING
+          const queries: string[] = [];
+          const mockedFetch: typeof fetch = async(input, init) => {
+            const url = new URL(input instanceof Request ? input.url : input);
+            const query = url.searchParams.get('query') ??
+              (init?.body ? new URLSearchParams(String(init.body)).get('query') : null);
+            // Requests without a query are service description lookups
+            if (!query) {
+              return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
+            }
+            queries.push(query);
+            return new Response(JSON.stringify({
+              head: { vars: [ 's' ]},
+              results: { bindings: [{ s: { type: 'uri', value: 'ex:s1' }}, { s: { type: 'uri', value: 'ex:s2' }}]},
+            }), { status: 200, headers: { 'content-type': 'application/sparql-results+json' }});
+          };
+
+          const bindings = await (await engine.queryBindings(`PREFIX func: <http://example.org/functions#>
+            SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:${funcAllow}(?s))`, {
+            sources: [{ type: 'sparql', value: 'http://example.org/having/sparql' }],
+            extensionFunctions: baseFunctions,
+            fetch: mockedFetch,
+          })).toArray();
+
+          expect(bindings.map(entry => entry.get('s')!.value)).toEqual([ 'ex:s1', 'ex:s2' ]);
+          expect(queries).toEqual([ expect.stringContaining('GROUP BY') ]);
+          expect(queries[0]).not.toContain(funcAllow);
+        });
+
         /**
          * These tests are integration tests to check the correct behaviour of filter pushdown with extension functions.
          * Comunica should not pushdown when it supports the extension function, but no endpoint does.

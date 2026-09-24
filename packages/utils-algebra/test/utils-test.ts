@@ -1,7 +1,7 @@
 import { Types } from '../lib/Algebra';
 import { AlgebraFactory } from '../lib/AlgebraFactory';
 import type { AlgebraTransformer } from '../lib/utils';
-import { algebraTransformer, transformer } from '../lib/utils';
+import { algebraTransformer, inScopeVariables, transformer } from '../lib/utils';
 
 const AF = new AlgebraFactory();
 const DF = AF.dataFactory;
@@ -69,5 +69,35 @@ describe('algebraTransformer', () => {
     // Without the default node pre-visitor of the project, its variables are traversed
     const copy = <any> custom.transformNode(operation, {});
     expect(copy.input.variables).not.toBe(operation.input.variables);
+  });
+});
+
+describe('inScopeVariables', () => {
+  const pattern = AF.createPattern(DF.variable!('s'), DF.namedNode('ex:p'), DF.variable!('o'));
+
+  /**
+   * Metadata holding an operation, as metadata can refer to sources and actors that are not part of the algebra.
+   * Its variable is never in scope, and reaching it means the metadata was traversed.
+   */
+  function withHiddenMetadata<T extends object>(operation: T): T {
+    return Object.assign(operation, {
+      metadata: { hidden: AF.createPattern(DF.variable!('hidden'), DF.namedNode('ex:p'), DF.variable!('o')) },
+    });
+  }
+
+  it('should find the in-scope variables of an operation.', () => {
+    expect(inScopeVariables(withHiddenMetadata(AF.createFilter(pattern, AF.createTermExpression(DF.variable!('o'))))))
+      .toEqual([ DF.variable!('s'), DF.variable!('o') ]);
+  });
+
+  it('should not traverse metadata of operations for which the variable scope is determined by a pre-visitor.', () => {
+    const count = AF
+      .createBoundAggregate(DF.variable!('count'), 'count', AF.createTermExpression(DF.variable!('o')), false);
+    expect(inScopeVariables(withHiddenMetadata(AF.createGroup(pattern, [ DF.variable!('s') ], [ count ]))))
+      .toEqual([ DF.variable!('count'), DF.variable!('s') ]);
+    expect(inScopeVariables(withHiddenMetadata(AF.createConstruct(pattern, [ pattern ]))))
+      .toEqual([ DF.variable!('s'), DF.variable!('o') ]);
+    expect(inScopeVariables(withHiddenMetadata(AF.createDeleteInsert([ pattern ], [], pattern))))
+      .toEqual([ DF.variable!('s'), DF.variable!('o') ]);
   });
 });

@@ -417,7 +417,34 @@ export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer)
  */
 export const inScopeVariables: typeof algebraUtils.inScopeVariables =
   (op: Operation, visitor = <typeof algebraUtils.visitOperation>visitOperation): RDF.Variable[] =>
-    algebraUtils.inScopeVariables(op, visitor);
+    algebraUtils.inScopeVariables(op, (startObject, nodeCallBacks) =>
+      visitor(startObject, keepIgnoringMetadata(nodeCallBacks)));
+
+type NodeCallBacks = { preVisitor?: (op: any) => VisitContext };
+
+/**
+ * Wrap the pre-visitors in the given callbacks, so that they keep ignoring the metadata of operations.
+ * A pre-visitor that returns its own `ignoreKeys` replaces the default ones, which include `metadata`,
+ * while metadata refers to sources and actors that are not part of the algebra, and can contain cycles.
+ * @param nodeCallBacks Callbacks for visiting operations, keyed by operation type.
+ */
+function keepIgnoringMetadata<T extends Record<string, NodeCallBacks | undefined>>(nodeCallBacks: T): T {
+  return <T> Object.fromEntries(Object.entries(nodeCallBacks).map(([ type, callbacks ]) => {
+    const preVisitor = callbacks?.preVisitor;
+    if (!preVisitor) {
+      return [ type, callbacks ];
+    }
+    return [ type, {
+      ...callbacks,
+      preVisitor(op: Operation): VisitContext {
+        const context = preVisitor(op);
+        return context.ignoreKeys ?
+            { ...context, ignoreKeys: new Set([ ...context.ignoreKeys, 'metadata' ]) } :
+          context;
+      },
+    }];
+  }));
+}
 
 /**
  * Returns an operation with an always-defined metadata property.
