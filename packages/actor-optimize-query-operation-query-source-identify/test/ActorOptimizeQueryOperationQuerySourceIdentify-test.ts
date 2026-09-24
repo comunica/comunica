@@ -308,20 +308,20 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
       });
 
-      it('should only flag the cache as holding named-graph sources once one is cached', async() => {
+      it('should only flag the cache as holding qualified sources once one is cached', async() => {
         contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [ 'source1' ]);
         await actor.run({ context: contextIn, operation });
-        expect(actor.cacheHasNamedGraphSources).toBeFalsy();
+        expect(actor.cacheHasQualifiedSources).toBeFalsy();
 
         contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [{
           value: 'source2',
           context: new ActionContext().set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('source2')),
         }]);
         await actor.run({ context: contextIn, operation });
-        expect(actor.cacheHasNamedGraphSources).toBeTruthy();
+        expect(actor.cacheHasQualifiedSources).toBeTruthy();
 
         listener({});
-        expect(actor.cacheHasNamedGraphSources).toBeFalsy();
+        expect(actor.cacheHasQualifiedSources).toBeFalsy();
       });
 
       it('should allow cache invalidation of named-graph sources for a specific url', async() => {
@@ -332,6 +332,101 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         };
         contextIn = contextIn
           .set(KeysInitQuery.querySourcesUnidentified, [ namedGraphSource, 'source2' ]);
+
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
+
+        listener({ url: 'source1' });
+
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
+
+        const sources1 = contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)!;
+        const sources2 = contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)!;
+        expect(sources1[0]).not.toBe(sources2[0]);
+        expect(sources1[1]).toBe(sources2[1]);
+      });
+
+      it('should not reuse cache entries of sources with a forced type for plain sources', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          'source1',
+          { type: 'sparql', value: 'source1' },
+        ]);
+
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+        const sources = contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)!;
+        expect(sources[0]).not.toBe(sources[1]);
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(2);
+      });
+
+      it('should not reuse cache entries of sources across distinct forced types', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [{ type: 'file', value: 'source1' }]);
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [{ type: 'sparql', value: 'source1' }]);
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
+
+        const source1 = contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0];
+        const source2 = contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0];
+        expect(source1).not.toBe(source2);
+        expect(source2).toEqual({ ofUnidentified: expect.objectContaining({ type: 'sparql', value: 'source1' }) });
+      });
+
+      it('should cache identical sources with a forced type in separate calls', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [{ type: 'sparql', value: 'source1' }]);
+
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
+        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+          .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not reuse cache entries of sources across distinct source contexts', async() => {
+        const keyAuth = new ActionContextKey<string>('@comunica/bus-http:auth');
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          'source1',
+          { value: 'source1', context: new ActionContext().set(keyAuth, 'user:secret') },
+          { value: 'source1', context: new ActionContext().set(keyAuth, 'other:secret') },
+        ]);
+
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+        const sources = contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)!;
+        expect(sources[0]).not.toBe(sources[1]);
+        expect(sources[0]).not.toBe(sources[2]);
+        expect(sources[1]).not.toBe(sources[2]);
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(3);
+      });
+
+      it('should cache identical sources with a source context in separate calls', async() => {
+        const keyAuth = new ActionContextKey<string>('@comunica/bus-http:auth');
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          { value: 'source1', context: new ActionContext().set(keyAuth, 'user:secret') },
+        ]);
+
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
+        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+          .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not cache sources with a source context value that has no string representation', async() => {
+        const keyFetch = new ActionContextKey<typeof fetch>('@comunica/bus-http:fetch');
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          { value: 'source1', context: new ActionContext().set(keyFetch, fetch) },
+        ]);
+
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
+        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+          .not.toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(2);
+        expect(actor.cache!.size).toBe(0);
+      });
+
+      it('should allow cache invalidation of sources with a forced type for a specific url', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          { type: 'sparql', value: 'source1' },
+          { type: 'sparql', value: 'source2' },
+        ]);
 
         const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
 
@@ -462,6 +557,52 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         );
 
         jest.useRealTimers();
+      });
+    });
+
+    describe('getCacheKey', () => {
+      it('should be the url for plain sources', () => {
+        expect(actor.getCacheKey({ value: 'http://ex.org/' }, '')).toBe('http://ex.org/');
+        expect(actor.getCacheKey({ value: 'http://ex.org/', context: new ActionContext() }, '')).toBe('http://ex.org/');
+      });
+
+      it('should start with the given prefix', () => {
+        expect(actor.getCacheKey({ value: 'http://ex.org/' }, 'service:')).toBe('service:http://ex.org/');
+      });
+
+      it('should be undefined for sources without url', () => {
+        expect(actor.getCacheKey({ value: RdfStore.createDefault() }, '')).toBeUndefined();
+      });
+
+      it('should contain the forced type', () => {
+        expect(actor.getCacheKey({ type: 'sparql', value: 'http://ex.org/' }, 'service:'))
+          .toBe('service:["sparql",[]]\nhttp://ex.org/');
+      });
+
+      it('should contain the source context entries, independent of their order', () => {
+        const context1 = new ActionContext()
+          .set(new ActionContextKey('b'), 1)
+          .set(new ActionContextKey('a'), true)
+          .set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('http://ex.org/g'))
+          .set(new ActionContextKey('c'), DF.literal('l', 'en'));
+        const context2 = new ActionContext()
+          .set(new ActionContextKey('c'), DF.literal('l', 'en'))
+          .set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('http://ex.org/g'))
+          .set(new ActionContextKey('a'), true)
+          .set(new ActionContextKey('b'), 1);
+        const key = '[null,[["@comunica/bus-query-operation:sourceAsNamedGraph","http://ex.org/g"],' +
+          '["a",true],["b",1],["c","\\"l\\"@en"]]]\nhttp://ex.org/';
+        expect(actor.getCacheKey({ value: 'http://ex.org/', context: context1 }, '')).toBe(key);
+        expect(actor.getCacheKey({ value: 'http://ex.org/', context: context2 }, '')).toBe(key);
+      });
+
+      it('should be undefined for source context values without string representation', () => {
+        for (const value of [ fetch, {}, [ 'a' ], null ]) {
+          expect(actor.getCacheKey({
+            value: 'http://ex.org/',
+            context: new ActionContext().set(new ActionContextKey('a'), value),
+          }, '')).toBeUndefined();
+        }
       });
     });
   });

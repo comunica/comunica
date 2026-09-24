@@ -21,15 +21,19 @@ import type {
 } from '@comunica/types';
 import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { passFullOperationToSource } from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
+import { termToString } from 'rdf-string';
 
 // Cache key prefix for sources that are identified as SERVICE targets,
 // as these are identified with a different source context than regular sources.
 const KEY_PREFIX_SERVICE = 'service:';
-// Cache key separator between a source's named graph and its url,
-// as sources that are exposed under a named graph contain different data than the plain source.
-// Whitespace can not occur in IRIs, so this never clashes with a url.
-const KEY_SEPARATOR_NAMED_GRAPH = '\n';
+// Cache key separator between a source's qualifiers (its forced type and source context) and its url,
+// as the same url may be identified into a different source depending on these,
+// e.g. a source that is exposed under a named graph contains different data than the plain source,
+// and a source with authentication may not be used by queries that do not provide it.
+// Whitespace can not occur in IRIs, nor unescaped in the JSON-serialized qualifiers, so this never clashes with a url.
+const KEY_SEPARATOR_QUALIFIERS = '\n';
 
 /**
  * A comunica Query Source Identify Optimize Query Operation Actor.
@@ -41,8 +45,8 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
   public readonly mediatorContextPreprocess: MediatorContextPreprocess;
   public readonly cache?: LRUCache<string, Promise<IQuerySourceWrapper>>;
-  // If the cache may hold sources that are exposed under a named graph.
-  public cacheHasNamedGraphSources = false;
+  // If the cache may hold sources with qualifiers in their key.
+  public cacheHasQualifiedSources = false;
 
   public constructor(args: IActorOptimizeQueryOperationQuerySourceIdentifyArgs) {
     super(args);
@@ -59,17 +63,17 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
           if (url) {
             cache.delete(url);
             cache.delete(KEY_PREFIX_SERVICE + url);
-            // Keys of named graph sources also contain that graph, so they can only be found by scanning.
-            if (this.cacheHasNamedGraphSources) {
+            // Keys of qualified sources also contain their qualifiers, so they can only be found by scanning.
+            if (this.cacheHasQualifiedSources) {
               for (const key of cache.keys()) {
-                if (key.endsWith(KEY_SEPARATOR_NAMED_GRAPH + url)) {
+                if (key.endsWith(KEY_SEPARATOR_QUALIFIERS + url)) {
                   cache.delete(key);
                 }
               }
             }
           } else {
             cache.clear();
-            this.cacheHasNamedGraphSources = false;
+            this.cacheHasQualifiedSources = false;
           }
         },
       );
@@ -165,13 +169,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
     let sourcePromise: Promise<IQuerySourceWrapper> | undefined;
 
     // Try to read from cache
-    // Only sources based on string values (e.g. URLs) are supported!
-    const namedGraph = querySourceUnidentified.context?.get(KeysQueryOperation.sourceAsNamedGraph);
-    const cacheKey = typeof querySourceUnidentified.value === 'string' ?
-      cacheKeyPrefix +
-      (namedGraph ? namedGraph.value + KEY_SEPARATOR_NAMED_GRAPH : '') +
-      querySourceUnidentified.value :
-      undefined;
+    const cacheKey = this.getCacheKey(querySourceUnidentified, cacheKeyPrefix);
     if (cacheKey !== undefined && this.cache) {
       sourcePromise = this.cache.get(cacheKey)!;
     }
@@ -184,11 +182,54 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
       // Set in cache
       if (cacheKey !== undefined && this.cache) {
         this.cache.set(cacheKey, sourcePromise);
-        this.cacheHasNamedGraphSources ||= Boolean(namedGraph);
+        this.cacheHasQualifiedSources ||= cacheKey.includes(KEY_SEPARATOR_QUALIFIERS);
       }
     }
 
     return sourcePromise;
+  }
+
+  /**
+   * Determine the key under which an identified source is cached.
+   *
+   * Next to the source's url, the key contains everything that can make the same url identify into a different source:
+   * its forced type, and the entries of its source context (such as its named graph or its authentication).
+   * This ensures that a source is only reused by queries that pass the same source.
+   *
+   * @param querySourceUnidentified An unidentified source.
+   * @param cacheKeyPrefix A prefix for the key.
+   * @return The cache key, or undefined if the source can not be cached,
+   *         because it has no url, or because its source context contains values that have no string representation.
+   */
+  public getCacheKey(
+    querySourceUnidentified: QuerySourceUnidentifiedExpanded,
+    cacheKeyPrefix: string,
+  ): string | undefined {
+    if (typeof querySourceUnidentified.value !== 'string') {
+      return undefined;
+    }
+
+    const contextEntries: [string, string | number | boolean][] = [];
+    const sourceContext = querySourceUnidentified.context;
+    if (sourceContext) {
+      for (const key of sourceContext.keys()) {
+        const value: unknown = sourceContext.get(key);
+        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+          contextEntries.push([ key.name, value ]);
+        } else if (typeof value === 'object' && value && typeof (<RDF.Term> value).termType === 'string') {
+          contextEntries.push([ key.name, termToString(<RDF.Term> value) ]);
+        } else {
+          return undefined;
+        }
+      }
+    }
+
+    if (!querySourceUnidentified.type && contextEntries.length === 0) {
+      return cacheKeyPrefix + querySourceUnidentified.value;
+    }
+    contextEntries.sort(([ keyA ], [ keyB ]) => keyA.localeCompare(keyB));
+    const qualifiers = JSON.stringify([ querySourceUnidentified.type ?? null, contextEntries ]);
+    return cacheKeyPrefix + qualifiers + KEY_SEPARATOR_QUALIFIERS + querySourceUnidentified.value;
   }
 }
 

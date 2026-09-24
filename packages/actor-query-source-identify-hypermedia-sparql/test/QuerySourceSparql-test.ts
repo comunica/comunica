@@ -1,7 +1,7 @@
 import { PassThrough } from 'node:stream';
 import { ActorQuerySerializeSparql } from '@comunica/actor-query-serialize-sparql';
 import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
+import { ActionContext, ActionContextKey } from '@comunica/core';
 import type { IActionContext, IDataset, QueryResultCardinality } from '@comunica/types';
 import { AlgebraFactory, Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -2225,9 +2225,9 @@ describe('QuerySourceSparql', () => {
 
     it('should shortcut to true if operation uses property features', async() => {
       jest.spyOn(source, 'operationUsesPropertyFeatures').mockReturnValue(true);
-      jest.spyOn((<any>source).endpointFetcher, 'fetchAsk');
+      jest.spyOn(<any>source, 'createEndpointFetcher');
       await expect(source.queryBoolean(AF.createAsk(AF.createNop()), ctx)).resolves.toBeTruthy();
-      expect((<any>source).endpointFetcher.fetchAsk).not.toHaveBeenCalled();
+      expect((<any>source).createEndpointFetcher).not.toHaveBeenCalled();
     });
   });
 
@@ -2326,6 +2326,128 @@ describe('QuerySourceSparql', () => {
         },
         input: url,
       });
+    });
+  });
+
+  describe('request contexts', () => {
+    const keyUser = new ActionContextKey<string>('user');
+    const pattern = AF.createPattern(DF.variable('s'), iriP, DF.variable('p'), DF.defaultGraph());
+    let contexts: IActionContext[];
+    let mediatorHttpUser: any;
+    let respond: (action: any, requestIndex: number) => any;
+
+    // Creates a source that is created with the given context, and answers with the user of each request's context.
+    function createSource(context: IActionContext, urlBackup = url): QuerySourceSparql {
+      return new QuerySourceSparql(
+        url,
+        urlBackup,
+        context,
+        mediatorHttpUser,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10000,
+        false,
+        false,
+        0,
+        false,
+        {},
+      );
+    }
+
+    // Answers a request with the user of its context
+    function respondWithUser(action: any): any {
+      const user = action.context.get(keyUser) ?? 'anonymous';
+      const results = action.init.body.toString().includes('ASK') ?
+        `{ "head": {}, "boolean": ${user !== 'anonymous'} }` :
+        `{ "head": { "vars": [ "p" ] }, "results": { "bindings": [ { "p": { "type": "literal", "value": "${user}" } } ] } }`;
+      return {
+        headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        body: Readable.from([ results ]),
+        ok: true,
+        status: 200,
+      };
+    }
+
+    beforeEach(() => {
+      contexts = [];
+      respond = respondWithUser;
+      mediatorHttpUser = {
+        mediate: jest.fn(async(action: any) => {
+          const requestIndex = contexts.push(action.context);
+          // Let other requests start before this one ends
+          await new Promise(resolve => setImmediate(resolve));
+          return respond(action, requestIndex);
+        }),
+      };
+    });
+
+    it('should send bindings requests with the context of the call, not of the source creation', async() => {
+      source = createSource(ctx.set(keyUser, 'first'));
+      await expect(source.queryBindings(pattern, ctx)).toEqualBindingsStream([
+        BF.fromRecord({ p: DF.literal('anonymous') }),
+      ]);
+      expect(contexts).toEqual([ ctx ]);
+    });
+
+    it('should send quads requests with the context of the call, not of the source creation', async() => {
+      respond = () => ({
+        headers: new Headers({ 'Content-Type': 'text/turtle' }),
+        body: Readable.from([ '<ex:s> <ex:p> <ex:o>.' ]),
+        ok: true,
+        status: 200,
+      });
+      source = createSource(ctx.set(keyUser, 'first'));
+      await expect(source.queryQuads(AF.createConstruct(pattern, [ pattern ]), ctx).toArray())
+        .resolves.toHaveLength(1);
+      expect(contexts).toEqual([ ctx ]);
+    });
+
+    it('should send boolean requests with the context of the call, not of the source creation', async() => {
+      source = createSource(ctx.set(keyUser, 'first'));
+      await expect(source.queryBoolean(AF.createAsk(pattern), ctx)).resolves.toBe(false);
+      expect(contexts).toEqual([ ctx ]);
+    });
+
+    it('should send void requests with the context of the call, not of the source creation', async() => {
+      respond = () => ({ headers: new Headers(), body: Readable.from([ '' ]), ok: true, status: 200 });
+      source = createSource(ctx.set(keyUser, 'first'));
+      await source.queryVoid(AF.createDeleteInsert(undefined, [ pattern ]), ctx);
+      expect(contexts).toEqual([ ctx ]);
+    });
+
+    it('should send the requests of concurrent calls with their own context', async() => {
+      source = createSource(ctx);
+      const ctxA = ctx.set(keyUser, 'A');
+      const ctxB = ctx.set(keyUser, 'B');
+      await Promise.all([
+        expect(source.queryBindings(pattern, ctxA)).toEqualBindingsStream([ BF.fromRecord({ p: DF.literal('A') }) ]),
+        expect(source.queryBindings(pattern, ctxB)).toEqualBindingsStream([ BF.fromRecord({ p: DF.literal('B') }) ]),
+        expect(source.queryBoolean(AF.createAsk(pattern), ctxA)).resolves.toBe(true),
+        expect(source.queryBoolean(AF.createAsk(pattern), ctx)).resolves.toBe(false),
+      ]);
+      expect(contexts).toHaveLength(4);
+    });
+
+    it('should retry concurrent calls on the backup URL with their own context', async() => {
+      source = createSource(ctx, `${url}backup`);
+      const ctxA = ctx.set(keyUser, 'A');
+      const ctxB = ctx.set(keyUser, 'B');
+      // Let the first request fail, while the second one is still pending
+      respond = (action: any, requestIndex: number) => requestIndex === 1 ?
+          { headers: new Headers(), body: Readable.from([ 'not found' ]), ok: false, status: 404 } :
+        respondWithUser(action);
+      await Promise.all([
+        expect(source.queryBindings(pattern, ctxA)).toEqualBindingsStream([ BF.fromRecord({ p: DF.literal('A') }) ]),
+        expect(source.queryBindings(pattern, ctxB)).toEqualBindingsStream([ BF.fromRecord({ p: DF.literal('B') }) ]),
+      ]);
+      expect(contexts).toEqual([ ctxA, ctxB, ctxA ]);
+      expect(mediatorHttpUser.mediate.mock.calls.map((call: any) => call[0].input))
+        .toEqual([ url, url, `${url}backup` ]);
     });
   });
 
