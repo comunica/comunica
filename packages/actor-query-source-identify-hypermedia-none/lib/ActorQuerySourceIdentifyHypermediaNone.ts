@@ -88,6 +88,9 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
         return [ gspo, gpos, gosp ];
       case '4gpos':
         return [ gspo, gpos, gosp, gpso ];
+      case '3gpso':
+        // GPSO first, so that it wins ties: a subject-only lookup then skips per predicate, not per object.
+        return [ gpso, gpos, gosp ];
       default:
         return [ gspo, gpso, gosp, gpos ];
     }
