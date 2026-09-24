@@ -1335,6 +1335,24 @@ WHERE {
     });
 
     describe('on multiple sources', () => {
+      it.each([
+        [ 'FILTER NOT EXISTS', 'SELECT ?s { ?s <ex:p> ?o FILTER NOT EXISTS { ?s <ex:q> ?x } }', [ 'ex:s', 'ex:s' ]],
+        [ 'BIND NOT EXISTS', 'SELECT ?s { ?s <ex:p> ?o BIND(NOT EXISTS { ?s <ex:q> ?x } AS ?b) }', [ 'ex:s', 'ex:s' ]],
+        [ 'MINUS', 'SELECT ?s WHERE { ?s <ex:p> ?o MINUS { ?s <ex:q> ?x } }', [ 'ex:s', 'ex:s' ]],
+        [ 'COUNT', 'SELECT (COUNT(*) AS ?s) WHERE { ?x <ex:q> ?y }', [ '0' ]],
+        [ 'zero-or-more path', 'SELECT ?s WHERE { <ex:s> <ex:q>* ?s }', [ 'ex:s' ]],
+      ])('with a %s over a pattern that none of the sources has results for', async(_, query, expected) => {
+        // Such patterns are pruned from the query, which should not affect the operations around them
+        const createStore = (): RdfStore => {
+          const store = RdfStore.createDefault();
+          store.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+          return store;
+        };
+        const bindings = await (await engine.queryBindings(query, { sources: [ createStore(), createStore() ]}))
+          .toArray();
+        expect(bindings.map(entry => entry.get('s')!.value)).toEqual(expected);
+      });
+
       it('with an explicit SERVICE clause without sources in context', async() => {
         const bindingsStream = await engine.queryBindings(`
 SELECT ?movie ?title ?name

@@ -54,6 +54,10 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         return { continue: false };
       } },
       [Algebra.Types.SERVICE]: { preVisitor: () => ({ continue: false }) },
+      // The zero-length results of these paths range over all nodes of the sources of their links,
+      // so these links must be kept, even if they have no results themselves.
+      [Algebra.Types.ZERO_OR_MORE_PATH]: { preVisitor: () => ({ continue: false }) },
+      [Algebra.Types.ZERO_OR_ONE_PATH]: { preVisitor: () => ({ continue: false }) },
       // Operations within FROM (NAMED) are evaluated over a different dataset than the source's default dataset.
       // Their graphs are only rewritten when the FROM operation is executed,
       // so emptiness checks against the source would be done on the wrong graphs here.
@@ -111,37 +115,49 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     return { operation, context: action.context };
   }
 
+  /**
+   * Check if the given operation produces no results, because it needs results from a union or alt
+   * of which all children have been pruned.
+   * Only the inputs that determine whether there are results are considered,
+   * so not for instance the expressions of a FILTER, as a `NOT EXISTS` over an empty operation still holds.
+   * @param operation An operation.
+   */
   protected static hasEmptyOperation(operation: Algebra.Operation): boolean {
-    // If union (or alt) is empty, consider it empty (`Array.every` on an empty array always returns true)
-    // But if we find a union with multiple children,
-    // *all* of the children must be empty before the full operation is considered empty.
-    let emptyOperation = false;
-    algebraUtils.visitOperation(operation, {
-      [Algebra.Types.UNION]: { preVisitor: (unionOp) => {
-        if (unionOp.input.every(subSubOperation => ActorOptimizeQueryOperationPruneEmptySourceOperations
-          .hasEmptyOperation(subSubOperation))) {
-          emptyOperation = true;
-          return { shortcut: true };
-        }
-        return { continue: false };
-      } },
-      [Algebra.Types.LEFT_JOIN]: { preVisitor: (leftJoinOp) => {
-        // Only recurse into left part of left-join
-        if (ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation(leftJoinOp.input[0])) {
-          emptyOperation = true;
-          return { shortcut: true };
-        }
-        return { continue: false };
-      } },
-      [Algebra.Types.ALT]: { preVisitor: (altOp) => {
-        if (altOp.input.length === 0) {
-          emptyOperation = true;
-          return { shortcut: true };
-        }
-        return { continue: false };
-      } },
-    });
-    return emptyOperation;
+    const hasEmptyOperation = ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation;
+    switch (operation.type) {
+      // `Array.every` on an empty array always returns true
+      case Algebra.Types.UNION:
+      case Algebra.Types.ALT:
+        return (<Algebra.Multi> operation).input.every(hasEmptyOperation);
+      case Algebra.Types.JOIN:
+      case Algebra.Types.SEQ:
+        return (<Algebra.Multi> operation).input.some(hasEmptyOperation);
+      // Only the left operation determines whether there are results
+      case Algebra.Types.LEFT_JOIN:
+      case Algebra.Types.MINUS:
+        return hasEmptyOperation((<Algebra.Double> operation).input[0]);
+      case Algebra.Types.FILTER:
+      case Algebra.Types.EXTEND:
+      case Algebra.Types.PROJECT:
+      case Algebra.Types.DISTINCT:
+      case Algebra.Types.REDUCED:
+      case Algebra.Types.SLICE:
+      case Algebra.Types.ORDER_BY:
+      case Algebra.Types.GRAPH:
+        return hasEmptyOperation((<Algebra.Single> operation).input);
+      // Without grouping keys, a group produces a single result, even without input
+      case Algebra.Types.GROUP:
+        return (<Algebra.Group> operation).variables.length > 0 &&
+          hasEmptyOperation((<Algebra.Group> operation).input);
+      case Algebra.Types.PATH:
+        return hasEmptyOperation((<Algebra.Path> operation).predicate);
+      // Unlike zero-or-more and zero-or-one paths, these produce no zero-length results that need no path at all
+      case Algebra.Types.INV:
+      case Algebra.Types.ONE_OR_MORE_PATH:
+        return hasEmptyOperation((<Algebra.Inv | Algebra.OneOrMorePath> operation).path);
+      default:
+        return false;
+    }
   }
 
   protected collectMultiOperationInputs(
