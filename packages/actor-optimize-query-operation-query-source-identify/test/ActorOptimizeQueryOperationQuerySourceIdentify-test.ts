@@ -1,7 +1,7 @@
 import type { ActorHttpInvalidateListenable } from '@comunica/bus-http-invalidate';
 import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { IActionQuerySourceIdentify, MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysDereference, KeysInitQuery, KeysQueryOperation, KeysStatistics }
+import { KeysDereference, KeysHttp, KeysInitQuery, KeysQueryOperation, KeysStatistics }
   from '@comunica/context-entries';
 import type { IAction } from '@comunica/core';
 import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
@@ -380,11 +380,10 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       });
 
       it('should not reuse cache entries of sources across distinct source contexts', async() => {
-        const keyAuth = new ActionContextKey<string>('@comunica/bus-http:auth');
         contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
           'source1',
-          { value: 'source1', context: new ActionContext().set(keyAuth, 'user:secret') },
-          { value: 'source1', context: new ActionContext().set(keyAuth, 'other:secret') },
+          { value: 'source1', context: new ActionContext().set(KeysHttp.auth, 'user:secret') },
+          { value: 'source1', context: new ActionContext().set(KeysHttp.auth, 'other:secret') },
         ]);
 
         const { context: contextOut } = await actor.run({ context: contextIn, operation });
@@ -396,9 +395,8 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       });
 
       it('should cache identical sources with a source context in separate calls', async() => {
-        const keyAuth = new ActionContextKey<string>('@comunica/bus-http:auth');
         contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
-          { value: 'source1', context: new ActionContext().set(keyAuth, 'user:secret') },
+          { value: 'source1', context: new ActionContext().set(KeysHttp.auth, 'user:secret') },
         ]);
 
         const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
@@ -408,18 +406,32 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(1);
       });
 
-      it('should not cache sources with a source context value that has no string representation', async() => {
-        const keyFetch = new ActionContextKey<typeof fetch>('@comunica/bus-http:fetch');
+      it('should reuse sources with a source context object only for the same object', async() => {
+        const fetch1 = jest.fn();
+        const fetch2 = jest.fn();
         contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
-          { value: 'source1', context: new ActionContext().set(keyFetch, fetch) },
+          { value: 'source1', context: new ActionContext().set(KeysHttp.fetch, fetch1) },
+          { value: 'source1', context: new ActionContext().set(KeysHttp.fetch, fetch1) },
+          { value: 'source1', context: new ActionContext().set(KeysHttp.fetch, fetch2) },
         ]);
 
-        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
-        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
-        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
-          .not.toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+        const sources = contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)!;
+        expect(sources[0]).toBe(sources[1]);
+        expect(sources[0]).not.toBe(sources[2]);
         expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(2);
-        expect(actor.cache!.size).toBe(0);
+      });
+
+      it('should reuse sources that only differ in source context entries that are not cache-relevant', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          { value: 'source1', context: new ActionContext().set(KeysHttp.httpTimeout, 1_000) },
+          { value: 'source1', context: new ActionContext().set(KeysHttp.httpTimeout, 2_000) },
+        ]);
+
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+        const sources = contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)!;
+        expect(sources[0]).toBe(sources[1]);
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(1);
       });
 
       it('should allow cache invalidation of sources with a forced type for a specific url', async() => {
@@ -579,30 +591,43 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           .toBe('service:["sparql",[]]\nhttp://ex.org/');
       });
 
-      it('should contain the source context entries, independent of their order', () => {
-        const context1 = new ActionContext()
-          .set(new ActionContextKey('b'), 1)
-          .set(new ActionContextKey('a'), true)
-          .set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('http://ex.org/g'))
-          .set(new ActionContextKey('c'), DF.literal('l', 'en'));
-        const context2 = new ActionContext()
-          .set(new ActionContextKey('c'), DF.literal('l', 'en'))
-          .set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('http://ex.org/g'))
-          .set(new ActionContextKey('a'), true)
-          .set(new ActionContextKey('b'), 1);
-        const key = '[null,[["@comunica/bus-query-operation:sourceAsNamedGraph","http://ex.org/g"],' +
-          '["a",true],["b",1],["c","\\"l\\"@en"]]]\nhttp://ex.org/';
-        expect(actor.getCacheKey({ value: 'http://ex.org/', context: context1 }, '')).toBe(key);
-        expect(actor.getCacheKey({ value: 'http://ex.org/', context: context2 }, '')).toBe(key);
+      it('should contain the values of the cache-relevant source context entries', () => {
+        const context = new ActionContext()
+          .set(KeysHttp.httpTimeout, 1_000)
+          .set(KeysHttp.includeCredentials, true)
+          .set(KeysHttp.auth, 'user:secret')
+          .set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('http://ex.org/g'));
+        expect(actor.getCacheKey({ value: 'http://ex.org/', context }, '')).toBe('[null,[' +
+          '["@comunica/bus-query-operation:sourceAsNamedGraph","http://ex.org/g"],' +
+          '["@comunica/bus-http:auth","user:secret"],' +
+          '["@comunica/bus-http:include-credentials",true]' +
+          ']]\nhttp://ex.org/');
       });
 
-      it('should be undefined for source context values without string representation', () => {
-        for (const value of [ fetch, {}, [ 'a' ], null ]) {
-          expect(actor.getCacheKey({
-            value: 'http://ex.org/',
-            context: new ActionContext().set(new ActionContextKey('a'), value),
-          }, '')).toBeUndefined();
-        }
+      it('should contain the identity of source context objects', () => {
+        const fetch1 = jest.fn();
+        const fetch2 = jest.fn();
+        const getKey = (value: any): string | undefined => actor.getCacheKey({
+          value: 'http://ex.org/',
+          context: new ActionContext().set(KeysHttp.fetch, value),
+        }, '');
+        expect(getKey(fetch1)).toBe('[null,[["@comunica/bus-http:fetch",{"object":0}]]]\nhttp://ex.org/');
+        expect(getKey(fetch2)).toBe('[null,[["@comunica/bus-http:fetch",{"object":1}]]]\nhttp://ex.org/');
+        expect(getKey(fetch1)).toBe('[null,[["@comunica/bus-http:fetch",{"object":0}]]]\nhttp://ex.org/');
+      });
+
+      it('should be the url for sources with only source context entries that are not cache-relevant', () => {
+        expect(actor.getCacheKey({
+          value: 'http://ex.org/',
+          context: new ActionContext().set(KeysHttp.httpTimeout, 1_000).set(new ActionContextKey('a'), 'b'),
+        }, '')).toBe('http://ex.org/');
+      });
+
+      it('should contain null source context values', () => {
+        expect(actor.getCacheKey({
+          value: 'http://ex.org/',
+          context: new ActionContext().set(KeysHttp.auth, null),
+        }, '')).toBe('[null,[["@comunica/bus-http:auth",null]]]\nhttp://ex.org/');
       });
     });
   });

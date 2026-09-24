@@ -505,3 +505,27 @@ export const KeysStatistics = {
     '@comunica/statistic:intermediateResults',
   ),
 };
+
+/**
+ * The context keys that determine which source is identified for a query source,
+ * when they are set in the source's own context.
+ *
+ * Identified sources are cached across queries, and only reused for query sources
+ * with the same value (or type) and the same values for these keys.
+ * Other keys in a source's context are assumed not to change the identified source.
+ */
+export const CONTEXT_KEYS_QUERY_SOURCE_CACHE: ActionContextKey<any>[] = [
+  // Sources that are exposed under a named graph contain different data than the plain source.
+  KeysQueryOperation.sourceAsNamedGraph,
+  // Sources may not be used by queries that do not have the same credentials, or the same way of sending requests.
+  KeysHttp.auth,
+  KeysHttp.fetch,
+  KeysHttp.includeCredentials,
+  KeysHttpProxy.httpProxyHandler,
+  // Sources that may not read local files (such as SERVICE targets) must not be shared with sources that may.
+  KeysDereference.blockFileAccess,
+  // Sources that are dereferenced at another time contain different data.
+  KeysHttpMemento.datetime,
+  // Sources that do not follow links contain different data than sources that do.
+  KeysQuerySourceIdentify.traverse,
+];

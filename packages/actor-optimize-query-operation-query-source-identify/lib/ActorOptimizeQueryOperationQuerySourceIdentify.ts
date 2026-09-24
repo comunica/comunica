@@ -7,7 +7,13 @@ import type {
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysDereference, KeysInitQuery, KeysQueryOperation, KeysStatistics } from '@comunica/context-entries';
+import {
+  CONTEXT_KEYS_QUERY_SOURCE_CACHE,
+  KeysDereference,
+  KeysInitQuery,
+  KeysQueryOperation,
+  KeysStatistics,
+} from '@comunica/context-entries';
 import type { TestResult, IActorTest } from '@comunica/core';
 import { passTestVoid, ActionContext } from '@comunica/core';
 import type {
@@ -28,10 +34,8 @@ import { termToString } from 'rdf-string';
 // Cache key prefix for sources that are identified as SERVICE targets,
 // as these are identified with a different source context than regular sources.
 const KEY_PREFIX_SERVICE = 'service:';
-// Cache key separator between a source's qualifiers (its forced type and source context) and its url,
-// as the same url may be identified into a different source depending on these,
-// e.g. a source that is exposed under a named graph contains different data than the plain source,
-// and a source with authentication may not be used by queries that do not provide it.
+// Cache key separator between a source's qualifiers (its forced type and cache-relevant source context) and its url,
+// as the same url may be identified into a different source depending on these.
 // Whitespace can not occur in IRIs, nor unescaped in the JSON-serialized qualifiers, so this never clashes with a url.
 const KEY_SEPARATOR_QUALIFIERS = '\n';
 
@@ -47,6 +51,9 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   public readonly cache?: LRUCache<string, Promise<IQuerySourceWrapper>>;
   // If the cache may hold sources with qualifiers in their key.
   public cacheHasQualifiedSources = false;
+  // Identifiers of the objects in source contexts, as objects can only be represented in cache keys by their identity.
+  private readonly cacheKeyObjectIds = new WeakMap<object, number>();
+  private cacheKeyObjectIdCounter = 0;
 
   public constructor(args: IActorOptimizeQueryOperationQuerySourceIdentifyArgs) {
     super(args);
@@ -193,13 +200,13 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
    * Determine the key under which an identified source is cached.
    *
    * Next to the source's url, the key contains everything that can make the same url identify into a different source:
-   * its forced type, and the entries of its source context (such as its named graph or its authentication).
-   * This ensures that a source is only reused by queries that pass the same source.
+   * its forced type, and the values of the cache-relevant keys in its source context
+   * (see {@link CONTEXT_KEYS_QUERY_SOURCE_CACHE}).
+   * This ensures that a source is only reused by queries that pass an equivalent source.
    *
    * @param querySourceUnidentified An unidentified source.
    * @param cacheKeyPrefix A prefix for the key.
-   * @return The cache key, or undefined if the source can not be cached,
-   *         because it has no url, or because its source context contains values that have no string representation.
+   * @return The cache key, or undefined if the source can not be cached because it has no url.
    */
   public getCacheKey(
     querySourceUnidentified: QuerySourceUnidentifiedExpanded,
@@ -209,29 +216,45 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
       return undefined;
     }
 
-    const contextEntries: [string, string | number | boolean][] = [];
-    const sourceContext = querySourceUnidentified.context;
-    if (sourceContext) {
-      for (const key of sourceContext.keys()) {
-        const value: unknown = sourceContext.get(key);
-        if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-          contextEntries.push([ key.name, value ]);
-        } else if (typeof value === 'object' && value && typeof (<RDF.Term> value).termType === 'string') {
-          contextEntries.push([ key.name, termToString(<RDF.Term> value) ]);
-        } else {
-          return undefined;
-        }
+    const contextEntries: [string, CacheKeyValue][] = [];
+    for (const key of CONTEXT_KEYS_QUERY_SOURCE_CACHE) {
+      const value: unknown = querySourceUnidentified.context?.get(key);
+      if (value !== undefined) {
+        contextEntries.push([ key.name, this.getCacheKeyValue(value) ]);
       }
     }
 
     if (!querySourceUnidentified.type && contextEntries.length === 0) {
       return cacheKeyPrefix + querySourceUnidentified.value;
     }
-    contextEntries.sort(([ keyA ], [ keyB ]) => keyA.localeCompare(keyB));
     const qualifiers = JSON.stringify([ querySourceUnidentified.type ?? null, contextEntries ]);
     return cacheKeyPrefix + qualifiers + KEY_SEPARATOR_QUALIFIERS + querySourceUnidentified.value;
   }
+
+  /**
+   * Represent a source context value in a cache key.
+   * RDF terms and primitive values are represented by their value.
+   * Other objects (such as fetch functions or proxy handlers) are represented by their identity,
+   * as they can not be compared by value.
+   * @param value A source context value.
+   */
+  protected getCacheKeyValue(value: unknown): CacheKeyValue {
+    if (typeof value === 'function' || (typeof value === 'object' && value !== null)) {
+      if (typeof (<RDF.Term> value).termType === 'string') {
+        return termToString(<RDF.Term> value);
+      }
+      let id = this.cacheKeyObjectIds.get(value);
+      if (id === undefined) {
+        id = this.cacheKeyObjectIdCounter++;
+        this.cacheKeyObjectIds.set(value, id);
+      }
+      return { object: id };
+    }
+    return <CacheKeyValue> value;
+  }
 }
+
+type CacheKeyValue = string | number | boolean | null | { object: number };
 
 export interface IActorOptimizeQueryOperationQuerySourceIdentifyArgs extends IActorOptimizeQueryOperationArgs {
   /**
