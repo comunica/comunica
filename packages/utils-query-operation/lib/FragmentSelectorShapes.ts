@@ -99,7 +99,8 @@ function doesShapeAcceptOperationRecurseShape(
       // All possible operations are accepted by this shape.
       // As exception, the operations that Comunica defines for internal use are not accepted through wildcards,
       // as these are not part of SPARQL, so a source that accepts all of SPARQL can not be assumed to know them.
-      if (containsInternalOperation(operation)) {
+      // Nested ones are still accepted if the shape accepts them in another way, such as by listing their type.
+      if (isInternalOperation(operation) || containsUnsupportedInternalOperation(shapeTop, operation, options)) {
         return false;
       }
       // As another exception, extension functions are not accepted through wildcards.
@@ -209,16 +210,30 @@ function isStandardSparqlFunction(iri: string): boolean {
   return /^https?:\/\/www\.w3\.org\//u.test(iri);
 }
 
+function isInternalOperation(operation: Algebra.Operation): boolean {
+  return Object.values<string>(TypesComunica).includes(operation.type);
+}
+
 /**
- * Check if the given operation is or contains an operation that Comunica defines for internal use.
+ * Check if the given operation contains an operation that Comunica defines for internal use,
+ * which the given shape does not accept.
+ * @param shape A shape to test the nested operations against.
  * @param operation An operation to inspect.
+ * @param options Additional options to consider.
  */
-function containsInternalOperation(operation: Algebra.Operation): boolean {
+function containsUnsupportedInternalOperation(
+  shape: FragmentSelectorShape,
+  operation: Algebra.Operation,
+  options?: FragmentSelectorShapeTestFlags,
+): boolean {
   let found = false;
   const callbacks = {
-    preVisitor: () => {
-      found = true;
-      return { shortcut: true };
+    preVisitor: (subOperation: Algebra.Operation) => {
+      if (!doesShapeAcceptOperation(shape, subOperation, options)) {
+        found = true;
+        return { shortcut: true };
+      }
+      return {};
     },
   };
   algebraUtils.visitOperation(operation, Object.fromEntries(Object.values(TypesComunica)

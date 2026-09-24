@@ -179,13 +179,17 @@ describe('FragmentSelectorShapes', () => {
       });
 
       it('should accept them when listed by their type next to a wildcard', () => {
-        expect(doesShapeAcceptOperation({
+        const shape: FragmentSelectorShape = {
           type: 'disjunction',
           children: [
             wildcard,
             { type: 'operation', operation: { operationType: 'type', type: TypesComunica.DISTINCT_TERMS }},
           ],
-        }, distinctTerms)).toBeTruthy();
+        };
+        expect(doesShapeAcceptOperation(shape, distinctTerms)).toBeTruthy();
+        expect(doesShapeAcceptOperation(shape, AF.createJoin([ AF.createNop(), distinctTerms ]))).toBeTruthy();
+        expect(doesShapeAcceptOperation(shape, AF.createDistinct(distinctTerms))).toBeTruthy();
+        expect(doesShapeAcceptOperation(shape, AF.createJoin([ distinctTerms, nodes ]))).toBeFalsy();
       });
     });
 
