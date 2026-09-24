@@ -7,6 +7,10 @@ A comunica File Dereference Actor.
 An [Dereference](https://github.com/comunica/comunica/tree/master/packages/bus-dereference) actor that
 resolves an URL to a local file (optionally starting with `file://`).
 
+This actor refuses to dereference files if the `@comunica/bus-dereference:blockFileAccess` context entry is enabled.
+This is for example set for SERVICE targets,
+so that queries from untrusted parties can not read arbitrary local files.
+
 [Click here if you just want to query with Comunica](https://comunica.dev/docs/query/).
 
 ## Install

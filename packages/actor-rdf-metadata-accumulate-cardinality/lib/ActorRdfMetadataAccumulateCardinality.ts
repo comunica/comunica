@@ -26,8 +26,12 @@ export class ActorRdfMetadataAccumulateCardinality extends ActorRdfMetadataAccum
       return { metadata: { cardinality: { type: 'exact', value: 0 }}};
     }
 
-    // Otherwise, attempt to update existing value
-    const cardinality: QueryResultCardinality = { ...action.accumulatedMetadata.cardinality };
+    // Otherwise, attempt to update existing value.
+    // Sources that report no cardinality of their own accumulate from the same value as `initialize`,
+    // which is the identity of the summation below.
+    const cardinality: QueryResultCardinality = action.accumulatedMetadata.cardinality ?
+        { ...action.accumulatedMetadata.cardinality } :
+        { type: 'exact', value: 0 };
 
     if (cardinality.dataset) {
       // If the accumulated cardinality refers to that of the full default graph (applicable for SPARQL endpoints)

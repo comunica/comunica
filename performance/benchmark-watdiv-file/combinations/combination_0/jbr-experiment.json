@@ -12,7 +12,7 @@
   "queryRecurrence": 1,
   "generateHdt": false,
   "endpointUrl": "http://localhost:3001/sparql",
-  "queryRunnerReplication": 3,
+  "queryRunnerReplication": 5,
   "queryRunnerWarmupRounds": 1,
   "queryRunnerRequestDelay": 0,
   "queryRunnerEndpointAvailabilityCheckTimeout": 1000,

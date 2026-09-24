@@ -9,7 +9,7 @@ const RdfStore = require('rdf-stores').RdfStore;
 const RdfTestSuite = require('rdf-test-suite');
 const { HttpServiceSparqlEndpoint } = require('..');
 
-module.exports = function(engine, exposeServiceDescriptionEndpoint = false) {
+module.exports = function(engine, exposeEndpoints = false) {
   const testEngine = {
     parse(query, options) {
       return engine.actorInitQuery.mediatorQueryProcess.bus.actors[0].parse(query, new ActionContext({ [KeysInitQuery.baseIRI.name]: options.baseIRI }));
@@ -46,6 +46,8 @@ module.exports = function(engine, exposeServiceDescriptionEndpoint = false) {
         httpRetryCount: 3,
         httpRetryDelayFallback: 10,
         httpRetryDelayLimit: 100,
+        // The spec test suite covers SERVICE clauses with a variable target
+        serviceAllowVariableTargets: true,
         nonLexicalComparison: options.nonLexicalComparison,
         fullTermComparison: options.fullTermComparison,
       });
@@ -78,8 +80,12 @@ module.exports = function(engine, exposeServiceDescriptionEndpoint = false) {
     },
   };
 
-  if (exposeServiceDescriptionEndpoint) {
-    testEngine.startServiceDescriptionEndpoint = createServiceDescriptionEndpointStarter(engine);
+  if (exposeEndpoints) {
+    testEngine.startServiceDescriptionEndpoint = createEndpointStarter(engine);
+    testEngine.startProtocolEndpoint = createEndpointStarter(engine, () => {
+      const store = RdfStore.createDefault(true);
+      return { sources: [{ type: 'rdfjs', value: store }], destination: store };
+    });
   }
 
   return testEngine;
@@ -109,7 +115,8 @@ function createServiceFetch(engine, serviceData) {
       return new Response(null, { status: 404 });
     }
 
-    const result = await engine.query(query, { sources: [ store ]});
+    // Pass the same fetch function, so that this endpoint can resolve nested SERVICE clauses.
+    const result = await engine.query(query, { sources: [ store ], fetch: serviceFetch });
     const mediaType = 'application/sparql-results+json';
     const body = await stringifyStream((await engine.resultToString(result, mediaType)).data);
     return new Response(body, { status: 200, headers: { 'content-type': mediaType }});
@@ -123,7 +130,7 @@ function extractQuery(url, init) {
     (init.body ? new URLSearchParams(String(init.body)).get('query') : null);
 }
 
-function createServiceDescriptionEndpointStarter(engine) {
+function createEndpointStarter(engine, createContext = () => ({})) {
   let server;
   let endpoint;
 
@@ -157,11 +164,12 @@ function createServiceDescriptionEndpointStarter(engine) {
     const address = server.address();
     if (!address || typeof address === 'string') {
       await close();
-      throw new Error('Could not determine the service description endpoint address.');
+      throw new Error('Could not determine the endpoint address.');
     }
 
-    const service = new HttpServiceSparqlEndpoint({ engine, port: address.port });
-    server.on('request', service.handleRequest.bind(service, engine, variants, process.stdout, process.stderr));
+    const service = new HttpServiceSparqlEndpoint({ engine, port: address.port, context: createContext() });
+    // The endpoint logs to stderr, so that its output does not end up in the EARL reports on stdout
+    server.on('request', service.handleRequest.bind(service, engine, variants, process.stderr, process.stderr));
 
     endpoint = `http://127.0.0.1:${address.port}/sparql`;
     return { close, endpoint };

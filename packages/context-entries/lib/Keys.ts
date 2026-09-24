@@ -2,6 +2,7 @@ import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
 import type {
   AsyncExtensionFunctionCreator,
   Bindings,
+  ExistenceResolver,
   FunctionArgumentsCache,
   IActionContext,
   ICliArgsHandler,
@@ -161,6 +162,20 @@ export const KeysInitQuery = {
    */
   lenient: new ActionContextKey<boolean>('@comunica/actor-init-query:lenient'),
   /**
+   * If SERVICE clauses are allowed to target local files.
+   * This is disabled by default, as queries could otherwise read arbitrary local files,
+   * which is problematic when queries originate from untrusted parties.
+   */
+  serviceAllowFileTargets: new ActionContextKey<boolean>('@comunica/actor-init-query:serviceAllowFileTargets'),
+  /**
+   * If SERVICE clauses are allowed to have a variable as target.
+   * This is disabled by default, as the targets are then determined by the queried data,
+   * which would allow queries from untrusted parties to dereference arbitrary sources.
+   */
+  serviceAllowVariableTargets: new ActionContextKey<boolean>(
+    '@comunica/actor-init-query:serviceAllowVariableTargets',
+  ),
+  /**
    * By default, errors will be emitted if parsers encounter unsupported versions.
    * Setting this flag to true will silence those checks.
    * Errors may still be emitted if unsupported grammar is encountered.
@@ -185,6 +200,8 @@ export const KeysInitQuery = {
   /**
    * Object to cache function argument overload resolutions.
    * Defaults to an object that is reused across query executions.
+   * Resolutions depend on the `superTypeProvider` they were made under,
+   * so a different super-type provider requires a fresh cache.
    */
   functionArgumentsCache: new ActionContextKey<FunctionArgumentsCache>(
     '@comunica/actor-init-query:functionArgumentsCache',
@@ -258,6 +275,12 @@ export const KeysInitQuery = {
    */
   invalidateCache: new ActionContextKey<boolean>('@comunica/actor-init-query:invalidateCache'),
   /**
+   * An opaque object that is unique to a single query execution.
+   * Actors can use it as a key into a `WeakMap` to hold state that may be reused within one query execution,
+   * but must never be reused across query executions, such as cached source cardinalities.
+   */
+  queryExecutionScope: new ActionContextKey<object>('@comunica/actor-init-query:queryExecutionScope'),
+  /**
    * The data factory for creating terms and quads.
    */
   dataFactory: new ActionContextKey<ComunicaDataFactory>('@comunica/actor-init-query:dataFactory'),
@@ -271,7 +294,19 @@ export const KeysExpressionEvaluator = {
   extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator>(
     '@comunica/utils-expression-evaluator:extensionFunctionCreator',
   ),
+  /**
+   * Discovers the super type of a type unknown to the system.
+   * Changing this between evaluations requires a fresh `functionArgumentsCache`,
+   * as overload resolutions are cached without it.
+   */
   superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/utils-expression-evaluator:superTypeProvider'),
+  /**
+   * Resolves `EXISTS` and `NOT EXISTS` expressions.
+   * When absent, the expression evaluator falls back to its query operation mediator.
+   */
+  existenceResolver: new ActionContextKey<ExistenceResolver>(
+    '@comunica/utils-expression-evaluator:existenceResolver',
+  ),
   defaultTimeZone: new ActionContextKey<ITimeZoneRepresentation>(
     '@comunica/utils-expression-evaluator:defaultTimeZone',
   ),
@@ -321,6 +356,12 @@ export const KeysQueryOperation = {
    * Flag for indicating that only read operations are allowed, defaults to false.
    */
   readOnly: new ActionContextKey<boolean>('@comunica/bus-query-operation:readOnly'),
+  /**
+   * Flag on a query source context indicating that this source is the target of a `SERVICE SILENT` clause.
+   * Errors from such a source must be swallowed, and replaced by a single empty solution,
+   * as mandated by SPARQL 1.1 Federated Query.
+   */
+  silent: new ActionContextKey<boolean>('@comunica/bus-query-operation:silent'),
   /**
    * An internal context entry to mark that a property path with arbitrary length and a distinct key is being processed.
    */
@@ -394,6 +435,15 @@ export const KeysQuerySourceIdentify = {
    * This means that sources annotated with this flag are considered incomplete until all links have been traversed.
    */
   traverse: new ActionContextKey<boolean>('@comunica/bus-query-source-identify:traverse'),
+};
+
+export const KeysDereference = {
+  /**
+   * If local files may not be dereferenced within the current scope.
+   * This is for example set when dereferencing SERVICE targets,
+   * to avoid exposing local files to queries from untrusted parties.
+   */
+  blockFileAccess: new ActionContextKey<boolean>('@comunica/bus-dereference:blockFileAccess'),
 };
 
 export const KeysRdfUpdateQuads = {

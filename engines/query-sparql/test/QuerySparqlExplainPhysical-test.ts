@@ -62,9 +62,9 @@ actors:
 
     it('explains a two-pattern BGP', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a }`)).resolves
-        .toBe(`project (a,n,s) cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(hash-def) cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
+        .toBe(`project (a,n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
+  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
+    join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
       pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
       pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
 
@@ -81,12 +81,12 @@ actors:
     it('explains a three-pattern BGP', async() => {
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a . ?s foaf:knows ?f }`,
-      )).resolves.toBe(`project (a,f,n,s) cardEst:28.975 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:28.975 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(multi-smallest) cardEst:28.975 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
-      join-inner(hash-def) cardEst:28.975 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
+      )).resolves.toBe(`project (a,f,n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
+  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
+    join-inner(multi-smallest) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
+      join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
         pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
-        join-inner(hash-def) cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
+        join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
           pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
           pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
 
@@ -275,9 +275,9 @@ actors:
 
     it('explains values', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { VALUES ?s { ex:alice } ?s foaf:name ?n }`)).resolves
-        .toBe(`project (n,s) cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(nested-loop) cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms actor:2
+        .toBe(`project (n,s) cardEst:~1 cardReal:1 timeSelf:Xms timeLife:Xms actor:0
+  join cardEst:~1 cardReal:1 timeSelf:Xms timeLife:Xms actor:1
+    join-inner(nested-loop) cardEst:~1 cardReal:1 timeSelf:Xms timeLife:Xms actor:2
       values cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms actor:3
       pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
 
@@ -295,9 +295,9 @@ actors:
     it('explains a subquery', async() => {
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . { SELECT ?s WHERE { ?s foaf:age ?a } } }`,
-      )).resolves.toBe(`project (n,s) cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(hash-def) cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
+      )).resolves.toBe(`project (n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
+  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
+    join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
       pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
       project (s) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
         join cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
@@ -381,9 +381,9 @@ actors:
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a }`,
         { sources: [ createStore(), createStore() ]},
-      )).resolves.toBe(`project (a,n,s) cardEst:34.215 cardReal:20 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:34.215 cardReal:20 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(hash-def) cardEst:34.215 cardReal:20 timeSelf:Xms timeLife:Xms actor:2
+      )).resolves.toBe(`project (a,n,s) cardEst:~10 cardReal:20 timeSelf:Xms timeLife:Xms actor:0
+  join cardEst:~10 cardReal:20 timeSelf:Xms timeLife:Xms actor:1
+    join-inner(hash-def) cardEst:~10 cardReal:20 timeSelf:Xms timeLife:Xms actor:2
       union cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms actor:3
         pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
         pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:1 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
@@ -411,7 +411,7 @@ actors:
         logical: 'project',
         actor: 'urn:comunica:default:query-operation/actors#project',
         variables: [ 'a', 'n', 's' ],
-        cardinality: { type: 'exact', value: 13.647997591087021 },
+        cardinality: { type: 'estimate', value: 5 },
         cardinalityReal: 5,
         timeSelf: expect.any(Number),
         timeLife: expect.any(Number),
@@ -419,7 +419,7 @@ actors:
           {
             logical: 'join',
             actor: 'urn:comunica:default:query-operation/actors#join',
-            cardinality: { type: 'exact', value: 13.647997591087021 },
+            cardinality: { type: 'estimate', value: 5 },
             cardinalityReal: 5,
             timeSelf: expect.any(Number),
             timeLife: expect.any(Number),
@@ -438,7 +438,7 @@ actors:
                   blockingItems: 5,
                   requestTime: 0,
                 },
-                cardinality: { type: 'exact', value: 13.647997591087021 },
+                cardinality: { type: 'estimate', value: 5 },
                 cardinalityReal: 5,
                 timeSelf: expect.any(Number),
                 timeLife: expect.any(Number),
@@ -509,10 +509,10 @@ actors:
         { sources: [ createStore() ]},
         'physical',
       );
-      expect(normalize(<string> result.data)).toBe(`project (a,n,s) cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(wrap-stream) cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
-      join-inner(hash-def) cardEst:13.648 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
+      expect(normalize(<string> result.data)).toBe(`project (a,n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
+  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
+    join-inner(wrap-stream) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
+      join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
         pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
         pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
 

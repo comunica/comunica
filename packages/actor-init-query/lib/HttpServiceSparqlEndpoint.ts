@@ -7,13 +7,15 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import * as path from 'node:path';
 import * as querystring from 'node:querystring';
 import type { Writable } from 'node:stream';
+import type { TLSSocket } from 'node:tls';
 import * as url from 'node:url';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
-import { Algebra } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraTransformer } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 
 import yargs from 'yargs';
 
@@ -32,6 +34,17 @@ const quad = require('rdf-quad');
 
 // Force type on Cluster, because there are issues with the Node.js typings since v18
 const cluster: Cluster = clusterUntyped;
+
+const DF = new DataFactory();
+
+/**
+ * The URL parameters through which the SPARQL protocol allows an RDF dataset to be specified,
+ * for query requests and update requests respectively.
+ */
+const DATASET_PARAMETERS: Record<IQueryBody['type'], { default: string; named: string }> = {
+  query: { default: 'default-graph-uri', named: 'named-graph-uri' },
+  void: { default: 'using-graph-uri', named: 'using-named-graph-uri' },
+};
 
 /**
  * An HTTP service that exposes a Comunica engine as a SPARQL endpoint.
@@ -221,8 +234,16 @@ export class HttpServiceSparqlEndpoint {
 
     // Attach listeners to each new worker
     cluster.on('listening', (worker) => {
+      // Handle worker timeouts
+      const workerTimeouts: Record<number, NodeJS.Timeout> = {};
+
       // Respawn crashed workers
       worker.once('exit', (code, signal) => {
+        // Drop the timeouts of the queries this worker was running, as they can only fire on a dead worker
+        for (const workerTimeout of Object.values(workerTimeouts)) {
+          clearTimeout(workerTimeout);
+        }
+
         if (!worker.exitedAfterDisconnect) {
           if (code === 9 || signal === 'SIGKILL') {
             stderr.write(`Worker ${worker.process.pid} forcefully killed with ${code || signal}. Killing main process as well.\n`);
@@ -234,8 +255,6 @@ export class HttpServiceSparqlEndpoint {
         }
       });
 
-      // Handle worker timeouts
-      const workerTimeouts: Record<number, NodeJS.Timeout> = {};
       worker.on('message', ({ type, queryId }) => {
         if (type === 'start') {
           stderr.write(`Worker ${worker.process.pid} got assigned a new query (${queryId}).\n`);
@@ -379,22 +398,13 @@ export class HttpServiceSparqlEndpoint {
     let queryBody: IQueryBody | undefined;
     switch (request.method) {
       case 'POST':
-        queryBody = await this.parseBody(request);
-        await this.writeQueryResult(
-          engine,
-          stdout,
-          stderr,
-          request,
-          response,
-          queryBody,
-          mediaType,
-          false,
-          false,
-          this.lastQueryId++,
-        );
-        break;
       case 'QUERY':
-        queryBody = await this.parseBody(request);
+        try {
+          queryBody = await this.parseBody(request);
+        } catch (error: unknown) {
+          this.writeBadRequest(stdout, response, (<Error> error).message);
+          return;
+        }
         await this.writeQueryResult(
           engine,
           stdout,
@@ -404,14 +414,24 @@ export class HttpServiceSparqlEndpoint {
           queryBody,
           mediaType,
           false,
-          true,
+          // QUERY is a safe method, so it may only read data
+          request.method === 'QUERY',
           this.lastQueryId++,
         );
         break;
       case 'HEAD':
       case 'GET':
+        // Updates may only be invoked through POST
+        if (requestUrl.query.update) {
+          this.writeBadRequest(stdout, response, 'SPARQL updates can only be invoked with a POST request');
+          return;
+        }
         // eslint-disable-next-line no-case-declarations
-        const queryValue = <string> requestUrl.query.query;
+        const queryValue = requestUrl.query.query;
+        if (Array.isArray(queryValue)) {
+          this.writeBadRequest(stdout, response, 'A request can only contain a single query parameter');
+          return;
+        }
         queryBody = queryValue ? { type: 'query', value: queryValue, context: undefined } : undefined;
         // eslint-disable-next-line no-case-declarations
         const headOnly = request.method === 'HEAD';
@@ -449,6 +469,116 @@ export class HttpServiceSparqlEndpoint {
         );
         response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
     }
+  }
+
+  /**
+   * Writes a 400 response with the given message.
+   * @param {module:stream.internal.Writable} stdout Output stream.
+   * @param {module:http.ServerResponse} response Response object.
+   * @param {string} message The reason why the request was rejected.
+   */
+  public writeBadRequest(stdout: Writable, response: http.ServerResponse, message: string): void {
+    stdout.write(`[400] Bad request: ${message}\n`);
+    response.writeHead(
+      400,
+      { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+    );
+    response.end(`${message}\n`);
+  }
+
+  /**
+   * Determine the base IRI that relative IRIs in a request are resolved against.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {number} port The port this service is running on.
+   * @return {string} The base IRI.
+   */
+  public static getBaseIRI(request: http.IncomingMessage, port: number): string {
+    const protocol = (<TLSSocket> request.socket).encrypted ? 'https' : 'http';
+    return `${protocol}://${request.headers.host ?? `localhost:${port}`}/sparql`;
+  }
+
+  /**
+   * Determine the RDF dataset that a request specifies through the SPARQL protocol.
+   * @param {module:url.UrlWithParsedQuery} requestUrl The parsed request URL.
+   * @param {'query' | 'void'} type The type of operation the dataset applies to.
+   * @return The graphs that form the default graph, and the named graphs.
+   */
+  public static getProtocolDataset(
+    requestUrl: url.UrlWithParsedQuery,
+    type: IQueryBody['type'],
+  ): { default: RDF.NamedNode[]; named: RDF.NamedNode[] } {
+    const parameters = DATASET_PARAMETERS[type];
+    const toGraphs = (value: string | string[] | undefined): RDF.NamedNode[] =>
+      (value === undefined ? [] : (Array.isArray(value) ? value : [ value ])).map(graph => DF.namedNode(graph));
+    return {
+      default: toGraphs(requestUrl.query[parameters.default]),
+      named: toGraphs(requestUrl.query[parameters.named]),
+    };
+  }
+
+  /**
+   * Apply the dataset that a request specifies through the SPARQL protocol to the query it contains.
+   * The query is returned unchanged if the request does not specify a dataset.
+   * @param {QueryEngineBase} engine A SPARQL engine.
+   * @param {IQueryBody} queryBody The query body.
+   * @param {module:url.UrlWithParsedQuery} requestUrl The parsed request URL.
+   * @param context The query context.
+   * @return {Promise<string | Algebra.Operation>} The query to execute.
+   */
+  public async applyProtocolDataset(
+    engine: QueryEngineBase,
+    queryBody: IQueryBody,
+    requestUrl: url.UrlWithParsedQuery,
+    context: Record<string, any>,
+  ): Promise<string | Algebra.Operation> {
+    const dataset = HttpServiceSparqlEndpoint.getProtocolDataset(requestUrl, queryBody.type);
+    if (dataset.default.length === 0 && dataset.named.length === 0) {
+      return queryBody.value;
+    }
+
+    const { data: operation } = await engine.explain(queryBody.value, <any> { ...context }, 'parsed');
+    const algebraFactory = new AlgebraFactory(DF);
+    if (queryBody.type === 'query') {
+      // The protocol-specified dataset replaces the dataset of the query itself
+      const input = operation.type === Algebra.Types.FROM ? operation.input : operation;
+      return algebraFactory.createFrom(input, dataset.default, dataset.named);
+    }
+    return HttpServiceSparqlEndpoint.applyUpdateDataset(algebraFactory, operation, dataset);
+  }
+
+  /**
+   * Apply the protocol-specified dataset to the WHERE clauses of an update operation.
+   * @param {AlgebraFactory} algebraFactory An algebra factory.
+   * @param {Algebra.Operation} operation An update operation.
+   * @param dataset The protocol-specified dataset.
+   * @param dataset.default The graphs that form the default graph.
+   * @param dataset.named The named graphs.
+   * @return {Algebra.Operation} The update operation with the dataset applied.
+   */
+  public static applyUpdateDataset(
+    algebraFactory: AlgebraFactory,
+    operation: Algebra.Operation,
+    dataset: { default: RDF.NamedNode[]; named: RDF.NamedNode[] },
+  ): Algebra.Operation {
+    return algebraTransformer({ continue: false, copy: false }).transformNode(operation, {
+      [Algebra.Types.COMPOSITE_UPDATE]: { preVisitor: () => ({ continue: true, copy: true }) },
+      [Algebra.Types.DELETE_INSERT]: {
+        transform: (deleteInsert) => {
+          if (!deleteInsert.where) {
+            return deleteInsert;
+          }
+          // The protocol does not allow a request to specify the dataset in more than one way
+          if (deleteInsert.where.type === Algebra.Types.FROM) {
+            throw new Error(`A request with a using-graph-uri or using-named-graph-uri parameter can not contain a USING, USING NAMED or WITH clause`);
+          }
+          return algebraFactory.createDeleteInsert(
+            deleteInsert.delete,
+            deleteInsert.insert,
+            algebraFactory.createFrom(deleteInsert.where, dataset.default, dataset.named),
+          );
+        },
+      },
+    });
   }
 
   /**
@@ -491,10 +621,16 @@ export class HttpServiceSparqlEndpoint {
     stdout.write(`      Received ${queryBody.type} query: ${queryBody.value}\n`);
 
     // Send message to master process to indicate the start of an execution
-    process.send!({ type: 'start', queryId });
+    process.send?.({ type: 'start', queryId });
+
+    // Send message to master process to indicate the end of an execution.
+    response.on('close', () => {
+      process.send?.({ type: 'end', queryId });
+    });
 
     // Determine context
     let context = {
+      [KeysInitQuery.baseIRI.name]: HttpServiceSparqlEndpoint.getBaseIRI(request, this.port),
       ...this.context,
       ...this.contextOverride ? queryBody.context : undefined,
     };
@@ -504,19 +640,22 @@ export class HttpServiceSparqlEndpoint {
 
     let result: QueryType;
     try {
-      result = await engine.query(queryBody.value, context);
+      // eslint-disable-next-line node/no-deprecated-api
+      const requestUrl = url.parse(request.url ?? '', true);
+      // The dataset that the request specifies through the protocol overrides the dataset of the query itself
+      const query = await this.applyProtocolDataset(engine, queryBody, requestUrl, context);
 
-      // For update queries, also await the result
+      result = await engine.query(query, context);
+
+      // For update queries, also await the result, so that failures are reported as a bad request.
+      // The execution is memoized, as updates may not be executed again while serializing the result.
       if (result.resultType === 'void') {
-        await result.execute();
+        const executed = result.execute();
+        await executed;
+        result = { ...result, execute: () => executed };
       }
     } catch (error: unknown) {
-      stdout.write('[400] Bad request\n');
-      response.writeHead(
-        400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
-      );
-      response.end((<Error> error).message);
+      this.writeBadRequest(stdout, response, (<Error> error).message);
       return;
     }
 
@@ -568,18 +707,12 @@ export class HttpServiceSparqlEndpoint {
       data.pipe(response);
       eventEmitter = data;
     } catch {
-      stdout.write('[400] Bad request, invalid media type\n');
-      response.writeHead(
-        400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+      this.writeBadRequest(
+        stdout,
+        response,
+        'The response for the given query could not be serialized for the requested media type',
       );
-      response.end('The response for the given query could not be serialized for the requested media type\n');
     }
-
-    // Send message to master process to indicate the end of an execution
-    response.on('close', () => {
-      process.send!({ type: 'end', queryId });
-    });
 
     this.stopResponse(response, queryId, process.stderr, eventEmitter);
   }
@@ -663,12 +796,11 @@ export class HttpServiceSparqlEndpoint {
       data.pipe(response);
       eventEmitter = data;
     } catch {
-      stdout.write('[400] Bad request, invalid media type\n');
-      response.writeHead(
-        400,
-        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+      this.writeBadRequest(
+        stdout,
+        response,
+        'The response for the given query could not be serialized for the requested media type',
       );
-      response.end('The response for the given query could not be serialized for the requested media type\n');
       return;
     }
     this.stopResponse(response, 0, process.stderr, eventEmitter);
@@ -765,11 +897,11 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
-   * Parses the body of a SPARQL POST or QUERY request
+   * Reads the body of a request as a UTF-8 string.
    * @param {module:http.IncomingMessage} request Request object.
-   * @return {Promise<IQueryBody>} A promise resolving to a query body object.
+   * @return {Promise<string>} A promise resolving to the request body.
    */
-  public parseBody(request: http.IncomingMessage): Promise<IQueryBody> {
+  public static readBody(request: http.IncomingMessage): Promise<string> {
     return new Promise((resolve, reject) => {
       let body = '';
       request.setEncoding('utf8');
@@ -777,36 +909,48 @@ export class HttpServiceSparqlEndpoint {
       request.on('data', (chunk) => {
         body += chunk;
       });
-      request.on('end', () => {
-        const contentType: string | undefined = request.headers['content-type'];
-        if (contentType) {
-          if (contentType.includes(HttpServiceSparqlEndpoint.MIME_SPARQL_QUERY)) {
-            return resolve({ type: 'query', value: body, context: undefined });
-          }
-          if (contentType.includes('application/sparql-update')) {
-            return resolve({ type: 'void', value: body, context: undefined });
-          }
-          if (contentType.includes('application/x-www-form-urlencoded')) {
-            const bodyStructure = querystring.parse(body);
-            let context: Record<string, any> | undefined;
-            if (bodyStructure.context) {
-              try {
-                context = JSON.parse(<string>bodyStructure.context);
-              } catch (error: unknown) {
-                reject(new Error(`Invalid POST body with context received ('${(<any> bodyStructure).context}'): ${(<Error> error).message}`));
-              }
-            }
-            if (bodyStructure.query) {
-              return resolve({ type: 'query', value: <string> bodyStructure.query, context });
-            }
-            if (bodyStructure.update) {
-              return resolve({ type: 'void', value: <string> bodyStructure.update, context });
-            }
+      request.on('end', () => resolve(body));
+    });
+  }
+
+  /**
+   * Parses the body of a SPARQL POST or QUERY request
+   * @param {module:http.IncomingMessage} request Request object.
+   * @return {Promise<IQueryBody>} A promise resolving to a query body object.
+   */
+  public async parseBody(request: http.IncomingMessage): Promise<IQueryBody> {
+    const body = await HttpServiceSparqlEndpoint.readBody(request);
+    const contentType: string | undefined = request.headers['content-type'];
+    if (contentType) {
+      if (contentType.includes(HttpServiceSparqlEndpoint.MIME_SPARQL_QUERY)) {
+        return { type: 'query', value: body, context: undefined };
+      }
+      if (contentType.includes('application/sparql-update')) {
+        return { type: 'void', value: body, context: undefined };
+      }
+      if (contentType.includes('application/x-www-form-urlencoded')) {
+        const bodyStructure = querystring.parse(body);
+        let context: Record<string, any> | undefined;
+        if (bodyStructure.context) {
+          try {
+            context = JSON.parse(<string>bodyStructure.context);
+          } catch (error: unknown) {
+            throw new Error(`Invalid POST body with context received ('${(<any> bodyStructure).context}'): ${(<Error> error).message}`);
           }
         }
-        reject(new Error(`Invalid request body received, query type could not be determined`));
-      });
-    });
+        // A request may only contain a single query or update
+        if (Array.isArray(bodyStructure.query) || Array.isArray(bodyStructure.update)) {
+          throw new TypeError(`Invalid request body received, it can only contain a single query or update parameter`);
+        }
+        if (bodyStructure.query) {
+          return { type: 'query', value: bodyStructure.query, context };
+        }
+        if (bodyStructure.update) {
+          return { type: 'void', value: bodyStructure.update, context };
+        }
+      }
+    }
+    throw new Error(`Invalid request body received, query type could not be determined`);
   }
 }
 

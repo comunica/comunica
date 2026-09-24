@@ -2,7 +2,7 @@ import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-
 import type {
   MediatorRdfJoinSelectivity,
 } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IAction, IActorArgs, Mediate, TestResult } from '@comunica/core';
 import { passTest, failTest, Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -20,6 +20,7 @@ import type {
   LogicalJoinType,
 } from '@comunica/types';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/utils-metadata';
+import { getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -72,6 +73,10 @@ TS
    * This will typically only be true for bind-join-like operators.
    */
   protected readonly canHandleOperationRequired?: boolean;
+  /**
+   * If this actor pushes bindings of one entry into the source of another entry.
+   */
+  protected readonly pushesBindingsToSource?: boolean;
 
   /* eslint-disable max-len */
   /**
@@ -91,6 +96,18 @@ TS
     this.canHandleUndefs = options.canHandleUndefs ?? false;
     this.requiresVariableOverlap = options.requiresVariableOverlap ?? false;
     this.canHandleOperationRequired = options.canHandleOperationRequired ?? false;
+    this.pushesBindingsToSource = options.pushesBindingsToSource ?? false;
+  }
+
+  /**
+   * Check if the operation of the given join entry must be pushed into the join.
+   * Next to entries that explicitly request this, this holds for entries whose metadata requests it,
+   * such as SERVICE clauses of which the target is still an unbound variable.
+   * @param entry A join entry.
+   * @param metadata The metadata of that entry.
+   */
+  public static isOperationRequired(entry: IJoinEntry, metadata: MetadataBindings): boolean {
+    return Boolean(entry.operationRequired ?? metadata.operationRequired);
   }
 
   /**
@@ -227,6 +244,46 @@ TS
   }
 
   /**
+   * Estimate the cardinality of an equi-join from the cardinalities of its entries.
+   *
+   * Under the usual uniformity assumption, joining two entries on a shared variable divides their cross product by
+   * the number of distinct values that variable takes. That number is unknown here, so it is approximated by the
+   * cardinality of the largest entry binding the variable, which is its upper bound. For two entries sharing a
+   * variable this yields the cardinality of the smaller entry.
+   *
+   * Only the most selective shared variable is taken into account. Entries sharing several variables are more
+   * selective still, but applying the approximation once per variable compounds its error, which would collapse
+   * the estimate far below the smallest entry.
+   *
+   * @param metadatas Metadata of the join entries.
+   * @return The estimated cardinality, or undefined if the entries share no variables.
+   */
+  public static getSharedVariableJoinCardinality(metadatas: MetadataBindings[]): number | undefined {
+    // Collect, per variable, the cardinalities of the entries binding it and their distinct value counts
+    const valuesByVariable: Record<string, { cardinalities: number[]; distinctValues: (number | undefined)[] }> = {};
+    for (const metadata of metadatas) {
+      for (const { variable, distinctValues } of metadata.variables) {
+        const values = valuesByVariable[variable.value] ??= { cardinalities: [], distinctValues: []};
+        values.cardinalities.push(metadata.cardinality.value);
+        values.distinctValues.push(distinctValues);
+      }
+    }
+
+    let divisor = 0;
+    for (const { cardinalities, distinctValues } of Object.values(valuesByVariable)) {
+      if (cardinalities.length > 1) {
+        // Only usable when every entry reports them; the cardinality assumes one value per binding
+        const values = distinctValues.every(value => value !== undefined) ? distinctValues : cardinalities;
+        divisor = Math.max(divisor, Math.max(...values) ** (values.length - 1));
+      }
+    }
+    if (divisor === 0) {
+      return undefined;
+    }
+    return metadatas.reduce((acc, metadata) => acc * metadata.cardinality.value, 1) / divisor;
+  }
+
+  /**
    * Helper function to create a new metadata object for the join result.
    * For required metadata entries that are not provided, sane defaults are calculated.
    * @param entries Join entries.
@@ -261,6 +318,16 @@ TS
       // The cardinality should only be zero if one of the entries has zero cardinality, not due to float overflow
       if (!hasZeroCardinality || optional) {
         cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
+        if (!optional) {
+          // The selectivity heuristic is purely structural, so it can only scale down the cross product by a
+          // constant factor, no matter how large the entries are. Cap the estimate with one that does look at the
+          // cardinalities, so that joining two large entries on a shared variable is not estimated as their product.
+          const capped = ActorRdfJoin.getSharedVariableJoinCardinality(metadatas);
+          if (capped !== undefined && capped < cardinalityJoined.value) {
+            cardinalityJoined.value = capped;
+            cardinalityJoined.type = 'estimate';
+          }
+        }
         if (cardinalityJoined.value === 0) {
           cardinalityJoined.value = Number.MIN_VALUE;
         }
@@ -344,12 +411,6 @@ TS
       return failTest(`${this.name} requires at least two join entries.`);
     }
 
-    // Check if operationRequired is supported.
-    const someOperationRequired = action.entries.some(entry => entry.operationRequired);
-    if (!this.canHandleOperationRequired && someOperationRequired) {
-      return failTest(`${this.name} does not work with operationRequired.`);
-    }
-
     // Check if this actor can handle the given number of streams
     if (this.limitEntriesMin ? action.entries.length < this.limitEntries : action.entries.length > this.limitEntries) {
       return failTest(`${this.name} requires ${this.limitEntries
@@ -366,6 +427,21 @@ TS
     }
 
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+
+    // Check if operationRequired is supported.
+    const someOperationRequired = action.entries
+      .some((entry, i) => ActorRdfJoin.isOperationRequired(entry, metadatas[i]));
+    if (!this.canHandleOperationRequired && someOperationRequired) {
+      return failTest(`${this.name} does not work with operationRequired.`);
+    }
+
+    // Pushing bindings into a source happens in chunks, with one source invocation per chunk.
+    // The target of a SERVICE SILENT clause must produce exactly one empty solution when it fails,
+    // which it could not do if it were invoked once per chunk.
+    if (this.pushesBindingsToSource && action.entries
+      .some(entry => getOperationSource(entry.operation)?.context?.get(KeysQueryOperation.silent))) {
+      return failTest(`${this.name} can not push bindings into the target of a SERVICE SILENT clause.`);
+    }
 
     // Check if this actor can handle undefs (for overlapping variables)
     let overlappingVariables: MetadataVariable[] | undefined;
@@ -516,6 +592,12 @@ export interface IActorRdfJoinInternalOptions {
    * This will typically only be true for bind-join-like operators.
    */
   canHandleOperationRequired?: boolean;
+  /**
+   * If this actor pushes bindings of one entry into the source of another entry,
+   * which it does in chunks, resulting in one source invocation per chunk.
+   * Defaults to false.
+   */
+  pushesBindingsToSource?: boolean;
 }
 
 export interface IActionRdfJoin extends IAction {

@@ -1,6 +1,6 @@
 # Comunica Context Union Merge Binding Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-merge-binding-factory-context-union.svg)](https://www.npmjs.com/package/@comunica/actor-merge-bindings-context-union)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-merge-bindings-context-union.svg)](https://www.npmjs.com/package/@comunica/actor-merge-bindings-context-union)
 
 An [Merge Bindings Context](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context) actor
 that merges context entry values by taking the set-union.

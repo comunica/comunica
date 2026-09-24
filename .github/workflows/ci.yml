@@ -297,40 +297,71 @@ jobs:
 
   performance:
     name: Performance benchmarks
-    if: startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')
+    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        benchmark:
-          - watdiv-file
-          - watdiv-tpf
-          - bsbm-file
-          - bsbm-tpf
-          - web
+        # The web benchmark is omitted on pull requests, as its query set varies across runs,
+        # which makes its totals incomparable between two runs.
+        benchmark: ${{ github.event_name == 'pull_request' && fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf"]') || fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "web"]') }}
+    env:
+      BENCHMARK_BASE: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          path: head
+      - name: Check out the base commit of the pull request
+        if: env.BENCHMARK_BASE == 'true'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base
       - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION_HIGHEST }}
           cache: yarn
+          cache-dependency-path: head/yarn.lock
       - name: Install dependencies and build monorepo
         run: yarn install --frozen-lockfile
+        working-directory: head
+      - name: Install dependencies and build monorepo of the base commit
+        if: env.BENCHMARK_BASE == 'true'
+        run: yarn install --frozen-lockfile
+        working-directory: base
+      - name: Run benchmarks of the base commit
+        if: env.BENCHMARK_BASE == 'true'
+        run: cd base/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
+      - name: Remove containers left behind by the base commit benchmarks
+        # The TPF benchmarks run their LDF server in Docker on fixed ports,
+        # so the benchmarks below must start from the same clean state as the base ones did.
+        if: env.BENCHMARK_BASE == 'true'
+        run: docker ps -aq | xargs -r docker rm -f
       - name: Run benchmarks
-        run: cd performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
+        run: cd head/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
       - uses: actions/upload-artifact@v7
         with:
           name: performance-benchmark-${{ matrix.benchmark }}
-          path: performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
+          path: head/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
+      - uses: actions/upload-artifact@v7
+        if: env.BENCHMARK_BASE == 'true'
+        with:
+          name: performance-benchmark-base-${{ matrix.benchmark }}
+          path: base/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
       - name: Print raw output
-        run: cat performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
+        run: cat head/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
+      - name: Print raw output of the base commit
+        if: env.BENCHMARK_BASE == 'true'
+        run: cat base/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
 
   performance-consolidate:
     name: Performance analysis
+    # Pull request results are compared in performance-compare instead, and are never stored.
+    if: github.event_name != 'pull_request'
     needs:
       - misc
       - test
@@ -363,6 +394,10 @@ jobs:
           path: performance/benchmark-bsbm-file/combinations/combination_0/output/
       - uses: actions/download-artifact@v8
         with:
+          name: performance-benchmark-bsbm-file-10k
+          path: performance/benchmark-bsbm-file-10k/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
           name: performance-benchmark-bsbm-tpf
           path: performance/benchmark-bsbm-tpf/combinations/combination_0/output/
       - uses: actions/download-artifact@v8
@@ -370,9 +405,9 @@ jobs:
           name: performance-benchmark-web
           path: performance/benchmark-web/combinations/combination_0/output/
       - name: Process benchmark detailed results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF,Web --total false --detailed true --name ghbench-detail.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,Web --total false --detailed true --name ghbench-detail.json
       - name: Process benchmark total results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-TPF,Web --total true --detailed false --name ghbench-total.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,Web --total true --detailed false --name ghbench-total.json
       - name: Determine benchmark detailed results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_DETAIL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail" >> $GITHUB_ENV
       - name: Determine benchmarks total results target directory name
@@ -413,6 +448,125 @@ jobs:
         uses: peter-evans/commit-comment@v4
         with:
           body-path: ./commit-comment-body.txt
+
+  performance-compare:
+    name: Performance comparison
+    if: github.event_name == 'pull_request'
+    needs:
+      - performance
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Use Node.js ${{ env.NODE_VERSION_HIGHEST }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION_HIGHEST }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-watdiv-file
+          path: performance/benchmark-watdiv-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-watdiv-tpf
+          path: performance/benchmark-watdiv-tpf/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-bsbm-file
+          path: performance/benchmark-bsbm-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-bsbm-file-10k
+          path: performance/benchmark-bsbm-file-10k/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-bsbm-tpf
+          path: performance/benchmark-bsbm-tpf/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-base-watdiv-file
+          path: base/performance/benchmark-watdiv-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-base-watdiv-tpf
+          path: base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-base-bsbm-file
+          path: base/performance/benchmark-bsbm-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-base-bsbm-file-10k
+          path: base/performance/benchmark-bsbm-file-10k/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-base-bsbm-tpf
+          path: base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/
+      - name: Process benchmark detailed results
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total false --detailed true --name ghbench-detail.json
+      - name: Process benchmark total results
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total true --detailed false --name ghbench-total.json
+      - name: Process base commit benchmark detailed results
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total false --detailed true --name ghbench-base-detail.json
+      - name: Process base commit benchmark total results
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total true --detailed false --name ghbench-base-total.json
+      - name: Assemble the comparison comment
+        # Posted by the performance-comment workflow, as this job
+        # receives a read-only GITHUB_TOKEN on pull requests from forks.
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -eu
+          table () {
+            jq -rn \
+              --slurpfile headResults "ghbench-$1.json" \
+              --slurpfile baseResults "ghbench-base-$1.json" \
+              --arg headSha "$HEAD_SHA" \
+              --arg baseSha "$BASE_SHA" \
+              '
+                def row: "| " + join(" | ") + " |";
+                # Ratios are rounded to two decimals, and are below 1 when the pull request is faster
+                def ratio($current; $previous):
+                  if $previous == 0
+                  then (if $current == 0 then "1.00" else "\u221e" end)
+                  else ($current * 100 / $previous | round)
+                    | "\(. / 100 | floor).\(. % 100 | tostring | if length == 1 then "0\(.)" else . end)"
+                  end;
+                ($baseResults[0] | INDEX(.name)) as $base
+                | [ ([ "Benchmark suite", "Current: \($headSha)", "Base: \($baseSha)", "Ratio" ] | row), "|-|-|-|-|" ]
+                  + ($headResults[0] | map(
+                      $base[.name] as $baseEntry
+                      | [ "`\(.name)`", "`\(.value)` \(.unit)" ] + (
+                          if $baseEntry == null
+                          then [ "", "" ]
+                          else [ "`\($baseEntry.value)` \($baseEntry.unit)", "`\(ratio(.value; $baseEntry.value))`" ]
+                          end)
+                      | row))
+                | join("\n")
+              '
+          }
+          {
+            printf '<!-- performance-comparison -->\n\n# Benchmarks total results\n\n'
+            table total
+            printf '\n\n<details>\n<summary>Show detailed results</summary>\n\n'
+            table detail
+            printf '\n\n</details>\n\nMeasured by [this CI run](%s/%s/actions/runs/%s).\n' \
+              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
+          } > comparison-comment.md
+          echo "$PULL_REQUEST_NUMBER" > comparison-pull-request.txt
+          cat comparison-comment.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: performance-comparison
+          path: |
+            comparison-comment.md
+            comparison-pull-request.txt
 
   documentation:
     name: Prepare documentation

@@ -1,0 +1,10 @@
+# The first pairs of distinct people born in Cambridge, by URI order
+# ORDER BY has no top-k, so this sorts all ~86k solutions in the engine
+# Datasource: https://fragments.dbpedia.org/2016-04/en
+SELECT ?person1 ?person2 WHERE {
+  ?person1 dbpedia-owl:birthPlace dbpedia:Cambridge.
+  ?person2 dbpedia-owl:birthPlace dbpedia:Cambridge.
+  FILTER(?person1 != ?person2)
+}
+ORDER BY ?person1 ?person2
+LIMIT 10

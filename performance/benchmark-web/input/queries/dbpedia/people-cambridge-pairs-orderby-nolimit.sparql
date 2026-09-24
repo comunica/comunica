@@ -1,0 +1,13 @@
+# All pairs of distinct people born in Cambridge, by URI order
+# The same query as people-cambridge-pairs-orderby.sparql, without its LIMIT. Nothing bounds the
+# sort here, so the engine has to hold and order all ~86k solutions rather than keeping only the
+# smallest ten. Together the two queries separate what bounding the sort is worth from what
+# producing the solutions costs, and this one is the side that a change to the unbounded sort
+# shows up in.
+# Datasource: https://fragments.dbpedia.org/2016-04/en
+SELECT ?person1 ?person2 WHERE {
+  ?person1 dbpedia-owl:birthPlace dbpedia:Cambridge.
+  ?person2 dbpedia-owl:birthPlace dbpedia:Cambridge.
+  FILTER(?person1 != ?person2)
+}
+ORDER BY ?person1 ?person2

@@ -43,7 +43,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
   }
 
   /**
-   * Converts an URL like 'hypermedia@http://user:passwd@example.com to an IDataSource
+   * Converts an URL like 'sparql@http://user:passwd@example.com to an IDataSource
    * @param {string} sourceString An url with possibly a type and authorization.
    * @return {[id: string]: any} An IDataSource which represents the sourceString.
    */
@@ -118,6 +118,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
         lenient: {
           type: 'boolean',
           describe: 'If failing requests and parsing errors should be logged instead of causing a hard crash',
+        },
+        serviceAllowVariableTargets: {
+          type: 'boolean',
+          describe: 'If SERVICE clauses are allowed to have a variable as target, ' +
+            'which lets the queried data determine what is dereferenced',
         },
         parseUnsupportedVersions: {
           type: 'boolean',
@@ -274,6 +279,11 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     // Define lenient-mode
     if (args.lenient) {
       context[KeysInitQuery.lenient.name] = true;
+    }
+
+    // Define if SERVICE clauses may have a variable as target
+    if (args.serviceAllowVariableTargets) {
+      context[KeysInitQuery.serviceAllowVariableTargets.name] = true;
     }
 
     // Define parseUnsupportedVersions

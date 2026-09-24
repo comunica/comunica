@@ -1,6 +1,6 @@
 # Comunica Term Function Contains Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-contains.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-contains)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-contains.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-contains)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)
