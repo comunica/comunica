@@ -1406,6 +1406,53 @@ SELECT ?person ?name ?book ?title {
     });
 
     describe('property paths', () => {
+      it('should handle repeated sequence paths with 2 variables over an RDF/JS store', async() => {
+        const store = new Store([
+          DF.quad(
+            DF.namedNode('http://example.org/a'),
+            DF.namedNode('http://example.org/q'),
+            DF.namedNode('http://example.org/b'),
+          ),
+          DF.quad(
+            DF.namedNode('http://example.org/b'),
+            DF.namedNode('http://example.org/p'),
+            DF.namedNode('http://example.org/c'),
+          ),
+        ]);
+
+        await expect(engine.queryBindings(`
+          PREFIX ex: <http://example.org/>
+          SELECT * WHERE { ?s (ex:q/ex:p)* ?o }
+        `, { sources: [ store ]}).then(stream => stream.toArray())).resolves.toEqualBindingsArray([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/a') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/a') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/a') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/c') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/b') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/b') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/c') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/c') ],
+          ]),
+        ]);
+
+        await expect(engine.queryBindings(`
+          PREFIX ex: <http://example.org/>
+          SELECT * WHERE { ?s (ex:q/ex:p)+ ?o }
+        `, { sources: [ store ]}).then(stream => stream.toArray())).resolves.toEqualBindingsArray([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/a') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/c') ],
+          ]),
+        ]);
+      });
+
       it('should handle zero-or-more paths with lists', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -3881,15 +3928,13 @@ CONSTRUCT {
     }`, {
           sources: [ 'https://www.rubensworks.net/' ],
         }, 'physical');
-        expect(result).toEqual({
-          explain: true,
-          type: 'physical',
-          data: `project (o,p,s)
+        // Without statistics nothing of the live page itself is asserted
+        expect(result.data).toBe(`project (o,p,s)
   pattern (?s ?p ?o) src:0
 
 sources:
-  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`,
-        });
+  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`);
+        expect(result).toMatchObject({ explain: true, type: 'physical' });
       });
 
       it('explaining physical-json plan', async() => {
@@ -3904,11 +3949,19 @@ sources:
           data: {
             logical: 'project',
             variables: [ 'o', 'p', 's' ],
+            cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
+            cardinalityReal: expect.any(Number),
+            timeSelf: expect.any(Number),
+            timeLife: expect.any(Number),
             children: [
               {
                 logical: 'pattern',
                 pattern: '?s ?p ?o',
                 source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
+                cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
+                cardinalityReal: expect.any(Number),
+                timeSelf: expect.any(Number),
+                timeLife: expect.any(Number),
               },
             ],
           },

@@ -11,8 +11,8 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getSafeBindings } from '@comunica/utils-query-operation';
-import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
+import { getSafeBindings, groupRepeatedSubOperations } from '@comunica/utils-query-operation';
+import { MultiTransformIterator, TransformIterator } from 'asynciterator';
 
 /**
  * A comunica Path OneOrMore Query Operation Actor.
@@ -74,8 +74,9 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       const subjectVar = operation.subject;
       const objectVar = operation.object;
 
-      const termHashes = {};
-
+      // The path is walked by evaluating one sub-path per reached term,
+      // so group those evaluations in the physical query plan
+      const alpContext = groupRepeatedSubOperations(context, 'alp', this.name);
       const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
         results.bindingsStream,
         {
@@ -85,23 +86,18 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
             const graph = operation.graph.termType === 'Variable' ? bindings.get(operation.graph) : operation.graph;
             return new TransformIterator<Bindings>(
               async() => {
-                const it = new BufferedIterator<Bindings>();
-                await this.getSubjectAndObjectBindingsPredicateStar(
-                  subjectVar,
-                  objectVar,
-                  subject!,
+                const pathResult = await this.getObjectsPredicateStarEval(
                   object!,
                   predicate.path,
+                  objectVar,
                   graph!,
-                  context,
-                  termHashes,
-                  {},
-                  it,
-                  { count: 0 },
+                  alpContext,
+                  true,
                   algebraFactory,
                   bindingsFactory,
                 );
-                return it.map<Bindings>((item) => {
+                return pathResult.bindingsStream.map<Bindings>((item) => {
+                  item = item.set(subjectVar, subject!);
                   if (operation.graph.termType === 'Variable') {
                     item = item.set(operation.graph, graph!);
                   }
