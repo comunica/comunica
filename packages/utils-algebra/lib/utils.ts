@@ -487,10 +487,10 @@ export const inScopeVariables: typeof algebraUtils.inScopeVariables =
 type NodeCallBacks = { preVisitor?: (op: any) => VisitContext };
 
 /**
- * Wrap the pre-visitors in the given callbacks, so that they keep ignoring the metadata of operations.
- * A pre-visitor that returns its own `ignoreKeys` replaces the default ones, which include `metadata`,
- * while metadata refers to sources and actors that are not part of the algebra, and can contain cycles.
+ * Wrap the pre-visitors in the given callbacks, so that the `ignoreKeys` they return keep including `metadata`.
+ * Metadata refers to sources and actors, which are not part of the algebra and can contain cycles.
  * @param nodeCallBacks Callbacks for visiting operations, keyed by operation type.
+ * @return The wrapped callbacks.
  */
 function keepIgnoringMetadata<T extends Record<string, NodeCallBacks | undefined>>(nodeCallBacks: T): T {
   return <T> Object.fromEntries(Object.entries(nodeCallBacks).map(([ type, callbacks ]) => {

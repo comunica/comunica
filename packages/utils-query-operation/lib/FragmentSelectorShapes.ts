@@ -221,6 +221,7 @@ function isInternalOperation(operation: Algebra.Operation): boolean {
  * @param shape A shape to test the nested operations against.
  * @param operation An operation to inspect.
  * @param options Additional options to consider.
+ * @return If it contains such an operation.
  */
 function containsUnsupportedInternalOperation(
   shape: FragmentSelectorShape,

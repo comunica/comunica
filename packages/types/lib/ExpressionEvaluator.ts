@@ -43,16 +43,12 @@ export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) =
 Promise<AsyncExtensionFunction | undefined>;
 
 /**
- * Resolves a SPARQL `EXISTS` or `NOT EXISTS` expression against the given bindings.
- *
- * The resolver receives the expression as it appears in the algebra, so it is responsible for both
- * materializing `expression.input` against the bindings (see `materializeOperation` in
- * `@comunica/utils-query-operation`) and for applying `expression.not`.
- * Inside a query engine, that is the optimized algebra, in which its operations are assigned to the query's sources.
- * The resolver also receives the context in which the expression is evaluated, which is especially useful
- * for resolvers that distinguish between the sources that the operations in `expression.input` target.
- * Throw an `ExpressionError` to have the failure treated as a SPARQL error, for example so that
- * `FILTER` drops the bindings instead of failing the query.
+ * Resolves a SPARQL `EXISTS` or `NOT EXISTS` expression, including its `not` flag.
+ * Throwing an `ExpressionError` makes the failure a SPARQL error, so that for instance `FILTER` drops the bindings.
+ * @param expression The expression as it appears in the algebra, inside a query engine optimized for its sources.
+ * @param mapping The bindings to resolve it for, which `materializeOperation` can fill into `expression.input`.
+ * @param context The context of the evaluation, which for instance tells apart the sources that the input targets.
+ * @return If the expression holds.
  */
 export type ExistenceResolver = (
   expression: Algebra.ExistenceExpression,

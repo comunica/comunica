@@ -4052,12 +4052,8 @@ CONSTRUCT {
   });
 
   /**
-   * Regression tests for the interaction between the existence resolver and query source pushdown.
-   *
-   * A SPARQL endpoint accepts any operation, so without this guard the whole `FILTER EXISTS` was
-   * handed to the endpoint, which answered the `EXISTS` against its own data while the resolver
-   * that the caller installed for exactly that purpose was never called.
-   * The body of a SERVICE clause is exempt, as it is up to the target of that clause to evaluate it.
+   * Tests that the existence resolver of the context answers every `EXISTS`, instead of the sources.
+   * The body of a SERVICE clause is exempt, as it has the data of its target in scope.
    */
   describe('existence resolver', () => {
     const endpoint = 'http://example.org/existence/sparql';

@@ -134,11 +134,10 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
   }
 
   /**
-   * Check if the given operation produces no results, because it needs results from a union or alt
-   * of which all children have been pruned.
-   * Only the inputs that determine whether there are results are considered,
-   * so not for instance the expressions of a FILTER, as a `NOT EXISTS` over an empty operation still holds.
+   * Check if the given operation has no results, because the results that it needs have all been pruned.
+   * Expressions are not considered, as for instance a `NOT EXISTS` over an empty operation still holds.
    * @param operation An operation.
+   * @return If the operation has no results.
    */
   protected static hasEmptyOperation(operation: Algebra.Operation): boolean {
     const hasEmptyOperation = ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation;

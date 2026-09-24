@@ -218,17 +218,13 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
   }
 
   /**
-   * Checks if the given source can evaluate the expressions in the given operation, using the following rules:
-   * - If an expression contains an operation that is assigned to another source,
-   *   such as the pattern of an `EXISTS` over other sources, then it can't,
-   *   as this source would evaluate that operation over its own data instead.
-   * - If an expression contains an empty union or alt, which is what remains of an operation that none of the sources
-   *   has results for, then it can't, as such an operation can not be handed to a source.
-   * - If the operation contains an `EXISTS` that the caller resolves itself, then it can't,
-   *   as this source would answer that `EXISTS` itself, bypassing the caller's existence resolver.
+   * Checks if the given source can evaluate the expressions in the given operation.
+   * It can't if they contain an operation of another source, an empty union or alt that pruning left behind,
+   * or an `EXISTS` that the existence resolver of the context answers.
    * @param operation A grouped operation consisting of operations that share the given source.
    * @param source The common source.
    * @param context The action context.
+   * @return If the source can evaluate the expressions.
    */
   public canSourceEvaluateExpressions(
     operation: Algebra.Operation,

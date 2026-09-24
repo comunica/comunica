@@ -316,15 +316,9 @@ export const KeysExpressionEvaluator = {
    */
   superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/utils-expression-evaluator:superTypeProvider'),
   /**
-   * Resolves `EXISTS` and `NOT EXISTS` expressions.
-   * When absent, the expression evaluator falls back to its query operation mediator.
-   *
-   * Inside a query engine, setting this also stops operations that contain an `EXISTS` from being
-   * delegated to a query source, because such a source would answer the `EXISTS` itself.
-   * More of the query is then evaluated locally, calling this resolver once per solution,
-   * and the source no longer applies an update atomically.
-   * The body of a SERVICE clause is exempt, as it has the data of its target in scope:
-   * an `EXISTS` in there is left to that target, and never passed to this resolver.
+   * Resolves `EXISTS` and `NOT EXISTS` expressions, instead of the query operation mediator.
+   * Inside a query engine, operations containing them are then kept away from sources,
+   * except within the body of a SERVICE clause, which is left to its target.
    */
   existenceResolver: new ActionContextKey<ExistenceResolver>(
     '@comunica/utils-expression-evaluator:existenceResolver',

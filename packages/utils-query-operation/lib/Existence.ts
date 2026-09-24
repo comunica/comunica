@@ -3,15 +3,11 @@ import type { IActionContext } from '@comunica/types';
 import { Algebra, algebraUtils, isKnownSubType } from '@comunica/utils-algebra';
 
 /**
- * Check if the given operation contains an `EXISTS` or `NOT EXISTS` that the caller resolves itself,
- * through a `KeysExpressionEvaluator.existenceResolver` in the context.
- *
- * Such an operation must not be delegated to a query source: the source would answer the `EXISTS`
- * against its own data, which silently bypasses the resolver that the caller installed for it.
- * The body of a SERVICE clause is exempt, also once source assignment has replaced that clause by its body
- * (see {@link markExistenceWithinService}).
+ * Check if the given operation contains an `EXISTS` or `NOT EXISTS` that the existence resolver of the context
+ * answers, so that it must not be delegated to a source. Those from the body of a SERVICE clause are exempt.
  * @param operation An operation to inspect.
  * @param context The action context, which may hold an existence resolver.
+ * @return If the operation contains such an expression.
  */
 export function containsCallerResolvedExistence(operation: Algebra.Operation, context: IActionContext): boolean {
   if (!context.get(KeysExpressionEvaluator.existenceResolver)) {
@@ -39,11 +35,10 @@ export function containsCallerResolvedExistence(operation: Algebra.Operation, co
 }
 
 /**
- * Mark the given `EXISTS` or `NOT EXISTS` expression as part of the body of a SERVICE clause.
- * Such an expression has the data of the target of that clause in scope, so it is evaluated over that target,
- * and never by a caller's existence resolver.
- * Once the clause has been replaced by its body, the expression can otherwise not be told apart from others.
+ * Mark the given `EXISTS` or `NOT EXISTS` expression as part of the body of a SERVICE clause,
+ * so that it is evaluated over the target of that clause, and never by an existence resolver.
  * @param expression An existence expression within the body of a SERVICE clause.
+ * @return A marked copy of the expression.
  */
 export function markExistenceWithinService(expression: Algebra.ExistenceExpression): Algebra.ExistenceExpression {
   const marked = algebraUtils.withMetadata({ ...expression });
@@ -54,6 +49,7 @@ export function markExistenceWithinService(expression: Algebra.ExistenceExpressi
 /**
  * Check if the given `EXISTS` or `NOT EXISTS` expression is marked as part of the body of a SERVICE clause.
  * @param expression An existence expression.
+ * @return If the expression is marked.
  */
 export function isExistenceWithinService(expression: Algebra.ExistenceExpression): boolean {
   return Boolean(expression.metadata?.withinService);
