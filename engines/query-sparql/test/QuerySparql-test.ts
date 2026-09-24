@@ -1406,6 +1406,39 @@ SELECT ?person ?name ?book ?title {
     });
 
     describe('property paths', () => {
+      it('should handle zero-or-more paths with variable ends over multiple SPARQL endpoints', async() => {
+        // Answers ASK and COUNT queries as if the endpoints hold data, so that they are queried for all nodes,
+        // which they can only be asked for through triple patterns, and answers all other queries with nothing.
+        const mockedFetch: typeof fetch = async(input, init) => {
+          const url = new URL(input instanceof Request ? input.url : input);
+          const query = url.searchParams.get('query') ??
+            (init?.body ? new URLSearchParams(String(init.body)).get('query') : null);
+          // Requests without a query are service description lookups
+          if (!query) {
+            return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
+          }
+          const count = { type: 'literal', value: '1', datatype: 'http://www.w3.org/2001/XMLSchema#integer' };
+          const response = /\bASK\b/u.test(query) ?
+              { head: {}, boolean: true } :
+            query.includes('COUNT') ?
+                { head: { vars: [ 'count' ]}, results: { bindings: [{ count }]}} :
+                { head: { vars: []}, results: { bindings: []}};
+          return new Response(JSON.stringify(response), {
+            status: 200,
+            headers: { 'content-type': 'application/sparql-results+json' },
+          });
+        };
+
+        const bindingsStream = await engine.queryBindings('SELECT * WHERE { ?s <ex:p>* ?o }', {
+          sources: [
+            { type: 'sparql', value: 'http://example.org/path1/sparql' },
+            { type: 'sparql', value: 'http://example.org/path2/sparql' },
+          ],
+          fetch: mockedFetch,
+        });
+        await expect(bindingsStream.toArray()).resolves.toEqual([]);
+      });
+
       it('should handle zero-or-more paths with lists', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -3414,6 +3447,34 @@ CONSTRUCT {
   });
 
   describe('DistinctTerms optimization', () => {
+    it('should not hand the DistinctTerms operator to a SPARQL endpoint', async() => {
+      // The SERVICE clause assigns the endpoint to the inner pattern before that endpoint is handed the whole clause,
+      // and the endpoint, which accepts any SPARQL operation, can not evaluate the DistinctTerms operator in between.
+      const endpoint = 'http://example.org/distinct/sparql';
+      const queries: string[] = [];
+      const mockedFetch: typeof fetch = async(input, init) => {
+        const url = new URL(input instanceof Request ? input.url : input);
+        const query = url.searchParams.get('query') ??
+          (init?.body ? new URLSearchParams(String(init.body)).get('query') : null);
+        // Requests without a query are service description lookups
+        if (!query) {
+          return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
+        }
+        queries.push(query);
+        return new Response(JSON.stringify({
+          head: { vars: [ 's' ]},
+          results: { bindings: [{ s: { type: 'uri', value: 'ex:s1' }}, { s: { type: 'uri', value: 'ex:s2' }}]},
+        }), { status: 200, headers: { 'content-type': 'application/sparql-results+json' }});
+      };
+
+      const bindings = await (await engine.queryBindings(`SELECT ?s WHERE {
+        SERVICE <${endpoint}> { SELECT DISTINCT ?s WHERE { ?s <ex:p> ?o } }
+      }`, { sources: [ RdfStore.createDefault() ], fetch: mockedFetch })).toArray();
+
+      expect(bindings.map(entry => entry.get('s')!.value)).toEqual([ 'ex:s1', 'ex:s2' ]);
+      expect(queries).toEqual([ expect.stringContaining('DISTINCT') ]);
+    });
+
     it('should optimize SELECT DISTINCT with subject and graph variables', async() => {
       const store = RdfStore.createDefault();
       store.addQuad(DF.quad(

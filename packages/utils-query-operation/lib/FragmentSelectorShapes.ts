@@ -1,6 +1,6 @@
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { FragmentSelectorShape, IActionContext, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, algebraUtils, isKnownSubType } from '@comunica/utils-algebra';
+import { Algebra, algebraUtils, isKnownSubType, TypesComunica } from '@comunica/utils-algebra';
 import { getDataDestinationValue } from './Utils';
 
 /**
@@ -97,7 +97,12 @@ function doesShapeAcceptOperationRecurseShape(
     }
     case 'wildcard': {
       // All possible operations are accepted by this shape.
-      // As exception, extension functions are not accepted through wildcards.
+      // As exception, the operations that Comunica defines for internal use are not accepted through wildcards,
+      // as these are not part of SPARQL, so a source that accepts all of SPARQL can not be assumed to know them.
+      if (containsInternalOperation(operation)) {
+        return false;
+      }
+      // As another exception, extension functions are not accepted through wildcards.
       if (options?.wildcardAcceptAllExtensionFunctions) {
         return true;
       }
@@ -202,6 +207,23 @@ function doesShapeAcceptOperationRecurseOperationImpl(
 
 function isStandardSparqlFunction(iri: string): boolean {
   return /^https?:\/\/www\.w3\.org\//u.test(iri);
+}
+
+/**
+ * Check if the given operation is or contains an operation that Comunica defines for internal use.
+ * @param operation An operation to inspect.
+ */
+function containsInternalOperation(operation: Algebra.Operation): boolean {
+  let found = false;
+  const callbacks = {
+    preVisitor: () => {
+      found = true;
+      return { shortcut: true };
+    },
+  };
+  algebraUtils.visitOperation(operation, Object.fromEntries(Object.values(TypesComunica)
+    .map(type => [ type, callbacks ])));
+  return found;
 }
 
 function isExtensionFunction(operation: Algebra.Operation): operation is Algebra.NamedExpression {

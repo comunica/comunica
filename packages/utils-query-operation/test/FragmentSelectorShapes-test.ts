@@ -153,6 +153,35 @@ describe('FragmentSelectorShapes', () => {
       }, AF.createBgp([]))).toBeTruthy();
     });
 
+    describe('for operations that Comunica defines for internal use', () => {
+      const wildcard: FragmentSelectorShape = { type: 'operation', operation: { operationType: 'wildcard' }};
+      const nodes = AF.createNodes(AF.dataFactory.variable!('g'), AF.dataFactory.variable!('s'));
+      const distinctTerms = AF.createDistinctTerms([ AF.dataFactory.variable!('s') ], { s: 'subject' });
+
+      it('should not accept them with type wildcard', () => {
+        expect(doesShapeAcceptOperation(wildcard, nodes)).toBeFalsy();
+        expect(doesShapeAcceptOperation(wildcard, distinctTerms)).toBeFalsy();
+        expect(doesShapeAcceptOperation(wildcard, distinctTerms, { wildcardAcceptAllExtensionFunctions: true }))
+          .toBeFalsy();
+        expect(doesShapeAcceptOperation(SHAPE_SPARQL_1_1, distinctTerms)).toBeFalsy();
+      });
+
+      it('should not accept operations containing them with type wildcard', () => {
+        expect(doesShapeAcceptOperation(wildcard, AF.createJoin([ AF.createNop(), nodes ]))).toBeFalsy();
+        expect(doesShapeAcceptOperation(wildcard, AF.createDistinct(distinctTerms))).toBeFalsy();
+      });
+
+      it('should accept them when listed by their type next to a wildcard', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'disjunction',
+          children: [
+            wildcard,
+            { type: 'operation', operation: { operationType: 'type', type: TypesComunica.DISTINCT_TERMS }},
+          ],
+        }, distinctTerms)).toBeTruthy();
+      });
+    });
+
     it('should not accept unequal operations with type type', () => {
       expect(doesShapeAcceptOperation({
         type: 'operation',

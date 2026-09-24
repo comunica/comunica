@@ -205,6 +205,8 @@ export type FragmentSelectorShape = {
      * All possible operations are accepted by this shape.
      * As exception, extension functions are not accepted through wildcards, and must be
      * explicitly listed via `extensionFunctions`.
+     * Neither are the operations that Comunica defines for internal use (`TypesComunica`),
+     * which must be explicitly listed by their type.
      */
     operationType: 'wildcard';
   };
