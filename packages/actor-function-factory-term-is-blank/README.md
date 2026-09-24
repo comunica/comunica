@@ -1,6 +1,6 @@
 # Comunica Term Function Is Blank Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-is-blank.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-is-blank)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-is-blank.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-is-blank)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)

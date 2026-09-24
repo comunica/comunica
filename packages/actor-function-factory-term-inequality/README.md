@@ -1,6 +1,6 @@
 # Comunica Term Function Inequality Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-inequality.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-inequality)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-inequality.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-inequality)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)

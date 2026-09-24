@@ -1,12 +1,12 @@
 import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, Expression, IActionContext, TermExpression } from '@comunica/types';
 import { ExpressionType } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import * as Eval from '@comunica/utils-expression-evaluator';
-import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
+import { getSafeBindings, groupRepeatedSubOperations, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { AlgebraTransformer } from './AlgebraTransformer';
 
@@ -65,11 +65,22 @@ export class InternalEvaluator {
   }
 
   private async evalExistence(expr: Eval.Existence, mapping: RDF.Bindings): Promise<Eval.Term> {
+    // A resolver takes over the whole expression, including its `not` flag, so nothing is materialized here.
+    const existenceResolver = this.context.get(KeysExpressionEvaluator.existenceResolver);
+    if (existenceResolver) {
+      return new Eval.BooleanLiteral(await existenceResolver(expr.expression, mapping));
+    }
+
     const dataFactory: ComunicaDataFactory = this.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
     const operation = materializeOperation(expr.expression.input, mapping, algebraFactory, this.bindingsFactory);
 
-    const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context: this.context });
+    // This expression is evaluated once per binding, so group those evaluations in the physical query
+    // plan. Every evaluation of it reaches for the same group, and a filter with more than one
+    // `EXISTS` keeps a group per expression, so nothing is remembered here.
+    const context = groupRepeatedSubOperations(this.context, 'exists', undefined, expr.expression);
+
+    const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context });
     const output = getSafeBindings(outputRaw);
 
     return await new Promise<boolean>(

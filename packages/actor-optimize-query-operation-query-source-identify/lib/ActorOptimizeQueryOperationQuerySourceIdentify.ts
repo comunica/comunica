@@ -7,7 +7,7 @@ import type {
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysInitQuery, KeysQueryOperation, KeysStatistics } from '@comunica/context-entries';
+import { KeysDereference, KeysInitQuery, KeysQueryOperation, KeysStatistics } from '@comunica/context-entries';
 import type { TestResult, IActorTest } from '@comunica/core';
 import { passTestVoid, ActionContext } from '@comunica/core';
 import type {
@@ -23,6 +23,14 @@ import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { passFullOperationToSource } from '@comunica/utils-query-operation';
 import { LRUCache } from 'lru-cache';
 
+// Cache key prefix for sources that are identified as SERVICE targets,
+// as these are identified with a different source context than regular sources.
+const KEY_PREFIX_SERVICE = 'service:';
+// Cache key separator between a source's named graph and its url,
+// as sources that are exposed under a named graph contain different data than the plain source.
+// Whitespace can not occur in IRIs, so this never clashes with a url.
+const KEY_SEPARATOR_NAMED_GRAPH = '\n';
+
 /**
  * A comunica Query Source Identify Optimize Query Operation Actor.
  */
@@ -33,6 +41,8 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
   public readonly mediatorContextPreprocess: MediatorContextPreprocess;
   public readonly cache?: LRUCache<string, Promise<IQuerySourceWrapper>>;
+  // If the cache may hold sources that are exposed under a named graph.
+  public cacheHasNamedGraphSources = false;
 
   public constructor(args: IActorOptimizeQueryOperationQuerySourceIdentifyArgs) {
     super(args);
@@ -45,7 +55,23 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
     const cache = this.cache;
     if (cache) {
       this.httpInvalidator.addInvalidateListener(
-        ({ url }: IActionHttpInvalidate) => url ? cache.delete(url) : cache.clear(),
+        ({ url }: IActionHttpInvalidate) => {
+          if (url) {
+            cache.delete(url);
+            cache.delete(KEY_PREFIX_SERVICE + url);
+            // Keys of named graph sources also contain that graph, so they can only be found by scanning.
+            if (this.cacheHasNamedGraphSources) {
+              for (const key of cache.keys()) {
+                if (key.endsWith(KEY_SEPARATOR_NAMED_GRAPH + url)) {
+                  cache.delete(key);
+                }
+              }
+            }
+          } else {
+            cache.clear();
+            this.cacheHasNamedGraphSources = false;
+          }
+        },
       );
     }
   }
@@ -91,6 +117,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
       const services: Set<string> = new Set();
       algebraUtils.visitOperation(action.operation, {
         [Algebra.Types.SERVICE]: {
+          // Nested SERVICE clauses are delegated to their parent SERVICE target, so they need no source here.
           preVisitor: () => ({ continue: false }),
           visitor: (serviceOperation) => {
             if (serviceOperation.name.termType === 'NamedNode') {
@@ -99,11 +126,17 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
           },
         },
       });
+      // Unless explicitly allowed, SERVICE targets may not be dereferenced from the local file system,
+      // as queries from untrusted parties could otherwise read arbitrary local files.
+      const serviceContext = context.get(KeysInitQuery.serviceAllowFileTargets) ?
+        undefined :
+        new ActionContext().set(KeysDereference.blockFileAccess, true);
       const serviceSources: Record<string, IQuerySourceWrapper> = Object.fromEntries(await Promise.all([ ...services ]
         .map(async service => [ service, await this.identifySource({
           type: this.serviceForceSparqlEndpoint ? 'sparql' : undefined,
           value: service,
-        }, context) ])));
+          context: serviceContext,
+        }, context, KEY_PREFIX_SERVICE) ])));
       if (services.size > 0) {
         context = context.set(KeysQueryOperation.serviceSources, serviceSources);
       }
@@ -127,13 +160,20 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   public identifySource(
     querySourceUnidentified: QuerySourceUnidentifiedExpanded,
     context: IActionContext,
+    cacheKeyPrefix = '',
   ): Promise<IQuerySourceWrapper> {
     let sourcePromise: Promise<IQuerySourceWrapper> | undefined;
 
     // Try to read from cache
     // Only sources based on string values (e.g. URLs) are supported!
-    if (typeof querySourceUnidentified.value === 'string' && this.cache) {
-      sourcePromise = this.cache.get(querySourceUnidentified.value)!;
+    const namedGraph = querySourceUnidentified.context?.get(KeysQueryOperation.sourceAsNamedGraph);
+    const cacheKey = typeof querySourceUnidentified.value === 'string' ?
+      cacheKeyPrefix +
+      (namedGraph ? namedGraph.value + KEY_SEPARATOR_NAMED_GRAPH : '') +
+      querySourceUnidentified.value :
+      undefined;
+    if (cacheKey !== undefined && this.cache) {
+      sourcePromise = this.cache.get(cacheKey)!;
     }
 
     // If not in cache, identify the source
@@ -142,8 +182,9 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
         .then(({ querySource }) => querySource);
 
       // Set in cache
-      if (typeof querySourceUnidentified.value === 'string' && this.cache) {
-        this.cache.set(querySourceUnidentified.value, sourcePromise);
+      if (cacheKey !== undefined && this.cache) {
+        this.cache.set(cacheKey, sourcePromise);
+        this.cacheHasNamedGraphSources ||= Boolean(namedGraph);
       }
     }
 

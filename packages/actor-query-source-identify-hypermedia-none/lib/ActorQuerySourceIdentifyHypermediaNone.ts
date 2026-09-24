@@ -8,18 +8,35 @@ import type {
 } from '@comunica/bus-query-source-identify-hypermedia';
 import { ActorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
-import type { ComunicaDataFactory } from '@comunica/types';
+import type {
+  ComunicaDataFactory,
+  DereferenceFromNamedConflictMode,
+  DereferenceFromNamedConflictModeResolver,
+} from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { RdfStore } from 'rdf-stores';
+import type { QuadTermName } from 'rdf-terms';
 
 /**
  * A comunica None Query Source Identify Hypermedia Actor.
  */
 export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIdentifyHypermedia {
+  /**
+   * The indexes of an ordered store.
+   * GPSO comes first, so that it serves `?s <p> ?o`, which then comes back in subject order: star-shaped
+   * joins on the subject can merge such scans. It also serves subject-only patterns, by skipping from one
+   * predicate to the next, which is why it replaces GSPO rather than being added to it.
+   */
+  public static readonly ORDERED_INDEX_COMBINATIONS: QuadTermName[][] = [
+    [ 'graph', 'predicate', 'subject', 'object' ],
+    [ 'graph', 'predicate', 'object', 'subject' ],
+    [ 'graph', 'object', 'subject', 'predicate' ],
+  ];
+
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   public readonly mediatorTermComparatorFactory?: MediatorTermComparatorFactory;
 
@@ -38,34 +55,25 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {
     this.logInfo(action.context, `Identified as file source: ${action.url}`);
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    // PROTOTYPE: with COMUNICA_SORTED_STORE=btree, build a store of ordered B+tree indexes, which keep
-    // their quads sorted on the comparator that consumers compare with, from the start.
-    let comparator: ((termA: RDF.Term, termB: RDF.Term) => number) | undefined;
-    if (process.env.COMUNICA_SORTED_STORE === 'btree') {
-      const termComparator = await this.mediatorTermComparatorFactory!.mediate({ context: action.context });
-      comparator = (termA, termB) => termComparator.orderTypes(termA, termB);
-    }
-    const store = await ActorQuerySourceIdentifyHypermediaNone.storeStream(action.quads, comparator);
+    const namedGraph = action.context.get(KeysQueryOperation.sourceAsNamedGraph);
+    const resolveConflictMode = action.context.get(KeysInitQuery.dereferenceFromNamedConflictMode) ??
+      ((): DereferenceFromNamedConflictMode => 'error');
 
-    // PROTOTYPE: order the indexes by the same comparator that consumers compare with, so that scans
-    // of this store report the order they produce and can be asked to skip ahead within it.
-    if (process.env.COMUNICA_SORTED_STORE === '1' && process.env.COMUNICA_STORE_SORT !== '0') {
-      if (!this.mediatorTermComparatorFactory) {
-        throw new Error(`${this.name} can only order its store when a term comparator mediator is configured`);
-      }
-      const termComparator = await this.mediatorTermComparatorFactory.mediate({ context: action.context });
-      (<any> store).sortIndexes((termA: RDF.Term, termB: RDF.Term) => termComparator.orderTypes(termA, termB));
-      if (process.env.COMUNICA_STORE_SORT === 'drop') {
-        // Keep the ordered indexes but release the tables that only skipping needs, to tell the cost of
-        // holding them apart from the cost of having reordered the indexes at all.
-        for (const field of [ 'sortedEncodings', 'sortedDecoded', 'termRank' ]) {
-          (<any> store)[field] = undefined;
-        }
-      }
+    // A file is loaded in full before it is queried, which is what an ordered store is built for.
+    // It keeps quads sorted on the same term order that consumers compare with, so that its scans can
+    // report that order and skip ahead within it.
+    let termComparator: ((termA: RDF.Term, termB: RDF.Term) => number) | undefined;
+    if (this.mediatorTermComparatorFactory) {
+      const comparator = await this.mediatorTermComparatorFactory.mediate({ context: action.context });
+      termComparator = (termA, termB) => comparator.orderTypes(termA, termB);
     }
 
     const source = new QuerySourceRdfJs(
-      store,
+      await ActorQuerySourceIdentifyHypermediaNone.storeStream(
+        action.quads,
+        namedGraph ? { dataFactory, graph: namedGraph, url: action.url, resolveConflictMode } : undefined,
+        termComparator,
+      ),
       dataFactory,
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
     );
@@ -75,53 +83,88 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
   }
 
   /**
-   * PROTOTYPE: the index set to build, so that the cost of the extra index and of where it sits can be
-   * measured apart from the cost of ordering.
+   * Create the store that a file is loaded into.
+   * @param termComparator If given, the order of an ordered store to create, instead of a default store.
    */
-  public static indexCombinations(): any[] {
-    const gspo = [ 'graph', 'subject', 'predicate', 'object' ];
-    const gpso = [ 'graph', 'predicate', 'subject', 'object' ];
-    const gosp = [ 'graph', 'object', 'subject', 'predicate' ];
-    const gpos = [ 'graph', 'predicate', 'object', 'subject' ];
-    switch (process.env.COMUNICA_STORE_INDEXES) {
-      case '3':
-        return [ gspo, gpos, gosp ];
-      case '4gpos':
-        return [ gspo, gpos, gosp, gpso ];
-      case '3gpso':
-        // GPSO first, so that it wins ties: a subject-only lookup then skips per predicate, not per object.
-        return [ gpso, gpos, gosp ];
-      default:
-        return [ gspo, gpso, gosp, gpos ];
+  public static createStore<Q extends RDF.BaseQuad = RDF.Quad>(
+    termComparator?: (termA: RDF.Term, termB: RDF.Term) => number,
+  ): RdfStore<any, Q> {
+    if (termComparator) {
+      return <RdfStore<any, Q>><unknown> RdfStore.createOrdered({
+        termComparator,
+        indexCombinations: ActorQuerySourceIdentifyHypermediaNone.ORDERED_INDEX_COMBINATIONS,
+        nodes: true,
+      });
     }
+    return <RdfStore<any, Q>><unknown> RdfStore.createDefault(true);
   }
 
   public static storeStream<Q extends RDF.BaseQuad = RDF.Quad>(
     stream: RDF.Stream<Q>,
-    comparator?: (termA: RDF.Term, termB: RDF.Term) => number,
+    rewrite?: {
+      dataFactory: ComunicaDataFactory;
+      graph: RDF.NamedNode;
+      url: string;
+      resolveConflictMode: DereferenceFromNamedConflictModeResolver;
+    },
+    termComparator?: (termA: RDF.Term, termB: RDF.Term) => number,
   ): Promise<RDF.Store<Q>> {
-    if (comparator) {
-      const ordered = (<any> RdfStore).createOrdered({
-        termComparator: comparator,
-        indexCombinations: ActorQuerySourceIdentifyHypermediaNone.indexCombinations(),
-        nodes: true,
-      });
-      return new Promise((resolve, reject) => ordered.import(stream)
+    const store = ActorQuerySourceIdentifyHypermediaNone.createStore<Q>(termComparator);
+
+    if (!rewrite) {
+      return new Promise((resolve, reject) => store.import(stream)
         .on('error', reject)
-        .once('end', () => resolve(ordered)));
+        .once('end', () => resolve(store)));
     }
-    // PROTOTYPE: with COMUNICA_SORTED_STORE, index on (graph, predicate, subject, object) as well, so
-    // that a bound-predicate scan is answered by an index that walks subjects and therefore comes back
-    // in subject order. GPOS is kept after it, for predicate-and-object-bound patterns.
-    const store: RDF.Store<Q> = process.env.COMUNICA_SORTED_STORE === '1' ?
-      <RDF.Store<Q>> <any> new RdfStore<any, any>({
-        ...RdfStore.createDefault(true).options,
-        indexCombinations: ActorQuerySourceIdentifyHypermediaNone.indexCombinations(),
-      }) :
-      <RDF.Store<Q>> <RDF.Store> RdfStore.createDefault(true);
-    return new Promise((resolve, reject) => store.import(stream)
-      .on('error', reject)
-      .once('end', () => resolve(store)));
+
+    // An ordered store inserts a batch much faster than quads one by one, so those are collected first.
+    const batch: Q[] | undefined = termComparator ? [] : undefined;
+    const addQuad = (quad: Q): void => {
+      if (batch) {
+        batch.push(quad);
+      } else {
+        store.addQuad(quad);
+      }
+    };
+
+    return new Promise((resolve, reject) => {
+      stream
+        .on('error', reject)
+        .on('data', (rawQuad: Q) => {
+          const quad = <RDF.Quad><unknown> rawQuad;
+          // Quads that the source already exposes under a named graph of its own conflict with the
+          // graph this FROM NAMED source must be exposed under, so the conflict mode decides their fate.
+          if (quad.graph.termType !== 'DefaultGraph') {
+            const conflictMode = rewrite.resolveConflictMode(quad);
+            if (conflictMode === 'error') {
+              reject(new Error(
+                `Detected an existing named graph '${quad.graph.value}' while loading ${rewrite.url} as a FROM ` +
+                `NAMED source. Refusing to overwrite it with <${rewrite.graph.value}>, as that would lose data. ` +
+                `Set the 'dereferenceFromNamedConflictMode' context entry to a resolver returning ` +
+                `'preferNamed' or 'keepSource' to allow this.`,
+              ));
+              return;
+            }
+            if (conflictMode === 'keepSource') {
+              addQuad(rawQuad);
+              return;
+            }
+          }
+
+          addQuad(<Q><unknown> rewrite.dataFactory.quad(
+            quad.subject,
+            quad.predicate,
+            quad.object,
+            rewrite.graph,
+          ));
+        })
+        .on('end', () => {
+          if (batch) {
+            store.addQuads(batch);
+          }
+          resolve(store);
+        });
+    });
   }
 }
 
@@ -131,10 +174,10 @@ export interface IActorQuerySourceIdentifyHypermediaNoneArgs extends IActorQuery
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   /**
-   * A mediator for creating term comparators, needed only to order the store's indexes.
-   *
-   * Optional so that a configuration predating it keeps working: without it the store is left in
-   * insertion order, which is what it was before ordering was possible.
+   * A mediator for creating term comparators.
+   * If set, files are loaded into a store that keeps its quads in the order of these comparators,
+   * so that scans of it can report that order and skip ahead within it, which merge joins make use of.
+   * If not set, files are loaded into a default store, whose scans have no order.
    */
   mediatorTermComparatorFactory?: MediatorTermComparatorFactory;
 }

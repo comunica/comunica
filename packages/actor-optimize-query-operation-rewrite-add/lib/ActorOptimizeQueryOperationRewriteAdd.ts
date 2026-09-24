@@ -32,7 +32,7 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
 
     const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.ADD]: {
-        preVisitor: () => ({ shortcut: true }),
+        preVisitor: () => ({ continue: false }),
         transform: (operationOriginal) => {
           // CONSTRUCT all quads from the source, and INSERT them into the destination
           const destination = operationOriginal.destination === 'DEFAULT' ?

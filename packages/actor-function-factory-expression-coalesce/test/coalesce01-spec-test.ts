@@ -76,12 +76,12 @@ describe('We should respect the coalesce01 spec', () => {
       ?z -3 = '${int('-3')}'
 
       '${q2}' -1 = '${q2}'
-      '${n2}/${q2}' -2 = '${decimal('0')}'
-      '${n2}/${q2}' -2 = '${decimal('0')}'
+      '${n2}/${q2}' -2 = '${decimal('0.0')}'
+      '${n2}/${q2}' -2 = '${decimal('0.0')}'
       ?z -3 = '${int('-3')}'
 
       '${q3}' -1 = '${q3}'
-      '${n3}/${q3}' = '${decimal('2')}'
+      '${n3}/${q3}' = '${decimal('2.0')}'
       ?z -3 = '${int('-3')}'
     `,
     errorTable: `

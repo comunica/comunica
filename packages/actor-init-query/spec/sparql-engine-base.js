@@ -46,6 +46,8 @@ module.exports = function(engine, exposeEndpoints = false) {
         httpRetryCount: 3,
         httpRetryDelayFallback: 10,
         httpRetryDelayLimit: 100,
+        // The spec test suite covers SERVICE clauses with a variable target
+        serviceAllowVariableTargets: true,
         nonLexicalComparison: options.nonLexicalComparison,
         fullTermComparison: options.fullTermComparison,
       });
@@ -113,7 +115,8 @@ function createServiceFetch(engine, serviceData) {
       return new Response(null, { status: 404 });
     }
 
-    const result = await engine.query(query, { sources: [ store ]});
+    // Pass the same fetch function, so that this endpoint can resolve nested SERVICE clauses.
+    const result = await engine.query(query, { sources: [ store ], fetch: serviceFetch });
     const mediaType = 'application/sparql-results+json';
     const body = await stringifyStream((await engine.resultToString(result, mediaType)).data);
     return new Response(body, { status: 200, headers: { 'content-type': mediaType }});

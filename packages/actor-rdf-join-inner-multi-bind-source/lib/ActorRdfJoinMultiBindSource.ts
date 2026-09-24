@@ -37,6 +37,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     super(args, {
       logicalType: 'inner',
       physicalName: 'bind-source',
+      pushesBindingsToSource: true,
       canHandleUndefs: true,
     });
     this.selectivityModifier = args.selectivityModifier;

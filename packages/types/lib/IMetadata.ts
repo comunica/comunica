@@ -49,6 +49,14 @@ export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermNam
   availableOrders?: RDF.QueryOperationOrder<OrderItemsType>[];
 
   /**
+   * If the operation that produced this stream must be pushed into a join.
+   * This achieves the same as `IJoinEntry.operationRequired`, but can be expressed in metadata.
+   * This is for example set for SERVICE clauses of which the target is still an unbound variable,
+   * which can only be evaluated once a bind-join has bound that target.
+   */
+  operationRequired?: boolean;
+
+  /**
    * Whether the stream can skip ahead within its `order` instead of being read one binding at a time.
    *
    * Only meaningful together with `order`. A consumer that plans around skipping needs to know before it

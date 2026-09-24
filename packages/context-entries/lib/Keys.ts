@@ -2,11 +2,13 @@ import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
 import type {
   AsyncExtensionFunctionCreator,
   Bindings,
+  ExistenceResolver,
   FunctionArgumentsCache,
   IActionContext,
   ICliArgsHandler,
   IDataDestination,
   IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
   IProxyHandler,
   IQuerySourceWrapper,
   ISuperTypeProvider,
@@ -20,6 +22,7 @@ import type {
   IDiscoverEventData,
   PartialResult,
   ILink,
+  DereferenceFromNamedConflictModeResolver,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -160,6 +163,20 @@ export const KeysInitQuery = {
    */
   lenient: new ActionContextKey<boolean>('@comunica/actor-init-query:lenient'),
   /**
+   * If SERVICE clauses are allowed to target local files.
+   * This is disabled by default, as queries could otherwise read arbitrary local files,
+   * which is problematic when queries originate from untrusted parties.
+   */
+  serviceAllowFileTargets: new ActionContextKey<boolean>('@comunica/actor-init-query:serviceAllowFileTargets'),
+  /**
+   * If SERVICE clauses are allowed to have a variable as target.
+   * This is disabled by default, as the targets are then determined by the queried data,
+   * which would allow queries from untrusted parties to dereference arbitrary sources.
+   */
+  serviceAllowVariableTargets: new ActionContextKey<boolean>(
+    '@comunica/actor-init-query:serviceAllowVariableTargets',
+  ),
+  /**
    * By default, errors will be emitted if parsers encounter unsupported versions.
    * Setting this flag to true will silence those checks.
    * Errors may still be emitted if unsupported grammar is encountered.
@@ -184,6 +201,8 @@ export const KeysInitQuery = {
   /**
    * Object to cache function argument overload resolutions.
    * Defaults to an object that is reused across query executions.
+   * Resolutions depend on the `superTypeProvider` they were made under,
+   * so a different super-type provider requires a fresh cache.
    */
   functionArgumentsCache: new ActionContextKey<FunctionArgumentsCache>(
     '@comunica/actor-init-query:functionArgumentsCache',
@@ -232,7 +251,8 @@ export const KeysInitQuery = {
    */
   cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-query:cliArgsHandlers'),
   /**
-   * Explain mode of the query. Can be 'parsed', 'logical', 'query', 'physical', or 'physical-json'.
+   * Explain mode of the query. Can be 'parsed', 'logical', 'query', 'physical', 'physical-stats',
+   * or 'physical-json'.
    */
   explain: new ActionContextKey<QueryExplainMode>('@comunica/actor-init-query:explain'),
   /**
@@ -242,10 +262,12 @@ export const KeysInitQuery = {
     '@comunica/actor-init-query:physicalQueryPlanLogger',
   ),
   /**
-   * The current physical operator within the query plan.
-   *              This is used to pass parent-child relationships for invoking the query plan logger.
+   * The current node within the query plan.
+   * This is used to pass parent-child relationships for invoking the query plan logger.
    */
-  physicalQueryPlanNode: new ActionContextKey<any>('@comunica/actor-init-query:physicalQueryPlanNode'),
+  physicalQueryPlanNode: new ActionContextKey<IPhysicalQueryPlanNode>(
+    '@comunica/actor-init-query:physicalQueryPlanNode',
+  ),
   /**
    * A JSON-LD context
    */
@@ -268,13 +290,38 @@ export const KeysInitQuery = {
    * A boolean value denoting whether results should be deduplicated or not.
    */
   distinctConstruct: new ActionContextKey<boolean>('@comunica/actor-init-query:distinctConstruct'),
+  /**
+   * If the IRIs within FROM (NAMED) clauses must be dereferenced,
+   * and added as sources to the query. (default: false)
+   */
+  dereferenceFromNamed: new ActionContextKey<boolean>('@comunica/actor-init-query:dereferenceFromNamed'),
+  /**
+   * Resolves, per named graph that a FROM NAMED source already contains of its own,
+   * whether to error (default), rewrite it into the FROM NAMED graph, or keep it as-is.
+   * This only has an effect when `dereferenceFromNamed` is enabled.
+   */
+  dereferenceFromNamedConflictMode: new ActionContextKey<DereferenceFromNamedConflictModeResolver>(
+    '@comunica/actor-init-query:dereferenceFromNamedConflictMode',
+  ),
 };
 
 export const KeysExpressionEvaluator = {
   extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator>(
     '@comunica/utils-expression-evaluator:extensionFunctionCreator',
   ),
+  /**
+   * Discovers the super type of a type unknown to the system.
+   * Changing this between evaluations requires a fresh `functionArgumentsCache`,
+   * as overload resolutions are cached without it.
+   */
   superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/utils-expression-evaluator:superTypeProvider'),
+  /**
+   * Resolves `EXISTS` and `NOT EXISTS` expressions.
+   * When absent, the expression evaluator falls back to its query operation mediator.
+   */
+  existenceResolver: new ActionContextKey<ExistenceResolver>(
+    '@comunica/utils-expression-evaluator:existenceResolver',
+  ),
   defaultTimeZone: new ActionContextKey<ITimeZoneRepresentation>(
     '@comunica/utils-expression-evaluator:defaultTimeZone',
   ),
@@ -325,6 +372,12 @@ export const KeysQueryOperation = {
    */
   readOnly: new ActionContextKey<boolean>('@comunica/bus-query-operation:readOnly'),
   /**
+   * Flag on a query source context indicating that this source is the target of a `SERVICE SILENT` clause.
+   * Errors from such a source must be swallowed, and replaced by a single empty solution,
+   * as mandated by SPARQL 1.1 Federated Query.
+   */
+  silent: new ActionContextKey<boolean>('@comunica/bus-query-operation:silent'),
+  /**
    * An internal context entry to mark that a property path with arbitrary length and a distinct key is being processed.
    */
   isPathArbitraryLengthDistinctKey: new ActionContextKey<boolean>(
@@ -347,6 +400,13 @@ export const KeysQueryOperation = {
    */
   serviceSources: new ActionContextKey<Record<string, IQuerySourceWrapper>>(
     '@comunica/bus-query-operation:serviceSources',
+  ),
+  /**
+   * If set on a query source's own context, that source's dereferenced quads should have their
+   * graph component rewritten to this term.
+   */
+  sourceAsNamedGraph: new ActionContextKey<RDF.NamedNode>(
+    '@comunica/bus-query-operation:sourceAsNamedGraph',
   ),
 };
 
@@ -397,6 +457,15 @@ export const KeysQuerySourceIdentify = {
    * This means that sources annotated with this flag are considered incomplete until all links have been traversed.
    */
   traverse: new ActionContextKey<boolean>('@comunica/bus-query-source-identify:traverse'),
+};
+
+export const KeysDereference = {
+  /**
+   * If local files may not be dereferenced within the current scope.
+   * This is for example set when dereferencing SERVICE targets,
+   * to avoid exposing local files to queries from untrusted parties.
+   */
+  blockFileAccess: new ActionContextKey<boolean>('@comunica/bus-dereference:blockFileAccess'),
 };
 
 export const KeysRdfUpdateQuads = {

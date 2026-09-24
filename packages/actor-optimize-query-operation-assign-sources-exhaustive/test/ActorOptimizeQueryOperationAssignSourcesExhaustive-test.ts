@@ -266,9 +266,13 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ], { source1 });
         expect(operationOut.type).toEqual(Algebra.Types.PATTERN);
         expect(getOperationSource(operationOut)).not.toBe(source1);
+        // Silent SERVICE clauses mark their target, so that its errors can be swallowed at execution time.
         expect(getOperationSource(operationOut)).toEqual({
           source: source1.source,
-          context: new ActionContext({ [KeysInitQuery.lenient.name]: true }),
+          context: new ActionContext({
+            [KeysInitQuery.lenient.name]: true,
+            [KeysQueryOperation.silent.name]: true,
+          }),
         });
       });
 
@@ -284,11 +288,15 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource(operationOut)).not.toBe(source1);
         expect(getOperationSource(operationOut)).toEqual({
           source: source1.source,
-          context: new ActionContext({ [KeysInitQuery.lenient.name]: true, a: 'b' }),
+          context: new ActionContext({
+            [KeysInitQuery.lenient.name]: true,
+            [KeysQueryOperation.silent.name]: true,
+            a: 'b',
+          }),
         });
       });
 
-      it('for service with a known source should assign, but not nested service', async() => {
+      it('for service with a known source should assign, and delegate nested service to it', async() => {
         const operationIn = AF.createService(
           AF.createJoin([
             AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
@@ -302,7 +310,9 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ], { source1 });
         expect(operationOut.type).toEqual(Algebra.Types.JOIN);
         expect(getOperationSource((<any> operationOut).input[0])).toBe(source1);
+        // Nested SERVICE clauses are passed on as-is to the source of the enclosing SERVICE clause.
         expect((<any> operationOut).input[1].type).toEqual(Algebra.Types.SERVICE);
+        expect(getOperationSource((<any> operationOut).input[1])).toBe(source1);
       });
 
       it('for service with variable should not assign', async() => {

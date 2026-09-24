@@ -1,0 +1,82 @@
+name: Performance comment
+
+# CI runs of pull requests from forks receive a read-only GITHUB_TOKEN, so they upload their
+# performance comparison as an artifact, which this workflow posts from the base repository.
+on:
+  workflow_run:
+    workflows:
+      - CI
+    types:
+      - completed
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.event }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+
+  performance-comment:
+    name: Comment performance comparison
+    if: github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      pull-requests: write
+    steps:
+      - name: Check for a performance comparison
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -eu
+          count=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts?name=performance-comparison" \
+            --jq '[ .artifacts[] | select(.name == "performance-comparison") ] | length')
+          if [ "$count" -gt 0 ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Download the performance comparison
+        if: steps.check.outputs.found == 'true'
+        uses: actions/download-artifact@v8
+        with:
+          name: performance-comparison
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # Forks control the artifact contents, so only accept a pull request at the benchmarked commit.
+      - name: Determine the pull request to comment on
+        id: pull-request
+        if: steps.check.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -eu
+          if [ ! -f comparison-pull-request.txt ]; then
+            echo "The artifact carries no pull request number, skipping the comment."
+            exit 0
+          fi
+          number=$(tr -cd '0-9' < comparison-pull-request.txt)
+          head=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number:-0}" --jq '.head.sha' 2> /dev/null || true)
+          if [ "$head" = "$HEAD_SHA" ]; then
+            echo "number=$number" >> "$GITHUB_OUTPUT"
+          else
+            echo "No pull request found at the benchmarked commit ${HEAD_SHA}, skipping the comment."
+          fi
+      - name: Find the previous performance comment
+        id: previous-comment
+        if: steps.pull-request.outputs.number != ''
+        uses: peter-evans/find-comment@v4
+        with:
+          issue-number: ${{ steps.pull-request.outputs.number }}
+          comment-author: github-actions[bot]
+          body-includes: <!-- performance-comparison -->
+      - name: Comment the performance comparison on the pull request
+        if: steps.pull-request.outputs.number != ''
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          issue-number: ${{ steps.pull-request.outputs.number }}
+          comment-id: ${{ steps.previous-comment.outputs.comment-id }}
+          body-path: comparison-comment.md
+          edit-mode: replace
