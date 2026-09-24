@@ -1568,8 +1568,18 @@ SELECT ?s WHERE {
 
     describe('property paths', () => {
       it('should handle zero-or-more paths with variable ends over multiple SPARQL endpoints', async() => {
-        // Answers ASK and COUNT queries as if the endpoints hold data, so that they are queried for all nodes,
-        // which they can only be asked for through triple patterns, and answers all other queries with nothing.
+        // A chain of length two that spans both endpoints, and a chain of length one
+        const endpoints: Record<string, RDF.Quad[]> = {
+          'http://example.org/path1/sparql': [
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p'), DF.namedNode('ex:b')),
+            DF.quad(DF.namedNode('ex:d'), DF.namedNode('ex:p'), DF.namedNode('ex:e')),
+          ],
+          'http://example.org/path2/sparql': [
+            DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:p'), DF.namedNode('ex:c')),
+          ],
+        };
+        // Each endpoint answers every query over its own data
+        const endpointEngine = new QueryEngine();
         const mockedFetch: typeof fetch = async(input, init) => {
           const url = new URL(input instanceof Request ? input.url : input);
           const query = url.searchParams.get('query') ??
@@ -1578,26 +1588,36 @@ SELECT ?s WHERE {
           if (!query) {
             return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
           }
-          const count = { type: 'literal', value: '1', datatype: 'http://www.w3.org/2001/XMLSchema#integer' };
-          const response = /\bASK\b/u.test(query) ?
-              { head: {}, boolean: true } :
-            query.includes('COUNT') ?
-                { head: { vars: [ 'count' ]}, results: { bindings: [{ count }]}} :
-                { head: { vars: []}, results: { bindings: []}};
-          return new Response(JSON.stringify(response), {
+          const store = RdfStore.createDefault();
+          for (const quad of endpoints[`${url.origin}${url.pathname}`]) {
+            store.addQuad(quad);
+          }
+          const { data } = await endpointEngine.resultToString(
+            await endpointEngine.query(query, { sources: [ store ]}),
+            'application/sparql-results+json',
+          );
+          return new Response(await stringifyStream(data), {
             status: 200,
             headers: { 'content-type': 'application/sparql-results+json' },
           });
         };
 
-        const bindingsStream = await engine.queryBindings('SELECT * WHERE { ?s <ex:p>* ?o }', {
-          sources: [
-            { type: 'sparql', value: 'http://example.org/path1/sparql' },
-            { type: 'sparql', value: 'http://example.org/path2/sparql' },
-          ],
+        const bindings = await (await engine.queryBindings('SELECT * WHERE { ?s <ex:p>* ?o }', {
+          sources: Object.keys(endpoints).map(value => ({ type: 'sparql', value })),
           fetch: mockedFetch,
-        });
-        await expect(bindingsStream.toArray()).resolves.toEqual([]);
+        })).toArray();
+        // Each node reaches itself, and every node that follows it in its chain
+        expect(bindings.map(entry => `${entry.get('s')!.value} ${entry.get('o')!.value}`).sort()).toEqual([
+          'ex:a ex:a',
+          'ex:a ex:b',
+          'ex:a ex:c',
+          'ex:b ex:b',
+          'ex:b ex:c',
+          'ex:c ex:c',
+          'ex:d ex:d',
+          'ex:d ex:e',
+          'ex:e ex:e',
+        ]);
       });
 
       it('should handle zero-or-more paths with lists', async() => {
