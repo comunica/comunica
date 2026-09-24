@@ -53,7 +53,6 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
         name: 'actor',
         bus,
         mediatorMergeBindingsContext,
-        mediatorTermComparatorFactory,
       });
       context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     });
@@ -131,87 +130,56 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       ]);
     });
 
-    it('selects the index set to build from COMUNICA_STORE_INDEXES', () => {
-      const join = (): string => ActorQuerySourceIdentifyHypermediaNone.indexCombinations()
-        .map(order => order.map((component: string) => component[0]).join('')).join(' ');
-      try {
-        process.env.COMUNICA_STORE_INDEXES = '3';
-        expect(join()).toBe('gspo gpos gosp');
-        process.env.COMUNICA_STORE_INDEXES = '4gpos';
-        expect(join()).toBe('gspo gpos gosp gpso');
-        delete process.env.COMUNICA_STORE_INDEXES;
-        expect(join()).toBe('gspo gpso gosp gpos');
-      } finally {
-        delete process.env.COMUNICA_STORE_INDEXES;
-      }
+    it('loads into a default store without a term comparator factory', async() => {
+      const quads = streamifyArray([ quad('s2', 'p1', 'o1'), quad('s1', 'p1', 'o2') ]);
+      const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
+      const store: any = (<any> source).source;
+      expect(store.indexOrders).toEqual([]);
+      // The default store keeps insertion order.
+      const bindings = await source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.variable('o')),
+        new ActionContext(),
+      ).toArray();
+      expect(bindings.map(b => b.get(DF.variable('s'))!.value)).toEqual([ 's2', 's1' ]);
     });
 
-    it('should order the store with COMUNICA_SORTED_STORE, using the SPARQL comparator', async() => {
-      process.env.COMUNICA_SORTED_STORE = '1';
-      try {
+    describe('with a term comparator factory', () => {
+      beforeEach(() => {
+        actor = new ActorQuerySourceIdentifyHypermediaNone({
+          name: 'actor',
+          bus,
+          mediatorMergeBindingsContext,
+          mediatorTermComparatorFactory,
+        });
+      });
+
+      it('loads into an ordered store, with GPSO first', async() => {
+        const quads = streamifyArray([ quad('s1', 'p1', 'o1') ]);
+        const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
+        const store: any = (<any> source).source;
+        expect(store.indexOrders.map((order: string[]) => order.map(component => component[0]).join('')))
+          .toEqual([ 'gpso', 'gpos', 'gosp' ]);
+      });
+
+      it('scans in the comparator\'s order, and says so in the metadata', async() => {
         const quads = streamifyArray([
           quad('s2', 'p1', 'o1'),
           quad('s1', 'p1', 'o2'),
         ]);
         const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
-        const store: any = (<any> source).source;
-
-        // Four indexes, so that a bound-predicate scan is answered by one that walks subjects.
-        expect(store.indexesWrapped.map((index: any) => index.componentOrder.join(',')))
-          .toEqual([
-            'graph,subject,predicate,object',
-            'graph,predicate,subject,object',
-            'graph,object,subject,predicate',
-            'graph,predicate,object,subject',
-          ]);
-
-        // And that scan comes back in subject order, rather than in insertion order.
-        const bindings = await source.queryBindings(
+        const stream = source.queryBindings(
           AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.variable('o')),
           new ActionContext(),
-        ).toArray();
+        );
+        const metadata: any = await new Promise(resolve => stream.getProperty('metadata', resolve));
+        expect(metadata.order).toEqual([
+          { term: DF.variable('s'), direction: 'asc' },
+          { term: DF.variable('o'), direction: 'asc' },
+        ]);
+        expect(metadata.canSeek).toBe(true);
+        const bindings = await stream.toArray();
         expect(bindings.map(b => b.get(DF.variable('s'))!.value)).toEqual([ 's1', 's2' ]);
-      } finally {
-        delete process.env.COMUNICA_SORTED_STORE;
-      }
-    });
-
-    it('says so when asked to order its store without a term comparator', async() => {
-      process.env.COMUNICA_SORTED_STORE = '1';
-      try {
-        const unconfigured = new ActorQuerySourceIdentifyHypermediaNone({
-          name: 'actor',
-          bus,
-          mediatorMergeBindingsContext,
-        });
-        const quads = streamifyArray([ quad('s1', 'p1', 'o1') ]);
-        await expect(unconfigured.run({ metadata: <any> null, quads, url: '', context })).rejects
-          .toThrow('actor can only order its store when a term comparator mediator is configured');
-      } finally {
-        delete process.env.COMUNICA_SORTED_STORE;
-      }
-    });
-
-    it('releases the ranking tables with COMUNICA_STORE_SORT=drop', async() => {
-      process.env.COMUNICA_SORTED_STORE = '1';
-      process.env.COMUNICA_STORE_SORT = 'drop';
-      try {
-        const quads = streamifyArray([ quad('s2', 'p1', 'o1'), quad('s1', 'p1', 'o2') ]);
-        const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
-        const store: any = (<any> source).source;
-        // The indexes stay in the order they were put into, without the tables that only skipping needs.
-        for (const field of [ 'sortedEncodings', 'sortedDecoded', 'termRank' ]) {
-          expect(store[field]).toBeUndefined();
-        }
-        const bindings = await source.queryBindings(
-          AF.createPattern(DF.variable('s'), DF.namedNode('p1'), DF.variable('o')),
-          new ActionContext(),
-        ).toArray();
-        expect(bindings.map(b => b.get(DF.variable('s'))!.value)).toEqual([ 's1', 's2' ]);
-      } finally {
-        delete process.env.COMUNICA_SORTED_STORE;
-        delete process.env.COMUNICA_STORE_SORT;
-      }
+      });
     });
 
     it('should run and delegate error events', async() => {
@@ -238,10 +206,19 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       })).resolves.toEqual(new Error('Dummy error'));
     });
 
-    describe('with a sourceAsNamedGraph-tagged context', () => {
+    describe.each([
+      [ 'a default', undefined ],
+      [ 'an ordered', mediatorTermComparatorFactory ],
+    ])('with a sourceAsNamedGraph-tagged context and %s store', (_, termComparatorFactory) => {
       const namedGraph = DF.namedNode('http://example.org/g');
 
       beforeEach(() => {
+        actor = new ActorQuerySourceIdentifyHypermediaNone({
+          name: 'actor',
+          bus,
+          mediatorMergeBindingsContext,
+          mediatorTermComparatorFactory: termComparatorFactory,
+        });
         context = context.set(KeysQueryOperation.sourceAsNamedGraph, namedGraph);
       });
 
