@@ -70,7 +70,6 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       expect(() => otherLogger.logOperation({
         logicalOperator: 'pattern',
         parentNode: orphan,
-        actor: 'actor-pattern',
       })).toThrow('No root node has been set yet, while a parent is being referenced');
     });
 
@@ -87,23 +86,20 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       const first = logger.logOperation({
         logicalOperator: 'pattern',
         parentNode: root,
-        actor: 'actor-pattern',
         operation,
       });
       const second = logger.logOperation({
         logicalOperator: 'pattern',
         parentNode: root,
-        actor: 'actor-pattern',
         operation,
       });
 
       expect(first).not.toBe(second);
       expect(logger.toJson()).toEqual({
         logical: 'join',
-        actor: 'actor-join',
         children: [
-          { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
-          { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+          { logical: 'pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+          { logical: 'pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
         ],
       });
     });
@@ -183,7 +179,6 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
-        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
         cardinality: { type: 'exact', value: 2 },
         cardinalityReal: 2,
@@ -256,7 +251,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       node.setOutput({ execute: () => Promise.resolve(true) });
       await logger.finalize();
 
-      expect(logger.toJson()).toEqual({ logical: 'ask', actor: 'actor-ask' });
+      expect(logger.toJson()).toEqual({ logical: 'ask' });
     });
 
     it('measures a quad stream', async() => {
@@ -284,14 +279,12 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
-        actor: 'actor-join',
         children: [
           {
             logical: 'join',
             physical: 'hash',
-            actor: 'actor-join-hash',
             children: [
-              { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+              { logical: 'pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
             ],
           },
         ],
@@ -308,9 +301,8 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
-        actor: 'actor-join',
         children: [
-          { logical: 'pattern', actor: 'actor-pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
+          { logical: 'pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
         ],
       });
     });
@@ -324,7 +316,6 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
-        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
         a: true,
         b: 1,
@@ -336,7 +327,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       node.appendMetadata({ a: true });
 
-      expect(logger.toJson()).toEqual({ logical: 'pattern', actor: 'actor-pattern', a: true });
+      expect(logger.toJson()).toEqual({ logical: 'pattern', a: true });
     });
   });
 
@@ -362,7 +353,6 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
-        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
       });
     });
@@ -387,7 +377,6 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
-        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
         source: 'SRC',
       });
@@ -410,7 +399,6 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
-        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1',
       });
     });
@@ -434,7 +422,6 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'pattern',
-        actor: 'actor-pattern',
         pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
         metaKey: 'metaValue',
       });
@@ -479,16 +466,13 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'bgp',
-        actor: 'actor-bgp',
         children: [
           {
             logical: 'pattern',
-            actor: 'actor-pattern',
             pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
           },
           {
             logical: 'pattern',
-            actor: 'actor-pattern',
             pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
           },
         ],
@@ -547,7 +531,6 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'project',
-        actor: 'actor-bgp',
         variables: [
           'varA',
           'varB',
@@ -555,16 +538,13 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         children: [
           {
             logical: 'bgp',
-            actor: 'actor-bgp',
             children: [
               {
                 logical: 'pattern',
-                actor: 'actor-pattern',
                 pattern: 'ex:s1 ex:p1 ?o1 ex:g1',
               },
               {
                 logical: 'pattern',
-                actor: 'actor-pattern',
                 pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
               },
             ],
@@ -661,19 +641,15 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
-        actor: 'actor-join',
         children: [
           {
             logical: 'bindings',
-            actor: 'actor-bind',
             children: [
               {
                 logical: 'join',
-                actor: 'actor-join',
                 children: [
                   {
                     logical: 'bgp',
-                    actor: 'actor-bgp',
                   },
                 ],
               },
@@ -683,11 +659,9 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
                 occurrences: 2,
                 firstOccurrence: {
                   logical: 'join',
-                  actor: 'actor-join',
                   children: [
                     {
                       logical: 'pattern',
-                      actor: 'actor-pattern',
                       pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
                     },
                   ],
@@ -789,38 +763,30 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
-        actor: 'actor-join',
         children: [
           {
             logical: 'bindings',
-            actor: 'actor-bind',
             children: [
               {
                 logical: 'join',
-                actor: 'actor-join',
                 children: [
                   {
                     logical: 'pattern',
-                    actor: 'actor-pattern',
                     pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
                   },
                 ],
               },
               {
                 logical: 'join',
-                actor: 'actor-join',
                 children: [
                   {
                     logical: 'bindings',
-                    actor: 'actor-bind',
                     children: [
                       {
                         logical: 'join',
-                        actor: 'actor-join',
                         children: [
                           {
                             logical: 'pattern',
-                            actor: 'actor-pattern',
                             pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
                           },
                         ],
@@ -898,17 +864,14 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
       expect(logger.toJson()).toEqual({
         logical: 'join',
-        actor: 'actor-join',
         children: [
           {
             logical: 'bindings',
-            actor: 'actor-bind',
             childrenCompact: [
               {
                 occurrences: 2,
                 firstOccurrence: {
                   logical: 'pattern',
-                  actor: 'actor-pattern',
                   pattern: 'ex:s2 ex:p2 ?o2 ex:g2',
                 },
               },
@@ -934,7 +897,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
 
   describe('toCompactString', () => {
     it('for an empty sequence', () => {
-      expect(logger.toCompactString()).toBe('Empty');
+      expect(logger.toCompactString(true)).toBe('Empty');
     });
 
     it('for an operation that a source handled itself', () => {
@@ -948,7 +911,7 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       });
       logOperation('join', undefined, root.input, root, 'actor-source', { delegated: true });
 
-      expect(logger.toCompactString()).toBe(`project () src:0 srcQuery:0 httpRequests:2
+      expect(logger.toCompactString(true)).toBe(`project () src:0 httpRequests:2 srcQuery:0
   join delegated
 
 sources:
@@ -975,7 +938,7 @@ source queries:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1)`);
+      expect(logger.toCompactString(true)).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1)`);
     });
 
     it('for a single pattern with source', () => {
@@ -996,7 +959,7 @@ source queries:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
+      expect(logger.toCompactString(true)).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
 
 sources:
   0: SRC`);
@@ -1017,7 +980,7 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1)`);
+      expect(logger.toCompactString(true)).toBe(`pattern (ex:s1 ex:p1 ?o1)`);
     });
 
     it('for a single pattern with metadata', () => {
@@ -1041,7 +1004,8 @@ sources:
         },
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:~3 cardReal:1 timeSelf:0.123ms timeLife:0.679ms`);
+      expect(logger.toCompactString(true)).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:~3 cardReal:1 timeSelf:0.123ms timeLife:0.679ms`);
+      expect(logger.toCompactString(false)).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1)`);
     });
 
     it('for a single pattern with metadata and exact cardinality', () => {
@@ -1062,7 +1026,7 @@ sources:
         },
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:3`);
+      expect(logger.toCompactString(true)).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:3`);
     });
 
     it('for a BGP and patterns', () => {
@@ -1102,7 +1066,7 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`bgp
+      expect(logger.toCompactString(true)).toBe(`bgp
   pattern (ex:s1 ex:p1 ?o1 ex:g1)
   pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
     });
@@ -1157,7 +1121,7 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`project (varA,varB)
+      expect(logger.toCompactString(true)).toBe(`project (varA,varB)
   bgp
     pattern (ex:s1 ex:p1 ?o1 ex:g1)
     pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
@@ -1249,7 +1213,7 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`join
+      expect(logger.toCompactString(true)).toBe(`join
   bindings bindIndex:1
     join
       bgp
@@ -1345,7 +1309,7 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`join
+      expect(logger.toCompactString(true)).toBe(`join
   bindings bindIndex:1
     join
       pattern (ex:s2 ex:p2 ?o2 ex:g2)
@@ -1404,7 +1368,7 @@ sources:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1)
+      expect(logger.toCompactString(true)).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1)
   pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
   pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
 

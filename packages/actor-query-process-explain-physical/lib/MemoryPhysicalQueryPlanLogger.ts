@@ -136,7 +136,6 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     const data: IPlanNodeJson = {
       logical: node.logicalOperator,
       physical: node.physicalOperator,
-      actor: node.actor,
       ...this.getLogicalMetadata(node.operation),
       ...node.metadata,
     };
@@ -239,12 +238,20 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     return `${termToString(quad.subject)} ${termToString(quad.predicate)} ${termToString(quad.object)}${quad.graph.termType === 'DefaultGraph' ? '' : ` ${termToString(quad.graph)}`}`;
   }
 
-  public toCompactString(): string {
+  /**
+   * Serialize the collected query plan as an indented tree.
+   *
+   * @param statistics If the measurements of each operator are included. Without them the plan only
+   * says what ran, which is what most readers are after; with them every line also reports how much
+   * it produced and how long it took.
+   */
+  public toCompactString(statistics: boolean): string {
     const node = this.toJson();
     const lines: string[] = [];
     const legends: ICompactStringLegends = {
       sources: new Map(),
       sourceQueries: new Map(),
+      statistics,
     };
 
     if ('logical' in node) {
@@ -300,6 +307,16 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       undefined :
       this.identify(legends.sourceQueries, node.sourceQuery);
 
+    const statistics = legends.statistics ?
+      `${
+        node.cardinality ? ` cardEst:${node.cardinality.type === 'estimate' ? '~' : ''}${numberToString(node.cardinality.value)}` : ''}${
+        node.cardinalityReal === undefined ? '' : ` cardReal:${node.cardinalityReal}`}${
+        node.timeSelf === undefined ? '' : ` timeSelf:${numberToString(node.timeSelf)}ms`}${
+        node.timeLife === undefined ? '' : ` timeLife:${numberToString(node.timeLife)}ms`}${
+        node.streamState ? ` ${node.streamState}` : ''}${
+        node.httpRequests === undefined ? '' : ` httpRequests:${node.httpRequests}`}` :
+      '';
+
     lines.push(`${
       indent}${
       node.logical}${
@@ -307,14 +324,9 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       node.pattern ? ` (${node.pattern})` : ''}${
       node.variables ? ` (${node.variables.join(',')})` : ''}${
       node.bindIndex === undefined ? '' : ` bindIndex:${node.bindIndex}`}${
-      node.cardinality ? ` cardEst:${node.cardinality.type === 'estimate' ? '~' : ''}${numberToString(node.cardinality.value)}` : ''}${
       node.source ? ` src:${sourceId}` : ''}${
-      node.cardinalityReal === undefined ? '' : ` cardReal:${node.cardinalityReal}`}${
-      node.timeSelf === undefined ? '' : ` timeSelf:${numberToString(node.timeSelf)}ms`}${
-      node.timeLife === undefined ? '' : ` timeLife:${numberToString(node.timeLife)}ms`}${
-      node.streamState ? ` ${node.streamState}` : ''}${
+      statistics}${
       sourceQueryId === undefined ? '' : ` srcQuery:${sourceQueryId}`}${
-      node.httpRequests === undefined ? '' : ` httpRequests:${node.httpRequests}`}${
       node.delegated ? ' delegated' : ''}${
       metadata ? ` ${metadata}` : ''}`);
     for (const child of node.children ?? []) {
@@ -326,7 +338,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
         legends,
         `${indent}  `,
         child.firstOccurrence,
-        MemoryPhysicalQueryPlanLogger.occurrencesToCompactString(child),
+        MemoryPhysicalQueryPlanLogger.occurrencesToCompactString(child, legends.statistics),
       );
     }
   }
@@ -334,18 +346,20 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
   /**
    * Summarize a group of repeated occurrences as a suffix for the compact plan.
    * @param child A group of repeated occurrences.
+   * @param statistics If the totals of the group are included.
    */
-  public static occurrencesToCompactString(child: IPlanNodeJsonChildCompact): string {
+  public static occurrencesToCompactString(child: IPlanNodeJsonChildCompact, statistics: boolean): string {
     return `compacted-occurrences:${child.occurrences}${
-      child.cardinalityRealSum === undefined ? '' : ` cardRealSum:${child.cardinalityRealSum}`}${
-      child.timeSelfSum === undefined ? '' : ` timeSelfSum:${numberToString(child.timeSelfSum)}ms`}${
-      child.timeLifeSum === undefined ? '' : ` timeLifeSum:${numberToString(child.timeLifeSum)}ms`}`;
+      !statistics || child.cardinalityRealSum === undefined ? '' : ` cardRealSum:${child.cardinalityRealSum}`}${
+      !statistics || child.timeSelfSum === undefined ? '' : ` timeSelfSum:${numberToString(child.timeSelfSum)}ms`}${
+      !statistics || child.timeLifeSum === undefined ? '' : ` timeLifeSum:${numberToString(child.timeLifeSum)}ms`}`;
   }
 }
 
 interface ICompactStringLegends {
   sources: Map<string, number>;
   sourceQueries: Map<string, number>;
+  statistics: boolean;
 }
 
 export function numberToString(value: number): string {

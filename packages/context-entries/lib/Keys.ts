@@ -250,7 +250,8 @@ export const KeysInitQuery = {
    */
   cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-query:cliArgsHandlers'),
   /**
-   * Explain mode of the query. Can be 'parsed', 'logical', 'query', 'physical', or 'physical-json'.
+   * Explain mode of the query. Can be 'parsed', 'logical', 'query', 'physical', 'physical-stats',
+   * or 'physical-json'.
    */
   explain: new ActionContextKey<QueryExplainMode>('@comunica/actor-init-query:explain'),
   /**

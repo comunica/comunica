@@ -2,7 +2,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { Types } from '../lib/Algebra';
 import { AlgebraFactory } from '../lib/AlgebraFactory';
 import type { AlgebraTransformer } from '../lib/utils';
-import { algebraTransformer, getSubOperations, transformer } from '../lib/utils';
+import { algebraTransformer, getSubOperations, transformer, visitOperationMembers } from '../lib/utils';
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);
@@ -70,6 +70,53 @@ describe('algebraTransformer', () => {
     // Without the default node pre-visitor of the project, its variables are traversed
     const copy = <any> custom.transformNode(operation, {});
     expect(copy.input.variables).not.toBe(operation.input.variables);
+  });
+});
+
+describe('visitOperationMembers', () => {
+  it('visits the values of the operation itself', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const expression = AF.createTermExpression(DF.literal('true'));
+    const visited: [string, unknown][] = [];
+
+    visitOperationMembers(AF.createFilter(pattern, expression), (value, key) => visited.push([ key, value ]));
+
+    expect(visited).toEqual([[ 'type', 'filter' ], [ 'input', pattern ], [ 'expression', expression ]]);
+  });
+
+  it('visits the elements of an array rather than the array', () => {
+    const pattern1 = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.variable('o'));
+    const pattern2 = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o'));
+    const visited: unknown[] = [];
+
+    visitOperationMembers(AF.createBgp([ pattern1, pattern2 ]), value => visited.push(value));
+
+    expect(visited).toEqual([ 'bgp', pattern1, pattern2 ]);
+  });
+
+  it('skips the keys that a traversal skips', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const operation: any = AF.createProject(pattern, [ DF.variable('s') ]);
+    operation.metadata = { hidden: AF.createNop() };
+    const visited: string[] = [];
+
+    visitOperationMembers(operation, (_value, key) => visited.push(key));
+
+    // The variables of a project and the metadata of any operation are never traversed
+    expect(visited).toEqual([ 'type', 'input' ]);
+  });
+
+  it('skips the given keys as well', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const visited: string[] = [];
+
+    visitOperationMembers(
+      AF.createFilter(pattern, AF.createTermExpression(DF.literal('true'))),
+      (_value, key) => visited.push(key),
+      new Set([ 'expression' ]),
+    );
+
+    expect(visited).toEqual([ 'type', 'input' ]);
   });
 });
 

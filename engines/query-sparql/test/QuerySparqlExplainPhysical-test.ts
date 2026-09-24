@@ -28,7 +28,19 @@ function normalize(plan: string): string {
   return plan.replaceAll(/[\d,.]+ms/gu, 'Xms');
 }
 
+/**
+ * Explain with the statistics of each operator, which the corpus pins down in full.
+ */
 async function explainPhysical(query: string, context: any = {}): Promise<string> {
+  const engine = new QueryEngine();
+  const result = await engine.explain(query, { sources: [ createStore() ], ...context }, 'physical-stats');
+  return normalize(<string> result.data);
+}
+
+/**
+ * Explain without statistics, which is what `physical` reports by default.
+ */
+async function explainPhysicalPlain(query: string, context: any = {}): Promise<string> {
   const engine = new QueryEngine();
   const result = await engine.explain(query, { sources: [ createStore() ], ...context }, 'physical');
   return normalize(<string> result.data);
@@ -41,16 +53,17 @@ async function explainPhysicalJson(query: string, context: any = {}): Promise<an
 }
 
 /**
- * Regression harness for `explain physical` and `explain physical-json`.
+ * Regression harness for the `physical`, `physical-stats` and `physical-json` explain modes.
  *
  * These tests pin down the exact physical plan for a corpus of queries, so that any change to the
- * physical query plan logger becomes visible.
+ * physical query plan logger becomes visible. Unless a test says otherwise, they report the plan
+ * with statistics, as that is the output that holds everything.
  */
 describe('System test: QuerySparql explain physical', () => {
   describe('for queries over an in-memory source', () => {
     it('explains a single pattern', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s ?p ?o }`)).resolves.toBe(`project (o,p,s) cardEst:20 cardReal:20 timeSelf:Xms timeLife:Xms
-  pattern (?s ?p ?o) cardEst:20 src:0 cardReal:20 timeSelf:Xms timeLife:Xms
+  pattern (?s ?p ?o) src:0 cardEst:20 cardReal:20 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -61,8 +74,8 @@ sources:
         .toBe(`project (a,n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
   join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
     join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
-      pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -75,10 +88,10 @@ sources:
   join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
     join-inner(multi-smallest) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
       join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
-        pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
         join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
-          pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
-          pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+          pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+          pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -88,7 +101,7 @@ sources:
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:age ?a FILTER(?a > 25) }`)).resolves
         .toBe(`project (a,s) cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms
   filter cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms
-    pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -101,10 +114,10 @@ sources:
         .toBe(`project (f,n,s) cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms
   leftjoin cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms
     join-optional(bind) cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
-      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:0 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:5 cardReal:0 timeSelf:Xms timeLife:Xms
       bindings
-        pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+        pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -114,8 +127,8 @@ sources:
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { { ?s foaf:name ?n } UNION { ?s foaf:age ?a } }`)).resolves
         .toBe(`project (a,n,s) cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms
   union cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms
-    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
-    pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -127,7 +140,7 @@ sources:
   distinct cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed
     project (n) cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed
       orderby cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed
-        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -138,7 +151,7 @@ sources:
         .toBe(`project (c) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
   extend cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
     group cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -151,10 +164,10 @@ sources:
       path cardEst:5 cardReal:13 timeSelf:Xms timeLife:Xms
         distinct cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
           path cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
-            pattern (?s http://xmlns.com/foaf/0.1/knows ?o) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+            pattern (?s http://xmlns.com/foaf/0.1/knows ?o) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
         alp
           path cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:4 cardRealSum:4 timeSelfSum:Xms timeLifeSum:Xms
-            pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?b) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms
+            pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?b) src:0 cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -165,8 +178,8 @@ sources:
         .toBe(`project (n,s) cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms
   minus cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms
     join-minus(hash-def) cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
-      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -174,7 +187,7 @@ sources:
 
     it('explains an ask', async() => {
       await expect(explainPhysical(`${PREFIXES}ASK { ?s foaf:name ?n }`)).resolves.toBe(`ask
-  pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:1 timeSelf:Xms timeLife:Xms destroyed
+  pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms destroyed
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -183,7 +196,7 @@ sources:
     it('explains a construct', async() => {
       await expect(explainPhysical(`${PREFIXES}CONSTRUCT { ?s ex:n ?n } WHERE { ?s foaf:name ?n }`)).resolves.toBe(`construct cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
   project (s,n) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
-    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -193,7 +206,7 @@ sources:
       await expect(explainPhysical(`${PREFIXES}DESCRIBE ex:alice`)).resolves.toBe(`union cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
   construct cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
     project (__predicate,__object) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
-      pattern (http://example.org/alice ?__predicate ?__object) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (http://example.org/alice ?__predicate ?__object) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -205,7 +218,7 @@ sources:
   join cardEst:~1 cardReal:1 timeSelf:Xms timeLife:Xms
     join-inner(nested-loop) cardEst:~1 cardReal:1 timeSelf:Xms timeLife:Xms
       values cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -217,11 +230,11 @@ sources:
       )).resolves.toBe(`project (n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
   join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
     join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
       project (s) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
         join cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
           join-inner(single) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
-            pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+            pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -232,9 +245,9 @@ sources:
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n FILTER EXISTS { ?s foaf:knows ?f } }`,
       )).resolves.toBe(`project (n,s) cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
   filter cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
-    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
     exists
-      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -247,11 +260,11 @@ sources:
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n FILTER(EXISTS { ?s foaf:knows ?f } && EXISTS { ?s foaf:age ?a }) }`,
       )).resolves.toBe(`project (n,s) cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
   filter cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
-    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
     exists
-      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/age ?a) cardEst:1 src:0 cardReal:1 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
     exists
-      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -259,7 +272,7 @@ sources:
 
     it('explains a graph', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(`project (g,o,p,s) cardEst:~20 cardReal:0 timeSelf:Xms timeLife:Xms
-  pattern (?s ?p ?o ?g) cardEst:~20 src:0 cardReal:0 timeSelf:Xms timeLife:Xms
+  pattern (?s ?p ?o ?g) src:0 cardEst:~20 cardReal:0 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -270,8 +283,8 @@ sources:
         .toBe(`project (a,s,x) cardEst:0 cardReal:0 timeSelf:Xms timeLife:Xms
   join cardEst:0 cardReal:0 timeSelf:Xms timeLife:Xms
     join-inner(empty)
-      pattern (?s http://example.org/nothing ?x) cardEst:0 src:0 cardReal:0 timeSelf:Xms timeLife:Xms
-      pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:0 timeSelf:Xms timeLife:Xms
+      pattern (?s http://example.org/nothing ?x) src:0 cardEst:0 cardReal:0 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:0 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -282,7 +295,7 @@ sources:
         `${PREFIXES}DELETE { ?s foaf:age ?a } INSERT { ?s foaf:age 1 } WHERE { ?s foaf:age ?a }`,
         { destination: createStore() },
       )).resolves.toBe(`deleteinsert
-  pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+  pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -296,15 +309,43 @@ sources:
   join cardEst:~10 cardReal:20 timeSelf:Xms timeLife:Xms
     join-inner(hash-def) cardEst:~10 cardReal:20 timeSelf:Xms timeLife:Xms
       union cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms
-        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
-        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:1 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:1 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
       union cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms
-        pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
-        pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:1 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:1 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)
   1: QuerySourceRdfJs(N3Store)(SkolemID:1)`);
+    });
+  });
+
+  describe('in physical mode', () => {
+    it('reports what ran, without any statistics', async() => {
+      await expect(explainPhysicalPlain(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a }`))
+        .resolves.toBe(`project (a,n,s)
+  join
+    join-inner(hash-def)
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0
+      pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0
+
+sources:
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
+    });
+
+    it('summarizes repetition without the totals it stands for', async() => {
+      await expect(explainPhysicalPlain(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n OPTIONAL { ?s foaf:knows ?f } }`))
+        .resolves.toBe(`project (f,n,s)
+  leftjoin
+    join-optional(bind)
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0
+      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0
+      bindings
+        pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 compacted-occurrences:5
+
+sources:
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
   });
 
@@ -313,7 +354,6 @@ sources:
       const data = await explainPhysicalJson(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a }`);
       expect(data).toEqual({
         logical: 'project',
-        actor: 'urn:comunica:default:query-operation/actors#project',
         variables: [ 'a', 'n', 's' ],
         cardinality: { type: 'estimate', value: 5 },
         cardinalityReal: 5,
@@ -322,7 +362,6 @@ sources:
         children: [
           {
             logical: 'join',
-            actor: 'urn:comunica:default:query-operation/actors#join',
             cardinality: { type: 'estimate', value: 5 },
             cardinalityReal: 5,
             timeSelf: expect.any(Number),
@@ -331,7 +370,6 @@ sources:
               {
                 logical: 'join-inner',
                 physical: 'hash-def',
-                actor: 'urn:comunica:default:rdf-join/actors#inner-hash-def',
                 cardinalities: [
                   { type: 'exact', value: 5 },
                   { type: 'exact', value: 5 },
@@ -349,7 +387,6 @@ sources:
                 children: [
                   {
                     logical: 'pattern',
-                    actor: 'urn:comunica:default:query-operation/actors#source',
                     source: 'QuerySourceRdfJs(N3Store)(SkolemID:0)',
                     pattern: '?s http://xmlns.com/foaf/0.1/name ?n',
                     cardinality: { type: 'exact', value: 5 },
@@ -359,7 +396,6 @@ sources:
                   },
                   {
                     logical: 'pattern',
-                    actor: 'urn:comunica:default:query-operation/actors#source',
                     source: 'QuerySourceRdfJs(N3Store)(SkolemID:0)',
                     pattern: '?s http://xmlns.com/foaf/0.1/age ?a',
                     cardinality: { type: 'exact', value: 5 },
@@ -400,14 +436,14 @@ sources:
       const result = await engine.explain(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a }`,
         { sources: [ createStore() ]},
-        'physical',
+        'physical-stats',
       );
       expect(normalize(<string> result.data)).toBe(`project (a,n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
   join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
     join-inner(wrap-stream) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
       join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
-        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
-        pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -439,10 +475,10 @@ sources:
   project (f,n,s) cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms
     leftjoin cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms
       join-optional(bind) cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms
-        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:4 timeSelf:Xms timeLife:Xms
-        pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:0 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:5 cardReal:0 timeSelf:Xms timeLife:Xms
         bindings
-          pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:4 cardRealSum:4 timeSelfSum:Xms timeLifeSum:Xms
+          pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:4 cardRealSum:4 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)` ]);

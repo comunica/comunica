@@ -518,7 +518,6 @@ test.describe('System test: QuerySparql', () => {
           type: 'physical-json',
           data: {
             logical: 'project',
-            actor: 'urn:comunica:default:query-operation/actors#project',
             variables: [ 'o', 'p', 's' ],
             cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
             cardinalityReal: expect.any(Number),
@@ -527,7 +526,6 @@ test.describe('System test: QuerySparql', () => {
             children: [
               {
                 logical: 'pattern',
-                actor: 'urn:comunica:default:query-operation/actors#source',
                 pattern: '?s ?p ?o',
                 source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
                 cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },

@@ -407,6 +407,40 @@ export const visitOperation = transformer.visitNode.bind(transformer);
 export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);
 
 /**
+ * Visit the values held directly by the given operation, without descending into them.
+ *
+ * The other visitors walk a whole subtree, which is what you want to reach every operation of a
+ * kind. This is the single-level counterpart, for taking one operation apart: it visits the values
+ * of its own keys, and an array is visited element by element rather than as a whole.
+ *
+ * The keys that {@link defaultObjectContext} and {@link defaultNodePreVisitor} leave alone are
+ * skipped, so a caller sees the same members a traversal would descend into.
+ *
+ * @param operation The operation to take apart.
+ * @param visitor Called with each value, in the order the keys occur.
+ * @param ignoreKeys Keys to skip on top of the ones that are skipped anyway.
+ */
+export function visitOperationMembers(
+  operation: Operation,
+  visitor: (value: unknown, key: string) => void,
+  ignoreKeys?: Set<string>,
+): void {
+  const ignoreKeysAll = [
+    defaultObjectContext.ignoreKeys,
+    defaultNodePreVisitor?.[<KnownOperation['type']> operation.type]?.ignoreKeys,
+    ignoreKeys,
+  ];
+  for (const [ key, value ] of Object.entries(operation)) {
+    if (ignoreKeysAll.some(keys => keys?.has(key))) {
+      continue;
+    }
+    for (const entry of Array.isArray(value) ? value : [ value ]) {
+      visitor(entry, key);
+    }
+  }
+}
+
+/**
  * The keys that hold something other than the operations an operation is composed of.
  *
  * These come on top of the keys that {@link defaultNodePreVisitor} already leaves alone: the path a
@@ -423,29 +457,19 @@ const nonOperationKeys: Partial<Record<string, Set<string>>> = {
  * Obtain the operations that the given operation is directly composed of, in the order they occur.
  *
  * Expressions are not included, as an expression is evaluated against a binding rather than being an
- * operation that produces results of its own. Neither are the keys that {@link defaultNodePreVisitor}
- * and {@link nonOperationKeys} describe as holding something other than an operation.
+ * operation that produces results of its own. Neither are the keys that {@link nonOperationKeys}
+ * describes as holding something other than an operation.
  *
  * @param operation An operation.
  * @return The operations directly nested within it.
  */
 export function getSubOperations(operation: Operation): Operation[] {
-  const ignoreKeys = [
-    defaultObjectContext.ignoreKeys,
-    defaultNodePreVisitor?.[<KnownOperation['type']> operation.type]?.ignoreKeys,
-    nonOperationKeys[operation.type],
-  ];
   const subOperations: Operation[] = [];
-  for (const [ key, value ] of Object.entries(operation)) {
-    if (ignoreKeys.some(keys => keys?.has(key))) {
-      continue;
+  visitOperationMembers(operation, (value) => {
+    if (isOperationObject(value) && value.type !== Types.EXPRESSION) {
+      subOperations.push(value);
     }
-    for (const entry of Array.isArray(value) ? value : [ value ]) {
-      if (isOperationObject(entry) && entry.type !== Types.EXPRESSION) {
-        subOperations.push(entry);
-      }
-    }
-  }
+  }, nonOperationKeys[operation.type]);
   return subOperations;
 }
 
