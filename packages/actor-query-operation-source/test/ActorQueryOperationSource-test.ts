@@ -8,6 +8,7 @@ import type {
   IQueryOperationResultVoid,
   IQuerySourceWrapper,
   IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
 } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -329,13 +330,17 @@ describe('ActorQueryOperationSource', () => {
       });
 
       it('should handle bindings operations and invokes the logger', async() => {
-        const parentNode = '';
-        const logger: IPhysicalQueryPlanLogger = {
-          logOperation: jest.fn(),
-          toJson: jest.fn(),
-          stashChildren: jest.fn(),
-          unstashChild: jest.fn(),
+        const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
+        const planNode: IPhysicalQueryPlanNode = {
           appendMetadata: jest.fn(),
+          adoptInput: jest.fn(),
+          setOutput: jest.fn(),
+        };
+        const logger: IPhysicalQueryPlanLogger = {
+          logOperation: jest.fn().mockReturnValue(planNode),
+          finalize: jest.fn(),
+          getNodeForOutput: jest.fn(),
+          toJson: jest.fn(),
         };
         ctx = new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
@@ -352,14 +357,51 @@ describe('ActorQueryOperationSource', () => {
         });
         await expect(result.bindingsStream).toEqualBindingsStream([]);
 
-        expect(logger.logOperation).toHaveBeenCalledWith(
-          'nop',
-          undefined,
-          opIn,
+        expect(logger.logOperation).toHaveBeenCalledWith({
+          logicalOperator: 'nop',
           parentNode,
-          'actor',
-          {},
-        );
+          actor: 'actor',
+          operation: opIn,
+        });
+        expect(planNode.setOutput).toHaveBeenCalledWith(result);
+      });
+
+      it('should log the operations that the source handles itself', async() => {
+        const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
+        const planNode: IPhysicalQueryPlanNode = {
+          appendMetadata: jest.fn(),
+          adoptInput: jest.fn(),
+          setOutput: jest.fn(),
+        };
+        const logger: IPhysicalQueryPlanLogger = {
+          logOperation: jest.fn().mockReturnValue(planNode),
+          getNodeForOutput: jest.fn(),
+          finalize: jest.fn(),
+          toJson: jest.fn(),
+        };
+        ctx = new ActionContext({
+          [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
+          [KeysInitQuery.physicalQueryPlanNode.name]: parentNode,
+        });
+
+        const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+        const opIn = assignOperationSource(AF.createProject(AF.createJoin([ pattern ]), []), source1);
+        await actor.run({ operation: opIn, context: ctx });
+
+        expect(logger.logOperation).toHaveBeenCalledWith({
+          logicalOperator: 'join',
+          parentNode: planNode,
+          actor: 'actor',
+          operation: (<any> opIn).input,
+          metadata: { delegated: true },
+        });
+        expect(logger.logOperation).toHaveBeenCalledWith({
+          logicalOperator: 'pattern',
+          parentNode: planNode,
+          actor: 'actor',
+          operation: pattern,
+          metadata: { delegated: true },
+        });
       });
     });
   });

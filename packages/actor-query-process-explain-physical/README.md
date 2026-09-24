@@ -5,6 +5,28 @@
 An [Query Process](https://github.com/comunica/comunica/tree/master/packages/bus-query-process) actor
 that explains the physical query plan after parsing, optimizing, and evaluating.
 
+These modes **execute the query**, as the plan reports what actually ran, so explaining an update
+performs it. Operators below one that stops early, such as a `LIMIT`, are cut short: they report as
+`destroyed`, and how far they got can differ between runs.
+
+## Output
+
+`physical` reports what ran: the logical and physical operator of every node, and the source it was
+handed to. `physical-stats` adds the measurements of each one — its estimated (`cardEst`) and actual
+(`cardReal`) cardinality, the time in its own output iterator (`timeSelf`) and the time until it
+ended (`timeLife`). Neither timing adds up to a total: nested operators overlap, and an operator that
+passes its input's stream through unchanged reports the same `timeSelf` as the one below it.
+`physical-json` reports everything, as JSON.
+
+Operations that evaluate a sub-operation per binding, such as bind joins, `EXISTS` filters and
+arbitrary-length property paths, group those evaluations under a node of their own, in which identical
+sub-plans are summarized as `compacted-occurrences`, with their totals under `physical-stats`.
+
+When a source handles an operation itself, the operations it was handed are reported below it as
+`delegated`. SPARQL endpoints also report the query they sent (`srcQuery`), and how many HTTP requests
+they made (`httpRequests`) once statistics are asked for. Long values are interned into legends below
+the plan.
+
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 

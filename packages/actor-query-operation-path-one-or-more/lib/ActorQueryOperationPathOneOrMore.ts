@@ -11,7 +11,7 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getSafeBindings } from '@comunica/utils-query-operation';
+import { getSafeBindings, groupRepeatedSubOperations } from '@comunica/utils-query-operation';
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 
 /**
@@ -75,6 +75,9 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       const objectVar = operation.object;
 
       const termHashes = {};
+      // The path is walked by evaluating one sub-path per reached term,
+      // so group those evaluations in the physical query plan
+      const alpContext = groupRepeatedSubOperations(context, 'alp', this.name);
 
       const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
         results.bindingsStream,
@@ -93,7 +96,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                   object!,
                   predicate.path,
                   graph!,
-                  context,
+                  alpContext,
                   termHashes,
                   {},
                   it,

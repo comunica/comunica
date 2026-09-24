@@ -9,7 +9,7 @@ import {
 } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
-import { failTest, passTestVoid, ActionContextKey } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import { MemoryPhysicalQueryPlanLogger } from './MemoryPhysicalQueryPlanLogger';
 
 /**
@@ -24,9 +24,9 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
   }
 
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
-    const mode = (action.context.get(KeysInitQuery.explain) ?? action.context.get(new ActionContextKey('explain')));
-    if (mode !== 'physical' && mode !== 'physical-json') {
-      return failTest(`${this.name} can only explain in 'physical' or 'physical-json' mode.`);
+    const mode = action.context.get(KeysInitQuery.explain);
+    if (mode !== 'physical' && mode !== 'physical-stats' && mode !== 'physical-json') {
+      return failTest(`${this.name} can only explain in 'physical', 'physical-stats' or 'physical-json' mode.`);
     }
     return passTestVoid();
   }
@@ -59,13 +59,17 @@ export class ActorQueryProcessExplainPhysical extends ActorQueryProcess {
         break;
     }
 
-    const mode = (action.context.get(KeysInitQuery.explain) ??
-      action.context.getSafe(new ActionContextKey('explain')));
+    // Statistics are only complete once every measurement has settled
+    await physicalQueryPlanLogger.finalize();
+
+    const mode = action.context.getSafe(KeysInitQuery.explain);
     return {
       result: {
         explain: true,
         type: mode,
-        data: mode === 'physical' ? physicalQueryPlanLogger.toCompactString() : physicalQueryPlanLogger.toJson(),
+        data: mode === 'physical-json' ?
+          physicalQueryPlanLogger.toJson() :
+          physicalQueryPlanLogger.toCompactString(mode === 'physical-stats'),
       },
     };
   }

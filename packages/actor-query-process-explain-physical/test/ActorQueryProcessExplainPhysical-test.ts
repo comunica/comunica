@@ -38,12 +38,12 @@ describe('ActorQueryProcessExplainPhysical', () => {
     describe('test', () => {
       it('rejects on no explain in context', async() => {
         await expect(actor.test({ query: 'q', context: new ActionContext() }))
-          .resolves.toFailTest(`actor can only explain in 'physical' or 'physical-json' mode.`);
+          .resolves.toFailTest(`actor can only explain in 'physical', 'physical-stats' or 'physical-json' mode.`);
       });
 
       it('rejects on wrong explain in context', async() => {
         await expect(actor.test({ query: 'q', context: new ActionContext().set(KeysInitQuery.explain, 'parsed') }))
-          .resolves.toFailTest(`actor can only explain in 'physical' or 'physical-json' mode.`);
+          .resolves.toFailTest(`actor can only explain in 'physical', 'physical-stats' or 'physical-json' mode.`);
       });
 
       it('handles physical explain in context', async() => {
@@ -51,11 +51,6 @@ describe('ActorQueryProcessExplainPhysical', () => {
           query: 'q',
           context: new ActionContext().set(KeysInitQuery.explain, 'physical'),
         })).resolves
-          .toPassTestVoid();
-      });
-
-      it('handles physical explain in raw context', async() => {
-        await expect(actor.test({ query: 'q', context: new ActionContext().setRaw('explain', 'physical') })).resolves
           .toPassTestVoid();
       });
     });
