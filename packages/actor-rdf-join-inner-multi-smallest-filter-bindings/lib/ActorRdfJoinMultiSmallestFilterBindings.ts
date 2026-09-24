@@ -43,7 +43,6 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
       pushesBindingsToSource: true,
       limitEntries: 2,
       limitEntriesMin: true,
-      isLeaf: false,
     });
     this.selectivityModifier = args.selectivityModifier;
     this.blockSize = args.blockSize;

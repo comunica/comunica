@@ -8,6 +8,7 @@ import type {
   ICliArgsHandler,
   IDataDestination,
   IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
   IProxyHandler,
   IQuerySourceWrapper,
   ISuperTypeProvider,
@@ -250,7 +251,8 @@ export const KeysInitQuery = {
    */
   cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-query:cliArgsHandlers'),
   /**
-   * Explain mode of the query. Can be 'parsed', 'logical', 'query', 'physical', or 'physical-json'.
+   * Explain mode of the query. Can be 'parsed', 'logical', 'query', 'physical', 'physical-stats',
+   * or 'physical-json'.
    */
   explain: new ActionContextKey<QueryExplainMode>('@comunica/actor-init-query:explain'),
   /**
@@ -260,10 +262,12 @@ export const KeysInitQuery = {
     '@comunica/actor-init-query:physicalQueryPlanLogger',
   ),
   /**
-   * The current physical operator within the query plan.
-   *              This is used to pass parent-child relationships for invoking the query plan logger.
+   * The current node within the query plan.
+   * This is used to pass parent-child relationships for invoking the query plan logger.
    */
-  physicalQueryPlanNode: new ActionContextKey<any>('@comunica/actor-init-query:physicalQueryPlanNode'),
+  physicalQueryPlanNode: new ActionContextKey<IPhysicalQueryPlanNode>(
+    '@comunica/actor-init-query:physicalQueryPlanNode',
+  ),
   /**
    * A JSON-LD context
    */

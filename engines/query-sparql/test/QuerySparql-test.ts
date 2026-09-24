@@ -3881,15 +3881,13 @@ CONSTRUCT {
     }`, {
           sources: [ 'https://www.rubensworks.net/' ],
         }, 'physical');
-        expect(result).toEqual({
-          explain: true,
-          type: 'physical',
-          data: `project (o,p,s)
+        // Without statistics nothing of the live page itself is asserted
+        expect(result.data).toBe(`project (o,p,s)
   pattern (?s ?p ?o) src:0
 
 sources:
-  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`,
-        });
+  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`);
+        expect(result).toMatchObject({ explain: true, type: 'physical' });
       });
 
       it('explaining physical-json plan', async() => {
@@ -3904,11 +3902,19 @@ sources:
           data: {
             logical: 'project',
             variables: [ 'o', 'p', 's' ],
+            cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
+            cardinalityReal: expect.any(Number),
+            timeSelf: expect.any(Number),
+            timeLife: expect.any(Number),
             children: [
               {
                 logical: 'pattern',
                 pattern: '?s ?p ?o',
                 source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
+                cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
+                cardinalityReal: expect.any(Number),
+                timeSelf: expect.any(Number),
+                timeLife: expect.any(Number),
               },
             ],
           },
