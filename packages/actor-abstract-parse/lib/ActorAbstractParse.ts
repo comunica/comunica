@@ -16,6 +16,11 @@ export interface IActionParse<T extends IParseMetadata = IParseMetadata> extends
    * Metadata properties to be given to the string stream that needs to be parsed
    */
   metadata?: T;
+  /**
+   * The URL the data was obtained from, which identifies the data in messages such as errors.
+   * Data that was not obtained from a URL (such as a serialized source) describes where it comes from instead.
+   */
+  url?: string;
 }
 
 export interface IActorParseOutput<T, K extends IParseMetadata = IParseMetadata> extends IActorOutput {
