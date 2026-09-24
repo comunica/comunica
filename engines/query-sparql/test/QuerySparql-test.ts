@@ -1278,9 +1278,6 @@ WHERE {
           .toContain(`Fetch timed out for ${endpoint} after 3000 ms`);
         expect(queryRequested).toBeTruthy();
         expect(queryInitSignal).not.toBe(serviceDescriptionInitSignal);
-
-        // The timed out request marks the host as rate-limited, which would delay the requests of later tests to it
-        await engine.invalidateHttpCache();
       });
 
       it('should not push distinct construct into a SPARQL endpoint', async() => {
@@ -1365,6 +1362,8 @@ WHERE {
           ?s <ex:p> ?o OPTIONAL { ?s <ex:p> ?y FILTER NOT EXISTS { ?s <ex:q> ?x } }
         }`, [ 'ex:s' ]],
       ])('with a %s over a pattern that none of the SPARQL endpoints has results for', async(_, query, expected) => {
+        // Earlier tests can leave state behind, such as the rate limiting of a slow host
+        await engine.invalidateHttpCache();
         // The first endpoint only has results for <ex:p>, the second has none at all
         const endpoints = [ 'http://example.org/pruned1/sparql', 'http://example.org/pruned2/sparql' ];
         const mockedFetch: typeof fetch = async(input, init) => {
@@ -1405,6 +1404,8 @@ WHERE {
       });
 
       it('should answer ASK over a pattern that none of the SPARQL endpoints has results for', async() => {
+        // Earlier tests can leave state behind, such as the rate limiting of a slow host
+        await engine.invalidateHttpCache();
         const mockedFetch: typeof fetch = async(input, init) => {
           const url = new URL(input instanceof Request ? input.url : input);
           const query = url.searchParams.get('query') ??
@@ -1472,6 +1473,8 @@ SELECT ?person ?name ?book ?title {
       });
 
       it('with an EXISTS over the sources in context next to a SERVICE clause', async() => {
+        // Earlier tests can leave state behind, such as the rate limiting of a slow host
+        await engine.invalidateHttpCache();
         // The endpoint answers ex:s1 and ex:s2 to any query, while only ex:s1 has an ex:q in the store
         const endpoint = 'http://example.org/service-exists/sparql';
         const mockedFetch: typeof fetch = async(input, init) => {
@@ -1568,6 +1571,8 @@ SELECT ?s WHERE {
 
     describe('property paths', () => {
       it('should handle zero-or-more paths with variable ends over multiple SPARQL endpoints', async() => {
+        // Earlier tests can leave state behind, such as the rate limiting of a slow host
+        await engine.invalidateHttpCache();
         // A chain of length two that spans both endpoints, and a chain of length one
         const endpoints: Record<string, RDF.Quad[]> = {
           'http://example.org/path1/sparql': [
