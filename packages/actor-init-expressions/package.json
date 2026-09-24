@@ -49,6 +49,6 @@
     "@comunica/core": "^5.4.0",
     "@comunica/types": "^5.4.0",
     "@comunica/utils-algebra": "^5.4.0",
-    "rdf-data-factory": "^2.0.0"
+    "rdf-data-factory": "^2.1.0"
   }
 }
