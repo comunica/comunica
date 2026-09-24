@@ -42,8 +42,17 @@ const EMITTING = 2;
  *
  * `read` is fully synchronous: it only stops when a source has nothing buffered, and resumes when that
  * source becomes readable again. It never awaits per binding.
+ *
+ * A side that can skip ahead is only asked to, once it has fallen behind the other side a number of times in a
+ * row. A skip has a fixed cost, which is only worth paying for a gap that is longer than a few bindings, and
+ * gaps are usually short when the keys of both sides interleave closely.
  */
 export class MergeJoinIterator extends AsyncIterator<Bindings> {
+  /**
+   * The number of times in a row that a side must fall behind before it is asked to skip ahead.
+   */
+  public static readonly SEEK_AFTER_BEHIND = 3;
+
   private readonly streamed: AsyncIterator<Bindings>;
   private readonly buffered: AsyncIterator<Bindings>;
   private readonly compareKeys: (left: Bindings, right: Bindings) => number;
@@ -53,16 +62,27 @@ export class MergeJoinIterator extends AsyncIterator<Bindings> {
   private run: Bindings[] = [];
   private runIndex = 0;
   private phase: number = SEEKING;
+  private readonly seekAfterBehind: number;
+  private streamedBehind = 0;
+  private bufferedBehind = 0;
 
+  /**
+   * @param streamed The side to stream.
+   * @param buffered The side to buffer runs of equal keys from.
+   * @param compareKeys Compares the join keys of two bindings.
+   * @param seekAfterBehind The number of times in a row that a side must fall behind before it is asked to skip.
+   */
   public constructor(
     streamed: AsyncIterator<Bindings>,
     buffered: AsyncIterator<Bindings>,
     compareKeys: (left: Bindings, right: Bindings) => number,
+    seekAfterBehind = MergeJoinIterator.SEEK_AFTER_BEHIND,
   ) {
     super();
     this.streamed = streamed;
     this.buffered = buffered;
     this.compareKeys = compareKeys;
+    this.seekAfterBehind = seekAfterBehind;
 
     for (const source of [ streamed, buffered ]) {
       source.on('error', error => this.destroy(error));
@@ -104,19 +124,30 @@ export class MergeJoinIterator extends AsyncIterator<Bindings> {
   }
 
   /**
-   * Drop the binding currently held for a source, and skip ahead to `target` when the source supports it.
+   * Drop the binding currently held for a source, and skip ahead to `target` when the source supports it,
+   * and has fallen behind often enough in a row for a skip to be worth its cost.
    * @param fromStreamed Whether to advance the streamed side rather than the buffered side.
    * @param target The bindings that the other side is at.
    */
   protected advance(fromStreamed: boolean, target: Bindings): void {
+    let behind: number;
     if (fromStreamed) {
       this.streamedItem = undefined;
+      behind = ++this.streamedBehind;
+      this.bufferedBehind = 0;
     } else {
       this.bufferedItem = undefined;
+      behind = ++this.bufferedBehind;
+      this.streamedBehind = 0;
     }
     const source = fromStreamed ? this.streamed : this.buffered;
-    if (isSeekableBindingsStream(source)) {
+    if (behind >= this.seekAfterBehind && isSeekableBindingsStream(source)) {
       source.seek(target);
+      if (fromStreamed) {
+        this.streamedBehind = 0;
+      } else {
+        this.bufferedBehind = 0;
+      }
     }
   }
 
@@ -183,6 +214,8 @@ export class MergeJoinIterator extends AsyncIterator<Bindings> {
       }
       this.run = [ buffered ];
       this.bufferedItem = undefined;
+      this.streamedBehind = 0;
+      this.bufferedBehind = 0;
       this.phase = COLLECTING;
     }
     return null;

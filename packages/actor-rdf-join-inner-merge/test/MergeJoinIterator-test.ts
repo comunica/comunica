@@ -287,8 +287,20 @@ describe('MergeJoinIterator', () => {
   });
 
   describe('with a seekable source', () => {
-    it('skips ahead on both sides instead of reading every binding', async() => {
-      // Two sparse key sets that only meet at 500, so almost everything can be skipped.
+    it('skips ahead over a long gap once a side has fallen behind a few times', async() => {
+      // The buffered side only has keys at the far end, so most of the streamed side can be skipped.
+      const streamed = new SeekableIterator(
+        [ ...Array.from({ length: 1000 }).keys() ].map(i => bindPadded(i, 'b', `l${i}`)),
+      );
+      const buffered = new SeekableIterator([ bindPadded(900, 'c', 'r0'), bindPadded(950, 'c', 'r1') ]);
+      const merged = new MergeJoinIterator(streamed, buffered, compare);
+      await expect(arrayifyStream(merged)).resolves.toHaveLength(2);
+      expect(streamed.seeks).toBe(2);
+      expect(streamed.skipped).toBeGreaterThan(900);
+    });
+
+    it('reads through keys that interleave closely instead of skipping', async() => {
+      // Each side is behind by a single key at a time, so there is never anything to skip.
       const streamed = new SeekableIterator(
         [ ...Array.from({ length: 1000 }).keys() ].map(i => bindPadded(i * 2, 'b', `l${i}`)),
       );
@@ -297,7 +309,19 @@ describe('MergeJoinIterator', () => {
       );
       const merged = new MergeJoinIterator(streamed, buffered, compare);
       await expect(arrayifyStream(merged)).resolves.toEqualBindingsArray([]);
-      expect(streamed.seeks + buffered.seeks).toBeGreaterThan(0);
+      expect(streamed.seeks + buffered.seeks).toBe(0);
+    });
+
+    it('skips on every step when asked to skip after falling behind once', async() => {
+      const streamed = new SeekableIterator(
+        [ ...Array.from({ length: 100 }).keys() ].map(i => bindPadded(i * 2, 'b', `l${i}`)),
+      );
+      const buffered = new SeekableIterator(
+        [ ...Array.from({ length: 100 }).keys() ].map(i => bindPadded(i * 2 + 1, 'c', `r${i}`)),
+      );
+      const merged = new MergeJoinIterator(streamed, buffered, compare, 1);
+      await expect(arrayifyStream(merged)).resolves.toEqualBindingsArray([]);
+      expect(streamed.seeks + buffered.seeks).toBeGreaterThan(100);
     });
 
     it('produces the same results as a non-seekable source', async() => {
