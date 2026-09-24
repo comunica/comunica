@@ -449,9 +449,7 @@ const nonOperationKeys: Partial<Record<string, Set<string>>> = {
 /**
  * Obtain the operations that the given operation is directly composed of, in the order they occur.
  *
- * Expressions are not included, as an expression is evaluated against a binding rather than being an
- * operation that produces results of its own. Neither are the keys that {@link nonOperationKeys}
- * describes as holding something other than an operation.
+ * Expressions are not included.
  *
  * @param operation An operation.
  * @return The operations directly nested within it.
