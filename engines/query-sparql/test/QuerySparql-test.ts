@@ -1372,6 +1372,39 @@ SELECT ?person ?name ?book ?title {
         });
         await expect(bindingsStream.toArray()).resolves.toHaveLength(10);
       });
+
+      it('with an EXISTS over the sources in context next to a SERVICE clause', async() => {
+        // The endpoint answers ex:s1 and ex:s2 to any query, while only ex:s1 has an ex:q in the store
+        const endpoint = 'http://example.org/service-exists/sparql';
+        const mockedFetch: typeof fetch = async(input, init) => {
+          const url = new URL(input instanceof Request ? input.url : input);
+          const query = url.searchParams.get('query') ??
+            (init?.body ? new URLSearchParams(String(init.body)).get('query') : null);
+          // Requests without a query are service description lookups
+          if (!query) {
+            return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
+          }
+          return new Response(JSON.stringify({
+            head: { vars: [ 's', 'o' ]},
+            results: {
+              bindings: [
+                { s: { type: 'uri', value: 'ex:s1' }, o: { type: 'uri', value: 'ex:o' }},
+                { s: { type: 'uri', value: 'ex:s2' }, o: { type: 'uri', value: 'ex:o' }},
+              ],
+            },
+          }), { status: 200, headers: { 'content-type': 'application/sparql-results+json' }});
+        };
+        const store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:q'), DF.namedNode('ex:x')));
+        const query = async(existence: string): Promise<string[]> => (await (await engine.queryBindings(`
+SELECT ?s WHERE {
+  SERVICE <${endpoint}> { ?s <ex:p> ?o }
+  FILTER ${existence} { ?s <ex:q> ?x }
+}`, { sources: [ store ], fetch: mockedFetch })).toArray()).map(bindings => bindings.get('s')!.value);
+
+        await expect(query('EXISTS')).resolves.toEqual([ 'ex:s1' ]);
+        await expect(query('NOT EXISTS')).resolves.toEqual([ 'ex:s2' ]);
+      });
     });
 
     describe('compositefile source', () => {

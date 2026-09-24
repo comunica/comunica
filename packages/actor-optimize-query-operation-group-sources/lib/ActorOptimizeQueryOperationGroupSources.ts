@@ -8,7 +8,14 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, AlgebraFactory, isKnownOperation, isKnownSubType } from '@comunica/utils-algebra';
+import {
+  Algebra,
+  AlgebraFactory,
+  algebraUtils,
+  isKnownOperation,
+  isKnownSubType,
+  TypesComunica,
+} from '@comunica/utils-algebra';
 import {
   assignOperationSource,
   doesShapeAcceptOperation,
@@ -171,11 +178,8 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     source: IQuerySourceWrapper | undefined,
     context: IActionContext,
   ): Promise<O> {
-    if (source && this.isPossibleToMoveSourceAnnotationUpwards(
-      operation,
-      await source.source.getSelectorShape(context),
-      context,
-    )) {
+    if (source && this.canSourceEvaluateExpressions(operation, source) &&
+      this.isPossibleToMoveSourceAnnotationUpwards(operation, await source.source.getSelectorShape(context), context)) {
       this.logDebug(context, `Hoist ${inputs.length} source-specific operations into a single ${operation.type} operation for ${source.source.toString()}`);
       operation = assignOperationSource(operation, source);
       for (const input of inputs) {
@@ -210,5 +214,31 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
         doesShapeAcceptOperation(shape, expression, { wildcardAcceptAllExtensionFunctions });
     }
     return false;
+  }
+
+  /**
+   * Checks if the given source can evaluate the expressions in the given operation.
+   * This is not the case if an expression contains an operation that is assigned to another source,
+   * such as the pattern of an `EXISTS` over other sources, as this source would evaluate it over its own data instead.
+   * @param operation A grouped operation consisting of operations that share the given source.
+   * @param source The common source.
+   */
+  public canSourceEvaluateExpressions(operation: Algebra.Operation, source: IQuerySourceWrapper): boolean {
+    let otherSource = false;
+    const sourceChecker = {
+      preVisitor: (subOperation: Algebra.Operation) => {
+        const subSource = getOperationSource(subOperation);
+        if (subSource && subSource !== source) {
+          otherSource = true;
+          return { shortcut: true };
+        }
+        return {};
+      },
+    };
+    // Only the operations within expressions can have another source,
+    // as the other operations have either been grouped into this source, or had no source to begin with.
+    const types = [ ...Object.values(Algebra.Types), ...Object.values(TypesComunica) ];
+    algebraUtils.visitOperation(operation, Object.fromEntries(types.map(type => [ type, sourceChecker ])));
+    return !otherSource;
   }
 }

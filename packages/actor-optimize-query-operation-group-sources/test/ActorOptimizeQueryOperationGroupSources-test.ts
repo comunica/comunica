@@ -158,6 +158,27 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
             ),
           );
         });
+
+        it('should group a singular sub-input for Filter if its EXISTS is over the same source', async() => {
+          const pattern = AF.createPattern(DF.namedNode('s'), DF.namedNode('s'), DF.namedNode('s'));
+          const opIn = AF.createFilter(
+            assignOperationSource(pattern, source1),
+            AF.createExistenceExpression(false, assignOperationSource(pattern, source1)),
+          );
+          const opOut = await actor.groupOperation(opIn, ctx);
+          expect(getOperationSource(opOut)).toBe(source1);
+        });
+
+        it('should not group a singular sub-input for Filter if its EXISTS is over another source', async() => {
+          const pattern = AF.createPattern(DF.namedNode('s'), DF.namedNode('s'), DF.namedNode('s'));
+          const opIn = AF.createFilter(
+            assignOperationSource(pattern, source1),
+            AF.createExistenceExpression(false, assignOperationSource(pattern, source2)),
+          );
+          const opOut = await actor.groupOperation(opIn, ctx);
+          expect(opOut).toEqual(opIn);
+          expect(getOperationSource(opOut)).toBeUndefined();
+        });
       });
 
       describe('for a join operation', () => {
@@ -700,6 +721,31 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
           { type: 'operation', operation: { operationType: 'wildcard' }},
           ctx,
         )).toBeFalsy();
+      });
+    });
+
+    describe('canSourceEvaluateExpressions', () => {
+      const pattern = AF.createPattern(DF.namedNode('s'), DF.namedNode('s'), DF.namedNode('s'));
+
+      it('should return true for operations without expressions', () => {
+        expect(actor.canSourceEvaluateExpressions(assignOperationSource(pattern, source1), source1)).toBeTruthy();
+        expect(actor.canSourceEvaluateExpressions(AF.createNop(), source1)).toBeTruthy();
+      });
+
+      it('should return true for expressions over the same source or without source', () => {
+        expect(actor.canSourceEvaluateExpressions(AF.createFilter(
+          assignOperationSource(pattern, source1),
+          AF.createExistenceExpression(false, AF.createJoin([ assignOperationSource(pattern, source1), pattern ])),
+        ), source1)).toBeTruthy();
+      });
+
+      it('should return false for expressions over another source', () => {
+        expect(actor.canSourceEvaluateExpressions(AF.createFilter(
+          assignOperationSource(pattern, source1),
+          AF.createOperatorExpression('!', [
+            AF.createExistenceExpression(false, AF.createJoin([ assignOperationSource(pattern, source2) ])),
+          ]),
+        ), source1)).toBeFalsy();
       });
     });
   });
