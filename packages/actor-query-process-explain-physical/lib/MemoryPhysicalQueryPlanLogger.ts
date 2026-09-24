@@ -1,9 +1,8 @@
 import type { ILogOperationArgs, IPhysicalQueryPlanLogger, IPhysicalQueryPlanNode } from '@comunica/types';
 import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
-import type { IInstrumentedIterator } from '@comunica/utils-iterator';
+import type { IInstrumentedIterator, InstrumentableIterator } from '@comunica/utils-iterator';
 import { instrumentIterator } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
-import type { AsyncIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import { MemoryPlanNode } from './MemoryPlanNode';
 
@@ -11,7 +10,7 @@ import { MemoryPlanNode } from './MemoryPlanNode';
  * A stream that is being measured, together with the ongoing measurement of it.
  */
 interface IMeasuredStream {
-  stream: AsyncIterator<any>;
+  stream: InstrumentableIterator;
   measurement: IInstrumentedIterator;
 }
 

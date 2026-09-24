@@ -26,6 +26,11 @@ export type IteratorCounters = {
 };
 
 /**
+ * An iterator that {@link instrumentIterator} can measure.
+ */
+export type InstrumentableIterator = AsyncIterator<any>;
+
+/**
  * An ongoing measurement of an iterator.
  */
 export interface IInstrumentedIterator {
@@ -57,7 +62,7 @@ export interface IInstrumentedIterator {
  *
  * @param iterator The iterator to measure.
  */
-export function instrumentIterator(iterator: AsyncIterator<any>): IInstrumentedIterator {
+export function instrumentIterator(iterator: InstrumentableIterator): IInstrumentedIterator {
   const counters: IteratorCounters = {
     count: 0,
     timeSelf: 0,

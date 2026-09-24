@@ -1,5 +1,5 @@
-import { ChunkedIterator } from '@comunica/utils-iterator';
 import { ArrayIterator } from 'asynciterator';
+import { ChunkedIterator } from '../lib/ChunkedIterator';
 
 describe('ChunkedIterator', () => {
   let itr: ChunkedIterator<number>;
