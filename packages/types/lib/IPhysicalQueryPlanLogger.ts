@@ -9,6 +9,10 @@ export interface IPhysicalQueryPlanLogger {
    * results in more than one node. Hierarchies are built by passing the handle of an
    * earlier call as `parentNode`. Exactly one node may be logged without a parent.
    *
+   * A `repeated` node is the exception: it stands for all evaluations of one thing within one
+   * operation, so logging it again under the same parent returns the node that already stands
+   * for them. Operations that open such a group per evaluation therefore need not remember it.
+   *
    * @param args The operation to log.
    * @return A handle to the created node.
    */
@@ -63,7 +67,8 @@ export interface ILogOperationArgs {
    * If the operations executed within this node are repeated evaluations of the same operation,
    * such as the per-binding evaluations of a bind join.
    *
-   * Such repetitions are summarized rather than listed one by one.
+   * Such repetitions are summarized rather than listed one by one. Logging a repeated node more
+   * than once under the same parent, with the same operator and actor, yields the same node.
    */
   repeated?: boolean;
   /**

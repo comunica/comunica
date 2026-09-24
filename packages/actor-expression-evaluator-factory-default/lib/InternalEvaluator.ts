@@ -16,12 +16,6 @@ import { AlgebraTransformer } from './AlgebraTransformer';
 export class InternalEvaluator {
   public readonly transformer: AlgebraTransformer;
 
-  /**
-   * The context in which each existence expression evaluates its sub-operations.
-   * These are cached so that the repeated evaluations of one expression share a physical plan node.
-   */
-  private readonly existenceContexts = new WeakMap<object, IActionContext>();
-
   private readonly subEvaluators:
   Record<ExpressionType, (expr: Expression, mapping: RDF.Bindings) => Promise<Eval.Term> | Eval.Term> =
       {
@@ -81,12 +75,10 @@ export class InternalEvaluator {
     const algebraFactory = new AlgebraFactory(dataFactory);
     const operation = materializeOperation(expr.expression.input, mapping, algebraFactory, this.bindingsFactory);
 
-    // This expression is evaluated once per binding, so group those evaluations in the physical query plan
-    let context = this.existenceContexts.get(expr.expression);
-    if (!context) {
-      context = groupRepeatedSubOperations(this.context, 'exists');
-      this.existenceContexts.set(expr.expression, context);
-    }
+    // This expression is evaluated once per binding, so group those evaluations in the physical query
+    // plan. Every evaluation of it reaches for the same group, and a filter with more than one
+    // `EXISTS` keeps a group per expression, so nothing is remembered here.
+    const context = groupRepeatedSubOperations(this.context, 'exists', undefined, expr.expression);
 
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context });
     const output = getSafeBindings(outputRaw);

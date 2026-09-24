@@ -107,6 +107,41 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
         ],
       });
     });
+
+    it('reuses the group of a repeated operation', () => {
+      const operation = createPattern();
+      const root = logOperation('filter', undefined, {}, undefined, 'actor-filter', {});
+      const args = { logicalOperator: 'exists', parentNode: root, repeated: true, operation };
+
+      expect(logger.logOperation(args)).toBe(logger.logOperation(args));
+    });
+
+    it('keeps a group per repeated operation', () => {
+      const root = logOperation('filter', undefined, {}, undefined, 'actor-filter', {});
+      const first = logger.logOperation({
+        logicalOperator: 'exists',
+        parentNode: root,
+        repeated: true,
+        operation: createPattern(),
+      });
+      const second = logger.logOperation({
+        logicalOperator: 'exists',
+        parentNode: root,
+        repeated: true,
+        operation: createPattern(),
+      });
+
+      expect(first).not.toBe(second);
+    });
+
+    it('does not reuse a group of another actor', () => {
+      const root = logOperation('join', undefined, {}, undefined, 'actor-join', {});
+      const first = logger.logOperation({ logicalOperator: 'bindings', parentNode: root, repeated: true });
+      const second = logger
+        .logOperation({ logicalOperator: 'bindings', parentNode: root, repeated: true, actor: 'actor-bind' });
+
+      expect(first).not.toBe(second);
+    });
   });
 
   describe('getNodeForOutput', () => {

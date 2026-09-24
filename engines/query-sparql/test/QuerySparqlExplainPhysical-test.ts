@@ -333,6 +333,28 @@ actors:
   2: urn:comunica:default:query-operation/actors#source`);
     });
 
+    // Each exists expression keeps a group of its own, so the repetitions of one are never
+    // summarized together with those of another.
+    it('explains a filter with two exists expressions', async() => {
+      await expect(explainPhysical(
+        `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n FILTER(EXISTS { ?s foaf:knows ?f } && EXISTS { ?s foaf:age ?a }) }`,
+      )).resolves.toBe(`project (n,s) cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms actor:0
+  filter cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms actor:1
+    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
+    exists
+      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/age ?a) cardEst:1 src:0 cardReal:1 timeSelf:Xms timeLife:Xms actor:2 compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+    exists
+      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms actor:2 compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+
+sources:
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
+
+actors:
+  0: urn:comunica:default:query-operation/actors#project
+  1: urn:comunica:default:query-operation/actors#filter
+  2: urn:comunica:default:query-operation/actors#source`);
+    });
+
     it('explains a graph', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(`project (g,o,p,s) cardEst:~20 cardReal:0 timeSelf:Xms timeLife:Xms actor:0
   pattern (?s ?p ?o ?g) cardEst:~20 src:0 cardReal:0 timeSelf:Xms timeLife:Xms actor:1

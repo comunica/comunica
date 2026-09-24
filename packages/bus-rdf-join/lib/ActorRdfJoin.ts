@@ -584,6 +584,16 @@ export interface IActorRdfJoinInternalOptions {
    */
   canHandleUndefs?: boolean;
   /**
+   * If this join operator will not invoke any other join or query operations below,
+   * and can therefore be considered a leaf of the join plan.
+   *
+   * @deprecated This is not used anymore. The physical query plan reports every join actor that ran,
+   * and finds the entries of a join by the outputs they produced, so it no longer needs to be told
+   * which joins have nothing below them.
+   * TODO: remove in the next major version.
+   */
+  isLeaf?: boolean;
+  /**
    * If this join operator must only be used for join entries with (at least partially) common variables.
    */
   requiresVariableOverlap?: boolean;

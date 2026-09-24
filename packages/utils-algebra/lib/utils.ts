@@ -407,6 +407,57 @@ export const visitOperation = transformer.visitNode.bind(transformer);
 export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);
 
 /**
+ * The keys that hold something other than the operations an operation is composed of.
+ *
+ * These come on top of the keys that {@link defaultNodePreVisitor} already leaves alone: the path a
+ * path traverses, and the templates a construct or an update produces, describe what to do rather
+ * than name an operation that is evaluated to obtain results.
+ */
+const nonOperationKeys: Partial<Record<string, Set<string>>> = {
+  [Types.PATH]: new Set([ 'predicate' ]),
+  [Types.CONSTRUCT]: new Set([ 'template' ]),
+  [Types.DELETE_INSERT]: new Set([ 'delete', 'insert' ]),
+};
+
+/**
+ * Obtain the operations that the given operation is directly composed of, in the order they occur.
+ *
+ * Expressions are not included, as an expression is evaluated against a binding rather than being an
+ * operation that produces results of its own. Neither are the keys that {@link defaultNodePreVisitor}
+ * and {@link nonOperationKeys} describe as holding something other than an operation.
+ *
+ * @param operation An operation.
+ * @return The operations directly nested within it.
+ */
+export function getSubOperations(operation: Operation): Operation[] {
+  const ignoreKeys = [
+    defaultObjectContext.ignoreKeys,
+    defaultNodePreVisitor?.[<KnownOperation['type']> operation.type]?.ignoreKeys,
+    nonOperationKeys[operation.type],
+  ];
+  const subOperations: Operation[] = [];
+  for (const [ key, value ] of Object.entries(operation)) {
+    if (ignoreKeys.some(keys => keys?.has(key))) {
+      continue;
+    }
+    for (const entry of Array.isArray(value) ? value : [ value ]) {
+      if (isOperationObject(entry) && entry.type !== Types.EXPRESSION) {
+        subOperations.push(entry);
+      }
+    }
+  }
+  return subOperations;
+}
+
+/**
+ * If the given value is an algebra operation.
+ * @param value Any value occurring within an operation.
+ */
+export function isOperationObject(value: any): value is Operation {
+  return typeof value === 'object' && value !== null && typeof value.type === 'string';
+}
+
+/**
  * Detects all in-scope variables.
  * In practice this means iterating through the entire algebra tree, finding all variables,
  * and stopping when a project function is found.

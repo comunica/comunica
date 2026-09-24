@@ -19,34 +19,6 @@ import type * as RDF from '@rdfjs/types';
 import { SilencedBindingsIterator } from './SilencedBindingsIterator';
 
 /**
- * The operation types that are reported when a source handles an operation itself.
- */
-const NESTED_OPERATION_TYPES = new Set<string>(Object.values(Algebra.Types).filter(type => ![
-  // Expressions are part of an operation, not operations of their own
-  Algebra.Types.EXPRESSION,
-  // Property path symbols describe a path, they are not evaluated separately
-  Algebra.Types.ALT,
-  Algebra.Types.INV,
-  Algebra.Types.LINK,
-  Algebra.Types.NPS,
-  Algebra.Types.ONE_OR_MORE_PATH,
-  Algebra.Types.SEQ,
-  Algebra.Types.ZERO_OR_MORE_PATH,
-  Algebra.Types.ZERO_OR_ONE_PATH,
-].includes(<any> type)));
-
-/**
- * The keys that hold a template of quads instead of a nested operation, per operation type.
- *
- * A template describes what to produce or to modify, and is never evaluated as an operation,
- * even though it is made up of values that look like patterns.
- */
-const TEMPLATE_KEYS: Record<string, Set<string>> = {
-  [Algebra.Types.CONSTRUCT]: new Set([ 'template' ]),
-  [Algebra.Types.DELETE_INSERT]: new Set([ 'delete', 'insert' ]),
-};
-
-/**
  * A comunica Source Query Operation Actor.
  */
 export class ActorQueryOperationSource extends ActorQueryOperation {
@@ -107,7 +79,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     parentNode: IPhysicalQueryPlanNode,
     operation: Algebra.Operation,
   ): void {
-    for (const subOperation of ActorQueryOperationSource.getSubOperations(operation)) {
+    for (const subOperation of algebraUtils.getSubOperations(operation)) {
       const node = logger.logOperation({
         logicalOperator: subOperation.type,
         parentNode,
@@ -117,38 +89,6 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
       });
       this.logDelegatedOperations(logger, node, subOperation);
     }
-  }
-
-  /**
-   * Obtain the operations that are directly nested within the given operation.
-   *
-   * Expressions, property path symbols and quad templates are not included,
-   * as those are not operations that a source evaluates separately.
-   *
-   * @param operation An operation.
-   */
-  public static getSubOperations(operation: Algebra.Operation): Algebra.Operation[] {
-    const templateKeys = TEMPLATE_KEYS[operation.type];
-    const subOperations: Algebra.Operation[] = [];
-    for (const [ key, value ] of Object.entries(operation)) {
-      if (templateKeys?.has(key)) {
-        continue;
-      }
-      for (const entry of Array.isArray(value) ? value : [ value ]) {
-        if (ActorQueryOperationSource.isNestedOperation(entry)) {
-          subOperations.push(entry);
-        }
-      }
-    }
-    return subOperations;
-  }
-
-  /**
-   * If the given value is an operation that can be nested within another operation.
-   * @param value Any value occurring within an operation.
-   */
-  public static isNestedOperation(value: any): value is Algebra.Operation {
-    return Boolean(value) && typeof value === 'object' && NESTED_OPERATION_TYPES.has(value.type);
   }
 
   /**

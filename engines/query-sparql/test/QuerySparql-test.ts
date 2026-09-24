@@ -3723,12 +3723,14 @@ CONSTRUCT {
     }`, {
           sources: [ 'https://www.rubensworks.net/' ],
         }, 'physical');
-        // The page is fetched live, so how many triples it contains is not fixed
+        // The page is fetched live, so neither how many triples it contains
+        // nor whether that count is exact is fixed
         const normalized = (<string> result.data)
           .replaceAll(/[\d,.]+ms/gu, 'Xms')
-          .replaceAll(/(?<=card(?:Est|Real):~?)[\d,.]+/gu, 'N');
-        expect(normalized).toBe(`project (o,p,s) cardEst:~N cardReal:N timeSelf:Xms timeLife:Xms actor:0
-  pattern (?s ?p ?o) cardEst:~N src:0 cardReal:N timeSelf:Xms timeLife:Xms actor:1
+          .replaceAll(/(?<=cardEst:)~?[\d,.]+/gu, 'N')
+          .replaceAll(/(?<=cardReal:)[\d,.]+/gu, 'N');
+        expect(normalized).toBe(`project (o,p,s) cardEst:N cardReal:N timeSelf:Xms timeLife:Xms actor:0
+  pattern (?s ?p ?o) cardEst:N src:0 cardReal:N timeSelf:Xms timeLife:Xms actor:1
 
 sources:
   0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)
@@ -3752,7 +3754,7 @@ actors:
             logical: 'project',
             actor: 'urn:comunica:default:query-operation/actors#project',
             variables: [ 'o', 'p', 's' ],
-            cardinality: { type: 'estimate', value: expect.any(Number) },
+            cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
             cardinalityReal: expect.any(Number),
             timeSelf: expect.any(Number),
             timeLife: expect.any(Number),
@@ -3762,7 +3764,7 @@ actors:
                 actor: 'urn:comunica:default:query-operation/actors#source',
                 pattern: '?s ?p ?o',
                 source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
-                cardinality: { type: 'estimate', value: expect.any(Number) },
+                cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
                 cardinalityReal: expect.any(Number),
                 timeSelf: expect.any(Number),
                 timeLife: expect.any(Number),

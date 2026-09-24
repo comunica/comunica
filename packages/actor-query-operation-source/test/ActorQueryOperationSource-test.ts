@@ -404,45 +404,5 @@ describe('ActorQueryOperationSource', () => {
         });
       });
     });
-
-    describe('getSubOperations', () => {
-      it('returns the nested operations', () => {
-        const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-        const operation = AF.createProject(AF.createJoin([ pattern, pattern ]), []);
-
-        expect(ActorQueryOperationSource.getSubOperations(operation)).toEqual([ operation.input ]);
-        expect(ActorQueryOperationSource.getSubOperations(operation.input)).toEqual([ pattern, pattern ]);
-        expect(ActorQueryOperationSource.getSubOperations(pattern)).toEqual([]);
-      });
-
-      it('does not return expressions or property path symbols', () => {
-        const path = AF.createPath(
-          DF.variable('s'),
-          AF.createOneOrMorePath(AF.createLink(DF.namedNode('ex:p'))),
-          DF.variable('o'),
-        );
-        const filter = AF.createFilter(path, AF.createTermExpression(DF.literal('true')));
-
-        expect(ActorQueryOperationSource.getSubOperations(filter)).toEqual([ path ]);
-        expect(ActorQueryOperationSource.getSubOperations(path)).toEqual([]);
-      });
-
-      it('does not return the template of a construct', () => {
-        const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-        const template = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p'), DF.variable('o'));
-        const construct = AF.createConstruct(pattern, [ template ]);
-
-        expect(ActorQueryOperationSource.getSubOperations(construct)).toEqual([ pattern ]);
-      });
-
-      it('does not return the templates of a delete-insert', () => {
-        const where = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-        const toDelete = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.variable('o'));
-        const toInsert = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o'));
-        const deleteInsert = AF.createDeleteInsert([ toDelete ], [ toInsert ], where);
-
-        expect(ActorQueryOperationSource.getSubOperations(deleteInsert)).toEqual([ where ]);
-      });
-    });
   });
 });
