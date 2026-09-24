@@ -38,7 +38,14 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
   public async run(action: IActionQuerySourceIdentifyHypermedia): Promise<IActorQuerySourceIdentifyHypermediaOutput> {
     this.logInfo(action.context, `Identified as file source: ${action.url}`);
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
-    const store = await ActorQuerySourceIdentifyHypermediaNone.storeStream(action.quads);
+    // PROTOTYPE: with COMUNICA_SORTED_STORE=btree, build a store of ordered B+tree indexes, which keep
+    // their quads sorted on the comparator that consumers compare with, from the start.
+    let comparator: ((termA: RDF.Term, termB: RDF.Term) => number) | undefined;
+    if (process.env.COMUNICA_SORTED_STORE === 'btree') {
+      const termComparator = await this.mediatorTermComparatorFactory!.mediate({ context: action.context });
+      comparator = (termA, termB) => termComparator.orderTypes(termA, termB);
+    }
+    const store = await ActorQuerySourceIdentifyHypermediaNone.storeStream(action.quads, comparator);
 
     // PROTOTYPE: order the indexes by the same comparator that consumers compare with, so that scans
     // of this store report the order they produce and can be asked to skip ahead within it.
@@ -86,7 +93,20 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     }
   }
 
-  public static storeStream<Q extends RDF.BaseQuad = RDF.Quad>(stream: RDF.Stream<Q>): Promise<RDF.Store<Q>> {
+  public static storeStream<Q extends RDF.BaseQuad = RDF.Quad>(
+    stream: RDF.Stream<Q>,
+    comparator?: (termA: RDF.Term, termB: RDF.Term) => number,
+  ): Promise<RDF.Store<Q>> {
+    if (comparator) {
+      const ordered = (<any> RdfStore).createOrdered({
+        termComparator: comparator,
+        indexCombinations: ActorQuerySourceIdentifyHypermediaNone.indexCombinations(),
+        nodes: true,
+      });
+      return new Promise((resolve, reject) => ordered.import(stream)
+        .on('error', reject)
+        .once('end', () => resolve(ordered)));
+    }
     // PROTOTYPE: with COMUNICA_SORTED_STORE, index on (graph, predicate, subject, object) as well, so
     // that a bound-predicate scan is answered by an index that walks subjects and therefore comes back
     // in subject order. GPOS is kept after it, for predicate-and-object-bound patterns.

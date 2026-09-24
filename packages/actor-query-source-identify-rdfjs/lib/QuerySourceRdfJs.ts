@@ -248,7 +248,10 @@ export class QuerySourceRdfJs implements IQuerySource {
       }
 
       // The order and the skipping only survive while nothing was wrapped around the scan.
-      const ordered = it === <any> scan && order && order.length > 0 ? order : undefined;
+      // PROTOTYPE: COMUNICA_ORDER=0 hides the order, to measure an ordered store without merge joins.
+      const ordered = it === <any> scan && order && order.length > 0 && process.env.COMUNICA_ORDER !== '0' ?
+        order :
+        undefined;
       if (ordered && scan.seekTo && process.env.COMUNICA_SEEK !== '0') {
         const seekTo = scan.seekTo;
         const [ component, variable ] = ordered[0];
