@@ -115,7 +115,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
         },
       },
       [Algebra.Types.EXPRESSION]: {
-        // The SERVICE clause is replaced by its body, so mark what remains of it that is not for the sources above.
+        // The SERVICE clause is replaced by its body, so mark each EXISTS in there as coming from that clause.
         transform: expressionOp => withinService && isKnownSubType(expressionOp, Algebra.ExpressionTypes.EXISTENCE) ?
           markExistenceWithinService(expressionOp) :
           expressionOp,

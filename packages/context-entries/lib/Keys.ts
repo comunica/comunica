@@ -303,14 +303,9 @@ export const KeysExpressionEvaluator = {
    *
    * Inside a query engine, setting this also stops operations that contain an `EXISTS` from being
    * delegated to a query source, because such a source would answer the `EXISTS` itself.
-   * More of the query is then evaluated locally: whatever surrounds the `EXISTS`, such as a `LIMIT`,
-   * `ORDER BY` or aggregate, is evaluated over all solutions that the source returns for the remainder,
-   * calling this resolver once per solution. SERVICE clauses outside the `EXISTS` are then sent to their
-   * targets directly, instead of through the source. An update is split into a query for the solutions of
-   * its `WHERE` clause and the resulting changes, which the source therefore no longer applies atomically.
-   *
-   * The body of a SERVICE clause is exempt: it is delegated to the target of that clause as usual,
-   * so a target that accepts it, such as a SPARQL endpoint, answers an `EXISTS` in there itself.
+   * More of the query is then evaluated locally, calling this resolver once per solution,
+   * and the source no longer applies an update atomically.
+   * The body of a SERVICE clause is exempt, and is delegated to its target as usual.
    */
   existenceResolver: new ActionContextKey<ExistenceResolver>(
     '@comunica/utils-expression-evaluator:existenceResolver',
