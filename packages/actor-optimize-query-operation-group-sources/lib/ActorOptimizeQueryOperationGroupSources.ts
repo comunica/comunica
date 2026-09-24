@@ -222,6 +222,8 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
    * - If an expression contains an operation that is assigned to another source,
    *   such as the pattern of an `EXISTS` over other sources, then it can't,
    *   as this source would evaluate that operation over its own data instead.
+   * - If an expression contains an empty union or alt, which is what remains of an operation that none of the sources
+   *   has results for, then it can't, as such an operation can not be handed to a source.
    * - If the operation contains an `EXISTS` that the caller resolves itself, then it can't,
    *   as this source would answer that `EXISTS` itself, bypassing the caller's existence resolver.
    * @param operation A grouped operation consisting of operations that share the given source.
@@ -233,25 +235,38 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     source: IQuerySourceWrapper,
     context: IActionContext,
   ): boolean {
-    let otherSource = false;
-    const sourceChecker = {
+    let unsupported = false;
+    const checker = {
       preVisitor: (subOperation: Algebra.Operation) => {
         const subSource = getOperationSource(subOperation);
-        if (subSource && subSource !== source) {
-          otherSource = true;
+        if (subSource ? subSource !== source : ActorOptimizeQueryOperationGroupSources.isEmptyMulti(subOperation)) {
+          unsupported = true;
           return { shortcut: true };
         }
         return {};
       },
     };
-    // Only the operations within expressions can have another source,
-    // as the other operations have either been grouped into this source, or had no source to begin with.
     const types = [ ...Object.values(Algebra.Types), ...Object.values(TypesComunica) ];
-    algebraUtils.visitOperation(operation, Object.fromEntries(types.map(type => [ type, sourceChecker ])));
-    if (otherSource) {
+    const checkers = Object.fromEntries(types.map(type => [ type, checker ]));
+    // Only the operations within expressions need checking,
+    // as the other operations have either been grouped into this source, or have no source to begin with.
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.EXPRESSION]: {
+        preVisitor: (expression) => {
+          algebraUtils.visitOperation(expression, checkers);
+          return unsupported ? { shortcut: true } : { continue: false };
+        },
+      },
+    });
+    if (unsupported) {
       return false;
     }
 
     return !containsCallerResolvedExistence(operation, context);
+  }
+
+  protected static isEmptyMulti(operation: Algebra.Operation): boolean {
+    return (isKnownOperation(operation, Algebra.Types.UNION) || isKnownOperation(operation, Algebra.Types.ALT)) &&
+      operation.input.length === 0;
   }
 }

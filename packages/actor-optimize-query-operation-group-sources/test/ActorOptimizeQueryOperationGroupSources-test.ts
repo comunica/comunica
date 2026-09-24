@@ -768,6 +768,19 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
         ), source1, ctx)).toBeFalsy();
       });
 
+      it('should return false for expressions over an empty union or alt', () => {
+        expect(actor.canSourceEvaluateExpressions(AF.createFilter(
+          assignOperationSource(pattern, source1),
+          AF.createExistenceExpression(true, AF.createUnion([ assignOperationSource(pattern, source1) ])),
+        ), source1, ctx)).toBeTruthy();
+        for (const empty of [ AF.createUnion([]), AF.createAlt([]) ]) {
+          expect(actor.canSourceEvaluateExpressions(AF.createFilter(
+            assignOperationSource(pattern, source1),
+            AF.createExistenceExpression(true, empty),
+          ), source1, ctx)).toBeFalsy();
+        }
+      });
+
       it('should return false for an existence expression when an existence resolver is set', () => {
         expect(actor.canSourceEvaluateExpressions(existenceFilter, source1, resolverContext)).toBeFalsy();
       });

@@ -1354,6 +1354,82 @@ WHERE {
         expect(bindings.map(entry => entry.get('s')!.value)).toEqual(expected);
       });
 
+      it.each([
+        [ 'FILTER NOT EXISTS', 'SELECT ?s { ?s <ex:p> ?o FILTER NOT EXISTS { ?s <ex:q> ?x } }', [ 'ex:s' ]],
+        [ 'FILTER EXISTS', 'SELECT ?s { ?s <ex:p> ?o FILTER EXISTS { ?s <ex:q> ?x } }', []],
+        [ 'BIND EXISTS', 'SELECT ?s { ?s <ex:p> ?o BIND(EXISTS { ?s <ex:q> ?x } AS ?b) }', [ 'ex:s' ]],
+        [ 'OPTIONAL with FILTER NOT EXISTS', `SELECT ?s {
+          ?s <ex:p> ?o OPTIONAL { ?s <ex:p> ?y FILTER NOT EXISTS { ?s <ex:q> ?x } }
+        }`, [ 'ex:s' ]],
+      ])('with a %s over a pattern that none of the SPARQL endpoints has results for', async(_, query, expected) => {
+        // The first endpoint only has results for <ex:p>, the second has none at all
+        const endpoints = [ 'http://example.org/pruned1/sparql', 'http://example.org/pruned2/sparql' ];
+        const mockedFetch: typeof fetch = async(input, init) => {
+          const url = new URL(input instanceof Request ? input.url : input);
+          const query = url.searchParams.get('query') ??
+            (init?.body ? new URLSearchParams(String(init.body)).get('query') : null);
+          // Requests without a query are service description lookups
+          if (!query) {
+            return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
+          }
+          const hasResults = url.href.startsWith(endpoints[0]) && query.includes('<ex:p>') &&
+            !query.includes('<ex:q>');
+          const variables = [ ...new Set([ ...query.matchAll(/\?(\w+)/gu) ].map(match => match[1])) ];
+          const response = /\bASK\b/u.test(query) ?
+              { head: {}, boolean: hasResults } :
+              {
+                head: { vars: variables },
+                results: {
+                  bindings: hasResults ?
+                      [ Object.fromEntries(variables.map(variable => [ variable, {
+                        type: 'uri',
+                        value: variable === 's' ? 'ex:s' : 'ex:o',
+                      }])) ] :
+                      [],
+                },
+              };
+          return new Response(JSON.stringify(response), {
+            status: 200,
+            headers: { 'content-type': 'application/sparql-results+json' },
+          });
+        };
+
+        const bindings = await (await engine.queryBindings(query, {
+          sources: endpoints.map(value => ({ type: 'sparql', value })),
+          fetch: mockedFetch,
+        })).toArray();
+        expect(bindings.map(entry => entry.get('s')!.value)).toEqual(expected);
+      });
+
+      it('should answer ASK over a pattern that none of the SPARQL endpoints has results for', async() => {
+        const mockedFetch: typeof fetch = async(input, init) => {
+          const url = new URL(input instanceof Request ? input.url : input);
+          const query = url.searchParams.get('query') ??
+            (init?.body ? new URLSearchParams(String(init.body)).get('query') : null);
+          if (!query) {
+            return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
+          }
+          // Only has results for <ex:p>
+          const hasResults = query.includes('<ex:p>') && !query.includes('<ex:q>');
+          return new Response(JSON.stringify(/\bASK\b/u.test(query) ?
+              { head: {}, boolean: hasResults } :
+              { head: { vars: [ 's', 'o' ]}, results: { bindings: hasResults ?
+                  [{ s: { type: 'uri', value: 'ex:s' }, o: { type: 'uri', value: 'ex:o' }}] :
+                  []}}), {
+            status: 200,
+            headers: { 'content-type': 'application/sparql-results+json' },
+          });
+        };
+
+        await expect(engine.queryBoolean('ASK { ?s <ex:p> ?o FILTER NOT EXISTS { ?s <ex:q> ?x } }', {
+          sources: [
+            { type: 'sparql', value: 'http://example.org/pruned-ask1/sparql' },
+            { type: 'sparql', value: 'http://example.org/pruned-ask2/sparql' },
+          ],
+          fetch: mockedFetch,
+        })).resolves.toBe(true);
+      });
+
       it('with an explicit SERVICE clause without sources in context', async() => {
         const bindingsStream = await engine.queryBindings(`
 SELECT ?movie ?title ?name
