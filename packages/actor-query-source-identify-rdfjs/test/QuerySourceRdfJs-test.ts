@@ -189,7 +189,7 @@ describe('QuerySourceRdfJs', () => {
       );
       await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toMatchObject({
-          order: [
+          termOrder: [
             { term: DF.variable('s'), direction: 'asc' },
             { term: DF.variable('o'), direction: 'asc' },
           ],
@@ -216,7 +216,7 @@ describe('QuerySourceRdfJs', () => {
         ctx,
       );
       await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
-        .toMatchObject({ order: [{ term: DF.variable('s'), direction: 'asc' }]});
+        .toMatchObject({ termOrder: [{ term: DF.variable('s'), direction: 'asc' }]});
     });
 
     it('should report no order when the scan varies over nothing the pattern binds', async() => {
@@ -234,7 +234,7 @@ describe('QuerySourceRdfJs', () => {
         ctx,
       );
       const metadata: any = await new Promise(resolve => data.getProperty('metadata', resolve));
-      expect(metadata.order).toBeUndefined();
+      expect(metadata.termOrder).toBeUndefined();
       expect(data.seek).toBeUndefined();
     });
 
@@ -254,7 +254,7 @@ describe('QuerySourceRdfJs', () => {
         ctx,
       );
       const metadata: any = await new Promise(resolve => data.getProperty('metadata', resolve));
-      expect(metadata.order).toBeUndefined();
+      expect(metadata.termOrder).toBeUndefined();
       expect(data.seek).toBeUndefined();
     });
 

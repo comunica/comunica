@@ -7,7 +7,6 @@ import type {
   IActorQuerySourceIdentifyHypermediaTest,
 } from '@comunica/bus-query-source-identify-hypermedia';
 import { ActorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
-import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTest } from '@comunica/core';
@@ -17,6 +16,7 @@ import type {
   DereferenceFromNamedConflictModeResolver,
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { compareTerms } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import { RdfStore } from 'rdf-stores';
 import type { QuadTermName } from 'rdf-terms';
@@ -38,12 +38,12 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
   ];
 
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
-  public readonly mediatorTermComparatorFactory?: MediatorTermComparatorFactory;
+  public readonly orderedStore: boolean;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaNoneArgs) {
     super(args, 'file');
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
-    this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;
+    this.orderedStore = args.orderedStore ?? false;
   }
 
   public async testMetadata(
@@ -59,20 +59,11 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     const resolveConflictMode = action.context.get(KeysInitQuery.dereferenceFromNamedConflictMode) ??
       ((): DereferenceFromNamedConflictMode => 'error');
 
-    // A file is loaded in full before it is queried, which is what an ordered store is built for.
-    // It keeps quads sorted on the same term order that consumers compare with, so that its scans can
-    // report that order and skip ahead within it.
-    let termComparator: ((termA: RDF.Term, termB: RDF.Term) => number) | undefined;
-    if (this.mediatorTermComparatorFactory) {
-      const comparator = await this.mediatorTermComparatorFactory.mediate({ context: action.context });
-      termComparator = (termA, termB) => comparator.orderTypes(termA, termB);
-    }
-
     const source = new QuerySourceRdfJs(
       await ActorQuerySourceIdentifyHypermediaNone.storeStream(
         action.quads,
         namedGraph ? { dataFactory, graph: namedGraph, url: action.url, resolveConflictMode } : undefined,
-        termComparator,
+        this.orderedStore,
       ),
       dataFactory,
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
@@ -84,14 +75,13 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
 
   /**
    * Create the store that a file is loaded into.
-   * @param termComparator If given, the order of an ordered store to create, instead of a default store.
+   * @param ordered If an ordered store must be created instead of a default store.
+   *                Its quads are kept in the term order, which its scans report as `termOrder`.
    */
-  public static createStore<Q extends RDF.BaseQuad = RDF.Quad>(
-    termComparator?: (termA: RDF.Term, termB: RDF.Term) => number,
-  ): RdfStore<any, Q> {
-    if (termComparator) {
+  public static createStore<Q extends RDF.BaseQuad = RDF.Quad>(ordered: boolean): RdfStore<any, Q> {
+    if (ordered) {
       return <RdfStore<any, Q>><unknown> RdfStore.createOrdered({
-        termComparator,
+        termComparator: compareTerms,
         indexCombinations: ActorQuerySourceIdentifyHypermediaNone.ORDERED_INDEX_COMBINATIONS,
         nodes: true,
       });
@@ -107,9 +97,9 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
       url: string;
       resolveConflictMode: DereferenceFromNamedConflictModeResolver;
     },
-    termComparator?: (termA: RDF.Term, termB: RDF.Term) => number,
+    ordered = false,
   ): Promise<RDF.Store<Q>> {
-    const store = ActorQuerySourceIdentifyHypermediaNone.createStore<Q>(termComparator);
+    const store = ActorQuerySourceIdentifyHypermediaNone.createStore<Q>(ordered);
 
     if (!rewrite) {
       return new Promise((resolve, reject) => store.import(stream)
@@ -118,7 +108,7 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     }
 
     // An ordered store inserts a batch much faster than quads one by one, so those are collected first.
-    const batch: Q[] | undefined = termComparator ? [] : undefined;
+    const batch: Q[] | undefined = ordered ? [] : undefined;
     const addQuad = (quad: Q): void => {
       if (batch) {
         batch.push(quad);
@@ -174,10 +164,11 @@ export interface IActorQuerySourceIdentifyHypermediaNoneArgs extends IActorQuery
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   /**
-   * A mediator for creating term comparators.
-   * If set, files are loaded into a store that keeps its quads in the order of these comparators,
-   * so that scans of it can report that order and skip ahead within it, which merge joins make use of.
-   * If not set, files are loaded into a default store, whose scans have no order.
+   * If files must be loaded into an ordered store, which keeps its quads in the term order,
+   * so that scans of it can report that order as `termOrder` and skip ahead within it, which merge joins make use of.
+   * A file is loaded in full before it is queried, which is what an ordered store is built for.
+   * If false, files are loaded into a default store, whose scans have no order.
+   * @default {false}
    */
-  mediatorTermComparatorFactory?: MediatorTermComparatorFactory;
+  orderedStore?: boolean;
 }

@@ -70,7 +70,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
   /**
    * Skip ahead to the first binding that is not before the given one.
-   * Only meaningful while this iterator reports an `order`, which it only does when a single source
+   * Only meaningful while this iterator reports a `termOrder`, which it only does when a single source
    * contributes to it. The call is a hint: sources that cannot skip keep producing every binding,
    * and bindings already buffered here are still emitted, so the consumer must stay tolerant of
    * bindings before the target.
@@ -406,7 +406,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
  * Whether metadata makes a claim about the order of its bindings.
  */
 function isOrdered(metadata: MetadataBindings): boolean {
-  return Boolean(metadata.order ?? metadata.availableOrders);
+  return Boolean(metadata.order ?? metadata.termOrder ?? metadata.availableOrders);
 }
 
 /**
@@ -414,6 +414,7 @@ function isOrdered(metadata: MetadataBindings): boolean {
  */
 function dropOrder(metadata: MetadataBindings): void {
   metadata.order = undefined;
+  metadata.termOrder = undefined;
   metadata.availableOrders = undefined;
   metadata.canSeek = undefined;
 }

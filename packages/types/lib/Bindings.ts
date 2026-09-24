@@ -23,9 +23,9 @@ export type BindingsStream = AsyncIterator<RDF.Bindings> & RDF.ResultStream<Bind
  */
 export interface ISeekableBindingsStream extends BindingsStream {
   /**
-   * Skip past every remaining binding that precedes `target` in this stream's declared order.
+   * Skip past every remaining binding that precedes `target` in this stream's declared term order.
    *
-   * Only meaningful on a stream that reports an `order` covering the terms `target` binds. After this
+   * Only meaningful on a stream that reports a `termOrder` covering the terms `target` binds. After this
    * call the next read returns the first binding that does not precede `target`, or nothing if the
    * stream holds no such binding. Implementations may skip fewer bindings than they could, and one
    * sitting behind a buffer may still emit bindings from before the target, so a consumer must remain

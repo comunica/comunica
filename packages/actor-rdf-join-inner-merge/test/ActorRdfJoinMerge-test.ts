@@ -1,6 +1,5 @@
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type {
@@ -17,7 +16,6 @@ import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { termToString } from 'rdf-string';
 import { ActorRdfJoinMerge } from '../lib/ActorRdfJoinMerge';
 import '@comunica/utils-jest';
 
@@ -33,7 +31,7 @@ const ORDER_A_ASC: TermsOrder<RDF.Variable> = [{ term: DF.variable('a'), directi
 function metadata(
   cardinality: number,
   variables: MetadataVariable[],
-  order?: TermsOrder<RDF.Variable>,
+  termOrder?: TermsOrder<RDF.Variable>,
   requestTime = 10,
   canSeek?: boolean,
 ): MetadataBindings {
@@ -42,7 +40,7 @@ function metadata(
     cardinality: { type: 'estimate', value: cardinality },
     pageSize: 100,
     requestTime,
-    order,
+    termOrder,
     canSeek,
     variables,
   };
@@ -63,26 +61,13 @@ describe('ActorRdfJoinMerge', () => {
   let bus: any;
   let context: IActionContext;
   let mediatorJoinSelectivity: any;
-  let mediatorTermComparatorFactory: MediatorTermComparatorFactory;
   let actor: ActorRdfJoinMerge;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     mediatorJoinSelectivity = { mediate: async() => ({ selectivity: 1 }) };
-    mediatorTermComparatorFactory = <any> {
-      mediate: async() => ({
-        orderTypes(termA: RDF.Term | undefined, termB: RDF.Term | undefined): -1 | 0 | 1 {
-          const stringA = termToString(termA) ?? '';
-          const stringB = termToString(termB) ?? '';
-          if (stringA < stringB) {
-            return -1;
-          }
-          return stringA > stringB ? 1 : 0;
-        },
-      }),
-    };
-    actor = new ActorRdfJoinMerge({ name: 'actor', bus, mediatorJoinSelectivity, mediatorTermComparatorFactory });
+    actor = new ActorRdfJoinMerge({ name: 'actor', bus, mediatorJoinSelectivity });
   });
 
   describe('The ActorRdfJoinMerge module', () => {
@@ -356,7 +341,7 @@ describe('ActorRdfJoinMerge', () => {
       const output = await actor.run(action, sideData);
       await expect(output.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        order: ORDER_A_ASC,
+        termOrder: ORDER_A_ASC,
         cardinality: { type: 'estimate', value: 4 },
         variables: [ VAR_A, VAR_B, VAR_C ],
       });

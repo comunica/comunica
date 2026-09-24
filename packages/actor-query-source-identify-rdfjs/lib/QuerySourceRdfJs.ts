@@ -268,7 +268,7 @@ export class QuerySourceRdfJs implements IQuerySource {
         this.setMetadata(it, operation, context, forceEstimateCardinality, {
           variables,
           ...ordered && {
-            order: ordered.map(([ , variable ]) => ({ term: variable, direction: <const> 'asc' })),
+            termOrder: ordered.map(([ , variable ]) => ({ term: variable, direction: <const> 'asc' })),
             canSeek: typeof (<ISeekableBindingsStream> <any> it).seek === 'function',
           },
         }).catch(error => it.destroy(error));

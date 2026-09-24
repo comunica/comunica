@@ -1,32 +1,18 @@
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { Bindings } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { termToString } from 'rdf-string';
 import { createKeyComparator, MergeJoinIterator } from '../lib/MergeJoinIterator';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 
-// A comparator that follows the lexicographical fallback documented for the `order` metadata entry.
-const termComparator = {
-  orderTypes(termA: RDF.Term | undefined, termB: RDF.Term | undefined): -1 | 0 | 1 {
-    const stringA = termToString(termA) ?? '';
-    const stringB = termToString(termB) ?? '';
-    if (stringA < stringB) {
-      return -1;
-    }
-    return stringA > stringB ? 1 : 0;
-  },
-};
-
 const ASC_A = [{ term: DF.variable('a'), direction: <const> 'asc' }];
 const DESC_A = [{ term: DF.variable('a'), direction: <const> 'desc' }];
-const compare = createKeyComparator(termComparator, ASC_A);
+const compare = createKeyComparator(ASC_A);
 
 function bindA(a: number, other: string, otherValue: string): Bindings {
   return BF.bindings([
@@ -118,7 +104,7 @@ describe('createKeyComparator', () => {
   });
 
   it('inverts the comparison for descending keys', () => {
-    const descending = createKeyComparator(termComparator, DESC_A);
+    const descending = createKeyComparator(DESC_A);
     expect(descending(bindA(1, 'b', 'x'), bindA(2, 'b', 'x'))).toBe(1);
     expect(descending(bindA(2, 'b', 'x'), bindA(1, 'b', 'x'))).toBe(-1);
   });
@@ -128,7 +114,7 @@ describe('createKeyComparator', () => {
   });
 
   it('falls through to the next key of a composite order', () => {
-    const composite = createKeyComparator(termComparator, [
+    const composite = createKeyComparator([
       { term: DF.variable('a'), direction: 'asc' },
       { term: DF.variable('b'), direction: 'asc' },
     ]);

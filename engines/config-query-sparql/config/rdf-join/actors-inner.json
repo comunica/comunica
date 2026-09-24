@@ -85,8 +85,7 @@
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-merge",
       "@type": "ActorRdfJoinMerge",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
-      "mediatorTermComparatorFactory": { "@id": "urn:comunica:default:term-comparator-factory/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-nested-loop",

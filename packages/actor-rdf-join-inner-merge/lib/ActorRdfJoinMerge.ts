@@ -5,7 +5,6 @@ import type {
   IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -18,7 +17,8 @@ import { createKeyComparator, MergeJoinIterator } from './MergeJoinIterator';
  *
  * Joins two streams that both already arrive sorted on a shared join variable, by reading each side once and
  * always advancing the side that is behind. This does no per-binding lookup and never blocks on a full side,
- * but it is only applicable when both entries advertise a compatible `order` in their metadata.
+ * but it is only applicable when both entries advertise a compatible `termOrder` in their metadata.
+ * That is the order in which it compares keys, so an entry that is only sorted in the SPARQL `order` does not qualify.
  */
 export class ActorRdfJoinMerge extends ActorRdfJoin<IActorRdfJoinMergeTestSideData> {
   /**
@@ -40,8 +40,6 @@ export class ActorRdfJoinMerge extends ActorRdfJoin<IActorRdfJoinMergeTestSideDa
    */
   public static readonly ITERATION_COST_ORDERED = 0.8;
 
-  public readonly mediatorTermComparatorFactory: MediatorTermComparatorFactory;
-
   public constructor(args: IActorRdfJoinMergeArgs) {
     super(args, {
       logicalType: 'inner',
@@ -50,7 +48,6 @@ export class ActorRdfJoinMerge extends ActorRdfJoin<IActorRdfJoinMergeTestSideDa
       requiresVariableOverlap: true,
       canHandleUndefs: false,
     });
-    this.mediatorTermComparatorFactory = args.mediatorTermComparatorFactory;
   }
 
   /**
@@ -62,8 +59,8 @@ export class ActorRdfJoinMerge extends ActorRdfJoin<IActorRdfJoinMergeTestSideDa
    * @param metadatas Metadata of the join entries.
    */
   public static getCommonOrderPrefix(metadatas: MetadataBindings[]): TermsOrder<RDF.Variable> {
-    const orderLeft = metadatas[0].order;
-    const orderRight = metadatas[1].order;
+    const orderLeft = metadatas[0].termOrder;
+    const orderRight = metadatas[1].termOrder;
     if (!orderLeft || !orderRight) {
       return [];
     }
@@ -91,11 +88,10 @@ export class ActorRdfJoinMerge extends ActorRdfJoin<IActorRdfJoinMergeTestSideDa
     sideData: IActorRdfJoinMergeTestSideData,
   ): Promise<IActorRdfJoinOutputInner> {
     const { entriesSorted, metadatas, mergeKey } = sideData;
-    const termComparator = await this.mediatorTermComparatorFactory.mediate({ context: action.context });
     const bindingsStream = new MergeJoinIterator(
       entriesSorted[0].output.bindingsStream,
       entriesSorted[1].output.bindingsStream,
-      createKeyComparator(termComparator, mergeKey),
+      createKeyComparator(mergeKey),
     );
     return {
       result: {
@@ -103,7 +99,7 @@ export class ActorRdfJoinMerge extends ActorRdfJoin<IActorRdfJoinMergeTestSideDa
         bindingsStream,
         metadata: async() => await this.constructResultMetadata(entriesSorted, metadatas, action.context, {
           // Merging preserves the order of the key that was merged on, so chained merge joins stay applicable.
-          order: mergeKey,
+          termOrder: mergeKey,
         }),
       },
     };
@@ -164,12 +160,7 @@ export class ActorRdfJoinMerge extends ActorRdfJoin<IActorRdfJoinMergeTestSideDa
   }
 }
 
-export interface IActorRdfJoinMergeArgs extends IActorRdfJoinArgs<IActorRdfJoinMergeTestSideData> {
-  /**
-   * The mediator for creating a term comparator following the SPARQL order semantics.
-   */
-  mediatorTermComparatorFactory: MediatorTermComparatorFactory;
-}
+export interface IActorRdfJoinMergeArgs extends IActorRdfJoinArgs<IActorRdfJoinMergeTestSideData> {}
 
 export interface IActorRdfJoinMergeTestSideData extends IActorRdfJoinTestSideData {
   /**

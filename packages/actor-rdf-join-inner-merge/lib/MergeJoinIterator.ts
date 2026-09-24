@@ -1,23 +1,21 @@
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import type { ITermComparator } from '@comunica/bus-term-comparator-factory';
 import type { Bindings, TermsOrder } from '@comunica/types';
-import { isSeekableBindingsStream } from '@comunica/utils-iterator';
+import { compareTerms, isSeekableBindingsStream } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import { AsyncIterator } from 'asynciterator';
 
 /**
- * Compares two bindings by the terms they bind to the given merge key.
+ * Compares two bindings by the terms they bind to the given merge key, in the term order.
  * Returns a negative number if `left` precedes `right` in the streams' order, 0 if they share the same key.
- * @param termComparator A comparator following the SPARQL order semantics.
- * @param mergeKey The (non-empty) order prefix that both streams are sorted on.
+ * @param mergeKey The (non-empty) term order prefix that both streams are sorted on.
  */
 export function createKeyComparator(
-  termComparator: ITermComparator,
   mergeKey: TermsOrder<RDF.Variable>,
 ): (left: Bindings, right: Bindings) => number {
   return (left: Bindings, right: Bindings): number => {
     for (const { term, direction } of mergeKey) {
-      const comparison = termComparator.orderTypes(left.get(term), right.get(term));
+      // The merge join does not handle undefined values, so every key is bound.
+      const comparison = compareTerms(left.get(term)!, right.get(term)!);
       if (comparison !== 0) {
         return direction === 'asc' ? comparison : -comparison;
       }

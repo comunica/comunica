@@ -75,19 +75,20 @@ class Dummy extends Blind {
  * @param options Shape of the sources to build.
  * @param options.multi Whether a second source follows the first.
  * @param options.ordered Whether the sources declare an order.
+ * @param options.orderKey The metadata entry the sources declare their order in.
  * @param options.seekable Whether the sources can skip ahead.
  * @param created Called with every source iterator as it is created.
  * @param Iterator The iterator class to build.
  */
 function build(
   pages: number[][],
-  options: { multi?: boolean; ordered?: boolean; seekable?: boolean } = {},
+  options: { multi?: boolean; ordered?: boolean; seekable?: boolean; orderKey?: 'order' | 'termOrder' } = {},
   created: (source: any) => void = () => {
     // Ignored by default
   },
   Iterator: new (...args: ConstructorParameters<typeof Blind>) => Blind = Dummy,
 ): Blind {
-  const { multi = false, ordered = true, seekable = true } = options;
+  const { multi = false, ordered = true, seekable = true, orderKey = 'termOrder' } = options;
   const sourceStateGetter: SourceStateGetter = async(link: ILink): Promise<ISourceState> => {
     const page = link.url === 'P1' ? 1 : 0;
     return {
@@ -101,7 +102,7 @@ function build(
           source.setProperty('metadata', {
             state: new MetadataValidationState(),
             cardinality: { type: 'exact', value: pages[page].length },
-            order: ordered ? [{ term: v, direction: 'asc' }] : undefined,
+            [orderKey]: ordered ? [{ term: v, direction: 'asc' }] : undefined,
             page,
             multi,
             variables: [{ variable: v, canBeUndef: false }],
@@ -124,7 +125,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator order and seek', () => {
     it('is the source order when a single source feeds it', async() => {
       const it = build([[ 1, 3, 5, 7 ]]);
       await expect(new Promise(resolve => it.getProperty('metadata', resolve)))
-        .resolves.toMatchObject({ order: [{ term: v, direction: 'asc' }]});
+        .resolves.toMatchObject({ termOrder: [{ term: v, direction: 'asc' }]});
       it.destroy();
     });
 
@@ -132,13 +133,13 @@ describe('LinkedRdfSourcesAsyncRdfIterator order and seek', () => {
       const it = build([[ 1, 3, 5, 7 ]]);
       expect((await it.toArray()).map(bindings => bindings.get(v)!.value))
         .toEqual([ 1, 3, 5, 7 ].map(label));
-      expect(it.getProperty<MetadataBindings>('metadata')!.order).toEqual([{ term: v, direction: 'asc' }]);
+      expect(it.getProperty<MetadataBindings>('metadata')!.termOrder).toEqual([{ term: v, direction: 'asc' }]);
     });
 
     it('is withheld in the preflight when a second source follows', async() => {
       const it = build([[ 1, 3, 5, 7 ], [ 2, 4, 6, 8 ]], { multi: true });
       await expect(new Promise(resolve => it.getProperty('metadata', resolve)))
-        .resolves.toMatchObject({ order: undefined });
+        .resolves.toMatchObject({ termOrder: undefined });
       it.destroy();
     });
 
@@ -146,7 +147,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator order and seek', () => {
       const it = build([[ 1, 3, 5, 7 ], [ 2, 4, 6, 8 ]], { multi: true });
       expect((await it.toArray()).map(bindings => bindings.get(v)!.value))
         .toEqual([ 1, 3, 5, 7, 2, 4, 6, 8 ].map(label));
-      expect(it.getProperty<MetadataBindings>('metadata')!.order).toBeUndefined();
+      expect(it.getProperty<MetadataBindings>('metadata')!.termOrder).toBeUndefined();
     });
 
     it('is withheld when the iterator cannot tell whether links follow', async() => {
@@ -155,14 +156,20 @@ describe('LinkedRdfSourcesAsyncRdfIterator order and seek', () => {
         // Not needed here
       }, Blind);
       await expect(new Promise(resolve => it.getProperty('metadata', resolve)))
-        .resolves.toMatchObject({ order: undefined });
+        .resolves.toMatchObject({ termOrder: undefined });
       it.destroy();
+    });
+
+    it('is withheld when a second source follows, for a SPARQL order too', async() => {
+      const it = build([[ 1, 3, 5, 7 ], [ 2, 4, 6, 8 ]], { multi: true, orderKey: 'order' });
+      await expect(it.toArray()).resolves.toHaveLength(8);
+      expect(it.getProperty<MetadataBindings>('metadata')!.order).toBeUndefined();
     });
 
     it('is absent when the sources declare none', async() => {
       const it = build([[ 1, 3, 5, 7 ]], { ordered: false });
       await expect(it.toArray()).resolves.toHaveLength(4);
-      expect(it.getProperty<MetadataBindings>('metadata')!.order).toBeUndefined();
+      expect(it.getProperty<MetadataBindings>('metadata')!.termOrder).toBeUndefined();
     });
   });
 

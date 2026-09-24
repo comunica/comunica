@@ -9,24 +9,26 @@ the side that is behind.
 Unlike a hash join, this does not build an index over one of its inputs, so it neither blocks on a full side nor
 holds more than one run of equal keys in memory. Unlike a bind join, it performs no per-binding lookup in a source.
 
-It only applies when both entries advertise an `order` in their metadata whose leading terms are shared join
-variables sorted in the same direction. No query source in this repository currently produces that metadata, so
-this actor never applies unless a source is extended to declare its order.
+It only applies when both entries advertise a `termOrder` in their metadata whose leading terms are shared join
+variables sorted in the same direction. That is the term order (see `compareTerms` in
+[`@comunica/utils-iterator`](https://github.com/comunica/comunica/tree/master/packages/utils-iterator)), which
+compares terms on term type, value, datatype, language, and base direction, and in which two terms are equal exactly
+if they are equal RDF terms. It is not the SPARQL order of the `order` metadata, which this actor does not use.
+File sources produce it when they are loaded into an ordered store (see
+[`@comunica/actor-query-source-identify-hypermedia-none`](https://github.com/comunica/comunica/tree/master/packages/actor-query-source-identify-hypermedia-none)).
 
 The output stays sorted on the key that was merged on, so merge joins can be chained over a star pattern without
 re-sorting in between.
 
 Sources may additionally expose a `seek(target)` method on the bindings stream they return
-(`ISeekableBindingsIterator`), which skips past every remaining binding preceding `target` in the stream's declared
-order. A merge join spends most of its time advancing whichever side is behind, so a source that can descend an
+(`ISeekableBindingsStream`), which skips past every remaining binding preceding `target` in the stream's declared
+term order. A merge join spends most of its time advancing whichever side is behind, so a source that can descend an
 index or binary-search a sorted array turns that scan into a jump. On a selective join this changes how much of the
 larger side is read at all: joining 6 bindings against 447k read 566 bindings with `seek` instead of 447,539
 without it.
 
-Note that the join calls the term comparator once per comparison, and the SPARQL order semantics that the `order`
-metadata is defined against are expensive to evaluate (~0.6us per comparison, against ~0.04us for a plain string
-compare). On a scan-shaped join that cost dominates, which is why the reported coefficients do not assume this
-actor beats a hash join.
+Comparing in the term order only compares strings, where the SPARQL order would have to interpret literals
+(~0.04us against ~0.6us per comparison).
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -53,8 +55,7 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-merge",
       "@type": "ActorRdfJoinMerge",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
-      "mediatorTermComparatorFactory": { "@id": "urn:comunica:default:term-comparator-factory/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
     }
   ]
 }
@@ -63,4 +64,3 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
-* `mediatorTermComparatorFactory`: A mediator over the [Term Comparator Factory bus](https://github.com/comunica/comunica/tree/master/packages/bus-term-comparator-factory), used to compare join keys following the SPARQL order semantics.
