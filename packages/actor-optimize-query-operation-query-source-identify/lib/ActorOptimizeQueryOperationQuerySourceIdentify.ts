@@ -26,6 +26,10 @@ import { LRUCache } from 'lru-cache';
 // Cache key prefix for sources that are identified as SERVICE targets,
 // as these are identified with a different source context than regular sources.
 const KEY_PREFIX_SERVICE = 'service:';
+// Cache key separator between a source's named graph and its url,
+// as sources that are exposed under a named graph contain different data than the plain source.
+// Whitespace can not occur in IRIs, so this never clashes with a url.
+const KEY_SEPARATOR_NAMED_GRAPH = '\n';
 
 /**
  * A comunica Query Source Identify Optimize Query Operation Actor.
@@ -53,6 +57,13 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
           if (url) {
             cache.delete(url);
             cache.delete(KEY_PREFIX_SERVICE + url);
+            // Keys of sources that are exposed under a named graph also contain that graph,
+            // so they can only be found by scanning.
+            for (const key of cache.keys()) {
+              if (key.endsWith(KEY_SEPARATOR_NAMED_GRAPH + url)) {
+                cache.delete(key);
+              }
+            }
           } else {
             cache.clear();
           }
@@ -151,11 +162,11 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
 
     // Try to read from cache
     // Only sources based on string values (e.g. URLs) are supported!
-    // Sources that must be exposed under a named graph are never cached,
-    // as their data differs from the plain source with the same URL.
-    const cacheKey = typeof querySourceUnidentified.value === 'string' &&
-      !querySourceUnidentified.context?.has(KeysQueryOperation.sourceAsNamedGraph) ?
-      cacheKeyPrefix + querySourceUnidentified.value :
+    const namedGraph = querySourceUnidentified.context?.get(KeysQueryOperation.sourceAsNamedGraph);
+    const cacheKey = typeof querySourceUnidentified.value === 'string' ?
+      cacheKeyPrefix +
+      (namedGraph ? namedGraph.value + KEY_SEPARATOR_NAMED_GRAPH : '') +
+      querySourceUnidentified.value :
       undefined;
     if (cacheKey !== undefined && this.cache) {
       sourcePromise = this.cache.get(cacheKey)!;

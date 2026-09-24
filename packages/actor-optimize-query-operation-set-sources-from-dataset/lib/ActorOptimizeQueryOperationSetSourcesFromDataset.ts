@@ -28,7 +28,6 @@ export class ActorOptimizeQueryOperationSetSourcesFromDataset extends ActorOptim
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    // The operation type has been asserted in test()
     const operation = <Algebra.From> action.operation;
     return {
       operation: operation.input,

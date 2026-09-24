@@ -265,6 +265,70 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![1]);
       });
 
+      it('should not reuse cache entries of named-graph sources for plain sources', async() => {
+        const namedGraphSource = {
+          value: 'source1',
+          context: new ActionContext()
+            .set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('source1')),
+        };
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [ 'source1', namedGraphSource ]);
+
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+        const sources = contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)!;
+        expect(sources[0]).not.toBe(sources[1]);
+      });
+
+      it('should not reuse cache entries of named-graph sources across distinct named graphs', async() => {
+        const sourceInG1 = {
+          value: 'source1',
+          context: new ActionContext().set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('g1')),
+        };
+        const sourceInG2 = {
+          value: 'source1',
+          context: new ActionContext().set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('g2')),
+        };
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [ sourceInG1, sourceInG2 ]);
+
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+        const sources = contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)!;
+        expect(sources[0]).not.toBe(sources[1]);
+      });
+
+      it('should cache identical named-graph sources in separate calls', async() => {
+        const namedGraphSource = {
+          value: 'source1',
+          context: new ActionContext()
+            .set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('source1')),
+        };
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [ namedGraphSource ]);
+
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
+        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+          .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+      });
+
+      it('should allow cache invalidation of named-graph sources for a specific url', async() => {
+        const namedGraphSource = {
+          value: 'source1',
+          context: new ActionContext()
+            .set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('source1')),
+        };
+        contextIn = contextIn
+          .set(KeysInitQuery.querySourcesUnidentified, [ namedGraphSource, 'source2' ]);
+
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
+
+        listener({ url: 'source1' });
+
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
+
+        const sources1 = contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)!;
+        const sources2 = contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)!;
+        expect(sources1[0]).not.toBe(sources2[0]);
+        expect(sources1[1]).toBe(sources2[1]);
+      });
+
       it('should allow cache invalidation for all url', async() => {
         const source1 = 'source1';
         const source2 = 'source2';
