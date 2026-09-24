@@ -4,7 +4,12 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import {
+  KeysExpressionEvaluator,
+  KeysInitQuery,
+  KeysQueryOperation,
+  KeysQuerySourceIdentify,
+} from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type {
@@ -16,9 +21,9 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation, isKnownSubType } from '@comunica/utils-algebra';
 import {
-  containsCallerResolvedExistence,
   doesShapeAcceptOperation,
   getOperationSource,
+  isExistenceWithinService,
 } from '@comunica/utils-query-operation';
 
 /**
@@ -44,6 +49,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     const algebraFactory = new AlgebraFactory(dataFactory);
 
     let operation = action.operation;
+    const existenceResolver = action.context.get(KeysExpressionEvaluator.existenceResolver);
 
     // Collect all operations with source types
     // Only consider unions of patterns or alts of links, since these are created during exhaustive source assignment.
@@ -66,11 +72,11 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
       // Their graphs are only rewritten when the FROM operation is executed,
       // so emptiness checks against the source would be done on the wrong graphs here.
       [Algebra.Types.FROM]: { preVisitor: () => ({ continue: false }) },
-      // The caller's existence resolver answers such an `EXISTS` without the sources,
-      // and should receive its operation as it is.
+      // The caller's existence resolver answers the `EXISTS` outside of SERVICE clauses without the sources,
+      // and should receive their operation as it is.
       [Algebra.Types.EXPRESSION]: {
-        preVisitor: expression => isKnownSubType(expression, Algebra.ExpressionTypes.EXISTENCE) &&
-          containsCallerResolvedExistence(expression, action.context) ?
+        preVisitor: expression => existenceResolver && isKnownSubType(expression, Algebra.ExpressionTypes.EXISTENCE) &&
+          !isExistenceWithinService(expression) ?
             { continue: false } :
             {},
       },

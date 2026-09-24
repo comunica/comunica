@@ -48,7 +48,7 @@ Promise<AsyncExtensionFunction | undefined>;
  * The resolver receives the expression as it appears in the algebra, so it is responsible for both
  * materializing `expression.input` against the bindings (see `materializeOperation` in
  * `@comunica/utils-query-operation`) and for applying `expression.not`.
- * Inside a query engine, that is the optimized algebra, as the engine would evaluate it.
+ * Inside a query engine, that is the optimized algebra, in which its operations are assigned to the query's sources.
  * The resolver also receives the context in which the expression is evaluated, which is especially useful
  * for resolvers that distinguish between the sources that the operations in `expression.input` target.
  * Throw an `ExpressionError` to have the failure treated as a SPARQL error, for example so that

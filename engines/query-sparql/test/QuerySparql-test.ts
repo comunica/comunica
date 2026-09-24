@@ -4044,6 +4044,7 @@ CONSTRUCT {
       }`, { sources: [ RdfStore.createDefault() ], existenceResolver }))
         .resolves.toEqual([ 'http://ex.org/s1', 'http://ex.org/s2' ]);
       expect(existenceResolver).not.toHaveBeenCalled();
+      expect(endpointsAskedExists()).toEqual([]);
       expect(requests.some(request => request.endpoint === serviceEndpoint && request.query.includes('<http://ex.org/q>')))
         .toBeTruthy();
     });
@@ -4057,6 +4058,7 @@ CONSTRUCT {
       // Only the EXISTS outside the SERVICE clause is up to the resolver
       expect(existenceResolver).toHaveBeenCalledTimes(2);
       expect(existenceResolver.mock.calls.every(([ expression ]) => !expression.metadata?.withinService)).toBeTruthy();
+      expect(endpointsAskedExists()).toEqual([]);
       expect(requests.some(request => request.query.includes('<http://ex.org/q>'))).toBeTruthy();
     });
 
