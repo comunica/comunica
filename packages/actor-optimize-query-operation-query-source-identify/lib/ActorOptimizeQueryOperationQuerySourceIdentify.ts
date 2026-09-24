@@ -48,7 +48,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
    * A cache of identified sources, indexed by url, and then by qualifier (see {@link getCacheQualifier}),
    * as the same url may be identified into different sources.
    */
-  public readonly cache?: LRUCache<string, LRUCache<string, Promise<IQuerySourceWrapper>>>;
+  public readonly cache?: LRUCache<string, Map<string, Promise<IQuerySourceWrapper>>>;
   // Identifiers of the objects in source contexts, as objects can only be represented in qualifiers by their identity.
   private readonly cacheQualifierObjectIds = new WeakMap<object, number>();
   private cacheQualifierObjectIdCounter = 0;
@@ -181,7 +181,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
       if (url !== undefined && this.cache) {
         let sourcesForUrl = this.cache.get(url);
         if (!sourcesForUrl) {
-          sourcesForUrl = new LRUCache<string, Promise<IQuerySourceWrapper>>({ max: this.cacheSize });
+          sourcesForUrl = new Map();
           this.cache.set(url, sourcesForUrl);
         }
         sourcesForUrl.set(qualifier!, sourcePromise);
@@ -249,7 +249,7 @@ export interface IActorOptimizeQueryOperationQuerySourceIdentifyArgs extends IAc
    */
   serviceForceSparqlEndpoint: boolean;
   /**
-   * The maximum number of urls in the LRU cache, and of sources per url, set to 0 to disable.
+   * The maximum number of entries in the LRU cache, set to 0 to disable.
    * @range {integer}
    * @default {100}
    */

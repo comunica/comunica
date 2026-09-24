@@ -74,8 +74,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
           this.sourceStateGetter(this.firstLink, {})
             .then((sourceState) => {
               // Don't pass query options, as we don't want to consume any passed iterators
-              const bindingsStream = sourceState.source
-                .queryBindings(this.operation, this.getSourceContext(sourceState));
+              const bindingsStream = sourceState.source.queryBindings(this.operation, this.context);
               bindingsStream.getProperty('metadata', (metadata: MetadataBindings) => {
                 metadata.state = new MetadataValidationState();
                 bindingsStream.destroy();
@@ -193,15 +192,6 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   ): Promise<MetadataBindings>;
 
   /**
-   * Determine the context for querying the given source,
-   * which contains the context of the source's link, as sources may be shared across queries with different contexts.
-   * @param sourceState A source state.
-   */
-  protected getSourceContext(sourceState: ISourceState): IActionContext {
-    return sourceState.link.context ? this.context.merge(sourceState.link.context) : this.context;
-  }
-
-  /**
    * Start a new iterator for the given source.
    * Once the iterator is done, it will either determine a new source, or it will close the linked iterator.
    * @param {ISourceState} startSource The start source state.
@@ -209,8 +199,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   protected startIterator(startSource: ISourceState): void {
     // Delegate the quad pattern query to the given source
     try {
-      const iterator = startSource.source
-        .queryBindings(this.operation, this.getSourceContext(startSource), this.queryBindingsOptions);
+      const iterator = startSource.source.queryBindings(this.operation, this.context, this.queryBindingsOptions);
       this.currentIterators.push(iterator);
       let receivedEndEvent = false;
       let receivedMetadata = false;

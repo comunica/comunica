@@ -317,7 +317,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         await actor.run({ context: contextIn, operation });
 
         expect([ ...actor.cache!.keys() ]).toEqual([ 'source2', 'source1' ]);
-        expect([ ...actor.cache!.get('source1')!.keys() ]).toEqual([ '["sparql",[]]', '' ]);
+        expect([ ...actor.cache!.get('source1')!.keys() ]).toEqual([ '', '["sparql",[]]' ]);
         expect([ ...actor.cache!.get('source2')!.keys() ]).toEqual([ '' ]);
       });
 

@@ -59,7 +59,7 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `serviceForceSparqlEndpoint`: Optional flag indicating if the SERVICE target should be assumed to be a SPARQL endpoint, defaults to `false`.
-* `cacheSize`: The maximum number of urls in the LRU cache, and of sources per url, set to 0 to disable, defaults to 100.
+* `cacheSize`: The maximum number of entries in the LRU cache, set to 0 to disable, defaults to 100.
 * `httpInvalidator`: An optional actor that listens to HTTP invalidation events.
 * `mediatorQuerySourceIdentify`: A mediator over the [Query Source Identify bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-identify).
 * `mediatorContextPreprocess`: A mediator over the [context preprocess bus](https://github.com/comunica/comunica/tree/master/packages/bus-context-preprocess).

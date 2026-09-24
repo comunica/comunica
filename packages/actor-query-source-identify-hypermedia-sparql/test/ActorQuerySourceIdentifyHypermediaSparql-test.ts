@@ -293,9 +293,8 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           .run({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null, context });
         expect(output.source).toBeInstanceOf(QuerySourceSparql);
         expect((<any> output.source).url).toBe('SERVICE');
-        const endpointFetcher = (<any> output.source).createEndpointFetcher(context);
-        expect(endpointFetcher.sparqlJsonParser.parseUnsupportedVersions).toBe(false);
-        expect(endpointFetcher.sparqlXmlParser.parseUnsupportedVersions).toBe(false);
+        expect((<any> output.source).endpointFetcher.sparqlJsonParser.parseUnsupportedVersions).toBe(false);
+        expect((<any> output.source).endpointFetcher.sparqlXmlParser.parseUnsupportedVersions).toBe(false);
       });
 
       it('should pass parseUnsupportedVersions to the parsers', async() => {
@@ -306,9 +305,8 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           context: context.set(KeysInitQuery.parseUnsupportedVersions, true),
         });
         expect(output.source).toBeInstanceOf(QuerySourceSparql);
-        const endpointFetcher = (<any> output.source).createEndpointFetcher(context);
-        expect(endpointFetcher.sparqlJsonParser.parseUnsupportedVersions).toBe(true);
-        expect(endpointFetcher.sparqlXmlParser.parseUnsupportedVersions).toBe(true);
+        expect((<any> output.source).endpointFetcher.sparqlJsonParser.parseUnsupportedVersions).toBe(true);
+        expect((<any> output.source).endpointFetcher.sparqlXmlParser.parseUnsupportedVersions).toBe(true);
       });
 
       it('should return a source when no sparqlService was defined in metadata', async() => {
