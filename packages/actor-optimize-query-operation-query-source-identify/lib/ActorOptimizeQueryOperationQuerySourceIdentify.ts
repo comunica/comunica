@@ -31,13 +31,9 @@ import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { termToString } from 'rdf-string';
 
-// Cache key prefix for sources that are identified as SERVICE targets,
+// Cache qualifier prefix for sources that are identified as SERVICE targets,
 // as these are identified with a different source context than regular sources.
-const KEY_PREFIX_SERVICE = 'service:';
-// Cache key separator between a source's qualifiers (its forced type and cache-relevant source context) and its url,
-// as the same url may be identified into a different source depending on these.
-// Whitespace can not occur in IRIs, nor unescaped in the JSON-serialized qualifiers, so this never clashes with a url.
-const KEY_SEPARATOR_QUALIFIERS = '\n';
+const QUALIFIER_PREFIX_SERVICE = 'service:';
 
 /**
  * A comunica Query Source Identify Optimize Query Operation Actor.
@@ -48,12 +44,14 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
   public readonly mediatorContextPreprocess: MediatorContextPreprocess;
-  public readonly cache?: LRUCache<string, Promise<IQuerySourceWrapper>>;
-  // If the cache may hold sources with qualifiers in their key.
-  public cacheHasQualifiedSources = false;
-  // Identifiers of the objects in source contexts, as objects can only be represented in cache keys by their identity.
-  private readonly cacheKeyObjectIds = new WeakMap<object, number>();
-  private cacheKeyObjectIdCounter = 0;
+  /**
+   * A cache of identified sources, indexed by url, and then by qualifier (see {@link getCacheQualifier}),
+   * as the same url may be identified into different sources.
+   */
+  public readonly cache?: LRUCache<string, LRUCache<string, Promise<IQuerySourceWrapper>>>;
+  // Identifiers of the objects in source contexts, as objects can only be represented in qualifiers by their identity.
+  private readonly cacheQualifierObjectIds = new WeakMap<object, number>();
+  private cacheQualifierObjectIdCounter = 0;
 
   public constructor(args: IActorOptimizeQueryOperationQuerySourceIdentifyArgs) {
     super(args);
@@ -69,18 +67,8 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
         ({ url }: IActionHttpInvalidate) => {
           if (url) {
             cache.delete(url);
-            cache.delete(KEY_PREFIX_SERVICE + url);
-            // Keys of qualified sources also contain their qualifiers, so they can only be found by scanning.
-            if (this.cacheHasQualifiedSources) {
-              for (const key of cache.keys()) {
-                if (key.endsWith(KEY_SEPARATOR_QUALIFIERS + url)) {
-                  cache.delete(key);
-                }
-              }
-            }
           } else {
             cache.clear();
-            this.cacheHasQualifiedSources = false;
           }
         },
       );
@@ -147,7 +135,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
           type: this.serviceForceSparqlEndpoint ? 'sparql' : undefined,
           value: service,
           context: serviceContext,
-        }, context, KEY_PREFIX_SERVICE) ])));
+        }, context, QUALIFIER_PREFIX_SERVICE) ])));
       if (services.size > 0) {
         context = context.set(KeysQueryOperation.serviceSources, serviceSources);
       }
@@ -171,14 +159,17 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   public identifySource(
     querySourceUnidentified: QuerySourceUnidentifiedExpanded,
     context: IActionContext,
-    cacheKeyPrefix = '',
+    cacheQualifierPrefix = '',
   ): Promise<IQuerySourceWrapper> {
     let sourcePromise: Promise<IQuerySourceWrapper> | undefined;
 
     // Try to read from cache
-    const cacheKey = this.getCacheKey(querySourceUnidentified, cacheKeyPrefix);
-    if (cacheKey !== undefined && this.cache) {
-      sourcePromise = this.cache.get(cacheKey)!;
+    // Only sources based on string values (e.g. URLs) are supported!
+    const url = typeof querySourceUnidentified.value === 'string' ? querySourceUnidentified.value : undefined;
+    let qualifier: string | undefined;
+    if (url !== undefined && this.cache) {
+      qualifier = cacheQualifierPrefix + this.getCacheQualifier(querySourceUnidentified);
+      sourcePromise = this.cache.get(url)?.get(qualifier);
     }
 
     // If not in cache, identify the source
@@ -187,9 +178,13 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
         .then(({ querySource }) => querySource);
 
       // Set in cache
-      if (cacheKey !== undefined && this.cache) {
-        this.cache.set(cacheKey, sourcePromise);
-        this.cacheHasQualifiedSources ||= cacheKey.includes(KEY_SEPARATOR_QUALIFIERS);
+      if (url !== undefined && this.cache) {
+        let sourcesForUrl = this.cache.get(url);
+        if (!sourcesForUrl) {
+          sourcesForUrl = new LRUCache<string, Promise<IQuerySourceWrapper>>({ max: this.cacheSize });
+          this.cache.set(url, sourcesForUrl);
+        }
+        sourcesForUrl.set(qualifier!, sourcePromise);
       }
     }
 
@@ -197,64 +192,55 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   }
 
   /**
-   * Determine the key under which an identified source is cached.
+   * Determine the qualifier under which an identified source is cached for its url.
    *
-   * Next to the source's url, the key contains everything that can make the same url identify into a different source:
+   * The qualifier contains everything that can make the same url identify into a different source:
    * its forced type, and the values of the cache-relevant keys in its source context
    * (see {@link CONTEXT_KEYS_QUERY_SOURCE_CACHE}).
    * This ensures that a source is only reused by queries that pass an equivalent source.
    *
    * @param querySourceUnidentified An unidentified source.
-   * @param cacheKeyPrefix A prefix for the key.
-   * @return The cache key, or undefined if the source can not be cached because it has no url.
+   * @return The qualifier, which is empty for sources without forced type and cache-relevant source context.
    */
-  public getCacheKey(
-    querySourceUnidentified: QuerySourceUnidentifiedExpanded,
-    cacheKeyPrefix: string,
-  ): string | undefined {
-    if (typeof querySourceUnidentified.value !== 'string') {
-      return undefined;
-    }
-
-    const contextEntries: [string, CacheKeyValue][] = [];
+  public getCacheQualifier(querySourceUnidentified: QuerySourceUnidentifiedExpanded): string {
+    const contextEntries: [string, CacheQualifierValue][] = [];
     for (const key of CONTEXT_KEYS_QUERY_SOURCE_CACHE) {
       const value: unknown = querySourceUnidentified.context?.get(key);
       if (value !== undefined) {
-        contextEntries.push([ key.name, this.getCacheKeyValue(value) ]);
+        contextEntries.push([ key.name, this.getCacheQualifierValue(value) ]);
       }
     }
 
     if (!querySourceUnidentified.type && contextEntries.length === 0) {
-      return cacheKeyPrefix + querySourceUnidentified.value;
+      return '';
     }
-    const qualifiers = JSON.stringify([ querySourceUnidentified.type ?? null, contextEntries ]);
-    return cacheKeyPrefix + qualifiers + KEY_SEPARATOR_QUALIFIERS + querySourceUnidentified.value;
+    return JSON.stringify([ querySourceUnidentified.type ?? null, contextEntries ]);
   }
 
   /**
-   * Represent a source context value in a cache key.
+   * Represent a source context value in a cache qualifier.
    * RDF terms and primitive values are represented by their value.
    * Other objects (such as fetch functions or proxy handlers) are represented by their identity,
    * as they can not be compared by value.
    * @param value A source context value.
    */
-  protected getCacheKeyValue(value: unknown): CacheKeyValue {
+  protected getCacheQualifierValue(value: unknown): CacheQualifierValue {
     if (typeof value === 'function' || (typeof value === 'object' && value !== null)) {
       if (typeof (<RDF.Term> value).termType === 'string') {
         return termToString(<RDF.Term> value);
       }
-      let id = this.cacheKeyObjectIds.get(value);
+      let id = this.cacheQualifierObjectIds.get(value);
       if (id === undefined) {
-        id = this.cacheKeyObjectIdCounter++;
-        this.cacheKeyObjectIds.set(value, id);
+        id = this.cacheQualifierObjectIdCounter++;
+        this.cacheQualifierObjectIds.set(value, id);
       }
       return { object: id };
     }
-    return <CacheKeyValue> value;
+    return <CacheQualifierValue> value;
   }
 }
 
-type CacheKeyValue = string | number | boolean | null | { object: number };
+type CacheQualifierValue = string | number | boolean | null | { object: number };
 
 export interface IActorOptimizeQueryOperationQuerySourceIdentifyArgs extends IActorOptimizeQueryOperationArgs {
   /**
@@ -263,7 +249,7 @@ export interface IActorOptimizeQueryOperationQuerySourceIdentifyArgs extends IAc
    */
   serviceForceSparqlEndpoint: boolean;
   /**
-   * The maximum number of entries in the LRU cache, set to 0 to disable.
+   * The maximum number of urls in the LRU cache, and of sources per url, set to 0 to disable.
    * @range {integer}
    * @default {100}
    */

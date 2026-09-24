@@ -308,20 +308,31 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
       });
 
-      it('should only flag the cache as holding qualified sources once one is cached', async() => {
-        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [ 'source1' ]);
+      it('should cache sources of the same url under their qualifiers', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          'source1',
+          { type: 'sparql', value: 'source1' },
+          'source2',
+        ]);
         await actor.run({ context: contextIn, operation });
-        expect(actor.cacheHasQualifiedSources).toBeFalsy();
 
-        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [{
-          value: 'source2',
-          context: new ActionContext().set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('source2')),
-        }]);
+        expect([ ...actor.cache!.keys() ]).toEqual([ 'source2', 'source1' ]);
+        expect([ ...actor.cache!.get('source1')!.keys() ]).toEqual([ '["sparql",[]]', '' ]);
+        expect([ ...actor.cache!.get('source2')!.keys() ]).toEqual([ '' ]);
+      });
+
+      it('should allow cache invalidation of all sources of a specific url', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          'source1',
+          { type: 'sparql', value: 'source1' },
+          { value: 'source1', context: new ActionContext().set(KeysHttp.auth, 'user:secret') },
+          'source2',
+        ]);
         await actor.run({ context: contextIn, operation });
-        expect(actor.cacheHasQualifiedSources).toBeTruthy();
 
-        listener({});
-        expect(actor.cacheHasQualifiedSources).toBeFalsy();
+        listener({ url: 'source1' });
+
+        expect([ ...actor.cache!.keys() ]).toEqual([ 'source2' ]);
       });
 
       it('should allow cache invalidation of named-graph sources for a specific url', async() => {
@@ -572,23 +583,14 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       });
     });
 
-    describe('getCacheKey', () => {
-      it('should be the url for plain sources', () => {
-        expect(actor.getCacheKey({ value: 'http://ex.org/' }, '')).toBe('http://ex.org/');
-        expect(actor.getCacheKey({ value: 'http://ex.org/', context: new ActionContext() }, '')).toBe('http://ex.org/');
-      });
-
-      it('should start with the given prefix', () => {
-        expect(actor.getCacheKey({ value: 'http://ex.org/' }, 'service:')).toBe('service:http://ex.org/');
-      });
-
-      it('should be undefined for sources without url', () => {
-        expect(actor.getCacheKey({ value: RdfStore.createDefault() }, '')).toBeUndefined();
+    describe('getCacheQualifier', () => {
+      it('should be empty for plain sources', () => {
+        expect(actor.getCacheQualifier({ value: 'http://ex.org/' })).toBe('');
+        expect(actor.getCacheQualifier({ value: 'http://ex.org/', context: new ActionContext() })).toBe('');
       });
 
       it('should contain the forced type', () => {
-        expect(actor.getCacheKey({ type: 'sparql', value: 'http://ex.org/' }, 'service:'))
-          .toBe('service:["sparql",[]]\nhttp://ex.org/');
+        expect(actor.getCacheQualifier({ type: 'sparql', value: 'http://ex.org/' })).toBe('["sparql",[]]');
       });
 
       it('should contain the values of the cache-relevant source context entries', () => {
@@ -597,37 +599,37 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           .set(KeysHttp.includeCredentials, true)
           .set(KeysHttp.auth, 'user:secret')
           .set(KeysQueryOperation.sourceAsNamedGraph, DF.namedNode('http://ex.org/g'));
-        expect(actor.getCacheKey({ value: 'http://ex.org/', context }, '')).toBe('[null,[' +
+        expect(actor.getCacheQualifier({ value: 'http://ex.org/', context })).toBe('[null,[' +
           '["@comunica/bus-query-operation:sourceAsNamedGraph","http://ex.org/g"],' +
           '["@comunica/bus-http:auth","user:secret"],' +
           '["@comunica/bus-http:include-credentials",true]' +
-          ']]\nhttp://ex.org/');
+          ']]');
       });
 
       it('should contain the identity of source context objects', () => {
         const fetch1 = jest.fn();
         const fetch2 = jest.fn();
-        const getKey = (value: any): string | undefined => actor.getCacheKey({
+        const getQualifier = (value: any): string => actor.getCacheQualifier({
           value: 'http://ex.org/',
           context: new ActionContext().set(KeysHttp.fetch, value),
-        }, '');
-        expect(getKey(fetch1)).toBe('[null,[["@comunica/bus-http:fetch",{"object":0}]]]\nhttp://ex.org/');
-        expect(getKey(fetch2)).toBe('[null,[["@comunica/bus-http:fetch",{"object":1}]]]\nhttp://ex.org/');
-        expect(getKey(fetch1)).toBe('[null,[["@comunica/bus-http:fetch",{"object":0}]]]\nhttp://ex.org/');
+        });
+        expect(getQualifier(fetch1)).toBe('[null,[["@comunica/bus-http:fetch",{"object":0}]]]');
+        expect(getQualifier(fetch2)).toBe('[null,[["@comunica/bus-http:fetch",{"object":1}]]]');
+        expect(getQualifier(fetch1)).toBe('[null,[["@comunica/bus-http:fetch",{"object":0}]]]');
       });
 
-      it('should be the url for sources with only source context entries that are not cache-relevant', () => {
-        expect(actor.getCacheKey({
+      it('should be empty for sources with only source context entries that are not cache-relevant', () => {
+        expect(actor.getCacheQualifier({
           value: 'http://ex.org/',
           context: new ActionContext().set(KeysHttp.httpTimeout, 1_000).set(new ActionContextKey('a'), 'b'),
-        }, '')).toBe('http://ex.org/');
+        })).toBe('');
       });
 
       it('should contain null source context values', () => {
-        expect(actor.getCacheKey({
+        expect(actor.getCacheQualifier({
           value: 'http://ex.org/',
           context: new ActionContext().set(KeysHttp.auth, null),
-        }, '')).toBe('[null,[["@comunica/bus-http:auth",null]]]\nhttp://ex.org/');
+        })).toBe('[null,[["@comunica/bus-http:auth",null]]]');
       });
     });
   });

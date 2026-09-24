@@ -507,12 +507,7 @@ export const KeysStatistics = {
 };
 
 /**
- * The context keys that determine which source is identified for a query source,
- * when they are set in the source's own context.
- *
- * Identified sources are cached across queries, and only reused for query sources
- * with the same value (or type) and the same values for these keys.
- * Other keys in a source's context are assumed not to change the identified source.
+ * Context keys that need their values different during source caching.
  */
 export const CONTEXT_KEYS_QUERY_SOURCE_CACHE: ActionContextKey<any>[] = [
   // Sources that are exposed under a named graph contain different data than the plain source.
