@@ -11,9 +11,9 @@ performs it. Operators below one that stops early, such as a `LIMIT`, are cut sh
 
 ## Output
 
-Every node reports its logical and physical operator, the actor that ran it, its estimated (`cardEst`)
-and actual (`cardReal`) cardinality, the time in its own output iterator (`timeSelf`) and the time
-until it ended (`timeLife`). Neither timing adds up to a total: nested operators overlap, and an
+Every node reports its logical and physical operator, its estimated (`cardEst`) and actual
+(`cardReal`) cardinality, the time in its own output iterator (`timeSelf`) and the time until it
+ended (`timeLife`). Neither timing adds up to a total: nested operators overlap, and an
 operator that passes its input's stream through unchanged reports the same `timeSelf` as the one below
 it.
 

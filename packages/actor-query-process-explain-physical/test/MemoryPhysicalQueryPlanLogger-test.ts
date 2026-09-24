@@ -948,14 +948,11 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
       });
       logOperation('join', undefined, root.input, root, 'actor-source', { delegated: true });
 
-      expect(logger.toCompactString()).toBe(`project () src:0 srcQuery:0 httpRequests:2 actor:0
-  join delegated actor:0
+      expect(logger.toCompactString()).toBe(`project () src:0 srcQuery:0 httpRequests:2
+  join delegated
 
 sources:
   0: SRC
-
-actors:
-  0: actor-source
 
 source queries:
   0: SELECT * WHERE {
@@ -978,10 +975,7 @@ source queries:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:0
-
-actors:
-  0: actor-pattern`);
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1)`);
     });
 
     it('for a single pattern with source', () => {
@@ -1002,13 +996,10 @@ actors:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0 actor:0
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
 
 sources:
-  0: SRC
-
-actors:
-  0: actor-pattern`);
+  0: SRC`);
     });
 
     it('for a single pattern in the default graph', () => {
@@ -1026,10 +1017,7 @@ actors:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1) actor:0
-
-actors:
-  0: actor-pattern`);
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1)`);
     });
 
     it('for a single pattern with metadata', () => {
@@ -1053,10 +1041,7 @@ actors:
         },
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:~3 cardReal:1 timeSelf:0.123ms timeLife:0.679ms actor:0
-
-actors:
-  0: actor-pattern`);
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:~3 cardReal:1 timeSelf:0.123ms timeLife:0.679ms`);
     });
 
     it('for a single pattern with metadata and exact cardinality', () => {
@@ -1077,10 +1062,7 @@ actors:
         },
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:3 actor:0
-
-actors:
-  0: actor-pattern`);
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) cardEst:3`);
     });
 
     it('for a BGP and patterns', () => {
@@ -1120,13 +1102,9 @@ actors:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`bgp actor:0
-  pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:1
-  pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:1
-
-actors:
-  0: actor-bgp
-  1: actor-pattern`);
+      expect(logger.toCompactString()).toBe(`bgp
+  pattern (ex:s1 ex:p1 ?o1 ex:g1)
+  pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
     });
 
     it('for a project, BGP and patterns', () => {
@@ -1179,14 +1157,10 @@ actors:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`project (varA,varB) actor:0
-  bgp actor:0
-    pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:1
-    pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:1
-
-actors:
-  0: actor-bgp
-  1: actor-pattern`);
+      expect(logger.toCompactString()).toBe(`project (varA,varB)
+  bgp
+    pattern (ex:s1 ex:p1 ?o1 ex:g1)
+    pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
     });
 
     it('for a bind join', () => {
@@ -1275,18 +1249,12 @@ actors:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`join actor:0
-  bindings bindIndex:1 actor:1
-    join actor:0
-      bgp actor:2
-    join actor:0 compacted-occurrences:2
-      pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:3
-
-actors:
-  0: actor-join
-  1: actor-bind
-  2: actor-bgp
-  3: actor-pattern`);
+      expect(logger.toCompactString()).toBe(`join
+  bindings bindIndex:1
+    join
+      bgp
+    join compacted-occurrences:2
+      pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
     });
 
     it('for a bind join with nesting', () => {
@@ -1377,19 +1345,14 @@ actors:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`join actor:0
-  bindings bindIndex:1 actor:1
-    join actor:0
-      pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:2
-    join actor:0
-      bindings actor:1
-        join actor:0
-          pattern (ex:s2 ex:p2 ?o2 ex:g2) actor:2
-
-actors:
-  0: actor-join
-  1: actor-bind
-  2: actor-pattern`);
+      expect(logger.toCompactString()).toBe(`join
+  bindings bindIndex:1
+    join
+      pattern (ex:s2 ex:p2 ?o2 ex:g2)
+    join
+      bindings
+        join
+          pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
     });
 
     it('for two patterns with the same source', () => {
@@ -1441,15 +1404,12 @@ actors:
         {},
       );
 
-      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1) actor:0
-  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0 actor:0
-  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0 actor:0
+      expect(logger.toCompactString()).toBe(`pattern (ex:s1 ex:p1 ?o1 ex:g1)
+  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
+  pattern (ex:s1 ex:p1 ?o1 ex:g1) src:0
 
 sources:
-  0: SRC
-
-actors:
-  0: actor-pattern`);
+  0: SRC`);
     });
   });
 });

@@ -3729,15 +3729,11 @@ CONSTRUCT {
           .replaceAll(/[\d,.]+ms/gu, 'Xms')
           .replaceAll(/(?<=cardEst:)~?[\d,.]+/gu, 'N')
           .replaceAll(/(?<=cardReal:)[\d,.]+/gu, 'N');
-        expect(normalized).toBe(`project (o,p,s) cardEst:N cardReal:N timeSelf:Xms timeLife:Xms actor:0
-  pattern (?s ?p ?o) cardEst:N src:0 cardReal:N timeSelf:Xms timeLife:Xms actor:1
+        expect(normalized).toBe(`project (o,p,s) cardEst:N cardReal:N timeSelf:Xms timeLife:Xms
+  pattern (?s ?p ?o) cardEst:N src:0 cardReal:N timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`);
         expect(result).toMatchObject({ explain: true, type: 'physical' });
       });
 

@@ -49,288 +49,195 @@ async function explainPhysicalJson(query: string, context: any = {}): Promise<an
 describe('System test: QuerySparql explain physical', () => {
   describe('for queries over an in-memory source', () => {
     it('explains a single pattern', async() => {
-      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s ?p ?o }`)).resolves.toBe(`project (o,p,s) cardEst:20 cardReal:20 timeSelf:Xms timeLife:Xms actor:0
-  pattern (?s ?p ?o) cardEst:20 src:0 cardReal:20 timeSelf:Xms timeLife:Xms actor:1
+      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s ?p ?o }`)).resolves.toBe(`project (o,p,s) cardEst:20 cardReal:20 timeSelf:Xms timeLife:Xms
+  pattern (?s ?p ?o) cardEst:20 src:0 cardReal:20 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a two-pattern BGP', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a }`)).resolves
-        .toBe(`project (a,n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
-      pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
+        .toBe(`project (a,n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+    join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#join
-  2: urn:comunica:default:rdf-join/actors#inner-hash-def
-  3: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a three-pattern BGP', async() => {
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a . ?s foaf:knows ?f }`,
-      )).resolves.toBe(`project (a,f,n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(multi-smallest) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
-      join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
-        pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
-        join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
-          pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
-          pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
+      )).resolves.toBe(`project (a,f,n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+    join-inner(multi-smallest) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+      join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+        join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+          pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+          pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#join
-  2: urn:comunica:default:rdf-join/actors#inner-multi-smallest
-  3: urn:comunica:default:rdf-join/actors#inner-hash-def
-  4: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a filter', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:age ?a FILTER(?a > 25) }`)).resolves
-        .toBe(`project (a,s) cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms actor:0
-  filter cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms actor:1
-    pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
+        .toBe(`project (a,s) cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms
+  filter cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#filter
-  2: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     // Both inputs of the bind join are nodes of their own: the pattern that drives the binding, and
     // the pattern that is only probed for its metadata before being bound per binding.
     it('explains an optional', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n OPTIONAL { ?s foaf:knows ?f } }`)).resolves
-        .toBe(`project (f,n,s) cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms actor:0
-  leftjoin cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms actor:1
-    join-optional(bind) cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms actor:2
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
-      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:0 timeSelf:Xms timeLife:Xms actor:3
-      bindings actor:2
-        pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms actor:3 compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+        .toBe(`project (f,n,s) cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms
+  leftjoin cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms
+    join-optional(bind) cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:0 timeSelf:Xms timeLife:Xms
+      bindings
+        pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#leftjoin
-  2: urn:comunica:default:rdf-join/actors#optional-bind
-  3: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a union', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { { ?s foaf:name ?n } UNION { ?s foaf:age ?a } }`)).resolves
-        .toBe(`project (a,n,s) cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms actor:0
-  union cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms actor:1
-    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
-    pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
+        .toBe(`project (a,n,s) cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms
+  union cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#union
-  2: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a distinct with order and limit', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT DISTINCT ?n WHERE { ?s foaf:name ?n } ORDER BY ?n LIMIT 3`)).resolves
-        .toBe(`slice cardEst:3 cardReal:3 timeSelf:Xms timeLife:Xms actor:0
-  distinct cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed actor:1
-    project (n) cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed actor:2
-      orderby cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed actor:3
-        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
+        .toBe(`slice cardEst:3 cardReal:3 timeSelf:Xms timeLife:Xms
+  distinct cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed
+    project (n) cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed
+      orderby cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#slice
-  1: urn:comunica:default:query-operation/actors#distinct
-  2: urn:comunica:default:query-operation/actors#project
-  3: urn:comunica:default:query-operation/actors#orderby
-  4: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a group by', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT (COUNT(?s) AS ?c) WHERE { ?s foaf:name ?n } GROUP BY ?n`)).resolves
-        .toBe(`project (c) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-  extend cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-    group cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
+        .toBe(`project (c) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+  extend cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+    group cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#extend
-  2: urn:comunica:default:query-operation/actors#group
-  3: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a property path', async() => {
-      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:knows+ ?o }`)).resolves.toBe(`project (o,s) cardEst:5 cardReal:10 timeSelf:Xms timeLife:Xms actor:0
-  path cardEst:5 cardReal:10 timeSelf:Xms timeLife:Xms actor:1
-    distinct cardEst:5 cardReal:10 timeSelf:Xms timeLife:Xms actor:2
-      path cardEst:5 cardReal:13 timeSelf:Xms timeLife:Xms actor:1
-        distinct cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
-          path cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
-            pattern (?s http://xmlns.com/foaf/0.1/knows ?o) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
-        alp actor:1
-          path cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms actor:3 compacted-occurrences:4 cardRealSum:4 timeSelfSum:Xms timeLifeSum:Xms
-            pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?b) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms actor:4
+      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:knows+ ?o }`)).resolves.toBe(`project (o,s) cardEst:5 cardReal:10 timeSelf:Xms timeLife:Xms
+  path cardEst:5 cardReal:10 timeSelf:Xms timeLife:Xms
+    distinct cardEst:5 cardReal:10 timeSelf:Xms timeLife:Xms
+      path cardEst:5 cardReal:13 timeSelf:Xms timeLife:Xms
+        distinct cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+          path cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+            pattern (?s http://xmlns.com/foaf/0.1/knows ?o) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+        alp
+          path cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:4 cardRealSum:4 timeSelfSum:Xms timeLifeSum:Xms
+            pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?b) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#path-one-or-more
-  2: urn:comunica:default:query-operation/actors#distinct
-  3: urn:comunica:default:query-operation/actors#path-link
-  4: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a minus', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n MINUS { ?s foaf:knows ?f } }`)).resolves
-        .toBe(`project (n,s) cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms actor:0
-  minus cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms actor:1
-    join-minus(hash-def) cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms actor:2
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
-      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
+        .toBe(`project (n,s) cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms
+  minus cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms
+    join-minus(hash-def) cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#minus
-  2: urn:comunica:default:rdf-join/actors#minus-hash-def
-  3: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains an ask', async() => {
-      await expect(explainPhysical(`${PREFIXES}ASK { ?s foaf:name ?n }`)).resolves.toBe(`ask actor:0
-  pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:1 timeSelf:Xms timeLife:Xms destroyed actor:1
+      await expect(explainPhysical(`${PREFIXES}ASK { ?s foaf:name ?n }`)).resolves.toBe(`ask
+  pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:1 timeSelf:Xms timeLife:Xms destroyed
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#ask
-  1: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a construct', async() => {
-      await expect(explainPhysical(`${PREFIXES}CONSTRUCT { ?s ex:n ?n } WHERE { ?s foaf:name ?n }`)).resolves.toBe(`construct cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-  project (s,n) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
+      await expect(explainPhysical(`${PREFIXES}CONSTRUCT { ?s ex:n ?n } WHERE { ?s foaf:name ?n }`)).resolves.toBe(`construct cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+  project (s,n) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#construct
-  1: urn:comunica:default:query-operation/actors#project
-  2: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a describe', async() => {
-      await expect(explainPhysical(`${PREFIXES}DESCRIBE ex:alice`)).resolves.toBe(`union cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-  construct cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-    project (__predicate,__object) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
-      pattern (http://example.org/alice ?__predicate ?__object) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
+      await expect(explainPhysical(`${PREFIXES}DESCRIBE ex:alice`)).resolves.toBe(`union cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+  construct cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+    project (__predicate,__object) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (http://example.org/alice ?__predicate ?__object) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#union
-  1: urn:comunica:default:query-operation/actors#construct
-  2: urn:comunica:default:query-operation/actors#project
-  3: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains values', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { VALUES ?s { ex:alice } ?s foaf:name ?n }`)).resolves
-        .toBe(`project (n,s) cardEst:~1 cardReal:1 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:~1 cardReal:1 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(nested-loop) cardEst:~1 cardReal:1 timeSelf:Xms timeLife:Xms actor:2
-      values cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms actor:3
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
+        .toBe(`project (n,s) cardEst:~1 cardReal:1 timeSelf:Xms timeLife:Xms
+  join cardEst:~1 cardReal:1 timeSelf:Xms timeLife:Xms
+    join-inner(nested-loop) cardEst:~1 cardReal:1 timeSelf:Xms timeLife:Xms
+      values cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#join
-  2: urn:comunica:default:rdf-join/actors#inner-nested-loop
-  3: urn:comunica:default:query-operation/actors#values
-  4: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a subquery', async() => {
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . { SELECT ?s WHERE { ?s foaf:age ?a } } }`,
-      )).resolves.toBe(`project (n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
-      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
-      project (s) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-        join cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-          join-inner(single) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
-            pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
+      )).resolves.toBe(`project (n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+    join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+      project (s) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+        join cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+          join-inner(single) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+            pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#join
-  2: urn:comunica:default:rdf-join/actors#inner-hash-def
-  3: urn:comunica:default:query-operation/actors#source
-  4: urn:comunica:default:rdf-join/actors#inner-single`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a filter with exists', async() => {
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n FILTER EXISTS { ?s foaf:knows ?f } }`,
-      )).resolves.toBe(`project (n,s) cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms actor:0
-  filter cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms actor:1
-    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
+      )).resolves.toBe(`project (n,s) cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
+  filter cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
     exists
-      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms actor:2 compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#filter
-  2: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     // Each exists expression keeps a group of its own, so the repetitions of one are never
@@ -338,91 +245,66 @@ actors:
     it('explains a filter with two exists expressions', async() => {
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n FILTER(EXISTS { ?s foaf:knows ?f } && EXISTS { ?s foaf:age ?a }) }`,
-      )).resolves.toBe(`project (n,s) cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms actor:0
-  filter cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms actor:1
-    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
+      )).resolves.toBe(`project (n,s) cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
+  filter cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
+    pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
     exists
-      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/age ?a) cardEst:1 src:0 cardReal:1 timeSelf:Xms timeLife:Xms actor:2 compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/age ?a) cardEst:1 src:0 cardReal:1 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
     exists
-      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms actor:2 compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#filter
-  2: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a graph', async() => {
-      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(`project (g,o,p,s) cardEst:~20 cardReal:0 timeSelf:Xms timeLife:Xms actor:0
-  pattern (?s ?p ?o ?g) cardEst:~20 src:0 cardReal:0 timeSelf:Xms timeLife:Xms actor:1
+      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(`project (g,o,p,s) cardEst:~20 cardReal:0 timeSelf:Xms timeLife:Xms
+  pattern (?s ?p ?o ?g) cardEst:~20 src:0 cardReal:0 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a join that is short-circuited on a zero cardinality', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s ex:nothing ?x . ?s foaf:age ?a }`)).resolves
-        .toBe(`project (a,s,x) cardEst:0 cardReal:0 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:0 cardReal:0 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(empty) actor:1
-      pattern (?s http://example.org/nothing ?x) cardEst:0 src:0 cardReal:0 timeSelf:Xms timeLife:Xms actor:2
-      pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:0 timeSelf:Xms timeLife:Xms actor:2
+        .toBe(`project (a,s,x) cardEst:0 cardReal:0 timeSelf:Xms timeLife:Xms
+  join cardEst:0 cardReal:0 timeSelf:Xms timeLife:Xms
+    join-inner(empty)
+      pattern (?s http://example.org/nothing ?x) cardEst:0 src:0 cardReal:0 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:0 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#join
-  2: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains an update', async() => {
       await expect(explainPhysical(
         `${PREFIXES}DELETE { ?s foaf:age ?a } INSERT { ?s foaf:age 1 } WHERE { ?s foaf:age ?a }`,
         { destination: createStore() },
-      )).resolves.toBe(`deleteinsert actor:0
-  pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
+      )).resolves.toBe(`deleteinsert
+  pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#update-delete-insert
-  1: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     });
 
     it('explains a federated query over two sources', async() => {
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n . ?s foaf:age ?a }`,
         { sources: [ createStore(), createStore() ]},
-      )).resolves.toBe(`project (a,n,s) cardEst:~10 cardReal:20 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:~10 cardReal:20 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(hash-def) cardEst:~10 cardReal:20 timeSelf:Xms timeLife:Xms actor:2
-      union cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms actor:3
-        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
-        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:1 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
-      union cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms actor:3
-        pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
-        pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:1 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
+      )).resolves.toBe(`project (a,n,s) cardEst:~10 cardReal:20 timeSelf:Xms timeLife:Xms
+  join cardEst:~10 cardReal:20 timeSelf:Xms timeLife:Xms
+    join-inner(hash-def) cardEst:~10 cardReal:20 timeSelf:Xms timeLife:Xms
+      union cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:1 cardReal:5 timeSelf:Xms timeLife:Xms
+      union cardEst:10 cardReal:10 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:1 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-  1: QuerySourceRdfJs(N3Store)(SkolemID:1)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#join
-  2: urn:comunica:default:rdf-join/actors#inner-hash-def
-  3: urn:comunica:default:query-operation/actors#union
-  4: urn:comunica:default:query-operation/actors#source`);
+  1: QuerySourceRdfJs(N3Store)(SkolemID:1)`);
     });
   });
 
@@ -496,27 +378,16 @@ actors:
 
   describe('for queries containing a zero-entry join', () => {
     it('explains an empty where clause', async() => {
-      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { }`)).resolves.toBe(`project () cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(none) cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms actor:2
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#join
-  2: urn:comunica:default:rdf-join/actors#inner-none`);
+      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { }`)).resolves.toBe(`project () cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms
+  join cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms
+    join-inner(none) cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms`);
     });
 
     it('explains a query that only binds', async() => {
-      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { BIND(1 AS ?x) }`)).resolves.toBe(`project (x) cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms actor:0
-  extend cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms actor:1
-    join cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms actor:2
-      join-inner(none) cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms actor:3
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#extend
-  2: urn:comunica:default:query-operation/actors#join
-  3: urn:comunica:default:rdf-join/actors#inner-none`);
+      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { BIND(1 AS ?x) }`)).resolves.toBe(`project (x) cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms
+  extend cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms
+    join cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms
+      join-inner(none) cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms`);
     });
   });
 
@@ -531,22 +402,15 @@ actors:
         { sources: [ createStore() ]},
         'physical',
       );
-      expect(normalize(<string> result.data)).toBe(`project (a,n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:0
-  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:1
-    join-inner(wrap-stream) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:2
-      join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms actor:3
-        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
-        pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms actor:4
+      expect(normalize(<string> result.data)).toBe(`project (a,n,s) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+  join cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+    join-inner(wrap-stream) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+      join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/age ?a) cardEst:5 src:0 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#project
-  1: urn:comunica:default:query-operation/actors#join
-  2: urn:comunica:default:rdf-join/actors#wrap-stream
-  3: urn:comunica:default:rdf-join/actors#inner-hash-def
-  4: urn:comunica:default:query-operation/actors#source`);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
     }, 60_000);
   });
 
@@ -571,24 +435,17 @@ actors:
       for (let i = 0; i < 15; i++) {
         plans.add((await explainPhysical(query)).replaceAll(' destroyed', ''));
       }
-      expect([ ...plans ]).toEqual([ `slice cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms actor:0
-  project (f,n,s) cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms actor:1
-    leftjoin cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms actor:2
-      join-optional(bind) cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms actor:3
-        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:4 timeSelf:Xms timeLife:Xms actor:4
-        pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:0 timeSelf:Xms timeLife:Xms actor:4
-        bindings actor:3
-          pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms actor:4 compacted-occurrences:4 cardRealSum:4 timeSelfSum:Xms timeLifeSum:Xms
+      expect([ ...plans ]).toEqual([ `slice cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms
+  project (f,n,s) cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms
+    leftjoin cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms
+      join-optional(bind) cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/name ?n) cardEst:5 src:0 cardReal:4 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/knows ?f) cardEst:5 src:0 cardReal:0 timeSelf:Xms timeLife:Xms
+        bindings
+          pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) cardEst:2 src:0 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:4 cardRealSum:4 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
-  0: QuerySourceRdfJs(N3Store)(SkolemID:0)
-
-actors:
-  0: urn:comunica:default:query-operation/actors#slice
-  1: urn:comunica:default:query-operation/actors#project
-  2: urn:comunica:default:query-operation/actors#leftjoin
-  3: urn:comunica:default:rdf-join/actors#optional-bind
-  4: urn:comunica:default:query-operation/actors#source` ]);
+  0: QuerySourceRdfJs(N3Store)(SkolemID:0)` ]);
     }, 60_000);
   });
 });

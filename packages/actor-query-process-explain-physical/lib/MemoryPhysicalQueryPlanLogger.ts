@@ -67,8 +67,7 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
    *
    * An operation that passes its input's output through unchanged, such as a wrapping join,
    * registers an output that was already registered by the operation below it. The last
-   * registration wins, which is what consumers need: they look an output up to find the
-   * operation that handed it to them, which is the outermost one.
+   * registration wins.
    *
    * @param output A query operation output.
    * @param node The node that produced the output.
@@ -246,7 +245,6 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     const legends: ICompactStringLegends = {
       sources: new Map(),
       sourceQueries: new Map(),
-      actors: new Map(),
     };
 
     if ('logical' in node) {
@@ -256,7 +254,6 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     }
 
     this.legendToCompactString(lines, 'sources', legends.sources);
-    this.legendToCompactString(lines, 'actors', legends.actors);
     this.legendToCompactString(lines, 'source queries', legends.sourceQueries);
 
     return lines.join('\n');
@@ -302,7 +299,6 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     const sourceQueryId = node.sourceQuery === undefined ?
       undefined :
       this.identify(legends.sourceQueries, node.sourceQuery);
-    const actorId = node.actor === undefined ? undefined : this.identify(legends.actors, node.actor);
 
     lines.push(`${
       indent}${
@@ -320,7 +316,6 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       sourceQueryId === undefined ? '' : ` srcQuery:${sourceQueryId}`}${
       node.httpRequests === undefined ? '' : ` httpRequests:${node.httpRequests}`}${
       node.delegated ? ' delegated' : ''}${
-      actorId === undefined ? '' : ` actor:${actorId}`}${
       metadata ? ` ${metadata}` : ''}`);
     for (const child of node.children ?? []) {
       this.nodeToCompactString(lines, legends, `${indent}  `, child);
@@ -351,7 +346,6 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
 interface ICompactStringLegends {
   sources: Map<string, number>;
   sourceQueries: Map<string, number>;
-  actors: Map<string, number>;
 }
 
 export function numberToString(value: number): string {
