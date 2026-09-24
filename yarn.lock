@@ -7306,10 +7306,10 @@ fetch-sparql-endpoint@^5.1.0:
     stream-to-string "^1.0.0"
     yargs "^17.0.0"
 
-fetch-sparql-endpoint@^7.2.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-7.2.0.tgz#db8ebaa265d343e91e054cf885bbc1665adca498"
-  integrity sha512-8J0RuZveKb8ikpAj8Y95S/UfFKeMRtgNNBJKGa+QJfSK2NWcR+QqgUZ77TR2saVvDpOyp89OsV0mIz96V0k1sg==
+fetch-sparql-endpoint@^7.3.0:
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-7.3.0.tgz#d6f647dd51c1fee46a1a6af59d7943212b07785b"
+  integrity sha512-pKVem6kZ4+ssy4tngyw4Z7ob08bGoSzYwqlV3s8Az/FnNdS7YFQgqBSUtS4kxCTYNflS7Xj07op1Os2xpDXKew==
   dependencies:
     "@traqula/parser-sparql-1-2" "^1.0.0"
     "@traqula/rules-sparql-1-2" "^1.0.0"
@@ -12654,10 +12654,10 @@ rdf-test-suite@^2.1.4:
     stream-to-string "^1.1.0"
     streamify-string "^1.0.1"
 
-rdf-test-suite@^2.7.0:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-2.7.0.tgz#0861968bfddb12e886bc3c364ebda5662784de1a"
-  integrity sha512-RlsfIAiSuFviqsqHemm9+hfldFGVxl6g61fzNZ3SpHu5q6gnil5lzQUIyyaGJQkekMS91IrV1jz2mIRVRI8hbg==
+rdf-test-suite@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-2.9.0.tgz#8ba9927b9511ff4e3840bce2fba955e2591f3335"
+  integrity sha512-ZB7UWt1etvtdQWzRKk5LJ3I3CgASCMfGCST1newoYPHrs6I9ARj7lh9THCW8aD+x6FHyBzJVRDopBQIHnmcsXg==
   dependencies:
     "@types/json-stable-stringify" "^1.0.32"
     "@types/minimist" "^1.2.0"
