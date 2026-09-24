@@ -436,9 +436,7 @@ export function visitOperationMembers(
 /**
  * The keys that hold something other than the operations an operation is composed of.
  *
- * These come on top of the keys that {@link defaultNodePreVisitor} already leaves alone: the path a
- * path traverses, and the templates a construct or an update produces, describe what to do rather
- * than name an operation that is evaluated to obtain results.
+ * These come on top of the keys that {@link defaultNodePreVisitor} already leaves alone.
  */
 const nonOperationKeys: Partial<Record<string, Set<string>>> = {
   [Types.PATH]: new Set([ 'predicate' ]),
