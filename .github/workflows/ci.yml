@@ -39,6 +39,8 @@ jobs:
         run: yarn run lint
       - name: Run depcheck
         run: yarn run depcheck
+      - name: Check actor READMEs
+        run: yarn run readme-check
       - name: Test clean script
         run: yarn run clean
 
