@@ -57,7 +57,8 @@ export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLe
    * Find the variable that most entries are sorted on first, in ascending order.
    * Among variables that equally many entries are sorted on, the one whose smallest entry is smallest wins.
    * @param metadatas Metadata of the join entries.
-   * @return The variable and the indexes of the entries sorted on it, or undefined if there is none.
+   * @return The variable and the indexes of the entries sorted on it, from the smallest entry to the largest,
+   *         or undefined if there is none.
    */
   public static getLeapfrogVariable(
     metadatas: MetadataBindings[],
@@ -84,7 +85,13 @@ export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLe
         best = group;
       }
     }
-    return best ? { variable: best.variable, indexes: best.indexes } : undefined;
+    if (!best) {
+      return undefined;
+    }
+    // A key is checked against the entries in this order, so the smallest ones come first.
+    const indexes = [ ...best.indexes ]
+      .sort((left, right) => metadatas[left].cardinality.value - metadatas[right].cardinality.value);
+    return { variable: best.variable, indexes };
   }
 
   protected async getOutput(
@@ -144,18 +151,24 @@ export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLe
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     const grouped = leapfrog.indexes.map(index => metadatas[index]);
 
-    // The result has at most as many keys as the smallest entry, and an entry that can skip is read down to
-    // about that many bindings, as for the merge join. One that cannot is read in full.
-    const smallest = Math.min(...grouped.map(metadata => metadata.cardinality.value));
-    const reads = grouped.reduce((sum, metadata) => sum +
-      (metadata.canSeek ? Math.min(metadata.cardinality.value, smallest) : metadata.cardinality.value), 0);
+    // The smallest entry proposes every key, and a later entry is only read at the keys that all entries
+    // before it share, of which there are about as many as their estimated join result. An entry that can skip
+    // is read down to about that many bindings, as for the merge join, and one that cannot is read in full.
+    let reads = grouped[0].cardinality.value;
+    let keys = reads;
+    for (let i = 1; i < grouped.length; i++) {
+      const cardinality = grouped[i].cardinality.value;
+      reads += grouped[i].canSeek ? Math.min(cardinality, keys) : cardinality;
+      // The entries share the key variable, so the estimate always exists.
+      keys = Math.min(keys, ActorRdfJoin.getSharedVariableJoinCardinality(grouped.slice(0, i + 1))!);
+    }
     const perBinding = grouped.every(metadata => metadata.canSeek) ?
       ActorRdfJoinMultiLeapfrog.ITERATION_COST_ORDERED :
       ActorRdfJoinMultiLeapfrog.ITERATION_COST;
     let iterations = reads * perBinding;
 
     // The other entries are joined with the result one at a time afterwards, as the multi-smallest join does.
-    let rows = smallest;
+    let rows = keys;
     for (const [ index, metadata ] of metadatas.entries()) {
       if (!leapfrog.indexes.includes(index)) {
         iterations += rows + metadata.cardinality.value;

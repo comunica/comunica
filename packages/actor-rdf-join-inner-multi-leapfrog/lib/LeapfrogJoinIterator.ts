@@ -14,11 +14,14 @@ const EMITTING = 2;
 
 /**
  * An iterator that joins any number of streams that are all sorted on one join key, by leapfrogging:
- * every stream that is behind the furthest one skips ahead to it, until all of them are at the same key.
- * The runs of that key are then emitted as a cross product, after which the streams move on.
+ * a candidate key is checked against the streams in the order they were given, where every stream that is
+ * behind it skips ahead to it, and a stream that is past it makes its own key the next candidate.
+ * Once all streams are at the candidate, the runs of that key are emitted as a cross product.
  *
- * Unlike a chain of binary merge joins, every stream skips ahead to the furthest key among all of them,
- * so a selective stream saves reads in all others at once.
+ * Unlike a chain of binary merge joins, every stream skips ahead to a key that all streams before it share,
+ * so a selective stream saves reads in all others at once. Since a stream is only read at keys that all
+ * streams before it have, the streams should be given with the most selective ones first: a key that the
+ * first streams do not share then never reaches the others, as in a chain of merge joins.
  *
  * `read` is fully synchronous: it only stops when a source has nothing buffered, and resumes when that
  * source becomes readable again.
@@ -43,6 +46,14 @@ export class LeapfrogJoinIterator extends AsyncIterator<Bindings> {
   private readonly behind: number[];
   private phase: number = SEEKING;
   /**
+   * The key that the streams are checked against, from the binding of the stream that set it.
+   */
+  private candidate: Bindings | undefined;
+  /**
+   * The number of streams, from the first one onwards, that are at the candidate key.
+   */
+  private matched = 0;
+  /**
    * The bindings that share the current key, per source.
    */
   private readonly runs: Bindings[][];
@@ -66,7 +77,7 @@ export class LeapfrogJoinIterator extends AsyncIterator<Bindings> {
   private depth = 0;
 
   /**
-   * @param sources The streams to join, all sorted on the join key.
+   * @param sources The streams to join, all sorted on the join key, most selective first.
    * @param compareKeys Compares the join keys of two bindings.
    * @param seekAfterBehind The number of times in a row that a stream must fall behind before it is asked to skip.
    */
@@ -141,6 +152,10 @@ export class LeapfrogJoinIterator extends AsyncIterator<Bindings> {
     if (this.phase !== SEEKING) {
       return;
     }
+    if (this.candidate === undefined || this.compareKeys(this.candidate, target) < 0) {
+      this.candidate = target;
+      this.matched = 0;
+    }
     for (let index = 0; index < this.sources.length; index++) {
       const held = this.heads[index];
       if (held === undefined || (held !== null && this.compareKeys(held, target) < 0)) {
@@ -199,6 +214,7 @@ export class LeapfrogJoinIterator extends AsyncIterator<Bindings> {
           return joined;
         }
         this.phase = SEEKING;
+        this.matched = 0;
         continue;
       }
 
@@ -224,9 +240,10 @@ export class LeapfrogJoinIterator extends AsyncIterator<Bindings> {
         continue;
       }
 
-      // Find the furthest key, and make every source that is behind it catch up.
-      let furthest: Bindings | undefined;
-      for (let index = 0; index < count; index++) {
+      // Check the candidate against the streams in order, so that a stream is only read at keys that
+      // all streams before it have.
+      while (this.matched < count) {
+        const index = this.matched;
         const head = this.head(index);
         if (head === PENDING) {
           return null;
@@ -235,19 +252,16 @@ export class LeapfrogJoinIterator extends AsyncIterator<Bindings> {
           this._end();
           return null;
         }
-        if (furthest === undefined || this.compareKeys(head, furthest) > 0) {
-          furthest = head;
+        const comparison = this.candidate === undefined ? 1 : this.compareKeys(head, this.candidate);
+        if (comparison < 0) {
+          this.advance(index, this.candidate!);
+        } else if (comparison > 0) {
+          // The streams before this one must now catch up with its key.
+          this.candidate = head;
+          this.matched = index === 0 ? 1 : 0;
+        } else {
+          this.matched++;
         }
-      }
-      let aligned = true;
-      for (let index = 0; index < count; index++) {
-        if (this.compareKeys(<Bindings> this.heads[index], furthest!) < 0) {
-          this.advance(index, furthest!);
-          aligned = false;
-        }
-      }
-      if (!aligned) {
-        continue;
       }
 
       // All sources are at the same key.

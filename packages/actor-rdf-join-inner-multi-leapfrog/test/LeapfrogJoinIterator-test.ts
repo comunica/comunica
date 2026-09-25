@@ -70,6 +70,7 @@ class ControlledIterator extends BufferedIterator<Bindings> {
 class SeekableIterator extends ArrayIterator<Bindings> {
   public seeks = 0;
   public skipped = 0;
+  public reads = 0;
   private position = 0;
   private readonly items: Bindings[];
 
@@ -83,6 +84,7 @@ class SeekableIterator extends ArrayIterator<Bindings> {
       this.close();
       return null;
     }
+    this.reads++;
     return this.items[this.position++];
   }
 
@@ -245,6 +247,14 @@ describe('LeapfrogJoinIterator', () => {
     expect(asMultiset(seeking)).toEqual(asMultiset(expected));
   });
 
+  it('does not read a later stream at keys that the earlier ones do not share', async() => {
+    const first = new SeekableIterator([ bind(1, 'b', 'b1'), bind(3, 'b', 'b3'), bind(5, 'b', 'b5') ]);
+    const second = new SeekableIterator([ bind(2, 'c', 'c2'), bind(4, 'c', 'c4'), bind(6, 'c', 'c6') ]);
+    const last = new SeekableIterator(Array.from({ length: 100 }, (_, i) => bind(i, 'd', `d${i}`)));
+    await expect(arrayifyStream(new LeapfrogJoinIterator([ first, second, last ], compare))).resolves.toHaveLength(0);
+    expect(last.reads).toBe(0);
+  });
+
   describe('with seekable sources', () => {
     it('skips ahead in every stream that falls behind the furthest one', async() => {
       const long = (other: string): SeekableIterator => new SeekableIterator(
@@ -285,17 +295,33 @@ describe('LeapfrogJoinIterator', () => {
       }
     });
 
-    it('drops the bindings held before the target, and keeps those at or after it', async() => {
+    it('drops the bindings held before the target, and skips their sources ahead', async() => {
       const behind = new SeekableIterator([ bind(1, 'b', 'b1'), bind(5, 'b', 'b5'), bind(7, 'b', 'b7') ]);
-      const ahead = new SeekableIterator([ bind(7, 'c', 'c7') ]);
       const pending = new ControlledIterator();
-      const it = new LeapfrogJoinIterator([ behind, ahead, pending ], compare, Number.POSITIVE_INFINITY);
-      // The first two sources now hold a binding, and the third has none yet.
+      const ahead = new SeekableIterator([ bind(7, 'd', 'd7') ]);
+      const it = new LeapfrogJoinIterator([ behind, pending, ahead ], compare, Number.POSITIVE_INFINITY);
+      // The first source now holds its first binding, and the second has none yet.
       expect(it.read()).toBeNull();
       it.seek(bind(6, 'e', 'e'));
       expect(behind.seeks).toBe(1);
       expect(behind.skipped).toBe(1);
-      expect(ahead.seeks).toBe(0);
+      pending.add(bind(7, 'c', 'c7'));
+      pending.finish();
+      await expect(arrayifyStream(it)).resolves.toEqualBindingsArray([
+        joined(7, [ 'b', 'b7' ], [ 'c', 'c7' ], [ 'd', 'd7' ]),
+      ]);
+    });
+
+    it('keeps the bindings held at or after the target', async() => {
+      const first = new SeekableIterator([ bind(7, 'b', 'b7') ]);
+      const second = new SeekableIterator([ bind(7, 'c', 'c7'), bind(9, 'c', 'c9') ]);
+      const pending = new ControlledIterator();
+      const it = new LeapfrogJoinIterator([ first, second, pending ], compare, Number.POSITIVE_INFINITY);
+      // The first two sources are at key 7, and the third has nothing yet.
+      expect(it.read()).toBeNull();
+      it.seek(bind(6, 'e', 'e'));
+      expect(first.seeks).toBe(0);
+      expect(second.seeks).toBe(0);
       pending.add(bind(7, 'd', 'd7'));
       pending.finish();
       await expect(arrayifyStream(it)).resolves.toEqualBindingsArray([

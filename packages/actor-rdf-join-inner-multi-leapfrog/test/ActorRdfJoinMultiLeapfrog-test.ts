@@ -113,6 +113,14 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
       ])).toEqual({ variable: DF.variable('a'), indexes: [ 1, 2 ]});
     });
 
+    it('orders the entries from the smallest to the largest', () => {
+      expect(ActorRdfJoinMultiLeapfrog.getLeapfrogVariable([
+        metadata(50, [ variable('a') ], order('a')),
+        metadata(5, [ variable('a') ], order('a')),
+        metadata(20, [ variable('a') ], order('a')),
+      ])).toEqual({ variable: DF.variable('a'), indexes: [ 1, 2, 0 ]});
+    });
+
     it('picks the variable with the smallest entry among equally large groups', () => {
       expect(ActorRdfJoinMultiLeapfrog.getLeapfrogVariable([
         metadata(9, [ variable('a'), variable('b') ], order('a')),
@@ -170,6 +178,28 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
         context,
       })).resolves.toPassTest({
         iterations: 30 * 0.8,
+        persistedItems: 0,
+        blockingItems: 0,
+        requestTime: 0,
+      });
+    });
+
+    it('charges a later entry that can skip only for the keys that the entries before it share', async() => {
+      const distinct = (cardinality: number): MetadataBindings => ({
+        ...metadata(cardinality, [{ ...variable('a'), distinctValues: cardinality }], order('a'), true),
+      });
+      await expect(actor.test({
+        type: 'inner',
+        entries: [
+          entry([], distinct(5000)),
+          entry([], distinct(100)),
+          entry([], distinct(5000)),
+          entry([], distinct(200)),
+        ],
+        context,
+      })).resolves.toPassTest({
+        // 100 keys from the smallest entry, checked against the next two, of which about 4 remain for the last.
+        iterations: (100 + 100 + 100 + 4) * 0.8,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 0,
