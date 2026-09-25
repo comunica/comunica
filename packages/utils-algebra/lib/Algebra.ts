@@ -47,12 +47,11 @@ export type Opened<T extends object> = {[K in keyof T]: OpenSingle<T[K]> } & wit
  */
 export type Closed<T extends object > = {[K in keyof T]: CloseSingle<T[K]> };
 
-export type InternalComunicaOperations = Nodes | DistinctTerms;
-
 // Redefinitions of types
 export type KnownOperation = Ask | KnownExpression | Bgp | Construct | Describe | Distinct | Extend | From | Filter
   | Graph | Group | Join | LeftJoin | Minus | Nop | OrderBy | Path | Pattern | Project | KnownPropertyPathSymbol
-  | Reduced | Service | Slice | Union | Values | KnownUpdate | CompositeUpdate | InternalComunicaOperations;
+  | Reduced | Service | Slice | Union | Values | KnownUpdate | CompositeUpdate | Nodes | DistinctTerms;
+export type InternalComunicaOperations = Extract<KnownOperation, { type: TypesComunica }>;
 export type KnownExpression = AggregateExpression | GroupConcatExpression | ExistenceExpression | NamedExpression |
   OperatorExpression | TermExpression | WildcardExpression | BoundAggregate;
 export type KnownPropertyPathSymbol = Alt | Inv | Link | Nps | OneOrMorePath | Seq | ZeroOrMorePath | ZeroOrOnePath;
