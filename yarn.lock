@@ -1506,10 +1506,10 @@
     "@types/yargs" "^17.0.0"
     fs-extra "^10.0.0"
 
-"@jbr-experiment/ldbc-snb@^6.2.0":
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/@jbr-experiment/ldbc-snb/-/ldbc-snb-6.2.0.tgz#3255d045bfc6ce71397aa820ba2618428c667841"
-  integrity sha512-iaBibk8R48CGKXNeEikBRsEMXIP2mPQg3qDhjOjSGzBhrLo/TLLYQLu+cyXhqrKClnasirSChMEjZlPFQapxHg==
+"@jbr-experiment/ldbc-snb@^6.2.1":
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/@jbr-experiment/ldbc-snb/-/ldbc-snb-6.2.1.tgz#f1987f7a56a3910e83f9dff9c33ab44982e4f684"
+  integrity sha512-d3hMMZrjicOAOymIJ0tG/VADBZvP6wYWPnX4YJrn0pZF25xpHW+pHiHeqSt5RfUW2lpbhE+DiPKDqjnwm+6udA==
   dependencies:
     "@rdfjs/types" "*"
     "@types/fs-extra" "^11.0.0"
@@ -1548,6 +1548,14 @@
     "@types/fs-extra" "^9.0.11"
     fs-extra "^10.0.0"
 
+"@jbr-hook/cli@^6.2.0":
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/@jbr-hook/cli/-/cli-6.2.0.tgz#60bfb3c5e06ace2c5922344800758e015fb87db8"
+  integrity sha512-YSs9nUKlzJ669AnXkTMVRQtxCahpejiJK/VSchnDsdW5fgINYZ7r1lfqI3WI4/1GzxE1TxOkaBG62gDR+UHDaQ==
+  dependencies:
+    "@types/fs-extra" "^11.0.0"
+    fs-extra "^11.0.0"
+
 "@jbr-hook/sparql-endpoint-comunica@^6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@jbr-hook/sparql-endpoint-comunica/-/sparql-endpoint-comunica-6.0.0.tgz#7968bc4c5ec63ed09e129b4deba506305cbb7b77"
@@ -1555,6 +1563,14 @@
   dependencies:
     "@types/fs-extra" "^9.0.11"
     fs-extra "^10.0.0"
+
+"@jbr-hook/sparql-endpoint-comunica@^6.2.0":
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/@jbr-hook/sparql-endpoint-comunica/-/sparql-endpoint-comunica-6.2.0.tgz#e13cb5f4efc15795ab106e6fdc7b4ddd788bfaf6"
+  integrity sha512-Vq7WH/iEpTdi0f/CnjDoUl3XN6ykKpsGBaTZBukywzIteWDpeKuwbW1LUKKSQW3z3pDPZbmVls6HPJ2pQkKGhA==
+  dependencies:
+    "@types/fs-extra" "^11.0.0"
+    fs-extra "^11.0.0"
 
 "@jbr-hook/sparql-endpoint-ldf@^6.0.0":
   version "6.0.0"
@@ -6341,6 +6357,18 @@ dockerode@^4.0.9:
     tar-fs "^2.1.4"
     uuid "^10.0.0"
 
+dockerode@^5.0.0:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/dockerode/-/dockerode-5.0.1.tgz#c389c0e32e825a818a3964f8c9b26f60aa306be1"
+  integrity sha512-avsq/xk4YPIrn0CgleX5bjT9Y8IT1p9PxrNQ++RBQ2WEyFfHCTDsT9kmyxz+H/axnjAwg8wJWEIuPGOUuNupiA==
+  dependencies:
+    "@balena/dockerignore" "^1.0.2"
+    "@grpc/grpc-js" "^1.11.1"
+    "@grpc/proto-loader" "^0.7.13"
+    docker-modem "^5.0.7"
+    protobufjs "^7.3.2"
+    tar-fs "^2.1.4"
+
 doctrine@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/doctrine/-/doctrine-2.1.0.tgz"
@@ -9289,6 +9317,32 @@ jbr@^6.0.0:
     pidusage "^3.0.2"
     semver "^7.5.4"
     tar "^6.1.7"
+    winston "^3.3.3"
+    yargs "^17.0.0"
+
+jbr@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/jbr/-/jbr-6.2.0.tgz#dd7745c43451e931b9acded5ef7ec8c6ad9a1732"
+  integrity sha512-zmIvgFkcEk0Z/1+57MkJ+eSyHFk/C4ILSmyeiPVWXzf4zNcBiNMUMao8TntYzkNmtR/4AgSte9WQM1bvTlByBQ==
+  dependencies:
+    "@types/cli-progress" "^3.9.1"
+    "@types/cross-spawn" "^6.0.2"
+    "@types/dockerode" "^4.0.0"
+    "@types/fs-extra" "^11.0.0"
+    "@types/pidusage" "^2.0.5"
+    "@types/semver" "^7.5.1"
+    "@types/yargs" "^17.0.0"
+    cli-progress "^3.9.0"
+    componentsjs "^6.3.0"
+    cross-fetch "^4.0.0"
+    cross-spawn "^7.0.3"
+    dockerode "^5.0.0"
+    fs-extra "^11.0.0"
+    ora "^5.4.0"
+    pidtree "^0.6.0"
+    pidusage "^4.0.0"
+    semver "^7.5.4"
+    tar "^7.0.0"
     winston "^3.3.3"
     yargs "^17.0.0"
 
@@ -12248,10 +12302,22 @@ picomatch@^4.0.4:
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-4.0.4.tgz#fd6f5e00a143086e074dffe4c924b8fb293b0589"
   integrity sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==
 
+pidtree@^0.6.0:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/pidtree/-/pidtree-0.6.1.tgz#3d03fae6183cc07091947dcc1087ce567cd3bcd3"
+  integrity sha512-e0F9AOF1JMrCfBsyJOwU9lNvQ0WtXTq0j/4jk0BQ5JSI9VAybPXmDpPRw/2FQ3e5d3ZFN1mLh7jW99m/jjaptw==
+
 pidusage@^3.0.2:
   version "3.0.2"
   resolved "https://registry.npmjs.org/pidusage/-/pidusage-3.0.2.tgz"
   integrity sha512-g0VU+y08pKw5M8EZ2rIGiEBaB8wrQMjYGFfW2QVIfyT8V+fq8YFLkvlz4bz5ljvFDJYNFCWT3PWqcRr2FKO81w==
+  dependencies:
+    safe-buffer "^5.2.1"
+
+pidusage@^4.0.0:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/pidusage/-/pidusage-4.0.1.tgz#4e03e0e54330d3cefb3f733902ca2d8755f0ed6f"
+  integrity sha512-yCH2dtLHfEBnzlHUJymR/Z1nN2ePG3m392Mv8TFlTP1B0xkpMQNHAnfkY0n2tAi6ceKO6YWhxYfZ96V4vVkh/g==
   dependencies:
     safe-buffer "^5.2.1"
 
@@ -14581,10 +14647,10 @@ tar@^6.1.7:
     mkdirp "^1.0.3"
     yallist "^4.0.0"
 
-tar@^7.4.3:
-  version "7.5.2"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-7.5.2.tgz#115c061495ec51ff3c6745ff8f6d0871c5b1dedc"
-  integrity sha512-7NyxrTE4Anh8km8iEy7o0QYPs+0JKBTj5ZaqHg6B39erLg0qYXN3BijtShwbsNSvQ+LN75+KV+C4QR/f6Gwnpg==
+tar@^7.0.0, tar@^7.5.4:
+  version "7.5.22"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-7.5.22.tgz#a696f998136e71487dc3f869a85bba2c67971ba9"
+  integrity sha512-MFO/QzvtAOmJbkhOaCTvbGcFN9L9b+JunIsDwaKljSOdcLMea3NJ1k9Usz/rjdfSXTq4dfzfeS7W4p4YOAAHeA==
   dependencies:
     "@isaacs/fs-minipass" "^4.0.0"
     chownr "^3.0.0"
@@ -14592,10 +14658,10 @@ tar@^7.4.3:
     minizlib "^3.1.0"
     yallist "^5.0.0"
 
-tar@^7.5.4:
-  version "7.5.22"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-7.5.22.tgz#a696f998136e71487dc3f869a85bba2c67971ba9"
-  integrity sha512-MFO/QzvtAOmJbkhOaCTvbGcFN9L9b+JunIsDwaKljSOdcLMea3NJ1k9Usz/rjdfSXTq4dfzfeS7W4p4YOAAHeA==
+tar@^7.4.3:
+  version "7.5.2"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-7.5.2.tgz#115c061495ec51ff3c6745ff8f6d0871c5b1dedc"
+  integrity sha512-7NyxrTE4Anh8km8iEy7o0QYPs+0JKBTj5ZaqHg6B39erLg0qYXN3BijtShwbsNSvQ+LN75+KV+C4QR/f6Gwnpg==
   dependencies:
     "@isaacs/fs-minipass" "^4.0.0"
     chownr "^3.0.0"
