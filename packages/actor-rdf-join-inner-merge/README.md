@@ -15,6 +15,8 @@ variables sorted in the same direction. That is the term order (see `compareTerm
 compares terms on term type, value, datatype, language, and base direction, and in which two terms are equal exactly
 if they are equal RDF terms. It is not the SPARQL order of the `order` metadata, which this actor does not use.
 Sources declare it in the metadata of the bindings they produce, when they produce them in that order.
+File sources do so when they are loaded into an ordered store (see
+[`@comunica/actor-query-source-identify-hypermedia-none`](https://github.com/comunica/comunica/tree/master/packages/actor-query-source-identify-hypermedia-none)).
 
 The output stays sorted on the key that was merged on, so merge joins can be chained over a star pattern without
 re-sorting in between.
