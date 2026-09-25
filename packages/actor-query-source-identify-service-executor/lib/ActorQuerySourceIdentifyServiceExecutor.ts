@@ -4,10 +4,10 @@ import type {
   IActorQuerySourceIdentifyArgs,
 } from '@comunica/bus-query-source-identify';
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { ActionContext, failTest, passTestVoidWithSideData } from '@comunica/core';
-import type { ComunicaDataFactory, IActionContext, ServiceExecutor } from '@comunica/types';
+import type { ServiceExecutor } from '@comunica/types';
+import { getServiceExecutor } from '@comunica/utils-query-operation';
 import { QuerySourceServiceExecutor } from './QuerySourceServiceExecutor';
 
 /**
@@ -25,7 +25,7 @@ export class ActorQuerySourceIdentifyServiceExecutor extends ActorQuerySourceIde
     if (typeof value !== 'string') {
       return failTest(`${this.name} requires a query source with an IRI value.`);
     }
-    const serviceExecutor = ActorQuerySourceIdentifyServiceExecutor.getServiceExecutor(value, action.context);
+    const serviceExecutor = getServiceExecutor(value, action.context);
     if (serviceExecutor === undefined) {
       return failTest(`${this.name} requires a custom SERVICE executor to be registered for ${value}.`);
     }
@@ -46,23 +46,5 @@ export class ActorQuerySourceIdentifyServiceExecutor extends ActorQuerySourceIde
         context: action.querySourceUnidentified.context ?? new ActionContext(),
       },
     };
-  }
-
-  /**
-   * Obtain the custom SERVICE executor that is registered for the given IRI in the given context.
-   * @param serviceIri The IRI of a SERVICE target.
-   * @param context The query context.
-   * @returns The executor, or undefined if none is registered for the IRI.
-   */
-  public static getServiceExecutor(serviceIri: string, context: IActionContext): ServiceExecutor | undefined {
-    const serviceExecutors = context.get(KeysInitQuery.serviceExecutors);
-    if (serviceExecutors) {
-      return serviceExecutors[serviceIri];
-    }
-    const serviceExecutorCreator = context.get(KeysInitQuery.serviceExecutorCreator);
-    if (serviceExecutorCreator) {
-      const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-      return serviceExecutorCreator(dataFactory.namedNode(serviceIri));
-    }
   }
 }

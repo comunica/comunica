@@ -1,7 +1,8 @@
-import { KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type {
+  ComunicaDataFactory,
   IActionContext,
   IDataDestination,
   IQueryOperationResult,
@@ -10,6 +11,7 @@ import type {
   IQueryOperationResultQuads,
   IQueryOperationResultVoid,
   IQuerySourceWrapper,
+  ServiceExecutor,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -111,6 +113,39 @@ export function removeOperationSource(operation: Algebra.Operation): void {
   if (operation.metadata && Object.keys(operation.metadata).length === 0) {
     delete operation.metadata;
   }
+}
+
+/**
+ * Obtain a function that looks up the custom SERVICE executors that are registered in the given context.
+ * @param context The query context.
+ * @return A function that obtains the executor of a SERVICE target IRI, or undefined if none is registered for it.
+ *         If no custom SERVICE executors are registered at all, undefined is returned instead of a function.
+ */
+export function getServiceExecutorLookup(
+  context: IActionContext,
+): ((serviceIri: string) => ServiceExecutor | undefined) | undefined {
+  const serviceExecutors = context.get(KeysInitQuery.serviceExecutors);
+  const serviceExecutorCreator = context.get(KeysInitQuery.serviceExecutorCreator);
+  if (serviceExecutors && serviceExecutorCreator) {
+    throw new Error('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
+  }
+  if (serviceExecutors) {
+    return serviceIri => serviceExecutors[serviceIri];
+  }
+  if (serviceExecutorCreator) {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    return serviceIri => serviceExecutorCreator(dataFactory.namedNode(serviceIri));
+  }
+}
+
+/**
+ * Obtain the custom SERVICE executor that is registered in the given context for the given SERVICE target.
+ * @param serviceIri The IRI of a SERVICE target.
+ * @param context The query context.
+ * @return The executor, or undefined if none is registered for the IRI.
+ */
+export function getServiceExecutor(serviceIri: string, context: IActionContext): ServiceExecutor | undefined {
+  return getServiceExecutorLookup(context)?.(serviceIri);
 }
 
 /**
