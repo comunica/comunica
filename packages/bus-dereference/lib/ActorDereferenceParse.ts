@@ -106,10 +106,10 @@ export abstract class ActorDereferenceParse<
    */
   public static createUnknownMediaTypeError(dereference: IActorDereferenceOutput, cause: unknown): Error {
     const contentType = dereference.headers?.get('content-type');
-    const reason = contentType ?
-      `its content type (${contentType}) is too generic` :
-      'it has no content type';
-    return new Error(`Could not determine the media type of ${dereference.url}, as ${reason}, and the extension of its URL is not recognized`, { cause });
+    const message = contentType ?
+      `Could not determine the media type of ${dereference.url} from its content type (${contentType}) or the extension of its URL` :
+      `Could not determine the media type of ${dereference.url}, as it has no content type, and the extension of its URL is not recognized`;
+    return new Error(message, { cause });
   }
 
   public async run(action: IActionDereferenceParse<K>): Promise<IActorDereferenceParseOutput<S, M>> {

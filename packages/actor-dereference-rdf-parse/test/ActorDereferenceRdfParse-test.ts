@@ -217,9 +217,9 @@ describe('ActorAbstractDereferenceParse', () => {
     expect((<Error> error).cause).toEqual(new Error('Parse reject error'));
   });
 
-  it('should explain parse rejects of documents with a too generic content type', async() => {
+  it('should explain parse rejects of documents with a content type without media type', async() => {
     context = new ActionContext({ parseReject: true, contentType: 'text/plain;charset=UTF-8' });
-    await expect(actor.run({ url: 'https://www.google.com/', context })).rejects.toThrow('Could not determine the media type of https://www.google.com/index.html, as its content type (text/plain;charset=UTF-8) is too generic, and the extension of its URL is not recognized');
+    await expect(actor.run({ url: 'https://www.google.com/', context })).rejects.toThrow('Could not determine the media type of https://www.google.com/index.html from its content type (text/plain;charset=UTF-8) or the extension of its URL');
   });
 
   it('should explain parse rejects of documents without a media type in lenient mode', async() => {
