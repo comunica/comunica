@@ -949,6 +949,40 @@ LIMIT 100
         });
       });
 
+      it('handles the --dereferenceFromNamed flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--dereferenceFromNamed' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
+          [KeysInitQuery.dereferenceFromNamed.name]: true,
+        });
+      });
+
+      it('handles the --dereferenceFromNamedConflictMode option', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--dereferenceFromNamedConflictMode', 'keepSource' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
+          [KeysInitQuery.dereferenceFromNamedConflictMode.name]: expect.any(Function),
+        });
+        expect(spyQueryOrExplain.mock.calls
+          .at(-1)![1][KeysInitQuery.dereferenceFromNamedConflictMode.name]()).toBe('keepSource');
+      });
+
       it('handles the destination --to option', async() => {
         const stdout = await stringifyStream(<any> (await actor.run({
           argv: [ sourceHypermedia, '-q', queryString, '--to', 'http://target.com/' ],

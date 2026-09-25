@@ -1156,7 +1156,7 @@ WHERE {
     sh:select ?query .
 } ORDER BY ?sq`, {
           sources: [{ type: 'file', value: 'https://lov.linkeddata.es/dataset/lov/sparql' }],
-        })).rejects.toThrow('RDF parsing failed');
+        })).rejects.toThrow('Could not determine the media type of https://lov.linkeddata.es/dataset/lov/sparql from its content type (text/plain;charset=UTF-8) or the extension of its URL');
       });
 
       it('on the LOV SPARQL service description with property paths (2)', async() => {
@@ -1170,7 +1170,7 @@ WHERE {
     sh:select|sh:ask|sh:construct|sh:describe ?query .
 } ORDER BY ?sq`, {
           sources: [{ type: 'file', value: 'https://lov.linkeddata.es/dataset/lov/sparql' }],
-        })).rejects.toThrow('RDF parsing failed');
+        })).rejects.toThrow('Could not determine the media type of https://lov.linkeddata.es/dataset/lov/sparql from its content type (text/plain;charset=UTF-8) or the extension of its URL');
       });
 
       it('should time out slow SPARQL service description requests and continue processing', async() => {
@@ -2470,6 +2470,164 @@ WHERE { }
       });
     });
 
+    describe('FROM (NAMED) as sources', () => {
+      const datasetIri = 'http://example.org/my-dataset.ttl';
+      const datasetTurtle = `
+        @prefix ex: <http://example.org/> .
+        ex:s1 ex:p1 ex:o1 .
+        ex:s2 ex:p2 ex:o2 .
+      `;
+      const mockFetch = (body: string, contentType = 'text/turtle'): typeof globalThis.fetch =>
+        <typeof globalThis.fetch> jest.fn(async(input: string, init?: RequestInit) => {
+          if (input === datasetIri) {
+            return <Response> {
+              status: 200,
+              ok: true,
+              headers: new Headers({ 'content-type': contentType }),
+              body: stringToStream(body),
+              url: input,
+            };
+          }
+          return fetch(input, init);
+        });
+
+      it('does not append FROM IRI as a real source when dereferenceFromNamed is false (default)', async() => {
+        await expect(engine.queryBindings(
+          `SELECT * FROM <${datasetIri}> WHERE { ?s ?p ?o }`,
+          {
+            sources: [],
+          },
+        )).rejects.toThrow('none of the configured actors were able to handle the operation type pattern');
+      });
+
+      it('appends the FROM IRI as a real source when dereferenceFromNamed is true', async() => {
+        const mockedFetch = mockFetch(datasetTurtle);
+
+        // No sources in context
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM <${datasetIri}> WHERE { ?s ?p ?o }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
+          },
+        );
+        const bindings = await bindingsStream.toArray();
+
+        expect(bindings).toHaveLength(2);
+        expect(bindings).toEqualBindingsArray([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p1') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
+          ]),
+        ]);
+
+        expect(mockedFetch).toHaveBeenCalledWith(
+          datasetIri,
+          expect.anything(),
+        );
+      });
+
+      it('exposes the FROM NAMED IRI as a named graph when dereferenceFromNamed is true', async() => {
+        const mockedFetch = mockFetch(datasetTurtle);
+
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { GRAPH ?g { ?s ?p ?o } }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
+          },
+        );
+
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode(datasetIri) ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p1') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode(datasetIri) ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
+          ]),
+        ]);
+      });
+
+      it('does not expose FROM NAMED data in the default graph', async() => {
+        const mockedFetch = mockFetch(datasetTurtle);
+
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { ?s ?p ?o }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
+          },
+        );
+
+        await expect(bindingsStream).toEqualBindingsStream([]);
+      });
+
+      it('errors on a FROM NAMED source that already contains named graphs', async() => {
+        const mockedFetch = mockFetch(`
+          @prefix ex: <http://example.org/> .
+          ex:s1 ex:p1 ex:o1 .
+          ex:g1 { ex:s2 ex:p2 ex:o2 . }
+        `, 'application/trig');
+
+        await expect(engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { GRAPH ?g { ?s ?p ?o } }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
+          },
+        )).rejects.toThrow(`Detected an existing named graph 'http://example.org/g1'`);
+      });
+
+      it('keeps the source\'s own named graphs when the conflict mode says so', async() => {
+        const mockedFetch = mockFetch(`
+          @prefix ex: <http://example.org/> .
+          ex:s1 ex:p1 ex:o1 .
+          ex:g1 { ex:s2 ex:p2 ex:o2 . }
+        `, 'application/trig');
+
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { GRAPH ?g { ?s ?p ?o } }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            dereferenceFromNamedConflictMode: () => 'keepSource',
+            fetch: mockedFetch,
+          },
+        );
+
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode(datasetIri) ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p1') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode('http://example.org/g1') ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
+          ]),
+        ]);
+      });
+    });
+
     describe('RDF dataset construction with FROM and FROM NAMED', () => {
       // These cases are defined by https://www.w3.org/TR/sparql11-query/#specifyingDataset
       const G1 = 'http://example.org/g1';
@@ -3723,15 +3881,13 @@ CONSTRUCT {
     }`, {
           sources: [ 'https://www.rubensworks.net/' ],
         }, 'physical');
-        expect(result).toEqual({
-          explain: true,
-          type: 'physical',
-          data: `project (o,p,s)
+        // Without statistics nothing of the live page itself is asserted
+        expect(result.data).toBe(`project (o,p,s)
   pattern (?s ?p ?o) src:0
 
 sources:
-  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`,
-        });
+  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`);
+        expect(result).toMatchObject({ explain: true, type: 'physical' });
       });
 
       it('explaining physical-json plan', async() => {
@@ -3746,11 +3902,19 @@ sources:
           data: {
             logical: 'project',
             variables: [ 'o', 'p', 's' ],
+            cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
+            cardinalityReal: expect.any(Number),
+            timeSelf: expect.any(Number),
+            timeLife: expect.any(Number),
             children: [
               {
                 logical: 'pattern',
                 pattern: '?s ?p ?o',
                 source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
+                cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
+                cardinalityReal: expect.any(Number),
+                timeSelf: expect.any(Number),
+                timeLife: expect.any(Number),
               },
             ],
           },

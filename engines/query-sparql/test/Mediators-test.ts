@@ -120,8 +120,8 @@ describe('System test: mediators', () => {
     'dereference-rdf',
     ':query-source-dereference-link/actors#dereference',
     'mediatorDereferenceRdf',
-    <any> { handle: <any> { data: <any> undefined, context, mediaType: 'text/css', url: 'http://example.org/' }},
-    `RDF dereferencing failed: none of the configured parsers were able to handle the media type text/css for http://example.org/`,
+    { url: 'http://example.org/' },
+    `RDF dereferencing failed: none of the configured actors were able to dereference http://example.org/`,
   );
   addTest<IActionExpressionEvaluatorFactory, IActorExpressionEvaluatorFactoryOutput>(
     'expression-evaluator-factory',
@@ -273,7 +273,7 @@ IMediatorTypeJoinCoefficients
     'rdf-parse',
     ':dereference-rdf/actors#parse',
     'mediatorParse',
-    { handle: <any> { data: <any> undefined, context, mediaType: 'text/css', url: 'http://example.org/' }},
+    { handle: { data: <any> undefined, context, url: 'http://example.org/' }, handleMediaType: 'text/css' },
     `RDF parsing failed: none of the configured parsers were able to handle the media type text/css for http://example.org/`,
   );
   // 'rdf-parse-html' has no mediator.

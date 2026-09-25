@@ -21,7 +21,7 @@ export abstract class ActorRdfParseFixedMediaTypes extends
    * TODO: rm this (and eslint-disable) once we remove the abstract media typed actor
    * @param args -
    *   \ @defaultNested {<cbrp:components/ActorRdfParse.jsonld#ActorRdfParse_default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-   *   \ @defaultNested {RDF parsing failed: none of the configured parsers were able to handle the media type ${action.handle.mediaType} for ${action.handle.url}} busFailMessage
+   *   \ @defaultNested {RDF parsing failed: none of the configured parsers were able to handle the media type ${action.handleMediaType} for ${action.handle.url}} busFailMessage
    */
   public constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);

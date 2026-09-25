@@ -5,6 +5,7 @@ export * from './ICachePolicy';
 export * from './ICliArgsHandler';
 export * from './IDataDestination';
 export * from './IDataset';
+export * from './IExpressionEngine';
 export * from './IJoinEntry';
 export * from './IMetadata';
 export * from './IPhysicalQueryPlanLogger';

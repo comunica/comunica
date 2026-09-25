@@ -7,6 +7,7 @@ import type {
   ComunicaDataFactory,
   IActionContext,
   IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
   IQueryOperationResult,
   IQuerySourceWrapper,
 } from '@comunica/types';
@@ -44,18 +45,57 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
     // Log to physical plan
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context
       .get(KeysInitQuery.physicalQueryPlanLogger);
+    let planNode: IPhysicalQueryPlanNode | undefined;
     if (physicalQueryPlanLogger) {
-      physicalQueryPlanLogger.logOperation(
-        action.operation.type,
-        undefined,
-        action.operation,
-        action.context.get(KeysInitQuery.physicalQueryPlanNode),
-        this.name,
-        {},
-      );
-      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
+      planNode = physicalQueryPlanLogger.logOperation({
+        logicalOperator: action.operation.type,
+        parentNode: action.context.get(KeysInitQuery.physicalQueryPlanNode),
+        actor: this.name,
+        operation: action.operation,
+      });
+      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, planNode);
+
+      // The source handles the whole operation itself, so no actor below reports what it contains.
+      // Record the shape that was handed to it, so that the plan does not stop at a single node.
+      this.logDelegatedOperations(physicalQueryPlanLogger, planNode, action.operation);
     }
 
+    const output = await this.runDelegated(action);
+
+    // Allow consumers of this output to find the node that produced it
+    planNode?.setOutput(output);
+
+    return output;
+  }
+
+  /**
+   * Log the operations below the given one, which the source handles itself.
+   * @param logger The physical query plan logger.
+   * @param parentNode The node of the operation that was delegated.
+   * @param operation The operation that was delegated.
+   */
+  protected logDelegatedOperations(
+    logger: IPhysicalQueryPlanLogger,
+    parentNode: IPhysicalQueryPlanNode,
+    operation: Algebra.Operation,
+  ): void {
+    for (const subOperation of algebraUtils.getSubOperations(operation)) {
+      const node = logger.logOperation({
+        logicalOperator: subOperation.type,
+        parentNode,
+        actor: this.name,
+        operation: subOperation,
+        metadata: { delegated: true },
+      });
+      this.logDelegatedOperations(logger, node, subOperation);
+    }
+  }
+
+  /**
+   * Delegate the operation of the given action to its source.
+   * @param action A query operation action with a source annotation.
+   */
+  protected async runDelegated(action: IActionQueryOperation): Promise<IQueryOperationResult> {
     const sourceWrapper: IQuerySourceWrapper = getOperationSource(action.operation)!;
     const mergedContext = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
 

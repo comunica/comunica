@@ -10,8 +10,6 @@ import checkDeps = require('depcheck');
 // eslint-disable-next-line ts/no-var-requires,ts/no-require-imports
 const { getPackages } = require('@manypkg/get-packages');
 
-const configPackage = process.argv[2];
-
 function ensureDependency({ checkedDeps, dependency, dependant }: any): void {
   if (!checkedDeps.dependencies.includes(dependency)) {
     checkedDeps.missing[dependency] = [ dependant ];
@@ -59,11 +57,13 @@ async function depInfo(pckg: any): Promise<any> {
       dependency: '@comunica/runner',
       dependant: join(pckg.dir, 'engine-default.js'),
     });
-    ensureDependency({
-      checkedDeps,
-      dependency: configPackage,
-      dependant: join(pckg.dir, 'engine-default.js'),
-    });
+    // Config packages are referenced from the engine's config through JSON-LD contexts, which depcheck
+    // cannot read, and never from the compiled engine-default.js, which requires actor packages only.
+    for (const dependency of Object.keys(pckg.packageJson.dependencies ?? {})) {
+      if (dependency.startsWith('@comunica/config-')) {
+        checkedDeps.using[dependency] = [ join(pckg.dir, 'config', 'config-default.json') ];
+      }
+    }
   } else {
     ignore = files ? folders.filter(elem => files.every((file: any) => !file.startsWith(elem.name))) : folders;
     ignore = ignore.map(x => x.isDirectory() ? `${x.name}/**` : x.name);

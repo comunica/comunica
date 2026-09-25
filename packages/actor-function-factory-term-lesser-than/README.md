@@ -1,6 +1,6 @@
 # Comunica Term Function Lesser Than Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-lesser-than.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-lesser-than)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-lesser-than.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-lesser-than)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)

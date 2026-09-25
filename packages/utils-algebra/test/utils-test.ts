@@ -1,10 +1,11 @@
+import { DataFactory } from 'rdf-data-factory';
 import { Types } from '../lib/Algebra';
 import { AlgebraFactory } from '../lib/AlgebraFactory';
 import type { AlgebraTransformer } from '../lib/utils';
-import { algebraTransformer, transformer } from '../lib/utils';
+import { algebraTransformer, getSubOperations, transformer, visitOperationMembers } from '../lib/utils';
 
-const AF = new AlgebraFactory();
-const DF = AF.dataFactory;
+const DF = new DataFactory();
+const AF = new AlgebraFactory(DF);
 
 describe('algebraTransformer', () => {
   /**
@@ -14,7 +15,7 @@ describe('algebraTransformer', () => {
    */
   function createOperation(): any {
     return Object.assign(
-      AF.createDistinct(AF.createProject(AF.createNop(), [ DF.variable!('v') ])),
+      AF.createDistinct(AF.createProject(AF.createNop(), [ DF.variable('v') ])),
       { metadata: { nested: AF.createNop() }},
     );
   }
@@ -69,5 +70,100 @@ describe('algebraTransformer', () => {
     // Without the default node pre-visitor of the project, its variables are traversed
     const copy = <any> custom.transformNode(operation, {});
     expect(copy.input.variables).not.toBe(operation.input.variables);
+  });
+});
+
+describe('visitOperationMembers', () => {
+  it('visits the values of the operation itself', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const expression = AF.createTermExpression(DF.literal('true'));
+    const visited: [string, unknown][] = [];
+
+    visitOperationMembers(AF.createFilter(pattern, expression), (value, key) => visited.push([ key, value ]));
+
+    expect(visited).toEqual([[ 'type', 'filter' ], [ 'input', pattern ], [ 'expression', expression ]]);
+  });
+
+  it('visits the elements of an array rather than the array', () => {
+    const pattern1 = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.variable('o'));
+    const pattern2 = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o'));
+    const visited: unknown[] = [];
+
+    visitOperationMembers(AF.createBgp([ pattern1, pattern2 ]), value => visited.push(value));
+
+    expect(visited).toEqual([ 'bgp', pattern1, pattern2 ]);
+  });
+
+  it('skips the keys that a traversal skips', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const operation: any = AF.createProject(pattern, [ DF.variable('s') ]);
+    operation.metadata = { hidden: AF.createNop() };
+    const visited: string[] = [];
+
+    visitOperationMembers(operation, (_value, key) => visited.push(key));
+
+    // The variables of a project and the metadata of any operation are never traversed
+    expect(visited).toEqual([ 'type', 'input' ]);
+  });
+
+  it('skips the given keys as well', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const visited: string[] = [];
+
+    visitOperationMembers(
+      AF.createFilter(pattern, AF.createTermExpression(DF.literal('true'))),
+      (_value, key) => visited.push(key),
+      new Set([ 'expression' ]),
+    );
+
+    expect(visited).toEqual([ 'type', 'input' ]);
+  });
+});
+
+describe('getSubOperations', () => {
+  it('returns the nested operations', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const operation = AF.createProject(AF.createJoin([ pattern, pattern ]), []);
+
+    expect(getSubOperations(operation)).toEqual([ operation.input ]);
+    expect(getSubOperations(operation.input)).toEqual([ pattern, pattern ]);
+    expect(getSubOperations(pattern)).toEqual([]);
+  });
+
+  it('does not return expressions or the path of a path operation', () => {
+    const path = AF.createPath(
+      DF.variable('s'),
+      AF.createOneOrMorePath(AF.createLink(DF.namedNode('ex:p'))),
+      DF.variable('o'),
+    );
+    const filter = AF.createFilter(path, AF.createTermExpression(DF.literal('true')));
+
+    expect(getSubOperations(filter)).toEqual([ path ]);
+    expect(getSubOperations(path)).toEqual([]);
+  });
+
+  it('does not return the template of a construct', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const template = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p'), DF.variable('o'));
+    const construct = AF.createConstruct(pattern, [ template ]);
+
+    expect(getSubOperations(construct)).toEqual([ pattern ]);
+  });
+
+  it('does not return the templates of a delete-insert', () => {
+    const where = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const toDelete = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.variable('o'));
+    const toInsert = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o'));
+    const deleteInsert = AF.createDeleteInsert([ toDelete ], [ toInsert ], where);
+
+    expect(getSubOperations(deleteInsert)).toEqual([ where ]);
+  });
+
+  it('does not return the metadata of an operation', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const operation: any = AF.createProject(pattern, []);
+    operation.metadata = { hidden: AF.createNop() };
+
+    expect(getSubOperations(operation)).toEqual([ pattern ]);
   });
 });

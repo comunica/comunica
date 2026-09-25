@@ -2,11 +2,13 @@ import { ActionContextKey, CONTEXT_KEY_LOGGER } from '@comunica/core';
 import type {
   AsyncExtensionFunctionCreator,
   Bindings,
+  ExistenceResolver,
   FunctionArgumentsCache,
   IActionContext,
   ICliArgsHandler,
   IDataDestination,
   IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
   IProxyHandler,
   IQuerySourceWrapper,
   ISuperTypeProvider,
@@ -22,6 +24,7 @@ import type {
   ServiceExecutorCreator,
   PartialResult,
   ILink,
+  DereferenceFromNamedConflictModeResolver,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -200,6 +203,8 @@ export const KeysInitQuery = {
   /**
    * Object to cache function argument overload resolutions.
    * Defaults to an object that is reused across query executions.
+   * Resolutions depend on the `superTypeProvider` they were made under,
+   * so a different super-type provider requires a fresh cache.
    */
   functionArgumentsCache: new ActionContextKey<FunctionArgumentsCache>(
     '@comunica/actor-init-query:functionArgumentsCache',
@@ -267,7 +272,8 @@ export const KeysInitQuery = {
    */
   cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-query:cliArgsHandlers'),
   /**
-   * Explain mode of the query. Can be 'parsed', 'logical', 'query', 'physical', or 'physical-json'.
+   * Explain mode of the query. Can be 'parsed', 'logical', 'query', 'physical', 'physical-stats',
+   * or 'physical-json'.
    */
   explain: new ActionContextKey<QueryExplainMode>('@comunica/actor-init-query:explain'),
   /**
@@ -277,10 +283,12 @@ export const KeysInitQuery = {
     '@comunica/actor-init-query:physicalQueryPlanLogger',
   ),
   /**
-   * The current physical operator within the query plan.
-   *              This is used to pass parent-child relationships for invoking the query plan logger.
+   * The current node within the query plan.
+   * This is used to pass parent-child relationships for invoking the query plan logger.
    */
-  physicalQueryPlanNode: new ActionContextKey<any>('@comunica/actor-init-query:physicalQueryPlanNode'),
+  physicalQueryPlanNode: new ActionContextKey<IPhysicalQueryPlanNode>(
+    '@comunica/actor-init-query:physicalQueryPlanNode',
+  ),
   /**
    * A JSON-LD context
    */
@@ -303,13 +311,38 @@ export const KeysInitQuery = {
    * A boolean value denoting whether results should be deduplicated or not.
    */
   distinctConstruct: new ActionContextKey<boolean>('@comunica/actor-init-query:distinctConstruct'),
+  /**
+   * If the IRIs within FROM (NAMED) clauses must be dereferenced,
+   * and added as sources to the query. (default: false)
+   */
+  dereferenceFromNamed: new ActionContextKey<boolean>('@comunica/actor-init-query:dereferenceFromNamed'),
+  /**
+   * Resolves, per named graph that a FROM NAMED source already contains of its own,
+   * whether to error (default), rewrite it into the FROM NAMED graph, or keep it as-is.
+   * This only has an effect when `dereferenceFromNamed` is enabled.
+   */
+  dereferenceFromNamedConflictMode: new ActionContextKey<DereferenceFromNamedConflictModeResolver>(
+    '@comunica/actor-init-query:dereferenceFromNamedConflictMode',
+  ),
 };
 
 export const KeysExpressionEvaluator = {
   extensionFunctionCreator: new ActionContextKey<AsyncExtensionFunctionCreator>(
     '@comunica/utils-expression-evaluator:extensionFunctionCreator',
   ),
+  /**
+   * Discovers the super type of a type unknown to the system.
+   * Changing this between evaluations requires a fresh `functionArgumentsCache`,
+   * as overload resolutions are cached without it.
+   */
   superTypeProvider: new ActionContextKey<ISuperTypeProvider>('@comunica/utils-expression-evaluator:superTypeProvider'),
+  /**
+   * Resolves `EXISTS` and `NOT EXISTS` expressions.
+   * When absent, the expression evaluator falls back to its query operation mediator.
+   */
+  existenceResolver: new ActionContextKey<ExistenceResolver>(
+    '@comunica/utils-expression-evaluator:existenceResolver',
+  ),
   defaultTimeZone: new ActionContextKey<ITimeZoneRepresentation>(
     '@comunica/utils-expression-evaluator:defaultTimeZone',
   ),
@@ -388,6 +421,13 @@ export const KeysQueryOperation = {
    */
   serviceSources: new ActionContextKey<Record<string, IQuerySourceWrapper>>(
     '@comunica/bus-query-operation:serviceSources',
+  ),
+  /**
+   * If set on a query source's own context, that source's dereferenced quads should have their
+   * graph component rewritten to this term.
+   */
+  sourceAsNamedGraph: new ActionContextKey<RDF.NamedNode>(
+    '@comunica/bus-query-operation:sourceAsNamedGraph',
   ),
 };
 
@@ -490,3 +530,22 @@ export const KeysStatistics = {
     '@comunica/statistic:intermediateResults',
   ),
 };
+
+/**
+ * Context keys that need their values different during source caching.
+ */
+export const CONTEXT_KEYS_QUERY_SOURCE_CACHE: ActionContextKey<any>[] = [
+  // Sources that are exposed under a named graph contain different data than the plain source.
+  KeysQueryOperation.sourceAsNamedGraph,
+  // Sources may not be used by queries that do not have the same credentials, or the same way of sending requests.
+  KeysHttp.auth,
+  KeysHttp.fetch,
+  KeysHttp.includeCredentials,
+  KeysHttpProxy.httpProxyHandler,
+  // Sources that may not read local files (such as SERVICE targets) must not be shared with sources that may.
+  KeysDereference.blockFileAccess,
+  // Sources that are dereferenced at another time contain different data.
+  KeysHttpMemento.datetime,
+  // Sources that do not follow links contain different data than sources that do.
+  KeysQuerySourceIdentify.traverse,
+];

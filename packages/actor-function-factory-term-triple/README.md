@@ -1,6 +1,6 @@
 # Comunica Term Function Triple Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-triple.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-triple)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-triple.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-triple)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)
