@@ -953,6 +953,49 @@ SELECT * WHERE {
         await expect(resultWithExtraFilter.execute()).resolves.toEqualBindingsStream(expectedResult);
       });
 
+      it('should handle a leftJoin expression on an optional subquery that can not be bound', async() => {
+        const store = new Store();
+        const xsdInteger = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
+        store.addQuads([
+          DF.quad(DF.namedNode('http://ex.org/a'), DF.namedNode('http://ex.org/id'), DF.literal('1', xsdInteger)),
+          DF.quad(DF.namedNode('http://ex.org/a'), DF.namedNode('http://ex.org/name'), DF.literal('a')),
+          DF.quad(DF.namedNode('http://ex.org/b'), DF.namedNode('http://ex.org/id'), DF.literal('2', xsdInteger)),
+          DF.quad(DF.namedNode('http://ex.org/b'), DF.namedNode('http://ex.org/name'), DF.literal('b')),
+          DF.quad(DF.namedNode('http://ex.org/b'), DF.namedNode('http://ex.org/name'), DF.literal('b2')),
+          DF.quad(DF.namedNode('http://ex.org/c'), DF.namedNode('http://ex.org/id'), DF.literal('3', xsdInteger)),
+        ]);
+
+        // The FILTER only shares ?id with the left side, and the GROUP BY subquery can not be bound,
+        // so this must be evaluated by a left join that evaluates the expression itself.
+        const result = <QueryBindings> await engine.query(`
+          PREFIX ex: <http://ex.org/>
+          SELECT ?s ?t ?c WHERE {
+            ?s ex:id ?id .
+            OPTIONAL {
+              { SELECT ?t (COUNT(*) AS ?c) WHERE { ?t ex:name ?n } GROUP BY ?t }
+              ?t ex:id ?id2 .
+              FILTER(?id = ?id2)
+            }
+          }
+          ORDER BY ?s`, { sources: [ store ]});
+
+        await expect(result.execute()).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://ex.org/a') ],
+            [ DF.variable('t'), DF.namedNode('http://ex.org/a') ],
+            [ DF.variable('c'), DF.literal('1', xsdInteger) ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://ex.org/b') ],
+            [ DF.variable('t'), DF.namedNode('http://ex.org/b') ],
+            [ DF.variable('c'), DF.literal('2', xsdInteger) ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://ex.org/c') ],
+          ]),
+        ]);
+      });
+
       it('should handle join with empty estimate cardinality', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -2624,7 +2667,7 @@ WHERE { }
             [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
             [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
           ]),
-        ]);
+        ], true);
       });
     });
 

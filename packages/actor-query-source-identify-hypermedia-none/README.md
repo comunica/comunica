@@ -38,3 +38,7 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).
+* `orderedStore`: If files must be loaded into an [rdf-stores](https://github.com/rubensworks/rdf-stores.js) store with ordered indexes (`GPSO`, `GPOS`, `GOSP`),
+  which keep their quads in the term order (see `compareTerms` in [`@comunica/utils-iterator`](https://github.com/comunica/comunica/tree/master/packages/utils-iterator)).
+  Scans of such a store report that order as `termOrder` in their metadata, and can skip ahead within it, which the merge join makes use of.
+  Defaults to `false`, in which case files are loaded into a default store, whose scans have no order.

@@ -32,6 +32,7 @@ IActorRdfJoinSelectivityOutput
     limitEntriesMin?: boolean,
     canHandleUndefs?: boolean,
     pushesBindingsToSource?: boolean,
+    canHandleExpression?: boolean,
   ) {
     super(
       { name: 'name', bus: new Bus({ name: 'bus' }), mediatorJoinSelectivity },
@@ -42,6 +43,7 @@ IActorRdfJoinSelectivityOutput
         limitEntriesMin,
         canHandleUndefs,
         pushesBindingsToSource,
+        canHandleExpression,
       },
     );
   }
@@ -1052,6 +1054,17 @@ IActorRdfJoinSelectivityOutput
       });
       instance = new Dummy(mediatorJoinSelectivity, 99);
       await expect(instance.test(action)).resolves.toFailTest(`name does not work with operationRequired.`);
+    });
+
+    it('should throw an error if the action has an expression', async() => {
+      instance = new Dummy(mediatorJoinSelectivity, 99);
+      await expect(instance.test({ ...action, expression: <any> {}}))
+        .resolves.toFailTest(`name can not handle join expressions.`);
+    });
+
+    it('should not throw an error if the action has an expression that can be handled', async() => {
+      instance = new Dummy(mediatorJoinSelectivity, 99, undefined, undefined, undefined, true);
+      await expect(instance.test({ ...action, expression: <any> {}})).resolves.toPassTest(expect.anything());
     });
 
     it('should throw an error if bindings are pushed into the target of a SERVICE SILENT clause', async() => {
