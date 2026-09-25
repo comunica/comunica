@@ -132,6 +132,58 @@ IQueryOperationResultBindings
           },
         )).resolves.toFailTest('Actor actor can only join entries with at least one common variable');
       });
+
+      it('should pass on non-overlapping variables with an expression', async() => {
+        const metadata = (variable: string): any => async() => ({
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 3 },
+          pageSize: 100,
+          requestTime: 10,
+          variables: [{ variable: DF.variable(variable), canBeUndef: false }],
+        });
+        const result = await actor.test(
+          {
+            type: 'optional',
+            entries: [
+              {
+                output: <any>{ type: 'bindings', metadata: metadata('a') },
+                operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o')),
+              },
+              {
+                output: <any>{ type: 'bindings', metadata: metadata('b') },
+                operation: FACTORY.createPattern(DF.variable('b'), DF.namedNode('p'), DF.namedNode('o')),
+              },
+            ],
+            expression: FACTORY.createTermExpression(DF.literal('true')),
+            context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          },
+        );
+        expect(result.isPassed()).toBe(true);
+      });
+    });
+
+    describe('getBindOperation', () => {
+      const right = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b'));
+
+      it('should return the right operation without an expression', () => {
+        expect(ActorRdfJoinOptionalBind.getBindOperation({
+          type: 'optional',
+          entries: [ <any>{}, <any>{ operation: right } ],
+          context,
+        })).toBe(right);
+      });
+
+      it('should return the right operation filtered by the expression', () => {
+        const expression = FACTORY.createTermExpression(DF.variable('a'));
+        const expected = algebraUtils.withMetadata(FACTORY.createFilter(right, expression));
+        expected.metadata.isHoistedLeftJoinFilter = true;
+        expect(ActorRdfJoinOptionalBind.getBindOperation({
+          type: 'optional',
+          entries: [ <any>{}, <any>{ operation: right } ],
+          expression,
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+        })).toEqual(expected);
+      });
     });
 
     describe('getJoinCoefficients', () => {
