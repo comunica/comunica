@@ -102,7 +102,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
                     // Also merge fields that were not explicitly accumulated
                     const returnMetadata = { ...sourceState.metadata, ...metadata, ...accumulatedMetadata };
                     // Probing for links is only worth its cost when there is an order at stake.
-                    if (isOrdered(returnMetadata) && await this.hasSourceLinks(returnMetadata)) {
+                    if (isOrdered(returnMetadata) && await this.hasSourceLinksCached(sourceState, returnMetadata)) {
                       dropOrder(returnMetadata);
                     }
                     resolve(returnMetadata);
@@ -155,6 +155,24 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    */
   protected async hasSourceLinks(_metadata: Record<string, any>): Promise<boolean> {
     return true;
+  }
+
+  /**
+   * {@link LinkedRdfSourcesAsyncRdfIterator#hasSourceLinks}, probed once per source state.
+   * A bind join creates an iterator per binding over the same source, and each of them asks for its
+   * metadata, so probing every time would resolve the same links over and over.
+   * This assumes that the links of a source do not depend on the operation it is queried with,
+   * which holds for the sources that report an order.
+   * @param sourceState The state of the source.
+   * @param metadata The metadata of the source.
+   */
+  protected hasSourceLinksCached(sourceState: ISourceState, metadata: Record<string, any>): Promise<boolean> {
+    let probe = SOURCE_LINK_PROBES.get(sourceState);
+    if (!probe) {
+      probe = this.hasSourceLinks(metadata);
+      SOURCE_LINK_PROBES.set(sourceState, probe);
+    }
+    return probe;
   }
 
   public override _read(count: number, done: () => void): void {
@@ -401,6 +419,11 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     return linkQueue.isEmpty() && !this.areIteratorsRunning();
   }
 }
+
+/**
+ * The results of {@link LinkedRdfSourcesAsyncRdfIterator#hasSourceLinks}, per source state.
+ */
+const SOURCE_LINK_PROBES = new WeakMap<ISourceState, Promise<boolean>>();
 
 /**
  * Whether metadata makes a claim about the order of its bindings.

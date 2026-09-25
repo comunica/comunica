@@ -166,6 +166,41 @@ describe('LinkedRdfSourcesAsyncRdfIterator order and seek', () => {
       expect(it.getProperty<MetadataBindings>('metadata')!.order).toBeUndefined();
     });
 
+    it('is probed for links once per source state', async() => {
+      const state: ISourceState = {
+        link: { url: 'P0' },
+        handledDatasets: {},
+        metadata: <any>{ page: 0, multi: false },
+        source: <any>{
+          queryBindings() {
+            const source = createSource([ 1, 3 ]);
+            source.setProperty('metadata', {
+              state: new MetadataValidationState(),
+              cardinality: { type: 'exact', value: 2 },
+              termOrder: [{ term: v, direction: 'asc' }],
+              variables: [{ variable: v, canBeUndef: false }],
+            });
+            return source;
+          },
+        },
+      };
+      let probes = 0;
+      class Counting extends Dummy {
+        protected override async hasSourceLinks(metadata: Record<string, any>): Promise<boolean> {
+          probes++;
+          return super.hasSourceLinks(metadata);
+        }
+      }
+      for (let i = 0; i < 3; i++) {
+        const pattern = AF.createPattern(v, v, v, v);
+        const it = new Counting(pattern, {}, new ActionContext(), { url: 'P0' }, 64, async() => state);
+        await expect(new Promise(resolve => it.getProperty('metadata', resolve)))
+          .resolves.toMatchObject({ termOrder: [{ term: v, direction: 'asc' }]});
+        it.destroy();
+      }
+      expect(probes).toBe(1);
+    });
+
     it('is absent when the sources declare none', async() => {
       const it = build([[ 1, 3, 5, 7 ]], { ordered: false });
       await expect(it.toArray()).resolves.toHaveLength(4);
