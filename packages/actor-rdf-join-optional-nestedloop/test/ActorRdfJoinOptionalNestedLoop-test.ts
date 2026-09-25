@@ -4,7 +4,9 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import { AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { ExpressionError } from '@comunica/utils-expression-evaluator';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -14,6 +16,7 @@ import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
+const FACTORY = new AlgebraFactory();
 
 describe('ActorRdfJoinOptionalNestedLoop', () => {
   let bus: any;
@@ -194,6 +197,187 @@ IActorRdfJoinSelectivityOutput
             [ DF.variable('b'), DF.literal('2') ],
           ]),
         ]);
+      });
+    });
+  });
+  describe('An ActorRdfJoinOptionalNestedLoop instance with an expression evaluator', () => {
+    let actor: ActorRdfJoinOptionalNestedLoop;
+    let evaluateAsEBV: jest.Mock;
+    let mediatorExpressionEvaluatorFactory: any;
+    const leftOperation = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('id'));
+    const expression = FACTORY.createTermExpression(DF.literal('true'));
+
+    function hoistedFilter(input: any): any {
+      const filter = algebraUtils.withMetadata(FACTORY.createFilter(input, expression));
+      filter.metadata.isHoistedLeftJoinFilter = true;
+      return filter;
+    }
+
+    function metadata(cardinality: number, variables: string[], extra: Record<string, any> = {}): () => Promise<any> {
+      return () => Promise.resolve({
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: cardinality },
+        variables: variables.map(name => ({ variable: DF.variable(name), canBeUndef: false })),
+        ...extra,
+      });
+    }
+
+    function makeAction(rightOperation: any, options: {
+      leftRequired?: true;
+      rightMetadataRequired?: boolean;
+      left?: RDF.Bindings[];
+      right?: RDF.Bindings[];
+    } = {}): IActionRdfJoin {
+      return {
+        type: 'optional',
+        entries: [
+          {
+            output: {
+              type: 'bindings',
+              bindingsStream: new ArrayIterator<RDF.Bindings>(options.left ?? [], { autoStart: false }),
+              metadata: metadata(2, [ 'a', 'id' ]),
+            },
+            operation: leftOperation,
+            operationRequired: options.leftRequired,
+          },
+          {
+            output: {
+              type: 'bindings',
+              bindingsStream: new ArrayIterator<RDF.Bindings>(options.right ?? [], { autoStart: false }),
+              metadata: metadata(3, [ 't', 'id2' ], options.rightMetadataRequired ? { operationRequired: true } : {}),
+            },
+            operation: rightOperation,
+            operationRequired: true,
+          },
+        ],
+        context,
+      };
+    }
+
+    const unbindable = (): any => hoistedFilter(FACTORY.createGroup(FACTORY.createNop(), [], []));
+
+    beforeEach(() => {
+      evaluateAsEBV = jest.fn(async(bindings: RDF.Bindings) =>
+        bindings.get('id')!.value === bindings.get('id2')!.value);
+      mediatorExpressionEvaluatorFactory = {
+        mediate: jest.fn(async() => ({ evaluateAsEBV })),
+      };
+      actor = new ActorRdfJoinOptionalNestedLoop({
+        name: 'actor',
+        bus,
+        mediatorJoinSelectivity: <any> { mediate: async() => ({ selectivity: 1 }) },
+        mediatorExpressionEvaluatorFactory,
+      });
+    });
+
+    describe('test', () => {
+      it('should not test without expression evaluator on operationRequired', async() => {
+        actor = new ActorRdfJoinOptionalNestedLoop({
+          name: 'actor',
+          bus,
+          mediatorJoinSelectivity: <any> { mediate: async() => ({ selectivity: 1 }) },
+        });
+        await expect(actor.test(makeAction(unbindable())))
+          .resolves.toFailTest('actor does not work with operationRequired.');
+      });
+
+      it('should test on a left join expression on an operation that can not be bound', async() => {
+        await expect(actor.test(makeAction(unbindable()))).resolves.toPassTest({
+          iterations: 6,
+          blockingItems: 0,
+          persistedItems: 0,
+          requestTime: 0,
+        });
+      });
+
+      it('should not test on a left join expression on an operation that can be bound', async() => {
+        await expect(actor.test(makeAction(hoistedFilter(
+          FACTORY.createPattern(DF.variable('t'), DF.namedNode('p'), DF.variable('id2')),
+        )))).resolves.toFailTest('actor only handles left join expressions on operations that can not be bound.');
+      });
+
+      it('should not test on a required left operation', async() => {
+        await expect(actor.test(makeAction(unbindable(), { leftRequired: true })))
+          .resolves.toFailTest('actor can only handle operationRequired for left join expressions.');
+      });
+
+      it('should not test on a right operation that is required via its metadata', async() => {
+        await expect(actor.test(makeAction(unbindable(), { rightMetadataRequired: true })))
+          .resolves.toFailTest('actor can only handle operationRequired for left join expressions.');
+      });
+
+      it('should not test on a required right operation that is not a left join filter', async() => {
+        await expect(actor.test(makeAction(FACTORY.createGroup(FACTORY.createNop(), [], []))))
+          .resolves.toFailTest('actor can only handle operationRequired for left join expressions.');
+      });
+
+      it('should not test on a required filter that is not a left join filter', async() => {
+        await expect(actor.test(makeAction(FACTORY.createFilter(FACTORY.createNop(), expression))))
+          .resolves.toFailTest('actor can only handle operationRequired for left join expressions.');
+      });
+    });
+
+    describe('run', () => {
+      const left = [
+        BF.bindings([[ DF.variable('a'), DF.literal('a1') ], [ DF.variable('id'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('a2') ], [ DF.variable('id'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('a'), DF.literal('a3') ], [ DF.variable('id'), DF.literal('3') ]]),
+      ];
+      const right = [
+        BF.bindings([[ DF.variable('t'), DF.literal('t1') ], [ DF.variable('id2'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('t'), DF.literal('t2') ], [ DF.variable('id2'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('t'), DF.literal('t2b') ], [ DF.variable('id2'), DF.literal('2') ]]),
+      ];
+
+      it('should keep joined bindings for which the expression holds, and unmatched left bindings', async() => {
+        const result = await actor.run(makeAction(unbindable(), { left, right }), undefined!);
+
+        await expect(result.bindingsStream).toEqualBindingsStream([
+          left[0].merge(right[0])!,
+          left[1].merge(right[1])!,
+          left[1].merge(right[2])!,
+          left[2],
+        ]);
+        expect(mediatorExpressionEvaluatorFactory.mediate).toHaveBeenCalledWith({ algExpr: expression, context });
+        await expect(result.metadata()).resolves.toEqual(expect.objectContaining({
+          cardinality: { type: 'estimate', value: 6 },
+        }));
+      });
+
+      it('should treat expression errors as false and log them', async() => {
+        const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
+        evaluateAsEBV.mockImplementation(async() => {
+          throw new ExpressionError('expression error');
+        });
+        const result = await actor.run(makeAction(unbindable(), { left, right }), undefined!);
+
+        await expect(result.bindingsStream).toEqualBindingsStream(left);
+        expect(logWarnSpy).toHaveBeenCalledWith(
+          context,
+          'Error occurred while evaluating a left join expression.',
+          expect.any(Function),
+        );
+        const logData = (<() => { error: Error }> logWarnSpy.mock.calls[0][2])();
+        expect(logData.error).toEqual(new ExpressionError('expression error'));
+      });
+
+      it('should emit other errors', async() => {
+        evaluateAsEBV.mockImplementation(async() => {
+          throw new Error('other error');
+        });
+        const result = await actor.run(makeAction(unbindable(), { left, right }), undefined!);
+
+        await expect(result.bindingsStream.toArray()).rejects.toThrow('other error');
+      });
+
+      it('should skip incompatible bindings', async() => {
+        const incompatibleRight = [
+          BF.bindings([[ DF.variable('a'), DF.literal('other') ], [ DF.variable('id2'), DF.literal('1') ]]),
+        ];
+        const result = await actor.run(makeAction(unbindable(), { left, right: incompatibleRight }), undefined!);
+
+        await expect(result.bindingsStream).toEqualBindingsStream(left);
+        expect(evaluateAsEBV).not.toHaveBeenCalled();
       });
     });
   });
