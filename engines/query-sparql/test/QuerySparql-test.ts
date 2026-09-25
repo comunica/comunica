@@ -2624,7 +2624,7 @@ WHERE { }
             [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
             [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
           ]),
-        ]);
+        ], true);
       });
     });
 
