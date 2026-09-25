@@ -5,7 +5,7 @@
   "scripts": {
     "jbr": "cross-env NODE_OPTIONS=--max-old-space-size=8192 jbr",
     "validate": "jbr validate",
-    "fetch-assets": "curl -s -L https://github.com/comunica/comunica-performance-assets/raw/ldbc-snb-assets/ldbc-snb-01.tar.gz?download= | tar --exclude=\".*\" -xz",
+    "fetch-assets": "curl -s -L https://github.com/comunica/comunica-performance-assets/raw/master/ldbc-snb-01.tar.gz?download= | tar --exclude=\".*\" -xz",
     "performance": "docker pull comunica/query-sparql-file:latest && jbr prepare && jbr run && psbr tex query combinations/combination_*/output --svg --logY --overrideCombinationLabels Current,Previous",
     "performance:ci": "npm run fetch-assets && jbr prepare -c 0 && jbr run -c 0 -f '^(?!interactive-complex-(3|9|14)$)'"
   },
