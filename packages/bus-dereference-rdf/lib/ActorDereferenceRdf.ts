@@ -27,7 +27,7 @@ export abstract class ActorDereferenceRdf extends
   /**
    * @param args -
    *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
-   *   \ @defaultNested {RDF dereferencing failed: none of the configured parsers were able to handle the media type ${action.handle.mediaType} for ${action.handle.url}} busFailMessage
+   *   \ @defaultNested {RDF dereferencing failed: none of the configured actors were able to dereference ${action.url}} busFailMessage
    */
   /* eslint-enable max-len */
   public constructor(args: IActorDereferenceRdfArgs) {
