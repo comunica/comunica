@@ -7,10 +7,11 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { ActionContext, passTestVoid } from '@comunica/core';
-import type { ComunicaDataFactory, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
+import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import { Algebra, AlgebraFactory, algebraTransformer, algebraUtils } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
+  doesShapeAcceptWholeServiceClause,
   passFullOperationToSource,
 } from '@comunica/utils-query-operation';
 
@@ -42,7 +43,14 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       };
     }
     return {
-      operation: this.assignExhaustive(algebraFactory, action.operation, sources, serviceSources),
+      operation: this.assignExhaustive(
+        algebraFactory,
+        action.operation,
+        sources,
+        serviceSources,
+        false,
+        await this.getWholeServiceClauses(action.operation, serviceSources, action.context),
+      ),
       // We only keep queryString in the context if we only have a single source that accepts the full operation.
       // In that case, the queryString can be sent to the source as-is.
       context: action.context
@@ -59,6 +67,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
    * @param sources The sources to assign.
    * @param serviceSources Mapping of SERVICE names to sources.
    * @param withinService If we are assigning sources within the body of a SERVICE clause.
+   * @param wholeServiceClauses SERVICE clauses in the operation that must be evaluated as a whole by their source.
    */
   public assignExhaustive(
     factory: AlgebraFactory,
@@ -66,6 +75,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
     sources: IQuerySourceWrapper[],
     serviceSources: Record<string, IQuerySourceWrapper>,
     withinService = false,
+    wholeServiceClauses: Set<Algebra.Service> = new Set(),
   ): Algebra.Operation {
     return algebraUtils.mapOperation(operation, {
       [Algebra.Types.PATTERN]: {
@@ -80,7 +90,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       },
       [Algebra.Types.SERVICE]: {
         preVisitor: () => ({ continue: false }),
-        transform: (serviceOp) => {
+        transform: (serviceOp, origServiceOp) => {
           if (serviceOp.name.termType === 'NamedNode') {
             let source = serviceSources[serviceOp.name.value];
             if (source) {
@@ -93,6 +103,9 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
                     // Replaces errors from the source by a single empty solution.
                     .set(KeysQueryOperation.silent, true),
                 };
+              }
+              if (wholeServiceClauses.has(origServiceOp)) {
+                return assignOperationSource(serviceOp, source);
               }
               const input = this.assignExhaustive(
                 factory,
@@ -142,5 +155,39 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
         preVisitor: () => ({ ignoreKeys: new Set([ 'delete', 'insert', 'metadata' ]) }),
       },
     });
+  }
+
+  /**
+   * Obtain the SERVICE clauses in the given operation that must be evaluated as a whole by their source.
+   * @param operation An operation.
+   * @param serviceSources Mapping of SERVICE names to sources.
+   * @param context The action context.
+   */
+  public async getWholeServiceClauses(
+    operation: Algebra.Operation,
+    serviceSources: Record<string, IQuerySourceWrapper>,
+    context: IActionContext,
+  ): Promise<Set<Algebra.Service>> {
+    const wholeServiceClauses = new Set<Algebra.Service>();
+    await algebraTransformer().visitNodeAsync(operation, {
+      [Algebra.Types.SERVICE]: {
+        preVisitor: () => ({ continue: false }),
+        visitor: async(serviceOp) => {
+          const source = serviceOp.name.termType === 'NamedNode' ? serviceSources[serviceOp.name.value] : undefined;
+          if (source) {
+            try {
+              const shape = await source.source
+                .getSelectorShape(source.context ? context.merge(source.context) : context);
+              if (doesShapeAcceptWholeServiceClause(shape, serviceOp)) {
+                wholeServiceClauses.add(serviceOp);
+              }
+            } catch {
+              // Ignore unreachable sources
+            }
+          }
+        },
+      },
+    });
+    return wholeServiceClauses;
   }
 }

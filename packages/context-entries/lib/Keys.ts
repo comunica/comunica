@@ -20,6 +20,8 @@ import type {
   ComunicaDataFactory,
   IStatisticBase,
   IDiscoverEventData,
+  ServiceExecutor,
+  ServiceExecutorCreator,
   PartialResult,
   ILink,
   DereferenceFromNamedConflictModeResolver,
@@ -245,6 +247,25 @@ export const KeysInitQuery = {
    */
   extensionFunctionsAlwaysPushdown: new ActionContextKey<boolean>(
     '@comunica/actor-init-query:extensionFunctionsAlwaysPushdown',
+  ),
+  /**
+   * Dictionary of custom SERVICE executors.
+   * Key is the IRI of the SERVICE target, and value is the executor implementation.
+   * SERVICE clauses with such a target are evaluated by the executor, instead of by querying the target.
+   *
+   * The callback-based serviceExecutorCreator context entry may be used instead, but not simultaneously.
+   */
+  serviceExecutors: new ActionContextKey<Record<string, ServiceExecutor>>(
+    '@comunica/actor-init-query:serviceExecutors',
+  ),
+  /**
+   * Creator of custom SERVICE executors for a given SERVICE target IRI.
+   * Undefined must be returned for targets that must be queried as regular sources.
+   *
+   * The dictionary-based serviceExecutors context entry may be used instead, but not simultaneously.
+   */
+  serviceExecutorCreator: new ActionContextKey<ServiceExecutorCreator>(
+    '@comunica/actor-init-query:serviceExecutorCreator',
   ),
   /**
    * Enables manipulation of the CLI arguments and their processing.

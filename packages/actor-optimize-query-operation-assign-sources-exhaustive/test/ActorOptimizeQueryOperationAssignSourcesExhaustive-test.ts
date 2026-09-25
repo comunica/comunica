@@ -1,6 +1,6 @@
 import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQuerySourceWrapper } from '@comunica/types';
+import type { FragmentSelectorShape, IQuerySourceWrapper, ServiceExecutor } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { getOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
@@ -38,6 +38,25 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
       }),
     },
   };
+  const shapeService: FragmentSelectorShape = {
+    type: 'operation',
+    operation: { operationType: 'type', type: Algebra.Types.SERVICE },
+    children: [{ type: 'operation', operation: { operationType: 'wildcard' }}],
+  };
+  const sourceService: IQuerySourceWrapper = <any> {
+    source: {
+      referenceValue: 'sourceService',
+      getSelectorShape: () => shapeService,
+    },
+  };
+  const sourceUnreachable: IQuerySourceWrapper = <any> {
+    source: {
+      referenceValue: 'sourceUnreachable',
+      getSelectorShape: () => Promise.reject(new Error('Unreachable source')),
+    },
+  };
+  const pattern = AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'));
+  const serviceExecutor: ServiceExecutor = async() => [];
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -157,6 +176,78 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource((<Algebra.Union><unknown>operationOut.patterns[0]).input[1])).toBe(sourcePattern);
         expect(getOperationSource((<Algebra.Union><unknown>operationOut.patterns[1]).input[0])).toBe(source1);
         expect(getOperationSource((<Algebra.Union><unknown>operationOut.patterns[1]).input[1])).toBe(sourcePattern);
+      });
+
+      it('should not globally assign operation to 1 source if a SERVICE clause has a custom executor', async() => {
+        const operationIn = AF.createJoin([
+          pattern,
+          AF.createService(pattern, DF.namedNode('sourceService')),
+        ]);
+        const { operation, context: contextOut } = await actor.run({
+          operation: operationIn,
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
+            .set(KeysQueryOperation.querySources, [ source1 ])
+            .set(KeysQueryOperation.serviceSources, { sourceService })
+            .set(KeysInitQuery.serviceExecutors, { sourceService: serviceExecutor })
+            .set(KeysInitQuery.queryString, 'abc'),
+        });
+        const operationOut = <Algebra.Join> operation;
+        expect(getOperationSource(operationOut)).toBeUndefined();
+        expect(getOperationSource(operationOut.input[0])).toBe(source1);
+        expect(operationOut.input[1].type).toEqual(Algebra.Types.SERVICE);
+        expect(getOperationSource(operationOut.input[1])).toBe(sourceService);
+        expect(getOperationSource((<Algebra.Service> operationOut.input[1]).input)).toBeUndefined();
+        expect(contextOut.get(KeysInitQuery.queryString)).toBeUndefined();
+      });
+
+      it('should assign SERVICE clauses evaluated as a whole next to the bodies of other SERVICE clauses', async() => {
+        const operationIn = AF.createJoin([
+          AF.createService(pattern, DF.namedNode('source1')),
+          AF.createService(pattern, DF.namedNode('sourceService')),
+        ]);
+        const { operation } = await actor.run({
+          operation: operationIn,
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
+            .set(KeysQueryOperation.querySources, [ source1 ])
+            .set(KeysQueryOperation.serviceSources, { source1, sourceService })
+            .set(KeysInitQuery.serviceExecutors, { sourceService: serviceExecutor }),
+        });
+        const operationOut = <Algebra.Join> operation;
+        expect(operationOut.input[0].type).toEqual(Algebra.Types.PATTERN);
+        expect(getOperationSource(operationOut.input[0])).toBe(source1);
+        expect(operationOut.input[1].type).toEqual(Algebra.Types.SERVICE);
+        expect(getOperationSource(operationOut.input[1])).toBe(sourceService);
+      });
+
+      it('should globally assign operation to 1 source if no SERVICE clause has a custom executor', async() => {
+        const operationIn = AF.createJoin([
+          pattern,
+          AF.createService(pattern, DF.namedNode('source1')),
+        ]);
+        const { operation: operationOut } = await actor.run({
+          operation: operationIn,
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
+            .set(KeysQueryOperation.querySources, [ source1 ])
+            .set(KeysQueryOperation.serviceSources, { source1 }),
+        });
+        expect(getOperationSource(operationOut)).toBe(source1);
+      });
+
+      it('should not request the shapes of SERVICE sources when globally assigning operation to 1 source', async() => {
+        const getSelectorShape = jest.fn(() => shapeService);
+        const sourceSpy: IQuerySourceWrapper = <any> { source: { getSelectorShape }};
+        const operationIn = AF.createJoin([
+          pattern,
+          AF.createService(pattern, DF.namedNode('sourceSpy')),
+        ]);
+        const { operation: operationOut } = await actor.run({
+          operation: operationIn,
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
+            .set(KeysQueryOperation.querySources, [ source1 ])
+            .set(KeysQueryOperation.serviceSources, { sourceSpy }),
+        });
+        expect(getOperationSource(operationOut)).toBe(source1);
+        expect(getSelectorShape).not.toHaveBeenCalled();
       });
 
       it('should keep the queryString for a single source', async() => {
@@ -315,6 +406,48 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource((<any> operationOut).input[1])).toBe(source1);
       });
 
+      it('for service with a known source that evaluates whole SERVICE clauses should assign the clause', async() => {
+        const operationIn = AF.createService(pattern, DF.namedNode('sourceService'));
+        const operationOut = actor.assignExhaustive(
+          AF,
+          operationIn,
+          [ source1 ],
+          { sourceService },
+          false,
+          new Set([ operationIn ]),
+        );
+        expect(operationOut.type).toEqual(Algebra.Types.SERVICE);
+        expect(getOperationSource(operationOut)).toBe(sourceService);
+        expect(getOperationSource((<Algebra.Service> operationOut).input)).toBeUndefined();
+      });
+
+      it('for silent service with a known whole-clause source should assign the clause', async() => {
+        const operationIn = AF.createService(pattern, DF.namedNode('sourceService'), true);
+        const operationOut = actor.assignExhaustive(
+          AF,
+          operationIn,
+          [ source1 ],
+          { sourceService },
+          false,
+          new Set([ operationIn ]),
+        );
+        expect(operationOut.type).toEqual(Algebra.Types.SERVICE);
+        expect(getOperationSource(operationOut)).toEqual({
+          source: sourceService.source,
+          context: new ActionContext({
+            [KeysInitQuery.lenient.name]: true,
+            [KeysQueryOperation.silent.name]: true,
+          }),
+        });
+      });
+
+      it('for service with a known source that is not evaluated as a whole should assign the body', async() => {
+        const operationIn = AF.createService(pattern, DF.namedNode('sourceService'));
+        const operationOut = actor.assignExhaustive(AF, operationIn, [ source1 ], { sourceService });
+        expect(operationOut.type).toEqual(Algebra.Types.PATTERN);
+        expect(getOperationSource(operationOut)).toBe(sourceService);
+      });
+
       it('for service with variable should not assign', async() => {
         source1.context = new ActionContext({ a: 'b' });
         const operationIn = AF.createService(
@@ -356,6 +489,83 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource(operationOut.delete![0])).not.toBe(source1);
         expect(getOperationSource(operationOut.insert![0])).not.toBe(source1);
         expect(getOperationSource(operationOut.where!)).toBe(source1);
+      });
+    });
+
+    describe('getWholeServiceClauses', () => {
+      const serviceSources = { source1, sourceService, sourceUnreachable };
+      const context = new ActionContext();
+
+      it('should be empty without SERVICE clauses', async() => {
+        const operation = AF.createJoin([ pattern, pattern ]);
+        await expect(actor.getWholeServiceClauses(operation, serviceSources, context)).resolves.toEqual(new Set());
+      });
+
+      it('should be empty for a SERVICE clause with a variable target', async() => {
+        const operation = AF.createService(pattern, DF.variable('s'));
+        await expect(actor.getWholeServiceClauses(operation, serviceSources, context)).resolves.toEqual(new Set());
+      });
+
+      it('should be empty for a SERVICE clause without a known source', async() => {
+        const operation = AF.createService(pattern, DF.namedNode('sourceOther'));
+        await expect(actor.getWholeServiceClauses(operation, serviceSources, context)).resolves.toEqual(new Set());
+      });
+
+      it('should be empty for a SERVICE clause of which the source is unreachable', async() => {
+        const operation = AF.createService(pattern, DF.namedNode('sourceUnreachable'));
+        await expect(actor.getWholeServiceClauses(operation, serviceSources, context)).resolves.toEqual(new Set());
+      });
+
+      it('should be empty for a SERVICE clause of which the source accepts the body', async() => {
+        const operation = AF.createService(pattern, DF.namedNode('source1'));
+        await expect(actor.getWholeServiceClauses(operation, serviceSources, context)).resolves.toEqual(new Set());
+      });
+
+      it('should contain all SERVICE clauses that are evaluated as a whole', async() => {
+        const serviceOp1 = AF.createService(pattern, DF.namedNode('sourceService'));
+        const serviceOp2 = AF.createService(AF.createBgp([ pattern ]), DF.namedNode('sourceService'));
+        const operation = AF.createProject(AF.createJoin([
+          serviceOp1,
+          AF.createService(pattern, DF.namedNode('source1')),
+          serviceOp2,
+        ]), []);
+        const wholeServiceClauses = await actor.getWholeServiceClauses(operation, serviceSources, context);
+        expect(wholeServiceClauses.size).toBe(2);
+        expect(wholeServiceClauses.has(serviceOp1)).toBe(true);
+        expect(wholeServiceClauses.has(serviceOp2)).toBe(true);
+      });
+
+      it('should not request the shapes of sources that no SERVICE clause targets', async() => {
+        const getSelectorShape = jest.fn(() => shapeService);
+        const sourceOther: IQuerySourceWrapper = <any> { source: { getSelectorShape }};
+        const serviceOp = AF.createService(pattern, DF.namedNode('sourceService'));
+        await expect(actor.getWholeServiceClauses(serviceOp, { sourceService, sourceOther }, context))
+          .resolves.toEqual(new Set([ serviceOp ]));
+        expect(getSelectorShape).not.toHaveBeenCalled();
+      });
+
+      it('should not request the shapes of the sources of nested SERVICE clauses', async() => {
+        const getSelectorShape = jest.fn(() => shapeService);
+        const sourceNested: IQuerySourceWrapper = <any> { source: { getSelectorShape }};
+        const operation = AF.createService(
+          AF.createService(pattern, DF.namedNode('sourceNested')),
+          DF.namedNode('source1'),
+        );
+        await expect(actor.getWholeServiceClauses(operation, { source1, sourceNested }, context))
+          .resolves.toEqual(new Set());
+        expect(getSelectorShape).not.toHaveBeenCalled();
+      });
+
+      it('should request shapes with the context of the source merged into the given context', async() => {
+        const getSelectorShape = jest.fn(() => shapeService);
+        const sourceWithContext: IQuerySourceWrapper = <any> {
+          source: { getSelectorShape },
+          context: new ActionContext({ a: 'b' }),
+        };
+        const serviceOp = AF.createService(pattern, DF.namedNode('sourceWithContext'));
+        await expect(actor.getWholeServiceClauses(serviceOp, { sourceWithContext }, new ActionContext({ c: 'd' })))
+          .resolves.toEqual(new Set([ serviceOp ]));
+        expect(getSelectorShape).toHaveBeenCalledWith(new ActionContext({ a: 'b', c: 'd' }));
       });
     });
   });
