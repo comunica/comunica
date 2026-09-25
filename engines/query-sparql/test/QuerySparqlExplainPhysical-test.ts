@@ -232,9 +232,7 @@ sources:
     join-inner(hash-def) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
       pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
       project (s) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
-        join cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
-          join-inner(single) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
-            pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
