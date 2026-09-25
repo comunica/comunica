@@ -11,6 +11,7 @@ import type {
   ICachePolicy,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
+import { seekBindingsStream } from '@comunica/utils-iterator';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator, BufferedIteratorOptions } from 'asynciterator';
@@ -32,6 +33,8 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   // eslint-disable-next-line unicorn/no-useless-undefined
   private accumulatedMetadata: Promise<MetadataBindings | undefined> = Promise.resolve(undefined);
   private preflightMetadata: Promise<MetadataBindings> | undefined;
+  private seekTarget: RDF.Bindings | undefined;
+  private sourcesStarted = 0;
 
   public constructor(
     operation: Algebra.Operation,
@@ -65,6 +68,22 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     }
   }
 
+  /**
+   * Skip ahead to the first binding that is not before the given one.
+   * Only meaningful while this iterator reports a `termOrder`, which it only does when a single source
+   * contributes to it. The call is a hint: sources that cannot skip keep producing every binding,
+   * and bindings already buffered here are still emitted, so the consumer must stay tolerant of
+   * bindings before the target.
+   * @param target The binding to skip to.
+   */
+  public seek(target: RDF.Bindings): void {
+    // Remembered so that a source started after this call also skips ahead.
+    this.seekTarget = target;
+    for (const iterator of this.currentIterators) {
+      seekBindingsStream(iterator, target);
+    }
+  }
+
   public override getProperty<P>(propertyName: string, callback?: (value: P) => void): P | undefined {
     if (propertyName === 'metadata' && !this.started) {
       // If the iterator has not started yet, forcefully fetch the metadata from the source without starting the
@@ -80,9 +99,13 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
                 metadata.state = new MetadataValidationState();
                 bindingsStream.destroy();
                 this.accumulateMetadata(sourceState.metadata, metadata)
-                  .then((accumulatedMetadata) => {
+                  .then(async(accumulatedMetadata) => {
                     // Also merge fields that were not explicitly accumulated
                     const returnMetadata = { ...sourceState.metadata, ...metadata, ...accumulatedMetadata };
+                    // Probing for links is only worth its cost when there is an order at stake.
+                    if (isOrdered(returnMetadata) && await this.hasSourceLinksCached(sourceState, returnMetadata)) {
+                      dropOrder(returnMetadata);
+                    }
                     resolve(returnMetadata);
                   })
                   .catch(() => {
@@ -123,6 +146,35 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * @param metadata The metadata of a source.
    */
   protected abstract getSourceLinks(metadata: Record<string, any>, startSource: ISourceState): Promise<ILink[]>;
+
+  /**
+   * Whether any links can be followed from a source with the given metadata.
+   * Unlike {@link LinkedRdfSourcesAsyncRdfIterator#getSourceLinks} this must leave no trace: it runs
+   * while the iterator is still lazy, so it may neither mark links as handled nor report them as
+   * discovered. Only used to decide whether an order may be reported, so the safe answer is `true`.
+   * @param _metadata The metadata of a source.
+   */
+  protected async hasSourceLinks(_metadata: Record<string, any>): Promise<boolean> {
+    return true;
+  }
+
+  /**
+   * {@link LinkedRdfSourcesAsyncRdfIterator#hasSourceLinks}, probed once per source state.
+   * A bind join creates an iterator per binding over the same source, and each of them asks for its
+   * metadata, so probing every time would resolve the same links over and over.
+   * This assumes that the links of a source do not depend on the operation it is queried with,
+   * which holds for the sources that report an order.
+   * @param sourceState The state of the source.
+   * @param metadata The metadata of the source.
+   */
+  protected hasSourceLinksCached(sourceState: ISourceState, metadata: Record<string, any>): Promise<boolean> {
+    let probe = SOURCE_LINK_PROBES.get(sourceState);
+    if (!probe) {
+      probe = this.hasSourceLinks(metadata);
+      SOURCE_LINK_PROBES.set(sourceState, probe);
+    }
+    return probe;
+  }
 
   public override _read(count: number, done: () => void): void {
     if (this.started) {
@@ -212,6 +264,10 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       const iterator = startSource.source
         .queryBindings(this.operation, this.getSourceContext(startSource), this.queryBindingsOptions);
       this.currentIterators.push(iterator);
+      this.sourcesStarted++;
+      if (this.seekTarget) {
+        seekBindingsStream(iterator, this.seekTarget);
+      }
       let receivedEndEvent = false;
       let receivedMetadata = false;
 
@@ -253,16 +309,13 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
               // Create new metadata state
               returnMetadata.state = new MetadataValidationState();
 
-              // Emit metadata, and invalidate any metadata that was set before
-              this.updateMetadata(returnMetadata);
-
-              // Invalidate any preflight metadata
-              if (this.preflightMetadata) {
-                this.preflightMetadata
-                  .then(metadataIn => metadataIn.state.invalidate())
-                  .catch(() => {
-                    // Ignore errors
-                  });
+              // An order only survives while a single source feeds this iterator: reading several
+              // sorted sources round-robin does not produce a sorted stream. Whether more sources
+              // follow is only known once the links are in, so emitting is held back until then,
+              // but only for a source that has an order to lose.
+              const ordered = isOrdered(returnMetadata);
+              if (!ordered) {
+                this.emitMetadata(returnMetadata);
               }
 
               // Determine next urls, which will eventually become a next-next source.
@@ -273,6 +326,13 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
                   const linkQueue = await this.getLinkQueue();
                   for (const nextUrl of nextUrls) {
                     linkQueue.push(nextUrl, startSource.link);
+                  }
+
+                  if (ordered) {
+                    if (this.sourcesStarted > 1 || !linkQueue.isEmpty()) {
+                      dropOrder(returnMetadata);
+                    }
+                    this.emitMetadata(returnMetadata);
                   }
 
                   receivedMetadata = true;
@@ -291,6 +351,20 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       });
     } catch (syncError: unknown) {
       this.destroy(<Error> syncError);
+    }
+  }
+
+  /**
+   * Publish metadata, and invalidate whatever was published before it.
+   */
+  protected emitMetadata(metadata: MetadataBindings): void {
+    this.updateMetadata(metadata);
+    if (this.preflightMetadata) {
+      this.preflightMetadata
+        .then(metadataIn => metadataIn.state.invalidate())
+        .catch(() => {
+          // Ignore errors
+        });
     }
   }
 
@@ -355,6 +429,28 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   protected isCloseable(linkQueue: ILinkQueue, _requireQueueEmpty: boolean): boolean {
     return linkQueue.isEmpty() && !this.areIteratorsRunning();
   }
+}
+
+/**
+ * The results of {@link LinkedRdfSourcesAsyncRdfIterator#hasSourceLinks}, per source state.
+ */
+const SOURCE_LINK_PROBES = new WeakMap<ISourceState, Promise<boolean>>();
+
+/**
+ * Whether metadata makes a claim about the order of its bindings.
+ */
+function isOrdered(metadata: MetadataBindings): boolean {
+  return Boolean(metadata.order ?? metadata.termOrder ?? metadata.availableOrders);
+}
+
+/**
+ * Withdraw a claim about the order of the bindings, and with it the ability to skip within that order.
+ */
+function dropOrder(metadata: MetadataBindings): void {
+  metadata.order = undefined;
+  metadata.termOrder = undefined;
+  metadata.availableOrders = undefined;
+  metadata.canSeek = undefined;
 }
 
 /**
