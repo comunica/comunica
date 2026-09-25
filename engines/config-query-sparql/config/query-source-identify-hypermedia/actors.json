@@ -27,8 +27,7 @@
     {
       "@id": "urn:comunica:default:query-source-identify-hypermedia/actors#none",
       "@type": "ActorQuerySourceIdentifyHypermediaNone",
-      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" },
-      "orderedStore": true
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }
