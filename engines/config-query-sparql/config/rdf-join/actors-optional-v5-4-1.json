@@ -47,7 +47,8 @@
     {
       "@id": "urn:comunica:default:rdf-join/actors#optional-nested-loop",
       "@type": "ActorRdfJoinOptionalNestedLoop",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorExpressionEvaluatorFactory": { "@id": "urn:comunica:default:expression-evaluator-factory/mediators#main" }
     }
   ]
 }

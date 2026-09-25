@@ -1,3 +1,4 @@
+import { ActorRdfJoinMultiBind } from '@comunica/actor-rdf-join-inner-multi-bind';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
@@ -5,7 +6,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IJoinEntry, IQueryOperationResult } from '@comunica/types';
-import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils, inScopeVariables } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 
 /**
@@ -28,17 +29,21 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 
+    // If we have an expression in the left join that can be pushed into the right-hand operation,
+    // we attach the expression to the right-hand operation, and enforce a bind-join.
+    // Otherwise, the expression is passed to the join bus, to be evaluated on joined bindings.
+    const expression = operationOriginal.expression;
+    const pushExpression = Boolean(expression) && ActorRdfJoinMultiBind
+      .canBindWithOperation(operationOriginal.input[1], inScopeVariables(operationOriginal.input[0]));
+
     // Delegate to join bus
     const entries: IJoinEntry[] = (await Promise.all(operationOriginal.input
       .map(async(subOperation, index) => {
         const output = getSafeBindings(await this.mediatorQueryOperation.mediate({ operation: subOperation, context }));
 
-        // If we have an expression in the left join,
-        // we attach the expression to the right-hand operation,
-        // and enforce a bind-join.
-        if (operationOriginal.expression && index === 1) {
+        if (pushExpression && index === 1) {
           const filterOperation =
-            algebraUtils.withMetadata(algebraFactory.createFilter(subOperation, operationOriginal.expression));
+            algebraUtils.withMetadata(algebraFactory.createFilter(subOperation, expression!));
           filterOperation.metadata.isHoistedLeftJoinFilter = true;
           return {
             output,
@@ -53,7 +58,12 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         };
       })));
 
-    return await this.mediatorJoin.mediate({ type: 'optional', entries, context });
+    return await this.mediatorJoin.mediate({
+      type: 'optional',
+      entries,
+      context,
+      ...expression && !pushExpression ? { expression } : {},
+    });
   }
 }
 

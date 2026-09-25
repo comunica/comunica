@@ -1,4 +1,3 @@
-import { ActorRdfJoinMultiBind } from '@comunica/actor-rdf-join-inner-multi-bind';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type {
   IActionRdfJoin,
@@ -10,10 +9,10 @@ import {
   ActorRdfJoin,
 } from '@comunica/bus-rdf-join';
 import type { TestResult } from '@comunica/core';
-import { failTest, passTestWithSideData } from '@comunica/core';
+import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, IActionContext, IExpressionEvaluator, IJoinEntry } from '@comunica/types';
-import { Algebra, inScopeVariables } from '@comunica/utils-algebra';
+import type { Bindings, BindingsStream, IActionContext, IExpressionEvaluator } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { NestedLoopJoin } from 'asyncjoin';
 
@@ -29,26 +28,14 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
       physicalName: 'nested-loop',
       limitEntries: 2,
       canHandleUndefs: true,
-      canHandleOperationRequired: Boolean(args.mediatorExpressionEvaluatorFactory),
+      canHandleExpression: Boolean(args.mediatorExpressionEvaluatorFactory),
     });
     this.mediatorExpressionEvaluatorFactory = args.mediatorExpressionEvaluatorFactory;
   }
 
-  /**
-   * Get the left join expression that was attached to the given (right) join entry, if any.
-   * @param entry A join entry.
-   */
-  public static getLeftJoinExpression(entry: IJoinEntry): Algebra.Expression | undefined {
-    if (entry.operationRequired && entry.operation.type === Algebra.Types.FILTER &&
-      entry.operation.metadata?.isHoistedLeftJoinFilter) {
-      return (<Algebra.Filter> entry.operation).expression;
-    }
-  }
-
   public async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
-    const expression = ActorRdfJoinOptionalNestedLoop.getLeftJoinExpression(action.entries[1]);
-    const bindingsStream = expression ?
-      await this.joinWithExpression(action, expression) :
+    const bindingsStream = action.expression ?
+      await this.joinWithExpression(action, action.expression) :
       new NestedLoopJoin<Bindings, Bindings, Bindings>(
         action.entries[0].output.bindingsStream,
         action.entries[1].output.bindingsStream,
@@ -74,7 +61,7 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
    * Left join in which joined bindings are only kept if the expression evaluates to true,
    * and left bindings without such joined bindings are kept as-is.
    * @param action The join action.
-   * @param expression The left join expression.
+   * @param expression The join expression.
    */
   protected async joinWithExpression(action: IActionRdfJoin, expression: Algebra.Expression):
   Promise<BindingsStream> {
@@ -122,7 +109,7 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
       return await evaluator.evaluateAsEBV(bindings);
     } catch (error: unknown) {
       if (isExpressionError(<Error> error)) {
-        this.logWarn(context, 'Error occurred while evaluating a left join expression.', () => ({ error }));
+        this.logWarn(context, 'Error occurred while evaluating a join expression.', () => ({ error }));
         return false;
       }
       throw error;
@@ -134,20 +121,6 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
     sideData: IActorRdfJoinTestSideData,
   ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
     const { metadatas } = sideData;
-
-    // Only left join expressions on operations that bind joins can not handle are supported here
-    if (action.entries.some((entry, i) => ActorRdfJoin.isOperationRequired(entry, metadatas[i]))) {
-      if (ActorRdfJoin.isOperationRequired(action.entries[0], metadatas[0]) ||
-        Boolean(metadatas[1].operationRequired) ||
-        !ActorRdfJoinOptionalNestedLoop.getLeftJoinExpression(action.entries[1])) {
-        return failTest(`${this.name} can only handle operationRequired for left join expressions.`);
-      }
-      if (ActorRdfJoinMultiBind
-        .canBindWithOperation(action.entries[1].operation, inScopeVariables(action.entries[0].operation))) {
-        return failTest(`${this.name} only handles left join expressions on operations that can not be bound.`);
-      }
-    }
-
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     return passTestWithSideData({
@@ -163,7 +136,7 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
 export interface IActorRdfJoinOptionalNestedLoopArgs extends IActorRdfJoinArgs {
   /**
    * An optional mediator for creating expression evaluators.
-   * If set, left join expressions on operations that can not be bound are supported.
+   * If set, join actions with an expression are supported.
    */
   mediatorExpressionEvaluatorFactory?: MediatorExpressionEvaluatorFactory;
 }
