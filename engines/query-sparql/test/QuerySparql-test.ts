@@ -1156,7 +1156,7 @@ WHERE {
     sh:select ?query .
 } ORDER BY ?sq`, {
           sources: [{ type: 'file', value: 'https://lov.linkeddata.es/dataset/lov/sparql' }],
-        })).rejects.toThrow('RDF parsing failed');
+        })).rejects.toThrow('Could not determine the media type of https://lov.linkeddata.es/dataset/lov/sparql from its content type (text/plain;charset=UTF-8) or the extension of its URL');
       });
 
       it('on the LOV SPARQL service description with property paths (2)', async() => {
@@ -1170,7 +1170,7 @@ WHERE {
     sh:select|sh:ask|sh:construct|sh:describe ?query .
 } ORDER BY ?sq`, {
           sources: [{ type: 'file', value: 'https://lov.linkeddata.es/dataset/lov/sparql' }],
-        })).rejects.toThrow('RDF parsing failed');
+        })).rejects.toThrow('Could not determine the media type of https://lov.linkeddata.es/dataset/lov/sparql from its content type (text/plain;charset=UTF-8) or the extension of its URL');
       });
 
       it('should time out slow SPARQL service description requests and continue processing', async() => {
