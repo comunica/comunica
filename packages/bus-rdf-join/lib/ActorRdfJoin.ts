@@ -463,10 +463,11 @@ TS
       }
     }
 
-    // This actor only works with common variables
+    // This actor only works with common variables, unless entries are connected through a required operation
+    // or a join expression.
     if (this.requiresVariableOverlap &&
       (overlappingVariables ?? ActorRdfJoin.overlappingVariables(metadatas)).length === 0 &&
-      !someOperationRequired) {
+      !someOperationRequired && !action.expression) {
       return failTest(`Actor ${this.name} can only join entries with at least one common variable`);
     }
 
