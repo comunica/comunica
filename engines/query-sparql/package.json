@@ -289,6 +289,7 @@
     "@comunica/actor-rdf-join-inner-multi-bind": "^5.4.0",
     "@comunica/actor-rdf-join-inner-multi-bind-source": "^5.4.0",
     "@comunica/actor-rdf-join-inner-multi-empty": "^5.4.0",
+    "@comunica/actor-rdf-join-inner-multi-leapfrog": "^5.4.0",
     "@comunica/actor-rdf-join-inner-multi-smallest": "^5.4.0",
     "@comunica/actor-rdf-join-inner-multi-smallest-filter-bindings": "^5.4.0",
     "@comunica/actor-rdf-join-inner-nestedloop": "^5.4.0",
