@@ -484,13 +484,15 @@ export const inScopeVariables: typeof algebraUtils.inScopeVariables =
     algebraUtils.inScopeVariables(op, (startObject, nodeCallBacks) =>
       visitor(startObject, keepIgnoringMetadata(nodeCallBacks)));
 
-type NodeCallBacks = { preVisitor?: (op: any) => VisitContext };
+type NodeCallBacks = { preVisitor?: (op: object) => VisitContext };
 
 /**
  * Wrap the pre-visitors in the given callbacks, so that the `ignoreKeys` they return keep including `metadata`.
  * Metadata refers to sources and actors, which are not part of the algebra and can contain cycles.
  * @param nodeCallBacks Callbacks for visiting operations, keyed by operation type.
  * @return The wrapped callbacks.
+ * TODO: this is not needed and unwanted. If someone want to enter metadata, they should be able to.
+ *   Comunica actors know metadata is present and should ignore if they provide
  */
 function keepIgnoringMetadata<T extends Record<string, NodeCallBacks | undefined>>(nodeCallBacks: T): T {
   return <T> Object.fromEntries(Object.entries(nodeCallBacks).map(([ type, callbacks ]) => {

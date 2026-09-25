@@ -211,7 +211,7 @@ function isStandardSparqlFunction(iri: string): boolean {
   return /^https?:\/\/www\.w3\.org\//u.test(iri);
 }
 
-function isInternalOperation(operation: Algebra.Operation): boolean {
+function isInternalOperation(operation: Algebra.Operation): operation is Algebra.InternalComunicaOperations {
   return Object.values<string>(TypesComunica).includes(operation.type);
 }
 
@@ -230,7 +230,7 @@ function containsUnsupportedInternalOperation(
 ): boolean {
   let found = false;
   const callbacks = {
-    preVisitor: (subOperation: Algebra.Operation) => {
+    preVisitor: (subOperation: Algebra.InternalComunicaOperations) => {
       if (!doesShapeAcceptOperation(shape, subOperation, options)) {
         found = true;
         return { shortcut: true };

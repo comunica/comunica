@@ -27,7 +27,7 @@ export function containsCallerResolvedExistence(operation: Algebra.Operation, co
           found = true;
           return { shortcut: true };
         }
-        return { shortcut: false };
+        return {};
       },
     },
   });
