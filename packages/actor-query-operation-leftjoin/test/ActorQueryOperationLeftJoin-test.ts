@@ -1,8 +1,7 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import type { IActionContext, IJoinEntry } from '@comunica/types';
-import type { Algebra } from '@comunica/utils-algebra';
-import { AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import {
   getMockEEActionContext,
@@ -177,13 +176,34 @@ describe('ActorQueryOperationLeftJoin', () => {
       ]);
     });
 
+    it('should pass expressions to the join bus', async() => {
+      const expression = AF.createTermExpression(DF.literal('nonemptystring'));
+      const left = AF.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b'));
+      const right = AF.createGroup(AF.createNop(), [], []);
+      const op: any = { operation: { type: 'leftjoin', input: [ left, right ], expression }, context };
+      await actor.run(op, undefined);
+
+      expect(mediatorJoin.mediate).toHaveBeenCalledWith({
+        context: expect.anything(),
+        type: 'optional',
+        entries: [
+          {
+            output: expect.anything(),
+            operation: left,
+          },
+          {
+            output: expect.anything(),
+            operation: right,
+          },
+        ],
+        expression,
+      });
+    });
+
     it('should correctly handle falsy expressions', async() => {
       const expression = AF.createTermExpression(DF.literal(''));
       const op: any = { operation: { type: 'leftjoin', input: [{}, {}], expression }, context };
       const output = getSafeBindings(await actor.run(op, undefined));
-
-      const expectedFilterOperation = algebraUtils.withMetadata(AF.createFilter(<Algebra.Operation>{}, expression));
-      expectedFilterOperation.metadata.isHoistedLeftJoinFilter = true;
 
       expect(mediatorJoin.mediate).toHaveBeenCalledWith({
         context: expect.anything(),
@@ -195,10 +215,10 @@ describe('ActorQueryOperationLeftJoin', () => {
           },
           {
             output: expect.anything(),
-            operation: expectedFilterOperation,
-            operationRequired: true,
+            operation: {},
           },
         ],
+        expression,
       });
       await expect(output.bindingsStream).toEqualBindingsStream([
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),

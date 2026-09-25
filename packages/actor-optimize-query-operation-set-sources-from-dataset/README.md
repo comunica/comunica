@@ -2,9 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-optimize-query-operation-set-sources-from-dataset.svg)](https://www.npmjs.com/package/@comunica/actor-optimize-query-operation-set-sources-from-dataset)
 
-A comunica Set Sources From Dataset Optimize Query Operation Actor.
-
-This actor appends the IRIs of the query's `FROM` and `FROM NAMED` clauses as sources to the context,
+An [Optimize Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation) actor
+that appends the IRIs of the query's `FROM` and `FROM NAMED` clauses as sources to the context,
 and removes the dataset clauses from the query afterwards.
 IRIs from `FROM NAMED` clauses are tagged so that their data is exposed under the named graph of that IRI,
 while IRIs from `FROM` clauses are queried as regular sources.
