@@ -26,6 +26,7 @@
   },
   "bin": {
     "depcheckTask": "./bin/depcheckTask.js",
+    "readme-check": "./bin/readme-check.js",
     "test-config-compat": "./bin/test-config-compat.js"
   },
   "files": [
