@@ -299,7 +299,8 @@ jobs:
 
   performance:
     name: Performance benchmarks
-    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')
+    # Feature branches are benchmarked by their pull request only, as their pushes also trigger a pull_request run.
+    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/next')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
