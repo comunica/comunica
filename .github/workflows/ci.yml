@@ -524,7 +524,7 @@ jobs:
           name: performance-benchmark-base-ldbc-snb-file
           path: base/performance/benchmark-ldbc-snb-file/combinations/combination_0/output/
       - name: Process benchmark detailed results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File --total false --detailed true --name ghbench-detail.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File --total false --detailed true --failures --name ghbench-detail.json
       - name: Determine base commit benchmark results
         # Benchmarks that are new in the pull request have no base results
         run: |
@@ -537,7 +537,7 @@ jobs:
           echo "BASE_BENCHMARK_DIRS=$dirs" >> $GITHUB_ENV
           echo "BASE_BENCHMARK_LABELS=$labels" >> $GITHUB_ENV
       - name: Process base commit benchmark detailed results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench $BASE_BENCHMARK_DIRS --overrideCombinationLabels $BASE_BENCHMARK_LABELS --total false --detailed true --name ghbench-base-detail.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench $BASE_BENCHMARK_DIRS --overrideCombinationLabels $BASE_BENCHMARK_LABELS --total false --detailed true --failures --name ghbench-base-detail.json
       - name: Assemble the comparison comment
         # Posted by the performance-comment workflow, as this job
         # receives a read-only GITHUB_TOKEN on pull requests from forks.
@@ -563,34 +563,57 @@ jobs:
                   else ($current * 100 / $previous | round)
                     | "\(. / 100 | floor).\(. % 100 | tostring | if length == 1 then "0\(.)" else . end)"
                   end;
-                # Per-instantiation error flags, as listed by psbr in the extra field
-                def errors: [ .extra // "" | scan("Error: \\[([^\\]]*)\\]") ][0][0] // "" | split(",");
-                def failures: errors | map(select(. == "true")) | length;
-                # Queries that failed for all instantiations are omitted by recent psbr versions, and 0 in older ones
-                def ok: . != null and failures == 0;
-                def cell($hasSuite):
-                  if . == null then (if $hasSuite then "failed or missing" else "" end)
-                  elif failures > 0 and failures == (errors | length) then "failed"
-                  elif failures > 0 then "`\(.value)` \(.unit) (\(failures) failed)"
-                  else "`\(.value)` \(.unit)"
-                  end;
+                def isFailures: .name | endswith(" - failed queries");
                 def suite: .name | split(" - ")[0];
                 def query: .name | split(" - ")[1:] | join(" - ");
-                ($headResults[0] | INDEX(.name)) as $head
-                | ($baseResults[0] | INDEX(.name)) as $base
+                # Per-instantiation error flags, as listed by psbr in the extra field
+                def errors: [ .extra // "" | scan("Error: \\[([^\\]]*)\\]") ][0][0] // "" | split(",");
+                # Failed and total instantiations per query of one side, as { name: { failed, count } }.
+                # psbr omits queries that failed for all instantiations, and reports them in its failed queries entries.
+                def failures:
+                  (map(select(isFailures) | (.name | sub(" - failed queries$"; "")) as $suite
+                    | .extra | select(. != "None") | split("; ")[]
+                    | capture("^(?<query>.*): (?<failed>[0-9]+)/(?<count>[0-9]+) failed$")
+                    | { key: "\($suite) - \(.query)", value: { failed: (.failed | tonumber), count: (.count | tonumber) } })
+                  + map(select(isFailures | not) | { key: .name, value: { failed: (errors | map(select(. == "true")) | length), count: (errors | length) } }))
+                  | reduce .[] as $entry ({}; .[$entry.key] //= $entry.value);
+                # One side of a query: its time (null when all instantiations failed), and its failures
+                def side($times; $failures; $name):
+                  if $times[$name] == null and $failures[$name] == null then null
+                  else { value: (if ($failures[$name].failed // 0) > 0 and $failures[$name].failed == $failures[$name].count then null else $times[$name].value end), unit: "ms", failed: ($failures[$name].failed // 0), count: ($failures[$name].count // 0) }
+                  end;
+                def ok: . != null and .failed == 0;
+                def failing: . != null and .failed > 0;
+                def cell($hasSuite):
+                  if . == null then (if $hasSuite then "missing" else "" end)
+                  elif .value == null then "failed"
+                  elif .failed > 0 then "`\(.value)` \(.unit) (\(.failed) failed)"
+                  else "`\(.value)` \(.unit)"
+                  end;
+                ($headResults[0] | map(select(isFailures | not)) | INDEX(.name)) as $headTimes
+                | ($baseResults[0] | map(select(isFailures | not)) | INDEX(.name)) as $baseTimes
+                | ($headResults[0] | failures) as $headFailures
+                | ($baseResults[0] | failures) as $baseFailures
                 | ($headResults[0] | map(suite)) as $headSuites
                 | ($baseResults[0] | map(suite)) as $baseSuites
-                | ($headResults[0] + ($baseResults[0] | map(select($head[.name] == null))))
-                | map({ suite: suite, query: query, name, head: $head[.name], base: $base[.name] }) as $rows
+                | ([ $headResults[0][], $baseResults[0][] | select(isFailures | not) | .name ] + ($headFailures | keys_unsorted) + ($baseFailures | keys_unsorted)
+                  | reduce .[] as $name ([]; if any(.[]; . == $name) then . else . + [ $name ] end)) as $names
+                | ($names | map({
+                    suite: split(" - ")[0],
+                    query: split(" - ")[1:] | join(" - "),
+                    name: .,
+                    head: side($headTimes; $headFailures; .),
+                    base: side($baseTimes; $baseFailures; .),
+                  })) as $rows
                 | ($rows | reduce .[].suite as $suite ([]; if any(.[]; . == $suite) then . else . + [ $suite ] end)) as $suites
                 | if $mode == "failures"
                   then
                     # Queries with failures per side, for suites that both sides ran
                     ($rows | map(. as $row | select(any($headSuites[]; . == $row.suite) and any($baseSuites[]; . == $row.suite)))) as $compared
                     | [
-                        [ ":warning: Queries failing or missing in this pull request, but not on the base", ($compared | map(select((.head | ok | not) and (.base | ok)))) ],
-                        [ ":white_check_mark: Queries failing or missing on the base, but not in this pull request", ($compared | map(select((.head | ok) and (.base | ok | not)))) ],
-                        [ ":x: Queries failing on both sides", ($compared | map(select((.head | ok | not) and (.base | ok | not)))) ]
+                        [ ":warning: Queries failing in this pull request, but not on the base", ($compared | map(select((.head | failing) and (.base | failing | not)))) ],
+                        [ ":white_check_mark: Queries failing on the base, but not in this pull request", ($compared | map(select((.head | failing | not) and (.base | failing)))) ],
+                        [ ":x: Queries failing on both sides", ($compared | map(select((.head | failing) and (.base | failing)))) ]
                       ]
                     | map(select(.[1] != []) | "\(.[0]):\n" + (.[1] | group_by(.suite) | map("- `\(.[0].suite)`: \(map(.query) | join(", "))") | join("\n")))
                     | join("\n\n")
@@ -605,8 +628,11 @@ jobs:
                             | ($suiteRows | map(select((.head | ok) and (($hasBase | not) or (.base | ok))))) as $included
                             | ($included | map(.head.value) | add // 0) as $headTotal
                             | ($included | map(.base.value) | add // 0) as $baseTotal
-                            | ([ "`\($suite)`", "`\($headTotal)` ms" ]
-                              + if $hasBase then [ "`\($baseTotal)` ms", "`\(ratio($headTotal; $baseTotal))`" ] else [ "", "" ] end
+                            | ([ "`\($suite)`", (if $hasBase and $included == [] then "" else "`\($headTotal)` ms" end) ]
+                              + if ($hasBase | not) then [ "", "" ]
+                                elif $included == [] then [ "", "n/a" ]
+                                else [ "`\($baseTotal)` ms", "`\(ratio($headTotal; $baseTotal))`" ]
+                                end
                               | row),
                               ($suiteRows - $included | map(.query) | select(. != [])
                                 | "\n`\($suite)` totals exclude queries that failed or are missing on either side: \(join(", "))")))
