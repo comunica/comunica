@@ -4,7 +4,10 @@
 export interface IGhbenchEntry {
   name: string;
   unit: string;
-  value: number;
+  /**
+   * The time, or null if the query was not executed.
+   */
+  value: number | null;
   extra?: string;
 }
 
@@ -103,13 +106,15 @@ export function getRows(headEntries: IGhbenchEntry[], baseEntries: IGhbenchEntry
   const headFailures = getFailures(headEntries);
   const baseFailures = getFailures(baseEntries);
   const names = new Set([ ...headTimes.keys(), ...baseTimes.keys(), ...headFailures.keys(), ...baseFailures.keys() ]);
-  return [ ...names ].map(name => ({
-    suite: getSuite(name),
-    query: getQuery(name),
-    name,
-    head: getSide(headTimes, headFailures, name),
-    base: getSide(baseTimes, baseFailures, name),
-  }));
+  return [ ...names ]
+    .map(name => ({
+      suite: getSuite(name),
+      query: getQuery(name),
+      name,
+      head: getSide(headTimes, headFailures, name),
+      base: getSide(baseTimes, baseFailures, name),
+    }))
+    .filter(row => row.head !== undefined || row.base !== undefined);
 }
 
 function getSide(
@@ -122,10 +127,14 @@ function getSide(
   if (!failure) {
     return undefined;
   }
-  const time = times.get(name);
+  const value = times.get(name)?.value ?? undefined;
+  // Queries that were not executed have no time and no failures
+  if (failure.failed === 0 && value === undefined) {
+    return undefined;
+  }
   const allFailed = failure.failed > 0 && failure.failed === failure.count;
   return {
-    value: time && !allFailed ? time.value : undefined,
+    value: allFailed ? undefined : value,
     unit: 'ms',
     failed: failure.failed,
     count: failure.count,
