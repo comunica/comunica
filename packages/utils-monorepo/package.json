@@ -26,6 +26,7 @@
   },
   "bin": {
     "depcheckTask": "./bin/depcheckTask.js",
+    "performance-comparison": "./bin/performance-comparison.js",
     "readme-check": "./bin/readme-check.js",
     "test-config-compat": "./bin/test-config-compat.js"
   },

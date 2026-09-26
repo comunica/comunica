@@ -33,6 +33,31 @@ describe('System test: QuerySparql', () => {
     engine = new QueryEngine();
   });
 
+  /**
+   * Create a fetch function that exposes each given store as a SPARQL endpoint.
+   * @param endpoints A mapping from endpoint URLs to the stores they answer queries over.
+   * @return A fetch function that answers the queries and service description requests of these endpoints.
+   */
+  function createSparqlEndpointsFetch(endpoints: Record<string, RdfStore>): typeof fetch {
+    return async(input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+      const url = new URL(input instanceof Request ? input.url : input);
+      const query = url.searchParams.get('query') ??
+        (init?.body ? new URLSearchParams(String(init.body)).get('query') : null);
+      // Requests without a query are service description lookups
+      if (!query) {
+        return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
+      }
+      const { data } = await engine.resultToString(
+        await engine.query(query, { sources: [ endpoints[`${url.origin}${url.pathname}`] ]}),
+        'application/sparql-results+json',
+      );
+      return new Response(
+        await stringifyStream(data),
+        { status: 200, headers: { 'content-type': 'application/sparql-results+json' }},
+      );
+    };
+  }
+
   describe('instantiated multiple times', () => {
     it('should contain different actors', () => {
       const engine2 = new QueryEngine();
@@ -1931,6 +1956,65 @@ SELECT ?option WHERE {
             [ DF.variable('o'), DF.literal('s2') ],
           ]),
         ]);
+      });
+
+      it('should handle zero-or-more path with variable subject and object over multiple SPARQL endpoints', async() => {
+        // An earlier test leaves rate limiting of example.org behind
+        await engine.invalidateHttpCache();
+        const endpoint1 = 'http://example.org/nodes1/sparql';
+        const endpoint2 = 'http://example.org/nodes2/sparql';
+        const store1 = RdfStore.createDefault();
+        store1.addQuad(DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p'), DF.namedNode('ex:b')));
+        store1.addQuad(DF.quad(DF.namedNode('ex:d'), DF.namedNode('ex:p'), DF.namedNode('ex:e')));
+        const store2 = RdfStore.createDefault();
+        store2.addQuad(DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:p'), DF.namedNode('ex:c')));
+
+        const bindingsStream = await engine.queryBindings(`
+        SELECT ?s ?o WHERE {
+          ?s <ex:p>* ?o .
+        }`, {
+          sources: [ endpoint1, endpoint2 ],
+          fetch: createSparqlEndpointsFetch({ [endpoint1]: store1, [endpoint2]: store2 }),
+        });
+
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:a') ],
+            [ DF.variable('o'), DF.namedNode('ex:a') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:a') ],
+            [ DF.variable('o'), DF.namedNode('ex:b') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:a') ],
+            [ DF.variable('o'), DF.namedNode('ex:c') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:b') ],
+            [ DF.variable('o'), DF.namedNode('ex:b') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:b') ],
+            [ DF.variable('o'), DF.namedNode('ex:c') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:c') ],
+            [ DF.variable('o'), DF.namedNode('ex:c') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:d') ],
+            [ DF.variable('o'), DF.namedNode('ex:d') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:d') ],
+            [ DF.variable('o'), DF.namedNode('ex:e') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:e') ],
+            [ DF.variable('o'), DF.namedNode('ex:e') ],
+          ]),
+        ], true);
       });
     });
 
@@ -3849,6 +3933,36 @@ CONSTRUCT {
 
       // The inner SELECT DISTINCT should have been optimized
       expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not push DistinctTerms into a SPARQL endpoint', async() => {
+      // An earlier test leaves rate limiting of example.org behind
+      await engine.invalidateHttpCache();
+      const endpoint = 'http://example.org/distinct/sparql';
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o1')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o2')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o1')));
+
+      const bindingsStream = await engine.queryBindings(`
+        SELECT ?s WHERE {
+          SERVICE <${endpoint}> {
+            SELECT DISTINCT ?s WHERE { ?s <ex:p> ?o }
+          }
+        }
+      `, {
+        sources: [ RdfStore.createDefault() ],
+        fetch: createSparqlEndpointsFetch({ [endpoint]: store }),
+      });
+
+      await expect(bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s2') ],
+        ]),
+      ], true);
     });
   });
 
