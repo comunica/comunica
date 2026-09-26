@@ -61,8 +61,8 @@ export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermNam
    *
    * The term order compares terms on term type, value, datatype, language, and base direction,
    * as `compareTerms` from `@comunica/utils-iterator` does, without interpreting literals.
-   * Two terms are equal in it exactly if they are equal RDF terms, which makes it cheap to maintain for a source,
-   * and safe to merge-join on. For example, "10"^^xsd:integer comes before "9"^^xsd:integer in this order.
+   * Two terms are equal in it exactly if they are equal RDF terms.
+   * For example, "10"^^xsd:integer comes before "9"^^xsd:integer in this order.
    *
    * If termOrder is undefined, then the bindings are not known to be in the term order.
    */
@@ -71,10 +71,7 @@ export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermNam
   /**
    * Whether the stream can skip ahead within its `termOrder` instead of being read one binding at a time.
    *
-   * Only meaningful together with `termOrder`. A consumer that plans around skipping needs to know before it
-   * reads anything, which is why this is declared here rather than discovered from the stream: the stream
-   * a join actor is handed at planning time is the one it will read, but the capability may be several
-   * wrappers down. The stream itself remains the authority at execution time.
+   * Only meaningful together with `termOrder`.
    * @see ISeekableBindingsStream
    */
   canSeek?: boolean;
