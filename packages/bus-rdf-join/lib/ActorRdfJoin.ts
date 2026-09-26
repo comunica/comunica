@@ -324,15 +324,17 @@ TS
       // The cardinality should only be zero if one of the entries has zero cardinality, not due to float overflow
       if (!hasZeroCardinality || optional) {
         cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
-        if (!optional) {
-          // The selectivity heuristic is purely structural, so it can only scale down the cross product by a
-          // constant factor, no matter how large the entries are. Cap the estimate with one that does look at the
-          // cardinalities, so that joining two large entries on a shared variable is not estimated as their product.
-          const capped = ActorRdfJoin.getSharedVariableJoinCardinality(metadatas);
-          if (capped !== undefined && capped < cardinalityJoined.value) {
-            cardinalityJoined.value = capped;
-            cardinalityJoined.type = 'estimate';
-          }
+        // The selectivity heuristic is purely structural, so it can only scale down the cross product by a
+        // constant factor, no matter how large the entries are. Cap the estimate with one that does look at the
+        // cardinalities, so that joining two large entries on a shared variable is not estimated as their product.
+        // Optional joins keep all bindings of their first entry, so their cap is at least its cardinality.
+        let capped = ActorRdfJoin.getSharedVariableJoinCardinality(metadatas);
+        if (capped !== undefined && optional) {
+          capped = Math.max(capped, metadatas[0].cardinality.value);
+        }
+        if (capped !== undefined && capped < cardinalityJoined.value) {
+          cardinalityJoined.value = capped;
+          cardinalityJoined.type = 'estimate';
         }
         if (cardinalityJoined.value === 0) {
           cardinalityJoined.value = Number.MIN_VALUE;

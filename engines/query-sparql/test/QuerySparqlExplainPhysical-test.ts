@@ -111,9 +111,9 @@ sources:
     // the pattern that is only probed for its metadata before being bound per binding.
     it('explains an optional', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n OPTIONAL { ?s foaf:knows ?f } }`)).resolves
-        .toBe(`project (f,n,s) cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms
-  leftjoin cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms
-    join-optional(bind) cardEst:13.648 cardReal:6 timeSelf:Xms timeLife:Xms
+        .toBe(`project (f,n,s) cardEst:~5 cardReal:6 timeSelf:Xms timeLife:Xms
+  leftjoin cardEst:~5 cardReal:6 timeSelf:Xms timeLife:Xms
+    join-optional(bind) cardEst:~5 cardReal:6 timeSelf:Xms timeLife:Xms
       pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
       pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:5 cardReal:0 timeSelf:Xms timeLife:Xms
       bindings
@@ -471,10 +471,10 @@ sources:
       for (let i = 0; i < 15; i++) {
         plans.add((await explainPhysical(query)).replaceAll(' destroyed', ''));
       }
-      expect([ ...plans ]).toEqual([ `slice cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms
-  project (f,n,s) cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms
-    leftjoin cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms
-      join-optional(bind) cardEst:13.648 cardReal:2 timeSelf:Xms timeLife:Xms
+      expect([ ...plans ]).toEqual([ `slice cardEst:~2 cardReal:2 timeSelf:Xms timeLife:Xms
+  project (f,n,s) cardEst:~5 cardReal:2 timeSelf:Xms timeLife:Xms
+    leftjoin cardEst:~5 cardReal:2 timeSelf:Xms timeLife:Xms
+      join-optional(bind) cardEst:~5 cardReal:2 timeSelf:Xms timeLife:Xms
         pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
         pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:5 cardReal:0 timeSelf:Xms timeLife:Xms
         bindings
