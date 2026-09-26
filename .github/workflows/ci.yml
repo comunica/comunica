@@ -525,8 +525,6 @@ jobs:
           path: base/performance/benchmark-ldbc-snb-file/combinations/combination_0/output/
       - name: Process benchmark detailed results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File --total false --detailed true --name ghbench-detail.json
-      - name: Process benchmark total results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File --total true --detailed false --name ghbench-total.json
       - name: Determine base commit benchmark results
         # Benchmarks that are new in the pull request have no base results
         run: |
@@ -540,8 +538,6 @@ jobs:
           echo "BASE_BENCHMARK_LABELS=$labels" >> $GITHUB_ENV
       - name: Process base commit benchmark detailed results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench $BASE_BENCHMARK_DIRS --overrideCombinationLabels $BASE_BENCHMARK_LABELS --total false --detailed true --name ghbench-base-detail.json
-      - name: Process base commit benchmark total results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench $BASE_BENCHMARK_DIRS --overrideCombinationLabels $BASE_BENCHMARK_LABELS --total true --detailed false --name ghbench-base-total.json
       - name: Assemble the comparison comment
         # Posted by the performance-comment workflow, as this job
         # receives a read-only GITHUB_TOKEN on pull requests from forks.
@@ -553,10 +549,11 @@ jobs:
           set -eu
           table () {
             jq -rn \
-              --slurpfile headResults "ghbench-$1.json" \
-              --slurpfile baseResults "ghbench-base-$1.json" \
+              --slurpfile headResults ghbench-detail.json \
+              --slurpfile baseResults ghbench-base-detail.json \
               --arg headSha "$HEAD_SHA" \
               --arg baseSha "$BASE_SHA" \
+              --arg mode "$1" \
               '
                 def row: "| " + join(" | ") + " |";
                 # Ratios are rounded to two decimals, and are below 1 when the pull request is faster
@@ -566,16 +563,48 @@ jobs:
                   else ($current * 100 / $previous | round)
                     | "\(. / 100 | floor).\(. % 100 | tostring | if length == 1 then "0\(.)" else . end)"
                   end;
+                # Per-instantiation error flags, as listed by psbr in the extra field
+                def errors: [ .extra // "" | scan("Error: \\[([^\\]]*)\\]") ][0][0] // "" | split(",");
+                def failures: errors | map(select(. == "true")) | length;
+                # Failed queries are reported with time 0, so they are never compared
+                def ok: . != null and failures == 0;
+                def cell:
+                  if . == null then ""
+                  elif failures > 0 and failures == (errors | length) then "failed"
+                  elif failures > 0 then "`\(.value)` \(.unit) (\(failures) failed)"
+                  else "`\(.value)` \(.unit)"
+                  end;
+                def suite: .name | split(" - ")[0];
+                def query: .name | split(" - ")[1:] | join(" - ");
                 ($baseResults[0] | INDEX(.name)) as $base
+                | ($baseResults[0] | map(suite)) as $baseSuites
+                | ($headResults[0] | map({ suite: suite, query: query, name, head: ., base: $base[.name] })) as $rows
+                | ($rows | reduce .[].suite as $suite ([]; if any(.[]; . == $suite) then . else . + [ $suite ] end)) as $suites
                 | [ ([ "Benchmark suite", "Current: \($headSha)", "Base: \($baseSha)", "Ratio" ] | row), "|-|-|-|-|" ]
-                  + ($headResults[0] | map(
-                      $base[.name] as $baseEntry
-                      | [ "`\(.name)`", "`\(.value)` \(.unit)" ] + (
-                          if $baseEntry == null
-                          then [ "", "" ]
-                          else [ "`\($baseEntry.value)` \($baseEntry.unit)", "`\(ratio(.value; $baseEntry.value))`" ]
-                          end)
-                      | row))
+                  + if $mode == "total"
+                    then
+                      # Totals only include queries that succeeded on both sides
+                      ($suites | map(. as $suite
+                        | any($baseSuites[]; . == $suite) as $hasBase
+                        | ($rows | map(select(.suite == $suite))) as $suiteRows
+                        | ($suiteRows | map(select((.head | ok) and (($hasBase | not) or (.base | ok))))) as $included
+                        | ($included | map(.head.value) | add // 0) as $headTotal
+                        | ($included | map(.base.value) | add // 0) as $baseTotal
+                        | ([ "`\($suite)`", "`\($headTotal)` ms" ]
+                          + if $hasBase then [ "`\($baseTotal)` ms", "`\(ratio($headTotal; $baseTotal))`" ] else [ "", "" ] end
+                          | row),
+                          ($suiteRows - $included | map(.query) | select(. != [])
+                            | "\n`\($suite)` totals exclude queries that failed or are missing on either side: \(join(", "))")))
+                      | map(select(startswith("|"))) + map(select(startswith("|") | not))
+                    else
+                      $rows | map(
+                        [ "`\(.name)`", (.head | cell), (.base | cell),
+                          if .base == null then ""
+                          elif (.head | ok) and (.base | ok) then "`\(ratio(.head.value; .base.value))`"
+                          else "n/a"
+                          end ]
+                        | row)
+                    end
                 | join("\n")
               '
           }
