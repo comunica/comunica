@@ -1,12 +1,13 @@
-# Comunica Inner Multi Leapfrog RDF Join Actor
+# Comunica Inner Multi Seek Merge RDF Join Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-inner-multi-leapfrog.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-inner-multi-leapfrog)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-inner-multi-seek-merge.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-inner-multi-seek-merge)
 
 An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that inner-joins three or
-more streams that are all sorted on the same variable in a single pass, with a leapfrog join: a candidate key is
-checked against the streams from the smallest to the largest, where a stream that is behind skips ahead to it, and a
-stream that is past it proposes its own key instead. Once all streams are at the same key, their runs are emitted as a
-cross product. This is one level of a leapfrog triejoin, over the variable that the streams are sorted on first.
+more streams that are all sorted on the same variable in a single pass, by merging them on that variable: a candidate
+key is checked against the streams from the smallest to the largest, where a stream that is behind skips ahead to it,
+and a stream that is past it proposes its own key instead. Once all streams are at the same key, their runs are emitted
+as a cross product. Other variables that the streams share are only checked within that cross product, so unlike a
+leapfrog triejoin, it does not descend into further variables.
 
 Since a larger stream is only read at keys that all smaller ones share, a key that the smallest streams do not have in
 common never reaches the larger ones, as in a chain of merge joins that starts with the smallest entries.
@@ -32,7 +33,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-rdf-join-inner-multi-leapfrog
+$ yarn add @comunica/actor-rdf-join-inner-multi-seek-merge
 ```
 
 ## Configure
@@ -42,13 +43,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-leapfrog/^5.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-seek-merge/^5.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
-      "@id": "urn:comunica:default:rdf-join/actors#inner-multi-leapfrog",
-      "@type": "ActorRdfJoinMultiLeapfrog",
+      "@id": "urn:comunica:default:rdf-join/actors#inner-multi-seek-merge",
+      "@type": "ActorRdfJoinMultiSeekMerge",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
       "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" }
     }
@@ -59,4 +60,4 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
-* `mediatorJoin`: A mediator over the [RDF Join bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join), to join the entries that are not leapfrogged with the result.
+* `mediatorJoin`: A mediator over the [RDF Join bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join), to join the entries that are not merged with the result.

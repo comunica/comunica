@@ -1,7 +1,7 @@
 {
-  "name": "@comunica/actor-rdf-join-inner-multi-leapfrog",
+  "name": "@comunica/actor-rdf-join-inner-multi-seek-merge",
   "version": "5.4.0",
-  "description": "A multi-way leapfrog rdf-join actor over streams sorted on a shared variable",
+  "description": "A multi-way merge rdf-join actor that skips ahead over streams sorted on a shared variable",
   "lsd:module": true,
   "license": "MIT",
   "funding": {
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-rdf-join-inner-multi-leapfrog"
+    "directory": "packages/actor-rdf-join-inner-multi-seek-merge"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
@@ -21,7 +21,7 @@
     "comunica",
     "actor",
     "rdf-join",
-    "leapfrog"
+    "seek"
   ],
   "sideEffects": false,
   "main": "lib/index.js",

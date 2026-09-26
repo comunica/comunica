@@ -14,20 +14,21 @@ import type { Bindings, ComunicaDataFactory, IJoinEntry, MetadataBindings } from
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { compareTerms } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
-import { LeapfrogJoinIterator } from './LeapfrogJoinIterator';
+import { SeekMergeJoinIterator } from './SeekMergeJoinIterator';
 
 /**
- * A comunica Multi Leapfrog RDF Join Actor.
+ * A comunica Multi Seek Merge RDF Join Actor.
  *
- * Joins three or more entries that are all sorted on the same variable in one pass, with a leapfrog join:
- * every entry that is behind skips ahead to the furthest key among all entries. This is the join of a single
- * level of a leapfrog triejoin, over the variable that the entries are sorted on first.
+ * Joins three or more entries that are all sorted on the same variable in one pass, by merging them on that
+ * variable: every entry that is behind skips ahead to the furthest key among all entries. Other variables that
+ * the entries share are only checked within the cross product of the runs of a key, so unlike a leapfrog triejoin,
+ * this does not descend into further variables.
  *
  * Entries that are not sorted on that variable are joined with the result afterwards, through the join bus.
  */
-export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLeapfrogTestSideData> {
+export class ActorRdfJoinMultiSeekMerge extends ActorRdfJoin<IActorRdfJoinMultiSeekMergeTestSideData> {
   /**
-   * The cost of reading one binding when every leapfrogged entry can skip, as for the merge join.
+   * The cost of reading one binding when every merged entry can skip, as for the merge join.
    */
   public static readonly ITERATION_COST_ORDERED = 0.8;
   /**
@@ -35,22 +36,22 @@ export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLe
    */
   public static readonly ITERATION_COST = 1;
   /**
-   * The minimum number of entries to leapfrog, below which a merge join does the same.
+   * The minimum number of entries to merge, below which a merge join does the same.
    */
   public static readonly MIN_ENTRIES = 3;
   /**
-   * How many times smaller than the leapfrogged result another entry must be for this actor to leave the join
+   * How many times smaller than the merged result another entry must be for this actor to leave the join
    * to actors that start from that entry, such as the bind join.
    */
   public static readonly OTHER_ENTRY_RATIO = 2;
 
   public readonly mediatorJoin: MediatorRdfJoin;
 
-  public constructor(args: IActorRdfJoinMultiLeapfrogArgs) {
+  public constructor(args: IActorRdfJoinMultiSeekMergeArgs) {
     super(args, {
       logicalType: 'inner',
-      physicalName: 'multi-leapfrog',
-      limitEntries: ActorRdfJoinMultiLeapfrog.MIN_ENTRIES,
+      physicalName: 'multi-seek-merge',
+      limitEntries: ActorRdfJoinMultiSeekMerge.MIN_ENTRIES,
       limitEntriesMin: true,
       requiresVariableOverlap: true,
       canHandleUndefs: false,
@@ -65,7 +66,7 @@ export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLe
    * @return The variable and the indexes of the entries sorted on it, from the smallest entry to the largest,
    *         or undefined if there is none.
    */
-  public static getLeapfrogVariable(
+  public static getMergeVariable(
     metadatas: MetadataBindings[],
   ): { variable: RDF.Variable; indexes: number[] } | undefined {
     const groups = new Map<string, { variable: RDF.Variable; indexes: number[]; smallest: number }>();
@@ -101,12 +102,12 @@ export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLe
 
   protected async getOutput(
     action: IActionRdfJoin,
-    sideData: IActorRdfJoinMultiLeapfrogTestSideData,
+    sideData: IActorRdfJoinMultiSeekMergeTestSideData,
   ): Promise<IActorRdfJoinOutputInner> {
     const { variable, indexes } = sideData;
     const entries = indexes.map(index => action.entries[index]);
     const metadatas = indexes.map(index => sideData.metadatas[index]);
-    const bindingsStream = new LeapfrogJoinIterator(
+    const bindingsStream = new SeekMergeJoinIterator(
       entries.map(entry => entry.output.bindingsStream),
       (left: Bindings, right: Bindings) => compareTerms(left.get(variable)!, right.get(variable)!),
     );
@@ -145,16 +146,16 @@ export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLe
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinMultiLeapfrogTestSideData>> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinMultiSeekMergeTestSideData>> {
     const { metadatas } = sideData;
-    const leapfrog = ActorRdfJoinMultiLeapfrog.getLeapfrogVariable(metadatas);
-    if (!leapfrog || leapfrog.indexes.length < ActorRdfJoinMultiLeapfrog.MIN_ENTRIES) {
-      return failTest(`Actor ${this.name} can only join at least ${ActorRdfJoinMultiLeapfrog.MIN_ENTRIES} entries that are sorted on a shared variable`);
+    const group = ActorRdfJoinMultiSeekMerge.getMergeVariable(metadatas);
+    if (!group || group.indexes.length < ActorRdfJoinMultiSeekMerge.MIN_ENTRIES) {
+      return failTest(`Actor ${this.name} can only join at least ${ActorRdfJoinMultiSeekMerge.MIN_ENTRIES} entries that are sorted on a shared variable`);
     }
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
-    const grouped = leapfrog.indexes.map(index => metadatas[index]);
+    const grouped = group.indexes.map(index => metadatas[index]);
 
     // The smallest entry proposes every key, and a later entry is only read at the keys that all entries
     // before it share, of which there are about as many as their estimated join result. An entry that can skip
@@ -169,22 +170,22 @@ export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLe
     }
 
     // Another entry that is much smaller than the result can only be joined after every key has been produced, while
-    // binding it into the leapfrogged entries only looks up its own bindings. Such an entry is usually a join, whose
+    // binding it into the merged entries only looks up its own bindings. Such an entry is usually a join, whose
     // estimate tends to be too high, so its actual advantage is often larger still.
-    if (metadatas.some((metadata, index) => !leapfrog.indexes.includes(index) &&
-      metadata.cardinality.value * ActorRdfJoinMultiLeapfrog.OTHER_ENTRY_RATIO < keys)) {
+    if (metadatas.some((metadata, index) => !group.indexes.includes(index) &&
+      metadata.cardinality.value * ActorRdfJoinMultiSeekMerge.OTHER_ENTRY_RATIO < keys)) {
       return failTest(`Actor ${this.name} leaves joins with an entry much smaller than its result to other actors`);
     }
 
     const perBinding = grouped.every(metadata => metadata.canSeek) ?
-      ActorRdfJoinMultiLeapfrog.ITERATION_COST_ORDERED :
-      ActorRdfJoinMultiLeapfrog.ITERATION_COST;
+      ActorRdfJoinMultiSeekMerge.ITERATION_COST_ORDERED :
+      ActorRdfJoinMultiSeekMerge.ITERATION_COST;
     let iterations = reads * perBinding;
 
     // The other entries are joined with the result one at a time afterwards, as the multi-smallest join does.
     let rows = keys;
     for (const [ index, metadata ] of metadatas.entries()) {
-      if (!leapfrog.indexes.includes(index)) {
+      if (!group.indexes.includes(index)) {
         iterations += rows + metadata.cardinality.value;
         rows = Math.min(rows, metadata.cardinality.value);
       }
@@ -197,24 +198,24 @@ export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLe
       blockingItems: 0,
       requestTime: metadatas.reduce((sum, metadata, i) => sum + requestInitialTimes[i] +
         metadata.cardinality.value * requestItemTimes[i], 0),
-    }, { ...sideData, ...leapfrog });
+    }, { ...sideData, ...group });
   }
 }
 
-export interface IActorRdfJoinMultiLeapfrogArgs extends IActorRdfJoinArgs<IActorRdfJoinMultiLeapfrogTestSideData> {
+export interface IActorRdfJoinMultiSeekMergeArgs extends IActorRdfJoinArgs<IActorRdfJoinMultiSeekMergeTestSideData> {
   /**
-   * A mediator for joining the entries that are not leapfrogged with the result.
+   * A mediator for joining the entries that are not merged with the result.
    */
   mediatorJoin: MediatorRdfJoin;
 }
 
-export interface IActorRdfJoinMultiLeapfrogTestSideData extends IActorRdfJoinTestSideData {
+export interface IActorRdfJoinMultiSeekMergeTestSideData extends IActorRdfJoinTestSideData {
   /**
-   * The variable that the leapfrogged entries are sorted on.
+   * The variable that the merged entries are sorted on.
    */
   variable: RDF.Variable;
   /**
-   * The indexes of the entries that are leapfrogged.
+   * The indexes of the entries that are merged.
    */
   indexes: number[];
 }

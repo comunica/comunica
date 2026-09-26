@@ -16,8 +16,8 @@ import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorRdfJoinMultiLeapfrog } from '../lib/ActorRdfJoinMultiLeapfrog';
-import { LeapfrogJoinIterator } from '../lib/LeapfrogJoinIterator';
+import { ActorRdfJoinMultiSeekMerge } from '../lib/ActorRdfJoinMultiSeekMerge';
+import { SeekMergeJoinIterator } from '../lib/SeekMergeJoinIterator';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -63,12 +63,12 @@ function bind(values: Record<string, string>): Bindings {
   return BF.bindings(Object.entries(values).map(([ name, value ]) => [ DF.variable(name), DF.literal(value) ]));
 }
 
-describe('ActorRdfJoinMultiLeapfrog', () => {
+describe('ActorRdfJoinMultiSeekMerge', () => {
   let bus: any;
   let context: IActionContext;
   let mediatorJoinSelectivity: any;
   let mediatorJoin: any;
-  let actor: ActorRdfJoinMultiLeapfrog;
+  let actor: ActorRdfJoinMultiSeekMerge;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -82,23 +82,23 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
         entries: action.entries,
       })),
     };
-    actor = new ActorRdfJoinMultiLeapfrog({ name: 'actor', bus, mediatorJoinSelectivity, mediatorJoin });
+    actor = new ActorRdfJoinMultiSeekMerge({ name: 'actor', bus, mediatorJoinSelectivity, mediatorJoin });
   });
 
   it('is an ActorRdfJoin', () => {
     expect(actor).toBeInstanceOf(ActorRdfJoin);
   });
 
-  describe('getLeapfrogVariable', () => {
+  describe('getMergeVariable', () => {
     it('finds nothing when no entry is sorted', () => {
-      expect(ActorRdfJoinMultiLeapfrog.getLeapfrogVariable([
+      expect(ActorRdfJoinMultiSeekMerge.getMergeVariable([
         metadata(1, [ variable('a') ]),
         metadata(1, [ variable('a') ]),
       ])).toBeUndefined();
     });
 
     it('skips entries sorted in descending order, or on a variable that can be undefined', () => {
-      expect(ActorRdfJoinMultiLeapfrog.getLeapfrogVariable([
+      expect(ActorRdfJoinMultiSeekMerge.getMergeVariable([
         metadata(1, [ variable('a') ], order('a', 'desc')),
         metadata(1, [ variable('a', true) ], order('a')),
         metadata(1, [ variable('a') ], order('a')),
@@ -106,7 +106,7 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
     });
 
     it('picks the variable that most entries are sorted on', () => {
-      expect(ActorRdfJoinMultiLeapfrog.getLeapfrogVariable([
+      expect(ActorRdfJoinMultiSeekMerge.getMergeVariable([
         metadata(1, [ variable('a'), variable('b') ], order('b')),
         metadata(9, [ variable('a') ], order('a')),
         metadata(9, [ variable('a') ], order('a')),
@@ -114,7 +114,7 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
     });
 
     it('orders the entries from the smallest to the largest', () => {
-      expect(ActorRdfJoinMultiLeapfrog.getLeapfrogVariable([
+      expect(ActorRdfJoinMultiSeekMerge.getMergeVariable([
         metadata(50, [ variable('a') ], order('a')),
         metadata(5, [ variable('a') ], order('a')),
         metadata(20, [ variable('a') ], order('a')),
@@ -122,7 +122,7 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
     });
 
     it('picks the variable with the smallest entry among equally large groups', () => {
-      expect(ActorRdfJoinMultiLeapfrog.getLeapfrogVariable([
+      expect(ActorRdfJoinMultiSeekMerge.getMergeVariable([
         metadata(9, [ variable('a'), variable('b') ], order('a')),
         metadata(5, [ variable('a'), variable('b') ], order('b')),
         metadata(9, [ variable('a'), variable('b') ], order('a')),
@@ -235,7 +235,7 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
         ],
         context,
       })).resolves.toPassTest({
-        // 30 bindings leapfrogged, then 10 + 50 and 10 + 5.
+        // 30 bindings merged, then 10 + 50 and 10 + 5.
         iterations: (30 * 0.8) + 60 + 15,
         persistedItems: 0,
         blockingItems: 0,
@@ -243,7 +243,7 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
       });
     });
 
-    it('rejects entries of which another one is much smaller than the leapfrogged result', async() => {
+    it('rejects entries of which another one is much smaller than the merged result', async() => {
       await expect(actor.test({
         type: 'inner',
         entries: [
@@ -258,7 +258,7 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
   });
 
   describe('run', () => {
-    it('leapfrogs all entries when they are sorted on the same variable', async() => {
+    it('merges all entries when they are sorted on the same variable', async() => {
       const action: IActionRdfJoin = {
         type: 'inner',
         entries: [
@@ -275,7 +275,7 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
         context,
       };
       const { result } = await (<any> actor).getOutput(action, (await actor.test(action)).getSideData());
-      expect(result.bindingsStream).toBeInstanceOf(LeapfrogJoinIterator);
+      expect(result.bindingsStream).toBeInstanceOf(SeekMergeJoinIterator);
       await expect(arrayifyStream(result.bindingsStream)).resolves.toEqualBindingsArray([
         bind({ a: '2', b: 'b2', c: 'c2', d: 'd2' }),
       ]);
@@ -300,7 +300,7 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
       await expect(result.metadata()).resolves.toMatchObject({ canSeek: false });
     });
 
-    it('joins the other entries with the leapfrogged result through the join bus', async() => {
+    it('joins the other entries with the merged result through the join bus', async() => {
       const action: IActionRdfJoin = {
         type: 'inner',
         entries: [
@@ -314,7 +314,7 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
       const { result } = await (<any> actor).getOutput(action, (await actor.test(action)).getSideData());
       expect(mediatorJoin.mediate).toHaveBeenCalledTimes(1);
       const [ joined, rest ] = result.entries;
-      expect(joined.output.bindingsStream).toBeInstanceOf(LeapfrogJoinIterator);
+      expect(joined.output.bindingsStream).toBeInstanceOf(SeekMergeJoinIterator);
       expect(joined.operation.type).toBe('join');
       expect(rest).toBe(action.entries[1]);
     });

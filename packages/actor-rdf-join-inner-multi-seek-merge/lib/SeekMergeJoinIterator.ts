@@ -13,7 +13,7 @@ const COLLECTING = 1;
 const EMITTING = 2;
 
 /**
- * An iterator that joins any number of streams that are all sorted on one join key, by leapfrogging:
+ * An iterator that joins any number of streams that are all sorted on one join key, by skipping ahead:
  * a candidate key is checked against the streams in the order they were given, where every stream that is
  * behind it skips ahead to it, and a stream that is past it makes its own key the next candidate.
  * Once all streams are at the candidate, the runs of that key are emitted as a cross product.
@@ -29,7 +29,7 @@ const EMITTING = 2;
  * As in the merge join, a stream is only asked to skip once it has fallen behind a number of times in a row,
  * since a skip has a fixed cost that only pays off over a gap of more than a few bindings.
  */
-export class LeapfrogJoinIterator extends AsyncIterator<Bindings> {
+export class SeekMergeJoinIterator extends AsyncIterator<Bindings> {
   /**
    * The number of times in a row that a stream must fall behind before it is asked to skip ahead.
    */
@@ -84,7 +84,7 @@ export class LeapfrogJoinIterator extends AsyncIterator<Bindings> {
   public constructor(
     sources: AsyncIterator<Bindings>[],
     compareKeys: (left: Bindings, right: Bindings) => number,
-    seekAfterBehind = LeapfrogJoinIterator.SEEK_AFTER_BEHIND,
+    seekAfterBehind = SeekMergeJoinIterator.SEEK_AFTER_BEHIND,
   ) {
     super();
     this.sources = sources;
