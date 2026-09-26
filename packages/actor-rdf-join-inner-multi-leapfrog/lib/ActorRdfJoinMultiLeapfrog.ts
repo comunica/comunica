@@ -38,6 +38,11 @@ export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLe
    * The minimum number of entries to leapfrog, below which a merge join does the same.
    */
   public static readonly MIN_ENTRIES = 3;
+  /**
+   * How many times smaller than the leapfrogged result another entry must be for this actor to leave the join
+   * to actors that start from that entry, such as the bind join.
+   */
+  public static readonly OTHER_ENTRY_RATIO = 2;
 
   public readonly mediatorJoin: MediatorRdfJoin;
 
@@ -162,6 +167,15 @@ export class ActorRdfJoinMultiLeapfrog extends ActorRdfJoin<IActorRdfJoinMultiLe
       // The entries share the key variable, so the estimate always exists.
       keys = Math.min(keys, ActorRdfJoin.getSharedVariableJoinCardinality(grouped.slice(0, i + 1))!);
     }
+
+    // Another entry that is much smaller than the result can only be joined after every key has been produced, while
+    // binding it into the leapfrogged entries only looks up its own bindings. Such an entry is usually a join, whose
+    // estimate tends to be too high, so its actual advantage is often larger still.
+    if (metadatas.some((metadata, index) => !leapfrog.indexes.includes(index) &&
+      metadata.cardinality.value * ActorRdfJoinMultiLeapfrog.OTHER_ENTRY_RATIO < keys)) {
+      return failTest(`Actor ${this.name} leaves joins with an entry much smaller than its result to other actors`);
+    }
+
     const perBinding = grouped.every(metadata => metadata.canSeek) ?
       ActorRdfJoinMultiLeapfrog.ITERATION_COST_ORDERED :
       ActorRdfJoinMultiLeapfrog.ITERATION_COST;

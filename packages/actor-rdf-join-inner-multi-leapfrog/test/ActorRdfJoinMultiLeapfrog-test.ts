@@ -242,6 +242,19 @@ describe('ActorRdfJoinMultiLeapfrog', () => {
         requestTime: 0,
       });
     });
+
+    it('rejects entries of which another one is much smaller than the leapfrogged result', async() => {
+      await expect(actor.test({
+        type: 'inner',
+        entries: [
+          entry([], metadata(100, [ variable('a') ], order('a'), true)),
+          entry([], metadata(10, [ variable('a'), variable('b') ], order('a'), true)),
+          entry([], metadata(100, [ variable('a') ], order('a'), true)),
+          entry([], metadata(4, [ variable('a'), variable('b') ])),
+        ],
+        context,
+      })).resolves.toFailTest(`Actor actor leaves joins with an entry much smaller than its result to other actors`);
+    });
   });
 
   describe('run', () => {
