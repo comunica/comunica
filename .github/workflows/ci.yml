@@ -473,6 +473,10 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION_HIGHEST }}
+          cache: yarn
+      - name: Install dependencies
+        # Only needed for running the comparison script with ts-node, so the monorepo is not built
+        run: yarn install --frozen-lockfile --ignore-scripts
       - uses: actions/download-artifact@v8
         with:
           name: performance-benchmark-watdiv-file
@@ -524,9 +528,7 @@ jobs:
           name: performance-benchmark-base-ldbc-snb-file
           path: base/performance/benchmark-ldbc-snb-file/combinations/combination_0/output/
       - name: Process benchmark detailed results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File --total false --detailed true --name ghbench-detail.json
-      - name: Process benchmark total results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File --total true --detailed false --name ghbench-total.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File --total false --detailed true --failures --name ghbench-detail.json
       - name: Determine base commit benchmark results
         # Benchmarks that are new in the pull request have no base results
         run: |
@@ -539,9 +541,7 @@ jobs:
           echo "BASE_BENCHMARK_DIRS=$dirs" >> $GITHUB_ENV
           echo "BASE_BENCHMARK_LABELS=$labels" >> $GITHUB_ENV
       - name: Process base commit benchmark detailed results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench $BASE_BENCHMARK_DIRS --overrideCombinationLabels $BASE_BENCHMARK_LABELS --total false --detailed true --name ghbench-base-detail.json
-      - name: Process base commit benchmark total results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench $BASE_BENCHMARK_DIRS --overrideCombinationLabels $BASE_BENCHMARK_LABELS --total true --detailed false --name ghbench-base-total.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench $BASE_BENCHMARK_DIRS --overrideCombinationLabels $BASE_BENCHMARK_LABELS --total false --detailed true --failures --name ghbench-base-detail.json
       - name: Assemble the comparison comment
         # Posted by the performance-comment workflow, as this job
         # receives a read-only GITHUB_TOKEN on pull requests from forks.
@@ -551,42 +551,9 @@ jobs:
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set -eu
-          table () {
-            jq -rn \
-              --slurpfile headResults "ghbench-$1.json" \
-              --slurpfile baseResults "ghbench-base-$1.json" \
-              --arg headSha "$HEAD_SHA" \
-              --arg baseSha "$BASE_SHA" \
-              '
-                def row: "| " + join(" | ") + " |";
-                # Ratios are rounded to two decimals, and are below 1 when the pull request is faster
-                def ratio($current; $previous):
-                  if $previous == 0
-                  then (if $current == 0 then "1.00" else "\u221e" end)
-                  else ($current * 100 / $previous | round)
-                    | "\(. / 100 | floor).\(. % 100 | tostring | if length == 1 then "0\(.)" else . end)"
-                  end;
-                ($baseResults[0] | INDEX(.name)) as $base
-                | [ ([ "Benchmark suite", "Current: \($headSha)", "Base: \($baseSha)", "Ratio" ] | row), "|-|-|-|-|" ]
-                  + ($headResults[0] | map(
-                      $base[.name] as $baseEntry
-                      | [ "`\(.name)`", "`\(.value)` \(.unit)" ] + (
-                          if $baseEntry == null
-                          then [ "", "" ]
-                          else [ "`\($baseEntry.value)` \($baseEntry.unit)", "`\(ratio(.value; $baseEntry.value))`" ]
-                          end)
-                      | row))
-                | join("\n")
-              '
-          }
-          {
-            printf '<!-- performance-comparison -->\n\n# Benchmarks total results\n\n'
-            table total
-            printf '\n\n<details>\n<summary>Show detailed results</summary>\n\n'
-            table detail
-            printf '\n\n</details>\n\nMeasured by [this CI run](%s/%s/actions/runs/%s).\n' \
-              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
-          } > comparison-comment.md
+          npx ts-node --transpile-only -O '{"rootDir":"."}' packages/utils-monorepo/bin/performance-comparison.ts \
+            ghbench-detail.json ghbench-base-detail.json "$HEAD_SHA" "$BASE_SHA" \
+            "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > comparison-comment.md
           echo "$PULL_REQUEST_NUMBER" > comparison-pull-request.txt
           cat comparison-comment.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v7
