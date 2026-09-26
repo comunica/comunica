@@ -481,7 +481,29 @@ export function isOperationObject(value: any): value is Operation {
  */
 export const inScopeVariables: typeof algebraUtils.inScopeVariables =
   (op: Operation, visitor = <typeof algebraUtils.visitOperation>visitOperation): RDF.Variable[] =>
-    algebraUtils.inScopeVariables(op, visitor);
+    algebraUtils.inScopeVariables(op, (startObject, nodeCallBacks) =>
+      visitor(startObject, ignoreDefaultKeys(nodeCallBacks)));
+
+type VisitCallBacks = Parameters<typeof algebraUtils.visitOperation>[1];
+
+/**
+ * Make the pre-visitors of the given callbacks ignore the keys of the default object context on top of their own.
+ * Otherwise, their own keys replace the default ones, so metadata, which can contain cycles, would be traversed.
+ * @param nodeCallBacks Visitor callbacks per operation type.
+ * @return The callbacks with adjusted pre-visitors.
+ */
+function ignoreDefaultKeys(nodeCallBacks: VisitCallBacks): VisitCallBacks {
+  return Object.fromEntries(Object.entries(nodeCallBacks)
+    .map(([ type, callBacks ]): [ string, NonNullable<VisitCallBacks[keyof VisitCallBacks]> ] => {
+      const preVisitor = <((op: Operation) => VisitContext) | undefined> callBacks.preVisitor;
+      return [ type, { ...callBacks, preVisitor: preVisitor && ((op: Operation) => {
+        const context = preVisitor(op);
+        return context.ignoreKeys ?
+            { ...context, ignoreKeys: new Set([ ...defaultObjectContext.ignoreKeys!, ...context.ignoreKeys ]) } :
+          context;
+      }) }];
+    }));
+}
 
 /**
  * Returns an operation with an always-defined metadata property.
