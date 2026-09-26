@@ -91,6 +91,13 @@ describe('getRows', () => {
     ]);
   });
 
+  it('ignores queries that were not executed', () => {
+    const skipped: IGhbenchEntry = { name: 'S - q2', unit: 'ms', value: null, extra: 'Error: []' };
+    expect(getRows([ time('S - q1', 10), skipped ], [ time('S - q1', 20), skipped ]).map(row => row.name))
+      .toEqual([ 'S - q1' ]);
+    expect(getRows([ time('S - q1', 10) ], [ skipped ])[0].base).toBeUndefined();
+  });
+
   it('treats queries that failed for all instantiations as without time', () => {
     expect(getRows([ time('S - q1', 0, [ true, true ]) ], [])[0].head)
       .toEqual({ value: undefined, unit: 'ms', failed: 2, count: 2 });
