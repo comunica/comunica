@@ -109,6 +109,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
             metadata: { baseIRI: this.baseIRI },
             data: textStream,
             headers: this.headers,
+            url: this.baseIRI,
             context: this.context,
           },
           handleMediaType: this.handleMediaType,

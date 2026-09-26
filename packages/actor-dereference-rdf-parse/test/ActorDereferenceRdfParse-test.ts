@@ -38,6 +38,9 @@ describe('ActorAbstractDereferenceParse', () => {
             status: 404,
             exists: !(<any>action.context).hasRaw('doesNotExist'),
             mediaType: (<any> action).mediaType,
+            headers: (<any>action.context).hasRaw('contentType') ?
+              new Headers({ 'content-type': (<any>action.context).getRaw('contentType') }) :
+              undefined,
             cachePolicy,
           };
         }),
@@ -176,16 +179,16 @@ describe('ActorAbstractDereferenceParse', () => {
   });
 
   it('should not run on parse rejects', async() => {
-    context = new ActionContext({ parseReject: true });
+    context = new ActionContext({ parseReject: true, extension: 'other.x' });
     await expect(actor.run({ url: 'https://www.google.com/', context }))
       .rejects.toThrow(new Error('Parse reject error'));
   });
 
   it('should run and ignore parse rejects in lenient mode', async() => {
-    context = new ActionContext({ parseReject: true, [KeysInitQuery.lenient.name]: true });
+    context = new ActionContext({ parseReject: true, extension: 'other.x', [KeysInitQuery.lenient.name]: true });
     const spy = jest.spyOn(actor, <any> 'logWarn');
     const output = await actor.run({ url: 'https://www.google.com/', context });
-    expect(output.url).toBe('https://www.google.com/index.html');
+    expect(output.url).toBe('https://www.google.com/other.x');
     await expect(arrayifyStream(output.data)).resolves.toEqual([]);
     expect(spy).toHaveBeenCalledTimes(1);
   });
@@ -196,11 +199,41 @@ describe('ActorAbstractDereferenceParse', () => {
     const url = 'https://www.google.com/';
     context = new ActionContext({
       parseReject: true,
+      extension: 'other.x',
       [KeysInitQuery.lenient.name]: true,
       [KeysCore.log.name]: logger,
     });
     await actor.run({ url, context });
     expect(spy).toHaveBeenCalledWith('Parse reject error', {
+      actor: 'actor',
+      url,
+    });
+  });
+
+  it('should explain parse rejects of documents without a media type', async() => {
+    context = new ActionContext({ parseReject: true });
+    const error = await actor.run({ url: 'https://www.google.com/', context }).catch((error_: Error) => error_);
+    expect(error).toEqual(new Error('Could not determine the media type of https://www.google.com/index.html, as it has no content type, and the extension of its URL is not recognized'));
+    expect((<Error> error).cause).toEqual(new Error('Parse reject error'));
+  });
+
+  it('should explain parse rejects of documents with a content type without media type', async() => {
+    context = new ActionContext({ parseReject: true, contentType: 'text/plain;charset=UTF-8' });
+    await expect(actor.run({ url: 'https://www.google.com/', context })).rejects.toThrow('Could not determine the media type of https://www.google.com/index.html from its content type (text/plain;charset=UTF-8) or the extension of its URL');
+  });
+
+  it('should explain parse rejects of documents without a media type in lenient mode', async() => {
+    const logger = new LoggerVoid();
+    const spy = jest.spyOn(logger, 'warn');
+    const url = 'https://www.google.com/';
+    context = new ActionContext({
+      parseReject: true,
+      [KeysInitQuery.lenient.name]: true,
+      [KeysCore.log.name]: logger,
+    });
+    const output = await actor.run({ url, context });
+    await expect(arrayifyStream(output.data)).resolves.toEqual([]);
+    expect(spy).toHaveBeenCalledWith('Could not determine the media type of https://www.google.com/index.html, as it has no content type, and the extension of its URL is not recognized', {
       actor: 'actor',
       url,
     });

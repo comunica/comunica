@@ -7,7 +7,13 @@ import type {
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysDereference, KeysInitQuery, KeysQueryOperation, KeysStatistics } from '@comunica/context-entries';
+import {
+  CONTEXT_KEYS_QUERY_SOURCE_CACHE,
+  KeysDereference,
+  KeysInitQuery,
+  KeysQueryOperation,
+  KeysStatistics,
+} from '@comunica/context-entries';
 import type { TestResult, IActorTest } from '@comunica/core';
 import { passTestVoid, ActionContext } from '@comunica/core';
 import type {
@@ -21,15 +27,13 @@ import type {
 } from '@comunica/types';
 import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { passFullOperationToSource } from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
+import { termToString } from 'rdf-string';
 
-// Cache key prefix for sources that are identified as SERVICE targets,
+// Cache qualifier prefix for sources that are identified as SERVICE targets,
 // as these are identified with a different source context than regular sources.
-const KEY_PREFIX_SERVICE = 'service:';
-// Cache key separator between a source's named graph and its url,
-// as sources that are exposed under a named graph contain different data than the plain source.
-// Whitespace can not occur in IRIs, so this never clashes with a url.
-const KEY_SEPARATOR_NAMED_GRAPH = '\n';
+const QUALIFIER_PREFIX_SERVICE = 'service:';
 
 /**
  * A comunica Query Source Identify Optimize Query Operation Actor.
@@ -40,9 +44,14 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
   public readonly mediatorQuerySourceIdentify: MediatorQuerySourceIdentify;
   public readonly mediatorContextPreprocess: MediatorContextPreprocess;
-  public readonly cache?: LRUCache<string, Promise<IQuerySourceWrapper>>;
-  // If the cache may hold sources that are exposed under a named graph.
-  public cacheHasNamedGraphSources = false;
+  /**
+   * A cache of identified sources, indexed by url, and then by qualifier (see {@link getCacheQualifier}),
+   * as the same url may be identified into different sources.
+   */
+  public readonly cache?: LRUCache<string, Map<string, Promise<IQuerySourceWrapper>>>;
+  // Identifiers of the objects in source contexts, as objects can only be represented in qualifiers by their identity.
+  private readonly cacheQualifierObjectIds = new WeakMap<object, number>();
+  private cacheQualifierObjectIdCounter = 0;
 
   public constructor(args: IActorOptimizeQueryOperationQuerySourceIdentifyArgs) {
     super(args);
@@ -58,18 +67,8 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
         ({ url }: IActionHttpInvalidate) => {
           if (url) {
             cache.delete(url);
-            cache.delete(KEY_PREFIX_SERVICE + url);
-            // Keys of named graph sources also contain that graph, so they can only be found by scanning.
-            if (this.cacheHasNamedGraphSources) {
-              for (const key of cache.keys()) {
-                if (key.endsWith(KEY_SEPARATOR_NAMED_GRAPH + url)) {
-                  cache.delete(key);
-                }
-              }
-            }
           } else {
             cache.clear();
-            this.cacheHasNamedGraphSources = false;
           }
         },
       );
@@ -136,7 +135,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
           type: this.serviceForceSparqlEndpoint ? 'sparql' : undefined,
           value: service,
           context: serviceContext,
-        }, context, KEY_PREFIX_SERVICE) ])));
+        }, context, QUALIFIER_PREFIX_SERVICE) ])));
       if (services.size > 0) {
         context = context.set(KeysQueryOperation.serviceSources, serviceSources);
       }
@@ -160,20 +159,17 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
   public identifySource(
     querySourceUnidentified: QuerySourceUnidentifiedExpanded,
     context: IActionContext,
-    cacheKeyPrefix = '',
+    cacheQualifierPrefix = '',
   ): Promise<IQuerySourceWrapper> {
     let sourcePromise: Promise<IQuerySourceWrapper> | undefined;
 
     // Try to read from cache
     // Only sources based on string values (e.g. URLs) are supported!
-    const namedGraph = querySourceUnidentified.context?.get(KeysQueryOperation.sourceAsNamedGraph);
-    const cacheKey = typeof querySourceUnidentified.value === 'string' ?
-      cacheKeyPrefix +
-      (namedGraph ? namedGraph.value + KEY_SEPARATOR_NAMED_GRAPH : '') +
-      querySourceUnidentified.value :
-      undefined;
-    if (cacheKey !== undefined && this.cache) {
-      sourcePromise = this.cache.get(cacheKey)!;
+    const url = typeof querySourceUnidentified.value === 'string' ? querySourceUnidentified.value : undefined;
+    let qualifier: string | undefined;
+    if (url !== undefined && this.cache) {
+      qualifier = cacheQualifierPrefix + this.getCacheQualifier(querySourceUnidentified);
+      sourcePromise = this.cache.get(url)?.get(qualifier);
     }
 
     // If not in cache, identify the source
@@ -182,15 +178,69 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
         .then(({ querySource }) => querySource);
 
       // Set in cache
-      if (cacheKey !== undefined && this.cache) {
-        this.cache.set(cacheKey, sourcePromise);
-        this.cacheHasNamedGraphSources ||= Boolean(namedGraph);
+      if (url !== undefined && this.cache) {
+        let sourcesForUrl = this.cache.get(url);
+        if (!sourcesForUrl) {
+          sourcesForUrl = new Map();
+          this.cache.set(url, sourcesForUrl);
+        }
+        sourcesForUrl.set(qualifier!, sourcePromise);
       }
     }
 
     return sourcePromise;
   }
+
+  /**
+   * Determine the qualifier under which an identified source is cached for its url.
+   *
+   * The qualifier contains everything that can make the same url identify into a different source:
+   * its forced type, and the values of the cache-relevant keys in its source context
+   * (see {@link CONTEXT_KEYS_QUERY_SOURCE_CACHE}).
+   * This ensures that a source is only reused by queries that pass an equivalent source.
+   *
+   * @param querySourceUnidentified An unidentified source.
+   * @return The qualifier, which is empty for sources without forced type and cache-relevant source context.
+   */
+  public getCacheQualifier(querySourceUnidentified: QuerySourceUnidentifiedExpanded): string {
+    const contextEntries: [string, CacheQualifierValue][] = [];
+    for (const key of CONTEXT_KEYS_QUERY_SOURCE_CACHE) {
+      const value: unknown = querySourceUnidentified.context?.get(key);
+      if (value !== undefined) {
+        contextEntries.push([ key.name, this.getCacheQualifierValue(value) ]);
+      }
+    }
+
+    if (!querySourceUnidentified.type && contextEntries.length === 0) {
+      return '';
+    }
+    return JSON.stringify([ querySourceUnidentified.type ?? null, contextEntries ]);
+  }
+
+  /**
+   * Represent a source context value in a cache qualifier.
+   * RDF terms and primitive values are represented by their value.
+   * Other objects (such as fetch functions or proxy handlers) are represented by their identity,
+   * as they can not be compared by value.
+   * @param value A source context value.
+   */
+  protected getCacheQualifierValue(value: unknown): CacheQualifierValue {
+    if (typeof value === 'function' || (typeof value === 'object' && value !== null)) {
+      if (typeof (<RDF.Term> value).termType === 'string') {
+        return termToString(<RDF.Term> value);
+      }
+      let id = this.cacheQualifierObjectIds.get(value);
+      if (id === undefined) {
+        id = this.cacheQualifierObjectIdCounter++;
+        this.cacheQualifierObjectIds.set(value, id);
+      }
+      return { object: id };
+    }
+    return <CacheQualifierValue> value;
+  }
 }
+
+type CacheQualifierValue = string | number | boolean | null | { object: number };
 
 export interface IActorOptimizeQueryOperationQuerySourceIdentifyArgs extends IActorOptimizeQueryOperationArgs {
   /**

@@ -69,6 +69,7 @@ export class ActorQuerySourceIdentifySerialized extends ActorQuerySourceIdentify
       handle: {
         metadata: { baseIRI: source.baseIRI, version: source.version },
         data: textStream,
+        url: source.baseIRI ? `a serialized source with base IRI ${source.baseIRI}` : 'a serialized source',
         context,
       },
       handleMediaType: source.mediaType,

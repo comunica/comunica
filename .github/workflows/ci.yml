@@ -39,6 +39,8 @@ jobs:
         run: yarn run lint
       - name: Run depcheck
         run: yarn run depcheck
+      - name: Check actor READMEs
+        run: yarn run readme-check
       - name: Test clean script
         run: yarn run clean
 
@@ -304,7 +306,7 @@ jobs:
       matrix:
         # The web benchmark is omitted on pull requests, as its query set varies across runs,
         # which makes its totals incomparable between two runs.
-        benchmark: ${{ github.event_name == 'pull_request' && fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf"]') || fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "web"]') }}
+        benchmark: ${{ github.event_name == 'pull_request' && fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "ldbc-snb-file"]') || fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "ldbc-snb-file", "web"]') }}
     env:
       BENCHMARK_BASE: ${{ github.event_name == 'pull_request' }}
     steps:
@@ -334,7 +336,8 @@ jobs:
         run: yarn install --frozen-lockfile
         working-directory: base
       - name: Run benchmarks of the base commit
-        if: env.BENCHMARK_BASE == 'true'
+        # A benchmark that is new in the pull request has no base results.
+        if: env.BENCHMARK_BASE == 'true' && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
         run: cd base/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
       - name: Remove containers left behind by the base commit benchmarks
         # The TPF benchmarks run their LDF server in Docker on fixed ports,
@@ -348,14 +351,14 @@ jobs:
           name: performance-benchmark-${{ matrix.benchmark }}
           path: head/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
       - uses: actions/upload-artifact@v7
-        if: env.BENCHMARK_BASE == 'true'
+        if: env.BENCHMARK_BASE == 'true' && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
         with:
           name: performance-benchmark-base-${{ matrix.benchmark }}
           path: base/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
       - name: Print raw output
         run: cat head/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
       - name: Print raw output of the base commit
-        if: env.BENCHMARK_BASE == 'true'
+        if: env.BENCHMARK_BASE == 'true' && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
         run: cat base/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
 
   performance-consolidate:
@@ -402,12 +405,16 @@ jobs:
           path: performance/benchmark-bsbm-tpf/combinations/combination_0/output/
       - uses: actions/download-artifact@v8
         with:
+          name: performance-benchmark-ldbc-snb-file
+          path: performance/benchmark-ldbc-snb-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
           name: performance-benchmark-web
           path: performance/benchmark-web/combinations/combination_0/output/
       - name: Process benchmark detailed results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,Web --total false --detailed true --name ghbench-detail.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,Web --total false --detailed true --name ghbench-detail.json
       - name: Process benchmark total results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,Web --total true --detailed false --name ghbench-total.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,Web --total true --detailed false --name ghbench-total.json
       - name: Determine benchmark detailed results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_DETAIL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail" >> $GITHUB_ENV
       - name: Determine benchmarks total results target directory name
@@ -488,6 +495,10 @@ jobs:
           path: performance/benchmark-bsbm-tpf/combinations/combination_0/output/
       - uses: actions/download-artifact@v8
         with:
+          name: performance-benchmark-ldbc-snb-file
+          path: performance/benchmark-ldbc-snb-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        with:
           name: performance-benchmark-base-watdiv-file
           path: base/performance/benchmark-watdiv-file/combinations/combination_0/output/
       - uses: actions/download-artifact@v8
@@ -506,14 +517,31 @@ jobs:
         with:
           name: performance-benchmark-base-bsbm-tpf
           path: base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        # Missing when the benchmark is new in the pull request
+        continue-on-error: true
+        with:
+          name: performance-benchmark-base-ldbc-snb-file
+          path: base/performance/benchmark-ldbc-snb-file/combinations/combination_0/output/
       - name: Process benchmark detailed results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total false --detailed true --name ghbench-detail.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File --total false --detailed true --name ghbench-detail.json
       - name: Process benchmark total results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total true --detailed false --name ghbench-total.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File --total true --detailed false --name ghbench-total.json
+      - name: Determine base commit benchmark results
+        # Benchmarks that are new in the pull request have no base results
+        run: |
+          dirs="base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/"
+          labels="WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF"
+          if [ -f base/performance/benchmark-ldbc-snb-file/combinations/combination_0/output/query-times.csv ]; then
+            dirs="$dirs base/performance/benchmark-ldbc-snb-file/combinations/combination_0/output/"
+            labels="$labels,LDBC-SNB-File"
+          fi
+          echo "BASE_BENCHMARK_DIRS=$dirs" >> $GITHUB_ENV
+          echo "BASE_BENCHMARK_LABELS=$labels" >> $GITHUB_ENV
       - name: Process base commit benchmark detailed results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total false --detailed true --name ghbench-base-detail.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench $BASE_BENCHMARK_DIRS --overrideCombinationLabels $BASE_BENCHMARK_LABELS --total false --detailed true --name ghbench-base-detail.json
       - name: Process base commit benchmark total results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench base/performance/benchmark-watdiv-file/combinations/combination_0/output/ base/performance/benchmark-watdiv-tpf/combinations/combination_0/output/ base/performance/benchmark-bsbm-file/combinations/combination_0/output/ base/performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ base/performance/benchmark-bsbm-tpf/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF --total true --detailed false --name ghbench-base-total.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench $BASE_BENCHMARK_DIRS --overrideCombinationLabels $BASE_BENCHMARK_LABELS --total true --detailed false --name ghbench-base-total.json
       - name: Assemble the comparison comment
         # Posted by the performance-comment workflow, as this job
         # receives a read-only GITHUB_TOKEN on pull requests from forks.

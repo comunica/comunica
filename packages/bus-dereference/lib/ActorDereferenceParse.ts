@@ -99,6 +99,19 @@ export abstract class ActorDereferenceParse<
 
   public abstract getMetadata(dereference: IActorDereferenceOutput): Promise<K | undefined>;
 
+  /**
+   * Create an error for data that could not be parsed because its media type could not be determined.
+   * @param dereference The dereference output.
+   * @param cause The error that occurred while parsing.
+   */
+  public static createUnknownMediaTypeError(dereference: IActorDereferenceOutput, cause: unknown): Error {
+    const contentType = dereference.headers?.get('content-type');
+    const message = contentType ?
+      `Could not determine the media type of ${dereference.url} from its content type (${contentType}) or the extension of its URL` :
+      `Could not determine the media type of ${dereference.url}, as it has no content type, and the extension of its URL is not recognized`;
+    return new Error(message, { cause });
+  }
+
   public async run(action: IActionDereferenceParse<K>): Promise<IActorDereferenceParseOutput<S, M>> {
     const { context } = action;
     const mediaTypes: () => Promise<Record<string, number> | undefined> =
@@ -108,19 +121,24 @@ export abstract class ActorDereferenceParse<
     let result: IActorParseOutput<S, M>;
 
     if (dereference.exists) {
+      // eslint-disable-next-line ts/prefer-nullish-coalescing
+      const handleMediaType = dereference.mediaType || action.mediaType ||
+        getMediaTypeFromExtension(dereference.url, this.mediaMappings);
       try {
         result = (await this.mediatorParse.mediate({
           context,
           handle: { context, ...dereference, metadata: await this.getMetadata(dereference) },
-          // eslint-disable-next-line ts/prefer-nullish-coalescing
-          handleMediaType: dereference.mediaType || action.mediaType ||
-            getMediaTypeFromExtension(dereference.url, this.mediaMappings),
+          handleMediaType,
         })).handle;
         result.data = this.handleDereferenceStreamErrors(action, result.data);
       } catch (error: unknown) {
         // Close the body, to avoid process to hang
         await dereference.data.close?.();
-        result = await this.dereferenceErrorHandler(action, error, {});
+        result = await this.dereferenceErrorHandler(
+          action,
+          handleMediaType ? error : ActorDereferenceParse.createUnknownMediaTypeError(dereference, error),
+          {},
+        );
       }
     } else {
       // Close the dereference stream and return an empty response directly to avoid unnecessary processing.

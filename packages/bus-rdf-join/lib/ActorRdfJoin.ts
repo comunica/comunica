@@ -19,6 +19,7 @@ import type {
   MetadataVariable,
   LogicalJoinType,
 } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/utils-metadata';
 import { getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -74,6 +75,10 @@ TS
    */
   protected readonly canHandleOperationRequired?: boolean;
   /**
+   * If this join operator can handle join actions with an expression.
+   */
+  protected readonly canHandleExpression?: boolean;
+  /**
    * If this actor pushes bindings of one entry into the source of another entry.
    */
   protected readonly pushesBindingsToSource?: boolean;
@@ -96,6 +101,7 @@ TS
     this.canHandleUndefs = options.canHandleUndefs ?? false;
     this.requiresVariableOverlap = options.requiresVariableOverlap ?? false;
     this.canHandleOperationRequired = options.canHandleOperationRequired ?? false;
+    this.canHandleExpression = options.canHandleExpression ?? false;
     this.pushesBindingsToSource = options.pushesBindingsToSource ?? false;
   }
 
@@ -435,6 +441,11 @@ TS
       return failTest(`${this.name} does not work with operationRequired.`);
     }
 
+    // Check if a join expression is supported.
+    if (!this.canHandleExpression && action.expression) {
+      return failTest(`${this.name} can not handle join expressions.`);
+    }
+
     // Pushing bindings into a source happens in chunks, with one source invocation per chunk.
     // The target of a SERVICE SILENT clause must produce exactly one empty solution when it fails,
     // which it could not do if it were invoked once per chunk.
@@ -452,10 +463,11 @@ TS
       }
     }
 
-    // This actor only works with common variables
+    // This actor only works with common variables, unless entries are connected through a required operation
+    // or a join expression.
     if (this.requiresVariableOverlap &&
       (overlappingVariables ?? ActorRdfJoin.overlappingVariables(metadatas)).length === 0 &&
-      !someOperationRequired) {
+      !someOperationRequired && !action.expression) {
       return failTest(`Actor ${this.name} can only join entries with at least one common variable`);
     }
 
@@ -603,6 +615,11 @@ export interface IActorRdfJoinInternalOptions {
    */
   canHandleOperationRequired?: boolean;
   /**
+   * If this join operator can handle join actions with an expression.
+   * Defaults to false.
+   */
+  canHandleExpression?: boolean;
+  /**
    * If this actor pushes bindings of one entry into the source of another entry,
    * which it does in chunks, resulting in one source invocation per chunk.
    * Defaults to false.
@@ -623,6 +640,12 @@ export interface IActionRdfJoin extends IAction {
    * If this join operation is within the scope of a GRAPH ?g.
    */
   graphVariableFromParentScope?: RDF.Variable;
+  /**
+   * An optional expression that joined bindings must satisfy.
+   * This is used for left joins with a filter expression that can not be pushed into the right entry,
+   * in which case left bindings without a joined binding satisfying the expression are kept as-is.
+   */
+  expression?: Algebra.Expression;
 }
 
 export interface IActorRdfJoinOutputInner {
