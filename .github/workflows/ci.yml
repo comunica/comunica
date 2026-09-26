@@ -473,6 +473,10 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION_HIGHEST }}
+          cache: yarn
+      - name: Install dependencies
+        # Only needed for running the comparison script with ts-node, so the monorepo is not built
+        run: yarn install --frozen-lockfile --ignore-scripts
       - uses: actions/download-artifact@v8
         with:
           name: performance-benchmark-watdiv-file
@@ -547,123 +551,9 @@ jobs:
           PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set -eu
-          table () {
-            jq -rn \
-              --slurpfile headResults ghbench-detail.json \
-              --slurpfile baseResults ghbench-base-detail.json \
-              --arg headSha "$HEAD_SHA" \
-              --arg baseSha "$BASE_SHA" \
-              --arg mode "$1" \
-              '
-                def row: "| " + join(" | ") + " |";
-                # Ratios are rounded to two decimals, and are below 1 when the pull request is faster
-                def ratio($current; $previous):
-                  if $previous == 0
-                  then (if $current == 0 then "1.00" else "\u221e" end)
-                  else ($current * 100 / $previous | round)
-                    | "\(. / 100 | floor).\(. % 100 | tostring | if length == 1 then "0\(.)" else . end)"
-                  end;
-                def isFailures: .name | endswith(" - failed queries");
-                def suite: .name | split(" - ")[0];
-                def query: .name | split(" - ")[1:] | join(" - ");
-                # Per-instantiation error flags, as listed by psbr in the extra field
-                def errors: [ .extra // "" | scan("Error: \\[([^\\]]*)\\]") ][0][0] // "" | split(",");
-                # Failed and total instantiations per query of one side, as { name: { failed, count } }.
-                # psbr omits queries that failed for all instantiations, and reports them in its failed queries entries.
-                def failures:
-                  (map(select(isFailures) | (.name | sub(" - failed queries$"; "")) as $suite
-                    | .extra | select(. != "None") | split("; ")[]
-                    | capture("^(?<query>.*): (?<failed>[0-9]+)/(?<count>[0-9]+) failed$")
-                    | { key: "\($suite) - \(.query)", value: { failed: (.failed | tonumber), count: (.count | tonumber) } })
-                  + map(select(isFailures | not) | { key: .name, value: { failed: (errors | map(select(. == "true")) | length), count: (errors | length) } }))
-                  | reduce .[] as $entry ({}; .[$entry.key] //= $entry.value);
-                # One side of a query: its time (null when all instantiations failed), and its failures
-                def side($times; $failures; $name):
-                  if $times[$name] == null and $failures[$name] == null then null
-                  else { value: (if ($failures[$name].failed // 0) > 0 and $failures[$name].failed == $failures[$name].count then null else $times[$name].value end), unit: "ms", failed: ($failures[$name].failed // 0), count: ($failures[$name].count // 0) }
-                  end;
-                def ok: . != null and .failed == 0;
-                def failing: . != null and .failed > 0;
-                def cell($hasSuite):
-                  if . == null then (if $hasSuite then "missing" else "" end)
-                  elif .value == null then "failed"
-                  elif .failed > 0 then "`\(.value)` \(.unit) (\(.failed) failed)"
-                  else "`\(.value)` \(.unit)"
-                  end;
-                ($headResults[0] | map(select(isFailures | not)) | INDEX(.name)) as $headTimes
-                | ($baseResults[0] | map(select(isFailures | not)) | INDEX(.name)) as $baseTimes
-                | ($headResults[0] | failures) as $headFailures
-                | ($baseResults[0] | failures) as $baseFailures
-                | ($headResults[0] | map(suite)) as $headSuites
-                | ($baseResults[0] | map(suite)) as $baseSuites
-                | ([ $headResults[0][], $baseResults[0][] | select(isFailures | not) | .name ] + ($headFailures | keys_unsorted) + ($baseFailures | keys_unsorted)
-                  | reduce .[] as $name ([]; if any(.[]; . == $name) then . else . + [ $name ] end)) as $names
-                | ($names | map({
-                    suite: split(" - ")[0],
-                    query: split(" - ")[1:] | join(" - "),
-                    name: .,
-                    head: side($headTimes; $headFailures; .),
-                    base: side($baseTimes; $baseFailures; .),
-                  })) as $rows
-                | ($rows | reduce .[].suite as $suite ([]; if any(.[]; . == $suite) then . else . + [ $suite ] end)) as $suites
-                | if $mode == "failures"
-                  then
-                    # Queries with failures per side, for suites that both sides ran
-                    ($rows | map(. as $row | select(any($headSuites[]; . == $row.suite) and any($baseSuites[]; . == $row.suite)))) as $compared
-                    | [
-                        [ ":warning: Queries failing in this pull request, but not on the base", ($compared | map(select((.head | failing) and (.base | failing | not)))) ],
-                        [ ":white_check_mark: Queries failing on the base, but not in this pull request", ($compared | map(select((.head | failing | not) and (.base | failing)))) ],
-                        [ ":x: Queries failing on both sides", ($compared | map(select((.head | failing) and (.base | failing)))) ]
-                      ]
-                    | map(select(.[1] != []) | "\(.[0]):\n" + (.[1] | group_by(.suite) | map("- `\(.[0].suite)`: \(map(.query) | join(", "))") | join("\n")))
-                    | join("\n\n")
-                  else
-                    [ ([ "Benchmark suite", "Current: \($headSha)", "Base: \($baseSha)", "Ratio" ] | row), "|-|-|-|-|" ]
-                      + if $mode == "total"
-                        then
-                          # Totals only include queries that succeeded on both sides
-                          ($suites | map(. as $suite
-                            | any($baseSuites[]; . == $suite) as $hasBase
-                            | ($rows | map(select(.suite == $suite))) as $suiteRows
-                            | ($suiteRows | map(select((.head | ok) and (($hasBase | not) or (.base | ok))))) as $included
-                            | ($included | map(.head.value) | add // 0) as $headTotal
-                            | ($included | map(.base.value) | add // 0) as $baseTotal
-                            | ([ "`\($suite)`", (if $hasBase and $included == [] then "" else "`\($headTotal)` ms" end) ]
-                              + if ($hasBase | not) then [ "", "" ]
-                                elif $included == [] then [ "", "n/a" ]
-                                else [ "`\($baseTotal)` ms", "`\(ratio($headTotal; $baseTotal))`" ]
-                                end
-                              | row),
-                              ($suiteRows - $included | map(.query) | select(. != [])
-                                | "\n`\($suite)` totals exclude queries that failed or are missing on either side: \(join(", "))")))
-                          | map(select(startswith("|"))) + map(select(startswith("|") | not))
-                        else
-                          $rows | map(
-                            .suite as $suite
-                            | any($baseSuites[]; . == $suite) as $hasBase
-                            | [ "`\(.name)`", (.head | cell(any($headSuites[]; . == $suite))), (.base | cell($hasBase)),
-                              if (.head | ok) and (.base | ok) then "`\(ratio(.head.value; .base.value))`"
-                              elif $hasBase then "n/a"
-                              else ""
-                              end ]
-                            | row)
-                        end
-                    | join("\n")
-                  end
-              '
-          }
-          {
-            printf '<!-- performance-comparison -->\n\n# Benchmarks total results\n\n'
-            table total
-            failures="$(table failures)"
-            if [ -n "$failures" ]; then
-              printf '\n\n%s' "$failures"
-            fi
-            printf '\n\n<details>\n<summary>Show detailed results</summary>\n\n'
-            table detail
-            printf '\n\n</details>\n\nMeasured by [this CI run](%s/%s/actions/runs/%s).\n' \
-              "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID"
-          } > comparison-comment.md
+          npx ts-node --transpile-only -O '{"rootDir":"."}' packages/utils-monorepo/bin/performance-comparison.ts \
+            ghbench-detail.json ghbench-base-detail.json "$HEAD_SHA" "$BASE_SHA" \
+            "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > comparison-comment.md
           echo "$PULL_REQUEST_NUMBER" > comparison-pull-request.txt
           cat comparison-comment.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v7
