@@ -37,7 +37,7 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
   public static cluster(op: Algebra.Join, factory: AlgebraFactory): Algebra.Operation {
     // Initialize each entry to be in a separate cluster, after flattening nested joins
     const initialClusters: IJoinCluster[] = op.input
-      .flatMap(subOp => subOp.type === Algebra.Types.JOIN ? (<Algebra.Join> subOp).input : [ subOp ])
+      .flatMap(subOp => algebraUtils.isKnownOperation(subOp, Algebra.Types.JOIN) ? subOp.input : [ subOp ])
       .map(subOp => ({
         inScopeVariables: Object.fromEntries(algebraUtils.inScopeVariables(subOp)
           .map(variable => [ variable.value, true ])),
