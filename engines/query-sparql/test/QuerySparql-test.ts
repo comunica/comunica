@@ -33,6 +33,11 @@ describe('System test: QuerySparql', () => {
     engine = new QueryEngine();
   });
 
+  beforeEach(async() => {
+    // Tests should not share HTTP state, such as the rate limiting that a test with a slow host leaves behind
+    await engine.invalidateHttpCache();
+  });
+
   /**
    * Create a fetch function that exposes each given store as a SPARQL endpoint.
    * @param endpoints A mapping from endpoint URLs to the stores they answer queries over.
@@ -1959,8 +1964,6 @@ SELECT ?option WHERE {
       });
 
       it('should handle zero-or-more path with variable subject and object over multiple SPARQL endpoints', async() => {
-        // An earlier test leaves rate limiting of example.org behind
-        await engine.invalidateHttpCache();
         const endpoint1 = 'http://example.org/nodes1/sparql';
         const endpoint2 = 'http://example.org/nodes2/sparql';
         const store1 = RdfStore.createDefault();
@@ -3936,8 +3939,6 @@ CONSTRUCT {
     });
 
     it('should not push DistinctTerms into a SPARQL endpoint', async() => {
-      // An earlier test leaves rate limiting of example.org behind
-      await engine.invalidateHttpCache();
       const endpoint = 'http://example.org/distinct/sparql';
       const store = RdfStore.createDefault();
       store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o1')));
