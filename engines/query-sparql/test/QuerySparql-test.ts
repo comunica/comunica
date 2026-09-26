@@ -1410,6 +1410,85 @@ SELECT ?person ?name ?book ?title {
         });
         await expect(bindingsStream.toArray()).resolves.toHaveLength(10);
       });
+
+      describe('with a FILTER (NOT) EXISTS next to a SERVICE clause', () => {
+        const endpoint = 'http://example.org/service-exists/sparql';
+        let context: QueryStringContext;
+        beforeEach(() => {
+          const store = RdfStore.createDefault();
+          store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:q'), DF.namedNode('ex:o')));
+          // Only ex:s2 has ex:q in the endpoint, so evaluating the EXISTS there swaps the results
+          const endpointStore = RdfStore.createDefault();
+          endpointStore.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+          endpointStore.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+          endpointStore.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:q'), DF.namedNode('ex:o')));
+          context = {
+            sources: [ store ],
+            fetch: createSparqlEndpointsFetch({ [endpoint]: endpointStore }),
+          };
+        });
+
+        it('should evaluate EXISTS over the sources in the context', async() => {
+          // An earlier test leaves rate limiting of example.org behind
+          await engine.invalidateHttpCache();
+          const bindingsStream = await engine.queryBindings(`
+            SELECT ?s WHERE {
+              SERVICE <${endpoint}> { ?s <ex:p> ?o }
+              FILTER EXISTS { ?s <ex:q> ?x }
+            }`, context);
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:s1') ]]),
+          ]);
+        });
+
+        it('should evaluate NOT EXISTS over the sources in the context', async() => {
+          // An earlier test leaves rate limiting of example.org behind
+          await engine.invalidateHttpCache();
+          const bindingsStream = await engine.queryBindings(`
+            SELECT ?s WHERE {
+              SERVICE <${endpoint}> { ?s <ex:p> ?o }
+              FILTER NOT EXISTS { ?s <ex:q> ?x }
+            }`, context);
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:s2') ]]),
+          ]);
+        });
+      });
+
+      describe('with a FILTER NOT EXISTS over multiple SPARQL endpoints', () => {
+        const endpoint1 = 'http://example.org/not-exists1/sparql';
+        const endpoint2 = 'http://example.org/not-exists2/sparql';
+        let context: QueryStringContext;
+        beforeEach(() => {
+          const store1 = RdfStore.createDefault();
+          store1.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+          // No endpoint has ex:q, so the pattern within the NOT EXISTS is pruned for all of them
+          context = {
+            sources: [ endpoint1, endpoint2 ],
+            fetch: createSparqlEndpointsFetch({ [endpoint1]: store1, [endpoint2]: RdfStore.createDefault() }),
+          };
+        });
+
+        it('should evaluate NOT EXISTS in an ASK query', async() => {
+          // An earlier test leaves rate limiting of example.org behind
+          await engine.invalidateHttpCache();
+          await expect(engine.queryBoolean(`
+            ASK { ?s <ex:p> ?o FILTER NOT EXISTS { ?s <ex:q> ?x } }`, context)).resolves.toBe(true);
+        });
+
+        it('should evaluate NOT EXISTS in an OPTIONAL', async() => {
+          // An earlier test leaves rate limiting of example.org behind
+          await engine.invalidateHttpCache();
+          const bindingsStream = await engine.queryBindings(`
+            SELECT ?s {
+              ?s <ex:p> ?o
+              OPTIONAL { ?s <ex:p> ?y FILTER NOT EXISTS { ?s <ex:q> ?x } }
+            }`, context);
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:s') ]]),
+          ]);
+        });
+      });
     });
 
     describe('compositefile source', () => {
