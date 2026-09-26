@@ -1,6 +1,6 @@
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { FragmentSelectorShape, IActionContext, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, algebraUtils, isKnownSubType } from '@comunica/utils-algebra';
+import { Algebra, algebraUtils, isKnownSubType, TypesComunica } from '@comunica/utils-algebra';
 import { getDataDestinationValue } from './Utils';
 
 /**
@@ -97,7 +97,10 @@ function doesShapeAcceptOperationRecurseShape(
     }
     case 'wildcard': {
       // All possible operations are accepted by this shape.
-      // As exception, extension functions are not accepted through wildcards.
+      // As exception, Comunica's internal operations and extension functions are not accepted through wildcards.
+      if (isInternalOperation(operation)) {
+        return false;
+      }
       if (options?.wildcardAcceptAllExtensionFunctions) {
         return true;
       }
@@ -207,6 +210,12 @@ function isStandardSparqlFunction(iri: string): boolean {
 function isExtensionFunction(operation: Algebra.Operation): operation is Algebra.NamedExpression {
   return operation && operation.type === Algebra.Types.EXPRESSION &&
     isKnownSubType(operation, Algebra.ExpressionTypes.NAMED) && !isStandardSparqlFunction(operation.name.value);
+}
+
+const internalOperationTypes = new Set<string>(Object.values(TypesComunica));
+
+function isInternalOperation(operation: Algebra.Operation): boolean {
+  return internalOperationTypes.has(operation.type);
 }
 
 export type FragmentSelectorShapeTestFlags = {
