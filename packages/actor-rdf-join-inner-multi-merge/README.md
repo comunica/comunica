@@ -1,6 +1,6 @@
-# Comunica Inner Multi Seek Merge RDF Join Actor
+# Comunica Inner Multi Merge RDF Join Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-inner-multi-seek-merge.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-inner-multi-seek-merge)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-inner-multi-merge.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-inner-multi-merge)
 
 An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that inner-joins three or
 more streams that are all sorted on the same variable in a single pass, by merging them on that variable: a candidate
@@ -33,7 +33,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-rdf-join-inner-multi-seek-merge
+$ yarn add @comunica/actor-rdf-join-inner-multi-merge
 ```
 
 ## Configure
@@ -43,13 +43,13 @@ After installing, this package can be added to your engine's configuration as fo
 {
   "@context": [
     ...
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-seek-merge/^5.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-inner-multi-merge/^5.0.0/components/context.jsonld"
   ],
   "actors": [
     ...
     {
-      "@id": "urn:comunica:default:rdf-join/actors#inner-multi-seek-merge",
-      "@type": "ActorRdfJoinMultiSeekMerge",
+      "@id": "urn:comunica:default:rdf-join/actors#inner-multi-merge",
+      "@type": "ActorRdfJoinMultiMerge",
       "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
       "mediatorJoin": { "@id": "urn:comunica:default:rdf-join/mediators#main" }
     }

@@ -1,5 +1,5 @@
 {
-  "name": "@comunica/actor-rdf-join-inner-multi-seek-merge",
+  "name": "@comunica/actor-rdf-join-inner-multi-merge",
   "version": "5.4.0",
   "description": "A multi-way merge rdf-join actor that skips ahead over streams sorted on a shared variable",
   "lsd:module": true,
@@ -12,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-rdf-join-inner-multi-seek-merge"
+    "directory": "packages/actor-rdf-join-inner-multi-merge"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

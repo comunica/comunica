@@ -105,7 +105,6 @@
     "@comunica/actor-query-operation-update-deleteinsert": "caqoudi",
     "@comunica/actor-dereference-fallback": "cadf",
     "@comunica/actor-rdf-join-inner-multi-sequential": "carjimse",
-    "@comunica/actor-rdf-join-inner-multi-seek-merge": "carjimsme",
     "@comunica/actor-rdf-join-inner-multi-smallest": "carjimsm",
     "@comunica/actor-rdf-join-inner-none": "carjino",
     "@comunica/actor-rdf-join-inner-single": "carjisi",

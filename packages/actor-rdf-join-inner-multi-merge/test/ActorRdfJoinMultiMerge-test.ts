@@ -16,8 +16,8 @@ import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorRdfJoinMultiSeekMerge } from '../lib/ActorRdfJoinMultiSeekMerge';
-import { SeekMergeJoinIterator } from '../lib/SeekMergeJoinIterator';
+import { ActorRdfJoinMultiMerge } from '../lib/ActorRdfJoinMultiMerge';
+import { MultiMergeJoinIterator } from '../lib/MultiMergeJoinIterator';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -63,12 +63,12 @@ function bind(values: Record<string, string>): Bindings {
   return BF.bindings(Object.entries(values).map(([ name, value ]) => [ DF.variable(name), DF.literal(value) ]));
 }
 
-describe('ActorRdfJoinMultiSeekMerge', () => {
+describe('ActorRdfJoinMultiMerge', () => {
   let bus: any;
   let context: IActionContext;
   let mediatorJoinSelectivity: any;
   let mediatorJoin: any;
-  let actor: ActorRdfJoinMultiSeekMerge;
+  let actor: ActorRdfJoinMultiMerge;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -82,7 +82,7 @@ describe('ActorRdfJoinMultiSeekMerge', () => {
         entries: action.entries,
       })),
     };
-    actor = new ActorRdfJoinMultiSeekMerge({ name: 'actor', bus, mediatorJoinSelectivity, mediatorJoin });
+    actor = new ActorRdfJoinMultiMerge({ name: 'actor', bus, mediatorJoinSelectivity, mediatorJoin });
   });
 
   it('is an ActorRdfJoin', () => {
@@ -91,14 +91,14 @@ describe('ActorRdfJoinMultiSeekMerge', () => {
 
   describe('getMergeVariable', () => {
     it('finds nothing when no entry is sorted', () => {
-      expect(ActorRdfJoinMultiSeekMerge.getMergeVariable([
+      expect(ActorRdfJoinMultiMerge.getMergeVariable([
         metadata(1, [ variable('a') ]),
         metadata(1, [ variable('a') ]),
       ])).toBeUndefined();
     });
 
     it('skips entries sorted in descending order, or on a variable that can be undefined', () => {
-      expect(ActorRdfJoinMultiSeekMerge.getMergeVariable([
+      expect(ActorRdfJoinMultiMerge.getMergeVariable([
         metadata(1, [ variable('a') ], order('a', 'desc')),
         metadata(1, [ variable('a', true) ], order('a')),
         metadata(1, [ variable('a') ], order('a')),
@@ -106,7 +106,7 @@ describe('ActorRdfJoinMultiSeekMerge', () => {
     });
 
     it('picks the variable that most entries are sorted on', () => {
-      expect(ActorRdfJoinMultiSeekMerge.getMergeVariable([
+      expect(ActorRdfJoinMultiMerge.getMergeVariable([
         metadata(1, [ variable('a'), variable('b') ], order('b')),
         metadata(9, [ variable('a') ], order('a')),
         metadata(9, [ variable('a') ], order('a')),
@@ -114,7 +114,7 @@ describe('ActorRdfJoinMultiSeekMerge', () => {
     });
 
     it('orders the entries from the smallest to the largest', () => {
-      expect(ActorRdfJoinMultiSeekMerge.getMergeVariable([
+      expect(ActorRdfJoinMultiMerge.getMergeVariable([
         metadata(50, [ variable('a') ], order('a')),
         metadata(5, [ variable('a') ], order('a')),
         metadata(20, [ variable('a') ], order('a')),
@@ -122,7 +122,7 @@ describe('ActorRdfJoinMultiSeekMerge', () => {
     });
 
     it('picks the variable with the smallest entry among equally large groups', () => {
-      expect(ActorRdfJoinMultiSeekMerge.getMergeVariable([
+      expect(ActorRdfJoinMultiMerge.getMergeVariable([
         metadata(9, [ variable('a'), variable('b') ], order('a')),
         metadata(5, [ variable('a'), variable('b') ], order('b')),
         metadata(9, [ variable('a'), variable('b') ], order('a')),
@@ -275,7 +275,7 @@ describe('ActorRdfJoinMultiSeekMerge', () => {
         context,
       };
       const { result } = await (<any> actor).getOutput(action, (await actor.test(action)).getSideData());
-      expect(result.bindingsStream).toBeInstanceOf(SeekMergeJoinIterator);
+      expect(result.bindingsStream).toBeInstanceOf(MultiMergeJoinIterator);
       await expect(arrayifyStream(result.bindingsStream)).resolves.toEqualBindingsArray([
         bind({ a: '2', b: 'b2', c: 'c2', d: 'd2' }),
       ]);
@@ -314,7 +314,7 @@ describe('ActorRdfJoinMultiSeekMerge', () => {
       const { result } = await (<any> actor).getOutput(action, (await actor.test(action)).getSideData());
       expect(mediatorJoin.mediate).toHaveBeenCalledTimes(1);
       const [ joined, rest ] = result.entries;
-      expect(joined.output.bindingsStream).toBeInstanceOf(SeekMergeJoinIterator);
+      expect(joined.output.bindingsStream).toBeInstanceOf(MultiMergeJoinIterator);
       expect(joined.operation.type).toBe('join');
       expect(rest).toBe(action.entries[1]);
     });

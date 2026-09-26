@@ -29,7 +29,7 @@ const EMITTING = 2;
  * As in the merge join, a stream is only asked to skip once it has fallen behind a number of times in a row,
  * since a skip has a fixed cost that only pays off over a gap of more than a few bindings.
  */
-export class SeekMergeJoinIterator extends AsyncIterator<Bindings> {
+export class MultiMergeJoinIterator extends AsyncIterator<Bindings> {
   /**
    * The number of times in a row that a stream must fall behind before it is asked to skip ahead.
    */
@@ -84,7 +84,7 @@ export class SeekMergeJoinIterator extends AsyncIterator<Bindings> {
   public constructor(
     sources: AsyncIterator<Bindings>[],
     compareKeys: (left: Bindings, right: Bindings) => number,
-    seekAfterBehind = SeekMergeJoinIterator.SEEK_AFTER_BEHIND,
+    seekAfterBehind = MultiMergeJoinIterator.SEEK_AFTER_BEHIND,
   ) {
     super();
     this.sources = sources;

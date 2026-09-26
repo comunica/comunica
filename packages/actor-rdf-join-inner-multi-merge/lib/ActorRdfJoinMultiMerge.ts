@@ -14,10 +14,10 @@ import type { Bindings, ComunicaDataFactory, IJoinEntry, MetadataBindings } from
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { compareTerms } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
-import { SeekMergeJoinIterator } from './SeekMergeJoinIterator';
+import { MultiMergeJoinIterator } from './MultiMergeJoinIterator';
 
 /**
- * A comunica Multi Seek Merge RDF Join Actor.
+ * A comunica Multi Merge RDF Join Actor.
  *
  * Joins three or more entries that are all sorted on the same variable in one pass, by merging them on that
  * variable: every entry that is behind skips ahead to the furthest key among all entries. Other variables that
@@ -26,7 +26,7 @@ import { SeekMergeJoinIterator } from './SeekMergeJoinIterator';
  *
  * Entries that are not sorted on that variable are joined with the result afterwards, through the join bus.
  */
-export class ActorRdfJoinMultiSeekMerge extends ActorRdfJoin<IActorRdfJoinMultiSeekMergeTestSideData> {
+export class ActorRdfJoinMultiMerge extends ActorRdfJoin<IActorRdfJoinMultiMergeTestSideData> {
   /**
    * The cost of reading one binding when every merged entry can skip, as for the merge join.
    */
@@ -47,11 +47,11 @@ export class ActorRdfJoinMultiSeekMerge extends ActorRdfJoin<IActorRdfJoinMultiS
 
   public readonly mediatorJoin: MediatorRdfJoin;
 
-  public constructor(args: IActorRdfJoinMultiSeekMergeArgs) {
+  public constructor(args: IActorRdfJoinMultiMergeArgs) {
     super(args, {
       logicalType: 'inner',
-      physicalName: 'multi-seek-merge',
-      limitEntries: ActorRdfJoinMultiSeekMerge.MIN_ENTRIES,
+      physicalName: 'multi-merge',
+      limitEntries: ActorRdfJoinMultiMerge.MIN_ENTRIES,
       limitEntriesMin: true,
       requiresVariableOverlap: true,
       canHandleUndefs: false,
@@ -102,12 +102,12 @@ export class ActorRdfJoinMultiSeekMerge extends ActorRdfJoin<IActorRdfJoinMultiS
 
   protected async getOutput(
     action: IActionRdfJoin,
-    sideData: IActorRdfJoinMultiSeekMergeTestSideData,
+    sideData: IActorRdfJoinMultiMergeTestSideData,
   ): Promise<IActorRdfJoinOutputInner> {
     const { variable, indexes } = sideData;
     const entries = indexes.map(index => action.entries[index]);
     const metadatas = indexes.map(index => sideData.metadatas[index]);
-    const bindingsStream = new SeekMergeJoinIterator(
+    const bindingsStream = new MultiMergeJoinIterator(
       entries.map(entry => entry.output.bindingsStream),
       (left: Bindings, right: Bindings) => compareTerms(left.get(variable)!, right.get(variable)!),
     );
@@ -146,11 +146,11 @@ export class ActorRdfJoinMultiSeekMerge extends ActorRdfJoin<IActorRdfJoinMultiS
   protected async getJoinCoefficients(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
-  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinMultiSeekMergeTestSideData>> {
+  ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinMultiMergeTestSideData>> {
     const { metadatas } = sideData;
-    const group = ActorRdfJoinMultiSeekMerge.getMergeVariable(metadatas);
-    if (!group || group.indexes.length < ActorRdfJoinMultiSeekMerge.MIN_ENTRIES) {
-      return failTest(`Actor ${this.name} can only join at least ${ActorRdfJoinMultiSeekMerge.MIN_ENTRIES} entries that are sorted on a shared variable`);
+    const group = ActorRdfJoinMultiMerge.getMergeVariable(metadatas);
+    if (!group || group.indexes.length < ActorRdfJoinMultiMerge.MIN_ENTRIES) {
+      return failTest(`Actor ${this.name} can only join at least ${ActorRdfJoinMultiMerge.MIN_ENTRIES} entries that are sorted on a shared variable`);
     }
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
@@ -173,13 +173,13 @@ export class ActorRdfJoinMultiSeekMerge extends ActorRdfJoin<IActorRdfJoinMultiS
     // binding it into the merged entries only looks up its own bindings. Such an entry is usually a join, whose
     // estimate tends to be too high, so its actual advantage is often larger still.
     if (metadatas.some((metadata, index) => !group.indexes.includes(index) &&
-      metadata.cardinality.value * ActorRdfJoinMultiSeekMerge.OTHER_ENTRY_RATIO < keys)) {
+      metadata.cardinality.value * ActorRdfJoinMultiMerge.OTHER_ENTRY_RATIO < keys)) {
       return failTest(`Actor ${this.name} leaves joins with an entry much smaller than its result to other actors`);
     }
 
     const perBinding = grouped.every(metadata => metadata.canSeek) ?
-      ActorRdfJoinMultiSeekMerge.ITERATION_COST_ORDERED :
-      ActorRdfJoinMultiSeekMerge.ITERATION_COST;
+      ActorRdfJoinMultiMerge.ITERATION_COST_ORDERED :
+      ActorRdfJoinMultiMerge.ITERATION_COST;
     let iterations = reads * perBinding;
 
     // The other entries are joined with the result one at a time afterwards, as the multi-smallest join does.
@@ -202,14 +202,14 @@ export class ActorRdfJoinMultiSeekMerge extends ActorRdfJoin<IActorRdfJoinMultiS
   }
 }
 
-export interface IActorRdfJoinMultiSeekMergeArgs extends IActorRdfJoinArgs<IActorRdfJoinMultiSeekMergeTestSideData> {
+export interface IActorRdfJoinMultiMergeArgs extends IActorRdfJoinArgs<IActorRdfJoinMultiMergeTestSideData> {
   /**
    * A mediator for joining the entries that are not merged with the result.
    */
   mediatorJoin: MediatorRdfJoin;
 }
 
-export interface IActorRdfJoinMultiSeekMergeTestSideData extends IActorRdfJoinTestSideData {
+export interface IActorRdfJoinMultiMergeTestSideData extends IActorRdfJoinTestSideData {
   /**
    * The variable that the merged entries are sorted on.
    */

@@ -6,7 +6,7 @@ import arrayifyStream from 'arrayify-stream';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
-import { SeekMergeJoinIterator } from '../lib/SeekMergeJoinIterator';
+import { MultiMergeJoinIterator } from '../lib/MultiMergeJoinIterator';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -105,9 +105,9 @@ class SeekableIterator extends ArrayIterator<Bindings> {
   }
 }
 
-describe('SeekMergeJoinIterator', () => {
+describe('MultiMergeJoinIterator', () => {
   it('joins the keys that all streams share, as a cross product of their runs', async() => {
-    const it = new SeekMergeJoinIterator([
+    const it = new MultiMergeJoinIterator([
       array([ bind(1, 'b', 'b1'), bind(2, 'b', 'b2'), bind(2, 'b', 'b2x'), bind(4, 'b', 'b4') ]),
       array([ bind(2, 'c', 'c2'), bind(3, 'c', 'c3'), bind(4, 'c', 'c4') ]),
       array([ bind(0, 'd', 'd0'), bind(2, 'd', 'd2'), bind(2, 'd', 'd2x'), bind(4, 'd', 'd4') ]),
@@ -122,7 +122,7 @@ describe('SeekMergeJoinIterator', () => {
   });
 
   it('drops combinations that disagree on a variable outside the key', async() => {
-    const it = new SeekMergeJoinIterator([
+    const it = new MultiMergeJoinIterator([
       array([ bind(1, 'b', 'x'), bind(1, 'b', 'y') ]),
       array([ bind(1, 'b', 'y'), bind(1, 'b', 'z') ]),
       array([ bind(1, 'c', 'c1') ]),
@@ -133,7 +133,7 @@ describe('SeekMergeJoinIterator', () => {
   });
 
   it('produces nothing when a combination at the first run never agrees', async() => {
-    const it = new SeekMergeJoinIterator([
+    const it = new MultiMergeJoinIterator([
       array([ bind(1, 'b', 'x'), bind(1, 'b', 'y') ]),
       array([ bind(1, 'b', 'z'), bind(1, 'b', 'w') ]),
       array([ bind(1, 'c', 'c1'), bind(1, 'c', 'c2') ]),
@@ -142,7 +142,7 @@ describe('SeekMergeJoinIterator', () => {
   });
 
   it('produces nothing for streams without a common key', async() => {
-    const it = new SeekMergeJoinIterator([
+    const it = new MultiMergeJoinIterator([
       array([ bind(1, 'b', 'b1'), bind(3, 'b', 'b3') ]),
       array([ bind(1, 'c', 'c1'), bind(2, 'c', 'c2') ]),
       array([ bind(2, 'd', 'd2'), bind(3, 'd', 'd3') ]),
@@ -151,7 +151,7 @@ describe('SeekMergeJoinIterator', () => {
   });
 
   it('produces nothing when one stream is empty', async() => {
-    const it = new SeekMergeJoinIterator([
+    const it = new MultiMergeJoinIterator([
       array([ bind(1, 'b', 'b1') ]),
       array([]),
       array([ bind(1, 'd', 'd1') ]),
@@ -161,7 +161,7 @@ describe('SeekMergeJoinIterator', () => {
 
   it('returns null when read after it has ended, and destroys its sources', async() => {
     const sources = [ array([ bind(1, 'b', 'b1') ]), array([ bind(1, 'c', 'c1') ]), array([ bind(1, 'd', 'd1') ]) ];
-    const it = new SeekMergeJoinIterator(sources, compare);
+    const it = new MultiMergeJoinIterator(sources, compare);
     await expect(arrayifyStream(it)).resolves.toHaveLength(1);
     expect(it.read()).toBeNull();
     for (const source of sources) {
@@ -171,7 +171,7 @@ describe('SeekMergeJoinIterator', () => {
 
   it('emits errors from its sources', async() => {
     const failing = new ControlledIterator();
-    const result = arrayifyStream(new SeekMergeJoinIterator([
+    const result = arrayifyStream(new MultiMergeJoinIterator([
       array([ bind(1, 'b', 'b1') ]),
       failing,
       array([ bind(1, 'd', 'd1') ]),
@@ -183,7 +183,7 @@ describe('SeekMergeJoinIterator', () => {
 
   it('waits for sources that have nothing buffered yet', async() => {
     const sources = [ new ControlledIterator(), new ControlledIterator(), new ControlledIterator() ];
-    const result = arrayifyStream(new SeekMergeJoinIterator(sources, compare));
+    const result = arrayifyStream(new MultiMergeJoinIterator(sources, compare));
     const tick = (): Promise<void> => new Promise(resolve => setImmediate(resolve));
     // Feed the sources in stages, so that seeking and collecting both have to pause and resume.
     await tick();
@@ -237,9 +237,9 @@ describe('SeekMergeJoinIterator', () => {
     }
     expect(expected.length).toBeGreaterThan(0);
 
-    const plain = await arrayifyStream(new SeekMergeJoinIterator(inputs.map(array), compare));
+    const plain = await arrayifyStream(new MultiMergeJoinIterator(inputs.map(array), compare));
     expect(asMultiset(plain)).toEqual(asMultiset(expected));
-    const seeking = await arrayifyStream(new SeekMergeJoinIterator(
+    const seeking = await arrayifyStream(new MultiMergeJoinIterator(
       inputs.map(input => new SeekableIterator(input)),
       compare,
       1,
@@ -251,7 +251,7 @@ describe('SeekMergeJoinIterator', () => {
     const first = new SeekableIterator([ bind(1, 'b', 'b1'), bind(3, 'b', 'b3'), bind(5, 'b', 'b5') ]);
     const second = new SeekableIterator([ bind(2, 'c', 'c2'), bind(4, 'c', 'c4'), bind(6, 'c', 'c6') ]);
     const last = new SeekableIterator(Array.from({ length: 100 }, (_, i) => bind(i, 'd', `d${i}`)));
-    await expect(arrayifyStream(new SeekMergeJoinIterator([ first, second, last ], compare))).resolves.toHaveLength(0);
+    await expect(arrayifyStream(new MultiMergeJoinIterator([ first, second, last ], compare))).resolves.toHaveLength(0);
     expect(last.reads).toBe(0);
   });
 
@@ -261,7 +261,7 @@ describe('SeekMergeJoinIterator', () => {
         Array.from({ length: 1000 }, (_, i) => bind(i, other, `${other}${i}`)),
       );
       const sources = [ long('b'), new SeekableIterator([ bind(500, 'c', 'c'), bind(900, 'c', 'c') ]), long('d') ];
-      const it = new SeekMergeJoinIterator(sources, compare);
+      const it = new MultiMergeJoinIterator(sources, compare);
       await expect(arrayifyStream(it)).resolves.toHaveLength(2);
       expect(sources[0].skipped).toBeGreaterThan(800);
       expect(sources[2].skipped).toBeGreaterThan(800);
@@ -271,7 +271,7 @@ describe('SeekMergeJoinIterator', () => {
       const sources = [ 'b', 'c', 'd' ].map(other => new SeekableIterator(
         Array.from({ length: 100 }, (_, i) => bind(i, other, `${other}${i}`)),
       ));
-      await expect(arrayifyStream(new SeekMergeJoinIterator(sources, compare))).resolves.toHaveLength(100);
+      await expect(arrayifyStream(new MultiMergeJoinIterator(sources, compare))).resolves.toHaveLength(100);
       for (const source of sources) {
         expect(source.seeks).toBe(0);
       }
@@ -287,7 +287,7 @@ describe('SeekMergeJoinIterator', () => {
 
     it('skips every source ahead before anything was read', async() => {
       const inputs = sources();
-      const it = new SeekMergeJoinIterator(inputs, compare);
+      const it = new MultiMergeJoinIterator(inputs, compare);
       it.seek(bind(90, 'e', 'e'));
       await expect(arrayifyStream(it)).resolves.toHaveLength(10);
       for (const input of inputs) {
@@ -299,7 +299,7 @@ describe('SeekMergeJoinIterator', () => {
       const behind = new SeekableIterator([ bind(1, 'b', 'b1'), bind(5, 'b', 'b5'), bind(7, 'b', 'b7') ]);
       const pending = new ControlledIterator();
       const ahead = new SeekableIterator([ bind(7, 'd', 'd7') ]);
-      const it = new SeekMergeJoinIterator([ behind, pending, ahead ], compare, Number.POSITIVE_INFINITY);
+      const it = new MultiMergeJoinIterator([ behind, pending, ahead ], compare, Number.POSITIVE_INFINITY);
       // The first source now holds its first binding, and the second has none yet.
       expect(it.read()).toBeNull();
       it.seek(bind(6, 'e', 'e'));
@@ -316,7 +316,7 @@ describe('SeekMergeJoinIterator', () => {
       const first = new SeekableIterator([ bind(7, 'b', 'b7') ]);
       const second = new SeekableIterator([ bind(7, 'c', 'c7'), bind(9, 'c', 'c9') ]);
       const pending = new ControlledIterator();
-      const it = new SeekMergeJoinIterator([ first, second, pending ], compare, Number.POSITIVE_INFINITY);
+      const it = new MultiMergeJoinIterator([ first, second, pending ], compare, Number.POSITIVE_INFINITY);
       // The first two sources are at key 7, and the third has nothing yet.
       expect(it.read()).toBeNull();
       it.seek(bind(6, 'e', 'e'));
@@ -330,7 +330,7 @@ describe('SeekMergeJoinIterator', () => {
     });
 
     it('is ignored while a key is being emitted', async() => {
-      const it = new SeekMergeJoinIterator([
+      const it = new MultiMergeJoinIterator([
         array([ bind(1, 'b', 'b1'), bind(1, 'b', 'b1x'), bind(2, 'b', 'b2') ]),
         array([ bind(1, 'c', 'c1'), bind(2, 'c', 'c2') ]),
         array([ bind(1, 'd', 'd1'), bind(2, 'd', 'd2') ]),
@@ -344,7 +344,7 @@ describe('SeekMergeJoinIterator', () => {
     });
 
     it('leaves sources alone that ended or cannot skip', async() => {
-      const it = new SeekMergeJoinIterator([
+      const it = new MultiMergeJoinIterator([
         array([ bind(1, 'b', 'b1') ]),
         array([]),
         array([ bind(1, 'd', 'd1') ]),
