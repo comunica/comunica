@@ -583,39 +583,56 @@ jobs:
                 | ($headResults[0] + ($baseResults[0] | map(select($head[.name] == null))))
                 | map({ suite: suite, query: query, name, head: $head[.name], base: $base[.name] }) as $rows
                 | ($rows | reduce .[].suite as $suite ([]; if any(.[]; . == $suite) then . else . + [ $suite ] end)) as $suites
-                | [ ([ "Benchmark suite", "Current: \($headSha)", "Base: \($baseSha)", "Ratio" ] | row), "|-|-|-|-|" ]
-                  + if $mode == "total"
-                    then
-                      # Totals only include queries that succeeded on both sides
-                      ($suites | map(. as $suite
-                        | any($baseSuites[]; . == $suite) as $hasBase
-                        | ($rows | map(select(.suite == $suite))) as $suiteRows
-                        | ($suiteRows | map(select((.head | ok) and (($hasBase | not) or (.base | ok))))) as $included
-                        | ($included | map(.head.value) | add // 0) as $headTotal
-                        | ($included | map(.base.value) | add // 0) as $baseTotal
-                        | ([ "`\($suite)`", "`\($headTotal)` ms" ]
-                          + if $hasBase then [ "`\($baseTotal)` ms", "`\(ratio($headTotal; $baseTotal))`" ] else [ "", "" ] end
-                          | row),
-                          ($suiteRows - $included | map(.query) | select(. != [])
-                            | "\n`\($suite)` totals exclude queries that failed or are missing on either side: \(join(", "))")))
-                      | map(select(startswith("|"))) + map(select(startswith("|") | not))
-                    else
-                      $rows | map(
-                        .suite as $suite
-                        | any($baseSuites[]; . == $suite) as $hasBase
-                        | [ "`\(.name)`", (.head | cell(any($headSuites[]; . == $suite))), (.base | cell($hasBase)),
-                          if (.head | ok) and (.base | ok) then "`\(ratio(.head.value; .base.value))`"
-                          elif $hasBase then "n/a"
-                          else ""
-                          end ]
-                        | row)
-                    end
-                | join("\n")
+                | if $mode == "failures"
+                  then
+                    # Queries with failures per side, for suites that both sides ran
+                    ($rows | map(. as $row | select(any($headSuites[]; . == $row.suite) and any($baseSuites[]; . == $row.suite)))) as $compared
+                    | [
+                        [ ":warning: Queries failing or missing in this pull request, but not on the base", ($compared | map(select((.head | ok | not) and (.base | ok)))) ],
+                        [ ":white_check_mark: Queries failing or missing on the base, but not in this pull request", ($compared | map(select((.head | ok) and (.base | ok | not)))) ],
+                        [ ":x: Queries failing on both sides", ($compared | map(select((.head | ok | not) and (.base | ok | not)))) ]
+                      ]
+                    | map(select(.[1] != []) | "\(.[0]):\n" + (.[1] | group_by(.suite) | map("- `\(.[0].suite)`: \(map(.query) | join(", "))") | join("\n")))
+                    | join("\n\n")
+                  else
+                    [ ([ "Benchmark suite", "Current: \($headSha)", "Base: \($baseSha)", "Ratio" ] | row), "|-|-|-|-|" ]
+                      + if $mode == "total"
+                        then
+                          # Totals only include queries that succeeded on both sides
+                          ($suites | map(. as $suite
+                            | any($baseSuites[]; . == $suite) as $hasBase
+                            | ($rows | map(select(.suite == $suite))) as $suiteRows
+                            | ($suiteRows | map(select((.head | ok) and (($hasBase | not) or (.base | ok))))) as $included
+                            | ($included | map(.head.value) | add // 0) as $headTotal
+                            | ($included | map(.base.value) | add // 0) as $baseTotal
+                            | ([ "`\($suite)`", "`\($headTotal)` ms" ]
+                              + if $hasBase then [ "`\($baseTotal)` ms", "`\(ratio($headTotal; $baseTotal))`" ] else [ "", "" ] end
+                              | row),
+                              ($suiteRows - $included | map(.query) | select(. != [])
+                                | "\n`\($suite)` totals exclude queries that failed or are missing on either side: \(join(", "))")))
+                          | map(select(startswith("|"))) + map(select(startswith("|") | not))
+                        else
+                          $rows | map(
+                            .suite as $suite
+                            | any($baseSuites[]; . == $suite) as $hasBase
+                            | [ "`\(.name)`", (.head | cell(any($headSuites[]; . == $suite))), (.base | cell($hasBase)),
+                              if (.head | ok) and (.base | ok) then "`\(ratio(.head.value; .base.value))`"
+                              elif $hasBase then "n/a"
+                              else ""
+                              end ]
+                            | row)
+                        end
+                    | join("\n")
+                  end
               '
           }
           {
             printf '<!-- performance-comparison -->\n\n# Benchmarks total results\n\n'
             table total
+            failures="$(table failures)"
+            if [ -n "$failures" ]; then
+              printf '\n\n%s' "$failures"
+            fi
             printf '\n\n<details>\n<summary>Show detailed results</summary>\n\n'
             table detail
             printf '\n\n</details>\n\nMeasured by [this CI run](%s/%s/actions/runs/%s).\n' \
