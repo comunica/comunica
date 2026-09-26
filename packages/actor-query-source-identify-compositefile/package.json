@@ -48,6 +48,6 @@
     "@comunica/core": "^5.4.0",
     "@comunica/utils-algebra": "^5.4.0",
     "@comunica/utils-bindings-factory": "^5.4.0",
-    "rdf-stores": "^2.5.0"
+    "rdf-stores": "^2.6.0"
   }
 }
