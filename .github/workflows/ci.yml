@@ -566,19 +566,22 @@ jobs:
                 # Per-instantiation error flags, as listed by psbr in the extra field
                 def errors: [ .extra // "" | scan("Error: \\[([^\\]]*)\\]") ][0][0] // "" | split(",");
                 def failures: errors | map(select(. == "true")) | length;
-                # Failed queries are reported with time 0, so they are never compared
+                # Queries that failed for all instantiations are omitted by recent psbr versions, and 0 in older ones
                 def ok: . != null and failures == 0;
-                def cell:
-                  if . == null then ""
+                def cell($hasSuite):
+                  if . == null then (if $hasSuite then "failed or missing" else "" end)
                   elif failures > 0 and failures == (errors | length) then "failed"
                   elif failures > 0 then "`\(.value)` \(.unit) (\(failures) failed)"
                   else "`\(.value)` \(.unit)"
                   end;
                 def suite: .name | split(" - ")[0];
                 def query: .name | split(" - ")[1:] | join(" - ");
-                ($baseResults[0] | INDEX(.name)) as $base
+                ($headResults[0] | INDEX(.name)) as $head
+                | ($baseResults[0] | INDEX(.name)) as $base
+                | ($headResults[0] | map(suite)) as $headSuites
                 | ($baseResults[0] | map(suite)) as $baseSuites
-                | ($headResults[0] | map({ suite: suite, query: query, name, head: ., base: $base[.name] })) as $rows
+                | ($headResults[0] + ($baseResults[0] | map(select($head[.name] == null))))
+                | map({ suite: suite, query: query, name, head: $head[.name], base: $base[.name] }) as $rows
                 | ($rows | reduce .[].suite as $suite ([]; if any(.[]; . == $suite) then . else . + [ $suite ] end)) as $suites
                 | [ ([ "Benchmark suite", "Current: \($headSha)", "Base: \($baseSha)", "Ratio" ] | row), "|-|-|-|-|" ]
                   + if $mode == "total"
@@ -598,10 +601,12 @@ jobs:
                       | map(select(startswith("|"))) + map(select(startswith("|") | not))
                     else
                       $rows | map(
-                        [ "`\(.name)`", (.head | cell), (.base | cell),
-                          if .base == null then ""
-                          elif (.head | ok) and (.base | ok) then "`\(ratio(.head.value; .base.value))`"
-                          else "n/a"
+                        .suite as $suite
+                        | any($baseSuites[]; . == $suite) as $hasBase
+                        | [ "`\(.name)`", (.head | cell(any($headSuites[]; . == $suite))), (.base | cell($hasBase)),
+                          if (.head | ok) and (.base | ok) then "`\(ratio(.head.value; .base.value))`"
+                          elif $hasBase then "n/a"
+                          else ""
                           end ]
                         | row)
                     end
