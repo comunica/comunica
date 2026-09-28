@@ -104,5 +104,53 @@ describe('ActorQuerySerializeSparql', () => {
         indentWidth: 0,
       })).resolves.toEqual({ query: `SELECT ?s WHERE { ?s <ex:p> <ex:o> . ?s <ex:p2> <ex:o2> . }` });
     });
+
+    describe('with a projection of the aggregate variables of a group', () => {
+      const bgp = AF.createBgp([ AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')) ]);
+
+      it('should write each kind of aggregate as the expression of its variable', async() => {
+        const o = AF.createTermExpression(DF.variable('o'));
+        await expect(actor.run({
+          operation: AF.createProject(
+            AF.createGroup(bgp, [ DF.variable('s') ], [
+              AF.createBoundAggregate(DF.variable('var0'), 'count', o, false),
+              AF.createBoundAggregate(DF.variable('var1'), 'count', AF.createWildcardExpression(), false),
+              AF.createBoundAggregate(DF.variable('var2'), 'count', o, true),
+              AF.createBoundAggregate(DF.variable('var3'), 'sum', o, false),
+              AF.createBoundAggregate(DF.variable('var4'), 'sample', o, false),
+              AF.createBoundAggregate(DF.variable('var5'), 'group_concat', o, false, '|'),
+            ]),
+            [ 'var0', 'var1', 'var2', 'var3', 'var4', 'var5', 's' ].map(name => DF.variable(name)),
+          ),
+          queryFormat: { language: 'sparql', version: '1.2' },
+          context,
+          newlines: false,
+          indentWidth: 0,
+        })).resolves.toEqual({ query: 'SELECT ( COUNT( ?o ) AS ?var0 ) ( COUNT( * ) AS ?var1 ) ' +
+          '( COUNT( DISTINCT ?o ) AS ?var2 ) ( SUM( ?o ) AS ?var3 ) ( SAMPLE( ?o ) AS ?var4 ) ' +
+          '( GROUP_CONCAT( ?o ;SEPARATOR="|" ) AS ?var5 ) ?s WHERE { ?s ?p ?o . } GROUP BY ?s' });
+      });
+
+      it('should write an aggregate as the expression of its variable next to an extension of it', async() => {
+        await expect(actor.run({
+          operation: AF.createProject(
+            AF.createExtend(
+              AF.createGroup(bgp, [ DF.variable('s') ], [
+                AF.createBoundAggregate(DF.variable('var0'), 'count', AF.createTermExpression(DF.variable('o')), false),
+              ]),
+              DF.variable('c'),
+              AF.createTermExpression(DF.variable('var0')),
+            ),
+            [ DF.variable('var0'), DF.variable('s'), DF.variable('c') ],
+          ),
+          queryFormat: { language: 'sparql', version: '1.2' },
+          context,
+          newlines: false,
+          indentWidth: 0,
+        })).resolves.toEqual({
+          query: 'SELECT ( COUNT( ?o ) AS ?var0 ) ?s ( COUNT( ?o ) AS ?c ) WHERE { ?s ?p ?o . } GROUP BY ?s',
+        });
+      });
+    });
   });
 });
