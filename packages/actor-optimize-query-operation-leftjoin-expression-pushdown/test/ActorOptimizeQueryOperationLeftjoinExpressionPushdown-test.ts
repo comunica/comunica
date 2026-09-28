@@ -1,6 +1,6 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { AlgebraFactory } from '@comunica/utils-algebra';
+import { AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationLeftjoinExpressionPushdown } from '..';
 import '@comunica/utils-jest';
@@ -71,18 +71,20 @@ describe('ActorOptimizeQueryOperationLeftjoinExpressionPushdown', () => {
           context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
           operation: operationIn,
         });
+        const filter = algebraUtils.withMetadata(AF.createFilter(
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s2'), DF.variable('p2') ],
+          ),
+          AF.createTermExpression(DF.variable('s2')),
+        ));
+        filter.metadata.isHoistedLeftJoinFilter = true;
         expect(operationOut).toEqual(AF.createLeftJoin(
           AF.createProject(
             AF.createBgp([]),
             [ DF.variable('s1'), DF.variable('p1') ],
           ),
-          AF.createFilter(
-            AF.createProject(
-              AF.createBgp([]),
-              [ DF.variable('s2'), DF.variable('p2') ],
-            ),
-            AF.createTermExpression(DF.variable('s2')),
-          ),
+          filter,
         ));
       });
 
