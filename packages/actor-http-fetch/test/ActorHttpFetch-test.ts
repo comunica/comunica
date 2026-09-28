@@ -181,6 +181,7 @@ describe('ActorHttpFetch', () => {
       const timeoutMilliseconds = 10_000;
       const contextWithTimeout = context.set(KeysHttp.httpTimeout, timeoutMilliseconds);
       const expectedError = new Error(`Fetch timed out for ${input} after ${timeoutMilliseconds} ms`);
+      expectedError.name = 'TimeoutError';
       // Mocks the fetch output to a promise that is never resolved, to mimick no reply from server,
       // and makes sure the promise is rejected on abort signal to simulate the fetch functionality
       jest.spyOn(globalThis, 'fetch').mockImplementation((_, init) => {
@@ -209,6 +210,7 @@ describe('ActorHttpFetch', () => {
       const timeoutMilliseconds = 10_000;
       const contextWithTimeout = context.set(KeysHttp.httpTimeout, timeoutMilliseconds);
       const expectedError = new Error(`Fetch timed out for ${input} after ${timeoutMilliseconds} ms`);
+      expectedError.name = 'TimeoutError';
       // Mocks the fetch output to a promise that is never resolved, to mimick no reply from server,
       // and makes sure the promise is rejected on abort signal to simulate the fetch functionality
       jest.spyOn(globalThis, 'fetch').mockImplementation((_, init) => {
@@ -250,6 +252,7 @@ describe('ActorHttpFetch', () => {
         .set(KeysHttp.httpTimeout, timeoutMilliseconds)
         .set(KeysHttp.httpBodyTimeout, true);
       const expectedError = new Error(`Fetch timed out for ${input} after ${timeoutMilliseconds} ms`);
+      expectedError.name = 'TimeoutError';
       jest.spyOn(globalThis, 'fetch').mockImplementation((_, init) => {
         let bodyReadReject: Function;
         const body = new ReadableStream({
