@@ -970,6 +970,56 @@ IActorRdfJoinSelectivityOutput
       });
     });
 
+    it('should cap optional cardinalities by their shared variables', async() => {
+      await expect(instance.constructResultMetadata([], [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 2 },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 1000 },
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
+        },
+      ], action.context, {}, true)).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'estimate', value: 2 },
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
+      });
+    });
+
+    it('should not cap optional cardinalities below the first entry', async() => {
+      await expect(instance.constructResultMetadata([], [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 10 },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 2 },
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
+        },
+      ], action.context, {}, true)).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'estimate', value: 10 },
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
+      });
+    });
+
     it('should handle metadata invalidation', async() => {
       const state1 = new MetadataValidationState();
       const metadataOut = await instance.constructResultMetadata([], [
