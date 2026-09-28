@@ -98,6 +98,38 @@ describe('ActorRdfJoinEntriesSortSelectivity', () => {
           ],
         });
       });
+
+      it('should prefer entries with lower cardinality on equal selectivity', async() => {
+        await expect(actor.run({
+          entries: [
+            <any> { metadata: { v: [ 'a' ], cardinality: { value: Number.POSITIVE_INFINITY }}},
+            <any> { metadata: { v: [ 'a' ], cardinality: { value: 100 }}},
+            <any> { metadata: { v: [ 'a' ], cardinality: { value: 20 }}},
+          ],
+          context,
+        })).resolves.toEqual({
+          entries: [
+            <any> { metadata: { v: [ 'a' ], cardinality: { value: 20 }}},
+            <any> { metadata: { v: [ 'a' ], cardinality: { value: 100 }}},
+            <any> { metadata: { v: [ 'a' ], cardinality: { value: Number.POSITIVE_INFINITY }}},
+          ],
+        });
+      });
+
+      it('should keep the original order on equal selectivity and cardinality', async() => {
+        await expect(actor.run({
+          entries: [
+            <any> { id: 1, metadata: { v: [ 'a' ], cardinality: { value: 20 }}},
+            <any> { id: 2, metadata: { v: [ 'a' ], cardinality: { value: 20 }}},
+          ],
+          context,
+        })).resolves.toEqual({
+          entries: [
+            <any> { id: 1, metadata: { v: [ 'a' ], cardinality: { value: 20 }}},
+            <any> { id: 2, metadata: { v: [ 'a' ], cardinality: { value: 20 }}},
+          ],
+        });
+      });
     });
   });
 });
