@@ -41,7 +41,7 @@
     "ccqs:config/query-source-identify-hypermedia/actors-sparql-v5-1-0.json",
     "ccqs:config/query-source-identify-hypermedia/mediators.json",
 
-    "ccqs:config/rdf-join/actors.json",
+    "ccqs:config/rdf-join/actors-v5-4-1.json",
     "ccqs:config/rdf-join/mediators.json",
     "ccqs:config/rdf-join-entries-sort/actors.json",
     "ccqs:config/rdf-join-entries-sort/mediators.json",

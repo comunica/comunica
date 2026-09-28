@@ -1,5 +1,6 @@
 # Datasource: https://www.rubensworks.net/
 SELECT * WHERE {
   ?me foaf:knows? ?other.
+  FILTER(!isBlank(?me) && !isBlank(?other))
 }
 

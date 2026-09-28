@@ -67,6 +67,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     const metadata: (() => Promise<MetadataQuads>) = () => output.metadata().then(meta => ({
       ...meta,
       order: undefined,
+      termOrder: undefined,
       cardinality: {
         type: meta.cardinality.type,
         value: meta.cardinality.value * operationOriginal.template.length,

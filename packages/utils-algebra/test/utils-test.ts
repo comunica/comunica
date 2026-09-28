@@ -1,8 +1,15 @@
 import { DataFactory } from 'rdf-data-factory';
+import type { Operation } from '../lib/Algebra';
 import { Types } from '../lib/Algebra';
 import { AlgebraFactory } from '../lib/AlgebraFactory';
 import type { AlgebraTransformer } from '../lib/utils';
-import { algebraTransformer, getSubOperations, transformer, visitOperationMembers } from '../lib/utils';
+import {
+  algebraTransformer,
+  getSubOperations,
+  inScopeVariables,
+  transformer,
+  visitOperationMembers,
+} from '../lib/utils';
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);
@@ -165,5 +172,48 @@ describe('getSubOperations', () => {
     operation.metadata = { hidden: AF.createNop() };
 
     expect(getSubOperations(operation)).toEqual([ pattern ]);
+  });
+});
+
+describe('inScopeVariables', () => {
+  const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+  const template = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p'), DF.variable('template'));
+
+  /**
+   * Copy the given operation with a pattern hidden in its metadata.
+   * The pattern stands in for a source annotation, whose cycles would make a traversal hang.
+   * @param operation An operation.
+   * @return The copy with the hidden pattern.
+   */
+  function hidePatternInMetadata<O extends Operation>(operation: O): O {
+    const hidden = AF.createPattern(DF.variable('hidden'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+    return { ...operation, metadata: { hidden }};
+  }
+
+  it('does not traverse the metadata of a group', () => {
+    const count = AF.createBoundAggregate(
+      DF.variable('count'),
+      'count',
+      AF.createTermExpression(DF.variable('o')),
+      false,
+    );
+    const group = hidePatternInMetadata(AF.createGroup(pattern, [ DF.variable('s') ], [ count ]));
+
+    // The aggregates of the group are still traversed
+    expect(inScopeVariables(group)).toEqual([ DF.variable('count'), DF.variable('s') ]);
+  });
+
+  it('does not traverse the metadata of a construct', () => {
+    const construct = hidePatternInMetadata(AF.createConstruct(pattern, [ template ]));
+
+    // The template of the construct is still not traversed
+    expect(inScopeVariables(construct)).toEqual([ DF.variable('s'), DF.variable('p'), DF.variable('o') ]);
+  });
+
+  it('does not traverse the metadata of a delete-insert', () => {
+    const deleteInsert = hidePatternInMetadata(AF.createDeleteInsert([ template ], [ template ], pattern));
+
+    // The templates of the delete-insert are still not traversed
+    expect(inScopeVariables(deleteInsert)).toEqual([ DF.variable('s'), DF.variable('p'), DF.variable('o') ]);
   });
 });
