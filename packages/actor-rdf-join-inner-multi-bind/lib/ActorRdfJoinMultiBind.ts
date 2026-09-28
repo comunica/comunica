@@ -21,7 +21,13 @@ import type {
 } from '@comunica/types';
 import { AlgebraFactory, Algebra, algebraUtils, inScopeVariables } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getSafeBindings, groupRepeatedSubOperations, materializeOperation } from '@comunica/utils-query-operation';
+import {
+  getExpressionVariables,
+  getOperationSource,
+  getSafeBindings,
+  groupRepeatedSubOperations,
+  materializeOperation,
+} from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 
@@ -237,8 +243,17 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       },
       [Algebra.Types.FILTER]: {
         preVisitor: (op: Algebra.Filter) => {
-          // Conflict when FILTER is not a direct child of LEFT_JOIN
-          if (!op.metadata?.isHoistedLeftJoinFilter) {
+          // A FILTER that is a direct child of LEFT_JOIN may always use bound variables.
+          if (op.metadata?.isHoistedLeftJoinFilter) {
+            return { shortcut: false };
+          }
+          // Other FILTERs are only bound when they are evaluated by a source, as one request per binding.
+          // Re-evaluating local FILTERs, and everything below them, for each binding can be very expensive,
+          // for example for sub-queries with property paths.
+          // Furthermore, they conflict when they use bound variables that are not in scope of their input,
+          // as these variables would be unbound when evaluating the FILTER without binding.
+          if (!boundVariables || !getOperationSource(op) ||
+            ActorRdfJoinMultiBind.filterUsesOutOfScopeVariables(op, boundVarNames)) {
             valid = false;
             return { shortcut: true };
           }
@@ -258,6 +273,25 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     });
 
     return valid;
+  }
+
+  /**
+   * Check if the expression of the given FILTER uses any of the given variables
+   * that are not in scope of the FILTER's input.
+   * @param filter A FILTER operation.
+   * @param variableNames Variable names.
+   */
+  public static filterUsesOutOfScopeVariables(filter: Algebra.Filter, variableNames: string[]): boolean {
+    let expressionVariables: RDF.Variable[];
+    try {
+      expressionVariables = getExpressionVariables(filter.expression);
+    } catch {
+      // Unknown expression types are considered unsafe
+      return true;
+    }
+    const inputVariableNames = new Set(inScopeVariables(filter.input).map(variable => variable.value));
+    return expressionVariables
+      .some(variable => variableNames.includes(variable.value) && !inputVariableNames.has(variable.value));
   }
 
   public async getJoinCoefficients(
@@ -301,9 +335,10 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     remainingRequestItemTimes.splice(0, 1);
 
     // Reject binding on some operation types
+    const boundVariables = metadatas[0].variables.map(variable => variable.variable);
     if (remainingEntries
-      .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation))) {
-      return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
+      .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation, boundVariables))) {
+      return failTest(`Actor ${this.name} can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations`);
     }
 
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.
