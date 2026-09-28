@@ -8,7 +8,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, AlgebraFactory, isKnownOperation, isKnownSubType } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraTransformer, isKnownOperation, isKnownSubType } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
   doesShapeAcceptOperation,
@@ -51,14 +51,21 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
       return operation;
     }
 
+    // The operation can only move into a source if the inputs of its (NOT) EXISTS expressions share that source.
+    const [ existenceGroupedOperation, existenceInputs ] = await this.groupExistenceInputs(operation, context);
+
     // If operation has a single input, move source annotation upwards if the source can handle it.
     if (!Array.isArray(operation.input)) {
       const groupedInput = await this.groupOperation(<Algebra.Operation> operation.input, context);
-      if (groupedInput.metadata?.scopedSource) {
-        const source: IQuerySourceWrapper = <IQuerySourceWrapper> getOperationSource(groupedInput);
-        operation = await this.moveSourceAnnotationUpwardsIfPossible(operation, [ groupedInput ], source, context);
-      }
-      return <Algebra.Operation> { ...operation, input: groupedInput };
+      return <Algebra.Operation> {
+        ...await this.moveSourceAnnotationUpwardsIfPossible(
+          existenceGroupedOperation,
+          [ groupedInput, ...existenceInputs ],
+          getOperationSource(groupedInput),
+          context,
+        ),
+        input: groupedInput,
+      };
     }
 
     // If operation has multiple inputs, cluster source annotations.
@@ -71,14 +78,19 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
       const newInputs = clusters[0];
       const source = getOperationSource(clusters[0][0])!;
       return <Algebra.Operation> {
-        ...await this.moveSourceAnnotationUpwardsIfPossible(operation, newInputs, source, context),
+        ...await this.moveSourceAnnotationUpwardsIfPossible(
+          existenceGroupedOperation,
+          [ ...newInputs, ...existenceInputs ],
+          source,
+          context,
+        ),
         input: newInputs,
       };
     }
 
     // If the number of clusters is equal to the number of original inputs, do nothing.
     if (clusters.length === inputs.length) {
-      const result: Algebra.Multi = { ...operation, input: inputs };
+      const result: Algebra.Multi = { ...existenceGroupedOperation, input: inputs };
       return result;
     }
 
@@ -102,6 +114,35 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
       throw new Error(`Unsupported operation '${operation.type}' detected while grouping sources`);
     }
     return await this.groupOperationMulti(clusters, multiFactoryMethod, context);
+  }
+
+  /**
+   * Group the inputs of the (NOT) EXISTS expressions held by the given operation, excluding those within its input.
+   * On base SPARQL1.2 handles `filter`, `leftJoin`, `extend`, `group` and `orderBy` generically.
+   * @param operation An operation with an input.
+   * @param context The action context.
+   * @return The operation with grouped existence inputs, and these grouped existence inputs.
+   */
+  public async groupExistenceInputs<O extends Algebra.Operation & { input: unknown }>(
+    operation: O,
+    context: IActionContext,
+  ): Promise<[ O, Algebra.Operation[] ]> {
+    const existenceInputs: Algebra.Operation[] = [];
+    // The input is grouped separately, so it is left out of the transformation
+    const operationGrouped = await algebraTransformer()
+      .transformNodeSpecificAsync({ ...operation, input: undefined }, {}, {
+        [Algebra.Types.EXPRESSION]: {
+          [Algebra.ExpressionTypes.EXISTENCE]: {
+            preVisitor: () => ({ continue: false }),
+            transform: async(existence) => {
+              const existenceInput = await this.groupOperation(existence.input, context);
+              existenceInputs.push(existenceInput);
+              return { ...existence, input: existenceInput };
+            },
+          },
+        },
+      });
+    return [ <O> { ...operationGrouped, input: operation.input }, existenceInputs ];
   }
 
   protected async groupOperationMulti(
@@ -157,11 +198,11 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
   }
 
   /**
-   * If the given source accepts the grouped operation, annotate the grouped operation with the source,
-   * and remove the source annotation from the seperate input operations.
+   * If all input operations are annotated with the given source, and this source accepts the grouped operation,
+   * annotate the grouped operation with the source, and remove the source annotation from the input operations.
    * Otherwise, return the grouped operation unchanged.
    * @param operation A grouped operation consisting of all given input operations.
-   * @param inputs An array of operations that share the same source annotation.
+   * @param inputs The operations within the grouped operation, including the inputs of its (NOT) EXISTS expressions.
    * @param source The common source.
    * @param context The action context.
    */
@@ -171,11 +212,12 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     source: IQuerySourceWrapper | undefined,
     context: IActionContext,
   ): Promise<O> {
-    if (source && this.isPossibleToMoveSourceAnnotationUpwards(
-      operation,
-      await source.source.getSelectorShape(context),
-      context,
-    )) {
+    if (source && inputs.every(input => getOperationSource(input) === source) &&
+      this.isPossibleToMoveSourceAnnotationUpwards(
+        operation,
+        await source.source.getSelectorShape(context),
+        context,
+      )) {
       this.logDebug(context, `Hoist ${inputs.length} source-specific operations into a single ${operation.type} operation for ${source.source.toString()}`);
       operation = assignOperationSource(operation, source);
       for (const input of inputs) {
