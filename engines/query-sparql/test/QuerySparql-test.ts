@@ -26,12 +26,11 @@ const BF = new BindingsFactory(DF);
 const factory = new AlgebraFactory();
 
 /**
- * The SPARQL JSON results with which a mocked SPARQL endpoint answered a query.
+ * A query that a mocked SPARQL endpoint received.
  */
-type SparqlEndpointResponse = {
+type SparqlEndpointQuery = {
   endpoint: string;
-  variables: string[];
-  bindings: Record<string, { value: string }>[];
+  query: string;
 };
 
 globalThis.fetch = cachedFetch;
@@ -50,12 +49,12 @@ describe('System test: QuerySparql', () => {
   /**
    * Create a fetch function that exposes each given store as a SPARQL endpoint.
    * @param endpoints A mapping from endpoint URLs to the stores they answer queries over.
-   * @param responses If given, the results with which the endpoints answer queries are added to it.
+   * @param queries If given, the queries that the endpoints receive are added to it.
    * @return A fetch function that answers the queries and service description requests of these endpoints.
    */
   function createSparqlEndpointsFetch(
     endpoints: Record<string, RdfStore>,
-    responses?: SparqlEndpointResponse[],
+    queries?: SparqlEndpointQuery[],
   ): typeof fetch {
     return async(input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
       const url = new URL(input instanceof Request ? input.url : input);
@@ -66,17 +65,13 @@ describe('System test: QuerySparql', () => {
       if (!query) {
         return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
       }
+      queries?.push({ endpoint, query });
       const { data } = await engine.resultToString(
         await engine.query(query, { sources: [ endpoints[endpoint] ]}),
         'application/sparql-results+json',
       );
-      const body = await stringifyStream(data);
-      if (responses) {
-        const { head, results } = JSON.parse(body);
-        responses.push({ endpoint, variables: head.vars, bindings: results.bindings });
-      }
       return new Response(
-        body,
+        await stringifyStream(data),
         { status: 200, headers: { 'content-type': 'application/sparql-results+json' }},
       );
     };
@@ -1990,14 +1985,13 @@ SELECT ?option WHERE {
         store1.addQuad(DF.quad(DF.namedNode('ex:d'), DF.namedNode('ex:p'), DF.namedNode('ex:e')));
         const store2 = RdfStore.createDefault();
         store2.addQuad(DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:p'), DF.namedNode('ex:c')));
-        const responses: SparqlEndpointResponse[] = [];
 
         const bindingsStream = await engine.queryBindings(`
         SELECT ?s ?o WHERE {
           ?s <ex:p>* ?o .
         }`, {
           sources: [ endpoint1, endpoint2 ],
-          fetch: createSparqlEndpointsFetch({ [endpoint1]: store1, [endpoint2]: store2 }, responses),
+          fetch: createSparqlEndpointsFetch({ [endpoint1]: store1, [endpoint2]: store2 }),
         });
 
         await expect(bindingsStream).toEqualBindingsStream([
@@ -2038,20 +2032,6 @@ SELECT ?option WHERE {
             [ DF.variable('o'), DF.namedNode('ex:e') ],
           ]),
         ], true);
-
-        // Each endpoint gets a single request for its nodes, and returns each node once instead of all its triples.
-        // Only these responses bind ?s, as the paths are then walked from each node through a generated variable.
-        const nodesResponses = responses
-          .filter(({ variables }) => variables.includes('s'))
-          .sort((left, right) => left.endpoint.localeCompare(right.endpoint));
-        expect(nodesResponses.map(({ endpoint, variables }) => ({ endpoint, variables }))).toEqual([
-          { endpoint: endpoint1, variables: [ 's' ]},
-          { endpoint: endpoint2, variables: [ 's' ]},
-        ]);
-        expect(nodesResponses.map(({ bindings }) => bindings.map(({ s }) => s.value).sort())).toEqual([
-          [ 'ex:a', 'ex:b', 'ex:d', 'ex:e' ],
-          [ 'ex:b', 'ex:c' ],
-        ]);
       });
 
       it('should handle zero-or-more path with variable subject, object and graph over SPARQL endpoints', async() => {
@@ -2071,18 +2051,17 @@ SELECT ?option WHERE {
           DF.namedNode('ex:c'),
           DF.namedNode('ex:g2'),
         ));
-        // The nodes of the default graphs must not show up.
-        // Both endpoints need ex:p in their default graph, as sources are pruned for a path based on that graph.
+        // Sources are currently pruned for a path if their default graph has no match, even within GRAPH.
+        // So both endpoints also have a triple in their default graph, whose nodes must not show up.
         store1.addQuad(DF.quad(DF.namedNode('ex:d'), DF.namedNode('ex:p'), DF.namedNode('ex:e')));
         store2.addQuad(DF.quad(DF.namedNode('ex:d'), DF.namedNode('ex:p'), DF.namedNode('ex:e')));
-        const responses: SparqlEndpointResponse[] = [];
 
         const bindingsStream = await engine.queryBindings(`
         SELECT ?s ?o ?g WHERE {
           GRAPH ?g { ?s <ex:p>* ?o . }
         }`, {
           sources: [ endpoint1, endpoint2 ],
-          fetch: createSparqlEndpointsFetch({ [endpoint1]: store1, [endpoint2]: store2 }, responses),
+          fetch: createSparqlEndpointsFetch({ [endpoint1]: store1, [endpoint2]: store2 }),
         });
 
         await expect(bindingsStream).toEqualBindingsStream([
@@ -2117,20 +2096,37 @@ SELECT ?option WHERE {
             [ DF.variable('g'), DF.namedNode('ex:g2') ],
           ]),
         ], true);
+      });
 
-        // Each endpoint gets a single request for its nodes along with their graphs
-        const nodesResponses = responses
-          .filter(({ variables }) => variables.includes('s'))
-          .sort((left, right) => left.endpoint.localeCompare(right.endpoint));
-        expect(nodesResponses.map(({ endpoint, variables }) => ({ endpoint, variables }))).toEqual([
-          { endpoint: endpoint1, variables: [ 's', 'g' ]},
-          { endpoint: endpoint2, variables: [ 's', 'g' ]},
-        ]);
-        expect(nodesResponses.map(({ bindings }) => bindings.map(({ s, g }) => `${s.value} ${g.value}`).sort()))
-          .toEqual([
-            [ 'ex:a ex:g1', 'ex:b ex:g1' ],
-            [ 'ex:b ex:g2', 'ex:c ex:g2' ],
-          ]);
+      // A zero-or-more path with variables at both ends starts from all nodes of each endpoint.
+      // Each endpoint should return its nodes itself, each only once, instead of all its triples.
+      it.each([
+        [
+          'SELECT * WHERE { ?s <ex:p>* ?o }',
+          'SELECT ?s WHERE { SELECT DISTINCT ?s WHERE { { ?s ?__p ?__x . } UNION { ?__x ?__p ?s . } } }',
+        ],
+        [
+          'SELECT * WHERE { GRAPH ?g { ?s <ex:p>* ?o } }',
+          'SELECT ?s ?g WHERE { SELECT DISTINCT ?s ?g WHERE { ' +
+          'GRAPH ?g { { ?s ?__p ?__x . } UNION { ?__x ?__p ?s . } } } }',
+        ],
+      ])('should ask each SPARQL endpoint for its nodes in a single query for %s', async(query, nodesQuery) => {
+        const endpoint1 = 'http://example.org/nodes1/sparql';
+        const endpoint2 = 'http://example.org/nodes2/sparql';
+        const store1 = RdfStore.createDefault();
+        store1.addQuad(DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p'), DF.namedNode('ex:b')));
+        const store2 = RdfStore.createDefault();
+        store2.addQuad(DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:p'), DF.namedNode('ex:c')));
+        const queries: SparqlEndpointQuery[] = [];
+
+        const bindingsStream = await engine.queryBindings(query, {
+          sources: [ endpoint1, endpoint2 ],
+          fetch: createSparqlEndpointsFetch({ [endpoint1]: store1, [endpoint2]: store2 }, queries),
+        });
+        await bindingsStream.toArray();
+
+        expect(queries).toContainEqual({ endpoint: endpoint1, query: nodesQuery });
+        expect(queries).toContainEqual({ endpoint: endpoint2, query: nodesQuery });
       });
     });
 
