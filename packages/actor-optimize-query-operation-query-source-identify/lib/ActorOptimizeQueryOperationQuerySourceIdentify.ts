@@ -156,12 +156,6 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
     };
   }
 
-  /**
-   * Identify the given source, and cache it if possible.
-   * @param querySourceUnidentified The source to identify.
-   * @param context The action context.
-   * @param cacheQualifierPrefix A prefix for the cache qualifier of the source.
-   */
   public identifySource(
     querySourceUnidentified: QuerySourceUnidentifiedExpanded,
     context: IActionContext,

@@ -1,6 +1,6 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { ServiceExecutor } from '@comunica/types';
+import type { IServiceExecutor } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -19,7 +19,7 @@ import {
 
 const AF = new AlgebraFactory();
 const DF = new DataFactory();
-const serviceExecutor: ServiceExecutor = async() => [];
+const serviceExecutor: IServiceExecutor = { execute: async() => []};
 const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
 
 describe('utils', () => {

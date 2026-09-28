@@ -1,7 +1,7 @@
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext, ServiceExecutor } from '@comunica/types';
+import type { IActionContext, IServiceExecutor } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQuerySourceIdentifyServiceExecutor, QuerySourceServiceExecutor } from '..';
 import '@comunica/utils-jest';
@@ -36,14 +36,14 @@ describe('ActorQuerySourceIdentifyServiceExecutor', () => {
 
   describe('An ActorQuerySourceIdentifyServiceExecutor instance', () => {
     let actor: ActorQuerySourceIdentifyServiceExecutor;
-    let serviceExecutor: ServiceExecutor;
+    let serviceExecutor: IServiceExecutor;
     let contextEmpty: IActionContext;
     let contextExecutors: IActionContext;
     let contextCreator: IActionContext;
 
     beforeEach(() => {
       actor = new ActorQuerySourceIdentifyServiceExecutor({ name: 'actor', bus });
-      serviceExecutor = jest.fn();
+      serviceExecutor = { execute: jest.fn() };
       contextEmpty = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
       contextExecutors = contextEmpty.set(KeysInitQuery.serviceExecutors, { 'urn:service': serviceExecutor });
       contextCreator = contextEmpty.set(
@@ -134,7 +134,18 @@ describe('ActorQuerySourceIdentifyServiceExecutor', () => {
         await expect(actor.run({
           querySourceUnidentified: { value: 'urn:service' },
           context: contextExecutors,
-        }, <any> Promise.resolve(serviceExecutor))).rejects.toThrow(`The serviceExecutorCreator must synchronously return a SERVICE executor or undefined for urn:service, but returned object`);
+        }, <any> Promise.resolve(serviceExecutor))).rejects.toThrow(`The custom SERVICE executor for urn:service must be an object with an execute function, but got object`);
+      });
+
+      it('should throw when the executor is not an object with an execute function', async() => {
+        await expect(actor.run({
+          querySourceUnidentified: { value: 'urn:service' },
+          context: contextExecutors,
+        }, <any> (async() => []))).rejects.toThrow(`The custom SERVICE executor for urn:service must be an object with an execute function, but got function`);
+        await expect(actor.run({
+          querySourceUnidentified: { value: 'urn:service' },
+          context: contextExecutors,
+        }, <any> null)).rejects.toThrow(`The custom SERVICE executor for urn:service must be an object with an execute function, but got object`);
       });
 
       it('should get the source with context', async() => {

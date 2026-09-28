@@ -18,7 +18,6 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import {
   assignOperationSource,
   doesShapeAcceptOperation,
-  doesShapeAcceptWholeServiceClause,
   getSafeBindings,
 } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -63,7 +62,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     try {
       const querySource = await this.identifyTarget(operation, operation.name, context);
       const output = getSafeBindings(await this.mediatorQueryOperation.mediate({
-        operation: await this.assignSource(operation, querySource, context),
+        operation: await this.assignSource(operation.input, querySource, context),
         context,
       }));
       // Force resolution of the metadata, so that connection errors surface here instead of on the stream.
@@ -111,28 +110,24 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
   }
 
   /**
-   * Annotate the given SERVICE clause with the given source.
-   * The whole clause is annotated if the source evaluates SERVICE clauses as a whole (e.g. custom SERVICE executors).
-   * Otherwise, the body of the clause is annotated if the source accepts it (e.g. for SPARQL endpoints),
-   * or only the leaves of the body are annotated, so that the remainder is evaluated locally.
+   * Annotate the given operation with the given source.
+   * The whole operation is annotated if the source accepts it (e.g. for SPARQL endpoints).
+   * Otherwise, only the leaves are annotated, so that the remainder is evaluated locally.
    */
   protected async assignSource(
-    operation: Algebra.Service,
+    operation: Algebra.Operation,
     querySource: IQuerySourceWrapper,
     context: IActionContext,
   ): Promise<Algebra.Operation> {
     const shape = await querySource.source.getSelectorShape(context);
-    if (doesShapeAcceptWholeServiceClause(shape, operation)) {
+    if (doesShapeAcceptOperation(shape, operation)) {
       return assignOperationSource(operation, querySource);
-    }
-    if (doesShapeAcceptOperation(shape, operation.input)) {
-      return assignOperationSource(operation.input, querySource);
     }
     const leafHandler = {
       preVisitor: () => ({ continue: <const> false }),
       transform: (leafOp: Algebra.Operation) => assignOperationSource(leafOp, querySource),
     };
-    return algebraUtils.mapOperation(operation.input, {
+    return algebraUtils.mapOperation(operation, {
       [Algebra.Types.PATTERN]: leafHandler,
       [Algebra.Types.LINK]: leafHandler,
       [Algebra.Types.NPS]: leafHandler,

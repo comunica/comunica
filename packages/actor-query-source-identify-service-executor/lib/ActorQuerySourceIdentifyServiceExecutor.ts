@@ -4,9 +4,11 @@ import type {
   IActorQuerySourceIdentifyArgs,
 } from '@comunica/bus-query-source-identify';
 import { ActorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { ActionContext, failTest, passTestVoidWithSideData } from '@comunica/core';
-import type { ServiceExecutor } from '@comunica/types';
+import type { ComunicaDataFactory, IServiceExecutor } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { getServiceExecutor } from '@comunica/utils-query-operation';
 import { QuerySourceServiceExecutor } from './QuerySourceServiceExecutor';
 
@@ -15,12 +17,12 @@ import { QuerySourceServiceExecutor } from './QuerySourceServiceExecutor';
  * It identifies IRIs for which a custom SERVICE executor is registered in the query context
  * as sources that evaluate SERVICE clauses through that executor.
  */
-export class ActorQuerySourceIdentifyServiceExecutor extends ActorQuerySourceIdentify<ServiceExecutor> {
-  public constructor(args: IActorQuerySourceIdentifyArgs<ServiceExecutor>) {
+export class ActorQuerySourceIdentifyServiceExecutor extends ActorQuerySourceIdentify<IServiceExecutor> {
+  public constructor(args: IActorQuerySourceIdentifyArgs<IServiceExecutor>) {
     super(args);
   }
 
-  public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest, ServiceExecutor>> {
+  public async test(action: IActionQuerySourceIdentify): Promise<TestResult<IActorTest, IServiceExecutor>> {
     const value = action.querySourceUnidentified.value;
     if (typeof value !== 'string') {
       return failTest(`${this.name} requires a query source with an IRI value.`);
@@ -34,15 +36,17 @@ export class ActorQuerySourceIdentifyServiceExecutor extends ActorQuerySourceIde
 
   public async run(
     action: IActionQuerySourceIdentify,
-    serviceExecutor: ServiceExecutor,
+    serviceExecutor: IServiceExecutor,
   ): Promise<IActorQuerySourceIdentifyOutput> {
     const value = <string> action.querySourceUnidentified.value;
-    if (typeof (<unknown> serviceExecutor) !== 'function') {
-      throw new TypeError(`The serviceExecutorCreator must synchronously return a SERVICE executor or undefined for ${value}, but returned ${typeof serviceExecutor}`);
+    if (!serviceExecutor || typeof (<unknown> serviceExecutor) !== 'object' ||
+      typeof serviceExecutor.execute !== 'function') {
+      throw new TypeError(`The custom SERVICE executor for ${value} must be an object with an execute function, but got ${typeof serviceExecutor}. A serviceExecutorCreator must return executors synchronously.`);
     }
+    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     return {
       querySource: {
-        source: new QuerySourceServiceExecutor(value, serviceExecutor),
+        source: new QuerySourceServiceExecutor(value, serviceExecutor, dataFactory, new AlgebraFactory(dataFactory)),
         context: action.querySourceUnidentified.context ?? new ActionContext(),
       },
     };

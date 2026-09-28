@@ -25,23 +25,17 @@ describe('ActorQueryOperationService', () => {
   let mediatorQueryOperation: any;
   let mediatorQuerySourceIdentify: any;
   let querySource: IQuerySourceWrapper;
-  let shape: 'wildcard' | 'pattern' | 'service';
+  let wildcardShape: boolean;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    shape = 'wildcard';
+    wildcardShape = true;
     querySource = <any> {
       source: {
         referenceValue: 'http://ex.org/sparql',
-        getSelectorShape: () => Promise.resolve({
-          wildcard: { type: 'operation', operation: { operationType: 'wildcard' }},
-          pattern: { type: 'operation', operation: { operationType: 'type', type: Algebra.Types.PATTERN }},
-          service: {
-            type: 'operation',
-            operation: { operationType: 'type', type: Algebra.Types.SERVICE },
-            children: [{ type: 'operation', operation: { operationType: 'wildcard' }}],
-          },
-        }[shape]),
+        getSelectorShape: () => Promise.resolve(wildcardShape ?
+            { type: 'operation', operation: { operationType: 'wildcard' }} :
+            { type: 'operation', operation: { operationType: 'type', type: Algebra.Types.PATTERN }}),
       },
     };
     mediatorQuerySourceIdentify = { mediate: jest.fn(() => Promise.resolve({ querySource })) };
@@ -215,18 +209,8 @@ describe('ActorQueryOperationService', () => {
       expect(sourceContext.get(KeysQueryOperation.silent)).toBeUndefined();
     });
 
-    it('should annotate the whole clause if the source evaluates SERVICE clauses as a whole', async() => {
-      shape = 'service';
-      const op: any = { operation: AF.createService(pattern(), endpoint), context: context() };
-      await createActor().run(op, undefined);
-      const operated = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
-      expect(operated.type).toEqual(Algebra.Types.SERVICE);
-      expect(getOperationSource(operated)).toBe(querySource);
-      expect(getOperationSource(operated.input)).toBeUndefined();
-    });
-
     it('should only annotate leaves if the source does not accept the whole operation', async() => {
-      shape = 'pattern';
+      wildcardShape = false;
       const join = AF.createJoin([ pattern(), pattern() ]);
       const op: any = { operation: AF.createService(join, endpoint), context: context() };
       await createActor().run(op, undefined);

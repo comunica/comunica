@@ -13,6 +13,45 @@ They can be registered through the query context in one of two ways, but not bot
 * `serviceExecutorCreator`: a synchronous callback creating an executor for a given `SERVICE` target IRI,
   or returning `undefined` if that target must be queried as a regular source.
 
+An executor is an object with an `execute` function that evaluates a `SERVICE` clause,
+and optionally a `getMetadata` function that provides the query planner with the number of solutions it will return, or an estimate of it.
+For example, the following evaluates a `SERVICE` clause through an executor that produces its solutions itself:
+
+```javascript
+import { QueryEngine } from '@comunica/query-sparql';
+import { KeysInitQuery } from '@comunica/context-entries';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+
+const engine = new QueryEngine();
+
+const greetExecutor = {
+  execute: async (serviceOperation, bindings, context) => {
+    const dataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const bindingsFactory = new BindingsFactory(dataFactory);
+    return [
+      bindingsFactory.bindings([[ dataFactory.variable('greeting'), dataFactory.literal('Hello world!') ]]),
+    ];
+  },
+  getMetadata: async (serviceOperation, context) => ({ cardinality: { type: 'exact', value: 1 } }),
+};
+
+const query = `SELECT ?greeting WHERE {
+  SERVICE <urn:my-app:greet> { <urn:my-app:me> <urn:my-app:greeting> ?greeting }
+}`;
+
+// With a dictionary of executors per SERVICE target IRI:
+const bindingsStream = await engine.queryBindings(query, {
+  sources: [],
+  serviceExecutors: { 'urn:my-app:greet': greetExecutor },
+});
+
+// Or with a creator, which can also handle parameterized target IRIs:
+const bindingsStream2 = await engine.queryBindings(query, {
+  sources: [],
+  serviceExecutorCreator: serviceNamedNode => serviceNamedNode.value === 'urn:my-app:greet' ? greetExecutor : undefined,
+});
+```
+
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 

@@ -1,4 +1,4 @@
-import type { ServiceExecutor } from '@comunica/types';
+import type { IServiceExecutor } from '@comunica/types';
 import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
@@ -50,27 +50,29 @@ describe('System test: QuerySparql with custom SERVICE executors', () => {
     return store;
   }
 
-  function createSubjectExecutor(calls: { name: string; binding: RDF.Bindings | undefined }[]): ServiceExecutor {
-    return async(serviceOperation, binding) => {
-      calls.push({ name: serviceOperation.name.value, binding });
-      let subject: RDF.Term = DF.variable('x');
-      algebraUtils.visitOperation(serviceOperation.input, {
-        [Algebra.Types.PATTERN]: { visitor: (patternOp) => {
-          subject = patternOp.subject;
-        } },
-      });
-      const subjects: RDF.NamedNode[] = subject.termType === 'Variable' ?
-          [ EX('a'), EX('b') ] :
-          [ <RDF.NamedNode> subject ];
-      return subjects.map((subjectTerm) => {
-        const entries: [RDF.Variable, RDF.Term][] = [
-          [ DF.variable('w'), DF.literal(`w-${subjectTerm.value.split('/').pop()}`) ],
-        ];
-        if (subject.termType === 'Variable') {
-          entries.push([ DF.variable('x'), subjectTerm ]);
-        }
-        return BF.bindings(entries);
-      });
+  function createSubjectExecutor(calls: { name: string; binding: RDF.Bindings | undefined }[]): IServiceExecutor {
+    return {
+      execute: async(serviceOperation, binding) => {
+        calls.push({ name: serviceOperation.name.value, binding });
+        let subject: RDF.Term = DF.variable('x');
+        algebraUtils.visitOperation(serviceOperation.input, {
+          [Algebra.Types.PATTERN]: { visitor: (patternOp) => {
+            subject = patternOp.subject;
+          } },
+        });
+        const subjects: RDF.NamedNode[] = subject.termType === 'Variable' ?
+            [ EX('a'), EX('b') ] :
+            [ <RDF.NamedNode> subject ];
+        return subjects.map((subjectTerm) => {
+          const entries: [RDF.Variable, RDF.Term][] = [
+            [ DF.variable('w'), DF.literal(`w-${subjectTerm.value.split('/').pop()}`) ],
+          ];
+          if (subject.termType === 'Variable') {
+            entries.push([ DF.variable('x'), subjectTerm ]);
+          }
+          return BF.bindings(entries);
+        });
+      },
     };
   }
 
@@ -160,7 +162,7 @@ describe('System test: QuerySparql with custom SERVICE executors', () => {
         }
         createdServices.push(serviceNamedNode.value);
         const x = Number(url.searchParams.get('x'));
-        return async() => [ BF.bindings([[ DF.variable('value'), DF.literal(`${x + 1}`) ]]) ];
+        return { execute: async() => [ BF.bindings([[ DF.variable('value'), DF.literal(`${x + 1}`) ]]) ]};
       },
     })).resolves.toEqual([
       { value: '11' },
@@ -175,10 +177,12 @@ describe('System test: QuerySparql with custom SERVICE executors', () => {
     }`, {
       sources: [],
       serviceExecutors: {
-        [SERVICE]: async() => new ArrayIterator(
-          [ BF.bindings([[ DF.variable('value'), DF.literal('works') ]]) ],
-          { autoStart: false },
-        ),
+        [SERVICE]: {
+          execute: async() => new ArrayIterator(
+            [ BF.bindings([[ DF.variable('value'), DF.literal('works') ]]) ],
+            { autoStart: false },
+          ),
+        },
       },
     })).resolves.toEqual([{ value: 'works' }]);
   });
@@ -189,8 +193,10 @@ describe('System test: QuerySparql with custom SERVICE executors', () => {
     }`, {
       sources: [],
       serviceExecutors: {
-        [SERVICE]: async() => {
-          throw new Error('Executor failure');
+        [SERVICE]: {
+          execute: async() => {
+            throw new Error('Executor failure');
+          },
         },
       },
     })).rejects.toThrow('Executor failure');
@@ -203,8 +209,10 @@ describe('System test: QuerySparql with custom SERVICE executors', () => {
     }`, {
       sources: [],
       serviceExecutors: {
-        [SERVICE]: async() => {
-          throw new Error('Executor failure');
+        [SERVICE]: {
+          execute: async() => {
+            throw new Error('Executor failure');
+          },
         },
       },
     })).resolves.toEqual([{ outer: 'outer' }]);
@@ -215,7 +223,7 @@ describe('System test: QuerySparql with custom SERVICE executors', () => {
       SERVICE <${SERVICE}> { <urn:s> <urn:p> ?value }
     }`, {
       sources: [],
-      serviceExecutors: { [SERVICE]: async() => []},
+      serviceExecutors: { [SERVICE]: { execute: async() => []}},
       serviceExecutorCreator: () => undefined,
     })).rejects.toThrow('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
   });

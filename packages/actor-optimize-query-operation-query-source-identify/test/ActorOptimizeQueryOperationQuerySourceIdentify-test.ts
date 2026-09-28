@@ -6,7 +6,7 @@ import { KeysDereference, KeysHttp, KeysInitQuery, KeysQueryOperation, KeysStati
 import type { IAction } from '@comunica/core';
 import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
 import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
-import type { IActionContext, IQuerySourceWrapper, ServiceExecutor } from '@comunica/types';
+import type { IActionContext, IQuerySourceWrapper, IServiceExecutor } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
@@ -19,7 +19,7 @@ const DF = new DataFactory();
 
 // The source context that SERVICE targets are identified with by default
 const serviceContextBlocked = new ActionContext().set(KeysDereference.blockFileAccess, true);
-const serviceExecutor: ServiceExecutor = async() => [];
+const serviceExecutor: IServiceExecutor = { execute: async() => []};
 
 describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
   let bus: any;
@@ -225,7 +225,6 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         contextIn = contextIn
           .set(KeysInitQuery.serviceExecutors, {})
           .set(KeysInitQuery.serviceExecutorCreator, () => undefined);
-        // This is checked for every query, even without SERVICE clauses or sources.
         await expect(actor.run({ context: contextIn, operation }))
           .rejects.toThrow('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
       });

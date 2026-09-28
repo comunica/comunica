@@ -20,7 +20,7 @@ import type {
   ComunicaDataFactory,
   IStatisticBase,
   IDiscoverEventData,
-  ServiceExecutor,
+  IServiceExecutor,
   ServiceExecutorCreator,
   PartialResult,
   ILink,
@@ -255,7 +255,7 @@ export const KeysInitQuery = {
    *
    * The callback-based serviceExecutorCreator context entry may be used instead, but not simultaneously.
    */
-  serviceExecutors: new ActionContextKey<Record<string, ServiceExecutor>>(
+  serviceExecutors: new ActionContextKey<Record<string, IServiceExecutor>>(
     '@comunica/actor-init-query:serviceExecutors',
   ),
   /**
