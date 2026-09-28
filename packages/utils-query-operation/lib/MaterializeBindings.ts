@@ -159,7 +159,10 @@ export function materializeOperation(
         if (origFilterOp.expression.subType === 'existence') {
           // For existence expressions (EXISTS/NOT EXISTS), the filter input and expression are materialized
           // without adding VALUES clauses, since existence evaluation handles bindings directly.
-          return algebraFactory.createFilter(filterOp.input, filterOp.expression);
+          return Object.assign(
+            algebraFactory.createFilter(filterOp.input, filterOp.expression),
+            { metadata: filterOp.metadata },
+          );
         }
 
         // The expression is an operator one, the only other kind materializesFilter accepts.
@@ -180,7 +183,11 @@ export function materializeOperation(
           algebraFactory.createJoin([ ...values, filterOp.input ]) :
           filterOp.input;
 
-        return algebraFactory.createFilter(subOperation, filterOp.expression);
+        // Keep metadata such as source annotations, as these would otherwise be lost for the input.
+        return Object.assign(
+          algebraFactory.createFilter(subOperation, filterOp.expression),
+          { metadata: filterOp.metadata },
+        );
       },
     },
     [Algebra.Types.PROJECT]: {
