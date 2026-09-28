@@ -33,6 +33,11 @@ describe('System test: QuerySparql', () => {
     engine = new QueryEngine();
   });
 
+  beforeEach(async() => {
+    // Tests should not share HTTP state, such as the rate limiting that a test with a slow host leaves behind
+    await engine.invalidateHttpCache();
+  });
+
   /**
    * Create a fetch function that exposes each given store as a SPARQL endpoint.
    * @param endpoints A mapping from endpoint URLs to the stores they answer queries over.
@@ -709,6 +714,35 @@ SELECT * WHERE {
             const bindingsStream = await engine.queryBindings(complexQuery, context);
             expect((await bindingsStream.toArray()).map(res => res.get(DF.variable('sum'))!.value)).toEqual([ '20' ]);
           });
+        });
+
+        it('evaluates a HAVING with an extension function locally over the groups of an endpoint', async() => {
+          const queries: (string | null)[] = [];
+          const bindingsStream = await engine.queryBindings(`PREFIX func: <http://example.org/functions#>
+SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
+            sources: [{ type: 'sparql', value: 'http://example.org/having/sparql' }],
+            extensionFunctions: {
+              // Only the group of s1 passes
+              'http://example.org/functions#f': async(args: RDF.Term[]) =>
+                DF.literal(String(args[0].equals(DF.namedNode('http://example.org/s1'))), booleanType),
+            },
+            fetch: async(input: RequestInfo | URL) => {
+              queries.push(new URL(<string> input).searchParams.get('query'));
+              return new Response(JSON.stringify({
+                head: { vars: [ 's' ]},
+                results: { bindings: [
+                  { s: { type: 'uri', value: 'http://example.org/s1' }},
+                  { s: { type: 'uri', value: 'http://example.org/s2' }},
+                ]},
+              }), { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }});
+            },
+          });
+
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/s1') ]]),
+          ]);
+          // The endpoint does not declare support for the function, so it only receives the grouping
+          expect(queries).toEqual([ 'SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s' ]);
         });
       });
 
@@ -1959,8 +1993,6 @@ SELECT ?option WHERE {
       });
 
       it('should handle zero-or-more path with variable subject and object over multiple SPARQL endpoints', async() => {
-        // An earlier test leaves rate limiting of example.org behind
-        await engine.invalidateHttpCache();
         const endpoint1 = 'http://example.org/nodes1/sparql';
         const endpoint2 = 'http://example.org/nodes2/sparql';
         const store1 = RdfStore.createDefault();
@@ -3936,8 +3968,6 @@ CONSTRUCT {
     });
 
     it('should not push DistinctTerms into a SPARQL endpoint', async() => {
-      // An earlier test leaves rate limiting of example.org behind
-      await engine.invalidateHttpCache();
       const endpoint = 'http://example.org/distinct/sparql';
       const store = RdfStore.createDefault();
       store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o1')));
