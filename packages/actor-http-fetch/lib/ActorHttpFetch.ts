@@ -67,7 +67,12 @@ export class ActorHttpFetch extends ActorHttp {
       const abortController = new AbortController();
       requestInit.signal = AbortSignal
         .any([ ...requestInit.signal ? [ requestInit.signal ] : [], abortController.signal ]);
-      timeoutCallback = () => abortController.abort(new Error(`Fetch timed out for ${ActorHttp.getInputUrl(action.input).href} after ${httpTimeout} ms`));
+      timeoutCallback = () => {
+        const error = new Error(`Fetch timed out for ${ActorHttp.getInputUrl(action.input).href} after ${httpTimeout} ms`);
+        // Allows distinguishing client-side timeouts from other failures
+        error.name = 'TimeoutError';
+        abortController.abort(error);
+      };
       timeoutHandle = setTimeout(() => timeoutCallback(), httpTimeout);
     }
 

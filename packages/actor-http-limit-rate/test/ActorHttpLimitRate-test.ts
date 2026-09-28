@@ -191,6 +191,24 @@ describe('ActorHttpLimitRate', () => {
       expect(globalThis.setTimeout).not.toHaveBeenCalled();
     });
 
+    it.each([ 'TimeoutError', 'AbortError' ])('should not mark hosts as rate-limited on a %s', async(name) => {
+      const error = new Error('Aborted');
+      error.name = name;
+      jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
+      const action = { context: new ActionContext({}), input: url };
+      await expect(actor.run(action)).rejects.toThrow(error);
+      expect(actorHostData.get(host)).toEqual({
+        requestInterval: Number.NEGATIVE_INFINITY,
+        latestRequestTimestamp: expect.any(Number),
+        rateLimited: false,
+      });
+    });
+
+    it('should not consider non-errors as client aborts', () => {
+      expect(ActorHttpLimitRate.isClientAbort({ name: 'TimeoutError' })).toBeFalsy();
+    });
+
     it('should not mark 404s as failed requests', async() => {
       const response = { ok: false, status: 404 };
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);

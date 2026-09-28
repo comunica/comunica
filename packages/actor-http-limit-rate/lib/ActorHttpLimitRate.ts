@@ -100,9 +100,20 @@ export class ActorHttpLimitRate extends ActorHttp {
       registerCompletedRequest(response.ok, response.status);
       return response;
     } catch (error: unknown) {
-      registerCompletedRequest(false, -1);
+      // Timeouts and aborts are imposed by the client, so they say nothing about the host's request rate.
+      if (!ActorHttpLimitRate.isClientAbort(error)) {
+        registerCompletedRequest(false, -1);
+      }
       throw error;
     }
+  }
+
+  /**
+   * Check if the given error was caused by the client timing out or aborting the request.
+   * @param error An error.
+   */
+  public static isClientAbort(error: unknown): boolean {
+    return error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError');
   }
 
   /**
