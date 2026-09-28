@@ -23,7 +23,6 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
 
     const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.JOIN]: {
-        preVisitor: () => ({ continue: false }),
         transform: op => ActorOptimizeQueryOperationJoinConnected.cluster(op, factory),
       },
     });
@@ -36,12 +35,14 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
    * @param factory An algebra factory.
    */
   public static cluster(op: Algebra.Join, factory: AlgebraFactory): Algebra.Operation {
-    // Initialize each entry to be in a separate cluster
-    const initialClusters: IJoinCluster[] = op.input.map(subOp => ({
-      inScopeVariables: Object.fromEntries(algebraUtils.inScopeVariables(subOp)
-        .map(variable => [ variable.value, true ])),
-      entries: [ subOp ],
-    }));
+    // Initialize each entry to be in a separate cluster, after flattening nested joins
+    const initialClusters: IJoinCluster[] = op.input
+      .flatMap(subOp => algebraUtils.isKnownOperation(subOp, Algebra.Types.JOIN) ? subOp.input : [ subOp ])
+      .map(subOp => ({
+        inScopeVariables: Object.fromEntries(algebraUtils.inScopeVariables(subOp)
+          .map(variable => [ variable.value, true ])),
+        entries: [ subOp ],
+      }));
 
     // Iteratively merge clusters until they don't change anymore
     let oldClusters: IJoinCluster[];

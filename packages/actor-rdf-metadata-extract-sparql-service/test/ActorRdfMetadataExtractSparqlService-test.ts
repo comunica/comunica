@@ -28,6 +28,34 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     });
   });
 
+  describe('isLocalUrl', () => {
+    beforeEach(() => {
+      actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus, inferHttpsEndpoint: false });
+    });
+
+    it.each([
+      'http://localhost/sparql',
+      'http://sub.localhost:3000/sparql',
+      'https://0.0.0.0:8080/x-query',
+      'http://127.0.0.1/sparql',
+      'http://127.1.2.3/sparql',
+      'http://[::]/sparql',
+      'http://[::1]:8080/sparql',
+    ])('should be true for %s', (url) => {
+      expect(actor.isLocalUrl(url)).toBe(true);
+    });
+
+    it.each([
+      'https://example.org/sparql',
+      'https://localhost.example.org/sparql',
+      'http://127.0.0.1.example.org/sparql',
+      'http://10.0.0.1/sparql',
+      'not a url',
+    ])('should be false for %s', (url) => {
+      expect(actor.isLocalUrl(url)).toBe(false);
+    });
+  });
+
   describe('run', () => {
     const voidSubset = DF.namedNode('http://rdfs.org/ns/void#subset');
 
@@ -162,6 +190,32 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
       await expect(actor.run({ url: httpsIri, metadata: input, context, requestTime })).resolves.toEqual({
         metadata: { sparqlService: endpointService.value.replace(/^http:/u, 'https:') },
       });
+    });
+
+    it('should replace a local sd:endpoint by the requested URL for non-local sources, and warn', async() => {
+      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const url = 'https://example.org/query';
+      const input = streamifyArray([
+        DF.quad(DF.blankNode(), serviceDescriptionEndpoint, DF.namedNode('https://0.0.0.0:8080/x-query')),
+      ]);
+      await expect(actor.run({ url, metadata: input, context, requestTime })).resolves.toEqual({
+        metadata: { sparqlService: url },
+      });
+      expect(logWarn).toHaveBeenCalledWith(
+        context,
+        'Invalid metadata detected in https://example.org/query: the SPARQL service description refers to the local endpoint https://0.0.0.0:8080/x-query. This has been corrected to https://example.org/query, but the server should be reconfigured with a valid sd:endpoint.',
+      );
+    });
+
+    it('should keep a local sd:endpoint for local sources', async() => {
+      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const input = streamifyArray([
+        DF.quad(DF.blankNode(), serviceDescriptionEndpoint, DF.namedNode('http://127.0.0.1:8080/x-query')),
+      ]);
+      await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
+        metadata: { sparqlService: 'http://127.0.0.1:8080/x-query' },
+      });
+      expect(logWarn).not.toHaveBeenCalled();
     });
 
     it('should parse sd:endpoint, sd:defaultDataset and the correct sd:defaultGraph when available', async() => {
