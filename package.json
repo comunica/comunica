@@ -49,7 +49,6 @@
     "@pollyjs/persister-fs": "^6.0.5",
     "@rubensworks/eslint-config": "^3.0.0",
     "@rubensworks/process-sparql-benchmark-results": "^1.4.0",
-    "@rubensworks/saxes": "^6.0.1",
     "@types/benchmark": "^2.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.10.0",
