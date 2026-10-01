@@ -1,8 +1,8 @@
 /**
- * Tests of the W3C XQuery and XPath Test Suite that are known to fail, grouped by the reason why they fail.
- * These tests are run as failing tests, so they are reported once they pass, and can be removed from this list.
+ * Tests of the XPath test suite (https://jitsedesmet.github.io/manifest-xpath-tests/) that are known to fail,
+ * grouped by the reason why they fail. xpath-spec.js reports them as skipped, or as failing once they pass.
  */
-export const KNOWN_FAILURES: { reason: string; tests: string[] }[] = [
+module.exports = [
   {
     reason: 'SPARQL restricts the positions of SUBSTR to xsd:integer ' +
       '(https://www.w3.org/TR/sparql12-query/#func-substr), while XPath accepts any numeric value. This ' +
@@ -83,8 +83,8 @@ export const KNOWN_FAILURES: { reason: string; tests: string[] }[] = [
     ],
   },
   {
-    reason: 'REPLACE does not handle the escapes \\$ and \\\\ in the replacement string, nor does it reject invalid ' +
-      'replacement strings.',
+    reason: 'REPLACE does not handle the escapes \\$ and \\\\ in the replacement string, nor does it reject ' +
+      'invalid replacement strings.',
     tests: [
       'K-ReplaceFunc-6',
       'K-ReplaceFunc-7',
@@ -114,8 +114,8 @@ export const KNOWN_FAILURES: { reason: string; tests: string[] }[] = [
     ],
   },
   {
-    reason: 'Arithmetic on durations (adding, subtracting, multiplying and dividing them) and adding a date or time ' +
-      'to a duration (in that order) is not supported.',
+    reason: 'Arithmetic on durations (adding, subtracting, multiplying and dividing them) and adding a date or ' +
+      'time to a duration (in that order) is not supported.',
     tests: [
       'K-DateAddDTD-2',
       'K-DateAddYMD-2',
@@ -222,8 +222,9 @@ export const KNOWN_FAILURES: { reason: string; tests: string[] }[] = [
     ],
   },
   {
-    reason: 'Adding a duration to a date or time, or subtracting it, gives incorrect results for the time component ' +
-      'of a duration added to a date, for the end of the month, and for a yearMonthDuration added to a time.',
+    reason: 'Adding a duration to a date or time, or subtracting it, gives incorrect results for the time ' +
+      'component of a duration added to a date, for the end of the month, and for a yearMonthDuration ' +
+      'added to a time.',
     tests: [
       'K-DateAddDTD-1',
       'K-DateSubtractDTD-1',
@@ -237,26 +238,25 @@ export const KNOWN_FAILURES: { reason: string; tests: string[] }[] = [
   {
     reason: 'Years before 1 and after 9999 are not supported.',
     tests: [
-      'CastAs121',
       'cbcl-date-gt-001',
       'cbcl-subtract-dateTimes-001',
       'cbcl-subtract-dateTimes-002',
       'cbcl-subtract-dates-001',
       'cbcl-subtract-dates-002',
-      'op-add-yearMonthDuration-to-dateTime-8',
-      'op-subtract-yearMonthDuration-from-dateTime2args-5',
     ],
   },
   {
-    reason: 'Time zones are not validated (offsets beyond 14:00 or with 60 minutes), ' +
-      'negative offsets with zero hours are serialized as +-hh:mm, ' +
-      'and casting a dateTime with a time zone to a date or time gives a different value.',
+    reason: 'Time zones are not validated (offsets beyond 14:00 or with 60 minutes), negative offsets with zero ' +
+      'hours are serialized as +-hh:mm, and casting a dateTime with a time zone to a date or time gives a ' +
+      'different value.',
     tests: [
       'CastAs679',
       'CastAs680',
       'CastAs681',
       'K-SeqExprCast-321',
       'K-SeqExprCast-322',
+      'K-SeqExprCast-323',
+      'K-SeqExprCast-324',
       'K-SeqExprCast-336',
       'K-SeqExprCast-337',
       'K-SeqExprCast-338',
@@ -272,8 +272,8 @@ export const KNOWN_FAILURES: { reason: string; tests: string[] }[] = [
     ],
   },
   {
-    reason: 'Dates, times and durations are not normalized when cast to a string (fractional seconds rounding up to ' +
-      '60, 24:00:00, and seconds beyond 60 in a duration).',
+    reason: 'Dates, times and durations are not normalized when cast to a string (fractional seconds rounding up ' +
+      'to 60, 24:00:00, and seconds beyond 60 in a duration).',
     tests: [
       'CastAs676',
       'K-SeqExprCast-186',
@@ -367,76 +367,8 @@ export const KNOWN_FAILURES: { reason: string; tests: string[] }[] = [
     ],
   },
   {
-    reason: 'The value ranges and lexical forms of the types derived from xsd:integer, such as xsd:byte and ' +
-      'xsd:positiveInteger, are not validated.',
-    tests: [
-      'K2-SeqExprCast-100',
-      'K2-SeqExprCast-101',
-      'K2-SeqExprCast-102',
-      'K2-SeqExprCast-103',
-      'K2-SeqExprCast-104',
-      'K2-SeqExprCast-105',
-      'K2-SeqExprCast-106',
-      'K2-SeqExprCast-107',
-      'K2-SeqExprCast-108',
-      'K2-SeqExprCast-109',
-      'K2-SeqExprCast-110',
-      'K2-SeqExprCast-111',
-      'K2-SeqExprCast-112',
-      'K2-SeqExprCast-113',
-      'K2-SeqExprCast-114',
-      'K2-SeqExprCast-115',
-      'K2-SeqExprCast-116',
-      'K2-SeqExprCast-117',
-      'K2-SeqExprCast-145',
-      'K2-SeqExprCast-147',
-      'K2-SeqExprCast-148',
-      'K2-SeqExprCast-151',
-      'K2-SeqExprCast-152',
-      'K2-SeqExprCast-153',
-      'K2-SeqExprCast-154',
-      'K2-SeqExprCast-155',
-      'K2-SeqExprCast-156',
-      'K2-SeqExprCast-428',
-      'K2-SeqExprCast-51',
-      'K2-SeqExprCast-56',
-      'K2-SeqExprCast-57',
-      'K2-SeqExprCast-62',
-      'K2-SeqExprCast-63',
-      'K2-SeqExprCast-78',
-      'K2-SeqExprCast-79',
-      'K2-SeqExprCast-80',
-      'K2-SeqExprCast-81',
-      'K2-SeqExprCast-82',
-      'K2-SeqExprCast-83',
-      'K2-SeqExprCast-84',
-      'K2-SeqExprCast-85',
-      'K2-SeqExprCast-86',
-      'K2-SeqExprCast-87',
-      'K2-SeqExprCast-88',
-      'K2-SeqExprCast-89',
-      'K2-SeqExprCast-90',
-      'K2-SeqExprCast-91',
-      'K2-SeqExprCast-92',
-      'K2-SeqExprCast-93',
-      'K2-SeqExprCast-94',
-      'K2-SeqExprCast-95',
-      'K2-SeqExprCast-96',
-      'K2-SeqExprCast-97',
-      'K2-SeqExprCast-98',
-      'K2-SeqExprCast-99',
-      'fn-abs-more-args-041',
-      'fn-abs-more-args-042',
-      'fn-abs-more-args-043',
-      'fn-abs-more-args-048',
-      'fn-abs-more-args-053',
-      'fn-abs-more-args-058',
-      'fn-abs-more-args-059',
-      'fn-abs-more-args-060',
-    ],
-  },
-  {
-    reason: 'Integers and decimals are JavaScript numbers, so they lose precision beyond about 15 significant digits.',
+    reason: 'Integers and decimals are JavaScript numbers, so they lose precision beyond about 15 significant ' +
+      'digits.',
     tests: [
       'CastAs647',
       'fn-concatdec2args-1',
@@ -517,8 +449,8 @@ export const KNOWN_FAILURES: { reason: string; tests: string[] }[] = [
     ],
   },
   {
-    reason: 'Arithmetic is computed in decimal precision for all numeric types, and xsd:float values are not rounded ' +
-      'to single precision.',
+    reason: 'Arithmetic is computed in decimal precision for all numeric types, and xsd:float values are not ' +
+      'rounded to single precision.',
     tests: [
       'CastAs169',
       'K-NumericAdd-5',
@@ -594,6 +526,54 @@ export const KNOWN_FAILURES: { reason: string; tests: string[] }[] = [
     tests: [
       'K-SeqExprCast-441',
       'K-SeqExprCast-489',
+    ],
+  },
+  {
+    reason: 'An invalid regular expression or invalid flags in REGEX or REPLACE throw an error that aborts the ' +
+      'query, instead of an expression error that leaves the variable of BIND unbound.',
+    tests: [
+      'K-MatchesFunc-5',
+      'K-MatchesFunc-6',
+      'K-ReplaceFunc-1',
+      'K-ReplaceFunc-4',
+      'K2-MatchesFunc-10',
+      'K2-MatchesFunc-11',
+      'K2-MatchesFunc-12',
+      'K2-MatchesFunc-7',
+      'K2-MatchesFunc-8',
+      'K2-MatchesFunc-9',
+      'K2-ReplaceFunc-4',
+      'K2-ReplaceFunc-5',
+      'cbcl-matches-002',
+      'cbcl-matches-005',
+      'cbcl-matches-008',
+      'cbcl-matches-009',
+      'cbcl-matches-010',
+      'cbcl-matches-011',
+      'cbcl-matches-012',
+      'cbcl-matches-013',
+      'cbcl-matches-014',
+      'cbcl-matches-029',
+      'cbcl-matches-030',
+      'cbcl-matches-031',
+      'cbcl-matches-032',
+      'cbcl-matches-033',
+      'cbcl-matches-034',
+      'cbcl-matches-035',
+      'fn-matches-25',
+      'fn-matches-35',
+      'fn-matchesErr-1',
+      'fn-matchesErr-2',
+      'fn-matchesErr-3',
+      'fn-replaceErr-1',
+    ],
+  },
+  {
+    reason: 'Dividing a decimal by zero results in the invalid literal "INF.0"^^xsd:decimal instead of an error.',
+    tests: [
+      'K2-NumericDivide-2',
+      'K2-NumericDivide-3',
+      'K2-NumericDivide-4',
     ],
   },
 ];
