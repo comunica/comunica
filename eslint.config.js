@@ -166,6 +166,8 @@ module.exports = config([
       '**/spec/*.js',
     ],
     rules: {
+      // Accessibility modifiers do not exist in JavaScript
+      'ts/explicit-member-accessibility': 'off',
       'import/extensions': 'off',
       'ts/no-var-requires': 'off',
       'ts/no-require-imports': 'off',
