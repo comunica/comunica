@@ -9,10 +9,12 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { KnownLiteralTypes } from '@comunica/utils-expression-evaluator';
 import { isNonLexicalLiteral, isSubTypeOf, TermTransformer } from '@comunica/utils-expression-evaluator';
 import type * as RDF from '@rdfjs/types';
-import { SaxesParser } from '@rubensworks/saxes';
 import type { Expression } from '@traqula/rules-sparql-1-1';
+import { evaluateXPathToFirstNode, evaluateXPathToNodes, evaluateXPathToString } from 'fontoxpath';
 import { LRUCache } from 'lru-cache';
 import { DataFactory } from 'rdf-data-factory';
+import type { Document, Element } from 'slimdom';
+import { parseXmlDocument } from 'slimdom';
 import { ExpressionEngine } from '../lib/ExpressionEngine';
 import { KNOWN_FAILURES } from './xpath/knownFailures';
 import { sparqlVariable, UnsupportedError, xpathToAlgebra, xpathToSparql, XSD } from './xpath/xpathToAlgebra';
@@ -31,70 +33,26 @@ const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);
 const BF = new BindingsFactory(DF);
 const QT3_DIR = join(__dirname, 'xpath', 'qt3');
-const QT3 = 'http://www.w3.org/2010/09/qt-fots-catalog';
-
-interface IElement {
-  name: string;
-  namespace: string;
-  attributes: Record<string, string>;
-  children: IElement[];
-  text: string;
-}
 
 /**
- * Parse an XML file of the test suite into a minimal element tree.
+ * The test cases that an XPath 3.1 and XSD 1.1 implementation without optional features can run,
+ * and that have their test in the test set itself.
  */
-function parseXml(file: string): IElement {
-  const parser = new SaxesParser({ xmlns: true });
-  const root: IElement = { name: '', namespace: '', attributes: {}, children: [], text: '' };
-  const stack = [ root ];
-  parser.on('opentag', (node) => {
-    const element: IElement = {
-      name: node.local,
-      namespace: node.uri,
-      attributes: Object.fromEntries(Object.values(node.attributes).map(attr => [ attr.local, attr.value ])),
-      children: [],
-      text: '',
-    };
-    stack.at(-1)!.children.push(element);
-    stack.push(element);
-  });
-  parser.on('closetag', () => stack.pop());
-  parser.on('text', (text) => {
-    stack.at(-1)!.text += text;
-  });
-  parser.on('cdata', (text) => {
-    stack.at(-1)!.text += text;
-  });
-  parser.write(readFileSync(join(QT3_DIR, file), 'utf8')).close();
-  return root.children[0];
-}
-
-function children(element: IElement, name: string): IElement[] {
-  return element.children.filter(child => child.namespace === QT3 && child.name === name);
-}
-
-function namedEnvironments(element: IElement): Record<string, IElement> {
-  return Object.fromEntries(children(element, 'environment')
-    .map(environment => [ environment.attributes.name, environment ]));
-}
+const TEST_CASES_QUERY = `
+/test-set/test-case[
+  (every $dependency in (../dependency, dependency) satisfies
+    (if ($dependency/@type = 'spec') then
+      (some $spec in tokenize($dependency/@value) satisfies
+        ($spec = 'XP31' or (matches($spec, '^XP\\d\\d\\+$') and xs:integer(substring($spec, 3, 2)) le 31)))
+    else if ($dependency/@type = 'xsd-version') then $dependency/@value = '1.1'
+    else false()) = not($dependency/@satisfied = 'false'))
+  and not(test/@file)]`;
 
 /**
- * Determine whether a dependency is satisfied by an XPath 3.1 and XSD 1.1 implementation without extra features.
+ * Parse an XML file of the test suite.
  */
-function isSatisfied(dependency: IElement): boolean {
-  const { type, value, satisfied } = dependency.attributes;
-  let result = false;
-  if (type === 'spec') {
-    result = value.split(/\s+/u).some((spec) => {
-      const match = /^XP(\d\d)(\+?)$/u.exec(spec);
-      return match !== null && (match[1] === '31' || (match[2] === '+' && Number(match[1]) <= 31));
-    });
-  } else if (type === 'xsd-version') {
-    result = value === '1.1';
-  }
-  // Optional features are not supported.
-  return result === (satisfied !== 'false');
+function parseXml(file: string): Document {
+  return parseXmlDocument(readFileSync(join(QT3_DIR, file), 'utf8'));
 }
 
 /**
@@ -115,8 +73,8 @@ function isExpressible(xpath: string, variables: Record<string, Expression>): bo
 /**
  * Determine whether an assertion of the test suite can be checked.
  */
-function isSupported(assertion: IElement, variables: Record<string, Expression>): boolean {
-  switch (assertion.name) {
+function isSupported(assertion: Element, variables: Record<string, Expression>): boolean {
+  switch (assertion.localName) {
     case 'error':
     case 'assert-true':
     case 'assert-false':
@@ -128,11 +86,11 @@ function isSupported(assertion: IElement, variables: Record<string, Expression>)
       return assertion.children.every(child => isSupported(child, variables));
     case 'assert-eq':
     case 'assert-deep-eq':
-      return isExpressible(assertion.text, variables);
+      return isExpressible(assertion.textContent!, variables);
     case 'assert':
-      return isExpressible(assertion.text, { ...variables, result: sparqlVariable('result') });
+      return isExpressible(assertion.textContent!, { ...variables, result: sparqlVariable('result') });
     case 'assert-type':
-      return /^xs:\w+$/u.test(assertion.text.trim());
+      return /^xs:\w+$/u.test(assertion.textContent!.trim());
     default:
       return false;
   }
@@ -142,21 +100,23 @@ function isSupported(assertion: IElement, variables: Record<string, Expression>)
  * Determine the SPARQL expressions of the variables of the environment of a test case,
  * or undefined if the environment is not supported.
  */
-function environmentVariables(
-  testCase: IElement,
-  environments: Record<string, IElement>,
-): Record<string, Expression> | undefined {
+function environmentVariables(testCase: Element, catalog: Document): Record<string, Expression> | undefined {
   const variables: Record<string, Expression> = {};
-  for (const environment of children(testCase, 'environment')) {
-    const definition = environment.attributes.ref ? environments[environment.attributes.ref] : environment;
+  for (const environment of evaluateXPathToNodes<Element>('environment', testCase)) {
+    const ref = environment.getAttribute('ref');
+    const definition = ref ?
+      evaluateXPathToFirstNode<Element>('/test-set/environment[@name = $ref]', testCase, null, { ref }) ??
+      evaluateXPathToFirstNode<Element>('/catalog/environment[@name = $ref]', catalog, null, { ref }) :
+      environment;
     if (!definition) {
       return;
     }
     for (const param of definition.children) {
-      if (param.name !== 'param' || !param.attributes.select || !isExpressible(param.attributes.select, variables)) {
+      const select = param.getAttribute('select');
+      if (param.localName !== 'param' || !select || !isExpressible(select, variables)) {
         return;
       }
-      variables[param.attributes.name] = xpathToSparql(param.attributes.select, variables);
+      variables[param.getAttribute('name')!] = xpathToSparql(select, variables);
     }
   }
   return variables;
@@ -174,11 +134,11 @@ function describeResult({ term, error }: IResult): string {
   return term!.termType === 'Literal' ? `"${term!.value}"^^<${term!.datatype.value}>` : `<${term!.value}>`;
 }
 
-function describeAssertion(assertion: IElement): string {
+function describeAssertion(assertion: Element): string {
   const content = assertion.children.length > 0 ?
     assertion.children.map(child => describeAssertion(child)).join(', ') :
-      (assertion.attributes.code ?? assertion.text.trim());
-  return `${assertion.name}(${content})`;
+      (assertion.getAttribute('code') ?? assertion.textContent!.trim());
+  return `${assertion.localName}(${content})`;
 }
 
 describe('the XPath test suite', () => {
@@ -218,9 +178,9 @@ describe('the XPath test suite', () => {
   /**
    * Check a result against an assertion of the test suite.
    */
-  async function check(assertion: IElement, result: IResult, variables: Record<string, Expression>): Promise<boolean> {
-    const text = assertion.text.trim();
-    switch (assertion.name) {
+  async function check(assertion: Element, result: IResult, variables: Record<string, Expression>): Promise<boolean> {
+    const text = assertion.textContent!.trim();
+    switch (assertion.localName) {
       case 'error':
         return Boolean(result.error);
       case 'all-of':
@@ -229,7 +189,7 @@ describe('the XPath test suite', () => {
         for (const child of assertion.children) {
           outcomes.push(await check(child, result, variables));
         }
-        return assertion.name === 'all-of' ? outcomes.every(Boolean) : outcomes.some(Boolean);
+        return assertion.localName === 'all-of' ? outcomes.every(Boolean) : outcomes.some(Boolean);
       }
       case 'not':
         return !await check(assertion.children[0], result, variables);
@@ -238,16 +198,16 @@ describe('the XPath test suite', () => {
     if (!term) {
       return false;
     }
-    switch (assertion.name) {
+    switch (assertion.localName) {
       case 'assert-true':
       case 'assert-false':
         return term.termType === 'Literal' && term.datatype.value === `${XSD}boolean` &&
-          [ 'true', '1' ].includes(term.value) === (assertion.name === 'assert-true');
+          [ 'true', '1' ].includes(term.value) === (assertion.localName === 'assert-true');
       case 'assert-eq':
       case 'assert-deep-eq': {
         const expected = (await evaluate(xpathToAlgebra(text, variables))).term;
         // Deep equality considers NaN equal to itself
-        if (assertion.name === 'assert-deep-eq' && term.value === 'NaN' && expected?.value === 'NaN') {
+        if (assertion.localName === 'assert-deep-eq' && term.value === 'NaN' && expected?.value === 'NaN') {
           return true;
         }
         return expected !== undefined && isTrue(AF.createOperatorExpression('=', [
@@ -262,10 +222,10 @@ describe('the XPath test suite', () => {
             AF.createTermExpression(term),
           ]))).term?.value;
         }
-        if (assertion.attributes['normalize-space'] === 'true') {
-          return actual?.replaceAll(/\s+/gu, ' ').trim() === assertion.text.replaceAll(/\s+/gu, ' ').trim();
+        if (assertion.getAttribute('normalize-space') === 'true') {
+          return actual?.replaceAll(/\s+/gu, ' ').trim() === assertion.textContent!.replaceAll(/\s+/gu, ' ').trim();
         }
-        return actual === assertion.text;
+        return actual === assertion.textContent;
       }
       case 'assert-type':
         return term.termType === 'Literal' &&
@@ -276,36 +236,32 @@ describe('the XPath test suite', () => {
   }
 
   const catalog = parseXml('catalog.xml');
-  const catalogEnvironments = namedEnvironments(catalog);
-  for (const testSet of children(catalog, 'test-set')) {
-    if (!existsSync(join(QT3_DIR, testSet.attributes.file))) {
+  for (const testSet of evaluateXPathToNodes<Element>('/catalog/test-set', catalog)) {
+    const file = testSet.getAttribute('file')!;
+    if (!existsSync(join(QT3_DIR, file))) {
       continue;
     }
-    const testSetXml = parseXml(testSet.attributes.file);
-    const environments = { ...catalogEnvironments, ...namedEnvironments(testSetXml) };
-    const testSetDependencies = children(testSetXml, 'dependency');
+    const testSetXml = parseXml(file);
 
-    describe(testSet.attributes.name, () => {
+    describe(testSet.getAttribute('name')!, () => {
       // Test cases are filtered, and known failures are registered as failing tests, which it.each cannot do
       // eslint-disable-next-line jest/prefer-each
-      for (const testCase of children(testSetXml, 'test-case')) {
-        const name = testCase.attributes.name;
-        const test = children(testCase, 'test')[0];
-        const assertion = children(testCase, 'result')[0].children[0];
-        const variables = environmentVariables(testCase, environments);
-        if (![ ...testSetDependencies, ...children(testCase, 'dependency') ].every(isSatisfied) ||
-          !variables || test.attributes.file || !isExpressible(test.text, variables) ||
-          !isSupported(assertion, variables)) {
+      for (const testCase of evaluateXPathToNodes<Element>(TEST_CASES_QUERY, testSetXml)) {
+        const name = testCase.getAttribute('name')!;
+        const test = evaluateXPathToString('test', testCase);
+        const assertion = evaluateXPathToFirstNode<Element>('result/*', testCase)!;
+        const variables = environmentVariables(testCase, catalog);
+        if (!variables || !isExpressible(test, variables) || !isSupported(assertion, variables)) {
           continue;
         }
 
         // Known failures are run as failing tests, so they are reported once they pass.
         const knownFailure = knownFailures.get(name);
         const run = async(): Promise<void> => {
-          const result = await evaluate(xpathToAlgebra(test.text, variables));
+          const result = await evaluate(xpathToAlgebra(test, variables));
           const failure = await check(assertion, result, variables) ?
             undefined :
-              `${test.text.trim().replaceAll(/\s+/gu, ' ')}
+              `${test.trim().replaceAll(/\s+/gu, ' ')}
   expected ${describeAssertion(assertion)}
   but got ${describeResult(result)}`;
           expect(failure).toBeUndefined();
