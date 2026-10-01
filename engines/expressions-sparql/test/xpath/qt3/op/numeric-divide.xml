@@ -1,0 +1,1427 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="op-numeric-divide">
+   <description>Tests for the numeric-divide() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-numeric-divide"/>
+
+   <test-case name="op-numeric-divideint2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:int(lower bound) $arg2 = xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-2147483648") div xs:int("-2147483648")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideint2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:int(mid range) $arg2 = xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:int("-1873914410") div xs:int("-2147483648")),10)</test>
+      <result>
+         <assert-eq>0.8726093965</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideint2args-3">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:int(upper bound) $arg2 = xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:int("2147483647") div xs:int("-2147483648")),10)</test>
+      <result>
+         <assert-eq>-0.9999999995</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideint2args-4">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:int(lower bound) $arg2 = xs:int(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:int("-2147483648") div xs:int("-1873914410")),10)</test>
+      <result>
+         <assert-eq>1.145988118</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideint2args-5">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:int(lower bound) $arg2 = xs:int(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:int("-2147483648") div xs:int("2147483647")),10)</test>
+      <result>
+         <assert-eq>-1.0000000005</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideintg2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:integer(lower bound) $arg2 = xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("-999999999999999999") div xs:integer("-999999999999999999")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideintg2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:integer(mid range) $arg2 = xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:integer("830993497117024304") div xs:integer("-999999999999999999")),18)</test>
+      <result>
+         <any-of>
+            <assert-eq>-0.830993497117024305</assert-eq>
+            <assert-eq>-0.830993497117</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideintg2args-3">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:integer(upper bound) $arg2 = xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("999999999999999999") div xs:integer("-999999999999999999")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideintg2args-4">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:integer(lower bound) $arg2 = xs:integer(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:integer("-999999999999999999") div xs:integer("830993497117024304")),18)</test>
+      <result>
+         <any-of>
+            <assert-eq>-1.203378851301859738</assert-eq>
+            <assert-eq>-1.203378851301</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideintg2args-5">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:integer(lower bound) $arg2 = xs:integer(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("-999999999999999999") div xs:integer("999999999999999999")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideintg2args-6">
+      <description> Evaluates the type of the result of "op:numeric-integer-divide" operator with both arguments of type xs:integer </description>
+      <created by="Sorin Nasoi" on="2009-04-01"/>
+      <test>(xs:integer("-999999999999999999") div xs:integer("999999999999999999")) instance of xs:decimal</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividedec2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:decimal(lower bound) $arg2 = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-999999999999999999") div xs:decimal("-999999999999999999")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividedec2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:decimal(mid range) $arg2 = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:decimal("617375191608514839") div xs:decimal("-999999999999999999")),18)</test>
+      <result>
+         <any-of>
+            <assert-eq>-0.61737519160851484</assert-eq>
+            <assert-eq>-0.6173751916085</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividedec2args-3">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:decimal(upper bound) $arg2 = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("999999999999999999") div xs:decimal("-999999999999999999")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividedec2args-4">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:decimal(lower bound) $arg2 = xs:decimal(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:decimal("-999999999999999999") div xs:decimal("617375191608514839")),18)</test>
+      <result>
+         <any-of>
+            <assert-eq>-1.619760582531006901</assert-eq>
+            <assert-eq>-1.619760582531</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividedec2args-5">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:decimal(lower bound) $arg2 = xs:decimal(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-999999999999999999") div xs:decimal("999999999999999999")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividedbl2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:double(lower bound) $arg2 = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.7976931348623157E308") div xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividedbl2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:double(mid range) $arg2 = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("0") div xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-eq>-0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividedbl2args-3">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:double(upper bound) $arg2 = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("1.7976931348623157E308") div xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividedbl2args-4">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:double(lower bound) $arg2 = xs:double(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.7976931348623157E308") div xs:double("1.7976931348623157E308")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideflt2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:float(lower bound) $arg2 = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-3.4028235E38") div xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideflt2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:float(mid range) $arg2 = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("0") div xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-eq>-0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideflt2args-3">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:float(upper bound) $arg2 = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("3.4028235E38") div xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideflt2args-4">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:float(lower bound) $arg2 = xs:float(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-3.4028235E38") div xs:float("3.4028235E38")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividelng2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:long(lower bound) $arg2 = xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-92233720368547758") div xs:long("-92233720368547758")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividelng2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:long(mid range) $arg2 = xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:long("-47175562203048468") div xs:long("-92233720368547758")),17)</test>
+      <result>
+         <any-of>
+            <assert-eq>0.51147847028770199</assert-eq>
+            <assert-eq>0.511478470287</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividelng2args-3">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:long(upper bound) $arg2 = xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("92233720368547758") div xs:long("-92233720368547758")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividelng2args-4">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:long(lower bound) $arg2 = xs:long(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:long("-92233720368547758") div xs:long("-47175562203048468")),17)</test>
+      <result>
+         <any-of>
+            <assert-eq>1.95511650654133906</assert-eq>
+            <assert-eq>1.955116506541</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividelng2args-5">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:long(lower bound) $arg2 = xs:long(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-92233720368547758") div xs:long("92233720368547758")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideusht2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:unsignedShort(lower bound) $arg2 = xs:unsignedShort(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") div xs:unsignedShort("44633")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideusht2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:unsignedShort(lower bound) $arg2 = xs:unsignedShort(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") div xs:unsignedShort("65535")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividenint2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:negativeInteger(lower bound) $arg2 = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-999999999999999999") div xs:negativeInteger("-999999999999999999")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividenint2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:negativeInteger(mid range) $arg2 = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:negativeInteger("-297014075999096793") div xs:negativeInteger("-999999999999999999")),18)</test>
+      <result>
+         <any-of>
+            <assert-eq>0.297014075999096793</assert-eq>
+            <assert-eq>0.297014075999</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividenint2args-3">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:negativeInteger(upper bound) $arg2 = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <modified by="Michael Kay" on="2021-06-07" change="Add yet another permissible result"/>
+      <test>xs:negativeInteger("-1") div xs:negativeInteger("-999999999999999999")</test>
+      <result>
+         <any-of>
+            <assert-eq>0.000000000000000001</assert-eq>
+            <assert-eq>0.000000000000000001000000000000000001</assert-eq>
+            <assert-eq>0.000000000000000001000000000000000001000000000000000001</assert-eq>
+            <assert-eq>0</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividenint2args-4">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:negativeInteger(lower bound) $arg2 = xs:negativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:negativeInteger("-999999999999999999") div xs:negativeInteger("-297014075999096793")),18)</test>
+      <result>
+         <any-of>
+            <assert-eq>3.366843799022646172</assert-eq>
+            <assert-eq>3.366843799022</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividenint2args-5">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:negativeInteger(lower bound) $arg2 = xs:negativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-999999999999999999") div xs:negativeInteger("-1")</test>
+      <result>
+         <assert-eq>999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividepint2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") div xs:positiveInteger("1")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividepint2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:positiveInteger(mid range) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("52704602390610033") div xs:positiveInteger("1")</test>
+      <result>
+         <assert-eq>52704602390610033</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividepint2args-3">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:positiveInteger(upper bound) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("999999999999999999") div xs:positiveInteger("1")</test>
+      <result>
+         <assert-eq>999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividepint2args-4">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:positiveInteger("1") div xs:positiveInteger("52704602390610033")),17)</test>
+      <result>
+         <any-of>
+            <assert-eq>0.00000000000000002</assert-eq>
+            <assert-eq>0</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividepint2args-5">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <modified by="Michael Kay" on="2021-06-07" change="add yet another permissible result"/>
+      <test>xs:positiveInteger("1") div xs:positiveInteger("999999999999999999")</test>
+      <result>
+         <any-of>
+            <assert-eq>0.000000000000000001</assert-eq>
+            <assert-eq>0.000000000000000001000000000000000001</assert-eq>
+            <assert-eq>0.000000000000000001000000000000000001000000000000000001</assert-eq>
+            <assert-eq>0</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideulng2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:unsignedLong(lower bound) $arg2 = xs:unsignedLong(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") div xs:unsignedLong("130747108607674654")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divideulng2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:unsignedLong(lower bound) $arg2 = xs:unsignedLong(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") div xs:unsignedLong("184467440737095516")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividenpi2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:nonPositiveInteger(lower bound) $arg2 = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-999999999999999999") div xs:nonPositiveInteger("-999999999999999999")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividenpi2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:nonPositiveInteger(mid range) $arg2 = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:nonPositiveInteger("-475688437271870490") div xs:nonPositiveInteger("-999999999999999999")),18)</test>
+      <result>
+         <any-of>
+            <assert-eq>0.47568843727187049</assert-eq>
+            <assert-eq>0.475688437271</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividenpi2args-3">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:nonPositiveInteger(upper bound) $arg2 = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("0") div xs:nonPositiveInteger("-999999999999999999")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividenpi2args-4">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:nonPositiveInteger(lower bound) $arg2 = xs:nonPositiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:nonPositiveInteger("-999999999999999999") div xs:nonPositiveInteger("-475688437271870490")),18)</test>
+      <result>
+         <any-of>
+            <assert-eq>2.102216328265447024</assert-eq>
+            <assert-eq>2.102216328265</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividenni2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(lower bound) $arg2 = xs:nonNegativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") div xs:nonNegativeInteger("303884545991464527")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividenni2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(lower bound) $arg2 = xs:nonNegativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") div xs:nonNegativeInteger("999999999999999999")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividesht2args-1">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:short(lower bound) $arg2 = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-32768") div xs:short("-32768")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividesht2args-2">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:short(mid range) $arg2 = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:short("-5324") div xs:short("-32768")),5)</test>
+      <result>
+         <assert-eq>0.16248</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividesht2args-3">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:short(upper bound) $arg2 = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("32767") div xs:short("-32768")</test>
+      <result>
+         <any-of>
+            <assert-eq>-0.999969482421875</assert-eq>
+            <assert-eq>-0.999969482421</assert-eq>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividesht2args-4">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:short(lower bound) $arg2 = xs:short(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:round-half-to-even((xs:short("-32768") div xs:short("-5324")),5)</test>
+      <result>
+         <assert-eq>6.15477</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividesht2args-5">
+      <description> Evaluates The "op:numeric-divide" operator with the arguments set as follows: $arg1 = xs:short(lower bound) $arg2 = xs:short(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <modified by="O'Neil Delpratt" on="2012-11-08" change="Bug #19782 - change expected result" />
+       <modified by="O'Neil Delpratt" on="2012-12-05" change="Bug #20123 - reduce decimal digits fro m24 to 18" />
+      <test>xs:short("-32768") div xs:short("32767")</test>
+      <result>
+        <assert>abs($result + 1.000030518509475997) lt 1e-12</assert>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividemix2args-1">
+      <description> Simple division test with () as one operand should return null </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <test>() div 1</test>
+      <result>
+         <any-of>
+            <assert-empty/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividemix2args-2">
+      <description> Simple division test pass string for second operator </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <test>1 div '1'</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividemix2args-3">
+      <description> Simple division test, second operator cast string to integer </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <test>1 div xs:integer('1')</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividemix2args-4">
+      <description> Simple division test, second operator is a node, atomization applied </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 div <a> 2 </a>]]></test>
+      <result>
+         <assert-eq>0.5</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividemix2args-5">
+      <description> Simple division test, second operator is a node, atomization applied </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 div <a> <b> 2 </b> </a>]]></test>
+      <result>
+         <assert-eq>0.5</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividemix2args-6">
+      <description> Simple division test, second operator node which is not atomizable </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 div <a> <b> 2</b> <c> 2</c> </a>]]></test>
+      <result>
+         <error code="FORG0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividemix2args-7">
+      <description> Simple division test, two operands are nodes </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a> 1 </a> div <b> 2 </b>]]></test>
+      <result>
+         <assert-eq>0.5</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividemix2args-8">
+      <description> Simple division test, second operator is a node, atomizable but not castable to integer </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 div <a> x </a>]]></test>
+      <result>
+         <error code="FORG0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-dividemix2args-9">
+      <description> Simple division test pass an empty node for second operator </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 div <a/>]]></test>
+      <result>
+         <error code="FORG0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-1">
+      <description> A test whose essence is: `xs:double(6) div xs:double(2) eq 3`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:double(6) div xs:double(2) eq 3</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-2">
+      <description> A test whose essence is: `xs:decimal(6) div xs:decimal(2) eq 3`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:decimal(6) div xs:decimal(2) eq 3</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-3">
+      <description> A test whose essence is: `xs:integer(6) div xs:integer(2) eq 3`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:integer(6) div xs:integer(2) eq 3</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-4">
+      <description> A test whose essence is: `xs:float(6) div xs:float(2) eq 3`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:float(6) div xs:float(2) eq 3</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-5">
+      <description> A test whose essence is: `xs:double(5) div xs:double(2) eq 2.5`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:double(5) div xs:double(2) eq 2.5</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-6">
+      <description> A test whose essence is: `xs:double(5) div xs:double(2) ne 2.6`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:double(5) div xs:double(2) ne 2.6</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-7">
+      <description> A test whose essence is: `xs:float(5) div xs:float(2) eq 2.5`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:float(5) div xs:float(2) eq 2.5</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-8">
+      <description> A test whose essence is: `xs:float(5) div xs:float(2) ne 2.6`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:float(5) div xs:float(2) ne 2.6</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-9">
+      <description> A test whose essence is: `xs:integer(5) div xs:integer(2) eq 2.5`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:integer(5) div xs:integer(2) eq 2.5</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-10">
+      <description> A test whose essence is: `xs:integer(5) div xs:integer(2) ne 2.6`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:integer(5) div xs:integer(2) ne 2.6</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-11">
+      <description> A test whose essence is: `xs:decimal(5) div xs:decimal(2) eq 2.5`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:decimal(5) div xs:decimal(2) eq 2.5</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-12">
+      <description> A test whose essence is: `xs:decimal(5) div xs:decimal(2) ne 2.6`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:decimal(5) div xs:decimal(2) ne 2.6</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-13">
+      <description> A test whose essence is: `5 div 2 ne 2.6`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>5 div 2 ne 2.6</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-14">
+      <description> A test whose essence is: `5.0 div 2.0 eq 2.5`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>5.0 div 2.0 eq 2.5</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-15">
+      <description> A test whose essence is: `5.0 div 2.0 ne 2.6`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>5.0 div 2.0 ne 2.6</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-16">
+      <description> A test whose essence is: `(xs:decimal(6) div xs:integer(2)) instance of xs:decimal`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) div xs:integer(2)) instance of xs:decimal</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-17">
+      <description> A test whose essence is: `(xs:integer(6) div xs:decimal(2)) instance of xs:decimal`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) div xs:decimal(2)) instance of xs:decimal</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-18">
+      <description> A test whose essence is: `(xs:integer(6) div xs:integer(2)) instance of xs:decimal`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) div xs:integer(2)) instance of xs:decimal</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-19">
+      <description> A test whose essence is: `(xs:decimal(6) div xs:decimal(2)) instance of xs:decimal`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) div xs:decimal(2)) instance of xs:decimal</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-20">
+      <description> A test whose essence is: `(xs:float(6) div xs:decimal(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) div xs:decimal(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-21">
+      <description> A test whose essence is: `(xs:decimal(6) div xs:float(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) div xs:float(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-22">
+      <description> A test whose essence is: `(xs:float(6) div xs:integer(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) div xs:integer(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-23">
+      <description> A test whose essence is: `(xs:integer(6) div xs:float(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) div xs:float(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-24">
+      <description> A test whose essence is: `(xs:float(6) div xs:float(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) div xs:float(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-25">
+      <description> A test whose essence is: `(xs:decimal(6) div xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) div xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-26">
+      <description> A test whose essence is: `(xs:double(6) div xs:decimal(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) div xs:decimal(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-27">
+      <description> A test whose essence is: `(xs:double(6) div xs:float(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) div xs:float(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-28">
+      <description> A test whose essence is: `(xs:float(6) div xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) div xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-29">
+      <description> A test whose essence is: `(xs:double(6) div xs:integer(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) div xs:integer(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-30">
+      <description> A test whose essence is: `(xs:integer(6) div xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) div xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-31">
+      <description> A test whose essence is: `(xs:double(6) div xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) div xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-32">
+      <description> Invoke the 'div operator with invalid operands. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>"3" div "3"</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-33">
+      <description> Invoke the 'div' operator with invalid operands. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:double(3) div "3"</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-34">
+      <description> A test whose essence is: `(xs:double(3) div xs:untypedAtomic("3")) eq 1`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(3) div xs:untypedAtomic("3")) eq 1</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-35">
+      <description> A test whose essence is: `(xs:untypedAtomic("3") div xs:double(3)) eq 1`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:untypedAtomic("3") div xs:double(3)) eq 1</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-36">
+      <description> Invalid whitespace for the 'div' operator. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>10 div3</test>
+      <result>
+         <error code="XPST0003"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-37">
+      <description> Invalid whitespace for the 'div' operator. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>10div 3</test>
+      <result>
+         <error code="XPST0003"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-38">
+      <description> Invalid whitespace for the 'div' operator. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>10div3</test>
+      <result>
+         <error code="XPST0003"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-39">
+      <description> Operand(s) which are the empty sequence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(() div ())</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-40">
+      <description> Operand(s) which are the empty sequence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(1 div ())</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-41">
+      <description> Operand(s) which are the empty sequence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(() div 1)</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-42">
+      <description> Operand(s) which are the empty sequence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(xs:double(3) div ())</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericDivide-43">
+      <description> Operand(s) which are the empty sequence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(() div xs:decimal(1))</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-1">
+      <description> Divide by 0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 div 0</test>
+      <result>
+         <error code="FOAR0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-2">
+      <description> Divide by 0.0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 div 0.0</test>
+      <result>
+         <error code="FOAR0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-3">
+      <description> Divide by +0.0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 div +0.0</test>
+      <result>
+         <error code="FOAR0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-4">
+      <description> Divide by -0.0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 div -0.0</test>
+      <result>
+         <error code="FOAR0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-5">
+      <description> Divide by 0e0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 div 0e0</test>
+      <result>
+         <assert-string-value>INF</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-6">
+      <description> Divide -1 by 0e0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>-1 div 0e0</test>
+      <result>
+         <assert-string-value>-INF</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-7">
+      <description> Divide by xs:float(0). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 div xs:float(0)</test>
+      <result>
+         <assert-string-value>INF</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-8">
+      <description> Divide -1 by xs:float(0). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>-1 div xs:float(0)</test>
+      <result>
+         <assert-string-value>-INF</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-9">
+      <description> Divide +0e0 with -0e0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>+0e0 div -0e0</test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-10">
+      <description> Divide +0e0 with +0e0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>+0e0 div +0e0</test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-11">
+      <description> Divide -0e0 with -0e0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>-0e0 div -0e0</test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-12">
+      <description> Divide -0e0 with +0e0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>-0e0 div +0e0</test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-13">
+      <description> Divide +3 with +0e0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>+3 div +0e0</test>
+      <result>
+         <assert-string-value>INF</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-14">
+      <description> Divide -3 with +0e0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>-3 div +0e0</test>
+      <result>
+         <assert-string-value>-INF</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-15">
+      <description> Divide +3 with -0e0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>+3 div -0e0</test>
+      <result>
+         <assert-string-value>-INF</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-16">
+      <description> Divide -3 with -0e0. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>-3 div -0e0</test>
+      <result>
+         <assert-string-value>INF</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericDivide-17">
+      <description> Ensure the 'div' keyword is parsed correctly. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[empty(<e/>/(div div div))]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divide-1">
+      <description> Check dynamic type of numeric divide on arguments of union of numeric types and untypedAtomic. </description>
+      <created by="Oliver Hallam" on="2010-03-16"/>
+      <test>for $x in (1, xs:decimal(2), xs:float(3), xs:double(4), xs:untypedAtomic(5)), 
+                $y in (6, xs:decimal(6), xs:float(6), xs:double(6), xs:untypedAtomic(6)),
+                $result in ($x div $y)
+            return 
+                if ($result instance of xs:integer) then "integer"
+                else if ($result instance of xs:decimal) then "decimal" 
+                else if ($result instance of xs:double) then "double"
+                else if ($result instance of xs:float) then "float"
+                else error() 
+       </test>
+      <result>
+         <assert-string-value>decimal decimal float double double decimal decimal float double double float float float double double double double double double double double double double double double</assert-string-value>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-numeric-divide-001">
+      <description> test division of xs:double NaN </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; 
+      	xs:double('NaN') div local:square(7)
+      </test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-002">
+      <description> test division by xs:double NaN </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>     
+      <test>
+      	declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; 
+      	local:square(7) div xs:double('NaN')
+      </test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-003">
+      <description> test division by xs:double 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; 
+      	local:square(7) div 1e0
+      	</test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-004">
+      <description> test division by xs:double -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; 
+      	local:square(7) div -1e0
+      </test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-005">
+      <description> test division of xs:float NaN </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>     
+      <test>
+      	declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; 
+      	xs:float('NaN') div local:square(7)
+      </test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-006">
+      <description> test division by xs:float NaN </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; 
+      	local:square(7) div xs:float('NaN')
+      </test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-007">
+      <description> test division by xs:float 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; 
+      	local:square(7) div xs:float(1)
+      </test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-008">
+      <description> test division by xs:float -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; 
+      	local:square(7) div xs:float(-1)
+      </test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-009">
+      <description> test division by xs:decimal 0 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; 
+      	local:square(2.0) div 0.0
+      </test>
+      <result>
+         <error code="FOAR0001"/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-010">
+      <description> test division by xs:decimal 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; 
+      	local:square(7.0) div 1.0
+      </test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-011">
+      <description> test division by xs:decimal -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; 
+      	local:square(7.0) div -1.0
+      </test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-012">
+      <description> test division by xs:integer 0 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; 
+      	local:square(2) div 0
+      </test>
+      <result>
+         <error code="FOAR0001"/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-013">
+      <description> test division by xs:integer 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>     
+      <test>
+      	declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; 
+      	local:square(7) div 1
+      </test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-014">
+      <description> test division by xs:integer -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; 
+      	local:square(7) div -1
+      </test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-divide-015">
+      <description> check that overflow occurs correctly when adding values of type xs:decimal </description>
+      <created by="Oliver Hallam" on="2008-05-30"/>      
+      <test>10000000000000000000000000000.0 div 0.1 gt 0</test>
+      <result>
+	    <any-of>
+	      <error code="FOAR0002"/>
+	      <assert-true />
+	    </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-divide-big-01">
+      <description> check that overflow occurs correctly when dividing values of type xs:decimal </description>
+      <created by="Andrew Eisenberg" on="2012-10-31"/>
+      <modified by="Michael Kay" on="2012-12-21" change="fix bug 20473"/>      
+      <test>(10000000000000000000000000000.0 div 0.1) cast as xs:string</test>
+      <result>
+	    <any-of>
+	      <error code="FOAR0002"/>
+	      <assert-string-value>100000000000000000000000000000</assert-string-value>
+	    </any-of>
+      </result>
+   </test-case>
+</test-set>

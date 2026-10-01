@@ -1,0 +1,660 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="op-time-greater-than">
+   <description>Tests for the time-greater-than() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-time-greater-than"/>
+   <test-case name="op-time-greater-than2args-1">
+      <description>
+*******************************************************
+Test: op-time-greater-than2args-1                       
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-greater-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") gt xs:time("00:00:00Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than2args-2">
+      <description>
+*******************************************************
+Test: op-time-greater-than2args-2                       
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-greater-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:time(mid range)                             
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("08:03:35Z") gt xs:time("00:00:00Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than2args-3">
+      <description>
+*******************************************************
+Test: op-time-greater-than2args-3                       
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-greater-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:time(upper bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("23:59:59Z") gt xs:time("00:00:00Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than2args-4">
+      <description>
+*******************************************************
+Test: op-time-greater-than2args-4                       
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-greater-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(mid range)                             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") gt xs:time("08:03:35Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than2args-5">
+      <description>
+*******************************************************
+Test: op-time-greater-than2args-5                       
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-greater-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(upper bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") gt xs:time("23:59:59Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than2args-6">
+      <description>
+*******************************************************
+Test: op-time-greater-than2args-6                       
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-greater-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") le xs:time("00:00:00Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than2args-7">
+      <description>
+*******************************************************
+Test: op-time-greater-than2args-7                       
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-greater-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:time(mid range)                             
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("08:03:35Z") le xs:time("00:00:00Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than2args-8">
+      <description>
+*******************************************************
+Test: op-time-greater-than2args-8                       
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-greater-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:time(upper bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("23:59:59Z") le xs:time("00:00:00Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than2args-9">
+      <description>
+*******************************************************
+Test: op-time-greater-than2args-9                       
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-greater-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(mid range)                             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") le xs:time("08:03:35Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than2args-10">
+      <description>
+*******************************************************
+Test: op-time-greater-than2args-10                      
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-greater-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(upper bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") le xs:time("23:59:59Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-1">
+      <description>
+*******************************************************
+Test: op-time-greater-than-1                           
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function    
+As per example 1 (for this function)of the F&amp;O specs   
+(gt operator).                                         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>(xs:time("08:00:00+09:00") gt xs:time("17:00:00-06:00"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-2">
+      <description>
+*******************************************************
+Test:  op-time-greater-than-2                          
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function    
+As per example 1 (for this function)of the F&amp;O specs   
+(ge operator).                                         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>(xs:time("08:00:00+09:00") ge xs:time("17:00:00-06:00"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-3">
+      <description>
+*******************************************************
+Test: op-time-greater-than-3                           
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function that
+return true and used together with fn:not (gt operator)
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>fn:not((xs:time("14:00:00Z") gt xs:time("13:00:00Z")))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-4">
+      <description>
+*******************************************************
+Test: op-time-greater-than-4                           
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function that
+return true and used together with fn:not (ge operator)
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>fn:not(xs:time("13:00:00Z") ge xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-5">
+      <description>
+*******************************************************
+Test: op-time-greater-than-5                           
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function that
+return false and used together with fn:not (gt operator)
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>fn:not(xs:time("13:00:00Z") gt xs:time("14:00:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-6">
+      <description>
+*******************************************************
+Test: op-time-greater-than-6                           
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function that
+return false and used together with fn:not(ge operator)
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>fn:not(xs:time("13:00:00Z") ge xs:time("17:00:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-7">
+      <description>
+*******************************************************
+Test: op-time-greater-than-7                           
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function used
+together with "and" expression (gt operator).          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>(xs:time("13:00:00Z") gt xs:time("17:00:00Z")) and (xs:time("13:00:00Z") gt xs:time("17:00:00Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-8">
+      <description>
+*******************************************************
+Test: op-time-greater-than-8                           
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function used
+together with "and" expression (ge operator).          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>(xs:time("13:00:00Z") ge xs:time("17:00:00Z")) and (xs:time("13:00:00Z") ge xs:time("17:00:00Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-9">
+      <description>
+*******************************************************
+Test: op-time-greater-than-9                           
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function used
+together with "or" expression (gt operator).          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>(xs:time("13:00:00Z") gt xs:time("17:00:00Z")) or (xs:time("13:00:00Z") gt xs:time("17:00:00Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-10">
+      <description>
+*******************************************************
+Test: op-time-greater-than-10                          
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function used
+together with "or" expression (ge operator).          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>(xs:time("13:00:00Z") ge xs:time("17:00:00Z")) or (xs:time("13:00:00Z") ge xs:time("17:00:00Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-11">
+      <description>
+*******************************************************
+Test: op-time-greater-than-11                          
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function used
+together with "fn:true"/or expression (gt operator).   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>(xs:time("13:00:00Z") gt xs:time("17:00:00Z")) or (fn:true())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-12">
+      <description>
+*******************************************************
+Test: op-time-greater-than-12                          
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function used
+together with "fn:true"/or expression (ge operator).   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>(xs:time("13:00:00Z") ge xs:time("17:00:00Z")) or (fn:true())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-13">
+      <description>
+*******************************************************
+Test: op-time-greater-than-13                          
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function used
+together with "fn:false"/or expression (gt operator).  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>(xs:time("13:00:00Z") gt xs:time("17:00:00Z")) or (fn:false())</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-greater-than-14">
+      <description>
+*******************************************************
+Test: op-time-greater-than-14                          
+Written By: Carmelo Montanez                           
+Date: June 13, 2005                                    
+Purpose: Evaluates The "time-greater-than" function used
+together with "fn:false"/or expression (ge operator).  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-13"/>
+      <test>(xs:time("13:00:00Z") ge xs:time("17:00:00Z")) or (fn:false())</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeGT-1">
+      <description>
+*******************************************************
+ Test: K-TimeGT-1                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple test of 'lt' for xs:time.             
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("23:01:03.12") lt xs:time("23:01:04.12")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeGT-2">
+      <description>
+*******************************************************
+ Test: K-TimeGT-2                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple test of 'lt' for xs:time.             
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(xs:time("23:01:04.12") lt xs:time("23:01:04.12"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeGT-3">
+      <description>
+*******************************************************
+ Test: K-TimeGT-3                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple test of 'lt' for xs:time.             
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(xs:time("23:01:05.12") lt xs:time("23:01:04.12"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeGT-4">
+      <description>
+*******************************************************
+ Test: K-TimeGT-4                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple test of 'le' for xs:time.             
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("23:01:04.12") le xs:time("23:01:04.12")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeGT-5">
+      <description>
+*******************************************************
+ Test: K-TimeGT-5                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple test of 'le' for xs:time.             
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("23:01:03.12") le xs:time("23:01:04.12")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeGT-6">
+      <description>
+*******************************************************
+ Test: K-TimeGT-6                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple test of 'le' for xs:time.             
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(xs:time("23:01:05.12") le xs:time("23:01:04.12"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+      <test-case name="cbcl-time-greater-than-001">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:two-digit($number as xs:integer) { let $string := string($number) return if (string-length($string) lt 2) then concat('0', $string) else $string };
+        declare function local:time($hours as xs:integer, $mins as xs:integer, $seconds as xs:decimal) { let $h := local:two-digit($hours), $m := local:two-digit($mins) return xs:time(concat($h, ':', $m, ':', $seconds)) };
+        not(local:time(12, 59, 30) gt xs:time("12:32:05"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-002">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("14:00:00-12:00") gt xs:time("02:00:00")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-003">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("02:00:00") gt xs:time("14:00:00-12:00")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-004">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <modified by="Tim Mills" on="2013-03-18" change="Bug 21222" />
+      <test>if (implicit-timezone() gt xs:dayTimeDuration('PT1H'))
+            then xs:time("00:00:00") gt xs:time("00:00:00+01:00")
+            else xs:time("00:00:00+01:01") gt xs:time("00:00:00")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-005">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <modified by="Tim Mills" on="2013-03-18" change="Bug 21222" />
+      <test>if (implicit-timezone() gt xs:dayTimeDuration('PT1H'))
+            then xs:time("00:00:01+01:00") gt xs:time("00:00:00")
+            else xs:time("00:00:00") gt xs:time("00:00:00+01:01")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-006">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:two-digit($number as xs:integer) { let $string := string($number) return if (string-length($string) lt 2) then concat('0', $string) else $string };
+        declare function local:time($hours as xs:integer, $mins as xs:integer, $seconds as xs:decimal) { let $h := local:two-digit($hours), $m := local:two-digit($mins) return xs:time(concat($h, ':', $m, ':', $seconds)) };
+        not(local:time(12, 59, 30) le xs:time("12:32:05"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-007">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("14:00:00-12:00") le xs:time("02:00:00")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-008">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("02:00:00") le xs:time("14:00:00-12:00")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-009">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <modified by="Tim Mills" on="2013-03-15" change="Bug 21222" />
+      <test>if (implicit-timezone() gt xs:dayTimeDuration('PT1H'))
+            then xs:time("00:00:00") le xs:time("00:00:00+01:00")
+            else xs:time("00:00:00+01:01") le xs:time("00:00:00")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-010">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <modified by="Tim Mills" on="2013-03-15" change="Bug 21222" />
+      <test>if (implicit-timezone() gt xs:dayTimeDuration('PT1H'))
+            then xs:time("00:00:01+01:00") le xs:time("00:00:00")
+            else xs:time("00:00:00") le xs:time("00:00:00+01:01")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-011">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:time($time as xs:time, $null as xs:boolean) { if ($null) then () else $time };
+        exists(local:time(xs:time("23:58:00"), fn:true()) gt xs:time("23:58:00"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-012">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:time($time as xs:time, $null as xs:boolean) { if ($null) then () else $time };
+        local:time(xs:time("23:58:00"), fn:false()) gt xs:time("23:58:00")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-013">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:time($time as xs:time, $null as xs:boolean) { if ($null) then () else $time };
+        exists(local:time(xs:time("23:58:00"), fn:true()) le xs:time("23:58:00"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-greater-than-014">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:time($time as xs:time, $null as xs:boolean) { if ($null) then () else $time };
+        local:time(xs:time("23:58:00"), fn:false()) le xs:time("23:58:00")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

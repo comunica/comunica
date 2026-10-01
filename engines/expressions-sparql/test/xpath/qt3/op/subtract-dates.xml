@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="op-subtract-dates">
+   <description>Tests for the subtract-dates() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-subtract-dates"/>
+   <test-case name="op-subtract-dates-yielding-DTD-1">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-1                 
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator 
+As per example 1 (for this function)of the F&amp;O specs.  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>xs:date("2000-10-30") - xs:date("1999-11-28")</test>
+      <result>
+         <assert-string-value>P337D</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-2">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-2                 
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator 
+as per example 2 (for this operator) from the F&amp;O specs.
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>xs:date("2000-10-30+05:00") - xs:date("1999-11-28Z")</test>
+      <result>
+         <assert-string-value>P336DT19H</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-3">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-3                 
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator as 
+per example 3 (for this operator) from the F&amp;O specs.  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>xs:date("2000-10-15-05:00") - xs:date("2000-10-10+02:00")</test>
+      <result>
+         <assert-string-value>P5DT7H</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-4">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-4                 
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The string value of "subtract-dates-yielding-DTD" 
+ operator that return true and used together with fn:not. 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:not(fn:string(xs:date("1998-09-12Z") - xs:date("1998-09-21Z")))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-5">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-5                 
+Written By: Carmelo Montanez                           
+Date: July 3, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator that  
+is used as an argument to the fn:boolean function.     
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:boolean(fn:string(xs:date("1962-03-12Z") - xs:date("1962-03-12Z")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-6">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-6                 
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator that 
+is used as an argument to the fn:number function.      
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:number(xs:date("1988-01-28Z") - xs:date("2001-03-02"))</test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-7">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-7                 
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator used  
+as an argument to the "fn:string" function).           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:string(xs:date("1989-07-05Z") - xs:date("1962-09-04Z"))</test>
+      <result>
+         <assert-string-value>P9801D</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-8">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-8                 
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dayTimeDuration-from-date" operator that  
+returns a negative value.                              
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>xs:date("0001-01-01Z") - xs:date("2005-07-06Z")</test>
+      <result>
+         <assert-string-value>-P732132D</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-9">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-9                 
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator used  
+together with an "and" expression.                      
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:string((xs:date("1993-12-09Z") - xs:date("1992-10-02Z"))) and fn:string((xs:date("1993-12-09Z") - xs:date("1980-10-20Z")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-10">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-10                
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator used  
+together with an "or" expression.                      
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:string((xs:date("1985-07-05Z") - xs:date("1977-12-02Z"))) or fn:string((xs:date("1985-07-05Z") - xs:date("1960-11-07Z")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-11">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-11                
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator used  
+as part of a "div" expression.                         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>(xs:date("1978-12-12Z") - xs:date("1978-12-12Z")) div xs:dayTimeDuration("P17DT10H02M")</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-12">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-12                
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator used 
+with a boolean expression and the "fn:true" function.   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:string((xs:date("1980-03-02Z") - xs:date("2001-09-11Z"))) and (fn:true())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-13">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-13                
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator used  
+together with the numeric-equal-operator "eq".         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:string((xs:date("1980-05-05Z") - xs:date("1981-12-03Z"))) eq xs:string(xs:dayTimeDuration("P17DT10H02M"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-14">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-14                
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator used  
+together with the numeric-equal operator "ne".         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:string((xs:date("1979-12-12Z") - xs:date("1979-11-11Z"))) ne xs:string(xs:dayTimeDuration("P17DT10H02M"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-15">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-15                
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator used  
+together with the numeric-equal operator "le".         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:string((xs:date("1978-12-12Z") - xs:date("1977-03-12Z"))) le xs:string(xs:dayTimeDuration("P17DT10H02M"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-16">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-16                
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator used  
+together with the numeric-equal operator "ge".         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:string((xs:date("1977-12-12Z") - xs:date("1976-12-12Z"))) ge xs:string(xs:dayTimeDuration("P17DT10H02M"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-17">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-17                
+Written By: Carmelo Montanez                           
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator 
+used as part of a boolean expression (and operator) and the "fn:false" function. 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:string(xs:date("2000-12-12Z") - xs:date("2000-11-11Z")) and fn:false()</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-18">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-18                
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator as 
+part of a boolean expression (or operator) and the "fn:false" function. 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>fn:string((xs:date("1999-10-23Z") - xs:date("1998-09-09Z"))) or fn:false()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-19">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-19                
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator as 
+part of a multiplication expression                     
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>(xs:date("1999-10-23Z") - xs:date("1998-09-09Z")) * xs:decimal(2.0)</test>
+      <result>
+         <assert-string-value>P818D</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-dates-yielding-DTD-20">
+      <description>
+*******************************************************
+Test: op-subtract-dates-yielding-DTD-20                
+Date: July 6, 2005                                     
+Purpose: Evaluates The "subtract-dates-yielding-DTD" operator as 
+part of a addition expression                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-06"/>
+      <test>(xs:date("1999-10-23Z") - xs:date("1998-09-09Z")) + xs:dayTimeDuration("P17DT10H02M")</test>
+      <result>
+         <assert-string-value>P426DT10H2M</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="K-DatesSubtract-1">
+      <description>
+*******************************************************
+ Test: K-DatesSubtract-1                               
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple testing involving operator '-' between xs:date and xs:date. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-07-19") - xs:date("1969-11-30") eq xs:dayTimeDuration("P10823D")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-DatesSubtract-2">
+      <description>
+*******************************************************
+ Test: K-DatesSubtract-2                               
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple testing involving operator '-' between xs:date and xs:date that evaluates to zero. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-07-19") - xs:date("1999-07-19") eq xs:dayTimeDuration("PT0S")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-DatesSubtract-3">
+      <description>
+*******************************************************
+ Test: K-DatesSubtract-3                               
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The '+' operator is not available between xs:date and xs:date. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-10-12") + xs:date("1999-10-12")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-DatesSubtract-4">
+      <description>
+*******************************************************
+ Test: K-DatesSubtract-4                               
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The 'div' operator is not available between xs:date and xs:date. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-10-12") div xs:date("1999-10-12")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-DatesSubtract-5">
+      <description>
+*******************************************************
+ Test: K-DatesSubtract-5                               
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The '*' operator is not available between xs:date and xs:date. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-10-12") * xs:date("1999-10-12")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-DatesSubtract-6">
+      <description>
+*******************************************************
+ Test: K-DatesSubtract-6                               
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The 'mod' operator is not available between xs:date and xs:date. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-10-12") mod xs:date("1999-10-12")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-subtract-dates-001">
+      <description> test subtraction of large dates </description>
+      <created by="Tim Mills" on="2008-05-15"/>
+      
+      <test>xs:date("-25252734927766554-12-31") - xs:date("25252734927766554-12-31")</test>
+      <result>
+         <error code="FODT0001"/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-subtract-dates-002">
+      <description> test subtraction of large dates </description>
+      <created by="Tim Mills" on="2008-05-15"/>
+      
+      <test>xs:date("-25252734927766554-12-31") - xs:date("25252734927766554-12-31+01:00")</test>
+      <result>
+         <error code="FODT0001"/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-subtract-dates-003">
+      <description> test subtraction of large dates </description>
+      <created by="Tim Mills" on="2008-05-15"/>
+      <modified by="Tim Mills" on="2013-03-15" change="Bug 21222" />
+      <test>xs:date("2008-12-31") - xs:date("2002-12-31+01:00") + implicit-timezone()</test>
+      <result>
+         <assert-string-value>P2192DT1H</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-subtract-dates-004">
+      <description> test subtraction of large dates </description>
+      <created by="Tim Mills" on="2008-05-15"/>
+      <modified by="Tim Mills" on="2013-03-15" change="Bug 21222" />
+      <test>xs:date("2002-12-31+01:00") - xs:date("2008-12-31") - implicit-timezone()</test>
+      <result>
+         <assert-string-value>-P2192DT1H</assert-string-value>
+      </result>
+   </test-case>   
+</test-set>

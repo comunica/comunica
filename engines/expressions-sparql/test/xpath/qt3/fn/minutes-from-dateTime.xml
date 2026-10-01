@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog"
+          name="fn-minutes-from-dateTime">
+   <description>Tests for the minutes-from-dateTime() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-minutes-from-dateTime"/>
+
+   <test-case name="fn-minutes-from-dateTime1args-1">
+      <description> Evaluates The "minutes-from-dateTime" function with the arguments set as follows: $arg = xs:dateTime(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1970-01-01T00:00:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime1args-2">
+      <description> Evaluates The "minutes-from-dateTime" function with the arguments set as follows: $arg = xs:dateTime(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1996-04-07T01:40:52Z"))</test>
+      <result>
+         <assert-string-value>40</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime1args-3">
+      <description> Evaluates The "minutes-from-dateTime" function with the arguments set as follows: $arg = xs:dateTime(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("2030-12-31T23:59:59Z"))</test>
+      <result>
+         <assert-string-value>59</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-1">
+      <description> Evaluates The "minutes-from-dateTime" function As per example 1 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1999-05-31T13:20:00-05:00"))</test>
+      <result>
+         <assert-string-value>20</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-2">
+      <description> Evaluates The "minutes-from-dateTime" function As per example 2 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1999-05-31T13:30:00+05:30"))</test>
+      <result>
+         <assert-string-value>30</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-3">
+      <description> Evaluates The "minutes-from-dateTime" function involving a "numeric-less-than" operation (lt operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1999-12-31T21:20:00-05:00")) lt fn:minutes-from-dateTime(xs:dateTime("1999-12-31T21:20:00-05:00"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-4">
+      <description> Evaluates The "minutes-from-dateTime" function involving a "numeric-less-than" operation (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1999-12-31T21:20:00-05:00")) le fn:minutes-from-dateTime(xs:dateTime("1999-12-31T21:20:00-05:00"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-5">
+      <description> Evaluates The "minutes-from-dateTime" function using the empty sequence as an argument. Use count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:count(fn:minutes-from-dateTime(()))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-6">
+      <description> Evaluates The "minutes-from-dateTime" function that returns 0. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1999-05-31T20:00:00-05:00"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-7">
+      <description> Evaluates The "minutes-from-dateTime" function that returns 59. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1999-05-31T23:59:00-05:00"))</test>
+      <result>
+         <assert-string-value>59</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-8">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "+" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1970-01-01T00:00:00Z")) + fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-9">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "-" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1970-01-01T00:00:00Z")) - fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-10">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "*" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1970-01-01T02:02:00Z")) * fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:03:00Z"))</test>
+      <result>
+         <assert-string-value>6</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-11">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "div" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1970-01-01T02:10:00Z")) div fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:05:00Z"))</test>
+      <result>
+         <assert-string-value>2</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-12">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "idiv" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z")) idiv fn:minutes-from-dateTime(xs:dateTime("1970-01-01T02:05:00Z"))</test>
+      <result>
+         <assert-string-value>2</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-13">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "mod" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z")) mod fn:minutes-from-dateTime(xs:dateTime("1970-01-01T03:10:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-14">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "numeric-unary-plus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>+fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z"))</test>
+      <result>
+         <assert-string-value>10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-15">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "numeric-unary-minus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>-fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z"))</test>
+      <result>
+         <assert-string-value>-10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-16">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "numeric-equal" expression (eq operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z")) eq fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-17">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "numeric-equal" expression (ne operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z")) ne fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-18">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "numeric-equal" expression (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z")) le fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-dateTime-19">
+      <description> Evaluates The "minutes-from-dateTime" function as part of a "numeric-equal" expression (ge operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z")) ge fn:minutes-from-dateTime(xs:dateTime("1970-01-01T10:10:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MinutesFromDateTimeFunc-1">
+      <description> A test whose essence is: `minutes-from-dateTime()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>minutes-from-dateTime()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MinutesFromDateTimeFunc-2">
+      <description> A test whose essence is: `minutes-from-dateTime((), "Wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>minutes-from-dateTime((), "Wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MinutesFromDateTimeFunc-3">
+      <description> A test whose essence is: `empty(minutes-from-dateTime(()))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(minutes-from-dateTime(()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MinutesFromDateTimeFunc-4">
+      <description> A test whose essence is: `minutes-from-dateTime(()) instance of xs:integer?`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>minutes-from-dateTime(()) instance of xs:integer?</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MinutesFromDateTimeFunc-5">
+      <description> A test whose essence is: `minutes-from-dateTime(xs:dateTime("2001-02-03T08:23:12.43")) eq 23`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>minutes-from-dateTime(xs:dateTime("2001-02-03T08:23:12.43")) eq 23</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

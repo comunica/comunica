@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog"
+          name="fn-seconds-from-dateTime">
+   <description>Tests for the seconds-from-dateTime() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-seconds-from-dateTime"/>
+
+   <test-case name="fn-seconds-from-dateTime1args-1">
+      <description> Evaluates The "seconds-from-dateTime" function with the arguments set as follows: $arg = xs:dateTime(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1970-01-01T00:00:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime1args-2">
+      <description> Evaluates The "seconds-from-dateTime" function with the arguments set as follows: $arg = xs:dateTime(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1996-04-07T01:40:52Z"))</test>
+      <result>
+         <assert-string-value>52</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime1args-3">
+      <description> Evaluates The "seconds-from-dateTime" function with the arguments set as follows: $arg = xs:dateTime(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("2030-12-31T23:59:59Z"))</test>
+      <result>
+         <assert-string-value>59</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-1">
+      <description> Evaluates The "seconds-from-dateTime" function As per example 1 of the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1999-05-31T13:20:00-05:00"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-2">
+      <description> Evaluates The "seconds-from-dateTime" function as an argument to an "avg" function. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:avg((fn:seconds-from-dateTime(xs:dateTime("1999-05-31T13:30:10Z")), fn:seconds-from-dateTime(xs:dateTime("1999-05-31T13:30:15Z"))))</test>
+      <result>
+         <assert-string-value>12.5</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-3">
+      <description> Evaluates The "seconds-from-dateTime" function involving a "numeric-less-than" operation (lt operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1999-12-31T21:20:20-05:00")) lt fn:seconds-from-dateTime(xs:dateTime("1999-12-31T21:20:20-05:00"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-4">
+      <description> Evaluates The "seconds-from-dateTime" function involving a "numeric-less-than" operation (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1999-12-31T21:20:20-05:00")) le fn:seconds-from-dateTime(xs:dateTime("1999-12-31T21:20:20-05:00"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-5">
+      <description> Evaluates The "seconds-from-dateTime" function using the empty sequence as an argument. Use count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:count(fn:seconds-from-dateTime(()))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-6">
+      <description> Evaluates The "seconds-from-dateTime" function that returns 0. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1999-05-31T20:00:00-05:00"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-7">
+      <description> Evaluates The "seconds-from-dateTime" function that returns 59. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1999-05-31T23:59:59-05:00"))</test>
+      <result>
+         <assert-string-value>59</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-8">
+      <description> Evaluates The "seconds-from-dateTime" function as part of a "+" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1970-01-01T00:00:10Z")) + fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:00:11Z"))</test>
+      <result>
+         <assert-string-value>21</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-9">
+      <description> Evaluates The "seconds-from-dateTime" function as part of a "-" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1970-01-01T00:00:10Z")) - fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-string-value>10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-10">
+      <description> Evaluates The "secondss-from-dateTime" function as part of a "*" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1970-01-01T02:02:02Z")) * fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:03:03Z"))</test>
+      <result>
+         <assert-string-value>6</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-11">
+      <description> Evaluates The "seconds-from-dateTime" function as part of a "div" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1970-01-01T02:10:10Z")) div fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:05:05Z"))</test>
+      <result>
+         <assert-string-value>2</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-12">
+      <description> Evaluates The "seconds-from-dateTime" function as part of a "idiv" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z")) idiv fn:seconds-from-dateTime(xs:dateTime("1970-01-01T02:05:05Z"))</test>
+      <result>
+         <assert-string-value>2</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-13">
+      <description> Evaluates The "seconds-from-dateTime" function as part of a "mod" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z")) mod fn:seconds-from-dateTime(xs:dateTime("1970-01-01T03:10:10Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-14">
+      <description> Evaluates The "seconds-from-dateTime" function as part of a "numeric-unary-plus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>+fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z"))</test>
+      <result>
+         <assert-string-value>10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-15">
+      <description> Evaluates The "seconds-from-dateTime" function as part of a "numeric-unary-minus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>-fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z"))</test>
+      <result>
+         <assert-string-value>-10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-16">
+      <description> Evaluates The "seconds-from-dateTime" function as part of a "numeric-equal" expression (eq operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z")) eq fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-17">
+      <description> Evaluates The "seconds-from-dateTime" function as part of a "numeric-equal" expression (ne operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z")) ne fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-18">
+      <description> Evaluates The "seconds-from-dateTime" function as part of a "numeric-equal" expression (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z")) le fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-dateTime-19">
+      <description> Evaluates The "seconds-from-dateTime" function as part of a "numeric-equal" expression (ge operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z")) ge fn:seconds-from-dateTime(xs:dateTime("1970-01-01T10:10:10Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SecondsFromDateTimeFunc-1">
+      <description> A test whose essence is: `seconds-from-dateTime()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>seconds-from-dateTime()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SecondsFromDateTimeFunc-2">
+      <description> A test whose essence is: `seconds-from-dateTime((), "Wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>seconds-from-dateTime((), "Wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SecondsFromDateTimeFunc-3">
+      <description> A test whose essence is: `empty(seconds-from-dateTime(()))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(seconds-from-dateTime(()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SecondsFromDateTimeFunc-4">
+      <description> A test whose essence is: `seconds-from-dateTime(()) instance of xs:decimal?`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>seconds-from-dateTime(()) instance of xs:decimal?</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SecondsFromDateTimeFunc-5">
+      <description> A test whose essence is: `seconds-from-dateTime(xs:dateTime("2001-02-03T08:23:12.43")) eq 12.43`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>seconds-from-dateTime(xs:dateTime("2001-02-03T08:23:12.43")) eq 12.43</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

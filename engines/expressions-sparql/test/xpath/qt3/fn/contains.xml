@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-contains">
+   <description>Tests for the contains() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-contains"/>
+   
+   <environment name="dyn">
+      <param name="zls"
+         select="''"
+         declared="true"/>
+      <param name="empty"
+         select="()"
+         declared="true"/>
+      <param name="zero"
+         select="0"
+         declared="true"/>
+   </environment>
+
+   <test-case name="fn-contains2args-1">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = xs:string(lower bound) $arg2 = xs:string(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:contains(xs:string("This is a characte"),xs:string("This is a characte"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains2args-2">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = xs:string(mid range) $arg2 = xs:string(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:contains(xs:string("This is a characte"),xs:string("This is a characte"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains2args-3">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = xs:string(upper bound) $arg2 = xs:string(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:contains(xs:string("This is a characte"),xs:string("This is a characte"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains2args-4">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = xs:string(lower bound) $arg2 = xs:string(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:contains(xs:string("This is a characte"),xs:string("This is a characte"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains2args-5">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = xs:string(lower bound) $arg2 = xs:string(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:contains(xs:string("This is a characte"),xs:string("This is a characte"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-1">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = "" $arg2 = "" </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains("","")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-1-dyn">
+      <description> contains, empty string, dynamic </description>
+      <created by="Michael Kay" on="2021-05-15"/>
+      <environment ref="dyn"/>
+      <dependency type="spec" value="XQ31+"/>
+      <test>declare variable $zls external; contains($zls, $zls)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-2">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = "" $arg2 = "A Character String" </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains("","A Character String")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-3">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = "" $arg2 = "A Character String" </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains("A Character String","")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-4">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = () $arg2 = "" </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains((),"")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-4-dyn">
+      <description> contains, empty sequence, dynamic </description>
+      <created by="Michael Kay" on="2021-05-15"/>
+      <environment ref="dyn"/>
+      <dependency type="spec" value="XQ31+"/>
+      <test>declare variable $empty external; declare variable $zls external; 
+         contains($empty, $zls)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-5">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = "" $arg2 = () </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains("",())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-5-dyn">
+      <description> contains, empty sequence, dynamic </description>
+      <created by="Michael Kay" on="2021-05-15"/>
+      <environment ref="dyn"/>
+      <dependency type="spec" value="XQ31+"/>
+      <test>declare variable $empty external; declare variable $zls external; 
+         contains($zls, $empty)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="fn-contains-6">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = "A Character String" $arg2 = () </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains("A Character String",())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-7">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = () $arg2 = "A Character String" </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains((),"A Character String")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-8">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = "AAAAABBBBBCCCCC" $arg2 = "BBBBB" </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains("AAAAABBBBBCCCCC","BBBBB")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-9">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = "AAAAABBBBB" $arg2 = " " </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains("AAAAABBBBB"," ")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-10">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = " " $arg2 = " AAAAABBBBB" </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains(" ","AAAAABBBBB")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-11">
+      <description> Evaluates The "contains" function using it as a argument of a fn:not - returns false </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:not(fn:contains("A","A"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-11-dyn">
+      <description> contains, equal strings, dynamic </description>
+      <created by="Michael Kay" on="2021-05-15"/>
+      <environment ref="dyn"/>
+      <dependency type="spec" value="XQ31+"/>
+      <test>declare variable $zls external; 
+         fn:not(fn:contains("A",$zls||"A"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-12">
+      <description> Evaluates The "contains" function using it as a argument of a fn:not - returns true </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:not(fn:contains("A","B"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-13">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = xs:string("A") $arg2 = "A" </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains(xs:string("A"),"A")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-14">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = "A" $arg2 = xs:string("A") </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains("A",xs:string("A"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-15">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = "A" $arg2 = "a" </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains("A","a")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-contains-16">
+      <description> Evaluates The "contains" function with the arguments set as follows: $arg1 = "a" $arg2 = "A" </description>
+      <created by="Carmelo Montanez" on="2005-05-27"/>
+      <test>fn:contains("a","A")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-17" covers="uca-collation">
+      <description> Use contains() with a UCA collation </description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("banana", "ana", "http://www.w3.org/2013/collation/UCA?lang=en")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-17-dyn">
+      <description> contains, UCA collation, dynamic input</description>
+      <created by="Michael Kay" on="2021-05-15"/>
+      <environment ref="dyn"/>
+      <dependency type="spec" value="XQ31+"/>
+      <test>declare variable $zls external; 
+         fn:contains($zls || "banana", $zls || "ana", "http://www.w3.org/2013/collation/UCA?lang=en")
+      </test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-18" covers="uca-collation">
+      <description> Use contains() with a UCA collation </description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("banana", "bananas", "http://www.w3.org/2013/collation/UCA?lang=en")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-18-dyn">
+      <description> contains, UCA collation, dynamic collation</description>
+      <created by="Michael Kay" on="2021-05-15"/>
+      <environment ref="dyn"/>
+      <dependency type="spec" value="XQ31+"/>
+      <test>declare variable $zls external; 
+         fn:contains("banana", "bananas", $zls || "http://www.w3.org/2013/collation/UCA?lang=en")
+      </test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-19" covers="uca-collation">
+      <description> Use contains() with a UCA collation and primary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("database", "DATA", "http://www.w3.org/2013/collation/UCA?lang=en;strength=primary")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-20" covers="uca-collation">
+      <description> Use contains() with a UCA collation and primary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("database", "tabaS", "http://www.w3.org/2013/collation/UCA?lang=en;strength=primary")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-21" covers="uca-collation">
+      <description> Use contains() with a UCA collation and primary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <modified by="Michael Kay" on="2018-07-19" change="Added dependency advanced-uca-fallback"/>
+      <dependency type="feature" value="advanced-uca-fallback"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("database", "dâta", "http://www.w3.org/2013/collation/UCA?lang=en;strength=primary")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-22" covers="uca-collation">
+      <description> Use contains() with a UCA collation and primary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("dâtabase", "âtabase", "http://www.w3.org/2013/collation/UCA?lang=en;strength=primary")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-23" covers="uca-collation">
+      <description> Use contains() with a UCA collation and primary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <modified by="Michael Kay" on="2018-07-19" change="Added dependency advanced-uca-fallback"/>
+      <dependency type="feature" value="advanced-uca-fallback"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("dâtÅbase", "âtabÃse", "http://www.w3.org/2013/collation/UCA?lang=en;strength=primary")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-24" covers="uca-collation">
+      <description> Use contains() with a UCA collation and secondary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("database", "DATA", "http://www.w3.org/2013/collation/UCA?lang=en;strength=secondary")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-25" covers="uca-collation">
+      <description> Use contains() with a UCA collation and secondary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("database", "tabaS", "http://www.w3.org/2013/collation/UCA?lang=en;strength=secondary")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-26" covers="uca-collation">
+      <description> Use contains() with a UCA collation and secondary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("database", "dâta", "http://www.w3.org/2013/collation/UCA?lang=en;strength=secondary")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-27" covers="uca-collation">
+      <description> Use contains() with a UCA collation and secondary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("dâtabase", "Data", "http://www.w3.org/2013/collation/UCA?lang=en;strength=secondary")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-28" covers="uca-collation">
+      <description> Use contains() with a UCA collation and tertiary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("database", "DATA", "http://www.w3.org/2013/collation/UCA?lang=en;strength=tertiary")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-29" covers="uca-collation">
+      <description> Use contains() with a UCA collation and tertiary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("dataBase", "taBas", "http://www.w3.org/2013/collation/UCA?lang=en;strength=tertiary")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-30" covers="uca-collation">
+      <description> Use contains() with a UCA collation and tertiary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("database", "dâta", "http://www.w3.org/2013/collation/UCA?lang=en;strength=tertiary")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-31" covers="uca-collation">
+      <description> Use contains() with a UCA collation and tertiary matching</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("database", "Data", "http://www.w3.org/2013/collation/UCA?lang=en;strength=tertiary")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-32" covers="uca-collation">
+      <description> Use contains() with a UCA collation and numeric matching.</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <modified by="O'Neil Delpratt" on="2016-10-25" change="Bug #29931: Added dependency advanced-uca-fallback"/>
+      <dependency type="feature" value="advanced-uca-fallback"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("Chapter-001", "Chapter-1", "http://www.w3.org/2013/collation/UCA?lang=en;numeric=yes")</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="FOCH0004"/>
+         </any-of>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-33" covers="uca-collation">
+      <description> Use contains() with a UCA collation and numeric matching.</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <modified by="O'Neil Delpratt" on="2016-10-25" change="Bug #29931: Added dependency advanced-uca-fallback"/>
+      <dependency type="feature" value="advanced-uca-fallback"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("Chapter-100", "Chapter-10", "http://www.w3.org/2013/collation/UCA?lang=en;numeric=yes")</test>
+      <result>
+         <any-of>
+            <assert-false/>
+            <error code="FOCH0004"/>
+         </any-of>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-34" covers="uca-collation">
+      <description> Use contains() with a UCA collation and ignorable characters.</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <modified by="O'Neil Delpratt" on="2016-10-25" change="Bug #29931: Added dependency advanced-uca-fallback"/>
+      <dependency type="feature" value="advanced-uca-fallback"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("abc-def", "abcdef", "http://www.w3.org/2013/collation/UCA?lang=en;alternate=blanked") (::)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-35" covers="uca-collation">
+      <description> Use contains() with a UCA collation and ignorable characters.</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("abc-def", "c-d", "http://www.w3.org/2013/collation/UCA?lang=en;alternate=blanked")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-36" covers="uca-collation">
+      <description> Use contains() with a UCA collation and ignorable characters.</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <modified by="O'Neil Delpratt" on="2016-10-25" change="Bug #29931: Added dependency advanced-uca-fallback"/>
+      <dependency type="feature" value="advanced-uca-fallback"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("abcdef", "c-d", "http://www.w3.org/2013/collation/UCA?lang=en;alternate=blanked")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-37" covers="uca-collation">
+      <description> Use contains() with a UCA collation and ignorable characters.</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("---", "-", "http://www.w3.org/2013/collation/UCA?lang=en;alternate=blanked")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-contains-38" covers="uca-collation">
+      <description> Use contains() with a UCA collation and ignorable characters.</description>
+      <created by="Michael Kay" on="2016-09-23"/>
+      <modified by="O'Neil Delpratt" on="2016-10-25" change="Bug #29931: Added dependency advanced-uca-fallback"/>
+      <dependency type="feature" value="advanced-uca-fallback"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:contains("-", "----", "http://www.w3.org/2013/collation/UCA?lang=en;alternate=blanked")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="K-ContainsFunc-1">
+      <description> A test whose essence is: `contains()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>contains()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ContainsFunc-2">
+      <description> A test whose essence is: `contains(())`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>contains(())</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ContainsFunc-3">
+      <description> A test whose essence is: `contains((), (), "http://www.w3.org/2005/xpath-functions/collation/codepoint", "wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>contains((), (), "http://www.w3.org/2005/xpath-functions/collation/codepoint", "wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+   
+   <test-case name="K-ContainsFunc-3-dyn">
+      <description> contains, empty sequences, dynamic </description>
+      <created by="Michael Kay" on="2021-05-15"/>
+      <environment ref="dyn"/>
+      <dependency type="spec" value="XQ31+"/>
+      <test>declare variable $empty external; contains($empty, $empty)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ContainsFunc-4">
+      <description> A test whose essence is: `contains("a string", "a string", "http://www.example.com/COLLATION/NOT/SUPPORTED")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>contains("a string", "a string", "http://www.example.com/COLLATION/NOT/SUPPORTED")</test>
+      <result>
+         <error code="FOCH0002"/>
+      </result>
+   </test-case>
+   
+   <test-case name="K-ContainsFunc-4-dyn">
+      <description> contains, dynamic collation, unknown collation </description>
+      <created by="Michael Kay" on="2021-05-15"/>
+      <environment ref="dyn"/>
+      <dependency type="spec" value="XQ31+"/>
+      <test>declare variable $zls external; 
+         contains("another string", "a string", $zls || "http://www.example.com/COLLATION/NOT/SUPPORTED")</test>
+      <result>
+         <error code="FOCH0002"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ContainsFunc-5">
+      <description> A test whose essence is: `contains("foo", "foo", "http://www.w3.org/2005/xpath-functions/collation/codepoint")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>contains("foo", "foo", "http://www.w3.org/2005/xpath-functions/collation/codepoint")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ContainsFunc-6">
+      <description> A test whose essence is: `contains("tattoo", "t")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>contains("tattoo", "t")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ContainsFunc-7">
+      <description> A test whose essence is: `not(contains("tattoo", "ttt"))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not(contains("tattoo", "ttt"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ContainsFunc-8">
+      <description> A test whose essence is: `contains("", ())`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>contains("", ())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ContainsFunc-9">
+      <description> A test whose essence is: `contains("a string", ())`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>contains("a string", ())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ContainsFunc-10">
+      <description> A test whose essence is: `contains("foo", "foo")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>contains("foo", "foo")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ContainsFunc-11">
+      <description> A test whose essence is: `not(contains("", "a string"))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not(contains("", "a string"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-ContainsFunc-1">
+      <description> Compare two values returned from fn:lower-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XP30+ XQ10+"/>
+      <test>let $vA := ("B STRING", current-time(), string("content"))[1] treat as xs:string,
+                $vB  := ("b string", current-time(), string("content"))[1] treat as xs:string
+         return contains(lower-case($vA), lower-case($vB))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-ContainsFunc-2">
+      <description> Compare two values returned from fn:upper-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XP30+ XQ10+"/>
+      <test>let $vA := ("B STRING", current-time(), string("content"))[1] treat as xs:string,
+                $vB := ("b string", current-time(), string("content"))[1] treat as xs:string
+         return contains(upper-case($vA), upper-case($vB))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-ContainsFunc-3">
+      <description> Compare two non-matching values returned from fn:lower-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XP30+ XQ10+"/>
+      <test>let $vA  := ("B STRING", current-time(), string("content"))[1] treat as xs:string,
+                $vB := ("no match", current-time(), string("content"))[1] treat as xs:string
+         return contains(lower-case($vA), lower-case($vB))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-ContainsFunc-4">
+      <description> Compare two non-matching values returned from fn:upper-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XP30+ XQ10+"/>
+      <test>let $vA := ("B STRING", current-time(), string("content"))[1] treat as xs:string,
+                $vB  := ("no match", current-time(), string("content"))[1] treat as xs:string
+        return contains(upper-case($vA), upper-case($vB))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-ContainsFunc-5">
+      <description> Compare two non-matching values returned from fn:lower-case() and fn:upper-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XP30+ XQ10+"/>
+      <test>let $vA := ("B STRING", current-time(), string("content"))[1] treat as xs:string,
+                $vB := ("b string", current-time(), string("content"))[1] treat as xs:string
+         return contains(upper-case($vA), lower-case($vB))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-ContainsFunc-6">
+      <description> Compare two non-matching values returned from fn:lower-case() and fn:upper-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XP30+ XQ10+"/>
+      <test>let $vA := ("B STRING", current-time(), string("content"))[1] treat as xs:string,
+                $vB := ("b string", current-time(), string("content"))[1] treat as xs:string
+         return contains(lower-case($vA), upper-case($vB))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+      
+   <test-case name="cbcl-contains-001">
+      <description> test fn:contains with collation and $arg2 as empty string </description>
+      <created by="Tim Mills" on="2008-04-11"/>      
+      <test>fn:boolean(fn:contains('input', '', 'http://www.w3.org/2005/xpath-functions/collation/codepoint'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-contains-002">
+      <description> test fn:contains with collation and $arg1 as empty string Author: Tim Mills </description>
+      <created by="Oliver Hallam" on="2008-04-11"/>      
+      <test>fn:boolean(fn:contains('', 'empty', 'http://www.w3.org/2005/xpath-functions/collation/codepoint'))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-contains-003">
+      <description> test evaluation of fn:contains to exactly one item Author: Tim Mills </description>
+      <created by="Oliver Hallam" on="2008-04-11"/>      
+      <test>fn:index-of( ( fn:true(), fn:false()), fn:contains('input', 'in', 'http://www.w3.org/2005/xpath-functions/collation/codepoint'))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+   
+   <test-case name="liam-contains-001" covers="html-ascii-case-insensitive">
+      <description>Check for presence of HTML ascii case-insensitive collation</description>
+      <created by="Liam Quin" on="2009-09-08"/>      
+      <modified by="Michael Dyck" on="2014-09-11" change="parenthesize IfExpr's condition"/>
+      <modified by="Josh Spiegel" on="2014-09-16" change="Added XP31+ dependency."/>
+      <modified by="Michael Kay" on="2014-09-16" change="Added XQ31+ dependency."/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>if (fn:contains('iNPut', 'pu', 'http://www.w3.org/2005/xpath-functions/collation/html-ascii-case-insensitive')) then 'pass' else 'huh'</test>
+      <result>
+         <assert-string-value>pass</assert-string-value>
+      </result>
+   </test-case>
+   
+   <test-case name="liam-contains-002" covers="html-ascii-case-insensitive">
+      <description>Check for presence of HTML ascii case-insensitive collation</description>
+      <created by="Liam Quin" on="2009-09-08"/>      
+      <modified by="Michael Dyck" on="2014-09-11" change="parenthesize IfExpr's condition"/>
+      <modified by="Josh Spiegel" on="2014-09-16" change="Added XP31+ dependency."/>
+      <modified by="Michael Kay" on="2014-09-16" change="Added XQ31+ dependency."/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>if (fn:contains('iNPut', 'PU', 'http://www.w3.org/2005/xpath-functions/collation/html-ascii-case-insensitive')) then 'pass' else 'huh'</test>
+      <result>
+         <assert-string-value>pass</assert-string-value>
+      </result>
+   </test-case>
+   
+   <test-case name="liam-contains-003" covers="html-ascii-case-insensitive">
+      <description>Check HTML ascii case-insensitive collation with non-ascii value</description>
+      <created by="Liam Quin" on="2009-09-08"/>      
+      <modified by="Michael Dyck" on="2014-09-11" change="parenthesize IfExpr's condition"/>
+      <modified by="Josh Spiegel" on="2014-09-16" change="Added XP31+ dependency."/>
+      <modified by="Michael Kay" on="2014-09-16" change="Added XQ31+ dependency."/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>if (fn:contains('h&#244;tel', 'h&#244;t', 'http://www.w3.org/2005/xpath-functions/collation/html-ascii-case-insensitive')) then 'pass' else 'huh'</test>
+      <result>
+         <assert-string-value>pass</assert-string-value>
+      </result>
+   </test-case>
+   
+   <test-case name="liam-contains-004" covers="html-ascii-case-insensitive">
+      <description>Check HTML ascii case-insensitive collation with non-ascii value differing in case; should fail to match</description>
+      <created by="Liam Quin" on="2009-09-08"/>      
+      <modified by="Michael Dyck" on="2014-09-11" change="parenthesize IfExpr's condition"/>
+      <modified by="Josh Spiegel" on="2014-09-16" change="Made test name unique (was liam-contains-001).  Added XP31 dependency."/>
+      <modified by="Michael Kay" on="2014-09-16" change="Added XQ31+ dependency."/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>if (fn:contains('h&#244;tel', 'H&#212;T', 'http://www.w3.org/2005/xpath-functions/collation/html-ascii-case-insensitive')) then 'fail' else 'pass'</test>
+      <result>
+         <assert-string-value>pass</assert-string-value>
+      </result>
+   </test-case>
+</test-set>

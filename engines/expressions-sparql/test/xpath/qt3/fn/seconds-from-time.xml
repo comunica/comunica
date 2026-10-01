@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-seconds-from-time">
+   <description>Tests for the seconds-from-time() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-seconds-from-time"/>
+
+   <test-case name="fn-seconds-from-time1args-1">
+      <description> Evaluates The "seconds-from-time" function with the arguments set as follows: $arg = xs:time(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:seconds-from-time(xs:time("00:00:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time1args-2">
+      <description> Evaluates The "seconds-from-time" function with the arguments set as follows: $arg = xs:time(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:seconds-from-time(xs:time("08:03:35Z"))</test>
+      <result>
+         <assert-string-value>35</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time1args-3">
+      <description> Evaluates The "seconds-from-time" function with the arguments set as follows: $arg = xs:time(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:seconds-from-time(xs:time("23:59:59Z"))</test>
+      <result>
+         <assert-string-value>59</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-1">
+      <description> Evaluates The "seconds-from-time" function As per example 1 of the F&amp;O specs (for this function) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("13:20:10.5"))</test>
+      <result>
+         <assert-string-value>10.5</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-2">
+      <description> Evaluates The "seconds-from-time" function used as part of a numeric less than expression (lt operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("21:23:04Z")) lt fn:seconds-from-time(xs:time("21:24:00Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-3">
+      <description> Evaluates The "seconds-from-time" function as part of a numeric greater than operation (gt operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("01:23:02Z")) gt fn:seconds-from-time(xs:time("01:23:03Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-4">
+      <description> Evaluates The "seconds-from-time" function used as an argument to an avg function. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:avg((fn:seconds-from-time(xs:time("01:10:20Z")), fn:seconds-from-time(xs:time("01:20:30Z"))))</test>
+      <result>
+         <assert-string-value>25</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-5">
+      <description> Evaluates The "seconds-from-time" function using the empty sequence as an argument. Use count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:count(fn:seconds-from-time(()))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-6">
+      <description> Evaluates The "seconds-from-time" function that returns 0. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("00:59:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-7">
+      <description> Evaluates The "seconds-from-time" function with the argument set to return 59. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("23:20:59Z"))</test>
+      <result>
+         <assert-string-value>59</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-8">
+      <description> Evaluates The "seconds-from-time" function as part of a "+" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("02:00:00Z")) + fn:seconds-from-time(xs:time("10:00:10Z"))</test>
+      <result>
+         <assert-string-value>10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-9">
+      <description> Evaluates The "seconds-from-time" function as part of a "-" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("10:10:10Z")) - fn:seconds-from-time(xs:time("09:02:07Z"))</test>
+      <result>
+         <assert-string-value>3</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-10">
+      <description> Evaluates The "seconds-from-time" function as part of a "*" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("02:02:03Z")) * fn:seconds-from-time(xs:time("10:08:09Z"))</test>
+      <result>
+         <assert-string-value>27</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-11">
+      <description> Evaluates The "seconds-from-time" function as part of a "div" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("22:33:10Z")) div fn:seconds-from-time(xs:time("02:11:02Z"))</test>
+      <result>
+         <assert-string-value>5</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-12">
+      <description> Evaluates The "seconds-from-time" function as part of a "idiv" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("10:12:15Z")) idiv fn:seconds-from-time(xs:time("02:02:03Z"))</test>
+      <result>
+         <assert-string-value>5</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-13">
+      <description> Evaluates The "seconds-from-time" function as part of a "mod" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("10:10:20Z")) mod fn:seconds-from-time(xs:time("03:03:02Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-14">
+      <description> Evaluates The "seconds-from-time" function as part of a "numeric-unary-plus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>+fn:seconds-from-time(xs:time("10:00:01Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-15">
+      <description> Evaluates The "seconds-from-time" function as part of a "numeric-unary-minus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>-fn:seconds-from-time(xs:time("10:10:01Z"))</test>
+      <result>
+         <assert-string-value>-1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-16">
+      <description> Evaluates The "seconds-from-time" function as part of a "numeric-equal" expression (eq operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("10:02:01Z")) eq fn:seconds-from-time(xs:time("10:02:00Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-17">
+      <description> Evaluates The "seconds-from-time" function as part of a "numeric-equal" expression (ne operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("10:00:01Z")) ne fn:seconds-from-time(xs:time("01:01:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-18">
+      <description> Evaluates The "seconds-from-time" function as part of a "numeric-equal" expression (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("10:00:00Z")) le fn:seconds-from-time(xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-seconds-from-time-19">
+      <description> Evaluates The "seconds-from-time" function as part of a "numeric-equal" expression (ge operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:seconds-from-time(xs:time("10:03:01Z")) ge fn:seconds-from-time(xs:time("10:04:02Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SecondsFromTimeFunc-1">
+      <description> A test whose essence is: `seconds-from-time()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>seconds-from-time()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SecondsFromTimeFunc-2">
+      <description> A test whose essence is: `seconds-from-time((), "Wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>seconds-from-time((), "Wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SecondsFromTimeFunc-3">
+      <description> A test whose essence is: `empty(seconds-from-time(()))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(seconds-from-time(()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SecondsFromTimeFunc-4">
+      <description> A test whose essence is: `seconds-from-time(()) instance of xs:decimal?`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>seconds-from-time(()) instance of xs:decimal?</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SecondsFromTimeFunc-5">
+      <description> Simple test invoking seconds-from-time(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>seconds-from-time(xs:time("23:11:12.43")) eq 12.43</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

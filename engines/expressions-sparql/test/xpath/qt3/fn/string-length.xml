@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-string-length">
+   <description>Tests for the string-length() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-string-length"/>
+
+   <test-case name="fn-string-length1args-1">
+      <description> Evaluates The "string-length" function with the arguments set as follows: $arg = xs:string(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string-length(xs:string("This is a characte"))</test>
+      <result>
+         <assert-eq>18</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length1args-2">
+      <description> Evaluates The "string-length" function with the arguments set as follows: $arg = xs:string(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string-length(xs:string("This is a characte"))</test>
+      <result>
+         <assert-eq>18</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length1args-3">
+      <description> Evaluates The "string-length" function with the arguments set as follows: $arg = xs:string(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string-length(xs:string("This is a characte"))</test>
+      <result>
+         <assert-eq>18</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-1">
+      <description> Evaluation of string-length function as per example 1 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("Harp not on that string, madam; that is past.")</test>
+      <result>
+         <assert-eq>45</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-2">
+      <description> Evaluation of string-length function using the empty sequence </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length(())</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-3">
+      <description> Evaluation of string-length function that uses only numbers as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("12345")</test>
+      <result>
+         <assert-eq>5</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-4">
+      <description> Evaluation of string-length function that uses both numbers and letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("12345abcd")</test>
+      <result>
+         <assert-eq>9</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-5">
+      <description> Evaluation of string-length function that uses only upper case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("ABCD")</test>
+      <result>
+         <assert-eq>4</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-6">
+      <description> Evaluation of string-length function that uses only lower case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("abcde")</test>
+      <result>
+         <assert-eq>5</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-7">
+      <description> Evaluation of string-length function that uses both upper and lower case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("ABCDEabcde")</test>
+      <result>
+         <assert-eq>10</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-8">
+      <description> Evaluation of string-length function that uses the empty string as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-9">
+      <description> Evaluation of string-length function that uses the "string" as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length(fn:string("AbcDH"))</test>
+      <result>
+         <assert-eq>5</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-10">
+      <description> Evaluation of string-length function with argument set to "*****" </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("*****")</test>
+      <result>
+         <assert-eq>5</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-11">
+      <description> Evaluation of string-length function as part of an addition operation </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("zzzzz") + fn:string-length("zzzzz")</test>
+      <result>
+         <assert-eq>10</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-12">
+      <description> Evaluation of string-length function as an argument to the "fn:boolean" function </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:boolean(fn:string-length("abcde"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-13">
+      <description> Evaluation of string-length function as an argument to the "fn:concat" function </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat(fn:string-length("abcde"), fn:string-length("fghi"))</test>
+      <result>
+         <assert-eq>"54"</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-14">
+      <description> Evaluation of string-length function as an argument to the "fn:not" function </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:not(fn:string-length("abcde"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-15">
+      <description> Evaluation of string-length function with argument set to "%$#@!" </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("%$#@!")</test>
+      <result>
+         <assert-eq>5</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-16">
+      <description> Evaluation of string-length function with argument set to "string-length" </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("string-length")</test>
+      <result>
+         <assert-eq>13</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-17">
+      <description> Evaluation of string-length function as part of a boolean expression </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string-length("abc") and fn:string-length("abc")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-18">
+      <description> Evaluation of string-length function with no argument and no context item defined. </description>
+      <created by="Carmelo Montanez" on="2005-09-19"/>
+      <environment ref="empty"/>
+      <test>fn:string-length()</test>
+      <result>
+         <error code="XPDY0002"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-19">
+      <description> Evaluation of string-length function with an argument that is a sequence of more than one item </description>
+      <created by="Nicolae Brinza" on="2009-04-01"/>
+      <environment ref="works-mod"/>
+      <test>fn:string-length(.//employee/@name )</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-20">
+      <description>Evaluation of string-length function with non-BMP characters.</description>
+      <created by="Michael Kay" on="2011-06-25"/>
+      <test>string-length("&#65538;")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-21" covers-30="named-function-ref">
+      <description>Evaluation of string-length applied to a function item.</description>
+      <created by="Michael Kay" on="2011-06-25"/>
+      <modified by="Michael Kay" on="2012-05-17" change="see bug 14904"/>
+      <dependency type="spec" value="XP30+ XQ30+"/>
+      <dependency type="feature" value="higherOrderFunctions"/>
+      <test>string-length(string-length#1)</test>
+      <result>
+         <error code="FOTY0013"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-22">
+      <description>Evaluation of string-length applied to a node that cannot be atomized because it has element-only content. 
+        This succeeds, because although getting the typed value of such a node is an error, the string value is well defined, 
+        and string-length with no arguments uses the string value. Note, we assume construction from PSVI, 
+        therefore insignificant whitespace is stripped.</description>
+      <created by="Michael Kay" on="2011-06-25"/>
+      <environment ref="qname"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>/*/string-length()</test>
+      <result>
+         <assert-eq>38</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-23">
+      <description>Evaluation of string-length applied to a node that cannot be atomized because it has element-only 
+        content. Unlike string-length-22, this fails, because when string-length() has an argument it atomizes the 
+        argument in the usual way.</description>
+      <created by="Michael Kay" on="2011-06-25"/>
+      <environment ref="qname"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>/*/string-length(.)</test>
+      <result>
+         <error code="FOTY0012"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-24">
+      <description>Call string-length() with no arguments when context item is an integer.</description>
+      <created by="Michael Kay" on="2011-06-25"/>
+      <environment ref="qname"/>
+      <test>(1 to 100)[string-length() = 3]</test>
+      <result>
+         <assert-eq>100</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-length-25">
+      <description>Call string-length() with . as argument when context item is an integer.</description>
+      <created by="Michael Kay" on="2011-06-25"/>
+      <environment ref="qname"/>
+      <test>(1 to 100)[string-length(.) = 3]</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringLengthFunc-1">
+      <description>A test whose essence is: `string-length("a string", "wrong param")`.</description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string-length("a string", "wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringLengthFunc-2">
+      <description>A test whose essence is: `string-length("ebv") eq 3`.</description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string-length("ebv") eq 3</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringLengthFunc-3">
+      <description>A test whose essence is: `string-length("ebv") instance of xs:integer`.</description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string-length("ebv") instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringLengthFunc-4">
+      <description>A test whose essence is: `string-length(()) eq 0`.</description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string-length(()) eq 0</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringLengthFunc-5">
+      <description>A test whose essence is: `string-length("") eq 0`.</description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string-length("") eq 0</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringLengthFunc-6">
+      <description>A test whose essence is: `string-length(()) instance of xs:integer`.</description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string-length(()) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringLengthFunc-7">
+      <description>A test whose essence is: `if(false()) then string-length() else true()`.</description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>if(false()) then string-length() else true()</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPDY0002"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringLengthFunc-8">
+      <description>A test whose essence is: `string-length("Harp not on that string, madam; that is past.") eq 45`.</description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string-length("Harp not on that string, madam; that is past.") eq 45</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

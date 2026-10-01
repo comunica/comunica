@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-encode-for-uri">
+   <description>Tests for the encode-for-uri() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-encode-uri"/>
+
+   <test-case name="fn-encode-for-uri1args-1">
+      <description>Test encode-for-uri from example defined in functions and operators specification </description>
+      <created by="Joanne Tong" on="2005-09-29"/>
+      <test>fn:encode-for-uri ("http://www.example.com/00/Weather/CA/Los%20Angeles#ocean")</test>
+      <result>
+         <assert-string-value>http%3A%2F%2Fwww.example.com%2F00%2FWeather%2FCA%2FLos%2520Angeles%23ocean</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri1args-2">
+      <description>Test encode-for-uri from example defined in functions and operators specification </description>
+      <created by="Joanne Tong" on="2005-09-29"/>
+      <test>encode-for-uri("~b&#233;b&#233;")</test>
+      <result>
+         <assert-string-value>~b%C3%A9b%C3%A9</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri1args-3">
+      <description>Test encode-for-uri from example defined in functions and operators specification </description>
+      <created by="Joanne Tong" on="2005-09-29"/>
+      <test>encode-for-uri("100% organic")</test>
+      <result>
+         <assert-string-value>100%25%20organic</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri1args-4">
+      <description>Test encode-for-uri with zero-length string argument </description>
+      <created by="Joanne Tong" on="2005-09-29"/>
+      <test>encode-for-uri('')</test>
+      <result>
+         <assert-string-value/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri1args-5">
+      <description>Test encode-for-uri with empty sequence argument </description>
+      <created by="Joanne Tong" on="2005-09-29"/>
+      <test>encode-for-uri(())</test>
+      <result>
+         <assert-string-value/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri1args-6">
+      <description>Test encode-for-uri with invalid argument type </description>
+      <created by="Joanne Tong" on="2005-09-29"/>
+      <test>encode-for-uri(12)</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri1args-7">
+      <description>Test encode-for-uri with incorrect arity </description>
+      <created by="Joanne Tong" on="2005-09-29"/>
+      <test>encode-for-uri('',())</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-1">
+      <description> Evaluation of fn-encode-for-uri function with argument thast ha nothing to encode. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("example"))</test>
+      <result>
+         <assert-string-value>example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-2">
+      <description> Examines that fn-encode-for-uri function does escape the "#" symbol. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples#example"))</test>
+      <result>
+         <assert-string-value>examples%23example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-3">
+      <description> Examines that fn-encode-for-uri function does not escape the "-" symbol. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples-example"))</test>
+      <result>
+         <assert-string-value>examples-example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-4">
+      <description> Examines that fn-encode-for-uri function does not escape the "_" symbol. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples_example"))</test>
+      <result>
+         <assert-string-value>examples_example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-5">
+      <description> Examines that fn-encode-for-uri function does not escape the "." symbol. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples.example"))</test>
+      <result>
+         <assert-string-value>examples.example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-6">
+      <description> Examines that fn-encode-for-uri function does escapes the "!" symbol. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples!example"))</test>
+      <result>
+         <assert-string-value>examples%21example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-7">
+      <description> Examines that fn-encode-for-uri function does not escape the "~" symbol. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples~example"))</test>
+      <result>
+         <assert-string-value>examples~example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-8">
+      <description> Examines that fn-encode-for-uri function does escape the "*" symbol. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples*example"))</test>
+      <result>
+         <assert-string-value>examples%2Aexample</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-9">
+      <description> Examines that fn-encode-for-uri function does escape the "'" symbol. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples'example"))</test>
+      <result>
+         <assert-string-value>examples%27example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-10">
+      <description> Examines that fn-encode-for-uri function does escape the "(" symbol. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples(example"))</test>
+      <result>
+         <assert-string-value>examples%28example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-11">
+      <description> Examines that fn-encode-for-uri function does escape the ")" symbol. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples)example"))</test>
+      <result>
+         <assert-string-value>examples%29example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-12">
+      <description> Examines that fn-encode-for-uri function does not escape numbers. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples0123456789example"))</test>
+      <result>
+         <assert-string-value>examples0123456789example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-13">
+      <description> Examines that fn-encode-for-uri function escapes the space. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples example"))</test>
+      <result>
+         <assert-string-value>examples%20example</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-14">
+      <description> Examines that fn-encode-for-uri function escapes the "/" character. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("examples/example"))</test>
+      <result>
+         <assert-string-value>examples%2Fexample</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-15">
+      <description> Examines that fn-encode-for-uri function escapes the ":" character. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("http:examples"))</test>
+      <result>
+         <assert-string-value>http%3Aexamples</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-encode-for-uri-16">
+      <description> Examines that fn-encode-for-uri function escapes the "%" character. </description>
+      <created by="Carmelo Montanez" on="2005-11-23"/>
+      <test>(fn:encode-for-uri("http%20examples"))</test>
+      <result>
+         <assert-string-value>http%2520examples</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K-EncodeURIfunc-1">
+      <description> A test whose essence is: `encode-for-uri()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>encode-for-uri()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-EncodeURIfunc-2">
+      <description> A test whose essence is: `encode-for-uri("http://example.com/", "wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>encode-for-uri("http://example.com/", "wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-EncodeURIfunc-3">
+      <description> A test whose essence is: `encode-for-uri(()) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>encode-for-uri(()) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-EncodeURIfunc-4">
+      <description> Combine fn:concat and fn:encode-for-uri. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>concat("http://www.example.com/", encode-for-uri("~b&#233;b&#233;")) eq "http://www.example.com/~b%C3%A9b%C3%A9"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-EncodeURIfunc-5">
+      <description> Combine fn:concat and fn:encode-for-uri. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>concat("http://www.example.com/", encode-for-uri("100% organic")) eq "http://www.example.com/100%25%20organic"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-EncodeURIfunc-6">
+      <description> Invoke fn:normalize-space() on the return value of fn:encode-for-uri(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>normalize-space(encode-for-uri(("some string", current-time())[1] treat as xs:string))</test>
+      <result>
+         <assert-string-value>some%20string</assert-string-value>
+      </result>
+   </test-case>
+</test-set>

@@ -1,0 +1,1159 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="op-numeric-multiply">
+   <description>Tests for the numeric-multiply() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-numeric-multiply"/>
+
+   <test-case name="op-numeric-multiplydec2args-1">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:decimal(lower bound) $arg2 = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-1.0000000000") * xs:decimal("-999999999999999999")</test>
+      <result>
+         <assert-eq>999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplydec2args-2">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:decimal(mid range) $arg2 = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("617375191608514839") * xs:decimal("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplydec2args-3">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:decimal(upper bound) $arg2 = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("999999999999999999") * xs:decimal("-1.0000000000")</test>
+      <result>
+         <assert-eq>-999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplydec2args-4">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:decimal(lower bound) $arg2 = xs:decimal(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("0") * xs:decimal("617375191608514839")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplydec2args-5">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:decimal(lower bound) $arg2 = xs:decimal(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-1.0000000000") * xs:decimal("999999999999999999")</test>
+      <result>
+         <assert-eq>-999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplydbl2args-1">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:double(lower bound) $arg2 = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.0000000000") * xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-eq>1.7976931348623157E308</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplydbl2args-2">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:double(mid range) $arg2 = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("0") * xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-eq>-0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplydbl2args-3">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:double(upper bound) $arg2 = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("1.7976931348623157E308") * xs:double("-1.0000000000")</test>
+      <result>
+         <assert-eq>-1.7976931348623157E308</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplydbl2args-4">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:double(lower bound) $arg2 = xs:double(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.7976931348623157E308") * xs:double("0")</test>
+      <result>
+         <assert-eq>-0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplydbl2args-5">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:double(lower bound) $arg2 = xs:double(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.0000000000") * xs:double("1.7976931348623157E308")</test>
+      <result>
+         <assert-eq>-1.7976931348623157E308</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyflt2args-1">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:float(lower bound) $arg2 = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-1.0000000000") * xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-eq>xs:float(3.4028235E38)</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyflt2args-2">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:float(mid range) $arg2 = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("0") * xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-eq>-0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyflt2args-3">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:float(upper bound) $arg2 = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("3.4028235E38") * xs:float("-1.0000000000")</test>
+      <result>
+         <assert-eq>xs:float(-3.4028235E38)</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyflt2args-4">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:float(lower bound) $arg2 = xs:float(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-3.4028235E38") * xs:float("0")</test>
+      <result>
+         <assert-eq>-0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyflt2args-5">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:float(lower bound) $arg2 = xs:float(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-1.0000000000") * xs:float("3.4028235E38")</test>
+      <result>
+         <assert-eq>xs:float(-3.4028235E38)</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyusht2args-1">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:unsignedShort(lower bound) $arg2 = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") * xs:unsignedShort("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyusht2args-2">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:unsignedShort(mid range) $arg2 = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("44633") * xs:unsignedShort("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyusht2args-3">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:unsignedShort(upper bound) $arg2 = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("65535") * xs:unsignedShort("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyusht2args-4">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:unsignedShort(lower bound) $arg2 = xs:unsignedShort(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") * xs:unsignedShort("44633")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyusht2args-5">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:unsignedShort(lower bound) $arg2 = xs:unsignedShort(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") * xs:unsignedShort("65535")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplypint2args-1">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") * xs:positiveInteger("1")</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplypint2args-2">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:positiveInteger(mid range) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("52704602390610033") * xs:positiveInteger("1")</test>
+      <result>
+         <assert-eq>52704602390610033</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplypint2args-3">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:positiveInteger(upper bound) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("999999999999999999") * xs:positiveInteger("1")</test>
+      <result>
+         <assert-eq>999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplypint2args-4">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") * xs:positiveInteger("52704602390610033")</test>
+      <result>
+         <assert-eq>52704602390610033</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplypint2args-5">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") * xs:positiveInteger("999999999999999999")</test>
+      <result>
+         <assert-eq>999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyulng2args-1">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:unsignedLong(lower bound) $arg2 = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") * xs:unsignedLong("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyulng2args-2">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:unsignedLong(mid range) $arg2 = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("130747108607674654") * xs:unsignedLong("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyulng2args-3">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:unsignedLong(upper bound) $arg2 = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("184467440737095516") * xs:unsignedLong("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyulng2args-4">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:unsignedLong(lower bound) $arg2 = xs:unsignedLong(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") * xs:unsignedLong("130747108607674654")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplyulng2args-5">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:unsignedLong(lower bound) $arg2 = xs:unsignedLong(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") * xs:unsignedLong("184467440737095516")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplynpi2args-1">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:nonPositiveInteger(upper bound) $arg2 = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("0") * xs:nonPositiveInteger("-999999999999999999")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplynpi2args-2">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:nonPositiveInteger(lower bound) $arg2 = xs:nonPositiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-999999999999999999") * xs:nonPositiveInteger("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplynni2args-1">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(lower bound) $arg2 = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") * xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplynni2args-2">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(mid range) $arg2 = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("303884545991464527") * xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplynni2args-3">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(upper bound) $arg2 = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("999999999999999999") * xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplynni2args-4">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(lower bound) $arg2 = xs:nonNegativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") * xs:nonNegativeInteger("303884545991464527")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplynni2args-5">
+      <description> Evaluates The "op:numeric-multiply" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(lower bound) $arg2 = xs:nonNegativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") * xs:nonNegativeInteger("999999999999999999")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplymix2args-1">
+      <description> Simple multiplication test with () as one operand should return null </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <test>1 * ()</test>
+      <result>
+         <any-of>
+            <assert-empty/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplymix2args-2">
+      <description> Simple multiplication test pass string for second operator </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <test>1 * '1'</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplymix2args-3">
+      <description> Simple multiplication test, second operator cast string to integer </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <test>1 * xs:integer('1')</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplymix2args-4">
+      <description> Simple multiplication test, second operator is a node, atomization applied </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 * <a> 2 </a>]]></test>
+      <result>
+         <assert-eq>2</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplymix2args-5">
+      <description> Simple multiplication test, second operator is a node, atomization applied </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 * <a> <b> 2 </b> </a>]]></test>
+      <result>
+         <assert-eq>2</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplymix2args-6">
+      <description> Simple multiplication test, second operator node which is not atomizable </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 * <a> <b> 2</b> <c> 2</c> </a>]]></test>
+      <result>
+         <error code="FORG0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplymix2args-7">
+      <description> Simple multiplication test, two operands are nodes </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a> 1 </a> * <b> 2 </b>]]></test>
+      <result>
+         <assert-eq>2</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplymix2args-8">
+      <description> Simple multiplication test, second operator is a node, atomizable but not castable to integer </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 * <a> x </a>]]></test>
+      <result>
+         <error code="FORG0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplymix2args-9">
+      <description> Simple multiplication test, pass an empty node for second operator </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 * <a/>]]></test>
+      <result>
+         <error code="FORG0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplymix2args-10">
+      <description> Simple multiplication test on xml document, with zero as second operand </description>
+      <created by="Shuxin Li" on="2023-06-21"/>
+      <dependency type="spec" value="XQ30+"/>
+      <test><![CDATA[
+         document{<A>-1</A>}//A[(text() * 0) = 6]
+      ]]></test>
+      <result>
+         <assert-empty/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiplymix2args-11">
+      <description> Simple multiplication test on xml document, with negative number as second operand </description>
+      <created by="Shuxin Li" on="2023-06-21"/>
+      <dependency type="spec" value="XQ30+"/>
+      <test><![CDATA[
+         document{<A>-1</A>}//A[text()*(-1)>2]
+      ]]></test>
+      <result>
+         <assert-empty/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-1">
+      <description> A test whose essence is: `xs:double(6) * xs:double(2) eq 12`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:double(6) * xs:double(2) eq 12</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-2">
+      <description> A test whose essence is: `xs:decimal(6) * xs:decimal(2) eq 12`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:decimal(6) * xs:decimal(2) eq 12</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-3">
+      <description> A test whose essence is: `xs:integer(6) * xs:integer(2) eq 12`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:integer(6) * xs:integer(2) eq 12</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-4">
+      <description> A test whose essence is: `xs:float(6) * xs:float(2) eq 12`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:float(6) * xs:float(2) eq 12</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-5">
+      <description> A test whose essence is: `(xs:decimal(6) * xs:integer(2)) instance of xs:decimal`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) * xs:integer(2)) instance of xs:decimal</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-6">
+      <description> A test whose essence is: `(xs:integer(6) * xs:decimal(2)) instance of xs:decimal`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) * xs:decimal(2)) instance of xs:decimal</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-7">
+      <description> A test whose essence is: `(xs:integer(6) * xs:integer(2)) instance of xs:integer`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) * xs:integer(2)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-8">
+      <description> A test whose essence is: `(xs:decimal(6) * xs:decimal(2)) instance of xs:decimal`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) * xs:decimal(2)) instance of xs:decimal</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-9">
+      <description> A test whose essence is: `(xs:decimal(6) * xs:float(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) * xs:float(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-10">
+      <description> A test whose essence is: `(xs:float(6) * xs:decimal(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) * xs:decimal(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-11">
+      <description> A test whose essence is: `(xs:float(6) * xs:integer(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) * xs:integer(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-12">
+      <description> A test whose essence is: `(xs:integer(6) * xs:float(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) * xs:float(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-13">
+      <description> A test whose essence is: `(xs:float(6) * xs:float(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) * xs:float(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-14">
+      <description> A test whose essence is: `(xs:decimal(6) * xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) * xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-15">
+      <description> A test whose essence is: `(xs:double(6) * xs:decimal(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) * xs:decimal(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-16">
+      <description> A test whose essence is: `(xs:double(6) * xs:float(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) * xs:float(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-17">
+      <description> A test whose essence is: `(xs:float(6) * xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) * xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-18">
+      <description> A test whose essence is: `(xs:double(6) * xs:integer(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) * xs:integer(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-19">
+      <description> A test whose essence is: `(xs:integer(6) * xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) * xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-20">
+      <description> A test whose essence is: `(xs:double(6) * xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) * xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-21">
+      <description> A test whose essence is: `string(xs:float("NaN") * 3) eq "NaN"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(xs:float("NaN") * 3) eq "NaN"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-22">
+      <description> A test whose essence is: `string(xs:double("NaN") * 3) eq "NaN"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(xs:double("NaN") * 3) eq "NaN"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-23">
+      <description> A test whose essence is: `string(3 * xs:float("NaN")) eq "NaN"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(3 * xs:float("NaN")) eq "NaN"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-24">
+      <description> A test whose essence is: `string(3 * xs:double("NaN")) eq "NaN"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(3 * xs:double("NaN")) eq "NaN"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-25">
+      <description> Invalid whitespace involving multiplication operator and '/'. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>/*5</test>
+      <result>
+         <error code="XPST0003"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-26">
+      <description> Invalid whitespace involving multiplication operator and '/'. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>/ * 5</test>
+      <result>
+         <error code="XPST0003"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-27">
+      <description> Invalid whitespace involving multiplication operator and '/'. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>4 + / * 5</test>
+      <result>
+         <error code="XPST0003"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-28">
+      <description> Invoke the '*' operator with invalid operands. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>"3" * "3"</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-29">
+      <description> Invoke the '*' operator with invalid operands. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 * "3"</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-30">
+      <description> A test whose essence is: `(3 * xs:untypedAtomic(3)) eq 9`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(3 * xs:untypedAtomic(3)) eq 9</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-31">
+      <description> A test whose essence is: `(xs:untypedAtomic(3) * 3) eq 9`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:untypedAtomic(3) * 3) eq 9</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-32">
+      <description> Operand(s) which are the empty sequence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(() * ())</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericMultiply-33">
+      <description> Operand(s) which are the empty sequence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(() * 1)</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-multiply-1">
+      <description> Check dynamic type of numeric multiply on arguments of union of numeric types and untypedAtomic. </description>
+      <created by="Oliver Hallam" on="2010-03-16"/>
+      <modified by="Michael Kay" on="2016-04-26" change="see bugs 29401, 29572"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+         for $x in (1, xs:decimal(2), xs:float(3), xs:double(4), xs:untypedAtomic(5)) 
+         for $y in (1, xs:decimal(2), xs:float(3), xs:double(4), xs:untypedAtomic(5))
+         return ($x * $y)
+      </test>
+      <result>
+         <all-of>
+            <assert>$result[1] instance of xs:integer</assert>
+            <assert>$result[2] instance of xs:decimal</assert>
+            <assert>$result[3] instance of xs:float</assert>
+            <assert>$result[4] instance of xs:double</assert>
+            <assert>$result[5] instance of xs:double</assert>
+            <assert>$result[6] instance of xs:decimal</assert>
+            <assert>$result[7] instance of xs:decimal</assert>
+            <assert>$result[8] instance of xs:float</assert>
+            <assert>$result[9] instance of xs:double</assert>
+            <assert>$result[10] instance of xs:double</assert>
+            <assert>$result[11] instance of xs:float</assert>
+            <assert>$result[12] instance of xs:float</assert>
+            <assert>$result[13] instance of xs:float</assert>
+            <assert>$result[14] instance of xs:double</assert>
+            <assert>$result[15] instance of xs:double</assert>
+            <assert>$result[16] instance of xs:double</assert>
+            <assert>$result[17] instance of xs:double</assert>
+            <assert>$result[18] instance of xs:double</assert>
+            <assert>$result[19] instance of xs:double</assert>
+            <assert>$result[20] instance of xs:double</assert>
+            <assert>$result[21] instance of xs:double</assert>
+            <assert>$result[22] instance of xs:double</assert>
+            <assert>$result[23] instance of xs:double</assert>
+            <assert>$result[24] instance of xs:double</assert>
+            <assert>$result[25] instance of xs:double</assert>
+         </all-of>
+         <!--<assert-string-value>integer decimal float double double 
+            decimal decimal float double double 
+            float float float double double 
+            double double double double double 
+            double double double double double</assert-string-value>-->
+      </result>
+   </test-case>
+   
+   
+   <test-case name="cbcl-numeric-multiply-001">
+      <description> test multiplication by xs:double NaN </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      	declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; 
+      	xs:double('NaN') * local:square(7)</test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-002">
+      <description> test multiplication by xs:double NaN </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      	declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; 
+      	local:square(7) * xs:double('NaN')</test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-003">
+      <description> test multiplication by xs:double 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      	declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; 
+      	local:square(7) * 1e0</test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-004">
+      <description> test multiplication by xs:double 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      	declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; 
+      	1e0 * local:square(7)</test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-005">
+      <description> test multiplication by xs:double -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      	declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; 
+      	local:square(7) * -1e0</test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-006">
+      <description> test multiplication by xs:double -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      	declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; 
+      	-1e0 * local:square(7)</test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-007">
+      <description> test multiplication by xs:float NaN </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      	declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; 
+      	xs:float('NaN') * local:square(7)</test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-008">
+      <description> test multiplication by xs:float NaN </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      	declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; 
+      	local:square(7) * xs:float('NaN')</test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-009">
+      <description> test multiplication by xs:float 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      	declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; 
+      	local:square(7) * xs:float(1)</test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-010">
+      <description> test multiplication by xs:float 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      	declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; 
+      	xs:float(1) * local:square(7)</test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-011">
+      <description> test multiplication by xs:float -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; 
+      	local:square(7) * xs:float(-1)</test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-012">
+      <description> test multiplication by xs:float -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; 
+      	xs:float(-1) * local:square(7)</test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-013">
+      <description> test multiplication by xs:decimal 0 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>     
+      <test>
+      	declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; 
+      	local:square(2.0) * 0.0</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-014">
+      <description> test multiplication by xs:decimal 0 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; 
+      	0.0 * local:square(7.0)</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-015">
+      <description> test multiplication by xs:decimal 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; 
+      	local:square(7.0) * 1.0</test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-016">
+      <description> test multiplication by xs:decimal 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; 
+      	1.0 * local:square(7.0)</test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-017">
+      <description> test multiplication by xs:decimal -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; 
+      	local:square(7.0) * -1.0</test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-018">
+      <description> test multiplication by xs:decimal -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>     
+      <test>
+      	declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; 
+      	-1.0 * local:square(7.0)</test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-019">
+      <description> test multiplication by xs:integer 0 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; 
+      	local:square(2) * 0</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-020">
+      <description> test multiplication by xs:integer 0 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; 
+      	0 * local:square(2)</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-021">
+      <description> test multiplication by xs:integer 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; 
+      	local:square(7) * 1</test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-022">
+      <description> test multiplication by xs:integer 1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; 
+      	1 * local:square(7)</test>
+      <result>
+         <assert-string-value>49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-023">
+      <description> test multiplication by xs:integer -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; 
+      	local:square(7) * -1</test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-024">
+      <description> test multiplication by xs:integer -1 </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; 
+      	-1 * local:square(7)</test>
+      <result>
+         <assert-string-value>-49</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-025">
+      <description> test multiplication of large xs:decimal </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; 
+      	local:square(9223372036854775808.1) gt 0</test>
+      <result>
+	<any-of>
+	  <assert-true/>
+	  <error code="FOAR0002"/>
+	</any-of>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-026">
+      <description> test multiplication of large xs:integer </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; 
+      	local:square(9223372036854775808) gt 0</test>
+      <result>
+	<any-of>
+	  <assert-true/>
+	  <error code="FOAR0002"/>
+	</any-of>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-multiply-027">
+      <description> ensure that multiplying xs:integers returns an xs:integer </description>
+      <created by="Oliver Hallam" on="2008-05-29"/>
+      <dependency type="spec" value="XQ10+"/>      
+      <test>
+      	declare function local:integer($x as xs:decimal) { if ($x mod 1 eq 0) then xs:integer($x) else $x }; 
+      	(local:integer(2) * local:integer(2)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

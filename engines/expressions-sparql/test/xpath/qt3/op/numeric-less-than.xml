@@ -1,0 +1,3054 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="op-numeric-less-than">
+   <description>Tests for the numeric-less-than() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-numeric-less-than"/>
+   <test-case name="op-numeric-less-thanint2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanint2args-1                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:int(lower bound)                            
+$arg2 = xs:int(lower bound)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-2147483648") lt xs:int("-2147483648")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanint2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanint2args-2                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:int(mid range)                              
+$arg2 = xs:int(lower bound)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-1873914410") lt xs:int("-2147483648")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanint2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanint2args-3                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:int(upper bound)                            
+$arg2 = xs:int(lower bound)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("2147483647") lt xs:int("-2147483648")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanint2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanint2args-4                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:int(lower bound)                            
+$arg2 = xs:int(mid range)                              
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-2147483648") lt xs:int("-1873914410")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanint2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanint2args-5                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:int(lower bound)                            
+$arg2 = xs:int(upper bound)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-2147483648") lt xs:int("2147483647")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanint2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanint2args-6                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:int(lower bound)                            
+$arg2 = xs:int(lower bound)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-2147483648") ge xs:int("-2147483648")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanint2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanint2args-7                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:int(mid range)                              
+$arg2 = xs:int(lower bound)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-1873914410") ge xs:int("-2147483648")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanint2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanint2args-8                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:int(upper bound)                            
+$arg2 = xs:int(lower bound)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("2147483647") ge xs:int("-2147483648")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanint2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanint2args-9                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:int(lower bound)                            
+$arg2 = xs:int(mid range)                              
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-2147483648") ge xs:int("-1873914410")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanint2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanint2args-10                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:int(lower bound)                            
+$arg2 = xs:int(upper bound)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-2147483648") ge xs:int("2147483647")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanintg2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanintg2args-1                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:integer(lower bound)                        
+$arg2 = xs:integer(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("-999999999999999999") lt xs:integer("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanintg2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanintg2args-2                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:integer(mid range)                          
+$arg2 = xs:integer(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("830993497117024304") lt xs:integer("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanintg2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanintg2args-3                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:integer(upper bound)                        
+$arg2 = xs:integer(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("999999999999999999") lt xs:integer("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanintg2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanintg2args-4                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:integer(lower bound)                        
+$arg2 = xs:integer(mid range)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("-999999999999999999") lt xs:integer("830993497117024304")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanintg2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanintg2args-5                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:integer(lower bound)                        
+$arg2 = xs:integer(upper bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("-999999999999999999") lt xs:integer("999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanintg2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanintg2args-6                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:integer(lower bound)                        
+$arg2 = xs:integer(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("-999999999999999999") ge xs:integer("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanintg2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanintg2args-7                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:integer(mid range)                          
+$arg2 = xs:integer(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("830993497117024304") ge xs:integer("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanintg2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanintg2args-8                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:integer(upper bound)                        
+$arg2 = xs:integer(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("999999999999999999") ge xs:integer("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanintg2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanintg2args-9                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:integer(lower bound)                        
+$arg2 = xs:integer(mid range)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("-999999999999999999") ge xs:integer("830993497117024304")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanintg2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanintg2args-10                  
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:integer(lower bound)                        
+$arg2 = xs:integer(upper bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("-999999999999999999") ge xs:integer("999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandec2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandec2args-1                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:decimal(lower bound)                        
+$arg2 = xs:decimal(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-999999999999999999") lt xs:decimal("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandec2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandec2args-2                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:decimal(mid range)                          
+$arg2 = xs:decimal(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("617375191608514839") lt xs:decimal("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandec2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandec2args-3                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:decimal(upper bound)                        
+$arg2 = xs:decimal(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("999999999999999999") lt xs:decimal("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandec2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandec2args-4                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:decimal(lower bound)                        
+$arg2 = xs:decimal(mid range)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-999999999999999999") lt xs:decimal("617375191608514839")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandec2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandec2args-5                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:decimal(lower bound)                        
+$arg2 = xs:decimal(upper bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-999999999999999999") lt xs:decimal("999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandec2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandec2args-6                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:decimal(lower bound)                        
+$arg2 = xs:decimal(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-999999999999999999") ge xs:decimal("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandec2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandec2args-7                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:decimal(mid range)                          
+$arg2 = xs:decimal(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("617375191608514839") ge xs:decimal("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandec2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandec2args-8                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:decimal(upper bound)                        
+$arg2 = xs:decimal(lower bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("999999999999999999") ge xs:decimal("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandec2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandec2args-9                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:decimal(lower bound)                        
+$arg2 = xs:decimal(mid range)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-999999999999999999") ge xs:decimal("617375191608514839")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandec2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandec2args-10                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:decimal(lower bound)                        
+$arg2 = xs:decimal(upper bound)                        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-999999999999999999") ge xs:decimal("999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandbl2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandbl2args-1                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:double(lower bound)                         
+$arg2 = xs:double(lower bound)                         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.7976931348623157E308") lt xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandbl2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandbl2args-2                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:double(mid range)                           
+$arg2 = xs:double(lower bound)                         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("0") lt xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandbl2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandbl2args-3                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:double(upper bound)                         
+$arg2 = xs:double(lower bound)                         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("1.7976931348623157E308") lt xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandbl2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandbl2args-4                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:double(lower bound)                         
+$arg2 = xs:double(mid range)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.7976931348623157E308") lt xs:double("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandbl2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandbl2args-5                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:double(lower bound)                         
+$arg2 = xs:double(upper bound)                         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.7976931348623157E308") lt xs:double("1.7976931348623157E308")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandbl2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandbl2args-6                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:double(lower bound)                         
+$arg2 = xs:double(lower bound)                         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.7976931348623157E308") ge xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandbl2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandbl2args-7                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:double(mid range)                           
+$arg2 = xs:double(lower bound)                         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("0") ge xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandbl2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandbl2args-8                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:double(upper bound)                         
+$arg2 = xs:double(lower bound)                         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("1.7976931348623157E308") ge xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandbl2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandbl2args-9                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:double(lower bound)                         
+$arg2 = xs:double(mid range)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.7976931348623157E308") ge xs:double("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thandbl2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thandbl2args-10                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:double(lower bound)                         
+$arg2 = xs:double(upper bound)                         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.7976931348623157E308") ge xs:double("1.7976931348623157E308")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanflt2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanflt2args-1                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:float(lower bound)                          
+$arg2 = xs:float(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-3.4028235E38") lt xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanflt2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanflt2args-2                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:float(mid range)                            
+$arg2 = xs:float(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("0") lt xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanflt2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanflt2args-3                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:float(upper bound)                          
+$arg2 = xs:float(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("3.4028235E38") lt xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanflt2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanflt2args-4                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:float(lower bound)                          
+$arg2 = xs:float(mid range)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-3.4028235E38") lt xs:float("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanflt2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanflt2args-5                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:float(lower bound)                          
+$arg2 = xs:float(upper bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-3.4028235E38") lt xs:float("3.4028235E38")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanflt2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanflt2args-6                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:float(lower bound)                          
+$arg2 = xs:float(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-3.4028235E38") ge xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanflt2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanflt2args-7                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:float(mid range)                            
+$arg2 = xs:float(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("0") ge xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanflt2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanflt2args-8                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:float(upper bound)                          
+$arg2 = xs:float(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("3.4028235E38") ge xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanflt2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanflt2args-9                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:float(lower bound)                          
+$arg2 = xs:float(mid range)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-3.4028235E38") ge xs:float("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanflt2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanflt2args-10                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:float(lower bound)                          
+$arg2 = xs:float(upper bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-3.4028235E38") ge xs:float("3.4028235E38")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanlng2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanlng2args-1                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:long(lower bound)                           
+$arg2 = xs:long(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-92233720368547758") lt xs:long("-92233720368547758")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanlng2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanlng2args-2                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:long(mid range)                             
+$arg2 = xs:long(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-47175562203048468") lt xs:long("-92233720368547758")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanlng2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanlng2args-3                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:long(upper bound)                           
+$arg2 = xs:long(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("92233720368547758") lt xs:long("-92233720368547758")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanlng2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanlng2args-4                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:long(lower bound)                           
+$arg2 = xs:long(mid range)                             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-92233720368547758") lt xs:long("-47175562203048468")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanlng2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanlng2args-5                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:long(lower bound)                           
+$arg2 = xs:long(upper bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-92233720368547758") lt xs:long("92233720368547758")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanlng2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanlng2args-6                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:long(lower bound)                           
+$arg2 = xs:long(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-92233720368547758") ge xs:long("-92233720368547758")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanlng2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanlng2args-7                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:long(mid range)                             
+$arg2 = xs:long(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-47175562203048468") ge xs:long("-92233720368547758")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanlng2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanlng2args-8                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:long(upper bound)                           
+$arg2 = xs:long(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("92233720368547758") ge xs:long("-92233720368547758")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanlng2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanlng2args-9                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:long(lower bound)                           
+$arg2 = xs:long(mid range)                             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-92233720368547758") ge xs:long("-47175562203048468")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanlng2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanlng2args-10                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:long(lower bound)                           
+$arg2 = xs:long(upper bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-92233720368547758") ge xs:long("92233720368547758")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanusht2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanusht2args-1                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedShort(lower bound)                  
+$arg2 = xs:unsignedShort(lower bound)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") lt xs:unsignedShort("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanusht2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanusht2args-2                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedShort(mid range)                    
+$arg2 = xs:unsignedShort(lower bound)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("44633") lt xs:unsignedShort("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanusht2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanusht2args-3                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedShort(upper bound)                  
+$arg2 = xs:unsignedShort(lower bound)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("65535") lt xs:unsignedShort("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanusht2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanusht2args-4                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedShort(lower bound)                  
+$arg2 = xs:unsignedShort(mid range)                    
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") lt xs:unsignedShort("44633")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanusht2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanusht2args-5                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedShort(lower bound)                  
+$arg2 = xs:unsignedShort(upper bound)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") lt xs:unsignedShort("65535")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanusht2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanusht2args-6                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedShort(lower bound)                  
+$arg2 = xs:unsignedShort(lower bound)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") ge xs:unsignedShort("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanusht2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanusht2args-7                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedShort(mid range)                    
+$arg2 = xs:unsignedShort(lower bound)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("44633") ge xs:unsignedShort("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanusht2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanusht2args-8                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedShort(upper bound)                  
+$arg2 = xs:unsignedShort(lower bound)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("65535") ge xs:unsignedShort("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanusht2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanusht2args-9                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedShort(lower bound)                  
+$arg2 = xs:unsignedShort(mid range)                    
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") ge xs:unsignedShort("44633")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanusht2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanusht2args-10                  
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedShort(lower bound)                  
+$arg2 = xs:unsignedShort(upper bound)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") ge xs:unsignedShort("65535")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannint2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannint2args-1                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:negativeInteger(lower bound)                
+$arg2 = xs:negativeInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-999999999999999999") lt xs:negativeInteger("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannint2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannint2args-2                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:negativeInteger(mid range)                  
+$arg2 = xs:negativeInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-297014075999096793") lt xs:negativeInteger("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannint2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannint2args-3                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:negativeInteger(upper bound)                
+$arg2 = xs:negativeInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-1") lt xs:negativeInteger("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannint2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannint2args-4                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:negativeInteger(lower bound)                
+$arg2 = xs:negativeInteger(mid range)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-999999999999999999") lt xs:negativeInteger("-297014075999096793")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannint2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannint2args-5                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:negativeInteger(lower bound)                
+$arg2 = xs:negativeInteger(upper bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-999999999999999999") lt xs:negativeInteger("-1")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannint2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannint2args-6                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:negativeInteger(lower bound)                
+$arg2 = xs:negativeInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-999999999999999999") ge xs:negativeInteger("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannint2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannint2args-7                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:negativeInteger(mid range)                  
+$arg2 = xs:negativeInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-297014075999096793") ge xs:negativeInteger("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannint2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannint2args-8                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:negativeInteger(upper bound)                
+$arg2 = xs:negativeInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-1") ge xs:negativeInteger("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannint2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannint2args-9                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:negativeInteger(lower bound)                
+$arg2 = xs:negativeInteger(mid range)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-999999999999999999") ge xs:negativeInteger("-297014075999096793")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannint2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannint2args-10                  
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:negativeInteger(lower bound)                
+$arg2 = xs:negativeInteger(upper bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-999999999999999999") ge xs:negativeInteger("-1")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanpint2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanpint2args-1                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:positiveInteger(lower bound)                
+$arg2 = xs:positiveInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") lt xs:positiveInteger("1")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanpint2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanpint2args-2                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:positiveInteger(mid range)                  
+$arg2 = xs:positiveInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("52704602390610033") lt xs:positiveInteger("1")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanpint2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanpint2args-3                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:positiveInteger(upper bound)                
+$arg2 = xs:positiveInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("999999999999999999") lt xs:positiveInteger("1")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanpint2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanpint2args-4                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:positiveInteger(lower bound)                
+$arg2 = xs:positiveInteger(mid range)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") lt xs:positiveInteger("52704602390610033")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanpint2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanpint2args-5                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:positiveInteger(lower bound)                
+$arg2 = xs:positiveInteger(upper bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") lt xs:positiveInteger("999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanpint2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanpint2args-6                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:positiveInteger(lower bound)                
+$arg2 = xs:positiveInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") ge xs:positiveInteger("1")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanpint2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanpint2args-7                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:positiveInteger(mid range)                  
+$arg2 = xs:positiveInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("52704602390610033") ge xs:positiveInteger("1")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanpint2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanpint2args-8                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:positiveInteger(upper bound)                
+$arg2 = xs:positiveInteger(lower bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("999999999999999999") ge xs:positiveInteger("1")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanpint2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanpint2args-9                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:positiveInteger(lower bound)                
+$arg2 = xs:positiveInteger(mid range)                  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") ge xs:positiveInteger("52704602390610033")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanpint2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanpint2args-10                  
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:positiveInteger(lower bound)                
+$arg2 = xs:positiveInteger(upper bound)                
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") ge xs:positiveInteger("999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanulng2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanulng2args-1                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedLong(lower bound)                   
+$arg2 = xs:unsignedLong(lower bound)                   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") lt xs:unsignedLong("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanulng2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanulng2args-2                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedLong(mid range)                     
+$arg2 = xs:unsignedLong(lower bound)                   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("130747108607674654") lt xs:unsignedLong("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanulng2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanulng2args-3                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedLong(upper bound)                   
+$arg2 = xs:unsignedLong(lower bound)                   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("184467440737095516") lt xs:unsignedLong("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanulng2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanulng2args-4                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedLong(lower bound)                   
+$arg2 = xs:unsignedLong(mid range)                     
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") lt xs:unsignedLong("130747108607674654")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanulng2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanulng2args-5                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedLong(lower bound)                   
+$arg2 = xs:unsignedLong(upper bound)                   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") lt xs:unsignedLong("184467440737095516")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanulng2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanulng2args-6                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedLong(lower bound)                   
+$arg2 = xs:unsignedLong(lower bound)                   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") ge xs:unsignedLong("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanulng2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanulng2args-7                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedLong(mid range)                     
+$arg2 = xs:unsignedLong(lower bound)                   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("130747108607674654") ge xs:unsignedLong("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanulng2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanulng2args-8                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedLong(upper bound)                   
+$arg2 = xs:unsignedLong(lower bound)                   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("184467440737095516") ge xs:unsignedLong("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanulng2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanulng2args-9                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedLong(lower bound)                   
+$arg2 = xs:unsignedLong(mid range)                     
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") ge xs:unsignedLong("130747108607674654")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thanulng2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thanulng2args-10                  
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:unsignedLong(lower bound)                   
+$arg2 = xs:unsignedLong(upper bound)                   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") ge xs:unsignedLong("184467440737095516")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannpi2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannpi2args-1                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonPositiveInteger(lower bound)             
+$arg2 = xs:nonPositiveInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-999999999999999999") lt xs:nonPositiveInteger("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannpi2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannpi2args-2                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonPositiveInteger(mid range)               
+$arg2 = xs:nonPositiveInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-475688437271870490") lt xs:nonPositiveInteger("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannpi2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannpi2args-3                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonPositiveInteger(upper bound)             
+$arg2 = xs:nonPositiveInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("0") lt xs:nonPositiveInteger("-999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannpi2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannpi2args-4                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonPositiveInteger(lower bound)             
+$arg2 = xs:nonPositiveInteger(mid range)               
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-999999999999999999") lt xs:nonPositiveInteger("-475688437271870490")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannpi2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannpi2args-5                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonPositiveInteger(lower bound)             
+$arg2 = xs:nonPositiveInteger(upper bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-999999999999999999") lt xs:nonPositiveInteger("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannpi2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannpi2args-6                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonPositiveInteger(lower bound)             
+$arg2 = xs:nonPositiveInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-999999999999999999") ge xs:nonPositiveInteger("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannpi2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannpi2args-7                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonPositiveInteger(mid range)               
+$arg2 = xs:nonPositiveInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-475688437271870490") ge xs:nonPositiveInteger("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannpi2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannpi2args-8                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonPositiveInteger(upper bound)             
+$arg2 = xs:nonPositiveInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("0") ge xs:nonPositiveInteger("-999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannpi2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannpi2args-9                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonPositiveInteger(lower bound)             
+$arg2 = xs:nonPositiveInteger(mid range)               
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-999999999999999999") ge xs:nonPositiveInteger("-475688437271870490")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannpi2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannpi2args-10                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonPositiveInteger(lower bound)             
+$arg2 = xs:nonPositiveInteger(upper bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-999999999999999999") ge xs:nonPositiveInteger("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannni2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannni2args-1                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonNegativeInteger(lower bound)             
+$arg2 = xs:nonNegativeInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") lt xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannni2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannni2args-2                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonNegativeInteger(mid range)               
+$arg2 = xs:nonNegativeInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("303884545991464527") lt xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannni2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannni2args-3                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonNegativeInteger(upper bound)             
+$arg2 = xs:nonNegativeInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("999999999999999999") lt xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannni2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannni2args-4                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonNegativeInteger(lower bound)             
+$arg2 = xs:nonNegativeInteger(mid range)               
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") lt xs:nonNegativeInteger("303884545991464527")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannni2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannni2args-5                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonNegativeInteger(lower bound)             
+$arg2 = xs:nonNegativeInteger(upper bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") lt xs:nonNegativeInteger("999999999999999999")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannni2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannni2args-6                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonNegativeInteger(lower bound)             
+$arg2 = xs:nonNegativeInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") ge xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannni2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannni2args-7                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonNegativeInteger(mid range)               
+$arg2 = xs:nonNegativeInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("303884545991464527") ge xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannni2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannni2args-8                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonNegativeInteger(upper bound)             
+$arg2 = xs:nonNegativeInteger(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("999999999999999999") ge xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannni2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannni2args-9                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonNegativeInteger(lower bound)             
+$arg2 = xs:nonNegativeInteger(mid range)               
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") ge xs:nonNegativeInteger("303884545991464527")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thannni2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thannni2args-10                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:nonNegativeInteger(lower bound)             
+$arg2 = xs:nonNegativeInteger(upper bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") ge xs:nonNegativeInteger("999999999999999999")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thansht2args-1">
+      <description>
+*******************************************************
+Test: op-numeric-less-thansht2args-1                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:short(lower bound)                          
+$arg2 = xs:short(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-32768") lt xs:short("-32768")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thansht2args-2">
+      <description>
+*******************************************************
+Test: op-numeric-less-thansht2args-2                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:short(mid range)                            
+$arg2 = xs:short(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-5324") lt xs:short("-32768")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thansht2args-3">
+      <description>
+*******************************************************
+Test: op-numeric-less-thansht2args-3                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:short(upper bound)                          
+$arg2 = xs:short(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("32767") lt xs:short("-32768")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thansht2args-4">
+      <description>
+*******************************************************
+Test: op-numeric-less-thansht2args-4                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:short(lower bound)                          
+$arg2 = xs:short(mid range)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-32768") lt xs:short("-5324")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thansht2args-5">
+      <description>
+*******************************************************
+Test: op-numeric-less-thansht2args-5                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:short(lower bound)                          
+$arg2 = xs:short(upper bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-32768") lt xs:short("32767")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thansht2args-6">
+      <description>
+*******************************************************
+Test: op-numeric-less-thansht2args-6                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:short(lower bound)                          
+$arg2 = xs:short(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-32768") ge xs:short("-32768")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thansht2args-7">
+      <description>
+*******************************************************
+Test: op-numeric-less-thansht2args-7                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:short(mid range)                            
+$arg2 = xs:short(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-5324") ge xs:short("-32768")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thansht2args-8">
+      <description>
+*******************************************************
+Test: op-numeric-less-thansht2args-8                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:short(upper bound)                          
+$arg2 = xs:short(lower bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("32767") ge xs:short("-32768")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thansht2args-9">
+      <description>
+*******************************************************
+Test: op-numeric-less-thansht2args-9                    
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:short(lower bound)                          
+$arg2 = xs:short(mid range)                            
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-32768") ge xs:short("-5324")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-numeric-less-thansht2args-10">
+      <description>
+*******************************************************
+Test: op-numeric-less-thansht2args-10                   
+Written By: Carmelo Montanez                            
+Date: Thu Dec 16 10:48:16 GMT-05:00 2004                
+Purpose: Evaluates The "op:numeric-less-than" operator 
+ with the arguments set as follows:                    
+$arg1 = xs:short(lower bound)                          
+$arg2 = xs:short(upper bound)                          
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-32768") ge xs:short("32767")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-1">
+      <description>
+*******************************************************
+ Test: K-NumericLT-1                                   
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `xs:integer(-1) lt xs:integer(1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:integer(-1) lt xs:integer(1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-2">
+      <description>
+*******************************************************
+ Test: K-NumericLT-2                                   
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `xs:integer(-1) le xs:integer(1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:integer(-1) le xs:integer(1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-3">
+      <description>
+*******************************************************
+ Test: K-NumericLT-3                                   
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `xs:decimal(-1) lt xs:decimal(1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:decimal(-1) lt xs:decimal(1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-4">
+      <description>
+*******************************************************
+ Test: K-NumericLT-4                                   
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `xs:decimal(-1) le xs:decimal(1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:decimal(-1) le xs:decimal(1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-5">
+      <description>
+*******************************************************
+ Test: K-NumericLT-5                                   
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `0 lt xs:double("INF")`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>0 lt xs:double("INF")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-6">
+      <description>
+*******************************************************
+ Test: K-NumericLT-6                                   
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `xs:double("-INF") lt 0`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:double("-INF") lt 0</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-7">
+      <description>
+*******************************************************
+ Test: K-NumericLT-7                                   
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `xs:double(-1) lt xs:double(1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:double(-1) lt xs:double(1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-8">
+      <description>
+*******************************************************
+ Test: K-NumericLT-8                                   
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `xs:double(-1) le xs:double(1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:double(-1) le xs:double(1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-9">
+      <description>
+*******************************************************
+ Test: K-NumericLT-9                                   
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `0 lt xs:float("INF")`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>0 lt xs:float("INF")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-10">
+      <description>
+*******************************************************
+ Test: K-NumericLT-10                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `xs:float("-INF") lt 0`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:float("-INF") lt 0</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-11">
+      <description>
+*******************************************************
+ Test: K-NumericLT-11                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `xs:float(-1) lt xs:float(1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:float(-1) lt xs:float(1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-12">
+      <description>
+*******************************************************
+ Test: K-NumericLT-12                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `xs:float(-1) le xs:float(1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:float(-1) le xs:float(1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-13">
+      <description>
+*******************************************************
+ Test: K-NumericLT-13                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `not(xs:double("NaN") lt 1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(xs:double("NaN") lt 1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-14">
+      <description>
+*******************************************************
+ Test: K-NumericLT-14                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `not(xs:float("NaN") lt 1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(xs:float("NaN") lt 1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-15">
+      <description>
+*******************************************************
+ Test: K-NumericLT-15                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `not(xs:double("NaN") le 1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(xs:double("NaN") le 1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-16">
+      <description>
+*******************************************************
+ Test: K-NumericLT-16                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `not(xs:float("NaN") le 1)`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(xs:float("NaN") le 1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-17">
+      <description>
+*******************************************************
+ Test: K-NumericLT-17                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `not(1 lt xs:double("NaN"))`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(1 lt xs:double("NaN"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-18">
+      <description>
+*******************************************************
+ Test: K-NumericLT-18                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `not(1 lt xs:float("NaN"))`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(1 lt xs:float("NaN"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-19">
+      <description>
+*******************************************************
+ Test: K-NumericLT-19                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `not(1 le xs:double("NaN"))`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(1 le xs:double("NaN"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-20">
+      <description>
+*******************************************************
+ Test: K-NumericLT-20                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: A test whose essence is: `not(1 le xs:float("NaN"))`. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(1 le xs:float("NaN"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-21">
+      <description>
+*******************************************************
+ Test: K-NumericLT-21                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: le combined with count().                    
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>1 le count((1, 2, 3, timezone-from-time(current-time()), 4))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-NumericLT-22">
+      <description>
+*******************************************************
+ Test: K-NumericLT-22                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: lt combined with count().                    
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>0 lt count((1, 2, 3, timezone-from-time(current-time()), 4))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K2-NumericLT-1">
+      <description>
+*******************************************************
+ Test: K2-NumericLT-1                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Compare two xs:unsignedLong values.          
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2008-12-04+01:00"/>
+      <test>xs:unsignedLong("100") lt xs:unsignedLong("18446744073709551615")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K2-NumericLT-2">
+      <description>
+*******************************************************
+ Test: K2-NumericLT-2                                  
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Compare two xs:unsignedLong values.          
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2008-12-04+01:00"/>
+      <test>xs:unsignedLong("18446744073709551615") lt xs:unsignedLong("100")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+
+   <test-case name="cbcl-numeric-less-than-001">
+      <description> test comparison of xs:double </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; not( local:square(1e0) lt local:square(2e0) )</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-002">
+      <description> test comparison of xs:float </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; not( local:square(xs:float(1e0)) lt local:square(xs:float(2e0)) )</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-003">
+      <description> test comparison of xs:decimal </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; not( local:square(1.0) lt local:square(2.0) )</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-004">
+      <description> test comparison of xs:integer </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; not( local:square(1) lt local:square(2) )</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-005">
+      <description> test comparison of xs:double </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; not( local:square(1e0) ge local:square(2e0) )</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-006">
+      <description> test comparison of xs:float </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; not( local:square(xs:float(1e0)) ge local:square(xs:float(2e0)) )</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-007">
+      <description> test comparison of xs:decimal </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:decimal) as xs:decimal { $arg * $arg }; not( local:square(1.0) ge local:square(2.0) )</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-008">
+      <description> test comparison of xs:integer </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:integer) as xs:integer { $arg * $arg }; not( local:square(1) ge local:square(2) )</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-009">
+      <description> test comparison of xs:double </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; not(not( local:square(1e0) lt local:square(2e0) ))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-010">
+      <description> test comparison of xs:float </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; not(not( local:square(xs:float(1e0)) lt local:square(xs:float(2e0)) ))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-011">
+      <description> test comparison of xs:double </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:double) as xs:double { $arg * $arg }; not(not( local:square(1e0) ge local:square(2e0) ))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-012">
+      <description> test comparison of xs:float </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:square($arg as xs:float) as xs:float { $arg * $arg }; not(not( local:square(xs:float(1e0)) ge local:square(xs:float(2e0)) ))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-013">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return $x + 1 lt 121</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-014">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return $x - 1 lt 121</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-015">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return 121 lt $x + 1</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-016">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return 121 lt 1 + $x</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-017">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return $x + 1 ge 121</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-018">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return $x - 1 ge 121</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-019">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return 121 ge $x + 1</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-020">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return 121 ge 1 + $x</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-021">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return $x + 2 lt 121</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-022">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return $x - 2 lt 12</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-023">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return 121 lt $x + 2</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-024">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return 121 lt 2 + $x</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-025">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return $x + 2 ge 121</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-026">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return $x - 2 ge 12</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-027">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return 121 ge $x + 2</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-028">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return 121 ge $x + 1</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-numeric-less-than-029">
+      <description> test comparison of integers </description>
+      <created by="Tim Mills" on="2008-05-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:factorial($arg as xs:integer) as xs:integer { if ($arg lt 1) then 1 else $arg * local:factorial($arg - 1) }; let $x := local:factorial(5) return 121 ge 2 + $x</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+</test-set>

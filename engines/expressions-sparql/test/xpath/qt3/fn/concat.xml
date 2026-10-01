@@ -1,0 +1,878 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-concat">
+   <description/>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-concat"/>
+   
+   <test-case name="fn-concatint2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:int(lower bound) $arg2 = xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:int("-2147483648"),xs:int("-2147483648"))</test>
+      <result>
+         <assert-string-value>-2147483648-2147483648</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatint2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:int(mid range) $arg2 = xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:int("-1873914410"),xs:int("-2147483648"))</test>
+      <result>
+         <assert-string-value>-1873914410-2147483648</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatint2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:int(upper bound) $arg2 = xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:int("2147483647"),xs:int("-2147483648"))</test>
+      <result>
+         <assert-string-value>2147483647-2147483648</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatint2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:int(lower bound) $arg2 = xs:int(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:int("-2147483648"),xs:int("-1873914410"))</test>
+      <result>
+         <assert-string-value>-2147483648-1873914410</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatint2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:int(lower bound) $arg2 = xs:int(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:int("-2147483648"),xs:int("2147483647"))</test>
+      <result>
+         <assert-string-value>-21474836482147483647</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatintg2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:integer(lower bound) $arg2 = xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:integer("-999999999999999999"),xs:integer("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatintg2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:integer(mid range) $arg2 = xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:integer("830993497117024304"),xs:integer("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>830993497117024304-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatintg2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:integer(upper bound) $arg2 = xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:integer("999999999999999999"),xs:integer("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>999999999999999999-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatintg2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:integer(lower bound) $arg2 = xs:integer(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:integer("-999999999999999999"),xs:integer("830993497117024304"))</test>
+      <result>
+         <assert-string-value>-999999999999999999830993497117024304</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatintg2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:integer(lower bound) $arg2 = xs:integer(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:integer("-999999999999999999"),xs:integer("999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatdec2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:decimal(lower bound) $arg2 = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:decimal("-999999999999999999"),xs:decimal("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatdec2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:decimal(mid range) $arg2 = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:decimal("617375191608514839"),xs:decimal("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>617375191608514839-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatdec2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:decimal(upper bound) $arg2 = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:decimal("999999999999999999"),xs:decimal("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>999999999999999999-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatdec2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:decimal(lower bound) $arg2 = xs:decimal(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:decimal("-999999999999999999"),xs:decimal("617375191608514839"))</test>
+      <result>
+         <assert-string-value>-999999999999999999617375191608514839</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatdec2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:decimal(lower bound) $arg2 = xs:decimal(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:decimal("-999999999999999999"),xs:decimal("999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatdbl2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:double(lower bound) $arg2 = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:double("-1.7976931348623157E308"),xs:double("-1.7976931348623157E308"))</test>
+      <result>
+         <assert-string-value>-1.7976931348623157E308-1.7976931348623157E308</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatdbl2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:double(mid range) $arg2 = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:double("0"),xs:double("-1.7976931348623157E308"))</test>
+      <result>
+         <assert-string-value>0-1.7976931348623157E308</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatdbl2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:double(upper bound) $arg2 = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:double("1.7976931348623157E308"),xs:double("-1.7976931348623157E308"))</test>
+      <result>
+         <assert-string-value>1.7976931348623157E308-1.7976931348623157E308</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatdbl2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:double(lower bound) $arg2 = xs:double(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:double("-1.7976931348623157E308"),xs:double("0"))</test>
+      <result>
+         <assert-string-value>-1.7976931348623157E3080</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatdbl2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:double(lower bound) $arg2 = xs:double(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:double("-1.7976931348623157E308"),xs:double("1.7976931348623157E308"))</test>
+      <result>
+         <assert-string-value>-1.7976931348623157E3081.7976931348623157E308</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatflt2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:float(lower bound) $arg2 = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:float("-3.4028235E38"),xs:float("-3.4028235E38"))</test>
+      <result>
+         <assert-string-value>-3.4028235E38-3.4028235E38</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatflt2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:float(mid range) $arg2 = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:float("0"),xs:float("-3.4028235E38"))</test>
+      <result>
+         <assert-string-value>0-3.4028235E38</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatflt2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:float(upper bound) $arg2 = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:float("3.4028235E38"),xs:float("-3.4028235E38"))</test>
+      <result>
+         <assert-string-value>3.4028235E38-3.4028235E38</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatflt2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:float(lower bound) $arg2 = xs:float(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:float("-3.4028235E38"),xs:float("0"))</test>
+      <result>
+         <assert-string-value>-3.4028235E380</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatflt2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:float(lower bound) $arg2 = xs:float(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:float("-3.4028235E38"),xs:float("3.4028235E38"))</test>
+      <result>
+         <assert-string-value>-3.4028235E383.4028235E38</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatlng2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:long(lower bound) $arg2 = xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:long("-92233720368547758"),xs:long("-92233720368547758"))</test>
+      <result>
+         <assert-string-value>-92233720368547758-92233720368547758</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatlng2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:long(mid range) $arg2 = xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:long("-47175562203048468"),xs:long("-92233720368547758"))</test>
+      <result>
+         <assert-string-value>-47175562203048468-92233720368547758</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatlng2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:long(upper bound) $arg2 = xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:long("92233720368547758"),xs:long("-92233720368547758"))</test>
+      <result>
+         <assert-string-value>92233720368547758-92233720368547758</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatlng2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:long(lower bound) $arg2 = xs:long(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:long("-92233720368547758"),xs:long("-47175562203048468"))</test>
+      <result>
+         <assert-string-value>-92233720368547758-47175562203048468</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatlng2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:long(lower bound) $arg2 = xs:long(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:long("-92233720368547758"),xs:long("92233720368547758"))</test>
+      <result>
+         <assert-string-value>-9223372036854775892233720368547758</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatusht2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:unsignedShort(lower bound) $arg2 = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:unsignedShort("0"),xs:unsignedShort("0"))</test>
+      <result>
+         <assert-string-value>00</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatusht2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:unsignedShort(mid range) $arg2 = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:unsignedShort("44633"),xs:unsignedShort("0"))</test>
+      <result>
+         <assert-string-value>446330</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatusht2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:unsignedShort(upper bound) $arg2 = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:unsignedShort("65535"),xs:unsignedShort("0"))</test>
+      <result>
+         <assert-string-value>655350</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatusht2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:unsignedShort(lower bound) $arg2 = xs:unsignedShort(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:unsignedShort("0"),xs:unsignedShort("44633"))</test>
+      <result>
+         <assert-string-value>044633</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatusht2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:unsignedShort(lower bound) $arg2 = xs:unsignedShort(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:unsignedShort("0"),xs:unsignedShort("65535"))</test>
+      <result>
+         <assert-string-value>065535</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnint2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:negativeInteger(lower bound) $arg2 = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:negativeInteger("-999999999999999999"),xs:negativeInteger("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnint2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:negativeInteger(mid range) $arg2 = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:negativeInteger("-297014075999096793"),xs:negativeInteger("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-297014075999096793-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnint2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:negativeInteger(upper bound) $arg2 = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:negativeInteger("-1"),xs:negativeInteger("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-1-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnint2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:negativeInteger(lower bound) $arg2 = xs:negativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:negativeInteger("-999999999999999999"),xs:negativeInteger("-297014075999096793"))</test>
+      <result>
+         <assert-string-value>-999999999999999999-297014075999096793</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnint2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:negativeInteger(lower bound) $arg2 = xs:negativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:negativeInteger("-999999999999999999"),xs:negativeInteger("-1"))</test>
+      <result>
+         <assert-string-value>-999999999999999999-1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatpint2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:positiveInteger("1"),xs:positiveInteger("1"))</test>
+      <result>
+         <assert-string-value>11</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatpint2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:positiveInteger(mid range) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:positiveInteger("52704602390610033"),xs:positiveInteger("1"))</test>
+      <result>
+         <assert-string-value>527046023906100331</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatpint2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:positiveInteger(upper bound) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:positiveInteger("999999999999999999"),xs:positiveInteger("1"))</test>
+      <result>
+         <assert-string-value>9999999999999999991</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatpint2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:positiveInteger("1"),xs:positiveInteger("52704602390610033"))</test>
+      <result>
+         <assert-string-value>152704602390610033</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatpint2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:positiveInteger("1"),xs:positiveInteger("999999999999999999"))</test>
+      <result>
+         <assert-string-value>1999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatulng2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:unsignedLong(lower bound) $arg2 = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:unsignedLong("0"),xs:unsignedLong("0"))</test>
+      <result>
+         <assert-string-value>00</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatulng2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:unsignedLong(mid range) $arg2 = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:unsignedLong("130747108607674654"),xs:unsignedLong("0"))</test>
+      <result>
+         <assert-string-value>1307471086076746540</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatulng2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:unsignedLong(upper bound) $arg2 = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:unsignedLong("184467440737095516"),xs:unsignedLong("0"))</test>
+      <result>
+         <assert-string-value>1844674407370955160</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatulng2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:unsignedLong(lower bound) $arg2 = xs:unsignedLong(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:unsignedLong("0"),xs:unsignedLong("130747108607674654"))</test>
+      <result>
+         <assert-string-value>0130747108607674654</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatulng2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:unsignedLong(lower bound) $arg2 = xs:unsignedLong(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:unsignedLong("0"),xs:unsignedLong("184467440737095516"))</test>
+      <result>
+         <assert-string-value>0184467440737095516</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnpi2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:nonPositiveInteger(lower bound) $arg2 = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:nonPositiveInteger("-999999999999999999"),xs:nonPositiveInteger("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnpi2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:nonPositiveInteger(mid range) $arg2 = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:nonPositiveInteger("-475688437271870490"),xs:nonPositiveInteger("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-475688437271870490-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnpi2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:nonPositiveInteger(upper bound) $arg2 = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:nonPositiveInteger("0"),xs:nonPositiveInteger("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>0-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnpi2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:nonPositiveInteger(lower bound) $arg2 = xs:nonPositiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:nonPositiveInteger("-999999999999999999"),xs:nonPositiveInteger("-475688437271870490"))</test>
+      <result>
+         <assert-string-value>-999999999999999999-475688437271870490</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnpi2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:nonPositiveInteger(lower bound) $arg2 = xs:nonPositiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:nonPositiveInteger("-999999999999999999"),xs:nonPositiveInteger("0"))</test>
+      <result>
+         <assert-string-value>-9999999999999999990</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnni2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:nonNegativeInteger(lower bound) $arg2 = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:nonNegativeInteger("0"),xs:nonNegativeInteger("0"))</test>
+      <result>
+         <assert-string-value>00</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnni2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:nonNegativeInteger(mid range) $arg2 = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:nonNegativeInteger("303884545991464527"),xs:nonNegativeInteger("0"))</test>
+      <result>
+         <assert-string-value>3038845459914645270</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnni2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:nonNegativeInteger(upper bound) $arg2 = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:nonNegativeInteger("999999999999999999"),xs:nonNegativeInteger("0"))</test>
+      <result>
+         <assert-string-value>9999999999999999990</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnni2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:nonNegativeInteger(lower bound) $arg2 = xs:nonNegativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:nonNegativeInteger("0"),xs:nonNegativeInteger("303884545991464527"))</test>
+      <result>
+         <assert-string-value>0303884545991464527</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatnni2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:nonNegativeInteger(lower bound) $arg2 = xs:nonNegativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:nonNegativeInteger("0"),xs:nonNegativeInteger("999999999999999999"))</test>
+      <result>
+         <assert-string-value>0999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatsht2args-1">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:short(lower bound) $arg2 = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:short("-32768"),xs:short("-32768"))</test>
+      <result>
+         <assert-string-value>-32768-32768</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatsht2args-2">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:short(mid range) $arg2 = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:short("-5324"),xs:short("-32768"))</test>
+      <result>
+         <assert-string-value>-5324-32768</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatsht2args-3">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:short(upper bound) $arg2 = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:short("32767"),xs:short("-32768"))</test>
+      <result>
+         <assert-string-value>32767-32768</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatsht2args-4">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:short(lower bound) $arg2 = xs:short(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:short("-32768"),xs:short("-5324"))</test>
+      <result>
+         <assert-string-value>-32768-5324</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concatsht2args-5">
+      <description> Evaluates The "concat" function with the arguments set as follows: $arg1 = xs:short(lower bound) $arg2 = xs:short(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:concat(xs:short("-32768"),xs:short("32767"))</test>
+      <result>
+         <assert-string-value>-3276832767</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-1">
+      <description>Evaluation of concat function as per example 1 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat('un', 'grateful')</test>
+      <result>
+         <assert-string-value>ungrateful</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-2">
+      <description>Evaluation of concat function as per example 2 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat('Thy ', (), 'old ', "groans", "", ' ring', ' yet', ' in', ' my', ' ancient',' ears.')</test>
+      <result>
+         <assert-string-value>Thy old groans ring yet in my ancient ears.</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-3">
+      <description>Evaluation of concat function as per example 3 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat('Ciao!',())</test>
+      <result>
+         <assert-string-value>Ciao!</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-4">
+      <description>Evaluation of concat function as per example 4 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat('Ingratitude, ', 'thou ', 'marble-hearted', ' fiend!')</test>
+      <result>
+         <assert-string-value>Ingratitude, thou marble-hearted fiend!</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-5">
+      <description>Evaluation of concat function that uses only upper case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat("AB","CD")</test>
+      <result>
+         <assert-string-value>ABCD</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-6">
+      <description>Evaluation of concat function that uses only lower case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat("abc","de")</test>
+      <result>
+         <assert-string-value>abcde</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-7">
+      <description>Evaluation of concat function that uses both upper and lower case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat("ABCDE","abcde")</test>
+      <result>
+         <assert-string-value>ABCDEabcde</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-8">
+      <description>Evaluation of concat function that uses the empty string as part of argument Uses "fn:count" to avoid the empty file </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:count(fn:concat("",""))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-9">
+      <description>Evaluation of concat function that uses the "upper-case" function as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat(fn:upper-case("Abc"),fn:upper-case("DH"))</test>
+      <result>
+         <assert-string-value>ABCDH</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-10">
+      <description>Evaluation of concat function with argument set to "*****" </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat("**","***")</test>
+      <result>
+         <assert-string-value>*****</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-11">
+      <description>Evaluation of concat function with argument that uses another concat function </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat(fn:concat("zzz","zz"),"123")</test>
+      <result>
+         <assert-string-value>zzzzz123</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-12">
+      <description>Evaluation of concat function as an argument to the "fn:boolean" function </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:boolean(fn:concat("ab","cde"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-13">
+      <description>Evaluation of concat function as an argument to the "fn:string" function </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:string(fn:concat("abc","de"))</test>
+      <result>
+         <assert-string-value>abcde</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-14">
+      <description>Evaluation of concat function as an argument to the "fn:not" function </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:not(fn:concat("ab","cde"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-15">
+      <description>Evaluation of concat function with argument set to "%$",#@!" </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat("%$","#@!")</test>
+      <result>
+         <assert-string-value>%$#@!</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-16">
+      <description>Evaluation of concat function with argument set to "concat","concat" </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat("concat","concat")</test>
+      <result>
+         <assert-string-value>concatconcat</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-17">
+      <description>Evaluation of concat function as part of a boolean expression </description>
+      <created by="Carmelo Montanez" on="2005-08-11"/>
+      <test>fn:concat("abc","abc") and fn:concat("abc","abc")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-concat-18" covers-30="named-function-ref">
+      <description>Can't have a function item as an argument to concat </description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <modified by="Michael Kay" on="2012-05-17" change="see bug 14904"/>
+      <dependency type="feature" value="higherOrderFunctions"/>
+      <dependency type="spec" value="XP30+ XQ30+"/>
+      <test>fn:concat("abc","abc", fn:concat#3)</test>
+      <result>
+         <error code="FOTY0013"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ConcatFunc-1">
+      <description> A test whose essence is: `concat()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XP20 XP30 XP31 XQ10 XQ30 XQ31"/>
+      <test>concat()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ConcatFunc-2">
+      <description> A test whose essence is: `concat("a string")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XP20 XP30 XP31 XQ10 XQ30 XQ31"/>
+      <test>concat("a string")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ConcatFunc-3">
+      <description> A test whose essence is: `concat("ab", "c") eq "abc"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>concat("ab", "c") eq "abc"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ConcatFunc-4">
+      <description> A test whose essence is: `concat("ab", "c") instance of xs:string`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>concat("ab", "c") instance of xs:string</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ConcatFunc-5">
+      <description> A test whose essence is: `concat((), ()) instance of xs:string`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>concat((), ()) instance of xs:string</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ConcatFunc-6">
+      <description> A test whose essence is: `concat((), ()) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>concat((), ()) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ConcatFunc-7">
+      <description> A test whose essence is: `concat('a', 'b', 'c', (), 'd', 'e', 'f', 'g', 'h', ' ', 'i', 'j', 'k l') eq "abcdefgh ijk l"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>concat('a', 'b', 'c', (), 'd', 'e', 'f', 'g', 'h', ' ', 'i', 'j', 'k l') eq "abcdefgh ijk l"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ConcatFunc-8">
+      <description> A test whose essence is: `concat(1, 2, 3) eq "123"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>concat(1, 2, 3) eq "123"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-ConcatFunc-9">
+      <description> A test whose essence is: `concat(1, "2", 3) eq "123"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>concat(1, "2", 3) eq "123"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-ConcatFunc-1">
+      <description> Invalid amount of arguments to fn:concat(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XP20 XP30 XP31 XQ10 XQ30 XQ31"/>
+      <test>concat(("a", "b"), "c")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-ConcatFunc-2">
+      <description> Invalid amount of arguments to fn:concat(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XP20 XP30 XP31 XQ10 XQ30 XQ31"/>
+      <test>concat("1", "2", "3", ("a", "b"), "c")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-ConcatFunc-3">
+      <description> Invalid arguments to fn:concat(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XP20 XP30 XP31 XQ10 XQ30 XQ31"/>
+      <test>concat("1", "2", "3", "c", ("a", "b"))</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-concat-001">
+      <description> test fn:boolean(fn:concat()) where concat returns empty string </description>
+      <created by="Tim Mills" on="2008-04-11"/>      
+      <test>fn:boolean(fn:concat('', ''))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+</test-set>

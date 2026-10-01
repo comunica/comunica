@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-hours-from-time">
+   <description>Tests for the hours-from-time() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-hours-from-time"/>
+
+   <test-case name="fn-hours-from-time1args-1">
+      <description> Evaluates The "hours-from-time" function with the arguments set as follows: $arg = xs:time(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:hours-from-time(xs:time("00:00:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time1args-2">
+      <description> Evaluates The "hours-from-time" function with the arguments set as follows: $arg = xs:time(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:hours-from-time(xs:time("08:03:35Z"))</test>
+      <result>
+         <assert-string-value>8</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time1args-3">
+      <description> Evaluates The "hours-from-time" function with the arguments set as follows: $arg = xs:time(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:hours-from-time(xs:time("23:59:59Z"))</test>
+      <result>
+         <assert-string-value>23</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-1">
+      <description> Evaluates The "hours-from-time" function As per example 1 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("11:23:00Z"))</test>
+      <result>
+         <assert-string-value>11</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-2">
+      <description> Evaluates The "hours-from-time" function As per example 2 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("21:23:00Z"))</test>
+      <result>
+         <assert-string-value>21</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-3">
+      <description> Evaluates The "hours-from-time" function As per example 3 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("01:23:00+05:00"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-4">
+      <description> Evaluates The "hours-from-time" function As per example 4 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(fn:adjust-time-to-timezone(xs:time("01:23:00+05:00"), xs:dayTimeDuration("PT0H")))</test>
+      <result>
+         <assert-string-value>20</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-5">
+      <description> Evaluates The "hours-from-time" function using the empty sequence as an argument. Use count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:count(fn:hours-from-time(()))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-6">
+      <description> Evaluates The "hours-from-time" function that returns 0. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("00:20:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-7">
+      <description> Evaluates The "hours-from-time" function that returns 23. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("23:20:00Z"))</test>
+      <result>
+         <assert-string-value>23</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-8">
+      <description> Evaluates The "hours-from-time" function as part of a "+" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("02:00:00Z")) + fn:hours-from-time(xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-string-value>12</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-9">
+      <description> Evaluates The "hours-from-time" function as part of a "-" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("10:00:00Z")) - fn:hours-from-time(xs:time("09:00:00Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-10">
+      <description> Evaluates The "hours-from-time" function as part of a "*" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("02:00:00Z")) * fn:hours-from-time(xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-string-value>20</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-11">
+      <description> Evaluates The "hours-from-time" function as part of a "div" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("22:00:00Z")) div fn:hours-from-time(xs:time("02:00:00Z"))</test>
+      <result>
+         <assert-string-value>11</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-12">
+      <description> Evaluates The "hours-from-time" function as part of a "idiv" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("10:00:00Z")) idiv fn:hours-from-time(xs:time("02:00:00Z"))</test>
+      <result>
+         <assert-string-value>5</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-13">
+      <description> Evaluates The "hours-from-time" function as part of a "mod" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("10:00:00Z")) mod fn:hours-from-time(xs:time("03:00:00Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-14">
+      <description> Evaluates The "hours-from-time" function as part of a "numeric-unary-plus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>+fn:hours-from-time(xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-string-value>10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-15">
+      <description> Evaluates The "hours-from-time" function as part of a "numeric-unary-minus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>-fn:hours-from-time(xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-string-value>-10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-16">
+      <description> Evaluates The "hours-from-time" function as part of a "numeric-equal" expression (eq operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("10:00:00Z")) eq fn:hours-from-time(xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-17">
+      <description> Evaluates The "hours-from-time" function as part of a "numeric-equal" expression (ne operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("10:00:00Z")) ne fn:hours-from-time(xs:time("01:00:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-18">
+      <description> Evaluates The "hours-from-time" function as part of a "numeric-equal" expression (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("10:00:00Z")) le fn:hours-from-time(xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-time-19">
+      <description> Evaluates The "hours-from-time" function as part of a "numeric-equal" expression (ge operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("10:00:00Z")) ge fn:hours-from-time(xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-HoursFromTimeFunc-1">
+      <description> A test whose essence is: `hours-from-time()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>hours-from-time()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-HoursFromTimeFunc-2">
+      <description> A test whose essence is: `hours-from-time((), "Wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>hours-from-time((), "Wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-HoursFromTimeFunc-3">
+      <description> A test whose essence is: `empty(hours-from-time(()))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(hours-from-time(()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-HoursFromTimeFunc-4">
+      <description> A test whose essence is: `hours-from-time(()) instance of xs:integer?`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>hours-from-time(()) instance of xs:integer?</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-HoursFromTimeFunc-5">
+      <description> A test whose essence is: `hours-from-time(xs:time("23:11:12.43")) eq 23`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>hours-from-time(xs:time("23:11:12.43")) eq 23</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

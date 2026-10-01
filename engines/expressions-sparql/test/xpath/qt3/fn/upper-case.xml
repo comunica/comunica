@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-upper-case">
+   <description>Tests for the upper-case() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-upper-case"/>
+
+   <test-case name="fn-upper-case1args-1">
+      <description> Evaluates The "upper-case" function with the arguments set as follows: $arg = xs:string(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:upper-case(xs:string("This is a characte"))</test>
+      <result>
+         <assert-string-value>THIS IS A CHARACTE</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case1args-2">
+      <description> Evaluates The "upper-case" function with the arguments set as follows: $arg = xs:string(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:upper-case(xs:string("This is a characte"))</test>
+      <result>
+         <assert-string-value>THIS IS A CHARACTE</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case1args-3">
+      <description> Evaluates The "upper-case" function with the arguments set as follows: $arg = xs:string(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:upper-case(xs:string("This is a characte"))</test>
+      <result>
+         <assert-string-value>THIS IS A CHARACTE</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-1">
+      <description> Evaluation of upper-case function as per example 1 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case("ABc!D")</test>
+      <result>
+         <assert-string-value>ABC!D</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-2">
+      <description> Evaluation of upper-case function using the empty sequence Uses the count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:count(fn:upper-case(()))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-3">
+      <description> Evaluation of upper-case function that uses only numbers as part of argument Use of count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case("12345")</test>
+      <result>
+         <assert-string-value>12345</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-4">
+      <description> Evaluation of upper-case function that uses both numbers and letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case("12345abcd")</test>
+      <result>
+         <assert-string-value>12345ABCD</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-5">
+      <description> Evaluation of upper-case function that uses only upper case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case("ABCD")</test>
+      <result>
+         <assert-string-value>ABCD</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-6">
+      <description> Evaluation of upper-case function that uses only lower case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case("abcde")</test>
+      <result>
+         <assert-string-value>ABCDE</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-7">
+      <description> Evaluation of upper-case function that uses both upper and lower case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case("ABCDEabcde")</test>
+      <result>
+         <assert-string-value>ABCDEABCDE</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-8">
+      <description> Evaluation of upper-case function that uses the empty string as part of argument Uses "fn:count" to avoid the empty file </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:count(fn:upper-case(""))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-9">
+      <description> Evaluation of upper-case function that uses the "lower-case" as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case(lower-case("AbcDH"))</test>
+      <result>
+         <assert-string-value>ABCDH</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-10">
+      <description> Evaluation of upper-case function with argument set to "*****" </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case("*****")</test>
+      <result>
+         <assert-string-value>*****</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-11">
+      <description> Evaluation of upper-case function with argument set to another upper case function </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case(upper-case("zzzzz"))</test>
+      <result>
+         <assert-string-value>ZZZZZ</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-12">
+      <description> Evaluation of upper-case function as an argument to the "fn:boolean" function </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:boolean(fn:upper-case("abcde"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-13">
+      <description> Evaluation of upper-case function as an argument to the "fn:concat" function </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:concat(fn:upper-case("abcde"), fn:upper-case("fghi"))</test>
+      <result>
+         <assert-string-value>ABCDEFGHI</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-14">
+      <description> Evaluation of upper-case function as an argument to the "fn:not" function </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:not(fn:upper-case("abcde"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-15">
+      <description> Evaluation of upper-case function with argument set to "%$#@!" </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case("%$#@!")</test>
+      <result>
+         <assert-string-value>%$#@!</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-16">
+      <description> Evaluation of upper-case function with argument set to "upper-case" </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case("upper-case")</test>
+      <result>
+         <assert-string-value>UPPER-CASE</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-17">
+      <description> Evaluation of upper-case function as part of a boolean expression </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:upper-case("abc") and fn:upper-case("abc")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-upper-case-18">
+      <description> Upper-case of Latin-1 characters </description>
+      <created by="Michael Kay" on="2016-03-21"/>
+      <test>fn:string-to-codepoints(fn:upper-case(fn:codepoints-to-string(160 to 256)))</test>
+      <result>
+         <assert-deep-eq>
+            160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 
+            177, 178, 179, 180, 924, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 
+            194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 
+            211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 83, 83, 192, 193, 194, 
+            195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 
+            212, 213, 214, 247, 216, 217, 218, 219, 220, 221, 222, 376, 256</assert-deep-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-upper-case-19">
+      <description> 
+         Upper-case of Greek characters 
+         (note: in the case of Saxon, this fails with JDK 6 but succeeds with a later JDK)
+      </description>
+      <created by="Michael Kay" on="2016-03-21"/>
+      <modified by="O'Neil Delpratt" on="2016-03-04" change="Related to bug issue #29630 - Added unicode-version"/>
+      <dependency type="unicode-version" value="7.0"/>
+      <test>fn:string-to-codepoints(fn:upper-case(fn:codepoints-to-string(880 to 1023)))</test>
+      <result>
+         <assert-deep-eq>
+            880, 880, 882, 882, 884, 885, 886, 886, 888, 889, 890, 1021, 1022, 1023, 894, 895, 
+            896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 906, 907, 908, 909, 910, 911, 921, 
+            776, 769, 913, 914, 915, 916, 917, 918, 919, 920, 921, 922, 923, 924, 925, 926, 927, 
+            928, 929, 930, 931, 932, 933, 934, 935, 936, 937, 938, 939, 902, 904, 905, 906, 933, 
+            776, 769, 913, 914, 915, 916, 917, 918, 919, 920, 921, 922, 923, 924, 925, 926, 927, 
+            928, 929, 931, 931, 932, 933, 934, 935, 936, 937, 938, 939, 908, 910, 911, 975, 914, 
+            920, 978, 979, 980, 934, 928, 975, 984, 984, 986, 986, 988, 988, 990, 990, 992, 992, 
+            994, 994, 996, 996, 998, 998, 1000, 1000, 1002, 1002, 1004, 1004, 1006, 1006, 922, 929, 
+            1017, 1011, 1012, 917, 1014, 1015, 1015, 1017, 1018, 1018, 1020, 1021, 1022, 1023</assert-deep-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-upper-case-20">
+      <description> Upper-case of a title-case character </description>
+      <created by="Michael Kay" on="2016-03-21"/>
+      <test>fn:string-to-codepoints(fn:upper-case(fn:codepoints-to-string(459)))</test>
+      <result>
+         <assert-eq>458</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-21">
+      <description> Upper-case of LATIN SMALL LETTER SHARP S </description>
+      <created by="Tim Mills" on="2016-03-24"/>
+      <test>fn:string-to-codepoints(fn:upper-case(fn:codepoints-to-string(223)))</test>
+      <result>
+         <assert-deep-eq>83, 83</assert-deep-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-upper-case-22">
+      <description> Upper-case of ARMENIAN SMALL LIGATURE MEN XEH </description>
+      <created by="Tim Mills" on="2016-03-24"/>
+      <test>fn:string-to-codepoints(fn:upper-case(fn:codepoints-to-string(64279)))</test>
+      <result>
+         <assert-deep-eq>1348, 1341</assert-deep-eq>
+      </result>
+   </test-case>
+
+   <test-case name="K-UpperCaseFunc-1">
+      <description> A test whose essence is: `upper-case()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>upper-case()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-UpperCaseFunc-2">
+      <description> A test whose essence is: `upper-case("string", "wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>upper-case("string", "wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-UpperCaseFunc-3">
+      <description> A test whose essence is: `upper-case(()) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>upper-case(()) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-UpperCaseFunc-4">
+      <description> A test whose essence is: `lower-case("ABc!D") eq "abc!d"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>lower-case("ABc!D") eq "abc!d"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

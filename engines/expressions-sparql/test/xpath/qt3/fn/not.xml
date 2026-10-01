@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-not">
+   <description/>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-11/"
+         idref="func-not"/>
+
+   <test-case name="fn-notint1args-1">
+      <description>notint1args-1 The "not" function with the arguments set as follows: $arg = xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:int("-2147483648"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notint1args-2">
+      <description>notint1args-2 The "not" function with the arguments set as follows: $arg = xs:int(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:int("-1873914410"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notint1args-3">
+      <description>notint1args-3 The "not" function with the arguments set as follows: $arg = xs:int(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:int("2147483647"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notintg1args-1">
+      <description>notintg1args-1 The "not" function with the arguments set as follows: $arg = xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:integer("-999999999999999999"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notintg1args-2">
+      <description>notintg1args-2 The "not" function with the arguments set as follows: $arg = xs:integer(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:integer("830993497117024304"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notintg1args-3">
+      <description>notintg1args-3 The "not" function with the arguments set as follows: $arg = xs:integer(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:integer("999999999999999999"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notdec1args-1">
+      <description>notdec1args-1 The "not" function with the arguments set as follows: $arg = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:decimal("-999999999999999999"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notdec1args-2">
+      <description>notdec1args-2 The "not" function with the arguments set as follows: $arg = xs:decimal(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:decimal("617375191608514839"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notdec1args-3">
+      <description>notdec1args-3 The "not" function with the arguments set as follows: $arg = xs:decimal(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:decimal("999999999999999999"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notdbl1args-1">
+      <description>notdbl1args-1 The "not" function with the arguments set as follows: $arg = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:double("-1.7976931348623157E308"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notdbl1args-2">
+      <description>notdbl1args-2 The "not" function with the arguments set as follows: $arg = xs:double(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:double("0"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notdbl1args-3">
+      <description>notdbl1args-3 The "not" function with the arguments set as follows: $arg = xs:double(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:double("1.7976931348623157E308"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notflt1args-1">
+      <description>notflt1args-1 The "not" function with the arguments set as follows: $arg = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:float("-3.4028235E38"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notflt1args-2">
+      <description>notflt1args-2 The "not" function with the arguments set as follows: $arg = xs:float(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:float("0"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notflt1args-3">
+      <description>notflt1args-3 The "not" function with the arguments set as follows: $arg = xs:float(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:float("3.4028235E38"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notlng1args-1">
+      <description>notlng1args-1 The "not" function with the arguments set as follows: $arg = xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:long("-92233720368547758"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notlng1args-2">
+      <description>notlng1args-2 The "not" function with the arguments set as follows: $arg = xs:long(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:long("-47175562203048468"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notlng1args-3">
+      <description>notlng1args-3 The "not" function with the arguments set as follows: $arg = xs:long(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:long("92233720368547758"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notusht1args-1">
+      <description>notusht1args-1 The "not" function with the arguments set as follows: $arg = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:unsignedShort("0"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notusht1args-2">
+      <description>notusht1args-2 The "not" function with the arguments set as follows: $arg = xs:unsignedShort(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:unsignedShort("44633"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notusht1args-3">
+      <description>notusht1args-3 The "not" function with the arguments set as follows: $arg = xs:unsignedShort(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:unsignedShort("65535"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notnint1args-1">
+      <description>notnint1args-1 The "not" function with the arguments set as follows: $arg = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:negativeInteger("-999999999999999999"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notnint1args-2">
+      <description>notnint1args-2 The "not" function with the arguments set as follows: $arg = xs:negativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:negativeInteger("-297014075999096793"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notnint1args-3">
+      <description>notnint1args-3 The "not" function with the arguments set as follows: $arg = xs:negativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:negativeInteger("-1"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notpint1args-1">
+      <description>notpint1args-1 The "not" function with the arguments set as follows: $arg = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:positiveInteger("1"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notpint1args-2">
+      <description>notpint1args-2 The "not" function with the arguments set as follows: $arg = xs:positiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:positiveInteger("52704602390610033"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notpint1args-3">
+      <description>notpint1args-3 The "not" function with the arguments set as follows: $arg = xs:positiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:positiveInteger("999999999999999999"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notulng1args-1">
+      <description>notulng1args-1 The "not" function with the arguments set as follows: $arg = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:unsignedLong("0"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notulng1args-2">
+      <description>notulng1args-2 The "not" function with the arguments set as follows: $arg = xs:unsignedLong(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:unsignedLong("130747108607674654"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notulng1args-3">
+      <description>notulng1args-3 The "not" function with the arguments set as follows: $arg = xs:unsignedLong(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:unsignedLong("184467440737095516"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notnpi1args-1">
+      <description>notnpi1args-1 The "not" function with the arguments set as follows: $arg = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:nonPositiveInteger("-999999999999999999"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notnpi1args-2">
+      <description>notnpi1args-2 The "not" function with the arguments set as follows: $arg = xs:nonPositiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:nonPositiveInteger("-475688437271870490"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notnpi1args-3">
+      <description>notnpi1args-3 The "not" function with the arguments set as follows: $arg = xs:nonPositiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:nonPositiveInteger("0"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notnni1args-1">
+      <description>notnni1args-1 The "not" function with the arguments set as follows: $arg = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:nonNegativeInteger("0"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notnni1args-2">
+      <description>notnni1args-2 The "not" function with the arguments set as follows: $arg = xs:nonNegativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:nonNegativeInteger("303884545991464527"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notnni1args-3">
+      <description>notnni1args-3 The "not" function with the arguments set as follows: $arg = xs:nonNegativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:nonNegativeInteger("999999999999999999"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notsht1args-1">
+      <description>notsht1args-1 The "not" function with the arguments set as follows: $arg = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:short("-32768"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notsht1args-2">
+      <description>notsht1args-2 The "not" function with the arguments set as follows: $arg = xs:short(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:short("-5324"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-notsht1args-3">
+      <description>notsht1args-3 The "not" function with the arguments set as follows: $arg = xs:short(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:not(xs:short("32767"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-1">
+      <description/>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-2">
+      <description>fn:not function.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("fn:not()")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-3">
+      <description>expression involving the "and" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") and fn:not("true")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-4">
+      <description>expression involving the "or" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") or fn:not("true")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-5">
+      <description>expression involving the "eq" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") eq fn:not("true")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-6">
+      <description>expression involving the "ne" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") ne fn:not("true")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-7">
+      <description>expression involving the "lt" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") lt fn:not("true")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-8">
+      <description>expression involving the "le" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") le fn:not("true")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-9">
+      <description>expression involving the "gt" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") gt fn:not("true")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-10">
+      <description>comparison expression involving the "ge" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") ge fn:not("true")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-11">
+      <description>comparison expression involving the "=" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") = fn:not("true")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-12">
+      <description>comparison expression involving the "!=" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") != fn:not("true")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-13">
+      <description>comparison expression involving the "&lt;" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test><![CDATA[fn:not("true") < fn:not("true")]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-14">
+      <description>comparison expression involving the "&lt;=" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test><![CDATA[fn:not("true") <= fn:not("true")]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-15">
+      <description>comparison expression involving the "&gt;" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") &gt; fn:not("true")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-16">
+      <description>comparison expression involving the "&gt;=" operator.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not("true") &gt;= fn:not("true")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-17">
+      <description>to an "xs:boolean" function.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>xs:boolean(fn:not("true"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-18">
+      <description>to an "fn:string" function.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:string(fn:not("true"))</test>
+      <result>
+         <assert-eq>'false'</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-19">
+      <description>an "fn:concat" function.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:concat(xs:string(fn:not("true")),xs:string(fn:not("true")))</test>
+      <result>
+         <assert-eq>'falsefalse'</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-20">
+      <description>an "fn:contains" function.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:contains(xs:string(fn:not("true")),xs:string(fn:not("true")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-21">
+      <description>to an "fn:string-length" function.</description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:string-length(xs:string(fn:not("true")))</test>
+      <result>
+         <assert-eq>5</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-22">
+      <description/>
+      <created by="Michael Kay" on="2010-12-13"/>
+      <environment ref="atomic"/>
+      <test>not(//banana)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-23">
+      <description/>
+      <created by="Michael Kay" on="2010-12-13"/>
+      <environment ref="atomic"/>
+      <test>not(//*)</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-24">
+      <description/>
+      <created by="Michael Kay" on="2010-12-13"/>
+      <environment ref="empty"/>
+      <test>not(xs:double('NaN'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-25">
+      <description/>
+      <created by="Michael Kay" on="2010-12-13"/>
+      <test>not(xs:float('NaN'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-26">
+      <description/>
+      <created by="Michael Kay" on="2010-12-13"/>
+      <test>not("")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-27">
+      <description>boolean</description>
+      <created by="Michael Kay" on="2010-12-13"/>
+      <test>not((true(), false()))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-28">
+      <description>then a node</description>
+      <created by="Michael Kay" on="2010-12-13"/>
+      <environment ref="atomic"/>
+      <test>not((23, /))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-not-29">
+      <description>an integer</description>
+      <created by="Michael Kay" on="2010-12-13"/>
+      <environment ref="atomic"/>
+      <test>not((/, 23))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NotFunc-1">
+      <description>K-NotFunc-1  A test whose essence is: `not()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NotFunc-2">
+      <description>K-NotFunc-2  A test whose essence is: `not(1, 2, 3, 4, 5, 6)`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not(1, 2, 3, 4, 5, 6)</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NotFunc-3">
+      <description>K-NotFunc-3  A test whose essence is: `not(false() and false())`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not(false() and false())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NotFunc-4">
+      <description>K-NotFunc-4  A test whose essence is: `not(not(true()))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not(not(true()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NotFunc-5">
+      <description>K-NotFunc-5  A test whose essence is: `not(false())`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not(false())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NotFunc-6">
+      <description>K-NotFunc-6  A test whose essence is: `not(0)`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not(0)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NotFunc-7">
+      <description>K-NotFunc-7  A test whose essence is: `not(())`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not(())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NotFunc-8">
+      <description>K-NotFunc-8  A test whose essence is: `not(xs:anyURI(""))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not(xs:anyURI(""))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NotFunc-9">
+      <description>K-NotFunc-9  A test whose essence is: `not(not(xs:anyURI("example.com/")))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not(not(xs:anyURI("example.com/")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NotFunc-10">
+      <description>K-NotFunc-10  fn:not() combined with fn:boolean(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not(fn:boolean((1, 2, 3, current-time())[1] treat as xs:integer)) eq false()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-not-001">
+      <description> test fn:not on a sequence of one or more nodes </description>
+      <created by="Oliver Hallam" on="2008-04-22"/>      
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[fn:not(for $x in 1 to 10 return <e>{$x}</e>)]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-not-002">
+      <description> test fn:not on the empty sequence </description>
+      <created by="Oliver Hallam" on="2008-04-22"/>      
+      <test>fn:not(())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-not-003">
+      <description> test fn:not on a context-sensitive comparison </description>
+      <created by="Oliver Hallam" on="2008-04-22"/>     
+      <test>fn:not(current-date() &gt; xs:date("1997-01-01Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-not-004">
+      <description> test fn:not on fn:not </description>
+      <created by="Oliver Hallam" on="2008-04-22"/>
+      <dependency type="spec" value="XQ10+"/>    
+      <test>
+      	declare function local:f($x as xs:integer) as xs:integer { $x }; 
+      	not(not(local:f(1)))
+      </test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-not-005">
+      <description> test fn:not on fn:exists </description>
+      <created by="Oliver Hallam" on="2008-04-22"/>
+      <dependency type="spec" value="XQ10+"/>     
+      <test>
+      	declare function local:f($x as xs:integer) as xs:integer* { 1 to $x }; 
+      	not(exists(local:f(0)))
+      </test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>
