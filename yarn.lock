@@ -7770,6 +7770,14 @@ follow-redirects@^1.15.2:
   resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.6.tgz"
   integrity sha512-wWN62YITEaOpSK584EZXJafH1AGpO8RVgElfkuXbTOrPX4fIfOyEpW/CsiNd8JdYrAoOvafRTOEnvsO++qCqFA==
 
+fontoxpath@^3.34.0:
+  version "3.34.0"
+  resolved "https://registry.yarnpkg.com/fontoxpath/-/fontoxpath-3.34.0.tgz#a17c8c97e82bb7f5c166b0e003669dc943ddd907"
+  integrity sha512-7FgBQRohn4WR/2eVdYqZtKBFZkJNaiP4kGdfqS6bAg465og05ixGA2OgfMdxsO1mnX67+64JX/8JKclVqS+bzA==
+  dependencies:
+    prsc "4.0.0"
+    xspattern "^3.1.0"
+
 for-each@^0.3.3:
   version "0.3.3"
   resolved "https://registry.npmjs.org/for-each/-/for-each-0.3.3.tgz"
@@ -12690,6 +12698,11 @@ proxy-from-env@2.1.0, proxy-from-env@^2.1.0:
   resolved "https://registry.yarnpkg.com/proxy-from-env/-/proxy-from-env-2.1.0.tgz#a7487568adad577cfaaa7e88c49cab3ab3081aba"
   integrity sha512-cJ+oHTW1VAEa8cJslgmUZrc+sjRKgAKl3Zyse6+PV38hZe/V6Z14TbCuXcan9F9ghlz4QrFr2c92TNF82UkYHA==
 
+prsc@4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/prsc/-/prsc-4.0.0.tgz#22a300478749924c92c25e04c514f8a2b93ae719"
+  integrity sha512-OmXQ2v76RlXNx/gqv7+oB6jyKnudJ/rsMfAIVexhbDFxXAJPoWKMxJkZU2ohlu4miCiSQCG+horf2DV4/kNc1Q==
+
 psl@^1.1.28:
   version "1.15.0"
   resolved "https://registry.yarnpkg.com/psl/-/psl-1.15.0.tgz#bdace31896f1d97cec6a79e8224898ce93d974c6"
@@ -14038,6 +14051,11 @@ slide@^1.1.3:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/slide/-/slide-1.1.6.tgz#56eb027d65b4d2dce6cb2e2d32c4d4afc9e1d707"
   integrity sha512-NwrtjCg+lZoqhFU8fOwl4ay2ei8PaqCBOUV3/ektPY9trO1yQ1oXEfmHAhKArUVUr/hOHvy5f6AdP17dCM0zMw==
+
+slimdom@^4.3.5:
+  version "4.3.5"
+  resolved "https://registry.yarnpkg.com/slimdom/-/slimdom-4.3.5.tgz#68d1c08336c343924ac3a351081042547d7ad058"
+  integrity sha512-MoxdfngDk7nf8Vun0xB2AYBiHv3Qlua3Frf12n8ZLmXtfZoapfAQOKLSMCsemSyEU1UIyd503LJfYKJE+dxDTg==
 
 slugify@^1.6.3:
   version "1.6.6"
@@ -15854,6 +15872,11 @@ which@^6.0.0:
   dependencies:
     isexe "^4.0.0"
 
+whynot@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/whynot/-/whynot-5.0.0.tgz#d4b39a8e18d0c371d7bfb42dd8321a3432c74c7a"
+  integrity sha512-cGGfDPYYqoHoMWqXVc3G+N74u1FhFhrBa+pOO906b9ktRc/JFUdwroTkfPqjKzyoCLVcKr6yy6bYIcWT7jTg2A==
+
 wide-align@^1.1.0:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/wide-align/-/wide-align-1.1.5.tgz#df1d4c206854369ecf3c9a4898f1b23fbd9d15d3"
@@ -16011,6 +16034,13 @@ xmlchars@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/xmlchars/-/xmlchars-2.2.0.tgz#060fe1bcb7f9c76fe2a17db86a9bc3ab894210cb"
   integrity sha512-JZnDKK8B0RCDw84FNdDAIpZK+JuJw+s7Lz8nksI7SIuU3UXJJslUthsi+uWBUYOwPFwW7W7PRLRfUKpxjtjFCw==
+
+xspattern@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/xspattern/-/xspattern-3.1.0.tgz#a29b3752b846a02a64c5cf92475632caaf003680"
+  integrity sha512-rxtOX8ORJizRqswIdZ72G3thKrHd0Q+TvyUCMByc5VdjDz1nkuZKfPXM3xGdrGi0fwEy+DDJN7DqtAZ06Re4bA==
+  dependencies:
+    whynot "^5.0.0"
 
 xtend@^4.0.2, xtend@~4.0.1:
   version "4.0.2"
