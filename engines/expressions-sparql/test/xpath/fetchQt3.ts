@@ -3,7 +3,7 @@
  * that XPathTestSuite-test.ts runs into the qt3 folder: the catalog and the test sets
  * for the functions and operators that SPARQL defines in terms of XPath.
  *
- * Usage: node test/xpath/fetchQt3.ts
+ * Usage, in engines/expressions-sparql: yarn run fetch-qt3
  */
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -11,7 +11,9 @@ import { dirname, join } from 'node:path';
 // A fixed commit of the test suite, so that results are reproducible.
 const QT3_COMMIT = '201a6e466940cdfc727f4babfedcde5332b9f578';
 const QT3_BASE = `https://raw.githubusercontent.com/w3c/qt3tests/${QT3_COMMIT}/`;
+const QT3_DIR = join(process.cwd(), 'test', 'xpath', 'qt3');
 
+// The test sets for the functions and operators that SPARQL defines in terms of XPath.
 const TEST_SETS = new RegExp(`^(${[
   String.raw`fn-(abs|ceiling|floor|round|string-length|substring|substring-before|substring-after)`,
   String.raw`fn-(upper-case|lower-case|starts-with|ends-with|contains|encode-for-uri|concat|matches|replace)`,
@@ -30,15 +32,22 @@ async function fetchFile(path: string): Promise<string> {
     throw new Error(`Could not fetch ${path}: ${response.status}`);
   }
   const body = await response.text();
-  const file = join(import.meta.dirname, 'qt3', path);
+  const file = join(QT3_DIR, path);
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, body);
   return body;
 }
 
-const catalog = await fetchFile('catalog.xml');
-for (const [ , name, file ] of catalog.matchAll(/<test-set\s+name="([^"]+)"\s+file="([^"]+)"/gu)) {
-  if (TEST_SETS.test(name)) {
-    await fetchFile(file);
+async function main(): Promise<void> {
+  const catalog = await fetchFile('catalog.xml');
+  for (const [ , name, file ] of catalog.matchAll(/<test-set\s+name="([^"]+)"\s+file="([^"]+)"/gu)) {
+    if (TEST_SETS.test(name)) {
+      await fetchFile(file);
+    }
   }
 }
+
+main().catch((error: unknown) => {
+  process.stderr.write(`${String(error)}\n`);
+  process.exitCode = 1;
+});
