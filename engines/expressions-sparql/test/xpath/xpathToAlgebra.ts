@@ -5,7 +5,9 @@ import type { SubTyped } from '@traqula/core';
 import { TransformerSubTyped } from '@traqula/core';
 import type { Expression, TermVariable } from '@traqula/rules-sparql-1-1';
 import { AstFactory } from '@traqula/rules-sparql-1-2';
+import { evaluateXPath, parseScript } from 'fontoxpath';
 import { DataFactory } from 'rdf-data-factory';
+import * as slimdom from 'slimdom';
 
 const DF = new DataFactory();
 const F = new AstFactory();
@@ -19,16 +21,16 @@ export const XSD = 'http://www.w3.org/2001/XMLSchema#';
 export class UnsupportedError extends Error {}
 
 /**
- * A node of the XPath syntax tree, of which the children are transformed into SPARQL expressions.
+ * An element of the XQueryX syntax tree (https://www.w3.org/TR/xqueryx-31/) of an XPath expression,
+ * of which the children are transformed into SPARQL expressions.
  */
-type XPathNode =
-  (SubTyped<'xpath', 'literal'> & { value: string; datatype: string }) |
-  (SubTyped<'xpath', 'variable'> & { name: string }) |
-  (SubTyped<'xpath', 'operator'> & { operator: string; args: XPathNode[] }) |
-  (SubTyped<'xpath', 'cast'> & { typeName: string; arg: XPathNode }) |
-  (SubTyped<'xpath', 'call'> & { name: string; args: XPathNode[] });
+interface IXQueryXNode extends SubTyped<'xqueryx', string> {
+  attributes: Record<string, string>;
+  text: string;
+  children: IXQueryXNode[];
+}
 
-const transformer = new TransformerSubTyped<XPathNode>();
+const transformer = new TransformerSubTyped<IXQueryXNode>();
 
 /**
  * The XSD types for which the expression engine has a cast function.
@@ -103,274 +105,85 @@ const FUNCTIONS: Record<string, { arities: number[]; operator: string }> = {
   not: { arities: [ 1 ], operator: '!' },
 };
 
-const COMPARISONS: Record<string, string> = {
-  eq: '=',
-  ne: '!=',
-  lt: '<',
-  le: '<=',
-  gt: '>',
-  ge: '>=',
-  '=': '=',
-  '!=': '!=',
-  '<': '<',
-  '<=': '<=',
-  '>': '>',
-  '>=': '>=',
+/**
+ * The XQueryX elements of XPath operators, mapped onto the SPARQL operators that they correspond to.
+ */
+const OPERATORS: Record<string, string> = {
+  orOp: '||',
+  andOp: '&&',
+  eqOp: '=',
+  neOp: '!=',
+  ltOp: '<',
+  leOp: '<=',
+  gtOp: '>',
+  geOp: '>=',
+  equalOp: '=',
+  notEqualOp: '!=',
+  lessThanOp: '<',
+  lessThanOrEqualOp: '<=',
+  greaterThanOp: '>',
+  greaterThanOrEqualOp: '>=',
+  addOp: '+',
+  subtractOp: '-',
+  multiplyOp: '*',
+  divOp: '/',
+  unaryMinusOp: 'uminus',
+  unaryPlusOp: 'uplus',
 };
 
 /**
- * Remove (possibly nested) XPath comments.
+ * The XQueryX elements that only group the parts of an expression.
  */
-function stripComments(xpath: string): string {
-  let result = '';
-  let depth = 0;
-  let quote: string | undefined;
-  for (let i = 0; i < xpath.length; i++) {
-    const char = xpath[i];
-    if (depth === 0 && quote) {
-      result += char;
-      if (char === quote) {
-        quote = undefined;
-      }
-    } else if (xpath.startsWith('(:', i)) {
-      depth++;
-      i++;
-    } else if (depth > 0 && xpath.startsWith(':)', i)) {
-      depth--;
-      i++;
-      result += ' ';
-    } else if (depth === 0) {
-      if (char === '"' || char === '\'') {
-        quote = char;
-      }
-      result += char;
-    }
-  }
-  return result;
-}
+const GROUPING_ELEMENTS = new Set([
+  'firstOperand',
+  'secondOperand',
+  'operand',
+  'arguments',
+  'argExpr',
+  'ifClause',
+  'thenClause',
+  'elseClause',
+  'functionName',
+  'singleType',
+  'atomicType',
+  'optional',
+  'value',
+  'name',
+]);
 
-const TOKEN = new RegExp([
-  // Whitespace
-  String.raw`(?<space>\s+)`,
-  // Numeric literals, where a double has an exponent and a decimal has a dot,
-  // and which must not be directly followed by a name (https://www.w3.org/TR/xpath-31/#id-terminal-delimitation)
-  String.raw`(?<double>(?:\.\d+|\d+(?:\.\d*)?)[eE][+-]?\d+(?![A-Za-z_]))`,
-  String.raw`(?<decimal>(?:\.\d+|\d+\.\d*)(?![A-Za-z_]))`,
-  String.raw`(?<integer>\d+(?![\d.A-Za-z_]))`,
-  // String literals, where a doubled quote escapes the quote
-  String.raw`(?<string>"(?:[^"]|"")*"|'(?:[^']|'')*')`,
-  // Variable references and (prefixed) names
-  String.raw`(?<variable>\$[A-Za-z_][\w.-]*)`,
-  String.raw`(?<name>[A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?)`,
-  // Symbols, longest first
-  String.raw`(?<symbol>!=|<=|>=|\|\||[-+*(),<>=?!|/\[\]{}#@.;:])`,
-].join('|'), 'uy');
-
-interface IToken {
-  type: string;
-  value: string;
-}
-
-function tokenize(xpath: string): IToken[] {
-  const tokens: IToken[] = [];
-  TOKEN.lastIndex = 0;
-  while (TOKEN.lastIndex < xpath.length) {
-    const match = TOKEN.exec(xpath);
-    if (!match) {
-      throw new UnsupportedError(`Unknown token at ${TOKEN.lastIndex}`);
-    }
-    const [ type, value ] = Object.entries(match.groups!).find(([ , val ]) => val !== undefined)!;
-    if (type !== 'space') {
-      tokens.push({ type, value });
-    }
-  }
-  return tokens;
+function toNode(element: slimdom.Element): IXQueryXNode {
+  return {
+    type: 'xqueryx',
+    subType: element.localName,
+    attributes: Object.fromEntries(element.attributes.map(attribute => [ attribute.localName, attribute.value ])),
+    text: element.textContent ?? '',
+    children: element.children.map(toNode),
+  };
 }
 
 /**
- * A recursive descent parser for the subset of XPath 3.1 that maps onto SPARQL expressions,
- * which produces an XPath syntax tree (https://www.w3.org/TR/xpath-31/#id-grammar).
+ * Parse an XPath expression into the XQueryX syntax tree of its body.
  */
-class Parser {
-  private readonly tokens: IToken[];
-  private position = 0;
-
-  public constructor(xpath: string) {
-    this.tokens = tokenize(stripComments(xpath));
+function parse(xpath: string): IXQueryXNode {
+  let module: slimdom.Element;
+  try {
+    module = parseScript<slimdom.Element>(
+      xpath,
+      { language: evaluateXPath.XPATH_3_1_LANGUAGE, annotateAst: false },
+      new slimdom.Document(),
+    );
+  } catch (error: unknown) {
+    throw new UnsupportedError(`Invalid XPath: ${(<Error> error).message.split('\n')[0]}`);
   }
+  const queryBody = module.getElementsByTagNameNS('http://www.w3.org/2005/XQueryX', 'queryBody')[0];
+  return toNode(queryBody.children[0]);
+}
 
-  public parse(): XPathNode {
-    const expression = this.orExpr();
-    if (this.peek()) {
-      throw new UnsupportedError(`Unsupported token ${this.peek()!.value}`);
-    }
-    return expression;
-  }
-
-  private peek(offset = 0): IToken | undefined {
-    return this.tokens[this.position + offset];
-  }
-
-  private isName(value: string, offset = 0): boolean {
-    const token = this.peek(offset);
-    return token?.type === 'name' && token.value === value;
-  }
-
-  private isSymbol(value: string, offset = 0): boolean {
-    const token = this.peek(offset);
-    return token?.type === 'symbol' && token.value === value;
-  }
-
-  private expectSymbol(value: string): void {
-    if (!this.isSymbol(value)) {
-      throw new UnsupportedError(`Expected ${value}`);
-    }
-    this.position++;
-  }
-
-  private operator(operator: string, args: XPathNode[]): XPathNode {
-    return { type: 'xpath', subType: 'operator', operator, args };
-  }
-
-  private orExpr(): XPathNode {
-    let left = this.andExpr();
-    while (this.isName('or')) {
-      this.position++;
-      left = this.operator('||', [ left, this.andExpr() ]);
-    }
-    return left;
-  }
-
-  private andExpr(): XPathNode {
-    let left = this.comparisonExpr();
-    while (this.isName('and')) {
-      this.position++;
-      left = this.operator('&&', [ left, this.comparisonExpr() ]);
-    }
-    return left;
-  }
-
-  private comparisonExpr(): XPathNode {
-    const left = this.additiveExpr();
-    const token = this.peek();
-    if (token && (token.type === 'name' || token.type === 'symbol') && COMPARISONS[token.value]) {
-      this.position++;
-      return this.operator(COMPARISONS[token.value], [ left, this.additiveExpr() ]);
-    }
-    return left;
-  }
-
-  private additiveExpr(): XPathNode {
-    let left = this.multiplicativeExpr();
-    while (this.isSymbol('+') || this.isSymbol('-')) {
-      const operator = this.peek()!.value;
-      this.position++;
-      left = this.operator(operator, [ left, this.multiplicativeExpr() ]);
-    }
-    return left;
-  }
-
-  private multiplicativeExpr(): XPathNode {
-    let left = this.castExpr();
-    while (this.isSymbol('*') || this.isName('div')) {
-      const operator = this.isSymbol('*') ? '*' : '/';
-      this.position++;
-      left = this.operator(operator, [ left, this.castExpr() ]);
-    }
-    return left;
-  }
-
-  private castExpr(): XPathNode {
-    const expression = this.unaryExpr();
-    if (this.isName('cast') && this.isName('as', 1)) {
-      this.position += 2;
-      const type = this.peek();
-      if (type?.type !== 'name' || this.isSymbol('?', 1)) {
-        throw new UnsupportedError('Unsupported cast type');
-      }
-      this.position++;
-      return { type: 'xpath', subType: 'cast', typeName: type.value, arg: expression };
-    }
-    return expression;
-  }
-
-  private unaryExpr(): XPathNode {
-    if (this.isSymbol('-') || this.isSymbol('+')) {
-      const operator = this.peek()!.value === '-' ? 'uminus' : 'uplus';
-      this.position++;
-      return this.operator(operator, [ this.unaryExpr() ]);
-    }
-    return this.primaryExpr();
-  }
-
-  private primaryExpr(): XPathNode {
-    const token = this.peek();
-    if (!token) {
-      throw new UnsupportedError('Unexpected end of expression');
-    }
-    this.position++;
-    switch (token.type) {
-      case 'integer':
-      case 'decimal':
-      case 'double':
-        return { type: 'xpath', subType: 'literal', value: token.value, datatype: token.type };
-      case 'string':
-        return {
-          type: 'xpath',
-          subType: 'literal',
-          value: token.value.slice(1, -1).replaceAll(token.value[0] + token.value[0], token.value[0]),
-          datatype: 'string',
-        };
-      case 'variable':
-        return { type: 'xpath', subType: 'variable', name: token.value.slice(1) };
-      case 'symbol':
-        if (token.value === '(') {
-          const expression = this.orExpr();
-          this.expectSymbol(')');
-          return expression;
-        }
-        break;
-      case 'name':
-        if (token.value === 'if' && this.isSymbol('(')) {
-          return this.ifExpr();
-        }
-        if (this.isSymbol('(')) {
-          return this.functionCall(token.value);
-        }
-        break;
-    }
-    throw new UnsupportedError(`Unsupported token ${token.value}`);
-  }
-
-  private ifExpr(): XPathNode {
-    this.expectSymbol('(');
-    const condition = this.orExpr();
-    this.expectSymbol(')');
-    if (!this.isName('then')) {
-      throw new UnsupportedError('Expected then');
-    }
-    this.position++;
-    const thenExpression = this.orExpr();
-    if (!this.isName('else')) {
-      throw new UnsupportedError('Expected else');
-    }
-    this.position++;
-    return this.operator('if', [ condition, thenExpression, this.orExpr() ]);
-  }
-
-  private functionCall(name: string): XPathNode {
-    this.expectSymbol('(');
-    const args: XPathNode[] = [];
-    if (!this.isSymbol(')')) {
-      args.push(this.orExpr());
-      while (this.isSymbol(',')) {
-        this.position++;
-        args.push(this.orExpr());
-      }
-    }
-    this.expectSymbol(')');
-    return { type: 'xpath', subType: 'call', name: name.includes(':') ? name : `fn:${name}`, args };
-  }
+/**
+ * The SPARQL expression of the part of an XQueryX element with the given name.
+ */
+function part(node: IXQueryXNode, name: string): Expression {
+  return <Expression> <unknown> node.children.find(child => child.subType === name)!.children[0];
 }
 
 /**
@@ -434,28 +247,70 @@ function functionCall(name: string, args: Expression[]): Expression {
 
 /**
  * Translate an XPath expression into a SPARQL expression, as a Traqula syntax tree.
- * The XPath syntax tree is transformed bottom-up, so the children of a node are SPARQL expressions already.
+ * The XQueryX syntax tree is transformed bottom-up, so the children of an element are SPARQL expressions already.
  * @param xpath The XPath expression.
  * @param variables SPARQL expressions to substitute variable references with.
  * @throws {UnsupportedError} If the expression has no SPARQL equivalent.
  */
 export function xpathToSparql(xpath: string, variables: Record<string, Expression> = {}): Expression {
-  return transformer.transformNodeSpecific<'unsafe', Expression>(new Parser(xpath).parse(), {}, {
-    xpath: {
-      literal: { transform: ({ value, datatype }) => literal(value, datatype) },
-      variable: {
-        transform({ name }) {
-          if (!variables[name]) {
-            throw new UnsupportedError(`Unknown variable $${name}`);
+  return transformer.transformNodeSpecific<'unsafe', Expression>(parse(xpath), {
+    xqueryx: {
+      transform(node) {
+        if (OPERATORS[node.subType]) {
+          return F.expressionOperation(
+            OPERATORS[node.subType],
+            node.subType.startsWith('unary') ?
+                [ part(node, 'operand') ] :
+                [ part(node, 'firstOperand'), part(node, 'secondOperand') ],
+            F.gen(),
+          );
+        }
+        if (!GROUPING_ELEMENTS.has(node.subType)) {
+          throw new UnsupportedError(`Unsupported ${node.subType}`);
+        }
+        return node;
+      },
+    },
+  }, {
+    xqueryx: {
+      integerConstantExpr: { transform: ({ text }) => literal(text, 'integer') },
+      decimalConstantExpr: { transform: ({ text }) => literal(text, 'decimal') },
+      doubleConstantExpr: { transform: ({ text }) => literal(text, 'double') },
+      stringConstantExpr: { transform: ({ text }) => literal(text, 'string') },
+      varRef: {
+        transform({ text }) {
+          if (!variables[text]) {
+            throw new UnsupportedError(`Unknown variable $${text}`);
           }
-          return variables[name];
+          return variables[text];
         },
       },
-      operator: {
-        transform: ({ operator, args }) => F.expressionOperation(operator, <Expression[]> <unknown> args, F.gen()),
+      ifThenElseExpr: {
+        transform: node => F.expressionOperation('if', [
+          part(node, 'ifClause'),
+          part(node, 'thenClause'),
+          part(node, 'elseClause'),
+        ], F.gen()),
       },
-      cast: { transform: ({ typeName, arg }) => cast(typeName, <Expression> <unknown> arg) },
-      call: { transform: ({ name, args }) => functionCall(name, <Expression[]> <unknown> args) },
+      castExpr: {
+        transform(node) {
+          const singleType = node.children.find(child => child.subType === 'singleType')!;
+          const [ atomicType, optional ] = singleType.children;
+          if (optional) {
+            throw new UnsupportedError('Unsupported cast to an optional type');
+          }
+          return cast(`${atomicType.attributes.prefix}:${atomicType.text}`, part(node, 'argExpr'));
+        },
+      },
+      functionCallExpr: {
+        transform(node) {
+          const [ functionName, args ] = node.children;
+          return functionCall(
+            `${functionName.attributes.prefix || 'fn'}:${functionName.text}`,
+            <Expression[]> <unknown> args.children,
+          );
+        },
+      },
     },
   });
 }
