@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="op-string-equal">
+   <description>Tests for the string-equal operation (not actually defined as such in F+O)</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-compare"/>
+
+   <test-case name="K-StringEqual-1">
+      <description> A test whose essence is: `'equals' eq 'equals'`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>'equals' eq 'equals'</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringEqual-2">
+      <description> A test whose essence is: `'' eq ''`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>'' eq ''</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringEqual-3">
+      <description> A test whose essence is: `not('nada' eq 'equalness')`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not('nada' eq 'equalness')</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringEqual-4">
+      <description> A test whose essence is: `'not' ne 'equal'`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>'not' ne 'equal'</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringEqual-5">
+      <description> A test whose essence is: `not('equal' ne 'equal')`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>not('equal' ne 'equal')</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-StringEqual-1">
+      <description> Compare two values returned from fn:lower-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[declare variable $vA as xs:string := ("B STRING", current-time(), string(<e>content</e>))[1] treat as xs:string; declare variable $vB as xs:string := ("b string", current-time(), string(<e>content</e>))[1] treat as xs:string; (lower-case($vA) eq lower-case($vB))]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-StringEqual-2">
+      <description> Compare two values returned from fn:upper-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[declare variable $vA as xs:string := ("B STRING", current-time(), string(<e>content</e>))[1] treat as xs:string; declare variable $vB as xs:string := ("b string", current-time(), string(<e>content</e>))[1] treat as xs:string; (upper-case($vA) eq upper-case($vB))]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-StringEqual-3">
+      <description> Compare two non-matching values returned from fn:lower-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[declare variable $vA as xs:string := ("B STRING", current-time(), string(<e>content</e>))[1] treat as xs:string; declare variable $vB as xs:string := ("no match", current-time(), string(<e>content</e>))[1] treat as xs:string; (lower-case($vA) eq lower-case($vB))]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-StringEqual-4">
+      <description> Compare two non-matching values returned from fn:upper-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[declare variable $vA as xs:string := ("B STRING", current-time(), string(<e>content</e>))[1] treat as xs:string; declare variable $vB as xs:string := ("no match", current-time(), string(<e>content</e>))[1] treat as xs:string; (upper-case($vA) eq upper-case($vB))]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-StringEqual-5">
+      <description> Compare two non-matching values returned from fn:lower-case() and fn:upper-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[declare variable $vA as xs:string := ("B STRING", current-time(), string(<e>content</e>))[1] treat as xs:string; declare variable $vB as xs:string := ("b string", current-time(), string(<e>content</e>))[1] treat as xs:string; (upper-case($vA) eq lower-case($vB))]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-StringEqual-6">
+      <description> Compare two non-matching values returned from fn:lower-case() and fn:upper-case(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[
+        declare variable $vA as xs:string := ("B STRING", current-time(), string(<e>content</e>))[1] treat as xs:string; 
+        declare variable $vB as xs:string := ("b string", current-time(), string(<e>content</e>))[1] treat as xs:string; 
+        (lower-case($vA) eq upper-case($vB))
+      ]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   
+   <test-case name="cbcl-string-equal-001">
+      <description> test string comparison </description>
+      <created by="Tim Mills" on="2008-05-23"/>
+      <test>not(string(current-time()) eq "now")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-string-equal-002">
+      <description> test string comparison </description>
+      <created by="Tim Mills" on="2008-05-23"/>
+      <test>not(string(current-time()) ne "now")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-string-equal-003">
+      <description> test string comparison </description>
+      <created by="Tim Mills" on="2008-05-23"/>
+      <test>
+        not(xs:untypedAtomic(current-time()) eq xs:untypedAtomic("now"))
+      </test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-string-equal-004">
+      <description> test string comparison </description>
+      <created by="Tim Mills" on="2008-05-23"/>
+      <test>
+        not(xs:untypedAtomic(current-time()) ne xs:untypedAtomic("now"))
+      </test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+</test-set>

@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="op-subtract-times">
+   <description>Tests for the subtract-times() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-subtract-times"/>
+   <test-case name="op-subtract-times2args-1">
+      <description>
+*******************************************************
+Test: op-subtract-times2args-1                          
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:08 GMT-05:00 2005                
+Purpose: Evaluates The "op:subtract-times" operator    
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") - xs:time("00:00:00Z")</test>
+      <result>
+         <assert-string-value>PT0S</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times2args-2">
+      <description>
+*******************************************************
+Test: op-subtract-times2args-2                          
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:08 GMT-05:00 2005                
+Purpose: Evaluates The "op:subtract-times" operator    
+ with the arguments set as follows:                    
+$arg1 = xs:time(mid range)                             
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("08:03:35Z") - xs:time("00:00:00Z")</test>
+      <result>
+         <assert-string-value>PT8H3M35S</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times2args-3">
+      <description>
+*******************************************************
+Test: op-subtract-times2args-3                          
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:08 GMT-05:00 2005                
+Purpose: Evaluates The "op:subtract-times" operator    
+ with the arguments set as follows:                    
+$arg1 = xs:time(upper bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("23:59:59Z") - xs:time("00:00:00Z")</test>
+      <result>
+         <assert-string-value>PT23H59M59S</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times2args-4">
+      <description>
+*******************************************************
+Test: op-subtract-times2args-4                          
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:08 GMT-05:00 2005                
+Purpose: Evaluates The "op:subtract-times" operator    
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(mid range)                             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") - xs:time("08:03:35Z")</test>
+      <result>
+         <assert-string-value>-PT8H3M35S</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times2args-5">
+      <description>
+*******************************************************
+Test: op-subtract-times2args-5                          
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:08 GMT-05:00 2005                
+Purpose: Evaluates The "op:subtract-times" operator    
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(upper bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") - xs:time("23:59:59Z")</test>
+      <result>
+         <assert-string-value>-PT23H59M59S</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-1">
+      <description>
+*******************************************************
+Test: op-subtract-times-1                              
+Written By: Carmelo Montanez                           
+Date: June 26, 2005                                    
+Purpose: Evaluates The "subtract-times" function       
+As per example 1 (for this function)of the F&amp;O specs   
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>xs:time("11:12:00Z") - xs:time("04:00:00Z")</test>
+      <result>
+         <assert-string-value>PT7H12M</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-2">
+      <description>
+*******************************************************
+Test: op-subtract-times-2                              
+Written By: Carmelo Montanez                           
+Date: June 27, 2005                                    
+Purpose: Evaluates The "subtract-times" function       
+As per example 2 (for this function) of the F&amp;O  specs 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>xs:time("11:00:00-05:00") - xs:time("21:30:00+05:30")</test>
+      <result>
+         <assert-string-value>PT0S</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-3">
+      <description>
+*******************************************************
+Test: op-subtract-times-3                              
+Written By: Carmelo Montanez                           
+Date: June 27, 2005                                    
+Purpose: Evaluates The "subtract-times" function as    
+per example 3 (for this function) from the F&amp;O specs.  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>xs:time("17:00:00-06:00") - xs:time("08:00:00+09:00")</test>
+      <result>
+         <assert-string-value>P1D</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-4">
+      <description>
+*******************************************************
+Test: op-subtract-times-4                              
+Written By: Carmelo Montanez                           
+Date: June 27, 2005                                    
+Purpose: Evaluates The "subtract-times" function that  
+return true and used together with fn:not.             
+ Uses the "fn:string" function to account for new EBV rules. 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>fn:not(fn:string(xs:time("13:00:00Z") - xs:time("14:00:00Z")))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-5">
+      <description>
+*******************************************************
+Test: op-subtract-times-5                              
+Written By: Carmelo Montanez                           
+Date: June 27 2005                                     
+Purpose: Evaluates The "subtract-times" function that  
+is used as an argument to the fn:boolean function.     
+ Uses the "fn:string" function to account for new EBV rules. 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>fn:boolean(fn:string(xs:time("13:00:00Z") - xs:time("10:00:00Z")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-6">
+      <description>
+*******************************************************
+Test: op-subtract-times-6                              
+Written By: Carmelo Montanez                           
+Date: June 27, 2005                                    
+Purpose: Evaluates The "subtract-times" operator that  
+is used as an argument to the fn:number function.      
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>fn:number(xs:time("13:00:00Z") - xs:time("12:00:00Z"))</test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-7">
+      <description>
+*******************************************************
+Test: op-subtract-times-7                              
+Written By: Carmelo Montanez                           
+Date: June 27, 2005                                    
+Purpose: Evaluates The "subtract-times" function used  
+as an argument to the "fn:string" function).           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>fn:string(xs:time("13:00:00Z") - xs:time("17:00:00Z"))</test>
+      <result>
+         <assert-string-value>-PT4H</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-8">
+      <description>
+*******************************************************
+Test: op-subtract-times-8                              
+Written By: Carmelo Montanez                           
+Date: June 27, 2005                                    
+Purpose: Evaluates The "subtract-times" function that  
+returns a negative value.                              
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>(xs:time("13:00:00Z") - xs:time("17:00:00Z"))</test>
+      <result>
+         <assert-string-value>-PT4H</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-9">
+      <description>
+*******************************************************
+Test: op-subtract-times-9                              
+Written By: Carmelo Montanez                           
+Date: June 27, 2005                                    
+Purpose: Evaluates The "subtract-times" function used  
+together with and "and" expression.                    
+ Uses the "fn:string" function to account for new EBV rules. 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>fn:string((xs:time("13:00:00Z") - xs:time("12:00:00Z"))) and fn:string((xs:time("13:00:00Z") - xs:time("10:00:00Z")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-10">
+      <description>
+*******************************************************
+Test: op-subtract-times-10                             
+Written By: Carmelo Montanez                           
+Date: June 27, 2005                                    
+Purpose: Evaluates The "subtract-times" function used  
+together with an "or" expression.                      
+ Uses the "fn:string" function to account for new EBV rules. 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>fn:string((xs:time("13:00:00Z") - xs:time("17:00:00Z"))) or fn:string((xs:time("13:00:00Z") - xs:time("17:00:00Z")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-11">
+      <description>
+*******************************************************
+Test: op-subtract-times-11                             
+Written By: Carmelo Montanez                           
+Date: June 27, 2005                                    
+Purpose: Evaluates The "subtract-times" function used  
+together with a "div" expression.                      
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>(xs:time("23:00:00Z") - xs:time("17:00:00Z")) div (xs:time("13:00:00Z") - xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-string-value>2</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-12">
+      <description>
+*******************************************************
+Test: op-subtract-times-12                             
+Written By: Carmelo Montanez                           
+Date: June 28, 2005                                    
+Purpose: Evaluates The "subtract-times" operators used 
+with a boolean expression and the "fn:true" function.   
+ Uses the "fn:string" function to account for new EBV rules. 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>fn:string((xs:time("17:00:00Z") - xs:time("13:00:00Z"))) and (fn:true())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-13">
+      <description>
+*******************************************************
+Test: op-subtract-times-13                             
+Written By: Carmelo Montanez                           
+Date: June 28, 2005                                    
+Purpose: Evaluates The "subtract-times" function used  
+together with the numeric-equal- operator "eq".        
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>(xs:time("13:00:00Z") - xs:time("17:00:00Z")) eq xs:dayTimeDuration("P20DT01H02M")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-14">
+      <description>
+*******************************************************
+Test: op-subtract-times-14                             
+Written By: Carmelo Montanez                           
+Date: June 28, 2005                                    
+Purpose: Evaluates The "subtract-times" function used  
+together with the numeric-equal operator "ne".         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>(xs:time("13:00:00Z") - xs:time("17:00:00Z")) ne xs:dayTimeDuration("P10DT01H01M")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-15">
+      <description>
+*******************************************************
+Test: op-subtract-times-15                             
+Written By: Carmelo Montanez                           
+Date: June 28, 2005                                    
+Purpose: Evaluates The "subtract-times" function used  
+together with the numeric-equal operator "le".         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>(xs:time("13:00:00Z") - xs:time("17:00:00Z")) le xs:dayTimeDuration("P10DT02H10M")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-times-16">
+      <description>
+*******************************************************
+Test: op-subtract-times-16                             
+Written By: Carmelo Montanez                           
+Date: June 28, 2005                                    
+Purpose: Evaluates The "subtract-times" function used  
+together with the numeric-equal operator "ge".         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-27"/>
+      <test>(xs:time("13:00:00Z") - xs:time("17:00:00Z")) ge xs:dayTimeDuration("P17DT10H02M")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeSubtract-1">
+      <description>
+*******************************************************
+ Test: K-TimeSubtract-1                                
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple testing involving operator '-' between xs:time and xs:time. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("08:12:32") - xs:time("18:12:32") eq xs:dayTimeDuration("-PT10H")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeSubtract-2">
+      <description>
+*******************************************************
+ Test: K-TimeSubtract-2                                
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple testing involving operator '-' between xs:time and xs:time, that evaluates to zero. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("08:12:32") - xs:time("08:12:32") eq xs:dayTimeDuration("PT0S")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeSubtract-3">
+      <description>
+*******************************************************
+ Test: K-TimeSubtract-3                                
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The '-' operator is not available between xs:yearMonthDuration and xs:time. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:dayTimeDuration("P3D") - xs:time("08:01:23")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeSubtract-4">
+      <description>
+*******************************************************
+ Test: K-TimeSubtract-4                                
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The '-' operator is not available between xs:yearMonthDuration and xs:date. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:dayTimeDuration("P3D") - xs:date("1999-08-12")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeSubtract-5">
+      <description>
+*******************************************************
+ Test: K-TimeSubtract-5                                
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The '+' operator is not available between xs:time and xs:time. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("08:01:23") + xs:time("08:01:23")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeSubtract-6">
+      <description>
+*******************************************************
+ Test: K-TimeSubtract-6                                
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The '+' operator is not available between xs:time and xs:time. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("08:01:23") * xs:time("08:01:23")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeSubtract-7">
+      <description>
+*******************************************************
+ Test: K-TimeSubtract-7                                
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The '-' operator is not available between xs:time and xs:time. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("08:01:23") div xs:time("08:01:23")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeSubtract-8">
+      <description>
+*******************************************************
+ Test: K-TimeSubtract-8                                
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The 'mod' operator is not available between xs:time and xs:time. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("08:01:23") mod xs:time("08:01:23")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-subtract-times-001">
+      <description> test subtraction of times </description>
+      <created by="Tim Mills" on="2008-05-15"/>
+      <modified by="Tim Mills" on="2013-03-15" change="Bug 21222" />
+      <test>xs:time("12:00:00+01:00") - xs:time("12:00:00") - implicit-timezone()</test>
+      <result>
+         <assert-string-value>-PT1H</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-subtract-times-002">
+      <description> test subtraction of times </description>
+      <created by="Tim Mills" on="2008-05-15"/>
+      <modified by="Tim Mills" on="2013-03-15" change="Bug 21222" />
+      <test>xs:time("12:00:00") - xs:time("12:00:00+01:00") + implicit-timezone()</test>
+      <result>
+         <assert-string-value>PT1H</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-subtract-times-003">
+      <description> test subtraction of times </description>
+      <created by="Tim Mills" on="2008-05-15"/>
+      <modified by="Tim Mills" on="2013-03-15" change="Bug 21222" />
+      <test>
+      fn:adjust-time-to-timezone(xs:time("12:00:00")) - fn:adjust-time-to-timezone(xs:time("08:00:00+05:00"), xs:dayTimeDuration("PT1H")) + implicit-timezone()
+   </test>
+      <result>
+         <assert-string-value>PT9H</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-subtract-times-004">
+      <description> test subtraction of times </description>
+      <created by="Tim Mills" on="2008-05-15"/>
+      <modified by="Tim Mills" on="2013-03-15" change="Bug 21222" />
+      <test>
+      fn:adjust-time-to-timezone(xs:time("08:00:00+05:00"), xs:dayTimeDuration("PT1H")) - fn:adjust-time-to-timezone(xs:time("12:00:00")) - implicit-timezone()
+   </test>
+      <result>
+         <assert-string-value>-PT9H</assert-string-value>
+      </result>
+   </test-case>
+</test-set>

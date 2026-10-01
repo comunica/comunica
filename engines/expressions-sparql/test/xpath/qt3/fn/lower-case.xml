@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-lower-case">
+   <description>Tests for the lower-case() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-lower-case"/>
+
+   <test-case name="fn-lower-case1args-1">
+      <description> Evaluates The "lower-case" function with the arguments set as follows: $arg = xs:string(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:lower-case(xs:string("This is a characte"))</test>
+      <result>
+         <assert-string-value>this is a characte</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case1args-2">
+      <description> Evaluates The "lower-case" function with the arguments set as follows: $arg = xs:string(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:lower-case(xs:string("This is a characte"))</test>
+      <result>
+         <assert-string-value>this is a characte</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case1args-3">
+      <description> Evaluates The "lower-case" function with the arguments set as follows: $arg = xs:string(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:lower-case(xs:string("This is a characte"))</test>
+      <result>
+         <assert-string-value>this is a characte</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-1">
+      <description> Evaluation of lower-case function as per example 1 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case("ABc!D")</test>
+      <result>
+         <assert-string-value>abc!d</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-2">
+      <description> Evaluation of lower-case function using the empty sequence Uses the count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:count(fn:lower-case(()))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-3">
+      <description> Evaluation of lower-case function that uses only numbers as part of argument Use of count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case("12345")</test>
+      <result>
+         <assert-string-value>12345</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-4">
+      <description> Evaluation of lower-case function that uses both numbers and letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case("12345abcd")</test>
+      <result>
+         <assert-string-value>12345abcd</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-5">
+      <description> Evaluation of lower-case function that uses only upper case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case("ABCD")</test>
+      <result>
+         <assert-string-value>abcd</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-6">
+      <description> Evaluation of lower-case function that uses only lower case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case("abcde")</test>
+      <result>
+         <assert-string-value>abcde</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-7">
+      <description> Evaluation of lower-case function that uses both upper and lower case letters as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case("ABCDEabcde")</test>
+      <result>
+         <assert-string-value>abcdeabcde</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-8">
+      <description> Evaluation of lower-case function that uses the empty string as part of argument Uses "fn:count" to avoid the empty file </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:count(fn:lower-case(""))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-9">
+      <description> Evaluation of lower-case function that uses the "upper-case" as part of argument </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case(upper-case("AbcDH"))</test>
+      <result>
+         <assert-string-value>abcdh</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-10">
+      <description> Evaluation of lower-case function with argument set to "*****" </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case("*****")</test>
+      <result>
+         <assert-string-value>*****</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-11">
+      <description> Evaluation of lower-case function with argument set to another lower-case function </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case(lower-case("zzzzz"))</test>
+      <result>
+         <assert-string-value>zzzzz</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-12">
+      <description> Evaluation of lower-case function as an argument to the "fn:boolean" function </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:boolean(fn:lower-case("abcde"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-13">
+      <description> Evaluation of lower-case function as an argument to the "fn:concat" function </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:concat(fn:lower-case("abcde"), fn:lower-case("fghi"))</test>
+      <result>
+         <assert-string-value>abcdefghi</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-14">
+      <description> Evaluation of lower-case function as an argument to the "fn:not" function </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:not(fn:lower-case("abcde"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-15">
+      <description> Evaluation of lower-case function with argument set to "%$#@!" </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case("%$#@!")</test>
+      <result>
+         <assert-string-value>%$#@!</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-16">
+      <description> Evaluation of lower-case function with argument set to "lower-case" </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case("lower-case")</test>
+      <result>
+         <assert-string-value>lower-case</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-lower-case-17">
+      <description> Evaluation of lower-case function as part of a boolean expression </description>
+      <created by="Carmelo Montanez" on="2005-07-07"/>
+      <test>fn:lower-case("abc") and fn:lower-case("abc")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-lower-case-18">
+      <description> Lower-case of Latin-1 characters </description>
+      <created by="Michael Kay" on="2016-03-21"/>
+      <test>fn:string-to-codepoints(fn:lower-case(fn:codepoints-to-string(160 to 256)))</test>
+      <result>
+         <assert-deep-eq>
+            160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 
+            177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 224, 225, 
+            226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 
+            243, 244, 245, 246, 215, 248, 249, 250, 251, 252, 253, 254, 223, 224, 225, 226, 227, 
+            228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 
+            245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 257</assert-deep-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-lower-case-19">
+      <description> Lower-case of Greek characters 
+         (note: in the case of Saxon, this fails with JDK 6 but succeeds with a later JDK)
+      </description>
+      <created by="Michael Kay" on="2016-03-21"/>
+      <modified by="O'Neil Delpratt" on="2016-03-04" change="Related to bug issue #29630 - Added unicode-version"/>
+      <dependency type="unicode-version" value="7.0"/>
+      <test>fn:string-to-codepoints(fn:lower-case(fn:codepoints-to-string(880 to 1023)))</test>
+      <result>
+         <assert-deep-eq>
+            881, 881, 883, 883, 884, 885, 887, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 
+            897, 898, 899, 900, 901, 940, 903, 941, 942, 943, 907, 972, 909, 973, 974, 912, 945, 
+            946, 947, 948, 949, 950, 951, 952, 953, 954, 955, 956, 957, 958, 959, 960, 961, 930, 
+            963, 964, 965, 966, 967, 968, 969, 970, 971, 940, 941, 942, 943, 944, 945, 946, 947, 
+            948, 949, 950, 951, 952, 953, 954, 955, 956, 957, 958, 959, 960, 961, 962, 963, 964, 
+            965, 966, 967, 968, 969, 970, 971, 972, 973, 974, 983, 976, 977, 978, 979, 980, 981, 
+            982, 983, 985, 985, 987, 987, 989, 989, 991, 991, 993, 993, 995, 995, 997, 997, 999, 
+            999, 1001, 1001, 1003, 1003, 1005, 1005, 1007, 1007, 1008, 1009, 1010, 1011, 952, 1013, 
+            1014, 1016, 1016, 1010, 1019, 1019, 1020, 891, 892, 893</assert-deep-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-lower-case-20">
+      <description> Lower-case of a title-case character </description>
+      <created by="Michael Kay" on="2016-03-21"/>
+      <test>fn:string-to-codepoints(fn:lower-case(fn:codepoints-to-string(459)))</test>
+      <result>
+         <assert-eq>460</assert-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-lower-case-21">
+      <description> Latin capital letter I with dot above: lower-case equivalent has length 2 </description>
+      <created by="Michael Kay" on="2021-06-08"/>
+      <test>fn:string-to-codepoints(fn:lower-case(fn:codepoints-to-string(304)))</test>
+      <result>
+         <assert-deep-eq>105, 775</assert-deep-eq>
+      </result>
+   </test-case>
+
+   <test-case name="K-LowerCaseFunc-1">
+      <description> A test whose essence is: `lower-case()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>lower-case()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-LowerCaseFunc-2">
+      <description> A test whose essence is: `lower-case("string", "wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>lower-case("string", "wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-LowerCaseFunc-3">
+      <description> A test whose essence is: `lower-case(()) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>lower-case(()) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-LowerCaseFunc-4">
+      <description> A test whose essence is: `upper-case("abCd0") eq "ABCD0"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>upper-case("abCd0") eq "ABCD0"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

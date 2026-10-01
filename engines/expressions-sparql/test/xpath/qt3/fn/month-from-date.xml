@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-month-from-date">
+   <description>Tests for the month-from-date() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-month-from-date"/>
+
+   <test-case name="fn-month-from-date1args-1">
+      <description> Evaluates The "month-from-date" function with the arguments set as follows: $arg = xs:date(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date1args-2">
+      <description> Evaluates The "month-from-date" function with the arguments set as follows: $arg = xs:date(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:month-from-date(xs:date("1983-11-17Z"))</test>
+      <result>
+         <assert-string-value>11</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date1args-3">
+      <description> Evaluates The "month-from-date" function with the arguments set as follows: $arg = xs:date(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:month-from-date(xs:date("2030-12-31Z"))</test>
+      <result>
+         <assert-string-value>12</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-1">
+      <description> Evaluates The "month-from-date" function As per example 1 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1999-05-31-05:00"))</test>
+      <result>
+         <assert-string-value>5</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-2">
+      <description> Evaluates The "month-from-date" function As per example 2 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("2000-01-01+05:00"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-3">
+      <description> Evaluates The "month-from-date" function involving a "numeric-less-than" operation (lt operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1999-12-31Z")) lt fn:month-from-date(xs:date("1999-12-31Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-4">
+      <description> Evaluates The "month-from-date" function involving a "numeric-less-than" operation (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1999-12-31Z")) le fn:month-from-date(xs:date("1999-12-31Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-5">
+      <description> Evaluates The "month-from-date" function using the empty sequence as an argument. Use count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:count(fn:month-from-date(()))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-6">
+      <description> Evaluates The "month-from-date" function that returns 1. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1970-01-31Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-7">
+      <description> Evaluates The "month-from-date" function that returns 12. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1999-12-31Z"))</test>
+      <result>
+         <assert-string-value>12</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-8">
+      <description> Evaluates The "month-from-date" function as part of a "+" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1970-01-01Z")) + fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>2</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-9">
+      <description> Evaluates The "month-from-date" function as part of a "-" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1970-01-01Z")) - fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-10">
+      <description> Evaluates The "month-from-date" function as part of a "*" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1970-01-01Z")) * fn:month-from-date(xs:date("0002-01-01Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-11">
+      <description> Evaluates The "month-from-date" function as part of a "div" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1970-01-01Z")) div fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-12">
+      <description> Evaluates The "month-from-date" function as part of a "idiv" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1970-01-01Z")) idiv fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-13">
+      <description> Evaluates The "month-from-date" function as part of a "mod" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1970-01-01Z")) mod fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-14">
+      <description> Evaluates The "month-from-date" function as part of a "numeric-unary-plus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>+fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-15">
+      <description> Evaluates The "month-from-date" function as part of a "numeric-unary-minus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>-fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>-1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-16">
+      <description> Evaluates The "month-from-date" function as part of a "numeric-equal" expression (eq operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1970-01-01Z")) eq fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-17">
+      <description> Evaluates The "month-from-date" function as part of a "numeric-equal" expression (ne operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1970-01-01Z")) ne fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-18">
+      <description> Evaluates The "month-from-date" function as part of a "numeric-equal" expression (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1970-01-01Z")) le fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-month-from-date-19">
+      <description> Evaluates The "month-from-date" function as part of a "numeric-equal" expression (ge operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:month-from-date(xs:date("1970-01-01Z")) ge fn:month-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MonthFromDateFunc-1">
+      <description> A test whose essence is: `month-from-date()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>month-from-date()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MonthFromDateFunc-2">
+      <description> A test whose essence is: `month-from-date((), "Wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>month-from-date((), "Wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MonthFromDateFunc-3">
+      <description> A test whose essence is: `empty(month-from-date(()))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(month-from-date(()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MonthFromDateFunc-4">
+      <description> A test whose essence is: `month-from-date(()) instance of xs:integer?`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>month-from-date(()) instance of xs:integer?</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MonthFromDateFunc-5">
+      <description> A test whose essence is: `month-from-date(xs:date("2000-02-03")) eq 2`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>month-from-date(xs:date("2000-02-03")) eq 2</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

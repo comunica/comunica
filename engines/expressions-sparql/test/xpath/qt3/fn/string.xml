@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-string">
+   <description>Tests the fn:string() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-string"/>
+
+   <test-case name="fn-stringint1args-1">
+      <description>stringint1args-1 The "string" function with the arguments set as follows: $arg = xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:int("-2147483648"))</test>
+      <result>
+         <assert-string-value>-2147483648</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringint1args-2">
+      <description>stringint1args-2 The "string" function with the arguments set as follows: $arg = xs:int(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:int("-1873914410"))</test>
+      <result>
+         <assert-string-value>-1873914410</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringint1args-3">
+      <description>stringint1args-3 The "string" function with the arguments set as follows: $arg = xs:int(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:int("2147483647"))</test>
+      <result>
+         <assert-string-value>2147483647</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringintg1args-1">
+      <description>stringintg1args-1 The "string" function with the arguments set as follows: $arg = xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:integer("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringintg1args-2">
+      <description>stringintg1args-2 The "string" function with the arguments set as follows: $arg = xs:integer(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:integer("830993497117024304"))</test>
+      <result>
+         <assert-string-value>830993497117024304</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringintg1args-3">
+      <description>stringintg1args-3 The "string" function with the arguments set as follows: $arg = xs:integer(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:integer("999999999999999999"))</test>
+      <result>
+         <assert-string-value>999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringdec1args-1">
+      <description>stringdec1args-1 The "string" function with the arguments set as follows: $arg = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:decimal("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringdec1args-2">
+      <description>stringdec1args-2 The "string" function with the arguments set as follows: $arg = xs:decimal(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:decimal("617375191608514839"))</test>
+      <result>
+         <assert-string-value>617375191608514839</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringdec1args-3">
+      <description>stringdec1args-3 The "string" function with the arguments set as follows: $arg = xs:decimal(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:decimal("999999999999999999"))</test>
+      <result>
+         <assert-string-value>999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringdbl1args-1">
+      <description>stringdbl1args-1 The "string" function with the arguments set as follows: $arg = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:double("-1.7976931348623157E308"))</test>
+      <result>
+         <assert-string-value>-1.7976931348623157E308</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringdbl1args-2">
+      <description>stringdbl1args-2 The "string" function with the arguments set as follows: $arg = xs:double(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:double("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringdbl1args-3">
+      <description>stringdbl1args-3 The "string" function with the arguments set as follows: $arg = xs:double(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:double("1.7976931348623157E308"))</test>
+      <result>
+         <assert-string-value>1.7976931348623157E308</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringflt1args-1">
+      <description>stringflt1args-1 The "string" function with the arguments set as follows: $arg = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:float("-3.4028235E38"))</test>
+      <result>
+         <assert-string-value>-3.4028235E38</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringflt1args-2">
+      <description>stringflt1args-2 The "string" function with the arguments set as follows: $arg = xs:float(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:float("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringflt1args-3">
+      <description>stringflt1args-3 The "string" function with the arguments set as follows: $arg = xs:float(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:float("3.4028235E38"))</test>
+      <result>
+         <assert-string-value>3.4028235E38</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringlng1args-1">
+      <description>stringlng1args-1 The "string" function with the arguments set as follows: $arg = xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:long("-92233720368547758"))</test>
+      <result>
+         <assert-string-value>-92233720368547758</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringlng1args-2">
+      <description>stringlng1args-2 The "string" function with the arguments set as follows: $arg = xs:long(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:long("-47175562203048468"))</test>
+      <result>
+         <assert-string-value>-47175562203048468</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringlng1args-3">
+      <description>stringlng1args-3 The "string" function with the arguments set as follows: $arg = xs:long(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:long("92233720368547758"))</test>
+      <result>
+         <assert-string-value>92233720368547758</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringusht1args-1">
+      <description>stringusht1args-1 The "string" function with the arguments set as follows: $arg = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:unsignedShort("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringusht1args-2">
+      <description>stringusht1args-2 The "string" function with the arguments set as follows: $arg = xs:unsignedShort(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:unsignedShort("44633"))</test>
+      <result>
+         <assert-string-value>44633</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringusht1args-3">
+      <description>stringusht1args-3 The "string" function with the arguments set as follows: $arg = xs:unsignedShort(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:unsignedShort("65535"))</test>
+      <result>
+         <assert-string-value>65535</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringnint1args-1">
+      <description>stringnint1args-1 The "string" function with the arguments set as follows: $arg = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:negativeInteger("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringnint1args-2">
+      <description>stringnint1args-2 The "string" function with the arguments set as follows: $arg = xs:negativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:negativeInteger("-297014075999096793"))</test>
+      <result>
+         <assert-string-value>-297014075999096793</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringnint1args-3">
+      <description>stringnint1args-3 The "string" function with the arguments set as follows: $arg = xs:negativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:negativeInteger("-1"))</test>
+      <result>
+         <assert-string-value>-1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringpint1args-1">
+      <description>stringpint1args-1 The "string" function with the arguments set as follows: $arg = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:positiveInteger("1"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringpint1args-2">
+      <description>stringpint1args-2 The "string" function with the arguments set as follows: $arg = xs:positiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:positiveInteger("52704602390610033"))</test>
+      <result>
+         <assert-string-value>52704602390610033</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringpint1args-3">
+      <description>stringpint1args-3 The "string" function with the arguments set as follows: $arg = xs:positiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:positiveInteger("999999999999999999"))</test>
+      <result>
+         <assert-string-value>999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringulng1args-1">
+      <description>stringulng1args-1 The "string" function with the arguments set as follows: $arg = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:unsignedLong("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringulng1args-2">
+      <description>stringulng1args-2 The "string" function with the arguments set as follows: $arg = xs:unsignedLong(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:unsignedLong("130747108607674654"))</test>
+      <result>
+         <assert-string-value>130747108607674654</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringulng1args-3">
+      <description>stringulng1args-3 The "string" function with the arguments set as follows: $arg = xs:unsignedLong(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:unsignedLong("184467440737095516"))</test>
+      <result>
+         <assert-string-value>184467440737095516</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringnpi1args-1">
+      <description>stringnpi1args-1 The "string" function with the arguments set as follows: $arg = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:nonPositiveInteger("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringnpi1args-2">
+      <description>stringnpi1args-2 The "string" function with the arguments set as follows: $arg = xs:nonPositiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:nonPositiveInteger("-475688437271870490"))</test>
+      <result>
+         <assert-string-value>-475688437271870490</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringnpi1args-3">
+      <description>stringnpi1args-3 The "string" function with the arguments set as follows: $arg = xs:nonPositiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:nonPositiveInteger("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringnni1args-1">
+      <description>stringnni1args-1 The "string" function with the arguments set as follows: $arg = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:nonNegativeInteger("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringnni1args-2">
+      <description>stringnni1args-2 The "string" function with the arguments set as follows: $arg = xs:nonNegativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:nonNegativeInteger("303884545991464527"))</test>
+      <result>
+         <assert-string-value>303884545991464527</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringnni1args-3">
+      <description>stringnni1args-3 The "string" function with the arguments set as follows: $arg = xs:nonNegativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:nonNegativeInteger("999999999999999999"))</test>
+      <result>
+         <assert-string-value>999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringsht1args-1">
+      <description>stringsht1args-1 The "string" function with the arguments set as follows: $arg = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:short("-32768"))</test>
+      <result>
+         <assert-string-value>-32768</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringsht1args-2">
+      <description>stringsht1args-2 The "string" function with the arguments set as follows: $arg = xs:short(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:short("-5324"))</test>
+      <result>
+         <assert-string-value>-5324</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-stringsht1args-3">
+      <description>stringsht1args-3 The "string" function with the arguments set as follows: $arg = xs:short(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:string(xs:short("32767"))</test>
+      <result>
+         <assert-string-value>32767</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-1">
+      <description>argument and no context item defined.</description>
+      <created by="Carmelo Montanez" on="2005-09-25"/>
+      <environment ref="empty"/>
+      <test>fn:string()</test>
+      <result>
+         <error code="XPDY0002"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-2">
+      <description>argument set to the empty sequence. Use fn:count to avoid empty file.</description>
+      <created by="Carmelo Montanez" on="2005-09-25"/>
+      <test>fn:string(())</test>
+      <result>
+         <all-of>
+            <assert-eq>""</assert-eq>
+            <assert-count>1</assert-count>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-3">
+      <description>argument set to "." and no context node set.</description>
+      <created by="Carmelo Montanez" on="2006-02-08"/>
+      <environment ref="empty"/>
+      <test>fn:string(.)</test>
+      <result>
+         <error code="XPDY0002"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-4">
+      <description>string() applied to a date</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <test>string(current-date())</test>
+      <result>
+         <assert-count>1</assert-count>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-5">
+      <description>string() applied to a time</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <test>string(xs:time("24:00:00"))</test>
+      <result>
+         <assert-eq>"00:00:00"</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-6">
+      <description>string() applied to a dateTime</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <test>string(dateTime(xs:date("2011-06-29"), xs:time("24:00:00")))</test>
+      <result>
+         <assert-eq>"2011-06-29T00:00:00"</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-7">
+      <description>string() applied to a duration</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <test>string(xs:duration("P24M"))</test>
+      <result>
+         <assert-eq>"P2Y"</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-8">
+      <description>string() applied to a QName</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <test>string(QName("http://www.w3.org/", "test:example"))</test>
+      <result>
+         <assert-eq>"test:example"</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-9">
+      <description>string() with no arguments applied to a double</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <test>xs:double('-INF')[string() = '-INF']</test>
+      <result>
+         <assert-count>1</assert-count>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-22">
+      <description>Evaluation of string() applied to a node that cannot be atomized because it has element-only content. This succeeds, because although getting the typed value of such a node is an error, the string value is well defined. Note, we assume construction from PSVI, therefore insignificant whitespace is stripped.</description>
+      <created by="Michael Kay" on="2011-06-28"/>
+      <environment ref="qname"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>/*/string()</test>
+      <result>
+         <assert-eq>"ns:barns:bar2ns:barDerivurn1test1test2"</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-23" covers-30="named-function-ref">
+      <description>Evaluation of string() applied to a function item</description>
+      <created by="Michael Kay" on="2011-06-28"/>
+      <dependency type="spec" value="XP30+ XQ30+"/>
+      <dependency type="feature" value="higherOrderFunctions"/>
+      <test>string(string#1)</test>
+      <result>
+         <error code="FOTY0014"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-24">
+      <description>Get the string-value of an element in a namespace.</description>
+      <created by="Michael Kay" on="2011-06-28"/>
+      <environment ref="auction"/>
+      <test>string((//*:Open)[1])</test>
+      <result>
+         <assert-string-value>2000-03-21:07:41:34-05:00</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-25">
+      <description>Get the string-value of an attribute in a namespace.</description>
+      <created by="Michael Kay" on="2011-06-28"/>
+      <environment ref="auction"/>
+      <test>string((//*:Start)[1]/@*)</test>
+      <result>
+         <assert-string-value>USD</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-26">
+      <description>Get the string-value of the xml:lang attribute.</description>
+      <created by="Michael Kay" on="2011-06-28"/>
+      <environment ref="auction"/>
+      <test>string((//@xml:*)[1])</test>
+      <result>
+         <assert-string-value>en</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-27">
+      <description>Get the string value of a namespace node.</description>
+      <created by="Michael Kay" on="2011-06-28"/>
+      <environment ref="auction"/>
+      <dependency type="feature" value="namespace-axis"/>
+      <dependency type="spec" value="XP20+"/>
+      <test>string((//namespace::*[.='http://www.w3.org/1999/xlink'])[1])</test>
+      <result>
+         <assert-string-value>http://www.w3.org/1999/xlink</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-28">
+      <description>Get the string-value of a processing-instruction node.</description>
+      <created by="Michael Kay" on="2011-06-28"/>
+      <environment ref="auction"/>
+      <test>string((//processing-instruction())[1])</test>
+      <result>
+         <assert-string-value>href="none"</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-29">
+      <description>Get the string value of an element with children.</description>
+      <created by="Michael Kay" on="2011-06-28"/>
+      <environment ref="auction"/>
+      <test>normalize-space(string((//*:Price)[1]))</test>
+      <result>
+         <assert-eq>"3.00 10.00 5"</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-30">
+      <description>Get the string value of a comment node</description>
+      <created by="Michael Kay" on="2011-06-28"/>
+      <environment ref="auction"/>
+      <test>string((//comment())[1])</test>
+      <result>
+         <assert>contains($result, "______________________________________________________")</assert>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-31">
+      <description>Get the string value of a text node</description>
+      <created by="Michael Kay" on="2011-06-28"/>
+      <environment ref="auction"/>
+      <test>string((//text())[normalize-space(.)][1])</test>
+      <result>
+         <assert-eq>"2000-03-21:07:41:34-05:00"</assert-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-string-32" covers="fn-string">
+      <description>Evaluation of string() applied to a map</description>
+      <created by="Michael Kay" on="2014-09-15"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>string(map{1:2})</test>
+      <result>
+         <error code="FOTY0014"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-33" covers="fn-string">
+      <description>Evaluation of string() applied to an array</description>
+      <created by="Josh Spiegel" on="2015-04-02"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>string([1])</test>
+      <result>
+         <error code="FOTY0014"/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-string-34" covers="fn-string">
+      <description>Evaluation of string() applied to an array (this is the example given in the specification)</description>
+      <created by="Josh Spiegel" on="2015-04-02"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>string([[1, 2], [3, 4]])</test>
+      <result>
+         <error code="FOTY0014"/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-string-35" covers="fn-string">
+      <description>Evaluation of string() applied to an empty map</description>
+      <created by="Debbie Lockett" on="2015-06-15"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>string(map{})</test>
+      <result>
+         <error code="FOTY0014"/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-string-36" covers="fn-string map-entry">
+      <description>Evaluation of string() applied to a map</description>
+      <created by="Debbie Lockett" on="2015-06-15"/>
+      <environment ref="map"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>string(map:entry("a","string"))</test>
+      <result>
+         <error code="FOTY0014"/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-string-37" covers="fn-string">
+      <description>Evaluation of string() applied to an empty array</description>
+      <created by="Debbie Lockett" on="2015-06-15"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>string(array{})</test>
+      <result>
+         <error code="FOTY0014"/>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-string-38" covers="fn-string">
+      <description>Evaluation of string() applied to an array</description>
+      <created by="Debbie Lockett" on="2015-06-15"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>string(["string"])</test>
+      <result>
+         <error code="FOTY0014"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringFunc-1">
+      <description>K-StringFunc-1 `string(1, 2)`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(1, 2)</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringFunc-2">
+      <description>K-StringFunc-2 ensures that no arguments isn't flagged as invalid. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>if(true()) then true() else string()</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPDY0002"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringFunc-3">
+      <description>K-StringFunc-3 `string(1) eq "1"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(1) eq "1"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringFunc-4">
+      <description>K-StringFunc-4 `string(()) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(()) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringFunc-5">
+      <description>K-StringFunc-5 xs:string. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string-length(string(xs:string(current-time()))) gt 2</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-StringFunc-6">
+      <description>K-StringFunc-6 `string( (1, 2) )`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string( (1, 2) )</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+</test-set>

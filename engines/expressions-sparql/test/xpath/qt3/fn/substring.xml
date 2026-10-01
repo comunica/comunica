@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-substring">
+   <description>Tests for the fn:substring() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-substring"/>
+   <environment name="concepts">
+      <source role="." file="substring/concepts.xml">
+         <description>A simple file used by one of the substring tests</description>
+         <created by="Michael Kay" on="2011-06-27"/>
+      </source>
+   </environment>
+
+   <test-case name="fn-substring-1">
+      <description>Evaluation of substring function as per example 1 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:substring("motor car", 6)</test>
+      <result>
+         <all-of>
+            <assert-string-value> car</assert-string-value>
+            <assert-type>xs:string</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-2">
+      <description>Evaluation of substring function as per example 2 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:substring("metadata", 4, 3)</test>
+      <result>
+         <assert-string-value>ada</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-3">
+      <description>Evaluation of substring function as per example 3 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:substring("12345", 1.5, 2.6)</test>
+      <result>
+         <assert-string-value>234</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-4">
+      <description>Evaluation of substring function as per example 4 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:substring("12345", 0, 3)</test>
+      <result>
+         <assert-string-value>12</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-5">
+      <description>Evaluation of substring function as per example 5 (for this function) from the F&amp;O specs. Use "fn:count" to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:count(fn:substring("12345", 5, -3))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-6">
+      <description>Evaluation of substring function as per example 6 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:substring("12345", -3, 5)</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-7">
+      <description>Evaluation of substring function as per example 7 (for this function) from the F&amp;O specs. Use "fn:count" to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:count(fn:substring("12345", 0 div 0E0, 3))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-8">
+      <description>Evaluation of substring function as per example 8 (for this function) from the F&amp;O specs. Use "fn:count" to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:count(fn:substring("12345", 1, 0 div 0E0))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-9">
+      <description>Evaluation of substring function as per example 9 (for this function) from the F&amp;O specs. Use "fn:count" to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:count(fn:substring((), 1, 3))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-10">
+      <description>Evaluation of substring function as per example 10 (for this function) from the F&amp;O specs. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:substring("12345", -42, 1 div 0E0)</test>
+      <result>
+         <assert-string-value>12345</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-11">
+      <description>Evaluation of substring function as per example 11 (for this function) from the F&amp;O specs. Use "fn:count" to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:count(fn:substring("12345", -1 div 0E0, 1 div 0E0))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-12">
+      <description>Evaluation of substring function, where the source string is the empty string Use "fn:count" to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:count(fn:substring("",0))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-13">
+      <description>Evaluation of substring function, as an argument to an "fn:boolean" function" </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:boolean(fn:substring("ABC",1))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-14">
+      <description>Evaluation of substring function, as an argument to an "fn:not" function" </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:not(fn:substring("ABC",1))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-15">
+      <description>Evaluation of substring function, as an argument to another "fn:substring" function" </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:substring(fn:substring("ABCDE",1),1)</test>
+      <result>
+         <assert-string-value>ABCDE</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-16">
+      <description>Evaluation of substring function, where the source string is the string "substring". </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:substring("substring",1)</test>
+      <result>
+         <assert-string-value>substring</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-17">
+      <description>Evaluation of substring function as an argument to a concat function. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:concat(fn:substring("ABC",1),"DEF")</test>
+      <result>
+         <assert-string-value>ABCDEF</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-18">
+      <description>Evaluation of substring function as an argument to a contains function. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:contains(fn:substring("ABCDEF",1),"DEF")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-19">
+      <description>Evaluation of substring function using the special chracter "!@#$%^&amp;*()". </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:substring("!@#$%^*()",1)</test>
+      <result>
+         <assert-string-value>!@#$%^*()</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-20">
+      <description>Evaluation of substring function, where the start location uses a "double" constructor. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:substring("ABCD",xs:double(1))</test>
+      <result>
+         <assert-string-value>ABCD</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-21">
+      <description>Evaluation of substring function, where the starting locatin is an addition expression. </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <test>fn:substring("ABCDE",1+1)</test>
+      <result>
+         <assert-string-value>BCDE</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-22">
+      <description>Evaluation of substring function, where start&lt;0 and (start+len)&lt;0 </description>
+      <created by="Carmelo Montanez" on="2005-08-16"/>
+      <environment ref="concepts"/>
+      <test>concat('#', fn:substring(./concepts/@id, string-length(./concepts/@id) - 18, 1), '#')</test>
+      <result>
+         <assert-string-value>##</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-23">
+      <description>substring() of a string containing non-BMP characters</description>
+      <created by="Michael Kay" on="2011-06-27"/>
+      <test>substring("abcd&#65537;efgh", 6)</test>
+      <result>
+         <assert-eq>"efgh"</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-substring-24">
+      <description>substring() of a string containing non-BMP characters</description>
+      <created by="Michael Kay" on="2011-06-27"/>
+      <test>substring("abcd&#65537;efgh", 5, 2)</test>
+      <result>
+         <assert-eq>"&#65537;e"</assert-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-substring-25">
+      <description>substring() of a string containing non-BMP characters</description>
+      <created by="Michael Kay" on="2013-04-23"/>
+      <test>substring("&#65537;", 1, 2)</test>
+      <result>
+         <assert-eq>"&#65537;"</assert-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-substring-26">
+      <description>substring() of a string containing non-BMP characters</description>
+      <created by="Michael Kay" on="2013-04-23"/>
+      <test>substring("&#65537;", 2, 1)</test>
+      <result>
+         <assert-eq>""</assert-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-substring-27">
+      <description>substring() of a string containing non-BMP characters</description>
+      <created by="Michael Kay" on="2013-04-23"/>
+      <test>substring("&#65537;", 0, 2)</test>
+      <result>
+         <assert-eq>"&#65537;"</assert-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-substring-28">
+      <description>substring() of a string containing non-BMP characters</description>
+      <created by="Michael Kay" on="2013-04-23"/>
+      <test>substring("&#65537;", 0, 3)</test>
+      <result>
+         <assert-eq>"&#65537;"</assert-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-substring-29">
+      <description>substring() of a string containing non-BMP characters</description>
+      <created by="Michael Kay" on="2013-04-23"/>
+      <test>substring("&#65537;&#65537;", 3)</test>
+      <result>
+         <assert-eq>""</assert-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-substring-30">
+      <description>substring() of a string containing non-BMP characters</description>
+      <created by="Michael Kay" on="2013-04-23"/>
+      <test>substring("&#65537;&#65537;", 0)</test>
+      <result>
+         <assert-eq>"&#65537;&#65537;"</assert-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="fn-substring-31">
+      <description> start is a double less than zero </description>
+      <created by="Michael Kay" on="2013-05-01"/>
+      <test>substring("12345", -3.1e0, 5.2e0) eq "1"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="K-SubstringFunc-1">
+      <description> A test whose essence is: `sub-string("a string")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>sub-string("a string")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-2">
+      <description> A test whose essence is: `sub-string("a string", 1, 2, "wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>sub-string("a string", 1, 2, "wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-3">
+      <description> A test whose essence is: `substring((), 1, 2) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring((), 1, 2) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-4">
+      <description> A test whose essence is: `substring((), 1) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring((), 1) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-5">
+      <description> A test whose essence is: `substring("12345", 1.5, 2.6) eq "234"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring("12345", 1.5, 2.6) eq "234"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-6">
+      <description> A test whose essence is: `substring((), 1, 3) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring((), 1, 3) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-7">
+      <description> A test whose essence is: `substring("motor car", 6) eq " car"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring("motor car", 6) eq " car"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-8">
+      <description> A test whose essence is: `substring("12345", 0, 3) eq "12"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring("12345", 0, 3) eq "12"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-9">
+      <description> A test whose essence is: `substring("metadata", 4, 3) eq "ada"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring("metadata", 4, 3) eq "ada"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-10">
+      <description> A test whose essence is: `substring("12345", 0 div 0E0, 3) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring("12345", 0 div 0E0, 3) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-11">
+      <description> A test whose essence is: `substring("12345", 1, 0 div 0E0) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring("12345", 1, 0 div 0E0) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-12">
+      <description> A test whose essence is: `substring("12345", -3, 5) eq "1"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring("12345", -3, 5) eq "1"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-13">
+      <description> A test whose essence is: `substring("12345", -42, 1 div 0E0) eq "12345"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring("12345", -42, 1 div 0E0) eq "12345"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-14">
+      <description> A test whose essence is: `substring("12345", -1 div 0E0, 1 div 0E0) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring("12345", -1 div 0E0, 1 div 0E0) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-SubstringFunc-15">
+      <description> A test whose essence is: `substring("12345", 5, -3) eq ""`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>substring("12345", 5, -3) eq ""</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   
+   <test-case name="cbcl-substring-001">
+      <description> test fn:substring empty string </description>
+      <created by="Tim Mills" on="2008-04-11"/>
+      <test>fn:boolean(fn:substring('', 1, 1))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-substring-002">
+      <description> test fn:substring with index past end of string </description>
+      <created by="Tim Mills" on="2008-04-11"/>
+      <test>fn:boolean(fn:substring('five', 5, 1))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+</test-set>

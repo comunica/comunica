@@ -1,0 +1,968 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-floor">
+   <description>Tests for the fn:floor() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-11/"
+         idref="func-floor"/>
+   <environment name="emptydoc"/>
+   <environment name="e0">
+      <source role="." file="abs/e0.xml">
+         <description>A simple file containing &lt;e&gt;0&lt;/e&gt;</description>
+         <created by="Michael Kay" on="2010-12-08"/>
+      </source>
+   </environment>
+   <environment name="e1">
+      <source role="." file="abs/e1.xml">
+         <description>A simple file containing &lt;e&gt;1&lt;/e&gt;</description>
+         <created by="Michael Kay" on="2010-12-08"/>
+      </source>
+   </environment>
+   <environment name="e-1">
+      <source role="." file="abs/e-1.xml">
+         <description>A simple file containing &lt;e&gt;-1&lt;/e&gt;</description>
+         <created by="Michael Kay" on="2010-12-08"/>
+      </source>
+   </environment>
+
+   <test-case name="fn-floorint1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:int("-2147483648"))</test>
+      <result>
+         <assert-string-value>-2147483648</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorint1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:int(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:int("-1873914410"))</test>
+      <result>
+         <assert-string-value>-1873914410</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorint1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:int(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:int("2147483647"))</test>
+      <result>
+         <assert-string-value>2147483647</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorintg1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:integer("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorintg1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:integer(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:integer("830993497117024304"))</test>
+      <result>
+         <assert-string-value>830993497117024304</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorintg1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:integer(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:integer("999999999999999999"))</test>
+      <result>
+         <assert-string-value>999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floordec1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:decimal("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floordec1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:decimal(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:decimal("617375191608514839"))</test>
+      <result>
+         <assert-string-value>617375191608514839</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floordec1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:decimal(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:decimal("999999999999999999"))</test>
+      <result>
+         <assert-string-value>999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floordbl1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:double("-1.7976931348623157E308"))</test>
+      <result>
+         <assert-string-value>-1.7976931348623157E308</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floordbl1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:double(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:double("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floordbl1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:double(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:double("1.7976931348623157E308"))</test>
+      <result>
+         <assert-string-value>1.7976931348623157E308</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorflt1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:float("-3.4028235E38"))</test>
+      <result>
+         <assert-string-value>-3.4028235E38</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorflt1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:float(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:float("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorflt1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:float(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:float("3.4028235E38"))</test>
+      <result>
+         <assert-string-value>3.4028235E38</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorlng1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:long("-92233720368547758"))</test>
+      <result>
+         <assert-string-value>-92233720368547758</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorlng1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:long(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:long("-47175562203048468"))</test>
+      <result>
+         <assert-string-value>-47175562203048468</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorlng1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:long(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:long("92233720368547758"))</test>
+      <result>
+         <assert-string-value>92233720368547758</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorusht1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:unsignedShort("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorusht1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:unsignedShort(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:unsignedShort("44633"))</test>
+      <result>
+         <assert-string-value>44633</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorusht1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:unsignedShort(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:unsignedShort("65535"))</test>
+      <result>
+         <assert-string-value>65535</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floornint1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:negativeInteger("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floornint1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:negativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:negativeInteger("-297014075999096793"))</test>
+      <result>
+         <assert-string-value>-297014075999096793</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floornint1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:negativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:negativeInteger("-1"))</test>
+      <result>
+         <assert-string-value>-1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorpint1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:positiveInteger("1"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorpint1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:positiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:positiveInteger("52704602390610033"))</test>
+      <result>
+         <assert-string-value>52704602390610033</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorpint1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:positiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:positiveInteger("999999999999999999"))</test>
+      <result>
+         <assert-string-value>999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorulng1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:unsignedLong("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorulng1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:unsignedLong(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:unsignedLong("130747108607674654"))</test>
+      <result>
+         <assert-string-value>130747108607674654</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorulng1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:unsignedLong(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:unsignedLong("184467440737095516"))</test>
+      <result>
+         <assert-string-value>184467440737095516</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floornpi1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:nonPositiveInteger("-999999999999999999"))</test>
+      <result>
+         <assert-string-value>-999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floornpi1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:nonPositiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:nonPositiveInteger("-475688437271870490"))</test>
+      <result>
+         <assert-string-value>-475688437271870490</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floornpi1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:nonPositiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:nonPositiveInteger("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floornni1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:nonNegativeInteger("0"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floornni1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:nonNegativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:nonNegativeInteger("303884545991464527"))</test>
+      <result>
+         <assert-string-value>303884545991464527</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floornni1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:nonNegativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:nonNegativeInteger("999999999999999999"))</test>
+      <result>
+         <assert-string-value>999999999999999999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorsht1args-1">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:short("-32768"))</test>
+      <result>
+         <assert-string-value>-32768</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorsht1args-2">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:short(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:short("-5324"))</test>
+      <result>
+         <assert-string-value>-5324</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floorsht1args-3">
+      <description> Evaluates The "floor" function with the arguments set as follows: $arg = xs:short(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <environment ref="emptydoc"/>
+      <test>fn:floor(xs:short("32767"))</test>
+      <result>
+         <assert-string-value>32767</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="K-FloorFunc-1">
+      <description> A test whose essence is: `floor()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="emptydoc"/>
+      <test>floor()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-FloorFunc-2">
+      <description> A test whose essence is: `floor(1, 2)`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="emptydoc"/>
+      <test>floor(1, 2)</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-FloorFunc-3">
+      <description> A test whose essence is: `empty(floor(()))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="emptydoc"/>
+      <test>empty(floor(()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-FloorFunc-4">
+      <description> A test whose essence is: `floor(10.5) eq 10`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="emptydoc"/>
+      <test>floor(10.5) eq 10</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-FloorFunc-5">
+      <description> A test whose essence is: `floor(-10.5) eq -11`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="emptydoc"/>
+      <test>floor(-10.5) eq -11</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-FloorFunc-6">
+      <description> A test whose essence is: `floor("a string")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="emptydoc"/>
+      <test>floor("a string")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-1">
+      <description> Ensure the return type is properly inferred. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e1"/>
+      <test>floor(xs:unsignedShort(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-2">
+      <description> Ensure the return type is properly inferred for unsignedShort. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e0"/>
+      <test>floor(xs:unsignedShort(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-3">
+      <description> Ensure the return type is properly inferred for unsignedLong. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e0"/>
+      <test>floor(xs:unsignedLong(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-4">
+      <description> Ensure the return type is properly inferred for unsignedInt. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e0"/>
+      <test>floor(xs:unsignedInt(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-5">
+      <description> Ensure the return type is properly inferred for unsignedByte. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e0"/>
+      <test>floor(xs:unsignedByte(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-6">
+      <description> Ensure the return type is properly inferred for positiveInteger. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e1"/>
+      <test>floor(xs:positiveInteger(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-7">
+      <description> Ensure the return type is properly inferred for nonPositiveInteger. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e0"/>
+      <test>floor(xs:nonPositiveInteger(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-8">
+      <description> Ensure the return type is properly inferred for nonNegativeInteger. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e0"/>
+      <test>floor(xs:nonNegativeInteger(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-9">
+      <description> Ensure the return type is properly inferred for negativeInteger. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e-1"/>
+      <test>floor(xs:negativeInteger(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-10">
+      <description> Ensure the return type is properly inferred for long. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e0"/>
+      <test>floor(xs:long(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-11">
+      <description> Ensure the return type is properly inferred for int. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e0"/>
+      <test>floor(xs:int(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-12">
+      <description> Ensure the return type is properly inferred for short. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e0"/>
+      <test>floor(xs:short(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-FloorFunc-13">
+      <description> Ensure the return type is properly inferred for byte. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="e0"/>
+      <test>floor(xs:byte(.)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-1">
+      <description> check dynamic type of fn:floor on argument of union of numeric types. </description>
+      <created by="Oliver Hallam" on="2010-03-15"/>
+      <test>for $x in (1, xs:decimal(2), xs:float(3), xs:double(4)) return 
+           if ((floor($x)) instance of xs:integer) then "integer" 
+           else if ((floor($x)) instance of xs:decimal) then "decimal" 
+           else if ((floor($x)) instance of xs:float) then "float"
+           else if ((floor($x)) instance of xs:double) then "double" 
+           else error()
+        </test>
+      <result>
+         <assert-deep-eq>"integer", "decimal", "float", "double"</assert-deep-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-decimal-1">
+      <description>Basic test of floor(decimal)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(12.5)</test>
+      <result>
+         <all-of>
+            <assert-eq>12.0</assert-eq>
+            <assert-type>xs:decimal</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-decimal-2">
+      <description>Basic test of floor(decimal)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(12.9)</test>
+      <result>
+         <all-of>
+            <assert-eq>12.0</assert-eq>
+            <assert-type>xs:decimal</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-decimal-3">
+      <description>Basic test of floor(decimal)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(0.000000001)</test>
+      <result>
+         <all-of>
+            <assert-eq>0.0</assert-eq>
+            <assert-type>xs:decimal</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-decimal-4">
+      <description>Basic test of floor(decimal)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(0.0)</test>
+      <result>
+         <all-of>
+            <assert-eq>0.0</assert-eq>
+            <assert-type>xs:decimal</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-decimal-5">
+      <description>Basic test of floor(decimal)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(-0.1)</test>
+      <result>
+         <all-of>
+            <assert-eq>-1.0</assert-eq>
+            <assert-type>xs:decimal</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-decimal-6">
+      <description>Basic test of floor(decimal)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(-12345678.567890)</test>
+      <result>
+         <all-of>
+            <assert-eq>-12345679</assert-eq>
+            <assert-type>xs:decimal</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-decimal-7">
+      <description>Basic test of floor(decimal)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(-1234567891234567.2)</test>
+      <result>
+         <all-of>
+            <assert-eq>-1234567891234568.0</assert-eq>
+            <assert-type>xs:decimal</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-double-1">
+      <description>Basic test of floor(double)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(12.5e0)</test>
+      <result>
+         <all-of>
+            <assert-eq>12.0e0</assert-eq>
+            <assert-type>xs:double</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-double-2">
+      <description>Basic test of floor(double)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(12.9e0)</test>
+      <result>
+         <all-of>
+            <assert-eq>12.0e0</assert-eq>
+            <assert-type>xs:double</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-double-3">
+      <description>Basic test of floor(double)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(0.000000001e0)</test>
+      <result>
+         <all-of>
+            <assert-eq>0.0e0</assert-eq>
+            <assert-type>xs:double</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-double-4">
+      <description>Basic test of floor(double)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(0.0e0)</test>
+      <result>
+         <all-of>
+            <assert-eq>0.0e0</assert-eq>
+            <assert-type>xs:double</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-double-5">
+      <description>Basic test of floor(double)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(-0.1e0)</test>
+      <result>
+         <all-of>
+            <assert-eq>-1.0e0</assert-eq>
+            <assert-type>xs:double</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-double-6">
+      <description>Basic test of floor(double)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(-12345678.567890e0)</test>
+      <result>
+         <all-of>
+            <assert-eq>-12345679e0</assert-eq>
+            <assert-type>xs:double</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-double-7">
+      <description>Basic test of floor(double)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(-1234567891234567.2e0)</test>
+      <result>
+         <all-of>
+            <assert-eq>-1234567891234568.0e0</assert-eq>
+            <assert-type>xs:double</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-double-8">
+      <description>Basic test of floor(double)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:double('NaN'))</test>
+      <result>
+         <all-of>
+            <assert-string-value>NaN</assert-string-value>
+            <assert-type>xs:double</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-double-9">
+      <description>Basic test of floor(double)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:double('INF'))</test>
+      <result>
+         <all-of>
+            <assert-string-value>INF</assert-string-value>
+            <assert-type>xs:double</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-double-10">
+      <description>Basic test of floor(double)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:double('-INF'))</test>
+      <result>
+         <all-of>
+            <assert-string-value>-INF</assert-string-value>
+            <assert-type>xs:double</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-double-11">
+      <description>Basic test of floor(double)</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:double('-0'))</test>
+      <result>
+         <all-of>
+            <assert-string-value>-0</assert-string-value>
+            <assert-type>xs:double</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-float-1">
+      <description>Basic test of floor(float))</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:float(12.5e0))</test>
+      <result>
+         <all-of>
+            <assert-eq>12.0e0</assert-eq>
+            <assert-type>xs:float</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-float-2">
+      <description>Basic test of floor(float))</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:float(12.9e0))</test>
+      <result>
+         <all-of>
+            <assert-eq>12.0e0</assert-eq>
+            <assert-type>xs:float</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-float-3">
+      <description>Basic test of floor(float))</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:float(0.000000001e0))</test>
+      <result>
+         <all-of>
+            <assert-eq>0.0e0</assert-eq>
+            <assert-type>xs:float</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-float-4">
+      <description>Basic test of floor(float))</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:float(0.0e0))</test>
+      <result>
+         <all-of>
+            <assert-eq>0.0e0</assert-eq>
+            <assert-type>xs:float</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-float-5">
+      <description>Basic test of floor(float))</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:float(-0.1e0))</test>
+      <result>
+         <all-of>
+            <assert-eq>-1.0e0</assert-eq>
+            <assert-type>xs:float</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-float-6">
+      <description>Basic test of floor(float))</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:float(-12345678.567890e0))</test>
+      <result>
+         <all-of>
+            <assert-eq>-12345679e0</assert-eq>
+            <assert-type>xs:float</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-float-7">
+      <description>Basic test of floor(float))</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:float(-1234567.2e0))</test>
+      <result>
+         <all-of>
+            <assert-eq>-1234568e0</assert-eq>
+            <assert-type>xs:float</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-float-8">
+      <description>Basic test of floor(float))</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:float(xs:float('NaN')))</test>
+      <result>
+         <all-of>
+            <assert-string-value>NaN</assert-string-value>
+            <assert-type>xs:float</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-float-9">
+      <description>Basic test of floor(float))</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:float(xs:float('INF')))</test>
+      <result>
+         <all-of>
+            <assert-string-value>INF</assert-string-value>
+            <assert-type>xs:float</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-float-10">
+      <description>Basic test of floor(float))</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:float(xs:float('-INF')))</test>
+      <result>
+         <all-of>
+            <assert-string-value>-INF</assert-string-value>
+            <assert-type>xs:float</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-floor-float-11">
+      <description>Basic test of floor(float))</description>
+      <created by="Michael Kay" on="2011-06-24"/>
+      <test>floor(xs:float(xs:float('-0')))</test>
+      <result>
+         <all-of>
+            <assert-string-value>-0</assert-string-value>
+            <assert-type>xs:float</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+</test-set>

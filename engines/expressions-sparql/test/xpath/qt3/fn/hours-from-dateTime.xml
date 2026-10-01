@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-hours-from-dateTime">
+   <description>Tests for the hours-from-dateTime() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-hours-from-dateTime"/>
+
+   <test-case name="fn-hours-from-dateTime1args-1">
+      <description> Evaluates The "hours-from-dateTime" function with the arguments set as follows: $arg = xs:dateTime(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1970-01-01T00:00:00"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime1args-2">
+      <description> Evaluates The "hours-from-dateTime" function with the arguments set as follows: $arg = xs:dateTime(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1996-04-07T01:40:52"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime1args-3">
+      <description> Evaluates The "hours-from-dateTime" function with the arguments set as follows: $arg = xs:dateTime(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("2030-12-31T23:59:59"))</test>
+      <result>
+         <assert-string-value>23</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-1">
+      <description> Evaluates The "hours-from-dateTime" function As per example 1 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1999-05-31T08:20:00-05:00"))</test>
+      <result>
+         <assert-string-value>8</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-2">
+      <description> Evaluates The "hours-from-dateTime" function As per example 2 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1999-12-31T21:20:00-05:00"))</test>
+      <result>
+         <assert-string-value>21</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-3">
+      <description> Evaluates The "hours-from-dateTime" function As per example 3 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(fn:adjust-dateTime-to-timezone(xs:dateTime("1999-12-31T21:20:00-05:00"), xs:dayTimeDuration("PT0H")))</test>
+      <result>
+         <assert-string-value>2</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-4">
+      <description> Evaluates The "hours-from-dateTime" function As per example 4 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1999-12-31T12:00:00"))</test>
+      <result>
+         <assert-string-value>12</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-5">
+      <description> Evaluates The "hours-from-dateTime" function using the empty sequence as an argument. Use count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:count(fn:hours-from-dateTime(()))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-6">
+      <description> Evaluates The "hours-from-dateTime" function that returns 0. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1999-05-31T00:20:00-05:00"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-7">
+      <description> Evaluates The "hours-from-dateTime" function that returns 23. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1999-05-31T23:20:00-05:00"))</test>
+      <result>
+         <assert-string-value>23</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-8">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "+" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1970-01-01T00:00:00Z")) + fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-string-value>10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-9">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "-" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1970-01-01T00:00:00Z")) - fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-string-value>-10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-10">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "*" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1970-01-01T02:00:00Z")) * fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-string-value>20</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-11">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "div" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1970-01-01T02:00:00Z")) div fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-string-value>0.2</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-12">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "idiv" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z")) idiv fn:hours-from-dateTime(xs:dateTime("1970-01-01T02:00:00Z"))</test>
+      <result>
+         <assert-string-value>5</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-13">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "mod" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z")) mod fn:hours-from-dateTime(xs:dateTime("1970-01-01T03:00:00Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-14">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "numeric-unary-plus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>+fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-string-value>10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-15">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "numeric-unary-minus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>-fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-string-value>-10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-16">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "numeric-equal" expression (eq operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z")) eq fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-17">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "numeric-equal" expression (ne operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z")) ne fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-18">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "numeric-equal" expression (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z")) le fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-hours-from-dateTime-19">
+      <description> Evaluates The "hours-from-dateTime" function as part of a "numeric-equal" expression (ge operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z")) ge fn:hours-from-dateTime(xs:dateTime("1970-01-01T10:00:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-HoursFromDateTimeFunc-1">
+      <description> A test whose essence is: `hours-from-dateTime()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>hours-from-dateTime()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-HoursFromDateTimeFunc-2">
+      <description> A test whose essence is: `hours-from-dateTime((), "Wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>hours-from-dateTime((), "Wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-HoursFromDateTimeFunc-3">
+      <description> A test whose essence is: `empty(hours-from-dateTime(()))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(hours-from-dateTime(()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-HoursFromDateTimeFunc-4">
+      <description> A test whose essence is: `hours-from-dateTime(()) instance of xs:integer?`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>hours-from-dateTime(()) instance of xs:integer?</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-HoursFromDateTimeFunc-5">
+      <description> A test whose essence is: `hours-from-dateTime(xs:dateTime("2001-02-03T08:23:12.43")) eq 8`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>hours-from-dateTime(xs:dateTime("2001-02-03T08:23:12.43")) eq 8</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

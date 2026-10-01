@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.w3.org/2010/09/qt-fots-catalog" 
+    test-suite="FOTS" version="3.1">
+    <environment name="empty">
+        <!-- The context item MUST be undefined/absent for queries run in this environment. -->
+        <!-- The test query will always be an expression, and if necessary an empty context can be achieved by wrapping
+             the expression as the body of a function -->
+    </environment>
+    
+    <environment name="atomic">
+        <namespace prefix="atomic" uri="http://www.w3.org/XQueryTest"/> 
+        <schema uri="http://www.w3.org/XQueryTest" file="docs/atomic.xsd">
+            <description>A Schema for atomic.xml</description>
+            <created by="Carmelo Montanez" on="2005-03-08"/>
+        </schema>        
+        <source role="." file="docs/atomic.xml" validation="strict" uri="http://www.w3.org/fots/docs/atomic.xml">
+            <description>A Schema validated xml file, that contains values for data types. Can be used by any test.</description>
+            <created by="Carmelo Montanez" on="2005-03-08"/>
+        </source>
+   </environment>
+   
+   <environment name="atomic-xq">
+        <schema uri="http://www.w3.org/XQueryTest" file="docs/atomic.xsd">
+            <description>A Schema for atomic.xml</description>
+            <created by="Carmelo Montanez" on="2005-03-08"/>
+        </schema>        
+        <source role="." file="docs/atomic.xml" validation="strict" uri="http://www.w3.org/fots/docs/atomic.xml">
+            <description>A Schema validated xml file, that contains values for data types. Can be used by any test.</description>
+            <created by="Carmelo Montanez" on="2005-03-08"/>
+        </source>
+   </environment>
+   
+   <environment name="works-mod">
+      <source role="." file="docs/works-mod.xml">
+         <description>Data for various NIST tests (abbreviated, unabbreviated syntax)</description>
+         <created by="Carmelo Montanez" on="2005-03-04"/>
+      </source>
+   </environment>
+   
+   <environment name="works">
+      <source role="." file="docs/works.xml">
+         <description>Data for various NIST tests</description>
+         <created by="Carmelo Montanez" on="2005-03-04"/>
+      </source>
+   </environment>
+   
+   <environment name="staff">
+      <source role="." file="docs/staff.xml">
+         <description>Data for various NIST tests</description>
+         <created by="Carmelo Montanez" on="2005-03-04"/>
+      </source>
+   </environment>
+   
+   <environment name="works-and-staff">
+      <source role="$works" file="docs/works.xml">
+         <description>Data for various NIST tests</description>
+         <created by="Carmelo Montanez" on="2005-03-04"/>
+      </source>
+      <source role="$staff" file="docs/staff.xml">
+         <description>Data for various NIST tests</description>
+         <created by="Carmelo Montanez" on="2005-03-04"/>
+      </source>
+   </environment>
+   
+   <environment name="auction">
+      <namespace prefix="ma" uri="http://www.example.com/AuctionWatch"/>
+      <namespace prefix="xlink" uri="http://www.w3.org/1999/xlink"/>
+      <namespace prefix="anyzone" uri="http://www.example.com/auctioneers#anyzone"/>
+      <namespace prefix="eachbay" uri="http://www.example.com/auctioneers#eachbay"/>
+      <namespace prefix="yabadoo" uri="http://www.example.com/auctioneers#yabadoo"/>
+      <namespace prefix="map" uri="http://www.w3.org/2005/xpath-functions/map"/>
+      <source role="." file="docs/auction.xml">
+         <description>Data for the the XML Query NS use cases: version for XPath tests</description>
+         <created by="XQuery WG" on="2005-02-11"/>
+      </source>
+   </environment>
+   
+   <environment name="qname">
+      <schema uri="http://www.example.com/QNameXSD" file="docs/QName-schema.xsd">
+          <description>A Schema for QName-source.xml</description>
+          <created by="XQuery WG" on="2005-03-08"/>
+      </schema>
+      <source role="." file="docs/QName-source.xml" validation="strict">
+          <description>Data containing QNames in content</description>
+          <created by="XQuery WG" on="2005-02-11"/>
+      </source>
+      <namespace prefix="" uri="http://www.example.com/QNameXSD"/>
+   </environment>
+   
+   <environment name="math">
+     <namespace prefix="math" uri="http://www.w3.org/2005/xpath-functions/math"/>
+   </environment>
+    
+    <environment name="array">
+        <namespace prefix="array" uri="http://www.w3.org/2005/xpath-functions/array"/>
+    </environment>
+
+    <environment name="map">
+        <namespace prefix="map" uri="http://www.w3.org/2005/xpath-functions/map"/>
+    </environment>
+
+    <environment name="array-and-map">
+        <namespace prefix="array" uri="http://www.w3.org/2005/xpath-functions/array"/>
+        <namespace prefix="map" uri="http://www.w3.org/2005/xpath-functions/map"/>
+    </environment>
+   
+   <!-- FUNCTIONS -->
+   
+    <test-set name="fn-abs"                             file="fn/abs.xml"/>  
+    <test-set name="fn-adjust-date-to-timezone"         file="fn/adjust-date-to-timezone.xml"/>  
+    <test-set name="fn-adjust-dateTime-to-timezone"     file="fn/adjust-dateTime-to-timezone.xml"/>
+    <test-set name="fn-adjust-time-to-timezone"         file="fn/adjust-time-to-timezone.xml"/>
+    <test-set name="fn-analyze-string"                  file="fn/analyze-string.xml"/>
+    <test-set name="fn-apply"                           file="fn/apply.xml"/>  
+    <test-set name="fn-available-environment-variables" file="fn/available-environment-variables.xml"/>
+    <test-set name="fn-avg"                             file="fn/avg.xml"/>
+    
+    <test-set name="fn-base-uri"                        file="fn/base-uri.xml"/>
+    <test-set name="fn-boolean"                         file="fn/boolean.xml"/>
+    
+    <test-set name="fn-ceiling"                         file="fn/ceiling.xml"/>
+    <test-set name="fn-codepoint-equal"                 file="fn/codepoint-equal.xml"/>
+    <test-set name="fn-codepoints-to-string"            file="fn/codepoints-to-string.xml"/>
+    <test-set name="fn-collation-key"                   file="fn/collation-key.xml"/>
+    <test-set name="fn-collection"                      file="fn/collection.xml"/>
+    <test-set name="fn-compare"                         file="fn/compare.xml"/>
+    <test-set name="fn-concat"                          file="fn/concat.xml"/>
+    <test-set name="fn-contains"                        file="fn/contains.xml"/>
+    <test-set name="fn-contains-token"                  file="fn/contains-token.xml"/>
+    <test-set name="fn-count"                           file="fn/count.xml"/>
+    <test-set name="fn-current-date"                    file="fn/current-date.xml"/>
+    <test-set name="fn-current-dateTime"                file="fn/current-dateTime.xml"/>
+    <test-set name="fn-current-time"                    file="fn/current-time.xml"/>
+
+    <test-set name="fn-data"                            file="fn/data.xml"/>
+    <test-set name="fn-dateTime"                        file="fn/dateTime.xml"/>
+    <test-set name="fn-day-from-date"                   file="fn/day-from-date.xml"/>
+    <test-set name="fn-day-from-dateTime"               file="fn/day-from-dateTime.xml"/>
+    <test-set name="fn-days-from-duration"              file="fn/days-from-duration.xml"/>
+    <test-set name="fn-deep-equal"                      file="fn/deep-equal.xml"/>
+    <test-set name="fn-default-collation"               file="fn/default-collation.xml"/>
+    <test-set name="fn-default-language"                file="fn/default-language.xml"/>
+    <test-set name="fn-distinct-values"                 file="fn/distinct-values.xml"/>
+    <test-set name="fn-doc"                             file="fn/doc.xml"/>
+    <test-set name="fn-doc-available"                   file="fn/doc-available.xml"/>
+    <test-set name="fn-document-uri"                    file="fn/document-uri.xml"/>
+
+    <test-set name="fn-element-with-id"                 file="fn/element-with-id.xml"/>
+    <test-set name="fn-empty"                           file="fn/empty.xml"/>
+    <test-set name="fn-encode-for-uri"                  file="fn/encode-for-uri.xml"/>
+    <test-set name="fn-ends-with"                       file="fn/ends-with.xml"/>
+    <test-set name="fn-environment-variable"            file="fn/environment-variable.xml"/>
+    <test-set name="fn-error"                           file="fn/error.xml"/>
+    <test-set name="fn-escape-html-uri"                 file="fn/escape-html-uri.xml"/>
+    <test-set name="fn-exactly-one"                     file="fn/exactly-one.xml"/>
+    <test-set name="fn-exists"                          file="fn/exists.xml"/>
+    
+    <test-set name="fn-false"                           file="fn/false.xml"/>
+    <test-set name="fn-filter"                          file="fn/filter.xml"/>
+    <test-set name="fn-floor"                           file="fn/floor.xml"/>
+    <test-set name="fn-fold-left"                       file="fn/fold-left.xml"/>
+    <test-set name="fn-fold-right"                      file="fn/fold-right.xml"/>
+    <test-set name="fn-for-each"                        file="fn/for-each.xml"/>
+    <test-set name="fn-for-each-pair"                   file="fn/for-each-pair.xml"/>
+    <test-set name="fn-format-date"                     file="fn/format-date.xml"/>
+    <test-set name="fn-format-dateTime"                 file="fn/format-dateTime.xml"/>
+    <test-set name="fn-format-integer"                  file="fn/format-integer.xml"/>
+    <test-set name="fn-format-number"                   file="fn/format-number.xml"/>
+    <test-set name="fn-format-time"                     file="fn/format-time.xml"/>
+    <test-set name="fn-function-lookup"                 file="fn/function-lookup.xml"/>
+    <test-set name="fn-function-arity"                  file="fn/function-arity.xml"/>
+    <test-set name="fn-function-name"                   file="fn/function-name.xml"/>
+    <test-set name="fn-generate-id"                     file="fn/generate-id.xml"/>
+    <test-set name="fn-has-children"                    file="fn/has-children.xml"/>
+    <test-set name="fn-head"                            file="fn/head.xml"/>
+    <test-set name="fn-hours-from-dateTime"             file="fn/hours-from-dateTime.xml"/>
+    <test-set name="fn-hours-from-duration"             file="fn/hours-from-duration.xml"/>
+    <test-set name="fn-hours-from-time"                 file="fn/hours-from-time.xml"/>
+    
+    <test-set name="fn-id"                              file="fn/id.xml"/>
+    <test-set name="fn-idref"                           file="fn/idref.xml"/>
+    <test-set name="fn-implicit-timezone"               file="fn/implicit-timezone.xml"/>
+    <test-set name="fn-innermost"                       file="fn/innermost.xml"/>
+    <test-set name="fn-index-of"                        file="fn/index-of.xml"/>
+    <test-set name="fn-insert-before"                   file="fn/insert-before.xml"/>
+    <test-set name="fn-in-scope-prefixes"               file="fn/in-scope-prefixes.xml"/>
+    <test-set name="fn-iri-to-uri"                      file="fn/iri-to-uri.xml"/>
+    
+    <test-set name="fn-json-doc"                        file="fn/json-doc.xml"/>  
+    <test-set name="fn-json-to-xml"                     file="fn/json-to-xml.xml"/>
+    <test-set name="fn-lang"                            file="fn/lang.xml"/>
+    <test-set name="fn-last"                            file="fn/last.xml"/>
+    <test-set name="fn-load-xquery-module"		        file="fn/load-xquery-module.xml"/>
+    <test-set name="fn-local-name"                      file="fn/local-name.xml"/>
+    <test-set name="fn-local-name-from-QName"           file="fn/local-name-from-QName.xml"/>
+    <test-set name="fn-lower-case"                      file="fn/lower-case.xml"/>
+    
+    <test-set name="fn-max"                             file="fn/max.xml"/>
+    <test-set name="fn-matches"                         file="fn/matches.xml"/>
+    <test-set name="fn-matches.re"                      file="fn/matches.re.xml"/>
+    <test-set name="fn-min"                             file="fn/min.xml"/>
+    <test-set name="fn-minutes-from-dateTime"           file="fn/minutes-from-dateTime.xml"/>
+    <test-set name="fn-minutes-from-duration"           file="fn/minutes-from-duration.xml"/>
+    <test-set name="fn-minutes-from-time"               file="fn/minutes-from-time.xml"/>
+    <test-set name="fn-month-from-date"                 file="fn/month-from-date.xml"/>
+    <test-set name="fn-months-from-duration"            file="fn/months-from-duration.xml"/>
+    <test-set name="fn-month-from-dateTime"             file="fn/month-from-dateTime.xml"/>
+    
+    <test-set name="fn-name"                            file="fn/name.xml"/>
+    <test-set name="fn-namespace-uri"                   file="fn/namespace-uri.xml"/>
+    <test-set name="fn-namespace-uri-for-prefix"        file="fn/namespace-uri-for-prefix.xml"/>
+    <test-set name="fn-namespace-uri-from-QName"        file="fn/namespace-uri-from-QName.xml"/>
+    <test-set name="fn-nilled"                          file="fn/nilled.xml"/>
+    <test-set name="fn-node-name"                       file="fn/node-name.xml"/>
+    <test-set name="fn-normalize-space"                 file="fn/normalize-space.xml"/>
+    <test-set name="fn-normalize-unicode"               file="fn/normalize-unicode.xml"/>
+    <test-set name="fn-not"                             file="fn/not.xml"/>
+    <test-set name="fn-number"                          file="fn/number.xml"/>
+    
+    <test-set name="fn-one-or-more"                     file="fn/one-or-more.xml"/>
+    <test-set name="fn-outermost"                       file="fn/outermost.xml"/>
+    
+    <test-set name="fn-parse-ietf-date"                 file="fn/parse-ietf-date.xml"/>
+    <test-set name="fn-parse-json"                      file="fn/parse-json.xml"/>
+    <test-set name="fn-parse-xml"                       file="fn/parse-xml.xml"/>
+    <test-set name="fn-parse-xml-fragment"              file="fn/parse-xml-fragment.xml"/>
+    <test-set name="fn-path"                            file="fn/path.xml"/>
+    <test-set name="fn-position"                        file="fn/position.xml"/>
+    <test-set name="fn-prefix-from-QName"               file="fn/prefix-from-QName.xml"/>
+    
+    <test-set name="fn-QName"                           file="fn/QName.xml"/>
+    
+    <test-set name="fn-random-number-generator"         file="fn/random-number-generator.xml"/>    
+    <test-set name="fn-remove"                          file="fn/remove.xml"/>
+    <test-set name="fn-replace"                         file="fn/replace.xml"/>
+    <test-set name="fn-resolve-QName"                   file="fn/resolve-QName.xml"/>
+    <test-set name="fn-resolve-uri"                     file="fn/resolve-uri.xml"/>
+    <test-set name="fn-reverse"                         file="fn/reverse.xml"/>
+    <test-set name="fn-root"                            file="fn/root.xml"/>
+    <test-set name="fn-round"                           file="fn/round.xml"/>
+    <test-set name="fn-round-half-to-even"              file="fn/round-half-to-even.xml"/>
+    
+    <test-set name="fn-seconds-from-dateTime"           file="fn/seconds-from-dateTime.xml"/>
+    <test-set name="fn-seconds-from-duration"           file="fn/seconds-from-duration.xml"/>
+    <test-set name="fn-seconds-from-time"               file="fn/seconds-from-time.xml"/>
+    <test-set name="fn-serialize"                       file="fn/serialize.xml"/>
+    <test-set name="fn-sort"                            file="fn/sort.xml"/>
+    <test-set name="fn-starts-with"                     file="fn/starts-with.xml"/>
+    <test-set name="fn-static-base-uri"                 file="fn/static-base-uri.xml"/>
+    <test-set name="fn-string"                          file="fn/string.xml"/>
+    <test-set name="fn-string-join"                     file="fn/string-join.xml"/>
+    <test-set name="fn-string-length"                   file="fn/string-length.xml"/>
+    <test-set name="fn-string-to-codepoints"            file="fn/string-to-codepoints.xml"/>
+    <test-set name="fn-subsequence"                     file="fn/subsequence.xml"/>
+    <test-set name="fn-substring"                       file="fn/substring.xml"/>
+    <test-set name="fn-substring-after"                 file="fn/substring-after.xml"/>
+    <test-set name="fn-substring-before"                file="fn/substring-before.xml"/>
+    <test-set name="fn-sum"                             file="fn/sum.xml"/>
+    
+    <test-set name="fn-tail"                            file="fn/tail.xml"/>
+    <test-set name="fn-timezone-from-date"              file="fn/timezone-from-date.xml"/>
+    <test-set name="fn-timezone-from-dateTime"          file="fn/timezone-from-dateTime.xml"/>
+    <test-set name="fn-timezone-from-time"              file="fn/timezone-from-time.xml"/>
+    <test-set name="fn-tokenize"                        file="fn/tokenize.xml"/>
+    <test-set name="fn-trace"                           file="fn/trace.xml"/>
+    <test-set name="fn-transform"                       file="fn/transform.xml"/>
+    <test-set name="fn-translate"                       file="fn/translate.xml"/>
+    <test-set name="fn-true"                            file="fn/true.xml"/>
+    <test-set name="fn-unordered"                       file="fn/unordered.xml"/>
+    <test-set name="fn-unparsed-text"                   file="fn/unparsed-text.xml"/>
+    <test-set name="fn-unparsed-text-available"         file="fn/unparsed-text-available.xml"/>
+    <test-set name="fn-unparsed-text-lines"             file="fn/unparsed-text-lines.xml"/>
+    <test-set name="fn-upper-case"                      file="fn/upper-case.xml"/>
+    <test-set name="fn-uri-collection"                  file="fn/uri-collection.xml"/>
+    <test-set name="fn-xml-to-json"                     file="fn/xml-to-json.xml"/>
+    <test-set name="fn-year-from-date"                  file="fn/year-from-date.xml"/>
+    <test-set name="fn-years-from-duration"             file="fn/years-from-duration.xml"/>
+    <test-set name="fn-year-from-dateTime"              file="fn/year-from-dateTime.xml"/>
+    <test-set name="fn-zero-or-one"                     file="fn/zero-or-one.xml"/>
+    
+    <test-set name="math-acos"                          file="math/math-acos.xml"/>
+    <test-set name="math-asin"                          file="math/math-asin.xml"/>   
+    <test-set name="math-atan"                          file="math/math-atan.xml"/>
+    <test-set name="math-atan2"                         file="math/math-atan2.xml"/>
+    <test-set name="math-cos"                           file="math/math-cos.xml"/>
+    <test-set name="math-exp"                           file="math/math-exp.xml"/>
+    <test-set name="math-exp10"                         file="math/math-exp10.xml"/>
+    <test-set name="math-log"                           file="math/math-log.xml"/>
+    <test-set name="math-log10"                         file="math/math-log10.xml"/>
+    <test-set name="math-pi"                            file="math/math-pi.xml"/>
+    <test-set name="math-pow"                           file="math/math-pow.xml"/>
+    <test-set name="math-sin"                           file="math/math-sin.xml"/>
+    <test-set name="math-sqrt"                          file="math/math-sqrt.xml"/>
+    <test-set name="math-tan"                           file="math/math-tan.xml"/>
+    
+    
+    <test-set name="map-merge"                          file="map/merge.xml"/>
+    <test-set name="map-contains"                       file="map/contains.xml"/>
+    <test-set name="map-find"                           file="map/find.xml"/>
+    <test-set name="map-get"                            file="map/get.xml"/>
+    <test-set name="map-entry"                          file="map/entry.xml"/>
+    <test-set name="map-size"                           file="map/size.xml"/>
+    <test-set name="map-keys"                           file="map/keys.xml"/>
+    <test-set name="map-put"                            file="map/put.xml"/>
+    <test-set name="map-remove"                         file="map/remove.xml"/>
+    <test-set name="map-for-each"                       file="map/for-each.xml"/>
+    <test-set name="map-call"                           file="map/call.xml"/>
+    
+    
+    <test-set name="array-append"                       file="array/append.xml"/>
+    <test-set name="array-filter"                       file="array/filter.xml"/>
+    <test-set name="array-flatten"                      file="array/flatten.xml"/>
+    <test-set name="array-fold-left"                    file="array/fold-left.xml"/>
+    <test-set name="array-fold-right"                   file="array/fold-right.xml"/>
+    <test-set name="array-for-each"                     file="array/for-each.xml"/>
+    <test-set name="array-for-each-pair"                file="array/for-each-pair.xml"/>
+    <test-set name="array-get"                          file="array/get.xml"/>
+    <test-set name="array-head"                         file="array/head.xml"/>
+    <test-set name="array-insert-before"                file="array/insert-before.xml"/>
+    <test-set name="array-join"                         file="array/join.xml"/>
+    <test-set name="array-put"                          file="array/put.xml"/>
+    <test-set name="array-remove"                       file="array/remove.xml"/>
+    <test-set name="array-reverse"                      file="array/reverse.xml"/>
+    <test-set name="array-size"                         file="array/size.xml"/>
+    <test-set name="array-sort"                         file="array/sort.xml"/>
+    <test-set name="array-subarray"                     file="array/subarray.xml"/>
+    <test-set name="array-tail"                         file="array/tail.xml"/>
+    
+    <!-- Some tests for characteristics of xs: data types. -->
+    
+    <test-set name="xs-anyURI"                          file="xs/anyURI.xml"/>
+    <test-set name="xs-base64Binary"                    file="xs/base64Binary.xml"/>
+    <test-set name="xs-dateTimeStamp"                   file="xs/dateTimeStamp.xml"/>
+    <test-set name="xs-double"                          file="xs/double.xml"/>
+    <test-set name="xs-error"                           file="xs/error.xml"/>
+    <test-set name="xs-float"                           file="xs/float.xml"/>
+    <test-set name="xs-hexBinary"                       file="xs/hexBinary.xml"/>
+    <test-set name="xs-normalizedString"                file="xs/normalizedString.xml"/>
+    <test-set name="xs-numeric"                         file="xs/numeric.xml"/>
+    <test-set name="xs-token"                           file="xs/token.xml"/>
+
+   <!-- OPERATORS -->
+   
+   <test-set name="op-add-dayTimeDurations"             file="op/add-dayTimeDurations.xml"/>
+   <test-set name="op-add-dayTimeDuration-to-date"      file="op/add-dayTimeDuration-to-date.xml"/>
+   <test-set name="op-add-dayTimeDuration-to-dateTime"  file="op/add-dayTimeDuration-to-dateTime.xml"/>
+   <test-set name="op-add-dayTimeDuration-to-time"      file="op/add-dayTimeDuration-to-time.xml"/>
+   <test-set name="op-add-yearMonthDurations"           file="op/add-yearMonthDurations.xml"/>
+   <test-set name="op-add-yearMonthDuration-to-date"    file="op/add-yearMonthDuration-to-date.xml"/>
+   <test-set name="op-add-yearMonthDuration-to-dateTime" file="op/add-yearMonthDuration-to-dateTime.xml"/>
+   <test-set name="op-anyURI-equal"                     file="op/anyURI-equal.xml"/>
+   <test-set name="op-anyURI-greater-than"              file="op/anyURI-greater-than.xml"/>
+   <test-set name="op-anyURI-less-than"                 file="op/anyURI-less-than.xml"/> 
+   
+   <test-set name="op-bang"                             file="op/bang.xml"/>
+   <test-set name="op-base64Binary-equal"               file="op/base64Binary-equal.xml"/>
+   <test-set name="op-base64Binary-less-than"           file="op/base64Binary-less-than.xml"/>
+   <test-set name="op-base64Binary-greater-than"        file="op/base64Binary-greater-than.xml"/>
+   <test-set name="op-boolean-equal"                    file="op/boolean-equal.xml"/>
+   <test-set name="op-boolean-greater-than"             file="op/boolean-greater-than.xml"/>
+   <test-set name="op-boolean-less-than"                file="op/boolean-less-than.xml"/>
+   
+   <test-set name="op-concat"                           file="op/concat.xml"/>
+   <test-set name="op-concatenate"                      file="op/concatenate.xml"/>
+   
+   <test-set name="op-date-equal"                       file="op/date-equal.xml"/>
+   <test-set name="op-date-greater-than"                file="op/date-greater-than.xml"/>
+   <test-set name="op-date-less-than"                   file="op/date-less-than.xml"/>
+   <test-set name="op-dateTime-equal"                   file="op/dateTime-equal.xml"/>
+   <test-set name="op-dateTime-greater-than"            file="op/dateTime-greater-than.xml"/>
+   <test-set name="op-dateTime-less-than"               file="op/dateTime-less-than.xml"/>
+   <test-set name="op-dayTimeDuration-greater-than"     file="op/dayTimeDuration-greater-than.xml"/>
+   <test-set name="op-dayTimeDuration-less-than"        file="op/dayTimeDuration-less-than.xml"/>
+   <test-set name="op-divide-dayTimeDuration"           file="op/divide-dayTimeDuration.xml"/>
+   <test-set name="op-divide-dayTimeDuration-by-dayTimeDuration" 
+                                                        file="op/divide-dayTimeDuration-by-dayTimeDuration.xml"/>
+   <test-set name="op-divide-yearMonthDuration"         file="op/divide-yearMonthDuration.xml"/>
+   <test-set name="op-divide-yearMonthDuration-by-yearMonthDuration" 
+                                                        file="op/divide-yearMonthDuration-by-yearMonthDuration.xml"/>
+   <test-set name="op-duration-equal"                   file="op/duration-equal.xml"/>
+   
+   <test-set name="op-except"                           file="op/except.xml"/>
+   
+   <test-set name="op-gDay-equal"                       file="op/gDay-equal.xml"/>
+   <test-set name="op-gMonth-equal"                     file="op/gMonth-equal.xml"/>
+   <test-set name="op-gMonthDay-equal"                  file="op/gMonthDay-equal.xml"/>
+   <test-set name="op-gYear-equal"                      file="op/gYear-equal.xml"/>
+   <test-set name="op-gYearMonth-equal"                 file="op/gYearMonth-equal.xml"/>
+   
+   <test-set name="op-hexBinary-equal"                  file="op/hexBinary-equal.xml"/>
+   <test-set name="op-hexBinary-greater-than"           file="op/hexBinary-greater-than.xml"/>
+   <test-set name="op-hexBinary-less-than"              file="op/hexBinary-less-than.xml"/> 
+   
+   <test-set name="op-intersect"                        file="op/intersect.xml"/>
+   <test-set name="op-is-same-node"                     file="op/is-same-node.xml"/>
+   
+   <test-set name="op-multiply-dayTimeDuration"         file="op/multiply-dayTimeDuration.xml"/>
+   <test-set name="op-multiply-yearMonthDuration"       file="op/multiply-yearMonthDuration.xml"/>
+   
+   <test-set name="op-node-after"                       file="op/node-after.xml"/>
+   <test-set name="op-node-before"                      file="op/node-before.xml"/>
+   <test-set name="op-NOTATION-equal"                   file="op/NOTATION-equal.xml"/>
+   <test-set name="op-numeric-add"                      file="op/numeric-add.xml"/>
+   <test-set name="op-numeric-equal"                    file="op/numeric-equal.xml"/> <!-- includes tests from NumericEqual.xml but not NumericEqualSI.xml -->
+   <test-set name="op-numeric-divide"                   file="op/numeric-divide.xml"/>
+   <test-set name="op-numeric-greater-than"             file="op/numeric-greater-than.xml"/>
+   <test-set name="op-numeric-integer-divide"           file="op/numeric-integer-divide.xml"/>
+   <test-set name="op-numeric-less-than"                file="op/numeric-less-than.xml"/>
+   <test-set name="op-numeric-mod"                      file="op/numeric-mod.xml"/>
+   <test-set name="op-numeric-multiply"                 file="op/numeric-multiply.xml"/>
+   <test-set name="op-numeric-subtract"                 file="op/numeric-subtract.xml"/>
+   <test-set name="op-numeric-unary-minus"              file="op/numeric-unary-minus.xml"/>
+   <test-set name="op-numeric-unary-plus"               file="op/numeric-unary-plus.xml"/>
+   
+   <test-set name="op-QName-equal"                      file="op/QName-equal.xml"/>
+   
+   <test-set name="op-string-equal"                     file="op/string-equal.xml"/>
+   <test-set name="op-string-greater-than"              file="op/string-greater-than.xml"/>
+   <test-set name="op-string-less-than"                 file="op/string-less-than.xml"/>
+   
+   <test-set name="op-subtract-dates"                   file="op/subtract-dates.xml"/>
+   <test-set name="op-subtract-dateTimes"               file="op/subtract-dateTimes.xml"/>
+   <test-set name="op-subtract-dayTimeDuration-from-date" file="op/subtract-dayTimeDuration-from-date.xml"/>
+   <test-set name="op-subtract-dayTimeDuration-from-dateTime" file="op/subtract-dayTimeDuration-from-dateTime.xml"/>
+   <test-set name="op-subtract-dayTimeDuration-from-time" file="op/subtract-dayTimeDuration-from-time.xml"/>
+   <test-set name="op-subtract-dayTimeDurations"        file="op/subtract-dayTimeDurations.xml"/>
+   <test-set name="op-subtract-times"                   file="op/subtract-times.xml"/>
+   <test-set name="op-subtract-yearMonthDuration-from-date" file="op/subtract-yearMonthDuration-from-date.xml"/>
+   <test-set name="op-subtract-yearMonthDuration-from-dateTime" file="op/subtract-yearMonthDuration-from-dateTime.xml"/>
+   <test-set name="op-subtract-yearMonthDurations"      file="op/subtract-yearMonthDurations.xml"/>
+   
+   <test-set name="op-time-equal"                       file="op/time-equal.xml"/>
+   <test-set name="op-time-greater-than"                file="op/time-greater-than.xml"/>
+   <test-set name="op-time-less-than"                   file="op/time-less-than.xml"/>
+   <test-set name="op-to"                               file="op/to.xml"/>
+   
+   <test-set name="op-union"                            file="op/union.xml"/>
+   
+   <test-set name="op-yearMonthDuration-greater-than"   file="op/yearMonthDuration-greater-than.xml"/>
+   <test-set name="op-yearMonthDuration-less-than"      file="op/yearMonthDuration-less-than.xml"/>
+
+   <test-set name="op-same-key"                         file="op/same-key.xml"/>
+   
+   
+   <!-- LANGUAGE CONSTRUCTS -->
+   
+   <test-set name="prod-AllowingEmpty"                  file="prod/AllowingEmpty.xml"/>
+   <test-set name="prod-Annotation"                     file="prod/Annotation.xml"/>
+   <test-set name="prod-ArrayTest"                      file="prod/ArrayTest.xml"/>  
+   <test-set name="prod-ArrowPostfix"                   file="prod/ArrowPostfix.xml"/>
+   <test-set name="prod-AxisStep"                       file="prod/AxisStep.xml"/>
+   <test-set name="prod-AxisStep.abbr"                  file="prod/AxisStep.abbr.xml"/>
+   <test-set name="prod-AxisStep.ancestor"              file="prod/AxisStep.ancestor.xml"/>
+   <test-set name="prod-AxisStep.ancestor-or-self"      file="prod/AxisStep.ancestor-or-self.xml"/>
+   <test-set name="prod-AxisStep.following"             file="prod/AxisStep.following.xml"/>
+   <test-set name="prod-AxisStep.following-sibling"     file="prod/AxisStep.following-sibling.xml"/>
+   <test-set name="prod-AxisStep.preceding"             file="prod/AxisStep.preceding.xml"/>
+   <test-set name="prod-AxisStep.preceding-sibling"     file="prod/AxisStep.preceding-sibling.xml"/>
+   <test-set name="prod-AxisStep.static-typing"         file="prod/AxisStep.static-typing.xml"/>
+   <test-set name="prod-AxisStep.unabbr"                file="prod/AxisStep.unabbr.xml"/>
+   
+   <test-set name="prod-BaseURIDecl"                    file="prod/BaseURIDecl.xml"/>
+   <test-set name="prod-BoundarySpaceDecl"              file="prod/BoundarySpaceDecl.xml"/>
+   
+   
+   <test-set name="prod-CastableExpr"                   file="prod/CastableExpr.xml"/>
+   <test-set name="prod-CastExpr"                       file="prod/CastExpr.xml"/>
+   <test-set name="prod-CastExpr.derived"               file="prod/CastExpr.derived.xml"/>
+   <test-set name="prod-CastExpr.schema"                file="prod/CastExpr.schema.xml"/>
+   <test-set name="prod-Comment"                        file="prod/Comment.xml"/>
+   <test-set name="prod-CompAttrConstructor"            file="prod/CompAttrConstructor.xml"/>
+   <test-set name="prod-CompDocConstructor"             file="prod/CompDocConstructor.xml"/>  
+   <test-set name="prod-CompCommentConstructor"         file="prod/CompCommentConstructor.xml"/>
+   <test-set name="prod-CompElemConstructor"            file="prod/CompElemConstructor.xml"/>
+   <test-set name="prod-CompNamespaceConstructor"       file="prod/CompNamespaceConstructor.xml"/>
+   <test-set name="prod-CompPIConstructor"              file="prod/CompPIConstructor.xml"/>
+   <test-set name="prod-CompTextConstructor"            file="prod/CompTextConstructor.xml"/>
+   <test-set name="prod-ConstructionDecl"               file="prod/ConstructionDecl.xml"/>
+   <test-set name="prod-ConstructionDecl.schema"        file="prod/ConstructionDecl.schema.xml"/>
+   <test-set name="prod-ContextItemDecl"                file="prod/ContextItemDecl.xml"/>
+   <test-set name="prod-ContextItemExpr"                file="prod/ContextItemExpr.xml"/>
+   <test-set name="prod-CopyNamespacesDecl"             file="prod/CopyNamespacesDecl.xml"/>
+   <test-set name="prod-CountClause"                    file="prod/CountClause.xml"/>
+   <test-set name="prod-CurlyArrayConstructor"          file="prod/CurlyArrayConstructor.xml"/>
+   
+   <test-set name="prod-DecimalFormatDecl"              file="prod/DecimalFormatDecl.xml"/>
+   <test-set name="prod-DefaultCollationDecl"           file="prod/DefaultCollationDecl.xml"/>
+   <test-set name="prod-DefaultNamespaceDecl"           file="prod/DefaultNamespaceDecl.xml"/>
+   <test-set name="prod-DirAttributeList"               file="prod/DirAttributeList.xml"/>
+   <test-set name="prod-DirectConstructor"              file="prod/DirectConstructor.xml"/>
+   <test-set name="prod-DirElemConstructor"             file="prod/DirElemConstructor.xml"/>
+   <test-set name="prod-DirElemContent"                 file="prod/DirElemContent.xml"/>
+   <test-set name="prod-DirElemContent.namespace"       file="prod/DirElemContent.namespace.xml"/>
+   <test-set name="prod-DirElemContent.whitespace"      file="prod/DirElemContent.whitespace.xml"/>
+   
+   <test-set name="prod-EmptyOrderDecl"                 file="prod/EmptyOrderDecl.xml"/>
+   <test-set name="prod-EQName"                         file="prod/EQName.xml"/>
+   <test-set name="prod-ExtensionExpr"                  file="prod/ExtensionExpr.xml"/>
+   
+   <test-set name="prod-FLWORExpr"                      file="prod/FLWORExpr.xml"/>
+   <test-set name="prod-FLWORExpr.static-typing"        file="prod/FLWORExpr.static-typing.xml"/>
+   <test-set name="prod-ForClause"                      file="prod/ForClause.xml"/>
+   <test-set name="prod-FunctionCall"                   file="prod/FunctionCall.xml"/>
+   <test-set name="prod-FunctionDecl"                   file="prod/FunctionDecl.xml"/>
+   
+   <test-set name="prod-GeneralComp.eq"                 file="prod/GeneralComp.eq.xml"/>
+   <test-set name="prod-GeneralComp.ge"                 file="prod/GeneralComp.ge.xml"/>
+   <test-set name="prod-GeneralComp.gt"                 file="prod/GeneralComp.gt.xml"/>
+   <test-set name="prod-GeneralComp.le"                 file="prod/GeneralComp.le.xml"/>
+   <test-set name="prod-GeneralComp.lt"                 file="prod/GeneralComp.lt.xml"/>
+   <test-set name="prod-GeneralComp.ne"                 file="prod/GeneralComp.ne.xml"/>
+   <test-set name="prod-GroupByClause"                  file="prod/GroupByClause.xml"/>
+   
+   <test-set name="prod-IfExpr"                         file="prod/IfExpr.xml"/>
+   <test-set name="prod-InlineFunctionExpr"             file="prod/InlineFunctionExpr.xml"/>
+   <test-set name="prod-InstanceofExpr"                 file="prod/InstanceofExpr.xml"/>
+   
+   <test-set name="prod-LetClause"                      file="prod/LetClause.xml"/>
+   <test-set name="prod-Literal"                        file="prod/Literal.xml"/>
+   <test-set name="prod-Lookup"                         file="prod/Lookup.xml"/>
+   
+   <test-set name="prod-MapConstructor"                 file="prod/MapConstructor.xml"/>
+   <test-set name="prod-MapTest"                        file="prod/MapTest.xml"/>
+   <test-set name="prod-ModuleImport"                   file="prod/ModuleImport.xml"/>
+   
+   <test-set name="prod-NamedFunctionRef"               file="prod/NamedFunctionRef.xml"/>
+   <test-set name="prod-NamespaceDecl"                  file="prod/NamespaceDecl.xml"/>
+   <test-set name="prod-NameTest"                       file="prod/NameTest.xml"/>
+   <test-set name="prod-NodeTest"                       file="prod/NodeTest.xml"/>
+   
+   <test-set name="prod-OptionDecl"                     file="prod/OptionDecl.xml"/>
+   <test-set name="prod-OptionDecl.serialization"       file="prod/OptionDecl.serialization.xml"/>
+   <test-set name="prod-OrExpr"                         file="prod/OrExpr.xml"/>
+   <test-set name="prod-OrderByClause"                  file="prod/OrderByClause.xml"/>
+   <test-set name="prod-OrderingModeDecl"               file="prod/OrderingModeDecl.xml"/>
+   
+   <test-set name="prod-PathExpr"                       file="prod/PathExpr.xml"/>
+   <test-set name="prod-ParenthesizedExpr"              file="prod/ParenthesizedExpr.xml"/>
+   <test-set name="prod-PositionalVar"                  file="prod/PositionalVar.xml"/>
+   <test-set name="prod-Predicate"                      file="prod/Predicate.xml"/>
+   
+   <test-set name="prod-QuantifiedExpr"                 file="prod/QuantifiedExpr.xml"/>
+
+   <test-set name="prod-ReturnClause"                   file="prod/ReturnClause.xml"/>
+  
+   <test-set name="prod-SchemaImport"                   file="prod/SchemaImport.xml"/>
+   <test-set name="prod-SequenceType"                   file="prod/SequenceType.xml"/>
+   <test-set name="prod-SquareArrayConstructor"         file="prod/SquareArrayConstructor.xml"/>
+   <test-set name="prod-StepExpr"                       file="prod/StepExpr.xml"/>
+   <test-set name="prod-StringConstructor"              file="prod/StringConstructor.xml"/>
+   <test-set name="prod-SwitchExpr"                     file="prod/SwitchExpr.xml"/>
+   
+   <test-set name="prod-TreatExpr"                      file="prod/TreatExpr.xml"/>
+   <test-set name="prod-TryCatchExpr"                   file="prod/TryCatchExpr.xml"/>
+   <test-set name="prod-TypeswitchExpr"                 file="prod/TypeswitchExpr.xml"/>
+   
+   <test-set name="prod-UnorderedExpr"                  file="prod/UnorderedExpr.xml"/>
+   <test-set name="prod-UnaryLookup"                    file="prod/UnaryLookup.xml"/>
+   
+   <test-set name="prod-ValidateExpr"                   file="prod/ValidateExpr.xml"/>
+   <test-set name="prod-ValueComp"                      file="prod/ValueComp.xml"/>
+   <test-set name="prod-VarDecl"                        file="prod/VarDecl.xml"/>
+   <test-set name="prod-VarDecl.external"               file="prod/VarDecl.external.xml"/>
+   <test-set name="prod-VarDefaultValue"                file="prod/VarDefaultValue.xml"/>
+   <test-set name="prod-VersionDecl"                    file="prod/VersionDecl.xml"/>
+   
+   <test-set name="prod-WhereClause"                    file="prod/WhereClause.xml"/>
+   <test-set name="prod-WindowClause"                   file="prod/WindowClause.xml"/>
+   
+   <!-- ORTHOGONAL FEATURES -->
+   
+   <test-set name="misc-CombinedErrorCodes"             file="misc/CombinedErrorCodes.xml"/>
+   <test-set name="misc-AnnexE"                         file="misc/AnnexE.xml"/>
+   <test-set name="misc-AppendixA4"                     file="misc/AppendixA4.xml"/>
+   <test-set name="misc-ErrorsAndOptimization"          file="misc/ErrorsAndOptimization.xml"/>
+   <test-set name="misc-HigherOrderFunctions"           file="misc/HigherOrderFunctions.xml"/>
+   <test-set name="misc-JsonTestSuite"                  file="misc/JsonTestSuite.xml"/>
+   <test-set name="misc-StaticContext"                  file="misc/StaticContext.xml"/>
+   <test-set name="misc-Surrogates"                     file="misc/Surrogates.xml"/>
+   <test-set name="misc-UCACollation"                   file="misc/UCACollation.xml"/>
+   <test-set name="misc-XMLEdition"                     file="misc/XMLEdition.xml"/>
+   
+   <!-- SERIALIZATION -->
+   
+   <test-set name="method-adaptive"                     file="ser/method-adaptive.xml"/>
+   <test-set name="method-html"                         file="ser/method-html.xml"/>
+   <test-set name="method-json"                         file="ser/method-json.xml"/>
+   <test-set name="method-text"                         file="ser/method-text.xml"/>
+   <test-set name="method-xhtml"                        file="ser/method-xhtml.xml"/>
+   <test-set name="method-xml"                          file="ser/method-xml.xml"/>
+   
+   <!-- USE CASES AND APPLICATIONS -->
+   
+   <test-set name="app-CatalogCheck"                    file="app/CatalogCheck.xml"/>
+   <test-set name="app-Demos"                           file="app/Demos.xml"/>
+   <test-set name="app-Duplicates"                      file="app/Duplicates.xml"/>
+   <test-set name="app-FunctxFn"                        file="app/FunctxFn.xml"/>
+   <test-set name="app-FunctxFunctx"                    file="app/FunctxFunctx.xml"/>
+   <test-set name="app-UseCaseCompoundValues"           file="app/UseCaseCompoundValues.xml"/>
+   <test-set name="app-UseCaseJSON"                     file="app/UseCaseJSON.xml"/>   
+   <test-set name="app-UseCaseNLP"                      file="app/UseCaseNLP.xml"/>
+   <test-set name="app-UseCaseNS"                       file="app/UseCaseNS.xml"/>
+   <test-set name="app-UseCasePARTS"                    file="app/UseCasePARTS.xml"/>
+   <test-set name="app-UseCaseR"                        file="app/UseCaseR.xml"/>
+   <test-set name="app-UseCaseR31"                      file="app/UseCaseR31.xml"/>
+   <test-set name="app-UseCaseSEQ"                      file="app/UseCaseSEQ.xml"/>
+   <test-set name="app-UseCaseSGML"                     file="app/UseCaseSGML.xml"/>
+   <test-set name="app-UseCaseSTRING"                   file="app/UseCaseSTRING.xml"/>
+   <test-set name="app-UseCaseTREE"                     file="app/UseCaseTREE.xml"/>
+   <test-set name="app-UseCaseXMP"                      file="app/UseCaseXMP.xml"/>
+   <test-set name="app-Walmsley"                        file="app/Walmsley.xml"/>
+   <test-set name="app-XMark"                           file="app/XMark.xml"/>
+   <test-set name="app-spec-examples"                   file="app/fo-spec-examples.xml"/>
+   
+    
+</catalog>

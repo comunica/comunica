@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-year-from-date">
+   <description>Tests for the year-from-date() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-year-from-date"/>
+
+   <test-case name="fn-year-from-date1args-1">
+      <description> Evaluates The "year-from-date" function with the arguments set as follows: $arg = xs:date(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>1970</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date1args-2">
+      <description> Evaluates The "year-from-date" function with the arguments set as follows: $arg = xs:date(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:year-from-date(xs:date("1983-11-17Z"))</test>
+      <result>
+         <assert-string-value>1983</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date1args-3">
+      <description> Evaluates The "year-from-date" function with the arguments set as follows: $arg = xs:date(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:year-from-date(xs:date("2030-12-31Z"))</test>
+      <result>
+         <assert-string-value>2030</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-1">
+      <description> Evaluates The "year-from-date" function As per example 1 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1999-05-31Z"))</test>
+      <result>
+         <assert-string-value>1999</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-2">
+      <description> Evaluates The "year-from-date" function As per example 2 of the F&amp;O specs </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("2000-01-01Z"))</test>
+      <result>
+         <assert-string-value>2000</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-3">
+      <description> Evaluates The "year-from-date" function involving a "numeric-less-than" operation (lt operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1999-12-31Z")) lt fn:year-from-date(xs:date("1999-12-31Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-4">
+      <description> Evaluates The "year-from-date" function involving a "numeric-less-than" operation (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1999-12-31Z")) le fn:year-from-date(xs:date("1999-12-31Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-5">
+      <description> Evaluates The "year-from-date" function using the empty sequence as an argument. Use count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:count(fn:year-from-date(()))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-6">
+      <description> Evaluates The "year-from-date" function that returns 1. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("0001-05-31Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-7">
+      <description> Evaluates The "year-from-date" function that returns a negative number </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <modified by="O'Neil Delpratt" on="2016-04-28" change="Added error code as alternative. see bug issue #29546"/>
+      <test>fn:year-from-date(xs:date("-1999-05-31Z"))</test>
+      <result>
+         <any-of>
+            <assert-string-value>-1999</assert-string-value>
+            <error code="FODT0001"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-8">
+      <description> Evaluates The "year-from-date" function as part of a "+" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1970-01-01Z")) + fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>3940</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-9">
+      <description> Evaluates The "year-from-date" function as part of a "-" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1970-01-01Z")) - fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-10">
+      <description> Evaluates The "year-from-date" function as part of a "*" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1970-01-01Z")) * fn:year-from-date(xs:date("0002-01-01Z"))</test>
+      <result>
+         <assert-string-value>3940</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-11">
+      <description> Evaluates The "year-from-date" function as part of a "div" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1970-01-01Z")) div fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-12">
+      <description> Evaluates The "year-from-date" function as part of a "idiv" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1970-01-01Z")) idiv fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-13">
+      <description> Evaluates The "year-from-date" function as part of a "mod" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1970-01-01Z")) mod fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-14">
+      <description> Evaluates The "year-from-date" function as part of a "numeric-unary-plus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>+fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>1970</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-15">
+      <description> Evaluates The "year-from-date" function as part of a "numeric-unary-minus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>-fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-string-value>-1970</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-16">
+      <description> Evaluates The "year-from-date" function as part of a "numeric-equal" expression (eq operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1970-01-01Z")) eq fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-17">
+      <description> Evaluates The "year-from-date" function as part of a "numeric-equal" expression (ne operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1970-01-01Z")) ne fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-18">
+      <description> Evaluates The "year-from-date" function as part of a "numeric-equal" expression (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1970-01-01Z")) le fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-year-from-date-19">
+      <description> Evaluates The "year-from-date" function as part of a "numeric-equal" expression (ge operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:year-from-date(xs:date("1970-01-01Z")) ge fn:year-from-date(xs:date("1970-01-01Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-YearFromDateFunc-1">
+      <description> A test whose essence is: `year-from-date()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>year-from-date()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-YearFromDateFunc-2">
+      <description> A test whose essence is: `year-from-date((), "Wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>year-from-date((), "Wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-YearFromDateFunc-3">
+      <description> A test whose essence is: `empty(year-from-date(()))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(year-from-date(()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-YearFromDateFunc-4">
+      <description> A test whose essence is: `year-from-date(()) instance of xs:integer?`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>year-from-date(()) instance of xs:integer?</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-YearFromDateFunc-5">
+      <description> A test whose essence is: `year-from-date(xs:date("2000-02-03")) eq 2000`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>year-from-date(xs:date("2000-02-03")) eq 2000</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

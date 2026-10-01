@@ -1,0 +1,1342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-boolean">
+   <description>Tests for the boolean() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/" idref="func-boolean"/>
+   <test-case name="fn-booleanint1args-1">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:int("-2147483648"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanint1args-2">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:int(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:int("-1873914410"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanint1args-3">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:int(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:int("2147483647"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanintg1args-1">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:integer("-999999999999999999"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanintg1args-2">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:integer(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:integer("830993497117024304"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanintg1args-3">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:integer(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:integer("999999999999999999"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleandec1args-1">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:decimal("-999999999999999999"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleandec1args-2">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:decimal(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:decimal("617375191608514839"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleandec1args-3">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:decimal(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:decimal("999999999999999999"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleandbl1args-1">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:double("-1.7976931348623157E308"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleandbl1args-2">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:double(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:double("0"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleandbl1args-3">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:double(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:double("1.7976931348623157E308"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanflt1args-1">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:float("-3.4028235E38"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanflt1args-2">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:float(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:float("0"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanflt1args-3">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:float(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:float("3.4028235E38"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanlng1args-1">
+      <description>Evaluates The "boolean" function with the arguments set as follows: $arg =
+         xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:long("-92233720368547758"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanlng1args-2">
+      <description> Test: booleanlng1args-2 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:long(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:long("-47175562203048468"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanlng1args-3">
+      <description> Test: booleanlng1args-3 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:long(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:long("92233720368547758"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanusht1args-1">
+      <description> Test: booleanusht1args-1 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:unsignedShort("0"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanusht1args-2">
+      <description> Test: booleanusht1args-2 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:unsignedShort(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:unsignedShort("44633"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanusht1args-3">
+      <description> Test: booleanusht1args-3 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:unsignedShort(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:unsignedShort("65535"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleannint1args-1">
+      <description> Test: booleannint1args-1 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:negativeInteger("-999999999999999999"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleannint1args-2">
+      <description> Test: booleannint1args-2 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:negativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:negativeInteger("-297014075999096793"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleannint1args-3">
+      <description> Test: booleannint1args-3 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:negativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:negativeInteger("-1"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanpint1args-1">
+      <description> Test: booleanpint1args-1 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:positiveInteger("1"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanpint1args-2">
+      <description> Test: booleanpint1args-2 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:positiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:positiveInteger("52704602390610033"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanpint1args-3">
+      <description> Test: booleanpint1args-3 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:positiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:positiveInteger("999999999999999999"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanulng1args-1">
+      <description> Test: booleanulng1args-1 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:unsignedLong("0"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanulng1args-2">
+      <description> Test: booleanulng1args-2 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:unsignedLong(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:unsignedLong("130747108607674654"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleanulng1args-3">
+      <description> Test: booleanulng1args-3 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:unsignedLong(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:unsignedLong("184467440737095516"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleannpi1args-1">
+      <description> Test: booleannpi1args-1 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:nonPositiveInteger("-999999999999999999"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleannpi1args-2">
+      <description> Test: booleannpi1args-2 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:nonPositiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:nonPositiveInteger("-475688437271870490"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleannpi1args-3">
+      <description> Test: booleannpi1args-3 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:nonPositiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:nonPositiveInteger("0"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleannni1args-1">
+      <description> Test: booleannni1args-1 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:nonNegativeInteger("0"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleannni1args-2">
+      <description> Test: booleannni1args-2 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:nonNegativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:nonNegativeInteger("303884545991464527"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleannni1args-3">
+      <description> Test: booleannni1args-3 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:nonNegativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:nonNegativeInteger("999999999999999999"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleansht1args-1">
+      <description> Test: booleansht1args-1 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:short("-32768"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleansht1args-2">
+      <description> Test: booleansht1args-2 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:short(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:short("-5324"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-booleansht1args-3">
+      <description> Test: booleansht1args-3 Written By: Carmelo Montanez Date: Fri Dec 10 10:15:47
+         GMT-05:00 2004 Purpose: Evaluates The "boolean" function with the arguments set as follows:
+         $arg = xs:short(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:boolean(xs:short("32767"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-001">
+      <description> Test: fn-boolean-mixed-args-001.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: empty sequence </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(())</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-002">
+      <description> Test: fn-boolean-mixed-args-002.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: string </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean("")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-003">
+      <description> Test: fn-boolean-mixed-args-003.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: boolean function </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(false())</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-004">
+      <description> Test: fn-boolean-mixed-args-004.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: boolean function </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(true())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-005">
+      <description> Test: fn-boolean-mixed-args-005.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: string </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:string(""))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-006">
+      <description> Test: fn-boolean-mixed-args-006.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: string </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(('a'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-007">
+      <description> Test: fn-boolean-mixed-args-007.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: string </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:string('abc'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-008">
+      <description> Test: fn-boolean-mixed-args-008.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: integer </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(0)</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-009">
+      <description> Test: fn-boolean-mixed-args-009.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: integer </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-010">
+      <description> Test: fn-boolean-mixed-args-010.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: integer </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(-1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-011">
+      <description> Test: fn-boolean-mixed-args-011.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: float </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:float('NaN'))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-012">
+      <description> Test: fn-boolean-mixed-args-012.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: float </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:float('-INF'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-013">
+      <description> Test: fn-boolean-mixed-args-013.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: float </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:float('INF'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-014">
+      <description> Test: fn-boolean-mixed-args-014.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: float </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:float(0))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-015">
+      <description> Test: fn-boolean-mixed-args-015.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: float </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:float(1))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-016">
+      <description> Test: fn-boolean-mixed-args-016.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: float </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:float(-1))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-017">
+      <description> Test: fn-boolean-mixed-args-017.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: double </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:double('NaN'))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-018">
+      <description> Test: fn-boolean-mixed-args-018.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: double </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:double('-INF'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-019">
+      <description> Test: fn-boolean-mixed-args-019.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: double </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:double('INF'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-020">
+      <description> Test: fn-boolean-mixed-args-020.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: double </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:double(0))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-021">
+      <description> Test: fn-boolean-mixed-args-021.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: double </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:double(1))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-022">
+      <description> Test: fn-boolean-mixed-args-022.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: double </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:double('1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-023">
+      <description> Test: fn-boolean-mixed-args-023.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: double </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:double('NaN'))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-024">
+      <description> Test: fn-boolean-mixed-args-024.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: decimal </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:decimal('9.99999999999999999999999999'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-025">
+      <description> Test: fn-boolean-mixed-args-025.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: decimal </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:decimal('-123456789.123456789123456789'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-026">
+      <description> Test: fn-boolean-mixed-args-026.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: decimal </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:decimal('0'))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-027">
+      <description> Test: fn-boolean-mixed-args-027.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: decimal </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:decimal('1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-028">
+      <description> Test: fn-boolean-mixed-args-028.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: decimal </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:decimal('-1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-029">
+      <description> Test: fn-boolean-mixed-args-029.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: integer </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:integer('0'))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-030">
+      <description> Test: fn-boolean-mixed-args-030.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: integer </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:integer('1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-031">
+      <description> Test: fn-boolean-mixed-args-031.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: integer </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:integer('-1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-032">
+      <description> Test: fn-boolean-mixed-args-032.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: nonPositiveInteger </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:nonPositiveInteger('-99999999999999999'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-033">
+      <description> Test: fn-boolean-mixed-args-033.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: nonPositiveInteger </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:nonPositiveInteger('0'))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-034">
+      <description> Test: fn-boolean-mixed-args-034.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: nonPositiveInteger </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:nonPositiveInteger('-1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-035">
+      <description> Test: fn-boolean-mixed-args-035.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: negativeInteger </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:negativeInteger('-99999999999999999'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-036">
+      <description> Test: fn-boolean-mixed-args-036.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: negativeInteger </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:negativeInteger('-1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-037">
+      <description> Test: fn-boolean-mixed-args-037.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: positiveInteger </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:positiveInteger('99999999999999999'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-038">
+      <description> Test: fn-boolean-mixed-args-038.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: positiveInteger </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:positiveInteger('1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-039">
+      <description> Test: fn-boolean-mixed-args-039.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: long </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:long('9223372036854775807'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-040">
+      <description> Test: fn-boolean-mixed-args-040.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: long </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:long('-9223372036854775808'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-041">
+      <description> Test: fn-boolean-mixed-args-041.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: long </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:long('0'))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-042">
+      <description> Test: fn-boolean-mixed-args-042.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: long </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:long('1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-043">
+      <description> Test: fn-boolean-mixed-args-043.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: long </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:long('-1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-044">
+      <description> Test: fn-boolean-mixed-args-044.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: int </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:int('2147483647'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-045">
+      <description> Test: fn-boolean-mixed-args-045.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: int </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:int('-2147483648'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-046">
+      <description> Test: fn-boolean-mixed-args-046.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: int </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:int('0'))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-047">
+      <description> Test: fn-boolean-mixed-args-047.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: int </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:int('1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-048">
+      <description> Test: fn-boolean-mixed-args-048.xq Written By: Pulkita Tyagi Date: Mon May 23
+         04:50:42 2005 Purpose: arg: int </description>
+      <created by="Pulkita Tyagi" on="2005-05-26"/>
+      <test>fn:boolean(xs:int('-1'))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-mixed-args-049">
+      <description> Test: fn-boolean-mixed-args-049.xq Written By: Carmelo Montanez Date: January,
+         19, 2006 Purpose: arg: anyURI </description>
+      <created by="Carmelo Montanez" on="2006-01-19"/>
+      <test>fn:boolean(xs:anyURI("http://www.example.org/examples"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="fn-boolean-050">
+      <description> Test: fn-boolean-050.xq Written By: Carmelo Montanez Date: February 6, 2006
+         Purpose: Raise error condition FORG0006 for fn:boolean. </description>
+      <created by="Carmelo Montanez" on="2006-12-06"/>
+      <test>fn:boolean(xs:dateTime("1999-12-31T00:00:00"))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   <test-case name="context-item-1">
+      <description> Name: context-item-1 Description: Evaluation of contect item expression for
+         which the context item is not defined. </description>
+      <created by="Carmelo Montanez" on="2006-12-06"/>
+      <modified by="Josh Spiegel" on="2014-05-29" change="added dependency"/>
+      <dependency type="spec" value="XP30+ XQ30+"/>
+      <dependency type="feature" value="higherOrderFunctions"/>
+      <test>let $f := function() { fn:boolean(.) } return $f()</test>
+      <result>
+         <error code="XPDY0002"/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-1">
+      <description> Test: K-SeqBooleanFunc-1 Purpose: A test whose essence is: `boolean()`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-2">
+      <description> Test: K-SeqBooleanFunc-2 Purpose: A test whose essence is: `boolean(1, "wrong
+         param")`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(1, "wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-3">
+      <description> Test: K-SeqBooleanFunc-3 Purpose: A test whose essence is: `boolean((1, 2))`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean((1, 2))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-4">
+      <description> Test: K-SeqBooleanFunc-4 Purpose: A test whose essence is:
+         `boolean(xs:QName("valid-local-name"))`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(xs:QName("valid-local-name"))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-5">
+      <description> Test: K-SeqBooleanFunc-5 Purpose: A test whose essence is:
+         `boolean(xs:hexBinary("03"))`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(xs:hexBinary("03"))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-6">
+      <description> Test: K-SeqBooleanFunc-6 Purpose: A test whose essence is:
+         `boolean(xs:base64Binary("aaaa"))`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(xs:base64Binary("aaaa"))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-7">
+      <description> Test: K-SeqBooleanFunc-7 Purpose: Extracting EBV from xs:anyURI is allowed. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(xs:anyURI("example.com/"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-8">
+      <description> Test: K-SeqBooleanFunc-8 Purpose: Extracting EBV from xs:anyURI is allowed. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(boolean(xs:anyURI("")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-9">
+      <description> Test: K-SeqBooleanFunc-9 Purpose: fn:boolean() invoked on an non-empty xs:string
+         should return true. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean("string")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-10">
+      <description> Test: K-SeqBooleanFunc-10 Purpose: fn:boolean() invoked on an non-empty
+         xs:untypedAtomic should return true. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(xs:untypedAtomic("string"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-11">
+      <description> Test: K-SeqBooleanFunc-11 Purpose: fn:boolean() invoked on an non-empty
+         xs:untypedAtomic should return false. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(boolean(xs:untypedAtomic("")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-12">
+      <description> Test: K-SeqBooleanFunc-12 Purpose: A test whose essence is: `boolean(1)`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-13">
+      <description> Test: K-SeqBooleanFunc-13 Purpose: A test whose essence is: `not(boolean(""))`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(boolean(""))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-14">
+      <description> Test: K-SeqBooleanFunc-14 Purpose: A test whose essence is:
+         `not(boolean(false()))`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(boolean(false()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-15">
+      <description> Test: K-SeqBooleanFunc-15 Purpose: A test whose essence is: `boolean(true())`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(true())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-16">
+      <description> Test: K-SeqBooleanFunc-16 Purpose: A test whose essence is: `true() eq
+         boolean(remove((xs:hexBinary("FF"), 1), 1) treat as xs:integer)`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>true() eq boolean(remove((xs:hexBinary("FF"), 1), 1) treat as xs:integer)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-17">
+      <description> Test: K-SeqBooleanFunc-17 Purpose: A test whose essence is: `not(0)`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(0)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-18">
+      <description>zzzA test whose essence is: `boolean(1)`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-19">
+      <description>zzzA test whose essence is: `boolean(1.1)`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(1.1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-20">
+      <description>sA test whose essence is: `boolean(1.1e1)`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(1.1e1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-21">
+      <description>sA test whose essence is: `not(0.0e0)`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(0.0e0)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-22">
+      <description>sA test whose essence is: `not(0.0)`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(0.0)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-23">
+      <description>sA test whose essence is: `boolean(-1)`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean(-1)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-24">
+      <description>A test whose essence is: `not(())`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-25">
+      <description>A test whose essence is: `not(boolean(()))`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(boolean(()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-26">
+      <description>A test whose essence is: `not(())`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-27">
+      <description> A test whose essence is: `not(empty((1, 2)))`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(empty((1, 2)))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-28">
+      <description>A test whose essence is: `not(empty(((), 1, 2)))`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(empty(((), 1, 2)))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-29">
+      <description>A test whose essence is: `boolean('nada')`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean('nada')</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-30">
+      <description>A test whose essence is: `boolean('""')`. </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>boolean('""')</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-31">
+      <description>A test whose essence is: `not('')`.</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not('')</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-SeqBooleanFunc-32">
+      <description>Apply fn:boolean() on fn:count(). </description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>fn:boolean(count((1, 2, 3, timezone-from-time(current-time()), 4)))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-001">
+      <description>boolean() applied to a node sequence</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <environment ref="auction"/>
+      <test>boolean(//*:Open)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-002">
+      <description>boolean() applied to an empty node sequence</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <environment ref="auction"/>
+      <test>boolean(//*:NotAtAllOpen)</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-003">
+      <description>boolean() applied to a sequence whose first item is a node</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <environment ref="auction"/>
+      <test>boolean((/, 93.7))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-004">
+      <description>boolean() applied to a sequence whose second item is a node</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <environment ref="auction"/>
+      <test>boolean((93.7, /))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-005">
+      <description>boolean() applied to a sequence of two booleans</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <test>boolean((true(), false()))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-006">
+      <description>boolean() applied to a sequence of two integers</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <test>boolean((1, 0))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-007">
+      <description>boolean() applied to a sequence of two strings</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <test>boolean(("", "a"))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-008">
+      <description>boolean() applied to a sequence of of a boolean and then an empty
+         node-set</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <environment ref="auction"/>
+      <test>boolean((true(), //aspidistra))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-009">
+      <description>boolean() applied to the string "false"</description>
+      <created by="Michael Kay" on="2011-06-29"/>
+      <environment ref="auction"/>
+      <test>boolean(string(false()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-010" covers="array-square-constructor fn-boolean">
+      <description>boolean() applied to an array</description>
+      <created by="Michael Kay" on="2014-10-14"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>boolean([true()])</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+
+   <test-case name="boolean-010b" covers="array-square-constructor fn-boolean">
+      <description>boolean() applied to an array (this is the example from the specification)</description>
+      <created by="Josh Spiegel" on="2015-04-15"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>fn:boolean([])</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-011" covers="map-constructor fn-boolean">
+      <description>boolean() applied to a map</description>
+      <created by="Michael Kay" on="2014-10-14"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>boolean(map{})</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-012">
+      <description>boolean() applied to a function item</description>
+      <created by="Michael Kay" on="2014-10-14"/>
+      <dependency type="spec" value="XP30+ XQ30+"/>
+      <dependency type="feature" value="higherOrderFunctions"/>
+      <test>boolean(boolean#1)</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-013" covers="array-curly-constructor fn-boolean">
+      <description>boolean() applied to an array</description>
+      <created by="Debbie Lockett" on="2015-06-15"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>boolean(array{})</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   
+   <test-case name="boolean-014" covers="map-constructor fn-boolean">
+      <description>boolean() applied to a map</description>
+      <created by="Debbie Lockett" on="2015-06-15"/>
+      <dependency type="spec" value="XP31+ XQ31+"/>
+      <test>boolean(map{0:"false", 1:"true"})</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-boolean-001">
+      <description>test fn:boolean on a count-preserving function </description>
+      <created by="Tim Mills" on="2008-04-11"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[
+      	declare function local:generate($count as xs:integer) {
+      		if ($count < 0) then "string" 
+      		else for $x in 1 to $count 
+      			 return 
+      			 	if ($x mod 3 = 0) then <a /> 
+      			 	else if ($x mod 3 = 1) then <b /> 
+      			 	else <c /> 
+      	}; 
+      	fn:boolean(fn:reverse( local:generate(5) ))
+      ]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-boolean-002">
+      <description> test fn:boolean on fn:count function</description>
+      <created by="Tim Mills" on="2008-04-11"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[
+      	declare function local:generate($count as xs:integer) {
+      		for $x in 1 to $count 
+      		return 
+      			if ($x mod 3 = 0) then <a /> 
+      			else if ($x mod 3 = 1) then <b /> 
+      			else <c /> 
+      	}; 
+      	fn:boolean(fn:count( local:generate(5) ))
+      ]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="cbcl-boolean-003">
+      <description>Test fn:boolean on sequence of node and string</description>
+      <created by="Oliver Hallam" on="2008-04-14"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>declare function local:f() { (&lt;a/&gt;, "a") }; boolean(local:f())</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="FORG0006"/>
+         </any-of>
+      </result>
+   </test-case>
+   <test-case name="cbcl-boolean-004">
+      <description>Tests negation of fn:boolean </description>
+      <created by="Nick Jones" on="2008-06-02"/>
+      <test>not(boolean(for $x in 1 to 10 return $x * $x))</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+   <test-case name="cbcl-boolean-005">
+      <description>test fn:boolean on a text node</description>
+      <created by="Tim Mills" on="2008-04-11"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      declare function local:repeat($count as xs:integer, $arg as xs:string) { for $x in 1 to $count return $arg }; 
+      fn:boolean( text { local:repeat(0, "string") } )
+      </test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-boolean-006">
+      <description>test fn:boolean on a text node </description>
+      <created by="Tim Mills" on="2008-04-11"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+      declare function local:repeat($count as xs:integer, $arg as xs:string) as item()* { 
+      	if ($count lt 0) then '$count must not be negative' 
+      	else text { for $x in 1 to $count return $arg }
+      }; 
+      fn:boolean( local:repeat(0, "string") )</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   
+</test-set>

@@ -1,0 +1,1083 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="prod-GeneralComp.le">
+   <description>Tests for the GeneralComp.le production</description>
+   <link type="spec" document="http://www.w3.org/TR/xquery-30/"
+         idref="doc-xquery30-GeneralComp.le"/>
+   <link type="spec" document="XQuery" section-number="3.5.2"
+         idref="id-general-comparisons"/>
+         
+
+   <test-case name="generalexpression298">
+      <description> Test of a General Expression with the operands set as follows operand1 = Empty sequence operator = &lt;= operand2 = Empty sequence </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[() <= ()]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression299">
+      <description> Test of a General Expression with the operands set as follows operand1 = Empty sequence operator = &lt;= operand2 = Atomic Value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[() <= 10000]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression300">
+      <description> Test of a General Expression with the operands set as follows operand1 = Empty sequence operator = &lt;= operand2 = Sequence of single atomic value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[() <= (50000)]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression301">
+      <description> Test of a General Expression with the operands set as follows operand1 = Empty sequence operator = &lt;= operand2 = Sequence of single atomic values </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[() <= (10000,50000)]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression302">
+      <description> Test of a General Expression with the operands set as follows operand1 = Empty sequence operator = &lt;= operand2 = Element Constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[() <= <a>10000</a>]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression303">
+      <description> Test of a General Expression with the operands set as follows operand1 = Empty sequence operator = &lt;= operand2 = Sequence of single element constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[() <= (<a>10000</a>)]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression304">
+      <description> Test of a General Expression with the operands set as follows operand1 = Empty sequence operator = &lt;= operand2 = Sequence of multiple element constructors </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[() <= (<a>10000</a>,<b>50000</b>)]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression305">
+      <description> Test of a General Expression with the operands set as follows operand1 = Empty sequence operator = &lt;= operand2 = Sequence of single element nodes </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[() <= (/works/employee[1]/hours[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression306">
+      <description> Test of a General Expression with the operands set as follows operand1 = Empty sequence operator = &lt;= operand2 = Sequence of multiple element nodes (single source) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[() <= (/works/employee[1]/hours[1],/works/employee[6]/hours[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression307">
+      <description> Test of a General Expression with the operands set as follows operand1 = Empty sequence operator = &lt;= operand2 = Sequence of multiple element nodes (multiple sources) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[() <= ($works/works/employee[1]/hours[1],$staff/staff/employee[6]/grade[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression308">
+      <description> Test of a General Expression with the operands set as follows operand1 = Atomic Value operator = &lt;= operand2 = Empty sequence </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[10000 <= ()]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression309">
+      <description> Test of a General Expression with the operands set as follows operand1 = Atomic Value operator = &lt;= operand2 = Sequence of single atomic value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[10000 <= (50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression310">
+      <description> Test of a General Expression with the operands set as follows operand1 = Atomic Value operator = &lt;= operand2 = Sequence of single atomic values </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[10000 <= (10000,50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression311">
+      <description> Test of a General Expression with the operands set as follows operand1 = Atomic Value operator = &lt;= operand2 = Element Constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[10000 <= <a>10000</a>]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression312">
+      <description> Test of a General Expression with the operands set as follows operand1 = Atomic Value operator = &lt;= operand2 = Sequence of single element constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[10000 <= (<a>10000</a>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression313">
+      <description> Test of a General Expression with the operands set as follows operand1 = Atomic Value operator = &lt;= operand2 = Sequence of multiple element constructors </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[10000 <= (<a>10000</a>,<b>50000</b>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression314">
+      <description> Test of a General Expression with the operands set as follows operand1 = Atomic Value operator = &lt;= operand2 = Sequence of single element nodes </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[10000 <= (/works/employee[1]/hours[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression315">
+      <description> Test of a General Expression with the operands set as follows operand1 = Atomic Value operator = &lt;= operand2 = Sequence of multiple element nodes (single source) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[10000 <= (/works/employee[1]/hours[1],/works/employee[6]/hours[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression316">
+      <description> Test of a General Expression with the operands set as follows operand1 = Atomic Value operator = &lt;= operand2 = Sequence of multiple element nodes (multiple sources) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[10000 <= ($works/works/employee[1]/hours[1],$staff/staff/employee[6]/grade[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression317">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic value operator = &lt;= operand2 = Empty sequence </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[(50000) <= ()]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression318">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic value operator = &lt;= operand2 = Atomic Value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[(50000) <= 10000]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression319">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic value operator = &lt;= operand2 = Sequence of single atomic value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[(50000) <= (50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression320">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic value operator = &lt;= operand2 = Sequence of single atomic values </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[(50000) <= (10000,50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression321">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic value operator = &lt;= operand2 = Element Constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(50000) <= <a>10000</a>]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression322">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic value operator = &lt;= operand2 = Sequence of single element constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(50000) <= (<a>10000</a>)]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression323">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic value operator = &lt;= operand2 = Sequence of multiple element constructors </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(50000) <= (<a>10000</a>,<b>50000</b>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression324">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic value operator = &lt;= operand2 = Sequence of single element nodes </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(50000) <= (/works/employee[1]/hours[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression325">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic value operator = &lt;= operand2 = Sequence of multiple element nodes (single source) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(50000) <= (/works/employee[1]/hours[1],/works/employee[6]/hours[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression326">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic value operator = &lt;= operand2 = Sequence of multiple element nodes (multiple sources) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[(50000) <= ($works/works/employee[1]/hours[1],$staff/staff/employee[6]/grade[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression327">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic values operator = &lt;= operand2 = Empty sequence </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[(10000,50000) <= ()]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression328">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic values operator = &lt;= operand2 = Atomic Value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[(10000,50000) <= 10000]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression329">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic values operator = &lt;= operand2 = Sequence of single atomic value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[(10000,50000) <= (50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression330">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic values operator = &lt;= operand2 = Sequence of single atomic values </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <test><![CDATA[(10000,50000) <= (10000,50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression331">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic values operator = &lt;= operand2 = Element Constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(10000,50000) <= <a>10000</a>]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression332">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic values operator = &lt;= operand2 = Sequence of single element constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(10000,50000) <= (<a>10000</a>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression333">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic values operator = &lt;= operand2 = Sequence of multiple element constructors </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(10000,50000) <= (<a>10000</a>,<b>50000</b>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression334">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic values operator = &lt;= operand2 = Sequence of single element nodes </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(10000,50000) <= (/works/employee[1]/hours[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression335">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic values operator = &lt;= operand2 = Sequence of multiple element nodes (single source) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(10000,50000) <= (/works/employee[1]/hours[1],/works/employee[6]/hours[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression336">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single atomic values operator = &lt;= operand2 = Sequence of multiple element nodes (multiple sources) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[(10000,50000) <= ($works/works/employee[1]/hours[1],$staff/staff/employee[6]/grade[1])]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression337">
+      <description> Test of a General Expression with the operands set as follows operand1 = Element Constructor operator = &lt;= operand2 = Empty sequence </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a>10000</a> <= ()]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression338">
+      <description> Test of a General Expression with the operands set as follows operand1 = Element Constructor operator = &lt;= operand2 = Atomic Value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a>10000</a> <= 10000]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression339">
+      <description> Test of a General Expression with the operands set as follows operand1 = Element Constructor operator = &lt;= operand2 = Sequence of single atomic value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a>10000</a> <= (50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression340">
+      <description> Test of a General Expression with the operands set as follows operand1 = Element Constructor operator = &lt;= operand2 = Sequence of single atomic values </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a>10000</a> <= (10000,50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression341">
+      <description> Test of a General Expression with the operands set as follows operand1 = Element Constructor operator = &lt;= operand2 = Element Constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a>10000</a> <= <a>10000</a>]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression342">
+      <description> Test of a General Expression with the operands set as follows operand1 = Element Constructor operator = &lt;= operand2 = Sequence of single element constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a>10000</a> <= (<a>10000</a>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression343">
+      <description> Test of a General Expression with the operands set as follows operand1 = Element Constructor operator = &lt;= operand2 = Sequence of multiple element constructors </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a>10000</a> <= (<a>10000</a>,<b>50000</b>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression344">
+      <description> Test of a General Expression with the operands set as follows operand1 = Element Constructor operator = &lt;= operand2 = Sequence of single element nodes </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a>10000</a> <= (/works/employee[1]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression345">
+      <description> Test of a General Expression with the operands set as follows operand1 = Element Constructor operator = &lt;= operand2 = Sequence of multiple element nodes (single source) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a>10000</a> <= (/works/employee[1]/hours[1],/works/employee[6]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression346">
+      <description> Test of a General Expression with the operands set as follows operand1 = Element Constructor operator = &lt;= operand2 = Sequence of multiple element nodes (multiple sources) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a>10000</a> <= ($works/works/employee[1]/hours[1],$staff/staff/employee[6]/grade[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression347">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element constructor operator = &lt;= operand2 = Empty sequence </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>) <= ()]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression348">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element constructor operator = &lt;= operand2 = Atomic Value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>) <= 10000]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression349">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element constructor operator = &lt;= operand2 = Sequence of single atomic value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>) <= (50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression350">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element constructor operator = &lt;= operand2 = Sequence of single atomic values </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>) <= (10000,50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression351">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element constructor operator = &lt;= operand2 = Element Constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>) <= <a>10000</a>]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression352">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element constructor operator = &lt;= operand2 = Sequence of single element constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>) <= (<a>10000</a>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression353">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element constructor operator = &lt;= operand2 = Sequence of multiple element constructors </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>) <= (<a>10000</a>,<b>50000</b>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression354">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element constructor operator = &lt;= operand2 = Sequence of single element nodes </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>) <= (/works/employee[1]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression355">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element constructor operator = &lt;= operand2 = Sequence of multiple element nodes (single source) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>) <= (/works/employee[1]/hours[1],/works/employee[6]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression356">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element constructor operator = &lt;= operand2 = Sequence of multiple element nodes (multiple sources) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>) <= ($works/works/employee[1]/hours[1],$staff/staff/employee[6]/grade[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression357">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element constructors operator = &lt;= operand2 = Empty sequence </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>,<b>50000</b>) <= ()]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression358">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element constructors operator = &lt;= operand2 = Atomic Value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>,<b>50000</b>) <= 10000]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression359">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element constructors operator = &lt;= operand2 = Sequence of single atomic value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>,<b>50000</b>) <= (50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression360">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element constructors operator = &lt;= operand2 = Sequence of single atomic values </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>,<b>50000</b>) <= (10000,50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression361">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element constructors operator = &lt;= operand2 = Element Constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>,<b>50000</b>) <= <a>10000</a>]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression362">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element constructors operator = &lt;= operand2 = Sequence of single element constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>,<b>50000</b>) <= (<a>10000</a>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression363">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element constructors operator = &lt;= operand2 = Sequence of multiple element constructors </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>,<b>50000</b>) <= (<a>10000</a>,<b>50000</b>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression364">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element constructors operator = &lt;= operand2 = Sequence of single element nodes </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>,<b>50000</b>) <= (/works/employee[1]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression365">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element constructors operator = &lt;= operand2 = Sequence of multiple element nodes (single source) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>,<b>50000</b>) <= (/works/employee[1]/hours[1],/works/employee[6]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression366">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element constructors operator = &lt;= operand2 = Sequence of multiple element nodes (multiple sources) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(<a>10000</a>,<b>50000</b>) <= ($works/works/employee[1]/hours[1],$staff/staff/employee[6]/grade[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression367">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element nodes operator = &lt;= operand2 = Empty sequence </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1]) <= ()]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression368">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element nodes operator = &lt;= operand2 = Atomic Value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1]) <= 10000]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression369">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element nodes operator = &lt;= operand2 = Sequence of single atomic value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1]) <= (50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression370">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element nodes operator = &lt;= operand2 = Sequence of single atomic values </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1]) <= (10000,50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression371">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element nodes operator = &lt;= operand2 = Element Constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(/works/employee[1]/hours[1]) <= <a>10000</a>]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression372">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element nodes operator = &lt;= operand2 = Sequence of single element constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(/works/employee[1]/hours[1]) <= (<a>10000</a>)]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression373">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element nodes operator = &lt;= operand2 = Sequence of multiple element constructors </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(/works/employee[1]/hours[1]) <= (<a>10000</a>,<b>50000</b>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression374">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element nodes operator = &lt;= operand2 = Sequence of single element nodes </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1]) <= (/works/employee[1]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression375">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element nodes operator = &lt;= operand2 = Sequence of multiple element nodes (single source) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1]) <= (/works/employee[1]/hours[1],/works/employee[6]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression376">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of single element nodes operator = &lt;= operand2 = Sequence of multiple element nodes (multiple sources) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1]) <= ($works/works/employee[1]/hours[1],$staff/staff/employee[6]/grade[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression377">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (single source) operator = &lt;= operand2 = Empty sequence </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1],/works/employee[6]/hours[1]) <= ()]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression378">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (single source) operator = &lt;= operand2 = Atomic Value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1],/works/employee[6]/hours[1]) <= 10000]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression379">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (single source) operator = &lt;= operand2 = Sequence of single atomic value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1],/works/employee[6]/hours[1]) <= (50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression380">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (single source) operator = &lt;= operand2 = Sequence of single atomic values </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1],/works/employee[6]/hours[1]) <= (10000,50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression381">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (single source) operator = &lt;= operand2 = Element Constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(/works/employee[1]/hours[1],/works/employee[6]/hours[1]) <= <a>10000</a>]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression382">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (single source) operator = &lt;= operand2 = Sequence of single element constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(/works/employee[1]/hours[1],/works/employee[6]/hours[1]) <= (<a>10000</a>)]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression383">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (single source) operator = &lt;= operand2 = Sequence of multiple element constructors </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[(/works/employee[1]/hours[1],/works/employee[6]/hours[1]) <= (<a>10000</a>,<b>50000</b>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression384">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (single source) operator = &lt;= operand2 = Sequence of single element nodes </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1],/works/employee[6]/hours[1]) <= (/works/employee[1]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression385">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (single source) operator = &lt;= operand2 = Sequence of multiple element nodes (single source) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works"/>
+      <test><![CDATA[(/works/employee[1]/hours[1],/works/employee[6]/hours[1]) <= (/works/employee[1]/hours[1],/works/employee[6]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression386">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (single source) operator = &lt;= operand2 = Sequence of multiple element nodes (multiple sources) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1],$works/works/employee[6]/hours[1]) <= ($works/works/employee[1]/hours[1],$staff/staff/employee[6]/grade[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression387">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (multiple sources) operator = &lt;= operand2 = Empty sequence </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1],$staff/staff/employee[6]/hours[1]) <= ()]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression388">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (multiple sources) operator = &lt;= operand2 = Atomic Value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1],$staff/staff/employee[6]/hours[1]) <= 10000]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression389">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (multiple sources) operator = &lt;= operand2 = Sequence of single atomic value </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1],$staff/staff/employee[6]/hours[1]) <= (50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression390">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (multiple sources) operator = &lt;= operand2 = Sequence of single atomic values </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1],$staff/staff/employee[6]/hours[1]) <= (10000,50000)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression391">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (multiple sources) operator = &lt;= operand2 = Element Constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1],$staff/staff/employee[6]/hours[1]) <= <a>10000</a>]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression392">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (multiple sources) operator = &lt;= operand2 = Sequence of single element constructor </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1],$staff/staff/employee[6]/hours[1]) <= (<a>10000</a>)]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression393">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (multiple sources) operator = &lt;= operand2 = Sequence of multiple element constructors </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1],$staff/staff/employee[6]/hours[1]) <= (<a>10000</a>,<b>50000</b>)]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression394">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (multiple sources) operator = &lt;= operand2 = Sequence of single element nodes </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1],$staff/staff/employee[6]/hours[1]) <= ($works/works/employee[1]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression395">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (multiple sources) operator = &lt;= operand2 = Sequence of multiple element nodes (single source) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1],$staff/staff/employee[6]/hours[1]) <= ($works/works/employee[1]/hours[1],$works/works/employee[6]/hours[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="generalexpression396">
+      <description> Test of a General Expression with the operands set as follows operand1 = Sequence of multiple element nodes (multiple sources) operator = &lt;= operand2 = Sequence of multiple element nodes (multiple sources) </description>
+      <created by="Carmelo Montanez (Automatic Generation)" on="2005-06-01"/>
+      <environment ref="works-and-staff"/>
+      <test><![CDATA[($works/works/employee[1]/hours[1],$staff/staff/employee[6]/hours[1]) <= ($works/works/employee[1]/hours[1],$staff/staff/employee[6]/grade[1])]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="lessthaneqonanyuri-1">
+      <description>Test - lessthaneqonanyuri-1  Evaluation of "le" operator on xs:anyURI datatype. </description>
+      <created by="Carmelo Montanez" on="2006-09-25"/>
+      <test><![CDATA[(xs:anyURI("http://www.example/com")) <= (xs:anyURI("http://www.example/com"))]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-GenCompLTEQ-1">
+      <description> General comparison where one or more operands is the empty sequence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test><![CDATA[not(() <= () )]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-GenCompLTEQ-2">
+      <description> General comparison where one or more operands is the empty sequence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test><![CDATA[not(1 <= () )]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-GenCompLTEQ-3">
+      <description> General comparison where one or more operands is the empty sequence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test><![CDATA[not(() <= 1 )]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-GenCompLTEQ-4">
+      <description> General comparison where the operands are various various sequence of xs:integers. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test><![CDATA[1 <= 1]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-GenCompLTEQ-5">
+      <description> General comparison causing a xs:untypedAtomic value to be cast to xs:boolean, and then compared. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test><![CDATA[xs:untypedAtomic("false") <= false()]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-GenCompLTEQ-6">
+      <description> General comparison causing a xs:untypedAtomic value to be cast to xs:boolean, and then compared. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test><![CDATA[false() <= xs:untypedAtomic("false")]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-GenCompLTEQ-7">
+      <description> General comparison causing a xs:untypedAtomic value to be cast to xs:boolean, and then compared. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test><![CDATA[xs:untypedAtomic("false") <= false()]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-GenCompLTEQ-8">
+      <description> General comparison causing a xs:untypedAtomic value to be cast to xs:boolean, and then compared. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test><![CDATA[true() <= xs:untypedAtomic("true")]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

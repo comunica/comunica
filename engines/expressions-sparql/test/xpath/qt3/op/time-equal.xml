@@ -1,0 +1,857 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="op-time-equal">
+   <description>Tests for the time-equal() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-time-equal"/>
+   <test-case name="op-time-equal2args-1">
+      <description>
+*******************************************************
+Test: op-time-equal2args-1                              
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-equal" operator        
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") eq xs:time("00:00:00Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-2">
+      <description>
+*******************************************************
+Test: op-time-equal2args-2                              
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-equal" operator        
+ with the arguments set as follows:                    
+$arg1 = xs:time(mid range)                             
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("08:03:35Z") eq xs:time("00:00:00Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-3">
+      <description>
+*******************************************************
+Test: op-time-equal2args-3                              
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-equal" operator        
+ with the arguments set as follows:                    
+$arg1 = xs:time(upper bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("23:59:59Z") eq xs:time("00:00:00Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-4">
+      <description>
+*******************************************************
+Test: op-time-equal2args-4                              
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-equal" operator        
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(mid range)                             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") eq xs:time("08:03:35Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-5">
+      <description>
+*******************************************************
+Test: op-time-equal2args-5                              
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-equal" operator        
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(upper bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") eq xs:time("23:59:59Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-6">
+      <description>
+*******************************************************
+Test: op-time-equal2args-6                              
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-equal" operator        
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") ne xs:time("00:00:00Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-7">
+      <description>
+*******************************************************
+Test: op-time-equal2args-7                              
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-equal" operator        
+ with the arguments set as follows:                    
+$arg1 = xs:time(mid range)                             
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("08:03:35Z") ne xs:time("00:00:00Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-8">
+      <description>
+*******************************************************
+Test: op-time-equal2args-8                              
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-equal" operator        
+ with the arguments set as follows:                    
+$arg1 = xs:time(upper bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("23:59:59Z") ne xs:time("00:00:00Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-9">
+      <description>
+*******************************************************
+Test: op-time-equal2args-9                              
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-equal" operator        
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(mid range)                             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") ne xs:time("08:03:35Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-10">
+      <description>
+*******************************************************
+Test: op-time-equal2args-10                             
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:07 GMT-05:00 2005                
+Purpose: Evaluates The "op:time-equal" operator        
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(upper bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:time("00:00:00Z") ne xs:time("23:59:59Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-11">
+      <description>
+*******************************************************
+Test: op-time-equal2args-11                            
+Written By: Carmelo Montanez                           
+Date: June 3, 2005                                     
+Purpose: Evaluates The "op:time-equal" operator (le)   
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-03"/>
+      <test>xs:time("00:00:00Z") le xs:time("00:00:00Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-12">
+      <description>
+*******************************************************
+Test: op-time-equal2args-12                            
+Written By: Carmelo Montanez                           
+Date: June 3, 2005                                     
+Purpose: Evaluates The "op:time-equal" operator (le)   
+ with the arguments set as follows:                    
+$arg1 = xs:time(mid range)                             
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-03"/>
+      <test>xs:time("08:03:35Z") le xs:time("00:00:00Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-13">
+      <description>
+*******************************************************
+Test: op-time-equal2args-13                            
+Written By: Carmelo Montanez                           
+Date: June 3, 2005                                     
+Purpose: Evaluates The "op:time-equal" operator (le)   
+ with the arguments set as follows:                    
+$arg1 = xs:time(upper bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-03"/>
+      <test>xs:time("23:59:59Z") le xs:time("00:00:00Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-14">
+      <description>
+*******************************************************
+Test: op-time-equal2args-14                            
+Written By: Carmelo Montanez                           
+Date: June 3, 2005                                     
+Purpose: Evaluates The "op:time-equal" operator (le)   
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(mid range)                             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-03"/>
+      <test>xs:time("00:00:00Z") le xs:time("08:03:35Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-15">
+      <description>
+*******************************************************
+Test: op-time-equal2args-15                            
+Written By: Carmelo Montanez                           
+Date: June 3 2005                                      
+Purpose: Evaluates The "op:time-equal" operator (le)   
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(upper bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-03"/>
+      <test>xs:time("00:00:00Z") le xs:time("23:59:59Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-16">
+      <description>
+*******************************************************
+Test: op-time-equal2args-16                            
+Written By: Carmelo Montanez                           
+Date: June 3, 2005                                     
+Purpose: Evaluates The "op:time-equal" operator (ge)   
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-03"/>
+      <test>xs:time("00:00:00Z") ge xs:time("00:00:00Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-17">
+      <description>
+*******************************************************
+Test: op-time-equal2args-17                            
+Written By: Carmelo Montanez                           
+Date: June 3, 2005                                     
+Purpose: Evaluates The "op:time-equal" operator  (ge)  
+ with the arguments set as follows:                    
+$arg1 = xs:time(mid range)                             
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-03"/>
+      <test>xs:time("08:03:35Z") ge xs:time("00:00:00Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-18">
+      <description>
+*******************************************************
+Test: op-time-equal2args-q8                            
+Written By: Carmelo Montanez                           
+Date: June 3, 2005                                     
+Purpose: Evaluates The "op:time-equal" operator (ge)   
+ with the arguments set as follows:                    
+$arg1 = xs:time(upper bound)                           
+$arg2 = xs:time(lower bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-03"/>
+      <test>xs:time("23:59:59Z") ge xs:time("00:00:00Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-19">
+      <description>
+*******************************************************
+Test: op-time-equal2args-19                            
+Written By: Carmelo Montanez                           
+Date: June 3, 2005                                     
+Purpose: Evaluates The "op:time-equal" operator (ge)   
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(mid range)                             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-03"/>
+      <test>xs:time("00:00:00Z") ge xs:time("08:03:35Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-time-equal2args-20">
+      <description>
+*******************************************************
+Test: op-time-equal2args-20                            
+Written By: Carmelo Montanez                           
+Date: June 3, 2005                                     
+Purpose: Evaluates The "op:time-equal" operator (ge)   
+ with the arguments set as follows:                    
+$arg1 = xs:time(lower bound)                           
+$arg2 = xs:time(upper bound)                           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-06-03"/>
+      <test>xs:time("00:00:00Z") ge xs:time("23:59:59Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-1">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-1                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple test of 'eq' for xs:time, returning positive. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("23:01:04.12") eq xs:time("23:01:04.12")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-2">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-2                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple test of 'eq' for xs:time.             
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(xs:time("23:01:04.12") eq xs:time("23:01:04.13"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-3">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-3                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple test of 'ne' for xs:time.             
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("23:01:05.12") ne xs:time("23:01:04.12")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-4">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-4                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple test of 'ne' for xs:time.             
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>not(xs:time("23:01:04.12") ne xs:time("23:01:04.12"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-5">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-5                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Test that zone offset -00:00 is equal to Z, in xs:time. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("16:00:12.345-00:00") eq xs:time("16:00:12.345Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-6">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-6                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Test that zone offset +00:00 is equal to Z, in xs:time. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("16:00:12.345+00:00") eq xs:time("16:00:12.345Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-7">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-7                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Test that zone offset Z is equal to Z, in xs:time. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("16:00:12.345Z") eq xs:time("16:00:12.345Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-8">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-8                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Test that zone offset -00:00 is equal to +00:00, in xs:time. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("16:00:12.345-00:00") eq xs:time("16:00:12.345+00:00")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-9">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-9                                      
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'eq' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("12:12:23") eq xs:date("1999-12-04")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-10">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-10                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'ne' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("12:12:23") ne xs:date("1999-12-04")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-11">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-11                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'le' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("12:12:23") le xs:date("1999-12-04")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-12">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-12                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'lt' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("12:12:23") lt xs:date("1999-12-04")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-13">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-13                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'ge' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("12:12:23") ge xs:date("1999-12-04")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-14">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-14                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'gt' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("12:12:23") gt xs:date("1999-12-04")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-15">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-15                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'eq' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-12-04") eq xs:time("12:12:23")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-16">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-16                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'ne' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-12-04") ne xs:time("12:12:23")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-17">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-17                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'le' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-12-04") le xs:time("12:12:23")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-18">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-18                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'lt' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-12-04") lt xs:time("12:12:23")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-19">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-19                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'ge' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-12-04") ge xs:time("12:12:23")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K-TimeEQ-20">
+      <description>
+*******************************************************
+ Test: K-TimeEQ-20                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: The operator 'gt' is not available between xs:dateTime and xs:date . 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:date("1999-12-04") gt xs:time("12:12:23")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+   <test-case name="K2-TimeEQ-1">
+      <description>
+*******************************************************
+ Test: K2-TimeEQ-1                                     
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Basic negative equalness test for xs:time.   
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:time("01:01:01-03:00") ne xs:time("01:01:01+03:00")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+      <test-case name="cbcl-time-equal-001">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:two-digit($number as xs:integer) { let $string := string($number) return if (string-length($string) lt 2) then concat('0', $string) else $string };
+        declare function local:time($hours as xs:integer, $mins as xs:integer, $seconds as xs:decimal) { let $h := local:two-digit($hours), $m := local:two-digit($mins) return xs:time(concat($h, ':', $m, ':', $seconds)) };
+        not(local:time(12, 59, 30) eq xs:time("12:32:05"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-002">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("14:00:00-12:00") eq xs:time("02:00:00")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-003">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("02:00:00") eq xs:time("14:00:00-12:00")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-004">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("00:00:01+01:00") eq xs:time("00:00:00")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-005">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("00:00:00") eq xs:time("00:00:01+01:00")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-006">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:two-digit($number as xs:integer) { let $string := string($number) return if (string-length($string) lt 2) then concat('0', $string) else $string };
+        declare function local:time($hours as xs:integer, $mins as xs:integer, $seconds as xs:decimal) { let $h := local:two-digit($hours), $m := local:two-digit($mins) return xs:time(concat($h, ':', $m, ':', $seconds)) };
+        not(local:time(12, 59, 30) ne xs:time("12:32:05"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-007">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("14:00:00-12:00") ne xs:time("02:00:00")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-008">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("02:00:00") ne xs:time("14:00:00-12:00")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-009">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("00:00:01+01:00") ne xs:time("00:00:00")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-010">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <test>xs:time("00:00:00") ne xs:time("00:00:01+01:00")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-011">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:time($time as xs:time, $null as xs:boolean) { if ($null) then () else $time };
+        exists(local:time(xs:time("23:58:00"), fn:true()) eq xs:time("23:58:00"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-012">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:time($time as xs:time, $null as xs:boolean) { if ($null) then () else $time };
+        local:time(xs:time("23:58:00"), fn:false()) eq xs:time("23:58:00")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-013">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:time($time as xs:time, $null as xs:boolean) { if ($null) then () else $time };
+        exists(local:time(xs:time("23:58:00"), fn:true()) ne xs:time("23:58:00"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-014">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-21"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+        declare function local:time($time as xs:time, $null as xs:boolean) { if ($null) then () else $time };
+        local:time(xs:time("23:58:00"), fn:false()) ne xs:time("23:58:00")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-017">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-23"/>
+      <test>xs:time("00:00:00+12:00") eq xs:time("00:00:01")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-018">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-23"/>
+      <test>xs:time("00:00:00+12:00") ne xs:time("00:00:01")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="cbcl-time-equal-019">
+      <description> test comparison of time </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <modified by="Tim Mills" on="2013-03-15" change="Bug 21222" />
+      <test>if (implicit-timezone() eq xs:dayTimeDuration('PT1H'))
+            then xs:time("12:00:00+02:00") eq xs:time("12:00:00")
+            else xs:time("12:00:00+01:00") eq xs:time("12:00:00")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+</test-set>

@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="prod-IfExpr">
+   <description>Tests for the IfExpr production</description>
+   <link type="spec" document="http://www.w3.org/TR/xquery-30/"
+         idref="doc-xquery30-IfExpr"/>
+   <link type="spec" document="XQuery" section-number="3.10" idref="id-conditionals"/>
+   
+   <environment name="fsx">
+      <source role="." file="ForClause/fsx.xml">
+         <description>Data about a filesystem represented in XML.</description>
+         <created by="Mike Rorke" on="2003-03-25"/>
+      </source>    
+   </environment>
+   
+   <environment name="nw_Customers">
+      <source role="." file="AxisStep/nw_Customers.xml">
+         <description>Customer name/address file with some non-ASCII characters..</description>
+         <created by="Kuen Siew" on="2003-03-25"/>
+      </source>
+   </environment>
+   
+   <environment name="acme_corp">
+      <source role="." file="../op/union/acme_corp.xml">
+         <description>Source document for Function Declaration tests</description>
+         <created by="Ravindranath Chennoju" on="2000-01-01"/>
+      </source>
+   </environment> 
+   
+   <environment name="xq311A">
+      <source role="." file="IfExpr/xq311A.xml">
+         <description>Data that fits first example in XQuery 3.11.</description>
+         <created by="David Marston" on="2003-03-25"/>
+      </source>
+   </environment> 
+   
+
+   <test-case name="CondExpr002">
+      <description> Simple if expression where boolean is a constant true </description>
+      <created by="Asad Jawahar" on="2003-02-10"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[if (fn:true()) then <elem1/> else <elem2/>]]></test>
+      <result>
+         <assert-xml><![CDATA[<elem1/>]]></assert-xml>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr003">
+      <description> Simple if expression where boolean is a constant false </description>
+      <created by="Asad Jawahar" on="2003-02-10"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[if (fn:false()) then <elem1/> else <elem2/>]]></test>
+      <result>
+         <assert-xml><![CDATA[<elem2/>]]></assert-xml>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr004">
+      <description> Node set from a path expression as test condition </description>
+      <created by="Asad Jawahar" on="2003-02-10"/>
+      <environment ref="nw_Customers"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[if (//CompanyName) then <elem1/> else <elem2/>]]></test>
+      <result>
+         <assert-xml><![CDATA[<elem1/>]]></assert-xml>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr005">
+      <description> Empty node set from a path expression as test condition </description>
+      <created by="Asad Jawahar" on="2003-02-10"/>
+      <environment ref="nw_Customers"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[if (//NodeDoesNotExist) then <elem1/> else <elem2/>]]></test>
+      <result>
+         <assert-xml><![CDATA[<elem2/>]]></assert-xml>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr006">
+      <description>FileName: CondExpr006  then-expression has another if expression </description>
+      <created by="David Marston" on="2003-02-10"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<out>{ if (1 != 0) then if (4 != 5) then 1 else 2 else 3 }</out>]]></test>
+      <result>
+         <assert-xml><![CDATA[<out>1</out>]]></assert-xml>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr007">
+      <description> else-expr has another if expression </description>
+      <created by="Asad Jawahar" on="2003-02-10"/>
+      <environment ref="nw_Customers"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[if (//MissingNode) then <elem3/> else if (/Root/Customers[@CustomerID='ALFKI']//Country = "Germany") then <elem1/> else <elem2/>]]></test>
+      <result>
+         <assert-xml><![CDATA[<elem1/>]]></assert-xml>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr008">
+      <description> and-expression in test expression </description>
+      <created by="Asad Jawahar" on="2003-02-10"/>
+      <environment ref="nw_Customers"/>
+      <test>if ( /Root/Customers[1]/@CustomerID = 'ALFKI' and /Root/Customers[1]/FullAddress/City = 'Berlin') then "pass" else "fail"</test>
+      <result>
+         <assert-string-value>pass</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr009">
+      <description> or-expression in test expression </description>
+      <created by="Asad Jawahar" on="2003-02-10"/>
+      <environment ref="nw_Customers"/>
+      <test>if (/Root/Customers[1]/@CustomerID = 'ALFKI' or /Root/Customers[1]/FullAddress/City = 'Non-Existent') then "pass" else "fail"</test>
+      <result>
+         <assert-string-value>pass</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr010">
+      <description>FileName: CondExpr010  a true expression in if expression </description>
+      <created by="David Marston" on="2003-02-10"/>
+      <test> if (2 != 4) then 1 else 0 </test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr011">
+      <description>FileName: CondExpr011  If expression as argument to a function </description>
+      <created by="David Marston" on="2003-02-10"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>fn:string-length(if (2 != 3) then 'foo' else 'expanded-foo')</test>
+      <result>
+         <assert-eq>3</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr012">
+      <description>FileName: CondExpr012  Adapted from example in spec; test expression is a relational expression </description>
+      <created by="David Marston" on="2003-02-10"/>
+      <environment ref="xq311A"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>if (/doc/widget1/@unit-cost = /doc/widget2/@unit-cost) then /doc/widget1/@name else /doc/widget2/@name</test>
+      <result>
+         <assert-string-value>axolotl</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr013">
+      <description>FileName: CondExpr013  test expression has another if expression </description>
+      <created by="David Marston" on="2003-02-10"/>
+      <environment ref="xq311A"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test> if (if (5 != 3) then fn:true() else fn:empty(/doc/widget1)) then "search" else "assume" </test>
+      <result>
+         <assert-string-value>search</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr014">
+      <description>FileName: CondExpr014  Two if expressions at same depth in larger expression </description>
+      <created by="David Marston" on="2003-02-10"/>
+      <environment ref="xq311A"/>
+      <test> ( if (3 != 2) then 16 else 0 ) + ( if (8 = 7) then 4 else 1 ) </test>
+      <result>
+         <assert-eq>17</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr015">
+      <description>FileName: CondExpr015  Two if expressions at same depth in larger expression, each parenthesized </description>
+      <created by="David Marston" on="2003-02-10"/>
+      <test> (if (3 != 2) then 16 else 0) + (if (8 = 7) then 4 else 1) </test>
+      <result>
+         <assert-eq>17</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr016">
+      <description>FileName: CondExpr016  if where branches return different valid types </description>
+      <created by="Mike Rorke" on="2005-03-17"/>
+      <modified by="Michael Kay" on="2020-01-14" change="Avoid implicit use of XML serialization for testing the result"/>
+      <environment ref="fsx"/>
+      <test>(//Folder)[1]/File[ if ( ./@name='File00000000000' ) then 2 else true() ]/FileName</test>
+      <result>
+         <all-of>
+            <assert-count>30</assert-count>
+            <assert>$result[1] eq "File00000000001"</assert>
+            <assert>$result[2] eq "File00000000002"</assert>
+            <assert>$result[3] eq "File00000000003"</assert>
+            <assert>$result[4] eq "File00000000004"</assert>
+            <assert>$result[5] eq "File00000000005"</assert>
+            <assert>$result[6] eq "File00000000006"</assert>           
+         </all-of>
+         <!--<assert-xml><![CDATA[<FileName>File00000000001</FileName><FileName>File00000000002</FileName>
+            <FileName>File00000000003</FileName><FileName>File00000000004</FileName><FileName>File00000000005</FileName>
+            <FileName>File00000000006</FileName><FileName>File00000000007</FileName><FileName>File00000000008</FileName>
+            <FileName>File00000000009</FileName><FileName>File00000000010</FileName><FileName>File00000000011</FileName>
+            <FileName>File00000000012</FileName><FileName>File00000000013</FileName><FileName>File00000000014</FileName>
+            <FileName>File00000000015</FileName><FileName>File00000000016</FileName><FileName>File00000000017</FileName>
+            <FileName>File00000000018</FileName><FileName>File00000000019</FileName><FileName>File00000000020</FileName>
+            <FileName>File00000000021</FileName><FileName>File00000000022</FileName><FileName>File00000000023</FileName>
+            <FileName>File00000000024</FileName><FileName>File00000000025</FileName><FileName>File00000000026</FileName>
+            <FileName>File00000000027</FileName><FileName>File00000000028</FileName><FileName>File00000000029</FileName>
+            <FileName>File00000000030</FileName>]]></assert-xml>-->
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr017">
+      <description>FileName: CondExpr017  if where branches return different valid types </description>
+      <created by="Mike Rorke" on="2005-03-17"/>
+      <modified by="Michael Kay" on="2017-03-17" change="Avoid implicit use of XML serialization for testing the result"/>
+      <environment ref="fsx"/>
+      <test>for $file in (//Folder)[1]/File return if( $file/FileName='File00000000000' ) then $file/FileName else data( $file/FileName )</test>
+      <result>
+         <all-of>
+            <assert-count>31</assert-count>
+            <assert>$result[1][. instance of element(FileName)][. = 'File00000000000']</assert>
+            <assert>every $r in subsequence($result,2) satisfies $r instance of xs:untypedAtomic</assert>
+            <assert>string-join(subsequence($result,2), ' ') eq "File00000000001 File00000000002 File00000000003 File00000000004 File00000000005 File00000000006 File00000000007 File00000000008 File00000000009 File00000000010 File00000000011 File00000000012 File00000000013 File00000000014 File00000000015 File00000000016 File00000000017 File00000000018 File00000000019 File00000000020 File00000000021 File00000000022 File00000000023 File00000000024 File00000000025 File00000000026 File00000000027 File00000000028 File00000000029 File00000000030"</assert>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr018">
+      <description>FileName: CondExpr018  if where branches return different valid types </description>
+      <created by="Mike Rorke" on="2005-03-17"/>
+      <environment ref="fsx"/>
+      <test>for $file in (//Folder)[1]/File return if( $file/FileName='File00000000004' ) then 1 else data( $file/FileName )</test>
+      <result>
+         <assert-string-value>File00000000000 File00000000001 File00000000002 File00000000003 1 File00000000005 File00000000006 File00000000007 File00000000008 File00000000009 File00000000010 File00000000011 File00000000012 File00000000013 File00000000014 File00000000015 File00000000016 File00000000017 File00000000018 File00000000019 File00000000020 File00000000021 File00000000022 File00000000023 File00000000024 File00000000025 File00000000026 File00000000027 File00000000028 File00000000029 File00000000030</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr019">
+      <description>FileName: CondExpr019  Test with test expression not contained in ( ... ) </description>
+      <created by="Mike Rorke" on="2005-03-17"/>
+      <environment ref="fsx"/>
+      <test>if //File[1] then "true" else "false"</test>
+      <result>
+         <error code="XPST0003"/>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr20">
+      <description>FileName: CondExpr020  Test case where then-expression raises a dynamic error, but test-expression selects else-expression so no error is raised </description>
+      <created by="Mike Rorke" on="2005-03-17"/>
+      <environment ref="fsx"/>
+      <test>if( false() ) then /Folder[1] cast as xs:double ? else 10 cast as xs:double ?</test>
+      <result>
+         <assert-eq>10</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr21">
+      <description>FileName: CondExpr021  Test case where else-expression raises a dynamic error, but test-expression selects then-expression so no error is raised </description>
+      <created by="Mike Rorke" on="2005-03-17"/>
+      <environment ref="fsx"/>
+      <test>if( true() ) then 10 cast as xs:double ? else /Folder[1] cast as xs:double ?</test>
+      <result>
+         <assert-eq>10</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="CondExpr022">
+      <description> Test case where then-expression raises a dynamic error, but test-expression selects else-expression so no error is raised </description>
+      <created by="Nicolae Brinza" on="2009-04-01"/>
+      <test>if (doc-available('nodocument.xml')) then doc('nodocument.xml') else 10 cast as xs:double</test>
+      <result>
+         <assert-eq>10</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-1">
+      <description> A test whose essence is: `(if(2) then 1 else 0) eq 1`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(if(2) then 1 else 0) eq 1</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-2">
+      <description> A test whose essence is: `if(()) then false() else true()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>if(()) then false() else true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-3">
+      <description> An expression involving the if expression that trigger certain optimization paths in some implementations. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(if((1, current-time())[1] treat as xs:integer) then true() else false()) eq true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-4">
+      <description> An expression involving the if expression that trigger certain optimization paths in some implementations(#2). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(if(boolean((1, current-time())[1] treat as xs:integer)) then true() else false()) eq true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-5">
+      <description> An expression involving the if expression that trigger certain optimization paths in some implementations(#2). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>if((1, 2, 3, hours-from-time(current-time()))[1]) then true() else false()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-6">
+      <description> An expression involving the if expression that trigger certain optimization paths in some implementations(#3). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(if(boolean((1, current-time())[1] treat as xs:integer)) then true() else false()) eq "true"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-7">
+      <description> An if-test which EBV cannot be extracted from. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(if(current-time()) then 1 else 0) eq 1</test>
+      <result>
+         <error code="FORG0006"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-8">
+      <description> An if-test which EBV cannot be extracted from. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 eq (if(xs:anyURI("example.com/")) then 1 else 0)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-9">
+      <description> An if-test which EBV cannot be extracted from. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>0 eq (if(xs:anyURI("")) then 1 else 0)</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-10">
+      <description> An if-test applied on fn:count(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>if(count((1, 2, 3, current-time(), 4))) then true() else 4</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-11">
+      <description> An if-test applied on fn:count() combined with fn:not(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>if(not(count(remove((1, 2, 3, current-time()), 1)))) then 3 else true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-CondExpr-12">
+      <description> if-then clause combined with fn:boolean(). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>if(boolean((1, 2, 3, current-time())[1] treat as xs:integer)) then true() else 4</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-CondExpr-1">
+      <description> An expression that can be rewritten to the empty sequence, no matter the test branch. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[empty(if(<e>{current-time()}</e>) then () else ())]]></test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K2-CondExpr-2">
+      <description> An expression that can be simplified to any of the result branches, no matter the test branch. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[empty(if(<e>{current-time()}</e>) then 1 else 1)]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-CondExpr-3">
+      <description> It is ok to name a function 'unordered'. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>declare default function namespace "http://www.example.com/"; declare function unordered() { 1 }; unordered()</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="K2-CondExpr-4">
+      <description> Extract the EBV from a node sequence. Sorting and deduplication isn't necessary in that case. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <environment ref="acme_corp"/>
+      <test>if(//(employee[location = "Denver"]/ancestor::*)) then 1 else 3</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="K2-CondExpr-5">
+      <description> There is no exclamation mark operator in XQuery. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>if(!true()) then 2 else 3</test>
+      <result>
+         <error code="XPST0003"/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-CondExpr-6">
+      <description> An if expression cannot directly be an axis step. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<e/>/if(true()) then 1 else 3]]></test>
+      <result>
+         <error code="XPST0003"/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-CondExpr-7">
+      <description> Use a set of expressions that trigger a bug in some parsers. </description>
+      <created by="Frans Englich" on="2008-05-08"/>
+      <test>if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else if (1) then 1 else ()</test>
+      <result>
+         <assert-eq>1</assert-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-condexpr-001">
+      <description> Tests if(exists($x)) then f($x) else () optimization </description>
+      <created by="Nick Jones" on="2008-06-23"/> 
+      <dependency type="spec" value="XQ10+ XP30+"/>     
+      <test>
+      	let $x := zero-or-one((1 to 10)[. div 2 = 2]) 
+      	return if(exists($x)) then xs:string($x) else ()
+      </test>
+      <result>
+         <assert-string-value>4</assert-string-value>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-condexpr-002">
+      <description> tests if(empty($x)) then () else f($x) optimization </description>
+      <created by="Nick Jones" on="2008-06-23"/>      
+      <dependency type="spec" value="XQ10+ XP30+"/>     
+      <test>
+      	let $x := zero-or-one((1 to 10)[. div 2 = 2]) 
+      	return if(empty($x)) then () else xs:string($x)
+      </test>
+      <result>
+         <assert-string-value>4</assert-string-value>
+      </result>
+   </test-case>
+</test-set>

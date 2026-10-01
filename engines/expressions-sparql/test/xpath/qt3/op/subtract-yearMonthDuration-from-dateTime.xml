@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog"
+          name="op-subtract-yearMonthDuration-from-dateTime">
+   <description>Tests for the subtract-yearMonthDuration-from-dateTime() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-subtract-yearMonthDuration-from-dateTime"/>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime2args-1">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime2args-1
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:08 GMT-05:00 2005                
+Purpose: Evaluates The "op:subtract-yearMonthDuration-from-dateTime" operator
+ with the arguments set as follows:                    
+arg1 = xs:dateTime(lower bound)                        
+$arg2 = xs:yearMonthDuration(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:dateTime("1970-01-01T00:00:00Z") - xs:yearMonthDuration("P0Y0M")</test>
+      <result>
+         <assert-string-value>1970-01-01T00:00:00Z</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime2args-2">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime2args-2
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:08 GMT-05:00 2005                
+Purpose: Evaluates The "op:subtract-yearMonthDuration-from-dateTime" operator
+ with the arguments set as follows:                    
+arg1 = xs:dateTime(mid range)                          
+$arg2 = xs:yearMonthDuration(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:dateTime("1996-04-07T01:40:52Z") - xs:yearMonthDuration("P0Y0M")</test>
+      <result>
+         <assert-string-value>1996-04-07T01:40:52Z</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime2args-3">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime2args-3
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:08 GMT-05:00 2005                
+Purpose: Evaluates The "op:subtract-yearMonthDuration-from-dateTime" operator
+ with the arguments set as follows:                    
+arg1 = xs:dateTime(upper bound)                        
+$arg2 = xs:yearMonthDuration(lower bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:dateTime("2030-12-31T23:59:59Z") - xs:yearMonthDuration("P0Y0M")</test>
+      <result>
+         <assert-string-value>2030-12-31T23:59:59Z</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime2args-4">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime2args-4
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:08 GMT-05:00 2005                
+Purpose: Evaluates The "op:subtract-yearMonthDuration-from-dateTime" operator
+ with the arguments set as follows:                    
+arg1 = xs:dateTime(lower bound)                        
+$arg2 = xs:yearMonthDuration(mid range)               
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:dateTime("1970-01-01T00:00:00Z") - xs:yearMonthDuration("P1000Y6M")</test>
+      <result>
+         <assert-string-value>0969-07-01T00:00:00Z</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime2args-5">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime2args-5
+Written By: Carmelo Montanez                            
+Date: Tue Apr 12 16:29:08 GMT-05:00 2005                
+Purpose: Evaluates The "op:subtract-yearMonthDuration-from-dateTime" operator
+ with the arguments set as follows:                    
+arg1 = xs:dateTime(lower bound)                        
+$arg2 = xs:yearMonthDuration(upper bound)             
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:dateTime("1970-01-01T00:00:00Z") - xs:yearMonthDuration("P2030Y12M")</test>
+      <result>
+         <any-of>
+            <assert-string-value>-0062-01-01T00:00:00Z</assert-string-value>
+            <assert-string-value>-0061-01-01T00:00:00Z</assert-string-value>
+         </any-of>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-1">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-1    
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates The "subtract-yearMonthDuration-from-dateTime" operator 
+As per example 1 (for this function)of the F&amp;O specs.  
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>xs:dateTime("2000-10-30T11:12:00") - xs:yearMonthDuration("P1Y2M")</test>
+      <result>
+         <assert-string-value>1999-08-30T11:12:00</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-2">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-2    
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates The string value of "subtract-yearMonthDuration-from-dateTime" 
+ operator used as part of a boolean expression (and operator) and the "fn:false" function. 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>fn:string(xs:dateTime("2000-12-12T12:12:12Z") - xs:dayTimeDuration("P12DT10H07M")) and fn:false()</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-3">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-3    
+date: July 5, 2005                                     
+Purpose: Evaluates The string value of "subtract-yearMonthDuration-from-dateTime" 
+operator as part of a boolean expression (or operator) and the "fn:boolean" function. 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>fn:string((xs:dateTime("1999-10-23T13:45:45Z") - xs:yearMonthDuration("P19Y12M"))) or fn:false()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-4">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-4    
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates The string value of "subtract-yearMonthDuration-from-dateTime" 
+ operator that return true and used together with fn:not.
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>fn:not(fn:string(xs:dateTime("1998-09-12T13:56:12Z") - xs:yearMonthDuration("P20Y03M")))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-5">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-5    
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates The string value of "subtract-yearMonthDuration-from-dateTime" 
+ operator that is used as an argument to the fn:boolean function.     
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>fn:boolean(fn:string(xs:dateTime("1962-03-12T10:12:34Z") - xs:yearMonthDuration("P10Y01M")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-6">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-6    
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates The "subtract-yearMonthDuration-from-dateTime" operator that 
+is used as an argument to the fn:number function.      
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>fn:number(xs:dateTime("1988-01-28T13:45:23Z") - xs:yearMonthDuration("P09Y02M"))</test>
+      <result>
+         <assert-string-value>NaN</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-7">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-7    
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates The "subtract-yearMonthDuration-from-dateTime" operator used  
+as an argument to the "fn:string" function).           
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>fn:string(xs:dateTime("1989-07-05T14:34:36Z") - xs:yearMonthDuration("P08Y04M"))</test>
+      <result>
+         <assert-string-value>1981-03-05T14:34:36Z</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-8">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-8    
+Written By: Carmelo Montanez                           
+date: July 8, 2005                                     
+Purpose: Evaluates The "subtract-yearMonthDuration-from-dateTime" operator that  
+returns a negative value.                              
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>(xs:dateTime("0001-01-01T01:01:01Z") - xs:yearMonthDuration("-P20Y07M"))</test>
+      <result>
+         <assert-string-value>0021-08-01T01:01:01Z</assert-string-value>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-9">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-9    
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates string value of the "subtract-yearMonthDuration-from-dateTime" 
+operator used together with an "and" expression.       
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>fn:string((xs:dateTime("1993-12-09T10:10:10Z") - xs:yearMonthDuration("P03Y03M"))) and fn:string((xs:dateTime("1993-12-09T10:10:10Z") - xs:yearMonthDuration("P03Y03M")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-10">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-10   
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates The string value of "subtract-yearMonthDuration-from-dateTime" 
+ operator used together with an "or" expression.       
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>fn:string((xs:dateTime("1985-07-05T09:09:09Z") - xs:yearMonthDuration("P02Y02M"))) or fn:string((xs:dateTime("1985-07-05T09:09:09Z") - xs:yearMonthDuration("P02Y02M")))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-12">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-12   
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates The string value of "subtract-yearMonthDuration-from-dateTime" 
+operator used with a boolean expression and the "fn:true" function. 
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>fn:string((xs:dateTime("1980-03-02T02:02:02Z") - xs:yearMonthDuration("P05Y05M"))) and (fn:true())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-13">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-13   
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates The "subtract-yearMonthDuration-from-dateTime" operator used  
+together with the numeric-equal-operator "eq".         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>(xs:dateTime("1980-05-05T05:05:05Z") - xs:yearMonthDuration("P23Y11M")) eq xs:dateTime("1980-05-05T05:05:05Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-14">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-14   
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates The "subtract-yearMonthDuration-from-dateTime" operator used  
+together with the numeric-equal operator "ne".         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>(xs:dateTime("1979-12-12T09:09:09Z") - xs:yearMonthDuration("P08Y08M")) ne xs:dateTime("1979-12-12T09:09:09Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-15">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-15   
+Written By: Carmelo Montanez                           
+date: July 5, 2005                                     
+Purpose: Evaluates The "subtract-yearMonthDuration-from-dateTime" operator used  
+together with the numeric-equal operator "le".         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>(xs:dateTime("1978-12-12T07:07:07Z") - xs:yearMonthDuration("P17Y12M")) le xs:dateTime("1978-12-12T07:07:07Z")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   <test-case name="op-subtract-yearMonthDuration-from-dateTime-16">
+      <description>
+*******************************************************
+Test: op-subtract-yearMonthDuration-from-dateTime-16   
+Written By: Carmelo Montanez                           
+Date: July 5, 2005                                     
+Purpose: Evaluates The "subtract-yearMonthDuration-from-dateTime" operator used  
+together with the numeric-equal operator "ge".         
+*******************************************************
+</description>
+      <created by="Carmelo Montanez" on="2005-07-05"/>
+      <test>(xs:dateTime("1977-12-12T03:03:03Z") - xs:yearMonthDuration("P18Y02M")) ge xs:dateTime("1977-12-12T03:03:03Z")</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+   <test-case name="K-DateTimeSubtractYMD-1">
+      <description>
+*******************************************************
+ Test: K-DateTimeSubtractYMD-1                         
+ Written by: Frans Englich                             
+ Date: 2007-11-22T11:31:21+01:00                       
+ Purpose: Simple testing involving operator '-' between xs:dateTime and xs:yearMonthDuration that evaluates to zero. 
+*******************************************************
+</description>
+      <created by="Frans Englich" on="2007-11-26+01:00"/>
+      <test>xs:dateTime("1999-07-19T08:23:01.765") - xs:yearMonthDuration("P3Y35M") eq xs:dateTime("1993-08-19T08:23:01.765")</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="cbcl-subtract-yearMonthDuration-from-dateTime-001">
+      <description> test subtraction of zero duration to dateTime </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:two-digit($number as xs:integer) { let $string := string($number) return if (string-length($string) lt 2) then concat('0', $string) else $string }; declare function local:dateTime($year as xs:integer, $month as xs:integer, $day as xs:integer, $hour as xs:integer, $mins as xs:integer) { let $m := local:two-digit($month), $d := local:two-digit($day), $h := local:two-digit($hour), $n := local:two-digit($mins) return xs:dateTime(concat($year, '-', $m, '-', $d, 'T', $h, ':', $n, ':00')) }; local:dateTime(2008, 05, 12, 12, 59) - xs:yearMonthDuration("P0Y")</test>
+      <result>
+         <assert-string-value>2008-05-12T12:59:00</assert-string-value>
+      </result>
+   </test-case>
+   
+
+   <test-case name="cbcl-subtract-yearMonthDuration-from-dateTime-002">
+      <description> test subtraction of large duration from dateTime </description>
+      <created by="Tim Mills" on="2008-05-16"/>
+      <dependency type="spec" value="XQ10+"/>
+      
+      <test>declare function local:two-digit($number as xs:integer) { let $string := string($number) return if (string-length($string) lt 2) then concat('0', $string) else $string }; declare function local:dateTime($year as xs:integer, $month as xs:integer, $day as xs:integer, $hour as xs:integer, $mins as xs:integer) { let $m := local:two-digit($month), $d := local:two-digit($day), $h := local:two-digit($hour), $n := local:two-digit($mins) return xs:dateTime(concat($year, '-', $m, '-', $d, 'T', $h, ':', $n, ':00')) }; local:dateTime(-25252734927766554, 05, 12, 12, 59) + xs:yearMonthDuration("-P3214267297Y")</test>
+      <result>
+         <error code="FODT0001"/>
+      </result>
+   </test-case>
+</test-set>

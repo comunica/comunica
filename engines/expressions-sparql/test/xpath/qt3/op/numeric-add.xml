@@ -1,0 +1,1612 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="op-numeric-add">
+   <description>Tests for the numeric-add() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-numeric-add"/>
+   
+   <environment name="user-defined-types">
+      <schema uri="http://www.w3.org/XQueryTest/userDefinedTypes" file="../docs/userdefined.xsd">
+         <description>A schema user defined types and constructor tests</description>
+         <created by="Anonymous" on="2006-04-03"/>
+      </schema>   
+   </environment>
+
+   <test-case name="op-numeric-addint2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:int(mid range) $arg2 = xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-1873914410") + xs:int("-273569238")</test>
+      <result>
+         <assert-eq>-2147483648</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addint2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:int(upper bound) $arg2 = xs:int(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("2147483647") + xs:int("-2147483648")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addint2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:int(lower bound) $arg2 = xs:int(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-273569238") + xs:int("-1873914410")</test>
+      <result>
+         <assert-eq>-2147483648</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addint2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:int(lower bound) $arg2 = xs:int(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:int("-2147483648") + xs:int("2147483647")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addintg2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:integer(mid range) $arg2 = xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("830993497117024304") + xs:integer("-999999999999999999")</test>
+      <result>
+         <assert-eq>-169006502882975695</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addintg2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:integer(upper bound) $arg2 = xs:integer(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("999999999999999999") + xs:integer("-999999999999999999")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addintg2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:integer(lower bound) $arg2 = xs:integer(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("-999999999999999999") + xs:integer("830993497117024304")</test>
+      <result>
+         <assert-eq>-169006502882975695</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addintg2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:integer(lower bound) $arg2 = xs:integer(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:integer("-999999999999999999") + xs:integer("999999999999999999")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-adddec2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:decimal(mid range) $arg2 = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("617375191608514839") + xs:decimal("-999999999999999999")</test>
+      <result>
+         <assert-eq>-382624808391485160</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-adddec2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:decimal(upper bound) $arg2 = xs:decimal(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("999999999999999999") + xs:decimal("-999999999999999999")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-adddec2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:decimal(lower bound) $arg2 = xs:decimal(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-999999999999999999") + xs:decimal("617375191608514839")</test>
+      <result>
+         <assert-eq>-382624808391485160</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-adddec2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:decimal(lower bound) $arg2 = xs:decimal(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:decimal("-999999999999999999") + xs:decimal("999999999999999999")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-adddbl2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:double(mid range) $arg2 = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("0") + xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-eq>-1.7976931348623157E308</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-adddbl2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:double(upper bound) $arg2 = xs:double(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("1.7976931348623157E308") + xs:double("-1.7976931348623157E308")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-adddbl2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:double(lower bound) $arg2 = xs:double(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.7976931348623157E308") + xs:double("0")</test>
+      <result>
+         <assert-eq>-1.7976931348623157E308</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-adddbl2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:double(lower bound) $arg2 = xs:double(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:double("-1.7976931348623157E308") + xs:double("1.7976931348623157E308")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addflt2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:float(mid range) $arg2 = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("0") + xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-eq>xs:float(-3.4028235E38)</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addflt2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:float(upper bound) $arg2 = xs:float(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("3.4028235E38") + xs:float("-3.4028235E38")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addflt2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:float(lower bound) $arg2 = xs:float(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-3.4028235E38") + xs:float("0")</test>
+      <result>
+         <assert-eq>xs:float(-3.4028235E38)</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addflt2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:float(lower bound) $arg2 = xs:float(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:float("-3.4028235E38") + xs:float("3.4028235E38")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addlng2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:long(mid range) $arg2 = xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-47175562203048468") + xs:long("-45058158165499290")</test>
+      <result>
+         <assert-eq>-92233720368547758</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addlng2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:long(upper bound) $arg2 = xs:long(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("92233720368547758") + xs:long("-92233720368547758")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addlng2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:long(lower bound) $arg2 = xs:long(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-45058158165499290") + xs:long("-47175562203048468")</test>
+      <result>
+         <assert-eq>-92233720368547758</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addlng2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:long(lower bound) $arg2 = xs:long(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:long("-92233720368547758") + xs:long("92233720368547758")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addusht2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:unsignedShort(lower bound) $arg2 = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") + xs:unsignedShort("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addusht2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:unsignedShort(mid range) $arg2 = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("44633") + xs:unsignedShort("0")</test>
+      <result>
+         <assert-eq>44633</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addusht2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:unsignedShort(upper bound) $arg2 = xs:unsignedShort(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("65535") + xs:unsignedShort("0")</test>
+      <result>
+         <assert-eq>65535</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addusht2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:unsignedShort(lower bound) $arg2 = xs:unsignedShort(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") + xs:unsignedShort("44633")</test>
+      <result>
+         <assert-eq>44633</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addusht2args-5">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:unsignedShort(lower bound) $arg2 = xs:unsignedShort(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedShort("0") + xs:unsignedShort("65535")</test>
+      <result>
+         <assert-eq>65535</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnint2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:negativeInteger(mid range) $arg2 = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-297014075999096793") + xs:negativeInteger("-702985924000903206")</test>
+      <result>
+         <assert-eq>-999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnint2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:negativeInteger(upper bound) $arg2 = xs:negativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-1") + xs:negativeInteger("-999999999999999999")</test>
+      <result>
+         <assert-eq>-1000000000000000000</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnint2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:negativeInteger(lower bound) $arg2 = xs:negativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-702985924000903206") + xs:negativeInteger("-297014075999096793")</test>
+      <result>
+         <assert-eq>-999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnint2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:negativeInteger(lower bound) $arg2 = xs:negativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:negativeInteger("-999999999999999999") + xs:negativeInteger("-1")</test>
+      <result>
+         <assert-eq>-1000000000000000000</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addpint2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") + xs:positiveInteger("1")</test>
+      <result>
+         <assert-eq>2</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addpint2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:positiveInteger(mid range) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("52704602390610033") + xs:positiveInteger("1")</test>
+      <result>
+         <assert-eq>52704602390610034</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addpint2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:positiveInteger(upper bound) $arg2 = xs:positiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("999999999999999998") + xs:positiveInteger("1")</test>
+      <result>
+         <assert-eq>999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addpint2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") + xs:positiveInteger("52704602390610033")</test>
+      <result>
+         <assert-eq>52704602390610034</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addpint2args-5">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:positiveInteger(lower bound) $arg2 = xs:positiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:positiveInteger("1") + xs:positiveInteger("999999999999999998")</test>
+      <result>
+         <assert-eq>999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addulng2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:unsignedLong(lower bound) $arg2 = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") + xs:unsignedLong("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addulng2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:unsignedLong(mid range) $arg2 = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("130747108607674654") + xs:unsignedLong("0")</test>
+      <result>
+         <assert-eq>130747108607674654</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addulng2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:unsignedLong(upper bound) $arg2 = xs:unsignedLong(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("184467440737095516") + xs:unsignedLong("0")</test>
+      <result>
+         <assert-eq>184467440737095516</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addulng2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:unsignedLong(lower bound) $arg2 = xs:unsignedLong(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") + xs:unsignedLong("130747108607674654")</test>
+      <result>
+         <assert-eq>130747108607674654</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addulng2args-5">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:unsignedLong(lower bound) $arg2 = xs:unsignedLong(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:unsignedLong("0") + xs:unsignedLong("184467440737095516")</test>
+      <result>
+         <assert-eq>184467440737095516</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnpi2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:nonPositiveInteger(mid range) $arg2 = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-475688437271870490") + xs:nonPositiveInteger("-524311562728129509")</test>
+      <result>
+         <assert-eq>-999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnpi2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:nonPositiveInteger(upper bound) $arg2 = xs:nonPositiveInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("0") + xs:nonPositiveInteger("-999999999999999999")</test>
+      <result>
+         <assert-eq>-999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnpi2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:nonPositiveInteger(lower bound) $arg2 = xs:nonPositiveInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-524311562728129509") + xs:nonPositiveInteger("-475688437271870490")</test>
+      <result>
+         <assert-eq>-999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnpi2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:nonPositiveInteger(lower bound) $arg2 = xs:nonPositiveInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonPositiveInteger("-999999999999999999") + xs:nonPositiveInteger("0")</test>
+      <result>
+         <assert-eq>-999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnni2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(lower bound) $arg2 = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") + xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-eq>0</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnni2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(mid range) $arg2 = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("303884545991464527") + xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-eq>303884545991464527</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnni2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(upper bound) $arg2 = xs:nonNegativeInteger(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("999999999999999999") + xs:nonNegativeInteger("0")</test>
+      <result>
+         <assert-eq>999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnni2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(lower bound) $arg2 = xs:nonNegativeInteger(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") + xs:nonNegativeInteger("303884545991464527")</test>
+      <result>
+         <assert-eq>303884545991464527</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addnni2args-5">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:nonNegativeInteger(lower bound) $arg2 = xs:nonNegativeInteger(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:nonNegativeInteger("0") + xs:nonNegativeInteger("999999999999999999")</test>
+      <result>
+         <assert-eq>999999999999999999</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addsht2args-1">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:short(mid range) $arg2 = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-5324") + xs:short("-27444")</test>
+      <result>
+         <assert-eq>-32768</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addsht2args-2">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:short(upper bound) $arg2 = xs:short(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("32767") + xs:short("-32768")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addsht2args-3">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:short(lower bound) $arg2 = xs:short(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-27444") + xs:short("-5324")</test>
+      <result>
+         <assert-eq>-32768</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addsht2args-4">
+      <description> Evaluates The "op:numeric-add" operator with the arguments set as follows: $arg1 = xs:short(lower bound) $arg2 = xs:short(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>xs:short("-32768") + xs:short("32767")</test>
+      <result>
+         <assert-eq>-1</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addmix2args-1">
+      <description> Simple addition test with () as one operand should return null </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <test>1 + ()</test>
+      <result>
+         <any-of>
+            <assert-empty/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addmix2args-2">
+      <description> Simple addition test pass string for second operator </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <test>1 + '1'</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addmix2args-3">
+      <description> Simple addition test, second operator cast string to integer </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <test>1 + xs:integer('1')</test>
+      <result>
+         <assert-eq>2</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addmix2args-4">
+      <description> Simple addition test, second operator is a node, atomization applied </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 + <a> 2 </a>]]></test>
+      <result>
+         <assert-eq>3</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addmix2args-5">
+      <description> Simple addition test, second operator is a node, atomization applied </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1+<a> <b> 2 </b> </a>]]></test>
+      <result>
+         <assert-eq>3</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addmix2args-6">
+      <description> Simple addition test, second operator node which is not atomizable </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 + <a> <b> 2</b> <c> 2</c> </a>]]></test>
+      <result>
+         <error code="FORG0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addmix2args-7">
+      <description> Simple addition test, two operands are nodes </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a> 1 </a> + <b> 2 </b>]]></test>
+      <result>
+         <assert-eq>3</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addmix2args-8">
+      <description> Simple addition test, second operator is a node, atomizable but not castable to integer </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 + <a> x </a>]]></test>
+      <result>
+         <error code="FORG0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-addmix2args-9">
+      <description> Simple addition test pass an empty node for second operator </description>
+      <created by="Ravindranath Chennoju" on="2004-12-13"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[1 + <a/>]]></test>
+      <result>
+         <error code="FORG0001"/>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-add-derived-1">
+      <description> Evaluates The "op:numeric-add" operator with the operators set as follows $arg1 = xs:long $arg2 = xs:unsignedLong </description>
+      <created by="Carmelo Montanez" on="2006-07-10"/>
+      <test>xs:long(10) + xs:unsignedLong(35)</test>
+      <result>
+         <assert-eq>45</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-add-derived-2">
+      <description> Evaluates The "op:numeric-add" operator with the operators set as follows $arg1 = xs:positiveInteger $arg2 = xs:nonPositiveInteger </description>
+      <created by="Carmelo Montanez" on="2006-07-10"/>
+      <test>xs:positiveInteger(10) + xs:nonPositiveInteger(-15)</test>
+      <result>
+         <assert-eq>-5</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-add-derived-3">
+      <description> Evaluates The "op:numeric-add" operator with the operators set as follows $arg1 = xs:nonNegativeInteger $arg2 = xs:short </description>
+      <created by="Carmelo Montanez" on="2006-07-10"/>
+      <test>xs:nonNegativeInteger(10) + xs:short(15)</test>
+      <result>
+         <assert-eq>25</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-add-derived-4">
+      <description> Evaluates The "op:numeric-add" operator with the operators set as follows $arg1 = xs:short $arg2 = xs:long </description>
+      <created by="Carmelo Montanez" on="2006-07-10"/>
+      <test>xs:short(10) + xs:long(145)</test>
+      <result>
+         <assert-eq>155</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-add-derived-5">
+      <description> Evaluates The "op:numeric-add" operator with the operators set as follows $arg1 = xs:positiveInteger $arg2 = xs:negativeInteger </description>
+      <created by="Carmelo Montanez" on="2006-07-10"/>
+      <test>xs:positiveInteger(10) + xs:negativeInteger(-5)</test>
+      <result>
+         <assert-eq>5</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-1">
+      <description> A test whose essence is: `xs:double(6) + xs:double(2) eq 8`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:double(6) + xs:double(2) eq 8</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-2">
+      <description> A test whose essence is: `xs:decimal(6) + xs:decimal(2) eq 8`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:decimal(6) + xs:decimal(2) eq 8</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-3">
+      <description> A test whose essence is: `xs:decimal(6.1) + xs:decimal(2.1) eq 8.2`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:decimal(6.1) + xs:decimal(2.1) eq 8.2</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-4">
+      <description> A test whose essence is: `1.1 + 2.2 eq 3.3`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1.1 + 2.2 eq 3.3</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-5">
+      <description> A test whose essence is: `xs:double(1.1) + xs:double(2.2) ne 3.3`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:double(1.1) + xs:double(2.2) ne 3.3</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-6">
+      <description> A test whose essence is: `xs:float(1.1) + xs:float(2.2) ne 3.3`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:float(1.1) + xs:float(2.2) ne 3.3</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-7">
+      <description> A test whose essence is: `xs:integer(6) + xs:integer(2) eq 8`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:integer(6) + xs:integer(2) eq 8</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-8">
+      <description> A test whose essence is: `xs:float(6) + xs:float(2) eq 8`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:float(6) + xs:float(2) eq 8</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-9">
+      <description> A test whose essence is: `string(xs:float("NaN") + 3) eq "NaN"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(xs:float("NaN") + 3) eq "NaN"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-10">
+      <description> A test whose essence is: `string(xs:double("NaN") + 3) eq "NaN"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(xs:double("NaN") + 3) eq "NaN"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-11">
+      <description> A test whose essence is: `string(3 + xs:float("NaN")) eq "NaN"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(3 + xs:float("NaN")) eq "NaN"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-12">
+      <description> A test whose essence is: `string(3 + xs:double("NaN")) eq "NaN"`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>string(3 + xs:double("NaN")) eq "NaN"</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-13">
+      <description> A test whose essence is: `(xs:decimal(6) + xs:integer(2)) instance of xs:decimal`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) + xs:integer(2)) instance of xs:decimal</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-14">
+      <description> A test whose essence is: `(xs:integer(6) + xs:decimal(2)) instance of xs:decimal`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) + xs:decimal(2)) instance of xs:decimal</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-15">
+      <description> A test whose essence is: `(xs:integer(6) + xs:integer(2)) instance of xs:integer`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) + xs:integer(2)) instance of xs:integer</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-16">
+      <description> A test whose essence is: `(xs:decimal(6) + xs:decimal(2)) instance of xs:decimal`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) + xs:decimal(2)) instance of xs:decimal</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-17">
+      <description> A test whose essence is: `(xs:decimal(6) + xs:float(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) + xs:float(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-18">
+      <description> A test whose essence is: `(xs:float(6) + xs:decimal(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) + xs:decimal(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-19">
+      <description> A test whose essence is: `(xs:float(6) + xs:integer(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) + xs:integer(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-20">
+      <description> A test whose essence is: `(xs:integer(6) + xs:float(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) + xs:float(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-21">
+      <description> A test whose essence is: `(xs:float(6) + xs:float(2)) instance of xs:float`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) + xs:float(2)) instance of xs:float</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-22">
+      <description> A test whose essence is: `(xs:decimal(6) + xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:decimal(6) + xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-23">
+      <description> A test whose essence is: `(xs:double(6) + xs:decimal(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) + xs:decimal(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-24">
+      <description> A test whose essence is: `(xs:double(6) + xs:float(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) + xs:float(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-25">
+      <description> A test whose essence is: `(xs:float(6) + xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:float(6) + xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-26">
+      <description> A test whose essence is: `(xs:double(6) + xs:integer(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) + xs:integer(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-27">
+      <description> A test whose essence is: `(xs:integer(6) + xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:integer(6) + xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-28">
+      <description> A test whose essence is: `(xs:double(6) + xs:double(2)) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:double(6) + xs:double(2)) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-29">
+      <description> Test parser handles '+' operator with critical whitespace. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1+1 eq 2</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-30">
+      <description> Test parser handles '+' operator with critical whitespace(#2). </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>2 eq 1+1</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-31">
+      <description> Invoke operator '+' where one of the operands is of type none. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>3 + error()</test>
+      <result>
+         <error code="FOER0000"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-32">
+      <description> Invoke operator '+' where one of the operands is of type none. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>error() + 3</test>
+      <result>
+         <error code="FOER0000"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-33">
+      <description> Invoke operator '+' where one of the operands is of type none. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>3 + (error(), 4)</test>
+      <result>
+         <error code="FOER0000"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-34">
+      <description> Invoke operator '+' where one of the operands is of type none. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <modified by="Josh Spiegel" on="2015-08-07" change="Bug 4551, comments 3,7,12 and bug 26860"/>
+      <test>(4, error()) + 3</test>
+      <result>
+         <any-of>
+            <error code="FOER0000"/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-35">
+      <description> Invoke operator '+' where one of the operands is of type none. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <modified by="Josh Spiegel" on="2015-08-07" change="Bug 4551, comments 3,7,12 and bug 26860"/>
+      <test>3 + (4, error())</test>
+      <result>
+         <any-of>
+            <error code="FOER0000"/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-36">
+      <description> Invoke operator '+' where one of the operands is of type none. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(error(), 4) + 3</test>
+      <result>
+         <error code="FOER0000"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-37">
+      <description> Arithmethics involving operands of integer type but with wrong cardinality. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(1, 2) + 1</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-38">
+      <description> Arithmethics involving operands of integer type but with wrong cardinality. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty((1, 2) + ())</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-39">
+      <description> Arithmethics involving operands of integer type but with wrong cardinality. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 + (1, 2)</test>
+      <result>
+         <any-of>
+            <error code="XPTY0004"/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-40">
+      <description> Arithmethics involving operands of integer type but with wrong cardinality. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(() + (1, 2))</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-41">
+      <description> Number addition with error() as the left operand. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>error() + 3</test>
+      <result>
+         <any-of>
+            <error code="FOER0000"/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-42">
+      <description> Number addition with error() as the right operand. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>3 + error()</test>
+      <result>
+         <error code="FOER0000"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-43">
+      <description> Invoke the '+' operator with invalid operands. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>"3" + "3"</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-44">
+      <description> Invoke the '+' operator with invalid operands. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>"3" + xs:untypedAtomic("3")</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-45">
+      <description> A test whose essence is: `(3 + xs:untypedAtomic("3")) eq 6`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(3 + xs:untypedAtomic("3")) eq 6</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-46">
+      <description> A test whose essence is: `(xs:untypedAtomic("3") + 3.0) eq 6`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:untypedAtomic("3") + 3.0) eq 6</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-47">
+      <description> Complex combination of numeric arithmetics in order to stress operator precedence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(2 + 4) * 5 eq 30</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-48">
+      <description> Complex combination of numeric arithmetics in order to stress operator precedence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>2 + 4 * 5 eq 22</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-49">
+      <description> Complex combination of numeric arithmetics in order to stress operator precedence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 + 2 * 4 + (1 + 2 + 3 * 4) eq 24</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-50">
+      <description> Operand(s) which are the empty sequence. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(() + ())</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPST0005"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-51">
+      <description> Implementations supporting the static typing feature may raise XPTy0004. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(remove((1, "two"), 2) + 1) eq 2</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-52">
+      <description> Implementations supporting the static typing feature may raise XPTy0004. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>2 eq (1 + remove((1, "two"), 2))</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-53">
+      <description> Implementations supporting the static typing feature may raise XPTy0004. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(remove((1, "two"), 2) + xs:untypedAtomic("1")) eq 2</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-54">
+      <description> Implementations supporting the static typing feature may raise XPTy0004. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>2 eq (xs:untypedAtomic("1") + remove((1, "two"), 2))</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-55">
+      <description> Implementations supporting the static typing feature may raise XPTy0004. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(remove((xs:untypedAtomic("1"), "two"), 2) + 1) eq 2</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-56">
+      <description> Implementations supporting the static typing feature may raise XPTy0004. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>2 eq (1 + remove((xs:untypedAtomic("1"), "two"), 2))</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-57">
+      <description> Implementations supporting the static typing feature may raise XPTy0004. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(remove((1, "two"), 2) + xs:untypedAtomic("1")) eq 2</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-58">
+      <description> Implementations supporting the static typing feature may raise XPTy0004. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>2 eq (xs:untypedAtomic("1") + remove((1, "two"), 2))</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-59">
+      <description> A test whose essence is: `xs:untypedAtomic("3") + 3 eq 6`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>xs:untypedAtomic("3") + 3 eq 6</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-60">
+      <description> A test whose essence is: `(xs:untypedAtomic("3") + 3) instance of xs:double`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(xs:untypedAtomic("3") + 3) instance of xs:double</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-61">
+      <description> A test whose essence is: `(remove((5, 1e0), 2) + 1) eq 6`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(remove((5, 1e0), 2) + 1) eq 6</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-62">
+      <description> A test whose essence is: `(1 + remove((5, 1e0), 2)) eq 6`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(1 + remove((5, 1e0), 2)) eq 6</test>
+      <result>
+         <any-of>
+            <assert-true/>
+            <error code="XPTY0004"/>
+         </any-of>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-63">
+      <description> Invoke operator '+' where one of the operands, using subsequence(), evaluates to an invalid cardinality. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 + subsequence("a string", 1, 1)</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-64">
+      <description> Invoke operator '+' where one of the operands, using subsequence(), evaluates to an invalid cardinality. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>subsequence("a string", 1, 1) + 1</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-65">
+      <description> Invoke operator '+' where one of the operands is a string. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>"foo" + 1</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-NumericAdd-66">
+      <description> Invoke operator '+' where one of the operands is a string. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>1 + "foo"</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericAdd-1">
+      <description> Arithmethics involving operands of integer type but where both have wrong cardinality. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>(1, 2) + (1, 2)</test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericAdd-2">
+      <description> Arithmetics where the operands are directly constructed nodes. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a>1</a> + <b>2</b>]]></test>
+      <result>
+         <assert-eq>3</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="K2-NumericAdd-3">
+      <description> Arithmetics where the operands are directly constructed attributes. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test><![CDATA[<a foo="1"/>/@foo + <b foo="2"/>/@foo]]></test>
+      <result>
+         <assert-eq>3</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="op-numeric-add-1">
+      <description> Check dynamic type of numeric add on arguments of union of numeric types and untypedAtomic. </description>
+      <created by="Oliver Hallam" on="2010-03-16"/>
+      <modified by="Michael Kay" on="2016-04-26" change="see bugs 29401, 29572"/>
+      <dependency type="spec" value="XQ10+"/>
+      <test>
+         for $x in (1, xs:decimal(2), xs:float(3), xs:double(4), xs:untypedAtomic(5)) 
+         for $y in (1, xs:decimal(2), xs:float(3), xs:double(4), xs:untypedAtomic(5))
+         return ($x + $y)
+      </test>
+      <result>
+         <all-of>
+            <assert>$result[1] instance of xs:integer</assert>
+            <assert>$result[2] instance of xs:decimal</assert>
+            <assert>$result[3] instance of xs:float</assert>
+            <assert>$result[4] instance of xs:double</assert>
+            <assert>$result[5] instance of xs:double</assert>
+            <assert>$result[6] instance of xs:decimal</assert>
+            <assert>$result[7] instance of xs:decimal</assert>
+            <assert>$result[8] instance of xs:float</assert>
+            <assert>$result[9] instance of xs:double</assert>
+            <assert>$result[10] instance of xs:double</assert>
+            <assert>$result[11] instance of xs:float</assert>
+            <assert>$result[12] instance of xs:float</assert>
+            <assert>$result[13] instance of xs:float</assert>
+            <assert>$result[14] instance of xs:double</assert>
+            <assert>$result[15] instance of xs:double</assert>
+            <assert>$result[16] instance of xs:double</assert>
+            <assert>$result[17] instance of xs:double</assert>
+            <assert>$result[18] instance of xs:double</assert>
+            <assert>$result[19] instance of xs:double</assert>
+            <assert>$result[20] instance of xs:double</assert>
+            <assert>$result[21] instance of xs:double</assert>
+            <assert>$result[22] instance of xs:double</assert>
+            <assert>$result[23] instance of xs:double</assert>
+            <assert>$result[24] instance of xs:double</assert>
+            <assert>$result[25] instance of xs:double</assert>
+         </all-of>
+         <!--<assert-string-value>integer decimal float double double 
+            decimal decimal float double double 
+            float float float double double 
+            double double double double double 
+            double double double double double</assert-string-value>-->
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-2">
+      <description> Numeric addition on schema-validated input. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="atomic"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>
+         declare namespace atomic="http://www.w3.org/XQueryTest";
+         /*/atomic:integer + /*/atomic:integer
+      </test>
+      <result>
+         <assert-type>xs:integer</assert-type>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-3">
+      <description> Numeric addition on schema-validated input. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="atomic"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>
+         declare namespace atomic="http://www.w3.org/XQueryTest";
+         /*/atomic:decimal + /*/atomic:integer
+      </test>
+      <result>
+         <assert-type>xs:decimal</assert-type>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-4">
+      <description> Numeric addition on schema-validated input. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="atomic"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>
+         declare namespace atomic="http://www.w3.org/XQueryTest";
+         /*/atomic:decimal + /*/atomic:float
+      </test>
+      <result>
+         <assert-type>xs:float</assert-type>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-5">
+      <description> Numeric addition on schema-validated input. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="atomic"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>
+         declare namespace atomic="http://www.w3.org/XQueryTest";
+         /*/atomic:float + /*/atomic:float
+      </test>
+      <result>
+         <assert-type>xs:float</assert-type>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-6">
+      <description> Numeric addition on schema-validated input. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="atomic"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>
+         declare namespace atomic="http://www.w3.org/XQueryTest";
+         /*/atomic:float + /*/atomic:double
+      </test>
+      <result>
+         <assert-type>xs:double</assert-type>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-7">
+      <description> Numeric addition on schema-validated input. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="atomic"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>
+         declare namespace atomic="http://www.w3.org/XQueryTest";
+         /*/atomic:decimal/@* + /*/atomic:double
+      </test>
+      <result>
+         <assert-type>xs:double</assert-type>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-8">
+      <description> Numeric addition on schema-validated input. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="atomic"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>
+         declare namespace atomic="http://www.w3.org/XQueryTest";
+         /*/atomic:double + /*/atomic:double
+      </test>
+      <result>
+         <assert-type>xs:double</assert-type>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-9">
+      <description> Numeric addition on schema-validated input. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="atomic"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>
+         declare namespace atomic="http://www.w3.org/XQueryTest";
+         /*/atomic:integer + xs:untypedAtomic('123')
+      </test>
+      <result>
+         <assert-type>xs:double</assert-type>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-10">
+      <description> Numeric addition on schema-validated input. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="atomic"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>
+         declare namespace atomic="http://www.w3.org/XQueryTest";
+         /*/atomic:decimal + xs:untypedAtomic('123')
+      </test>
+      <result>
+         <assert-type>xs:double</assert-type>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-11">
+      <description> Numeric addition on schema-validated input. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="atomic"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>
+         declare namespace atomic="http://www.w3.org/XQueryTest";
+         /*/atomic:float + xs:untypedAtomic('123')
+      </test>
+      <result>
+         <assert-type>xs:double</assert-type>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-12">
+      <description> Numeric addition on schema-validated input. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="atomic"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaValidation"/>
+      <test>
+         declare namespace atomic="http://www.w3.org/XQueryTest";
+         /*/atomic:double + xs:untypedAtomic('123')
+      </test>
+      <result>
+         <assert-type>xs:double</assert-type>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-13">
+      <description> Numeric addition on schema-validated input with user-defined types. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <environment ref="user-defined-types"/>
+      <dependency type="spec" value="XQ10+"/>
+      <dependency type="feature" value="schemaImport"/>
+      <test>
+         import schema namespace t="http://www.w3.org/XQueryTest/userDefinedTypes";
+         15 cast as t:sizeType + 15 cast as t:floatBased
+      </test>
+      <result>
+        <all-of>
+         <assert-type>xs:float</assert-type>
+         <assert-eq>30</assert-eq>
+        </all-of>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-14">
+      <description> Numeric addition on schema-validated input with union types. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <modified by="Michael Kay" on="2016-05-09" change="see bug 29694"/>
+      <environment ref="user-defined-types"/>
+      <dependency type="spec" value="XQ30+"/>
+      <dependency type="feature" value="schemaImport"/>
+      <test>
+         import schema namespace t="http://www.w3.org/XQueryTest/userDefinedTypes";
+         15 cast as t:sizeType + 15 cast as t:integer-or-nothing
+      </test>
+      <result>
+        <all-of>
+         <assert-type>xs:integer</assert-type>
+         <assert-eq>30</assert-eq>
+        </all-of>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-15">
+      <description> Numeric addition on schema-validated input with union types. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <modified by="Michael Kay" on="2016-05-09" change="see bug 29694"/>
+      <environment ref="user-defined-types"/>
+      <dependency type="spec" value="XQ30+"/>
+      <dependency type="feature" value="schemaImport"/>
+      <test>
+         import schema namespace t="http://www.w3.org/XQueryTest/userDefinedTypes";
+         15 cast as t:floatBased + 15 cast as t:integer-or-nothing
+      </test>
+      <result>
+        <all-of>
+         <assert-type>xs:float</assert-type>
+         <assert-eq>30</assert-eq>
+        </all-of>
+      </result>
+   </test-case>
+   
+   <test-case name="op-numeric-add-16">
+      <description> Numeric addition on schema-validated input with union types. </description>
+      <created by="Michael Kay" on="2016-05-09"/>
+      <modified by="Michael Kay" on="2016-05-09" change="see bug 29694"/>
+      <environment ref="user-defined-types"/>
+      <dependency type="spec" value="XQ30+"/>
+      <dependency type="feature" value="schemaImport"/>
+      <test>
+         import schema namespace t="http://www.w3.org/XQueryTest/userDefinedTypes";
+         15 cast as t:floatBased + '' cast as t:integer-or-nothing
+      </test>
+      <result>
+         <error code="XPTY0004"/>
+      </result>
+   </test-case>
+</test-set>

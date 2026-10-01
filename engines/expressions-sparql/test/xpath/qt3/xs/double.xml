@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="xs-double">
+   <description>Tests features of XSD 1.1 doubles</description>
+
+   
+
+   <test-case name="xs-double-001">
+      <description>Test -0 in xs:double</description>
+      <created by="Norman Walsh" on="2011-07-28"/>
+      <dependency type="xsd-version" value="1.1"/>
+      <test>fn:string(xs:double("-0"))</test>
+      <result>
+        <assert-eq>fn:string("-0")</assert-eq>
+      </result>
+   </test-case>
+   
+   <test-case name="xs-double-002">
+      <description>Distinguish positive from negative zero</description>
+      <created by="Michael Kay" on="2011-07-28"/>
+      <dependency type="xsd-version" value="1.1"/>
+      <test>1 div xs:double("-0") ne 1 div xs:double("0")</test>
+      <result>
+        <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="xs-double-003">
+      <description>Ensure +INF accepted in XSD 1.1</description>
+      <created by="Michael Kay" on="2011-07-28"/>
+      <dependency type="xsd-version" value="1.1"/>
+      <test>exists(xs:double("+INF"))</test>
+      <result>
+        <assert-true/>
+      </result>
+   </test-case>
+   
+   <test-case name="xs-double-004">
+      <description>Ensure +INF rejected in XSD 1.0</description>
+      <created by="Michael Kay" on="2011-07-28"/>
+      <dependency type="xsd-version" value="1.0"/>
+      <test>exists(xs:double("+INF"))</test>
+      <result>
+        <error code="FORG0001"/>
+      </result>
+   </test-case>
+   
+   <test-case name="xs-double-005">
+      <description>Parse a particular number known to cause trouble in Java and PHP.
+        Some versions of Java go into an infinite loop on this one.
+        You may be able to fix this by applying a Java patch: see
+        http://www.oracle.com/technetwork/topics/security/alert-cve-2010-4476-305811.html</description>
+      <created by="Michael Kay" on="2011-07-28"/>
+      <dependency type="xsd-version" value="1.0"/>
+      <test>xs:double("2.2250738585072012e-308")</test>
+      <result>
+        <assert-type>xs:double</assert-type>
+      </result>
+   </test-case>
+   
+ 
+
+</test-set>

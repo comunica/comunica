@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-true">
+   <description>Tests for the function true()</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-true"/>
+
+   <test-case name="fn-true-1">
+      <description> Simple call to an "fn:true" function. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true()</test>
+      <result>
+         <all-of>
+            <assert-true/>
+            <assert-type>xs:boolean</assert-type>
+         </all-of>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-2">
+      <description> Evaluation of "fn:true" function as an argument to "fn:not" function. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:not(fn:true())</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-3">
+      <description> Evaluation of a "true" function with a logical expression involving the "and" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() and fn:true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-4">
+      <description> Evaluation of a "fn:true" function with a logical expression involving the "or" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() or fn:true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-5">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "eq" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() eq fn:true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-6">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "ne" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() ne fn:true()</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-7">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "lt" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() lt fn:true()</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-8">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "le" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() le fn:true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-9">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "gt" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() gt fn:true()</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-10">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "ge" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() ge fn:true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-11">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "=" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() = fn:true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-12">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "!=" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() != fn:true()</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-13">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "&lt;" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test><![CDATA[fn:true() < fn:true()]]></test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-14">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "&lt;=" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test><![CDATA[fn:true() <= fn:true()]]></test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-15">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "&gt;" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() &gt; fn:true()</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-16">
+      <description> Evaluation of an "fn:true" function with a comparison expression involving the "&gt;=" operator. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:true() &gt;= fn:true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-17">
+      <description> Evaluation of an "fn:true" function as an argument to an "xs:boolean" function. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>xs:boolean(fn:true())</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-18">
+      <description> Evaluation of an "fn:true" function as an argument to an "fn:string" function. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:string(fn:true())</test>
+      <result>
+         <assert-eq>"true"</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-19">
+      <description> Evaluation of an "fn:true" function as arguments to an "fn:concat" function. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:concat(xs:string(fn:true()),xs:string(fn:true()))</test>
+      <result>
+         <assert-string-value>truetrue</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-20">
+      <description> Evaluation of an "fn:true" function as arguments to an "fn:contains" function. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:contains(xs:string(fn:true()),xs:string(fn:true()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-21">
+      <description> Evaluation of an "fn:true" function as an argument to an "fn:string-length" function. </description>
+      <created by="Carmelo Montanez" on="2005-08-17"/>
+      <test>fn:string-length(xs:string(fn:true()))</test>
+      <result>
+         <assert-string-value>4</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-true-22" covers-30="inline-function">
+      <description>true() as a function item</description>
+      <created by="Michael Kay" on="2011-06-27"/>
+      <dependency type="spec" value="XP30+ XQ30+"/>
+      <dependency type="feature" value="higherOrderFunctions"/>
+      <test>let $t := true#0 return 3[$t()]</test>
+      <result>
+         <assert-eq>3</assert-eq>
+      </result>
+   </test-case>
+
+   <test-case name="K-TrueFunc-1">
+      <description> A test whose essence is: `true(1)`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>true(1)</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-TrueFunc-2">
+      <description> A test whose essence is: `true() eq true()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>true() eq true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-TrueFunc-3">
+      <description> A test whose essence is: `true()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>true()</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<test-set xmlns="http://www.w3.org/2010/09/qt-fots-catalog" name="fn-minutes-from-time">
+   <description>Tests for the minutes-from-time() function</description>
+   <link type="spec" document="http://www.w3.org/TR/xpath-functions-30/"
+         idref="func-minutes-from-time"/>
+
+   <test-case name="fn-minutes-from-time1args-1">
+      <description> Evaluates The "minutes-from-time" function with the arguments set as follows: $arg = xs:time(lower bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:minutes-from-time(xs:time("00:00:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time1args-2">
+      <description> Evaluates The "minutes-from-time" function with the arguments set as follows: $arg = xs:time(mid range) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:minutes-from-time(xs:time("08:03:35Z"))</test>
+      <result>
+         <assert-string-value>3</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time1args-3">
+      <description> Evaluates The "minutes-from-time" function with the arguments set as follows: $arg = xs:time(upper bound) </description>
+      <created by="Carmelo Montanez" on="2004-12-13"/>
+      <test>fn:minutes-from-time(xs:time("23:59:59Z"))</test>
+      <result>
+         <assert-string-value>59</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-1">
+      <description> Evaluates The "minutes-from-time" function As per example 1 of the F&amp;O specs (for this function) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("13:00:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-2">
+      <description> Evaluates The "minutes-from-time" function used as part of a numeric less than expression (lt operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("21:23:00Z")) lt fn:minutes-from-time(xs:time("21:24:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-3">
+      <description> Evaluates The "minutes-from-time" function as part of a numeric greater than operation (gt operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("01:23:00Z")) gt fn:minutes-from-time(xs:time("01:23:00Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-4">
+      <description> Evaluates The "minutes-from-time" function used as an argument to an avg function. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:avg((fn:minutes-from-time(xs:time("01:10:00Z")), fn:minutes-from-time(xs:time("01:20:00Z"))))</test>
+      <result>
+         <assert-string-value>15</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-5">
+      <description> Evaluates The "minutes-from-time" function using the empty sequence as an argument. Use count function to avoid empty file. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:count(fn:minutes-from-time(()))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-6">
+      <description> Evaluates The "hours-from-time" function that returns 59. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:hours-from-time(xs:time("00:59:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-7">
+      <description> Evaluates The "minutes-from-time" function used as part of an abs function. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:abs(fn:minutes-from-time(xs:time("23:20:00Z")))</test>
+      <result>
+         <assert-string-value>20</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-8">
+      <description> Evaluates The "minutes-from-time" function as part of a "+" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("02:00:00Z")) + fn:minutes-from-time(xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-9">
+      <description> Evaluates The "minutes-from-time" function as part of a "-" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("10:10:00Z")) - fn:minutes-from-time(xs:time("09:02:00Z"))</test>
+      <result>
+         <assert-string-value>8</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-10">
+      <description> Evaluates The "minutes-from-time" function as part of a "*" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("02:02:00Z")) * fn:minutes-from-time(xs:time("10:08:00Z"))</test>
+      <result>
+         <assert-string-value>16</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-11">
+      <description> Evaluates The "minutes-from-time" function as part of a "div" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("22:33:00Z")) div fn:minutes-from-time(xs:time("02:11:00Z"))</test>
+      <result>
+         <assert-string-value>3</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-12">
+      <description> Evaluates The "minutes-from-time" function as part of a "idiv" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("10:12:00Z")) idiv fn:minutes-from-time(xs:time("02:02:00Z"))</test>
+      <result>
+         <assert-string-value>6</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-13">
+      <description> Evaluates The "minutes-from-time" function as part of a "mod" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("10:10:00Z")) mod fn:minutes-from-time(xs:time("03:03:00Z"))</test>
+      <result>
+         <assert-string-value>1</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-14">
+      <description> Evaluates The "minutes-from-time" function as part of a "numeric-unary-plus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>+fn:minutes-from-time(xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-string-value>0</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-15">
+      <description> Evaluates The "minutes-from-time" function as part of a "numeric-unary-minus" expression. </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>-fn:minutes-from-time(xs:time("10:10:00Z"))</test>
+      <result>
+         <assert-string-value>-10</assert-string-value>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-16">
+      <description> Evaluates The "minutes-from-time" function as part of a "numeric-equal" expression (eq operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("10:02:00Z")) eq fn:minutes-from-time(xs:time("10:02:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-17">
+      <description> Evaluates The "minutes-from-time" function as part of a "numeric-equal" expression (ne operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("10:00:00Z")) ne fn:minutes-from-time(xs:time("01:01:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-18">
+      <description> Evaluates The "minutes-from-time" function as part of a "numeric-equal" expression (le operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("10:00:00Z")) le fn:minutes-from-time(xs:time("10:00:00Z"))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="fn-minutes-from-time-19">
+      <description> Evaluates The "minutes-from-time" function as part of a "numeric-equal" expression (ge operator) </description>
+      <created by="Carmelo Montanez" on="2005-06-06"/>
+      <test>fn:minutes-from-time(xs:time("10:03:00Z")) ge fn:minutes-from-time(xs:time("10:04:00Z"))</test>
+      <result>
+         <assert-false/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MinutesFromTimeFunc-1">
+      <description> A test whose essence is: `minutes-from-time()`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>minutes-from-time()</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MinutesFromTimeFunc-2">
+      <description> A test whose essence is: `minutes-from-time((), "Wrong param")`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>minutes-from-time((), "Wrong param")</test>
+      <result>
+         <error code="XPST0017"/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MinutesFromTimeFunc-3">
+      <description> A test whose essence is: `empty(minutes-from-time(()))`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>empty(minutes-from-time(()))</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MinutesFromTimeFunc-4">
+      <description> A test whose essence is: `minutes-from-time(()) instance of xs:integer?`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>minutes-from-time(()) instance of xs:integer?</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+
+   <test-case name="K-MinutesFromTimeFunc-5">
+      <description> A test whose essence is: `minutes-from-time(xs:time("23:11:12.43")) eq 11`. </description>
+      <created by="Frans Englich" on="2007-11-26"/>
+      <test>minutes-from-time(xs:time("23:11:12.43")) eq 11</test>
+      <result>
+         <assert-true/>
+      </result>
+   </test-case>
+</test-set>
