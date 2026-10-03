@@ -21,3 +21,4 @@ export * from './ILink';
 export * from './ILinkQueue';
 export * from './Logger';
 export * from './ExpressionEvaluator';
+export * from './ServiceExecutor';
