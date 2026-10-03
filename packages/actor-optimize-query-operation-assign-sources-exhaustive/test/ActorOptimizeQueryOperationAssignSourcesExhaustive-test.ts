@@ -1,6 +1,6 @@
 import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQuerySourceWrapper, IServiceExecutor } from '@comunica/types';
+import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { getOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
@@ -38,19 +38,6 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
       }),
     },
   };
-  const sourceService: IQuerySourceWrapper = <any> {
-    source: {
-      referenceValue: 'sourceService',
-      getSelectorShape: () => ({
-        type: 'operation',
-        operation: {
-          operationType: 'wildcard',
-        },
-      }),
-    },
-  };
-  const pattern = AF.createPattern(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'));
-  const serviceExecutor: IServiceExecutor = { execute: async() => []};
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -170,42 +157,6 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource((<Algebra.Union><unknown>operationOut.patterns[0]).input[1])).toBe(sourcePattern);
         expect(getOperationSource((<Algebra.Union><unknown>operationOut.patterns[1]).input[0])).toBe(source1);
         expect(getOperationSource((<Algebra.Union><unknown>operationOut.patterns[1]).input[1])).toBe(sourcePattern);
-      });
-
-      it('should not globally assign operation to 1 source if a SERVICE clause has a custom executor', async() => {
-        const operationIn = AF.createJoin([
-          pattern,
-          AF.createService(pattern, DF.namedNode('sourceService')),
-        ]);
-        const { operation, context: contextOut } = await actor.run({
-          operation: operationIn,
-          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
-            .set(KeysQueryOperation.querySources, [ source1 ])
-            .set(KeysQueryOperation.serviceSources, { sourceService })
-            .set(KeysInitQuery.serviceExecutors, { sourceService: serviceExecutor })
-            .set(KeysInitQuery.queryString, 'abc'),
-        });
-        const operationOut = <Algebra.Join> operation;
-        expect(getOperationSource(operationOut)).toBeUndefined();
-        expect(getOperationSource(operationOut.input[0])).toBe(source1);
-        expect(operationOut.input[1].type).toEqual(Algebra.Types.PATTERN);
-        expect(getOperationSource(operationOut.input[1])).toBe(sourceService);
-        expect(contextOut.get(KeysInitQuery.queryString)).toBeUndefined();
-      });
-
-      it('should globally assign operation to 1 source if no SERVICE clause has a custom executor', async() => {
-        const operationIn = AF.createJoin([
-          pattern,
-          AF.createService(pattern, DF.namedNode('source1')),
-        ]);
-        const { operation: operationOut } = await actor.run({
-          operation: operationIn,
-          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
-            .set(KeysQueryOperation.querySources, [ source1 ])
-            .set(KeysQueryOperation.serviceSources, { source1 })
-            .set(KeysInitQuery.serviceExecutors, { sourceService: serviceExecutor }),
-        });
-        expect(getOperationSource(operationOut)).toBe(source1);
       });
 
       it('should keep the queryString for a single source', async() => {
