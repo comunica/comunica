@@ -45,7 +45,7 @@
     "build:ts": "node \"../../node_modules/typescript/bin/tsc\"",
     "prepare": "comunica-compile-config config/config-default.json urn:comunica:default:init/actors#expressions > engine-default.js",
     "test": "node \"../../node_modules/jest/bin/jest.js\" --config ../../jest.config.ts --coverage=false engines/expressions-sparql/",
-    "spec:xpath": "node ../../packages/actor-init-query/spec/xpath-spec.js spec/sparql-engine.js https://jitsedesmet.github.io/manifest-xpath-tests/manifest.ttl -c ../../.rdf-test-suite-cache/",
+    "spec:xpath": "node ../../packages/actor-init-query/spec/xpath-spec.js spec/sparql-engine.js https://sparql-manifest-xpath-tests.jitsedesmet.be/manifest.ttl https://sparql-manifest-xpath-tests.jitsedesmet.be/extensions.ttl https://sparql-manifest-xpath-tests.jitsedesmet.be/errors.ttl -c ../../.rdf-test-suite-cache/",
     "spec": "yarn run spec:xpath",
     "browser:webpack": "node \"../../node_modules/webpack/bin/webpack.js\" --mode production",
     "browser:vite": "node \"../../node_modules/vite/bin/vite.js\" build",
