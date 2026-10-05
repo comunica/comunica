@@ -44,13 +44,13 @@ async function evaluateAsEbv(expression, bindings) {
 
 /**
  * A query engine for rdf-test-suite that evaluates the queries of the XPath test suite
- * (https://jitsedesmet.github.io/manifest-xpath-tests/) with the expression engine.
+ * (https://sparql-manifest-xpath-tests.jitsedesmet.be/) with the expression engine.
  * These queries have the form ASK { BIND(<expression> AS ?result) FILTER(<assertion>) },
  * so the expression is evaluated first, and the assertion is evaluated with its result.
  */
 module.exports = {
   parse(queryString) {
-    parser.parse(queryString);
+    toAlgebra(parser.parse(queryString), { quads: true, dataFactory: DF });
   },
   async query(data, queryString) {
     const ask = toAlgebra(parser.parse(queryString), { quads: true, dataFactory: DF });

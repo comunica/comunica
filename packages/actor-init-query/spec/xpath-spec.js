@@ -7,14 +7,14 @@ const { ErrorTest, TestSuiteRunner } = require('rdf-test-suite');
 const knownFailures = require('./xpath-known-failures');
 
 /**
- * Runs the XPath test suite (https://jitsedesmet.github.io/manifest-xpath-tests/) with rdf-test-suite.
+ * Runs the XPath test suite (https://sparql-manifest-xpath-tests.jitsedesmet.be/) with rdf-test-suite.
  * Known failures (see xpath-known-failures.js) are reported as skipped when they fail,
  * and fail the run when they pass, so that they are removed from that list.
  *
- * Usage: node xpath-spec.js path/to/sparql-engine.js manifest-url [-c cacheDirectory] [-m urlToFileMapping] [-t testRegex]
+ * Usage: node xpath-spec.js path/to/sparql-engine.js manifest-url... [-c cacheDirectory] [-m urlToFileMapping] [-t testRegex]
  */
 async function main() {
-  const { values: args, positionals: [ enginePath, manifest ] } = parseArgs({
+  const { values: args, positionals: [ enginePath, ...manifests ] } = parseArgs({
     allowPositionals: true,
     options: { c: { type: 'string' }, m: { type: 'string' }, t: { type: 'string' }},
   });
@@ -32,7 +32,10 @@ async function main() {
     mkdirSync(config.cachePath, { recursive: true });
   }
   const engine = require(join(process.cwd(), enginePath));
-  const results = await runner.runManifest(manifest, engine, config);
+  const results = [];
+  for (const manifest of manifests) {
+    results.push(...await runner.runManifest(manifest, engine, config));
+  }
 
   const reasons = new Map(knownFailures.flatMap(({ reason, tests }) => tests.map(test => [ test, reason ])));
   for (const result of results) {
