@@ -1,6 +1,6 @@
 /**
  * Tests of the XPath test suite (https://sparql-manifest-xpath-tests.jitsedesmet.be/) that are known to fail,
- * grouped by the reason why they fail. xpath-spec.js reports them as skipped, or as failing once they pass.
+ * grouped by the reason why they fail. xpath-spec.js reports them as skipped, or warns once they pass.
  */
 module.exports = [
   {
