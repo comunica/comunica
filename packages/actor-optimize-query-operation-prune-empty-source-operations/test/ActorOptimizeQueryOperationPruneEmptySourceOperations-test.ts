@@ -714,9 +714,6 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
                 assignOperationSource(AF
                   .createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), DF.variable('o')), source1),
               ]),
-              AF.createJoin([
-                AF.createUnion([]),
-              ]),
             ]),
             [
               DF.variable('o'),
@@ -854,6 +851,148 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
               DF.variable('o'),
             ],
           ));
+        });
+
+        describe('depending on the operations around empty ones', () => {
+          const variable = DF.variable('o');
+          const unionOf = (predicate: string): Algebra.Operation => AF.createUnion([
+            assignOperationSource(AF.createPattern(DF.namedNode('s'), DF.namedNode(predicate), variable), source1),
+            assignOperationSource(AF.createPattern(DF.namedNode('s'), DF.namedNode(predicate), variable), source1),
+          ]);
+          const altOf = (predicate: string): Algebra.Operation => AF.createAlt([
+            assignOperationSource(AF.createLink(DF.namedNode(predicate)), source1),
+            assignOperationSource(AF.createLink(DF.namedNode(predicate)), source1),
+          ]);
+          const pathOf = (predicate: Algebra.Operation): Algebra.Operation =>
+            AF.createPath(DF.namedNode('s'), predicate, variable);
+          const count = AF.createBoundAggregate(DF.variable('c'), 'count', AF.createWildcardExpression(), false);
+          const booleanOf = (value: boolean): Algebra.Expression => AF.createTermExpression(DF.literal(
+            String(value),
+            DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean'),
+          ));
+
+          it.each(<[string, () => Algebra.Operation][]> [
+            [ 'join', () => AF.createJoin([ unionOf('nonEmpty'), unionOf('empty') ]) ],
+            [ 'left join with an empty left', () => AF.createLeftJoin(unionOf('empty'), unionOf('nonEmpty')) ],
+            [ 'minus with an empty left', () => AF.createMinus(unionOf('empty'), unionOf('nonEmpty')) ],
+            [ 'filter', () => AF.createFilter(unionOf('empty'), AF.createTermExpression(variable)) ],
+            [ 'extend', () => AF.createExtend(unionOf('empty'), DF.variable('x'), AF.createTermExpression(variable)) ],
+            [ 'project', () => AF.createProject(unionOf('empty'), [ variable ]) ],
+            [ 'distinct', () => AF.createDistinct(unionOf('empty')) ],
+            [ 'reduced', () => AF.createReduced(unionOf('empty')) ],
+            [ 'slice', () => AF.createSlice(unionOf('empty'), 1) ],
+            [ 'order by', () => AF.createOrderBy(unionOf('empty'), [ AF.createTermExpression(variable) ]) ],
+            [ 'graph', () => AF.createGraph(unionOf('empty'), DF.namedNode('g')) ],
+            [ 'group with keys', () => AF.createGroup(unionOf('empty'), [ variable ], [ count ]) ],
+            [ 'one-or-more path', () => pathOf(AF.createOneOrMorePath(altOf('empty'))) ],
+            [ 'inverse path', () => pathOf(AF.createInv(altOf('empty'))) ],
+            [ 'sequence path', () => pathOf(AF.createSeq([ altOf('nonEmpty'), altOf('empty') ])) ],
+          ])('should prune if the projection has an empty %s', async(_, createOperation) => {
+            const { operation: opOut } = await actor
+              .run({ operation: AF.createProject(createOperation(), [ variable ]), context: ctx });
+            expect(opOut).toEqual(AF.createUnion([]));
+          });
+
+          it.each(<[string, () => Algebra.Operation][]> [
+            [ 'filter expression', () => AF.createFilter(
+              unionOf('nonEmpty'),
+              AF.createExistenceExpression(true, unionOf('empty')),
+            ) ],
+            [ 'extend expression', () => AF.createExtend(
+              unionOf('nonEmpty'),
+              DF.variable('x'),
+              AF.createExistenceExpression(true, unionOf('empty')),
+            ) ],
+            [ 'minus right', () => AF.createMinus(unionOf('nonEmpty'), unionOf('empty')) ],
+            [ 'group without keys', () => AF.createGroup(unionOf('empty'), [], [ count ]) ],
+            [ 'values', () => AF.createJoin([ unionOf('nonEmpty'), AF.createValues([], [{}]) ]) ],
+          ])('should not prune if the projection has an empty %s', async(_, createOperation) => {
+            const { operation: opOut } = await actor
+              .run({ operation: AF.createProject(createOperation(), [ variable ]), context: ctx });
+            expect(opOut.type).toBe(Algebra.Types.PROJECT);
+          });
+
+          it.each(<[string, (path: Algebra.Operation) => Algebra.Operation][]> [
+            [ 'zero-or-more', path => AF.createZeroOrMorePath(path) ],
+            [ 'zero-or-one', path => AF.createZeroOrOnePath(path) ],
+          ])('should keep the empty links of a %s path', async(_, createPath) => {
+            const opIn = AF.createProject(pathOf(createPath(altOf('empty'))), [ variable ]);
+            const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+            expect(opOut).toEqual(opIn);
+          });
+
+          it('should remove minus operations with empty right operation', async() => {
+            const opIn = AF.createProject(AF.createMinus(unionOf('nonEmpty'), unionOf('empty')), [ variable ]);
+            const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+            expect(opOut).toEqual(AF.createProject(unionOf('nonEmpty'), [ variable ]));
+          });
+
+          it('should keep minus operations with non-empty right operation', async() => {
+            const opIn = AF.createProject(AF.createMinus(unionOf('nonEmpty'), unionOf('nonEmpty')), [ variable ]);
+            const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+            expect(opOut).toEqual(opIn);
+          });
+
+          it.each([ true, false ])('should replace an existence with not %s over an empty operation', async(not) => {
+            const { operation: opOut } = await actor.run({
+              operation: AF.createProject(AF.createFilter(
+                unionOf('nonEmpty'),
+                AF.createOperatorExpression('&&', [
+                  AF.createTermExpression(variable),
+                  AF.createExistenceExpression(not, unionOf('empty')),
+                ]),
+              ), [ variable ]),
+              context: ctx,
+            });
+            expect(opOut).toEqual(AF.createProject(AF.createFilter(
+              unionOf('nonEmpty'),
+              AF.createOperatorExpression('&&', [
+                AF.createTermExpression(variable),
+                booleanOf(not),
+              ]),
+            ), [ variable ]));
+          });
+
+          it('should keep an existence over a non-empty operation', async() => {
+            const opIn = AF.createProject(AF.createExtend(
+              unionOf('nonEmpty'),
+              DF.variable('x'),
+              AF.createExistenceExpression(true, AF.createJoin([ unionOf('nonEmpty'), unionOf('nonEmpty') ])),
+            ), [ variable ]);
+            const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+            expect(opOut).toEqual(opIn);
+          });
+
+          it('should remove children of unions that have become empty', async() => {
+            const opIn = AF.createProject(AF.createUnion([
+              AF.createJoin([ unionOf('nonEmpty'), unionOf('empty') ]),
+              unionOf('nonEmpty'),
+              unionOf('nonEmpty'),
+            ]), [ variable ]);
+            const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+            expect(opOut).toEqual(AF.createProject(AF.createUnion([
+              unionOf('nonEmpty'),
+              unionOf('nonEmpty'),
+            ]), [ variable ]));
+          });
+
+          it('should replace the empty operation of a group without keys', async() => {
+            const opIn = AF.createProject(
+              AF.createGroup(AF.createJoin([ unionOf('nonEmpty'), unionOf('empty') ]), [], [ count ]),
+              [ variable ],
+            );
+            const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+            expect(opOut).toEqual(AF.createProject(
+              AF.createGroup(AF.createValues([], []), [], [ count ]),
+              [ variable ],
+            ));
+          });
+
+          it('should keep the non-empty operation of a group without keys', async() => {
+            const opIn = AF.createProject(AF.createGroup(unionOf('nonEmpty'), [], [ count ]), [ variable ]);
+            const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+            expect(opOut).toEqual(opIn);
+          });
         });
       });
     });
