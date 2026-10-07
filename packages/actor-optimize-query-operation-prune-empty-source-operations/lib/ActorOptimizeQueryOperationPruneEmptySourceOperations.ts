@@ -14,8 +14,20 @@ import type {
   MetadataBindings,
   QueryResultCardinality,
 } from '@comunica/types';
-import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation, isKnownSubType } from '@comunica/utils-algebra';
+import {
+  Algebra,
+  AlgebraFactory,
+  algebraTransformer,
+  algebraUtils,
+  isKnownOperation,
+  isKnownSubType,
+} from '@comunica/utils-algebra';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
+
+/**
+ * Transformer that only descends into an operation if its callbacks ask for it.
+ */
+const nonDescendingTransformer = algebraTransformer({ continue: false });
 
 /**
  * A comunica Prune Empty Source Operations Optimize Query Operation Actor.
@@ -152,40 +164,42 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
    */
   protected static hasEmptyOperation(operation: Algebra.Operation): boolean {
     const hasEmptyOperation = ActorOptimizeQueryOperationPruneEmptySourceOperations.hasEmptyOperation;
-    switch (operation.type) {
+    let emptyOperation = false;
+    const emptyIf = (empty: boolean): { shortcut: boolean } | { continue: boolean } => {
+      if (empty) {
+        emptyOperation = true;
+        return { shortcut: true };
+      }
+      return { continue: false };
+    };
+    const descend = { preVisitor: () => ({ continue: true }) };
+    // Operations without callback are not descended into, so they are never considered empty
+    nonDescendingTransformer.visitNode(operation, {
       // `Array.every` on an empty array always returns true
-      case Algebra.Types.UNION:
-      case Algebra.Types.ALT:
-        return (<Algebra.Multi> operation).input.every(hasEmptyOperation);
-      case Algebra.Types.JOIN:
-      case Algebra.Types.SEQ:
-        return (<Algebra.Multi> operation).input.some(hasEmptyOperation);
+      [Algebra.Types.UNION]: { preVisitor: unionOp => emptyIf(unionOp.input.every(hasEmptyOperation)) },
+      [Algebra.Types.ALT]: { preVisitor: altOp => emptyIf(altOp.input.every(hasEmptyOperation)) },
+      [Algebra.Types.JOIN]: descend,
+      [Algebra.Types.SEQ]: descend,
       // Only the left operation determines whether there are results
-      case Algebra.Types.LEFT_JOIN:
-      case Algebra.Types.MINUS:
-        return hasEmptyOperation((<Algebra.Double> operation).input[0]);
-      case Algebra.Types.FILTER:
-      case Algebra.Types.EXTEND:
-      case Algebra.Types.PROJECT:
-      case Algebra.Types.DISTINCT:
-      case Algebra.Types.REDUCED:
-      case Algebra.Types.SLICE:
-      case Algebra.Types.ORDER_BY:
-      case Algebra.Types.GRAPH:
-        return hasEmptyOperation((<Algebra.Single> operation).input);
+      [Algebra.Types.LEFT_JOIN]: { preVisitor: leftJoinOp => emptyIf(hasEmptyOperation(leftJoinOp.input[0])) },
+      [Algebra.Types.MINUS]: { preVisitor: minusOp => emptyIf(hasEmptyOperation(minusOp.input[0])) },
+      // Their expressions are not descended into, as a `NOT EXISTS` over an empty operation still holds
+      [Algebra.Types.FILTER]: descend,
+      [Algebra.Types.EXTEND]: descend,
+      [Algebra.Types.PROJECT]: descend,
+      [Algebra.Types.DISTINCT]: descend,
+      [Algebra.Types.REDUCED]: descend,
+      [Algebra.Types.SLICE]: descend,
+      [Algebra.Types.ORDER_BY]: descend,
+      [Algebra.Types.GRAPH]: descend,
       // Without grouping keys, a group produces a single result, even without input
-      case Algebra.Types.GROUP:
-        return (<Algebra.Group> operation).variables.length > 0 &&
-          hasEmptyOperation((<Algebra.Group> operation).input);
-      case Algebra.Types.PATH:
-        return hasEmptyOperation((<Algebra.Path> operation).predicate);
+      [Algebra.Types.GROUP]: { preVisitor: groupOp => ({ continue: groupOp.variables.length > 0 }) },
       // Unlike zero-or-more and zero-or-one paths, these have no zero-length results
-      case Algebra.Types.INV:
-      case Algebra.Types.ONE_OR_MORE_PATH:
-        return hasEmptyOperation((<Algebra.Inv | Algebra.OneOrMorePath> operation).path);
-      default:
-        return false;
-    }
+      [Algebra.Types.PATH]: descend,
+      [Algebra.Types.INV]: descend,
+      [Algebra.Types.ONE_OR_MORE_PATH]: descend,
+    });
+    return emptyOperation;
   }
 
   protected collectMultiOperationInputs(
