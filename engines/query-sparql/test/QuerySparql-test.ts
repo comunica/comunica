@@ -1407,6 +1407,64 @@ WHERE {
     });
 
     describe('on multiple sources', () => {
+      it.each([
+        [ 'FILTER NOT EXISTS', 'SELECT ?s { ?s <ex:p> ?o FILTER NOT EXISTS { ?s <ex:q> ?x } }', [ 'ex:s', 'ex:s' ]],
+        [ 'BIND NOT EXISTS', 'SELECT ?s { ?s <ex:p> ?o BIND(NOT EXISTS { ?s <ex:q> ?x } AS ?b) }', [ 'ex:s', 'ex:s' ]],
+        [ 'MINUS', 'SELECT ?s WHERE { ?s <ex:p> ?o MINUS { ?s <ex:q> ?x } }', [ 'ex:s', 'ex:s' ]],
+        [ 'COUNT', 'SELECT (COUNT(*) AS ?s) WHERE { ?x <ex:q> ?y }', [ '0' ]],
+        [ 'zero-or-more path', 'SELECT ?s WHERE { <ex:s> <ex:q>* ?s }', [ 'ex:s' ]],
+        [ 'zero-or-one path', 'SELECT ?s WHERE { <ex:s> <ex:q>? ?s }', [ 'ex:s' ]],
+      ])('with a %s over a pattern that none of the sources has results for', async(_, query, expected) => {
+        // Such patterns are pruned from the query, which should not affect the operations around them
+        const createStore = (): RdfStore => {
+          const store = RdfStore.createDefault();
+          store.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+          return store;
+        };
+        const bindings = await (await engine.queryBindings(query, { sources: [ createStore(), createStore() ]}))
+          .toArray();
+        expect(bindings.map(entry => entry.get('s')!.value)).toEqual(expected);
+      });
+
+      it.each([
+        [ 'FILTER NOT EXISTS', 'SELECT ?s ?b { ?s <ex:r> ?o FILTER NOT EXISTS { ?s <ex:q> ?x } }', [ 'ex:s' ], []],
+        [ 'BIND EXISTS', 'SELECT ?s ?b { ?s <ex:r> ?o BIND(EXISTS { ?s <ex:q> ?x } AS ?b) }', [ 'ex:s' ], [ 'false' ]],
+        [
+          'BIND NOT EXISTS',
+          'SELECT ?s ?b { ?s <ex:r> ?o BIND(NOT EXISTS { ?s <ex:q> ?x } AS ?b) }',
+          [ 'ex:s' ],
+          [ 'true' ],
+        ],
+        [
+          'FILTER NOT EXISTS with a UNION',
+          `SELECT ?s { ?s <ex:r> ?o FILTER NOT EXISTS {
+            { ?s <ex:p> ?y FILTER(?y = <ex:x>) } UNION { ?s <ex:q> ?x }
+          } }`,
+          [ 'ex:s' ],
+          [],
+        ],
+        [
+          'FILTER NOT EXISTS with a COUNT',
+          'SELECT ?s { ?s <ex:r> ?o FILTER NOT EXISTS { SELECT (COUNT(*) AS ?c) { ?s <ex:q> ?x } } }',
+          [],
+          [],
+        ],
+      ])('with a %s over a pattern that none of the SPARQL endpoints has results for', async(_, query, s, b) => {
+        // The other patterns only have results in a single endpoint, which may then receive the (NOT) EXISTS
+        const endpoint1 = 'http://example.org/pruned-exists1/sparql';
+        const endpoint2 = 'http://example.org/pruned-exists2/sparql';
+        const store1 = RdfStore.createDefault();
+        store1.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:r'), DF.namedNode('ex:o')));
+        const store2 = RdfStore.createDefault();
+        store2.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+        const bindings = await (await engine.queryBindings(query, {
+          sources: [ endpoint1, endpoint2 ],
+          fetch: createSparqlEndpointsFetch({ [endpoint1]: store1, [endpoint2]: store2 }),
+        })).toArray();
+        expect(bindings.map(entry => entry.get('s')!.value)).toEqual(s);
+        expect(bindings.flatMap(entry => entry.has('b') ? [ entry.get('b')!.value ] : [])).toEqual(b);
+      });
+
       it('with an explicit SERVICE clause without sources in context', async() => {
         const bindingsStream = await engine.queryBindings(`
 SELECT ?movie ?title ?name
