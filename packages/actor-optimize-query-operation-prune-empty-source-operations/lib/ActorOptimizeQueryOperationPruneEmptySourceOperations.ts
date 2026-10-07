@@ -105,13 +105,17 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     emptyOperations: Set<Algebra.Operation>,
   ): Algebra.Operation {
     const isEmpty = ActorOptimizeQueryOperationPruneEmptySourceOperations.isEmptyOperation;
+    const emptyOperation: () => Algebra.Operation = () => algebraFactory.createUnion([]);
+    const emptyPath: () => Algebra.Alt = () => algebraFactory.createAlt([]);
+
     const emptyIfInputIsEmpty = { transform: (subOperation: Algebra.Single) =>
-      isEmpty(subOperation.input) ? algebraFactory.createUnion([]) : subOperation };
+      isEmpty(subOperation.input) ? emptyOperation() : subOperation };
     const emptyPathIfPathIsEmpty = { transform: (subOperation: Algebra.Inv | Algebra.OneOrMorePath) =>
-      isEmpty(subOperation.path) ? algebraFactory.createAlt([]) : subOperation };
+      isEmpty(subOperation.path) ? emptyPath() : subOperation };
     // Only the left operation determines whether there are results, and an empty right one matches nothing
     const leftIfAnyInputIsEmpty = { transform: (subOperation: Algebra.LeftJoin | Algebra.Minus) =>
       subOperation.input.some(isEmpty) ? subOperation.input[0] : subOperation };
+
     return algebraUtils.mapOperation(operation, {
       [Algebra.Types.UNION]: { transform: (subOperation, origOp) =>
         this.mapMultiOperation(subOperation, origOp, emptyOperations, children =>
@@ -120,9 +124,9 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         this.mapMultiOperation(subOperation, origOp, emptyOperations, children =>
           algebraFactory.createAlt(children)) },
       [Algebra.Types.JOIN]: { transform: subOperation =>
-        subOperation.input.some(isEmpty) ? algebraFactory.createUnion([]) : subOperation },
+        subOperation.input.some(isEmpty) ? emptyOperation() : subOperation },
       [Algebra.Types.SEQ]: { transform: subOperation =>
-        subOperation.input.some(isEmpty) ? algebraFactory.createAlt([]) : subOperation },
+        subOperation.input.some(isEmpty) ? emptyPath() : subOperation },
       [Algebra.Types.LEFT_JOIN]: leftIfAnyInputIsEmpty,
       [Algebra.Types.MINUS]: leftIfAnyInputIsEmpty,
       [Algebra.Types.FILTER]: emptyIfInputIsEmpty,
@@ -140,11 +144,11 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         // Without grouping keys, a group produces a single result, even without input,
         // so its empty operation is replaced by one that can be sent to a source.
         return subOperation.variables.length > 0 ?
-          algebraFactory.createUnion([]) :
+          emptyOperation() :
             { ...subOperation, input: algebraFactory.createValues([], []) };
       } },
       [Algebra.Types.PATH]: { transform: subOperation =>
-        isEmpty(subOperation.predicate) ? algebraFactory.createUnion([]) : subOperation },
+        isEmpty(subOperation.predicate) ? emptyOperation() : subOperation },
       // Unlike zero-or-more and zero-or-one paths, these have no zero-length results
       [Algebra.Types.INV]: emptyPathIfPathIsEmpty,
       [Algebra.Types.ONE_OR_MORE_PATH]: emptyPathIfPathIsEmpty,
@@ -167,7 +171,8 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
    * @param operation An operation.
    */
   protected static isEmptyOperation(operation: Algebra.Operation): boolean {
-    return (isKnownOperation(operation, Algebra.Types.UNION) || isKnownOperation(operation, Algebra.Types.ALT)) &&
+    return (isKnownOperation(operation, Algebra.Types.UNION) ||
+        isKnownOperation(operation, Algebra.Types.ALT)) &&
       operation.input.length === 0;
   }
 
