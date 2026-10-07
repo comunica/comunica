@@ -863,6 +863,13 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             assignOperationSource(AF.createLink(DF.namedNode(predicate)), source1),
             assignOperationSource(AF.createLink(DF.namedNode(predicate)), source1),
           ]);
+          const nonEmptyPattern = (): Algebra.Operation =>
+            assignOperationSource(AF.createPattern(DF.namedNode('s'), DF.namedNode('nonEmpty'), variable), source1);
+          // Becomes the non-empty pattern, so that the operations around it are rewritten while staying non-empty
+          const partlyEmptyUnion = (): Algebra.Operation => AF.createUnion([
+            nonEmptyPattern(),
+            assignOperationSource(AF.createPattern(DF.namedNode('s'), DF.namedNode('empty'), variable), source1),
+          ]);
           const pathOf = (predicate: Algebra.Operation): Algebra.Operation =>
             AF.createPath(DF.namedNode('s'), predicate, variable);
           const count = AF.createBoundAggregate(DF.variable('c'), 'count', AF.createWildcardExpression(), false);
@@ -921,6 +928,20 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             expect(opOut).toEqual(opIn);
           });
 
+          it.each(<[string, (path: Algebra.Operation) => Algebra.Operation][]> [
+            [ 'inverse', path => AF.createInv(path) ],
+            [ 'one-or-more', path => AF.createOneOrMorePath(path) ],
+          ])('should keep a non-empty %s path', async(_, createPath) => {
+            const nonEmptyLink = (): Algebra.Operation =>
+              assignOperationSource(AF.createLink(DF.namedNode('nonEmpty')), source1);
+            const opIn = AF.createProject(pathOf(createPath(AF.createAlt([
+              nonEmptyLink(),
+              assignOperationSource(AF.createLink(DF.namedNode('empty')), source1),
+            ]))), [ variable ]);
+            const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
+            expect(opOut).toEqual(AF.createProject(pathOf(createPath(nonEmptyLink())), [ variable ]));
+          });
+
           it('should remove minus operations with empty right operation', async() => {
             const opIn = AF.createProject(AF.createMinus(unionOf('nonEmpty'), unionOf('empty')), [ variable ]);
             const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
@@ -928,9 +949,12 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           });
 
           it('should keep minus operations with non-empty right operation', async() => {
-            const opIn = AF.createProject(AF.createMinus(unionOf('nonEmpty'), unionOf('nonEmpty')), [ variable ]);
+            const opIn = AF.createProject(AF.createMinus(unionOf('nonEmpty'), partlyEmptyUnion()), [ variable ]);
             const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
-            expect(opOut).toEqual(opIn);
+            expect(opOut).toEqual(AF.createProject(
+              AF.createMinus(unionOf('nonEmpty'), nonEmptyPattern()),
+              [ variable ],
+            ));
           });
 
           it.each([ true, false ])('should replace an existence with not %s over an empty operation', async(not) => {
@@ -957,10 +981,14 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
             const opIn = AF.createProject(AF.createExtend(
               unionOf('nonEmpty'),
               DF.variable('x'),
-              AF.createExistenceExpression(true, AF.createJoin([ unionOf('nonEmpty'), unionOf('nonEmpty') ])),
+              AF.createExistenceExpression(true, AF.createJoin([ unionOf('nonEmpty'), partlyEmptyUnion() ])),
             ), [ variable ]);
             const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
-            expect(opOut).toEqual(opIn);
+            expect(opOut).toEqual(AF.createProject(AF.createExtend(
+              unionOf('nonEmpty'),
+              DF.variable('x'),
+              AF.createExistenceExpression(true, AF.createJoin([ unionOf('nonEmpty'), nonEmptyPattern() ])),
+            ), [ variable ]));
           });
 
           it('should remove children of unions that have become empty', async() => {
@@ -989,9 +1017,9 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
           });
 
           it('should keep the non-empty operation of a group without keys', async() => {
-            const opIn = AF.createProject(AF.createGroup(unionOf('nonEmpty'), [], [ count ]), [ variable ]);
+            const opIn = AF.createProject(AF.createGroup(partlyEmptyUnion(), [], [ count ]), [ variable ]);
             const { operation: opOut } = await actor.run({ operation: opIn, context: ctx });
-            expect(opOut).toEqual(opIn);
+            expect(opOut).toEqual(AF.createProject(AF.createGroup(nonEmptyPattern(), [], [ count ]), [ variable ]));
           });
         });
       });
