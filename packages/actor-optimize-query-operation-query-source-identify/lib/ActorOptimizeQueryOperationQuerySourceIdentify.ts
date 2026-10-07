@@ -26,7 +26,7 @@ import type {
   QuerySourceUnidentifiedExpanded,
 } from '@comunica/types';
 import { Algebra, algebraUtils } from '@comunica/utils-algebra';
-import { passFullOperationToSource } from '@comunica/utils-query-operation';
+import { getServiceExecutor, passFullOperationToSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { termToString } from 'rdf-string';
@@ -165,7 +165,11 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
 
     // Try to read from cache
     // Only sources based on string values (e.g. URLs) are supported!
-    const url = typeof querySourceUnidentified.value === 'string' ? querySourceUnidentified.value : undefined;
+    // Sources with a custom SERVICE executor are not cached, as such executors are specific to the query context.
+    const url = typeof querySourceUnidentified.value === 'string' &&
+      getServiceExecutor(querySourceUnidentified.value, context) === undefined ?
+      querySourceUnidentified.value :
+      undefined;
     let qualifier: string | undefined;
     if (url !== undefined && this.cache) {
       qualifier = cacheQualifierPrefix + this.getCacheQualifier(querySourceUnidentified);
