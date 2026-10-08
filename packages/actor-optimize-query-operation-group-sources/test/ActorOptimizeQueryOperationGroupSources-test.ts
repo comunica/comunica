@@ -158,6 +158,122 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
             ),
           );
         });
+
+        it('should group a singular sub-input for Filter with an EXISTS input of the same source', async() => {
+          const opIn = AF.createFilter(
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+              source1,
+            ),
+            AF.createExistenceExpression(false, AF.createJoin([
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('s'), DF.namedNode('q'), DF.namedNode('o')),
+                source1,
+              ),
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('o'), DF.namedNode('r'), DF.namedNode('o')),
+                source1,
+              ),
+            ])),
+          );
+          const opOut = await actor.groupOperation(opIn, ctx);
+          expect(opOut).toEqual(assignOperationSource(
+            AF.createFilter(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+              AF.createExistenceExpression(false, AF.createJoin([
+                AF.createPattern(DF.namedNode('s'), DF.namedNode('q'), DF.namedNode('o')),
+                AF.createPattern(DF.namedNode('o'), DF.namedNode('r'), DF.namedNode('o')),
+              ])),
+            ),
+            source1,
+          ));
+        });
+
+        it('should not group a singular sub-input for Filter with an EXISTS input of another source', async() => {
+          const opIn = AF.createFilter(
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+              source1,
+            ),
+            AF.createExistenceExpression(false, AF.createJoin([
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('s'), DF.namedNode('q'), DF.namedNode('o')),
+                source2,
+              ),
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('o'), DF.namedNode('r'), DF.namedNode('o')),
+                source2,
+              ),
+            ])),
+          );
+          const opOut = await actor.groupOperation(opIn, ctx);
+          expect(opOut).toEqual(AF.createFilter(
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+              source1,
+            ),
+            AF.createExistenceExpression(false, assignOperationSource(
+              AF.createJoin([
+                AF.createPattern(DF.namedNode('s'), DF.namedNode('q'), DF.namedNode('o')),
+                AF.createPattern(DF.namedNode('o'), DF.namedNode('r'), DF.namedNode('o')),
+              ]),
+              source2,
+            )),
+          ));
+        });
+
+        it('should not group a singular sub-input for Filter with a NOT EXISTS input without source', async() => {
+          // Pruning leaves such an empty union when no source has results for the pattern within the NOT EXISTS
+          const opIn = AF.createFilter(
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+              source1,
+            ),
+            AF.createExistenceExpression(true, AF.createUnion([])),
+          );
+          const opOut = await actor.groupOperation(opIn, ctx);
+          expect(opOut).toEqual(AF.createFilter(
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+              source1,
+            ),
+            AF.createExistenceExpression(true, AF.createUnion([])),
+          ));
+        });
+      });
+
+      describe('for a left join operation', () => {
+        it('should not group patterns with equal sources if its NOT EXISTS input has another source', async() => {
+          const opIn = AF.createLeftJoin(
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+              source1,
+            ),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('y')),
+              source1,
+            ),
+            AF.createExistenceExpression(true, assignOperationSource(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('q'), DF.namedNode('o')),
+              source2,
+            )),
+          );
+          const opOut = await actor.groupOperation(opIn, ctx);
+          expect(opOut).toEqual(AF.createLeftJoin(
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+              source1,
+            ),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('y')),
+              source1,
+            ),
+            AF.createExistenceExpression(true, assignOperationSource(
+              AF.createPattern(DF.namedNode('s'), DF.namedNode('q'), DF.namedNode('o')),
+              source2,
+            )),
+          ));
+        });
       });
 
       describe('for a join operation', () => {
@@ -631,6 +747,22 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
         expect(getOperationSource(out)).toBe(source1);
         expect(getOperationSource(inputs[0])).toBeUndefined();
         expect(getOperationSource(inputs[1])).toBeUndefined();
+      });
+
+      it('should return the grouped operation for inputs with another source', async() => {
+        const grouped = AF.createUnion([]);
+        const inputs = [
+          assignOperationSource(AF.createNop(), source1),
+          assignOperationSource(AF.createNop(), source2),
+        ];
+        await expect(actor.moveSourceAnnotationUpwardsIfPossible(
+          grouped,
+          inputs,
+          source1,
+          new ActionContext(),
+        )).resolves.toBe(grouped);
+        expect(getOperationSource(inputs[0])).toBe(source1);
+        expect(getOperationSource(inputs[1])).toBe(source2);
       });
     });
 
