@@ -744,6 +744,65 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
           // The endpoint does not declare support for the function, so it only receives the grouping
           expect(queries).toEqual([ 'SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s' ]);
         });
+
+        describe('with a GROUP BY over an endpoint and an extension function above it', () => {
+          const endpoint = 'http://example.org/aggregates/sparql';
+          let queries: (string | null)[];
+          let context: QueryStringContext;
+
+          beforeEach(() => {
+            const store = RdfStore.createDefault();
+            store.addQuad(DF.quad(DF.namedNode('http://example.org/s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o1')));
+            store.addQuad(DF.quad(DF.namedNode('http://example.org/s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o2')));
+            store.addQuad(DF.quad(DF.namedNode('http://example.org/s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o1')));
+            const endpointsFetch = createSparqlEndpointsFetch({ [endpoint]: store });
+            queries = [];
+            context = {
+              sources: [{ type: 'sparql', value: endpoint }],
+              extensionFunctions: {
+                // The function only holds for s1
+                'http://example.org/functions#f': async(args: RDF.Term[]) =>
+                  DF.literal(String(args[0].equals(DF.namedNode('http://example.org/s1'))), booleanType),
+              },
+              fetch: async(input: RequestInfo | URL, init?: RequestInit) => {
+                queries.push(new URL(<string> input).searchParams.get('query'));
+                return endpointsFetch(input, init);
+              },
+            };
+          });
+
+          it('sends the aggregates to the endpoint when evaluating a HAVING locally', async() => {
+            const bindingsStream = await engine.queryBindings(`PREFIX func: <http://example.org/functions#>
+SELECT ?s (COUNT(?o) AS ?c) WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, context);
+
+            await expect(bindingsStream).toEqualBindingsStream([
+              BF.bindings([
+                [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+                [ DF.variable('c'), DF.literal('2', integerType) ],
+              ]),
+            ]);
+            expect(queries).toEqual([ 'SELECT ( COUNT( ?o ) AS ?var0 ) ?s WHERE { ?s ?p ?o . } GROUP BY ?s' ]);
+          });
+
+          it('sends the aggregates to the endpoint when evaluating an ORDER BY locally', async() => {
+            const bindingsStream = await engine.queryBindings(`PREFIX func: <http://example.org/functions#>
+SELECT ?s (COUNT(?o) AS ?c) WHERE { ?s ?p ?o } GROUP BY ?s ORDER BY (func:f(?s))`, context);
+
+            await expect(bindingsStream).toEqualBindingsStream([
+              BF.bindings([
+                [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
+                [ DF.variable('c'), DF.literal('1', integerType) ],
+              ]),
+              BF.bindings([
+                [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+                [ DF.variable('c'), DF.literal('2', integerType) ],
+              ]),
+            ]);
+            expect(queries).toEqual([
+              'SELECT ( COUNT( ?o ) AS ?var0 ) ?s ( COUNT( ?o ) AS ?c ) WHERE { ?s ?p ?o . } GROUP BY ?s',
+            ]);
+          });
+        });
       });
 
       describe('functionArgumentsCache', () => {
