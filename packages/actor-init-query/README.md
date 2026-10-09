@@ -33,7 +33,9 @@ After installing, this package can be added to your engine's configuration as fo
       "mediatorQueryResultSerialize": { "@id": "urn:comunica:default:query-result-serialize/mediators#serialize" },
       "mediatorQueryResultSerializeMediaTypeCombiner": { "@id": "urn:comunica:default:query-result-serialize/mediators#mediaType" },
       "mediatorQueryResultSerializeMediaTypeFormatCombiner": { "@id": "urn:comunica:default:query-result-serialize/mediators#mediaTypeFormat" },
-      "mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" }
+      "mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" },
+      "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
+      "mediatorUpdateQuads": { "@id": "urn:comunica:default:rdf-update-quads/mediators#main" }
     }
   ]
 }
@@ -45,3 +47,5 @@ After installing, this package can be added to your engine's configuration as fo
 * `mediatorSparqlSerializeMediaTypeCombiner`: A mediator over the [query result serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-result-serialize).
 * `mediatorSparqlSerializeMediaTypeFormatCombiner`: A mediator over the [query result serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-result-serialize).
 * `mediatorHttpInvalidate`: A mediator over the [HTTP invalidate bus](https://github.com/comunica/comunica/tree/master/packages/bus-http-invalidate).
+* `mediatorContextPreprocess`: A mediator over the [context preprocess bus](https://github.com/comunica/comunica/tree/master/packages/bus-context-preprocess). _(optional, needed for `updateQuads`)_
+* `mediatorUpdateQuads`: A mediator over the [RDF update quads bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-quads). _(optional, needed for `updateQuads`)_
