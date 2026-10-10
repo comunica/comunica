@@ -62,7 +62,7 @@
     "process": "^0.11.10",
     "rdf-data-factory": "^2.1.0",
     "rdf-quad": "^2.0.0",
-    "readable-stream": "^4.7.0",
+    "readable-stream": "^4.8.0",
     "yargs": "^17.7.2"
   },
   "optionalDependencies": {
