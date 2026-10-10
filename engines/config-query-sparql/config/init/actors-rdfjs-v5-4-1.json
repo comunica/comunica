@@ -17,8 +17,7 @@
       "mediatorQueryResultSerializeMediaTypeFormatCombiner": { "@id": "urn:comunica:default:query-result-serialize/mediators#mediaTypeFormat" },
       "mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" },
       "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
-      "mediatorUpdateQuads": { "@id": "urn:comunica:default:rdf-update-quads/mediators#main" },
-      "mediatorRdfParse": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" }
+      "mediatorUpdateQuads": { "@id": "urn:comunica:default:rdf-update-quads/mediators#main" }
     }
   ]
 }

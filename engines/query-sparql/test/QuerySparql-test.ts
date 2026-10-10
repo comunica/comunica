@@ -3855,6 +3855,68 @@ CONSTRUCT {
     });
   });
 
+  describe('parseRdf', () => {
+    it('parses a stream against a base IRI', async() => {
+      const quads = engine.parseRdf(stringToStream('<s> <p> <o> .'), {
+        contentType: 'text/turtle',
+        baseIRI: 'http://example.org/',
+      });
+
+      await expect(arrayifyStream(quads)).resolves.toEqualRdfQuadArray([
+        DF.quad(
+          DF.namedNode('http://example.org/s'),
+          DF.namedNode('http://example.org/p'),
+          DF.namedNode('http://example.org/o'),
+        ),
+      ]);
+    });
+
+    it('fetches remote JSON-LD contexts with the fetch function in the options', async() => {
+      const requestedUrls: string[] = [];
+      const customFetch = async(input: RequestInfo | URL): Promise<Response> => {
+        requestedUrls.push(input instanceof Request ? input.url : input.toString());
+        return new Response(JSON.stringify({ '@context': { name: 'http://schema.org/name' }}), {
+          status: 200,
+          headers: { 'content-type': 'application/ld+json' },
+        });
+      };
+      const document = {
+        '@context': 'https://example.org/parse-rdf-context.jsonld',
+        '@id': 'http://example.org/me',
+        name: 'Me',
+      };
+
+      const quads = engine.parseRdf(stringToStream(JSON.stringify(document)), {
+        contentType: 'application/ld+json',
+        fetch: customFetch,
+      });
+
+      await expect(arrayifyStream(quads)).resolves.toEqualRdfQuadArray([
+        DF.quad(DF.namedNode('http://example.org/me'), DF.namedNode('http://schema.org/name'), DF.literal('Me')),
+      ]);
+      expect(requestedUrls).toEqual([ 'https://example.org/parse-rdf-context.jsonld' ]);
+    });
+
+    it('emits an error for an unsupported content type', async() => {
+      await expect(arrayifyStream(engine.parseRdf(stringToStream(''), { contentType: 'text/unknown' }))).rejects
+        .toThrow('none of the configured parsers were able to handle the media type text/unknown for a stream');
+    });
+
+    it('throws without content type', () => {
+      expect(() => engine.parseRdf(stringToStream(''), <any> {}))
+        .toThrow(`Missing 'contentType' option while parsing.`);
+    });
+
+    it('produces quads that can be inserted with updateQuads', async() => {
+      const store = new Store();
+      const quads = engine.parseRdf(stringToStream('<ex:s> <ex:p> <ex:o1>, <ex:o2> .'), { contentType: 'text/turtle' });
+
+      await engine.updateQuads({ quadStreamInsert: wrap<RDF.Quad>(quads) }, { destination: store });
+
+      expect(store.size).toBe(2);
+    });
+  });
+
   describe('DistinctTerms optimization', () => {
     it('should optimize SELECT DISTINCT with subject and graph variables', async() => {
       const store = RdfStore.createDefault();
