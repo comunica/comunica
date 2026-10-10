@@ -8,6 +8,7 @@ import type {
   MediatorQueryResultSerializeMediaTypes,
   MediatorQueryResultSerializeMediaTypeFormats,
 } from '@comunica/bus-query-result-serialize';
+import type { MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
@@ -23,6 +24,7 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
   public readonly mediatorQueryProcess: MediatorQueryProcess;
   public readonly mediatorContextPreprocess?: MediatorContextPreprocess;
   public readonly mediatorUpdateQuads?: MediatorRdfUpdateQuads;
+  public readonly mediatorRdfParse?: MediatorRdfParseHandle;
 
   public readonly queryString?: string;
   public readonly defaultQueryInputFormat?: string;
@@ -38,6 +40,7 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
     this.mediatorQueryProcess = args.mediatorQueryProcess;
     this.mediatorContextPreprocess = args.mediatorContextPreprocess;
     this.mediatorUpdateQuads = args.mediatorUpdateQuads;
+    this.mediatorRdfParse = args.mediatorRdfParse;
     this.queryString = args.queryString;
     this.defaultQueryInputFormat = args.defaultQueryInputFormat;
     this.allowNoSources = args.allowNoSources;
@@ -76,7 +79,7 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
   mediatorHttpInvalidate: MediatorHttpInvalidate;
   // TODO: make mandatory in next/major
   /**
-   * The context preprocessing mediator, required for updating quads.
+   * The context preprocessing mediator, required for updating quads and parsing RDF.
    */
   mediatorContextPreprocess?: MediatorContextPreprocess;
   // TODO: make mandatory in next/major
@@ -84,6 +87,11 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    * The RDF update quads mediator, required for updating quads.
    */
   mediatorUpdateQuads?: MediatorRdfUpdateQuads;
+  // TODO: make mandatory in next/major
+  /**
+   * The RDF parse mediator, required for parsing RDF.
+   */
+  mediatorRdfParse?: MediatorRdfParseHandle;
 
   /**
    * A SPARQL query string

@@ -7,6 +7,7 @@ import type {
   IQueryEngine,
   IQueryExplained,
   IQuadUpdate,
+  IRdfParseOptions,
   QueryFormatType,
   QueryType,
   QueryExplainMode,
@@ -20,6 +21,8 @@ import type {
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
+import type { Readable } from 'readable-stream';
+import { PassThrough } from 'readable-stream';
 import type { ActorInitQueryBase } from './ActorInitQueryBase';
 
 /**
@@ -182,6 +185,55 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     const { execute } = await mediatorUpdateQuads.mediate({ ...update, context: actionContext });
     await execute();
     actionContext.get(KeysCore.log)?.flush();
+  }
+
+  /**
+   * Parse a stream of RDF with the parsers of this engine.
+   * @param stream A text stream in an RDF serialization.
+   * @param options The content type of the stream, and optional parsing and context options.
+   * @return A stream of the parsed quads.
+   */
+  public parseRdf(
+    stream: NodeJS.ReadableStream,
+    options: IRdfParseOptions & Partial<QueryAlgebraContextInner>,
+  ): RDF.Stream & Readable {
+    const { mediatorContextPreprocess, mediatorRdfParse } = this.actorInitQuery;
+    if (!mediatorContextPreprocess || !mediatorRdfParse) {
+      throw new Error(
+        'Parsing RDF requires the query init actor to have a mediatorContextPreprocess and a mediatorRdfParse',
+      );
+    }
+    if (!options.contentType) {
+      throw new Error(`Missing 'contentType' option while parsing.`);
+    }
+
+    const readable = new PassThrough({ objectMode: true });
+    (async(): Promise<void> => {
+      const context = (await mediatorContextPreprocess.mediate({
+        context: ActionContext.ensureActionContext(options),
+        initialize: true,
+      })).context;
+      if (context.get(KeysInitQuery.invalidateCache)) {
+        await this.invalidateHttpCache();
+      }
+
+      const { data } = (await mediatorRdfParse.mediate({
+        context,
+        handle: {
+          data: stream,
+          metadata: { baseIRI: options.baseIRI, version: options.version },
+          url: options.baseIRI ?? 'a stream',
+          context,
+        },
+        handleMediaType: options.contentType,
+      })).handle;
+      readable.on('end', () => context.get(KeysCore.log)?.flush());
+      data.on('error', error => readable.emit('error', error));
+      data.on('prefix', (prefix, iri) => readable.emit('prefix', prefix, iri));
+      data.on('context', jsonLdContext => readable.emit('context', jsonLdContext));
+      data.pipe(readable);
+    })().catch(error => readable.emit('error', error));
+    return <RDF.Stream & Readable> readable;
   }
 
   /**

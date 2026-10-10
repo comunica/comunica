@@ -64,6 +64,24 @@ export interface IQuadUpdate {
 }
 
 /**
+ * Options for parsing a stream of RDF.
+ */
+export interface IRdfParseOptions {
+  /**
+   * The content type of the stream.
+   */
+  contentType: string;
+  /**
+   * An optional base IRI of the stream's document.
+   */
+  baseIRI?: string;
+  /**
+   * The version to consider as media type parameter.
+   */
+  version?: string;
+}
+
+/**
  * Base interface for a Comunica query engine.
  */
 export interface IQueryEngine<
@@ -159,6 +177,17 @@ export interface IQueryEngine<
    * @return {Promise<void>} A promise that resolves when the destination has been updated.
    */
   updateQuads?: (update: IQuadUpdate, context?: Partial<QueryAlgebraContextInner>) => Promise<void>;
+  // TODO: make mandatory in next/major
+  /**
+   * Parse a stream of RDF with the parsers of this engine.
+   * @param stream A text stream in an RDF serialization.
+   * @param options The content type of the stream, and optional parsing and context options.
+   * @return A stream of the parsed quads.
+   */
+  parseRdf?: (
+    stream: NodeJS.ReadableStream,
+    options: IRdfParseOptions & Partial<QueryAlgebraContextInner>,
+  ) => RDF.Stream & NodeJS.ReadableStream;
   /**
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
