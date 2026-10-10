@@ -43,10 +43,12 @@
   },
   "dependencies": {
     "@comunica/actor-http-proxy": "^5.4.0",
+    "@comunica/bus-context-preprocess": "^5.4.0",
     "@comunica/bus-http-invalidate": "^5.4.0",
     "@comunica/bus-init": "^5.4.0",
     "@comunica/bus-query-process": "^5.4.0",
     "@comunica/bus-query-result-serialize": "^5.4.0",
+    "@comunica/bus-rdf-update-quads": "^5.4.0",
     "@comunica/context-entries": "^5.4.0",
     "@comunica/core": "^5.4.0",
     "@comunica/logger-pretty": "^5.4.0",
