@@ -1,4 +1,4 @@
-import { KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
@@ -13,6 +13,27 @@ import '@comunica/utils-jest';
 
 const AF = new AlgebraFactory();
 const DF = new DataFactory();
+
+/**
+ * Match a context that equals the given context, extended with an abort signal for ASK requests.
+ * @param context The expected context without abort signal.
+ */
+function contextWithAbortSignal(context: ActionContext): any {
+  return {
+    asymmetricMatch(actual: ActionContext): boolean {
+      if (!(actual.get(KeysHttp.httpAbortSignal) instanceof AbortSignal)) {
+        return false;
+      }
+      try {
+        expect(actual.delete(KeysHttp.httpAbortSignal)).toEqual(context);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    toString: () => 'contextWithAbortSignal',
+  };
+}
 
 describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
   let bus: any;
@@ -986,7 +1007,88 @@ describe('ActorOptimizeQueryOperationPruneEmptySourceOperations', () => {
         it('should wrap the operation in an ask operation', async() => {
           jest.spyOn(sourceAsk.source, 'queryBoolean').mockImplementation(async() => true);
           await actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx);
+          expect(sourceAsk.source.queryBoolean)
+            .toHaveBeenCalledWith(AF.createAsk(AF.createNop()), contextWithAbortSignal(ctx));
+        });
+
+        it('should assume results if the ASK query fails without timeout', async() => {
+          actor = new ActorOptimizeQueryOperationPruneEmptySourceOperations({
+            name: 'actor',
+            bus,
+            useAskIfSupported: true,
+            askTimeout: 0,
+          });
+          jest.spyOn(sourceAsk.source, 'queryBoolean').mockRejectedValue(new Error('ASK error'));
+          await expect(actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx)).resolves.toBeTruthy();
+        });
+
+        it('should pass the ASK query context as-is if the timeout is disabled', async() => {
+          actor = new ActorOptimizeQueryOperationPruneEmptySourceOperations({
+            name: 'actor',
+            bus,
+            useAskIfSupported: true,
+            askTimeout: 0,
+          });
+          jest.spyOn(sourceAsk.source, 'queryBoolean').mockImplementation(async() => false);
+          await expect(actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx)).resolves.toBeFalsy();
           expect(sourceAsk.source.queryBoolean).toHaveBeenCalledWith(AF.createAsk(AF.createNop()), ctx);
+        });
+
+        it('should combine an existing abort signal with the ASK abort signal', async() => {
+          const existingAbortController = new AbortController();
+          const ctxSignal = ctx.set(KeysHttp.httpAbortSignal, existingAbortController.signal);
+          let signal: AbortSignal | undefined;
+          jest.spyOn(sourceAsk.source, 'queryBoolean').mockImplementation(async(_op, context) => {
+            signal = context.get(KeysHttp.httpAbortSignal);
+            return true;
+          });
+          await actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctxSignal);
+          expect(signal).not.toBe(existingAbortController.signal);
+          existingAbortController.abort();
+          expect(signal!.aborted).toBeTruthy();
+        });
+
+        describe('with a slow ASK query', () => {
+          let signal: AbortSignal | undefined;
+          let rejectAsk: (error: Error) => void;
+
+          beforeEach(() => {
+            jest.useFakeTimers();
+            actor = new ActorOptimizeQueryOperationPruneEmptySourceOperations({
+              name: 'actor',
+              bus,
+              useAskIfSupported: true,
+              askTimeout: 1000,
+            });
+            jest.spyOn(sourceAsk.source, 'queryBoolean').mockImplementation((_op, context) => {
+              signal = context.get(KeysHttp.httpAbortSignal);
+              return new Promise((_resolve, reject) => {
+                rejectAsk = reject;
+              });
+            });
+          });
+
+          afterEach(() => {
+            jest.useRealTimers();
+          });
+
+          it('should assume results and abort the request on timeout', async() => {
+            const promise = actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx);
+            await jest.advanceTimersByTimeAsync(999);
+            expect(signal!.aborted).toBeFalsy();
+            await jest.advanceTimersByTimeAsync(1);
+            await expect(promise).resolves.toBeTruthy();
+            expect(signal!.aborted).toBeTruthy();
+            rejectAsk(new Error('aborted'));
+          });
+
+          it('should assume results if the ASK query fails before the timeout', async() => {
+            const promise = actor.hasSourceResults(AF, sourceAsk, AF.createNop(), ctx);
+            await jest.advanceTimersByTimeAsync(10);
+            rejectAsk(new Error('ASK error'));
+            await expect(promise).resolves.toBeTruthy();
+            expect(jest.getTimerCount()).toBe(0);
+          });
         });
 
         it('should fallback to queryBindings if the source does not accept ask', async() => {
