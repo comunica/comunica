@@ -97,7 +97,7 @@ export class ActorHttpLimitRate extends ActorHttp {
         ...action,
         context: action.context.set(ActorHttpLimitRate.keyWrapped, true),
       });
-      // Only responses that signal an overloaded server count as failures, not errors about the request itself.
+      // Only responses that signal an overloaded server count as failures.
       registerCompletedRequest(response.ok || !ActorHttpLimitRate.isOverloadStatus(response.status));
       return response;
     } catch (error: unknown) {
