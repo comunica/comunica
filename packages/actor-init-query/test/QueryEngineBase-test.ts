@@ -1,5 +1,5 @@
 import { Readable, Transform } from 'node:stream';
-import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
+import { KeysCore, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type {
   IActionContext,
@@ -354,6 +354,106 @@ describe('QueryEngineBase', () => {
       // Make it reject instead of reading input
       mediatorQueryProcess.mediate = () => Promise.reject(new Error('a'));
       await expect(queryEngine.query('INVALID QUERY', { sources: [ 'abc' ]})).rejects.toBeTruthy();
+    });
+  });
+
+  describe('An QueryEngineBase instance for updating quads', () => {
+    const quad1 = DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+    const quad2 = DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+    let mediatorContextPreprocess: any;
+    let mediatorUpdateQuads: any;
+    let execute: jest.Mock;
+    let queryEngine: QueryEngineBase;
+
+    beforeEach(() => {
+      mediatorContextPreprocess = {
+        mediate: jest.fn(async({ context }: any) => ({ context: context.setRaw('preprocessed', true) })),
+      };
+      execute = jest.fn(async() => {});
+      mediatorUpdateQuads = {
+        mediate: jest.fn(async() => ({ execute })),
+      };
+      queryEngine = new QueryEngineBase(new ActorInitQuery({
+        bus,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorContextPreprocess,
+        mediatorUpdateQuads,
+        name: 'actor',
+      }));
+    });
+
+    it('should pass the update to the update quads mediator with the preprocessed context', async() => {
+      const update = {
+        quadStreamInsert: new ArrayIterator([ quad1 ], { autoStart: false }),
+        quadStreamDelete: new ArrayIterator([ quad2 ], { autoStart: false }),
+        deleteGraphs: { graphs: [ DF.namedNode('ex:g1') ], requireExistence: true, dropGraphs: true },
+        createGraphs: { graphs: [ DF.namedNode('ex:g2') ], requireNonExistence: true },
+      };
+
+      await queryEngine.updateQuads(update, { destination: 'abc' });
+
+      expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
+        context: new ActionContext({ destination: 'abc' }),
+        initialize: true,
+      });
+      expect(mediatorUpdateQuads.mediate).toHaveBeenCalledWith({
+        ...update,
+        context: new ActionContext({ destination: 'abc', preprocessed: true }),
+      });
+      expect(execute).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reject if the init actor has no mediators for updating quads', async() => {
+      queryEngine = new QueryEngineBase(new ActorInitQuery({
+        bus,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+      }));
+
+      await expect(queryEngine.updateQuads({})).rejects.toThrow(
+        'Updating quads requires the query init actor to have a mediatorContextPreprocess and a mediatorUpdateQuads',
+      );
+    });
+
+    it('should reject in read-only mode', async() => {
+      mediatorContextPreprocess.mediate = async({ context }: any) => ({
+        context: context.set(KeysQueryOperation.readOnly, true),
+      });
+
+      await expect(queryEngine.updateQuads({ quadStreamInsert: new ArrayIterator([ quad1 ], { autoStart: false }) }))
+        .rejects.toThrow('Attempted a write operation in read-only mode');
+      expect(mediatorUpdateQuads.mediate).not.toHaveBeenCalled();
+    });
+
+    it('should invalidate the HTTP cache if requested', async() => {
+      jest.spyOn(mediatorHttpInvalidate, 'mediate');
+
+      await queryEngine.updateQuads({}, { [KeysInitQuery.invalidateCache.name]: true });
+
+      expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledTimes(1);
+      expect(execute).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reject if the update fails', async() => {
+      execute.mockRejectedValue(new Error('Update failed'));
+
+      await expect(queryEngine.updateQuads({})).rejects.toThrow('Update failed');
+    });
+
+    it('should flush the logger after the update', async() => {
+      const logger = <Logger><unknown>{ flush: jest.fn() };
+
+      await queryEngine.updateQuads({}, { [KeysCore.log.name]: logger });
+
+      expect(logger.flush).toHaveBeenCalledTimes(1);
     });
   });
 
