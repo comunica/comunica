@@ -8,11 +8,18 @@ describe('ActorHttpLimitRate', () => {
   let bus: any;
   let actor: ActorHttpLimitRate;
   let mediatorHttp: MediatorHttp;
-  let actorHostData: Map<string, { requestInterval: number; latestRequestTimestamp: number; rateLimited: boolean }>;
+  let actorHostData: Map<string, {
+    requestInterval: number;
+    latestRequestTimestamp: number;
+    rateLimited: boolean;
+    concurrency: number;
+    successStreak: number;
+  }>;
   let invalidateListeners: ((event: IActionHttpInvalidate) => void)[];
 
   const correctionMultiplier = 0.1;
   const failureMultiplier = 10;
+  const recoveryThreshold = 50;
 
   const url = 'http://localhost:3000/some/url';
   const host = 'localhost:3000';
@@ -31,6 +38,7 @@ describe('ActorHttpLimitRate', () => {
       failureMultiplier,
       limitByDefault: false,
       allowOverlap: false,
+      recoveryThreshold,
       httpInvalidator: <any>{
         addInvalidateListener: jest.fn(listener => invalidateListeners.push(listener)),
       },
@@ -71,6 +79,8 @@ describe('ActorHttpLimitRate', () => {
         requestInterval: duration * correctionMultiplier,
         latestRequestTimestamp: 0,
         rateLimited: false,
+        concurrency: 1,
+        successStreak: 0,
       });
     });
 
@@ -81,7 +91,13 @@ describe('ActorHttpLimitRate', () => {
       jest.spyOn(Date, 'now').mockReturnValueOnce(0).mockReturnValueOnce(responseTime);
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
       jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
-      actorHostData.set(host, { latestRequestTimestamp: 0, rateLimited: true, requestInterval: interval });
+      actorHostData.set(host, {
+        latestRequestTimestamp: 0,
+        rateLimited: true,
+        requestInterval: interval,
+        concurrency: 1,
+        successStreak: 0,
+      });
       const action = { context: new ActionContext({}), input: url };
       await expect(actor.run(action)).resolves.toEqual(response);
       expect(globalThis.setTimeout).toHaveBeenCalledTimes(1);
@@ -90,6 +106,8 @@ describe('ActorHttpLimitRate', () => {
         requestInterval: interval + correctionMultiplier * (responseTime - interval - interval),
         latestRequestTimestamp: interval,
         rateLimited: true,
+        concurrency: 2,
+        successStreak: 1,
       });
     });
 
@@ -101,7 +119,13 @@ describe('ActorHttpLimitRate', () => {
       jest.spyOn(Date, 'now').mockReturnValueOnce(0).mockReturnValueOnce(responseTime);
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
       jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
-      actorHostData.set(host, { latestRequestTimestamp: 0, rateLimited: true, requestInterval: interval });
+      actorHostData.set(host, {
+        latestRequestTimestamp: 0,
+        rateLimited: true,
+        requestInterval: interval,
+        concurrency: 1,
+        successStreak: 0,
+      });
       const action = { context: new ActionContext({}), input: url };
       await expect(actor.run(action)).resolves.toEqual(response);
       expect(globalThis.setTimeout).toHaveBeenCalledTimes(1);
@@ -112,6 +136,8 @@ describe('ActorHttpLimitRate', () => {
         // This is the major difference between the overlap and non-overlap test
         latestRequestTimestamp: 0,
         rateLimited: true,
+        concurrency: 2,
+        successStreak: 1,
       });
     });
 
@@ -119,7 +145,9 @@ describe('ActorHttpLimitRate', () => {
       const duration1 = 100;
       const duration2 = 200;
       const interval1 = duration1 * correctionMultiplier;
-      const interval2 = interval1 + correctionMultiplier * (duration2 - interval1 - interval1);
+      // After the first success, two requests may be sent per interval
+      const delay2 = interval1 / 2;
+      const interval2 = interval1 + Math.round(correctionMultiplier * (duration2 - delay2 - interval1));
       const response = { ok: true };
       (<any>actor).limitByDefault = true;
       jest.spyOn(Date, 'now')
@@ -136,15 +164,19 @@ describe('ActorHttpLimitRate', () => {
         requestInterval: interval1,
         latestRequestTimestamp: 0,
         rateLimited: true,
+        concurrency: 2,
+        successStreak: 1,
       });
       // Second call, when the delay is adjusted based on the correction multiplier
       await expect(actor.run(action)).resolves.toEqual(response);
       expect(globalThis.setTimeout).toHaveBeenCalledTimes(1);
-      expect(globalThis.setTimeout).toHaveBeenNthCalledWith(1, expect.any(Function), interval1);
+      expect(globalThis.setTimeout).toHaveBeenNthCalledWith(1, expect.any(Function), delay2);
       expect(actorHostData.get(host)).toEqual({
         requestInterval: interval2,
-        latestRequestTimestamp: interval1,
+        latestRequestTimestamp: delay2,
         rateLimited: true,
+        concurrency: 2.5,
+        successStreak: 2,
       });
     });
 
@@ -168,6 +200,8 @@ describe('ActorHttpLimitRate', () => {
         requestInterval: interval1,
         latestRequestTimestamp: 0,
         rateLimited: true,
+        concurrency: 1,
+        successStreak: 0,
       });
       // Second call, when the delay is adjusted based on the correction multiplier
       await expect(actor.run(action)).resolves.toEqual(response);
@@ -177,6 +211,8 @@ describe('ActorHttpLimitRate', () => {
         requestInterval: interval2,
         latestRequestTimestamp: interval1,
         rateLimited: true,
+        concurrency: 1,
+        successStreak: 0,
       });
     });
 
@@ -202,6 +238,8 @@ describe('ActorHttpLimitRate', () => {
         requestInterval: Number.NEGATIVE_INFINITY,
         latestRequestTimestamp: expect.any(Number),
         rateLimited: false,
+        concurrency: 1,
+        successStreak: 0,
       });
     });
 
@@ -221,6 +259,8 @@ describe('ActorHttpLimitRate', () => {
         requestInterval: expect.anything(),
         latestRequestTimestamp: expect.anything(),
         rateLimited: false,
+        concurrency: 1,
+        successStreak: 0,
       });
     });
 
@@ -231,6 +271,56 @@ describe('ActorHttpLimitRate', () => {
       await expect(actor.run(action)).rejects.toThrow('fetch failed');
       expect(actorHostData.get(host)?.rateLimited).toBeTruthy();
     });
+    it('should halve the concurrency on overload, down to one', async() => {
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>{ ok: false, status: 429 });
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
+      actorHostData.set(host, {
+        latestRequestTimestamp: 0,
+        rateLimited: true,
+        requestInterval: 100,
+        concurrency: 5,
+        successStreak: 3,
+      });
+      const action = { context: new ActionContext({}), input: url };
+      await actor.run(action);
+      expect(actorHostData.get(host)).toMatchObject({ concurrency: 2.5, successStreak: 0 });
+      await actor.run(action);
+      await actor.run(action);
+      expect(actorHostData.get(host)).toMatchObject({ concurrency: 1, successStreak: 0 });
+    });
+
+    it('should recover hosts after enough consecutive successful requests', async() => {
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>{ ok: true });
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
+      actorHostData.set(host, {
+        latestRequestTimestamp: 0,
+        rateLimited: true,
+        requestInterval: 100,
+        concurrency: 1,
+        successStreak: recoveryThreshold - 2,
+      });
+      const action = { context: new ActionContext({}), input: url };
+      await actor.run(action);
+      expect(actorHostData.get(host)).toMatchObject({ rateLimited: true, successStreak: recoveryThreshold - 1 });
+      await actor.run(action);
+      expect(actorHostData.get(host)).toMatchObject({ rateLimited: false, concurrency: 1, successStreak: 0 });
+    });
+
+    it('should not recover hosts when limiting by default', async() => {
+      (<any>actor).limitByDefault = true;
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>{ ok: true });
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
+      actorHostData.set(host, {
+        latestRequestTimestamp: 0,
+        rateLimited: true,
+        requestInterval: 100,
+        concurrency: 1,
+        successStreak: recoveryThreshold - 1,
+      });
+      const action = { context: new ActionContext({}), input: url };
+      await actor.run(action);
+      expect(actorHostData.get(host)).toMatchObject({ rateLimited: true, successStreak: recoveryThreshold });
+    });
   });
 
   describe('handleHttpInvalidateEvent', () => {
@@ -238,8 +328,20 @@ describe('ActorHttpLimitRate', () => {
       [ 'specific host data when specified', url, 1 ],
       [ 'all host data when not specified', undefined, 0 ],
     ])('correctly clears %s', async(_, url, expectedSize) => {
-      actorHostData.set(host, { latestRequestTimestamp: 0, rateLimited: true, requestInterval: 0 });
-      actorHostData.set('otherhost:3000', { latestRequestTimestamp: 0, rateLimited: true, requestInterval: 0 });
+      actorHostData.set(host, {
+        latestRequestTimestamp: 0,
+        rateLimited: true,
+        requestInterval: 0,
+        concurrency: 1,
+        successStreak: 0,
+      });
+      actorHostData.set('otherhost:3000', {
+        latestRequestTimestamp: 0,
+        rateLimited: true,
+        requestInterval: 0,
+        concurrency: 1,
+        successStreak: 0,
+      });
       expect(actorHostData.size).toBe(2);
       for (const listener of invalidateListeners) {
         listener({ context: <any>{}, url });

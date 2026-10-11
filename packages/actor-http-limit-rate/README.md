@@ -8,6 +8,8 @@ in an attempt to match the number of requests sent per second to the number of r
 By default, the actor waits for the first request to a given host to signal that the server is overloaded,
 via a `429` or `503` response or a network error, prior to spacing out requests.
 Other failing responses, such as `404` or `500`, concern the request itself, so they do not trigger rate limiting.
+While a host is rate limited, the number of requests sent per interval is increased additively on success
+and halved on overload, and the host stops being rate limited after enough consecutive successful requests.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -46,3 +48,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `failureMultiplier`: The response time of a failed request is taken into account with this multiplier applied. Defaults to `10.0`.
 * `limitByDefault`: Whether the actor should do rate limiting by default, already before a request fails. Defaults to `false`.
 * `allowOverlap`: Whether the actor should allow overlapping requests to be sent to the server when rate limiting is applied. Defaults to `false`.
+* `recoveryThreshold`: The number of consecutive successful requests after which a host stops being rate limited. Defaults to `50`.

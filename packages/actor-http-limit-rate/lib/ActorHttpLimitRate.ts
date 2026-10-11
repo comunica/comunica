@@ -11,6 +11,7 @@ export class ActorHttpLimitRate extends ActorHttp {
   private readonly failureMultiplier: number;
   private readonly limitByDefault: boolean;
   private readonly allowOverlap: boolean;
+  private readonly recoveryThreshold: number;
   private readonly httpInvalidator: ActorHttpInvalidateListenable;
   private readonly mediatorHttp: MediatorHttp;
 
@@ -26,6 +27,7 @@ export class ActorHttpLimitRate extends ActorHttp {
     this.failureMultiplier = args.failureMultiplier;
     this.limitByDefault = args.limitByDefault;
     this.allowOverlap = args.allowOverlap;
+    this.recoveryThreshold = args.recoveryThreshold;
     this.hostData = new Map();
   }
 
@@ -45,6 +47,8 @@ export class ActorHttpLimitRate extends ActorHttp {
         latestRequestTimestamp: 0,
         rateLimited: this.limitByDefault,
         requestInterval: Number.NEGATIVE_INFINITY,
+        concurrency: 1,
+        successStreak: 0,
       };
       this.hostData.set(requestUrl.host, requestHostData);
     }
@@ -55,7 +59,8 @@ export class ActorHttpLimitRate extends ActorHttp {
     if (requestHostData.rateLimited) {
       currentRequestDelay = Math.max(
         0,
-        requestHostData.latestRequestTimestamp + requestHostData.requestInterval - currentTimestamp,
+        requestHostData.latestRequestTimestamp +
+        requestHostData.requestInterval / requestHostData.concurrency - currentTimestamp,
       );
     }
 
@@ -84,11 +89,30 @@ export class ActorHttpLimitRate extends ActorHttp {
           requestDuration - requestHostData.requestInterval
         ));
       }
-      if (!success && !requestHostData.rateLimited) {
-        this.logDebug(action.context, 'Marking host as rate-limited', () => ({
-          host: requestUrl.host,
-        }));
-        requestHostData.rateLimited = true;
+      if (success) {
+        if (requestHostData.rateLimited) {
+          // Additively increase the concurrency, by one for every concurrency-sized batch of successes.
+          requestHostData.concurrency += 1 / requestHostData.concurrency;
+          requestHostData.successStreak++;
+          if (!this.limitByDefault && requestHostData.successStreak >= this.recoveryThreshold) {
+            this.logDebug(action.context, 'Marking host as recovered', () => ({
+              host: requestUrl.host,
+            }));
+            requestHostData.rateLimited = false;
+            requestHostData.concurrency = 1;
+            requestHostData.successStreak = 0;
+          }
+        }
+      } else {
+        if (!requestHostData.rateLimited) {
+          this.logDebug(action.context, 'Marking host as rate-limited', () => ({
+            host: requestUrl.host,
+          }));
+          requestHostData.rateLimited = true;
+        }
+        // Multiplicatively decrease the concurrency.
+        requestHostData.concurrency = Math.max(1, requestHostData.concurrency / 2);
+        requestHostData.successStreak = 0;
       }
     };
 
@@ -152,6 +176,14 @@ interface IHostData {
    * Whether the host is being rate limited.
    */
   rateLimited: boolean;
+  /**
+   * The number of requests that may be sent to the host per request interval.
+   */
+  concurrency: number;
+  /**
+   * The number of consecutive successful requests since the latest overload.
+   */
+  successStreak: number;
 }
 
 export interface IActorHttpLimitRateArgs extends IActorHttpArgs {
@@ -193,4 +225,10 @@ export interface IActorHttpLimitRateArgs extends IActorHttpArgs {
    * @default {false}
    */
   allowOverlap: boolean;
+  /**
+   * The number of consecutive successful requests after which a host stops being rate limited.
+   * @range {integer}
+   * @default {50}
+   */
+  recoveryThreshold: number;
 }
