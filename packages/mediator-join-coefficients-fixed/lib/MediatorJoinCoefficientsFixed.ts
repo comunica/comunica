@@ -56,10 +56,13 @@ IActorRdfJoinTestSideData
       // eslint-disable-next-line array-callback-return
       .map((result) => {
         if (result) {
-          return result.value.iterations * this.cpuWeight +
+          const cost = result.value.iterations * this.cpuWeight +
             result.value.persistedItems * this.memoryWeight +
             result.value.blockingItems * this.timeWeight +
             result.value.requestTime * this.ioWeight;
+          // Costs become NaN when multiplying unknown (infinite) cardinalities with zero coefficients.
+          // Consider these the worst possible cost, so they never win over actors with a known cost.
+          return Number.isNaN(cost) ? Number.POSITIVE_INFINITY : cost;
         }
       });
     const maxCost = Math.max(...costs.filter(cost => cost !== undefined));
