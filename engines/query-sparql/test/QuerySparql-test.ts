@@ -1,5 +1,6 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
+import { Readable } from 'node:stream';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { Logger } from '@comunica/types';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
@@ -10,6 +11,7 @@ import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
+import { ArrayIterator, wrap } from 'asynciterator';
 import 'jest-rdf';
 import '@comunica/utils-jest';
 import { Store } from 'n3';
@@ -3726,6 +3728,129 @@ CONSTRUCT {
         expect(store
           .countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g1')))
           .toBe(1);
+      });
+    });
+
+    describe('with updateQuads', () => {
+      const quad = DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+
+      it('inserts and deletes quads in a destination RDFJS Store', async() => {
+        const quadPre = DF.quad(DF.namedNode('ex:s-pre'), DF.namedNode('ex:p-pre'), DF.namedNode('ex:o-pre'));
+        const store = new Store([ quadPre ]);
+
+        await engine.updateQuads({
+          quadStreamInsert: new ArrayIterator([ quad ], { autoStart: false }),
+          quadStreamDelete: new ArrayIterator([ quadPre ], { autoStart: false }),
+        }, { destination: store });
+
+        expect(store.size).toBe(1);
+        expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
+          .toBe(1);
+      });
+
+      it('inserts a parsed stream of quads', async() => {
+        const store = new Store();
+        const turtle = stringToStream('<ex:s> <ex:p> <ex:o1>, <ex:o2> .');
+        const quads = rdfParse.parse(turtle, { contentType: 'text/turtle' });
+
+        await engine.updateQuads({ quadStreamInsert: wrap<RDF.Quad>(quads) }, { destination: store });
+
+        expect(store.size).toBe(2);
+        expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o1'), DF.defaultGraph()))
+          .toBe(1);
+        expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o2'), DF.defaultGraph()))
+          .toBe(1);
+      });
+
+      it('inserts quads into a single source without destination', async() => {
+        const store = new Store();
+
+        await engine.updateQuads(
+          { quadStreamInsert: new ArrayIterator([ quad ], { autoStart: false }) },
+          { sources: [ store ]},
+        );
+
+        expect(store.size).toBe(1);
+      });
+
+      it('deletes graphs in a destination RDFJS Store', async() => {
+        const store = new Store([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.namedNode('ex:g1')),
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.namedNode('ex:g2')),
+        ]);
+
+        await engine.updateQuads({
+          deleteGraphs: { graphs: [ DF.namedNode('ex:g1') ], requireExistence: false, dropGraphs: true },
+        }, { destination: store });
+
+        expect(store.size).toBe(1);
+        expect(store.countQuads(null, null, null, DF.namedNode('ex:g2'))).toBe(1);
+      });
+
+      it('rejects creating a graph that already exists in a destination RDFJS Store', async() => {
+        const store = new Store([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.namedNode('ex:g1')),
+        ]);
+
+        await expect(engine.updateQuads({
+          createGraphs: { graphs: [ DF.namedNode('ex:g1') ], requireNonExistence: true },
+        }, { destination: store })).rejects.toThrow('Unable to create graph ex:g1 as it already exists');
+      });
+
+      it('streams the quads to insert into the body of a PATCH request', async() => {
+        const insert = new Readable({ objectMode: true, read: () => {} });
+        insert.push(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+        const patchBodies: string[] = [];
+        const customFetch = async(_input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+          if (init?.method === 'PATCH') {
+            insert.push(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+            insert.push(null);
+            patchBodies.push(await new Response(init.body).text());
+            return new Response(null, { status: 200 });
+          }
+          return new Response('', {
+            status: 200,
+            headers: { 'accept-patch': 'application/sparql-update', 'content-type': 'text/turtle' },
+          });
+        };
+
+        await engine.updateQuads(
+          { quadStreamInsert: wrap<RDF.Quad>(insert) },
+          { destination: 'https://example.org/update-quads', fetch: customFetch },
+        );
+
+        expect(patchBodies).toEqual([ `INSERT DATA {
+  <ex:s1> <ex:p> <ex:o> .
+  <ex:s2> <ex:p> <ex:o> .
+}` ]);
+      });
+
+      it('rejects in read-only mode', async() => {
+        const store = new Store();
+
+        await expect(engine.updateQuads(
+          { quadStreamInsert: new ArrayIterator([ quad ], { autoStart: false }) },
+          { destination: store, readOnly: true },
+        )).rejects.toThrow('Attempted a write operation in read-only mode');
+
+        expect(store.size).toBe(0);
+      });
+
+      it('rejects without destination', async() => {
+        await expect(engine.updateQuads({ quadStreamInsert: new ArrayIterator([ quad ], { autoStart: false }) }))
+          .rejects.toThrow('RDF updating failed: none of the configured actors were able to handle an update');
+      });
+
+      it('rejects if the stream of quads to insert emits an error', async() => {
+        const insert = new Readable({
+          objectMode: true,
+          read() {
+            this.destroy(new Error('Invalid quad'));
+          },
+        });
+
+        await expect(engine.updateQuads({ quadStreamInsert: wrap<RDF.Quad>(insert) }, { destination: new Store() }))
+          .rejects.toThrow('Invalid quad');
       });
     });
   });

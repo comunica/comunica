@@ -21,22 +21,8 @@ export default function createConfig(packagePath: string): UserConfig {
   return {
     plugins: [
       tsconfigPaths(),
-      nodePolyfills({
-        // TODO: Remove this as soon as the readable-stream issue has been resolved:
-        // https://github.com/nodejs/readable-stream/issues/540
-        globals: {
-          process: true,
-        },
-      }),
+      nodePolyfills(),
     ],
-    resolve: {
-      alias: {
-        // Needed to resolve "TypeError: process.nextTick is not a function" in comunica dependency.
-        // TODO: Remove this as soon as the readable-stream issue has been resolved:
-        // https://github.com/nodejs/readable-stream/issues/540
-        'process/': 'process/browser',
-      },
-    },
     build: {
       // Keep the source next to the webpack bundle, without wiping other files.
       outDir: packagePath,
