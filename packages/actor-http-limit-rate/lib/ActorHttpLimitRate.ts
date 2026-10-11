@@ -11,6 +11,7 @@ export class ActorHttpLimitRate extends ActorHttp {
   private readonly failureMultiplier: number;
   private readonly limitByDefault: boolean;
   private readonly allowOverlap: boolean;
+  private readonly maxRequestInterval: number;
   private readonly httpInvalidator: ActorHttpInvalidateListenable;
   private readonly mediatorHttp: MediatorHttp;
 
@@ -26,6 +27,7 @@ export class ActorHttpLimitRate extends ActorHttp {
     this.failureMultiplier = args.failureMultiplier;
     this.limitByDefault = args.limitByDefault;
     this.allowOverlap = args.allowOverlap;
+    this.maxRequestInterval = args.maxRequestInterval;
     this.hostData = new Map();
   }
 
@@ -84,6 +86,8 @@ export class ActorHttpLimitRate extends ActorHttp {
           requestDuration - requestHostData.requestInterval
         ));
       }
+      // Slow responses, such as long-running queries, should not make the host unreachable.
+      requestHostData.requestInterval = Math.min(requestHostData.requestInterval, this.maxRequestInterval);
       if (!success && !requestHostData.rateLimited) {
         this.logDebug(action.context, 'Marking host as rate-limited', () => ({
           host: requestUrl.host,
@@ -193,4 +197,10 @@ export interface IActorHttpLimitRateArgs extends IActorHttpArgs {
    * @default {false}
    */
   allowOverlap: boolean;
+  /**
+   * The maximum interval between requests to a rate limited host, in milliseconds.
+   * @range {integer}
+   * @default {5000}
+   */
+  maxRequestInterval: number;
 }

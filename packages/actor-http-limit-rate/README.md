@@ -46,3 +46,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `failureMultiplier`: The response time of a failed request is taken into account with this multiplier applied. Defaults to `10.0`.
 * `limitByDefault`: Whether the actor should do rate limiting by default, already before a request fails. Defaults to `false`.
 * `allowOverlap`: Whether the actor should allow overlapping requests to be sent to the server when rate limiting is applied. Defaults to `false`.
+* `maxRequestInterval`: The maximum interval between requests to a rate limited host, in milliseconds. Defaults to `5000`.

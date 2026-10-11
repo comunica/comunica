@@ -13,6 +13,7 @@ describe('ActorHttpLimitRate', () => {
 
   const correctionMultiplier = 0.1;
   const failureMultiplier = 10;
+  const maxRequestInterval = 5000;
 
   const url = 'http://localhost:3000/some/url';
   const host = 'localhost:3000';
@@ -31,6 +32,7 @@ describe('ActorHttpLimitRate', () => {
       failureMultiplier,
       limitByDefault: false,
       allowOverlap: false,
+      maxRequestInterval,
       httpInvalidator: <any>{
         addInvalidateListener: jest.fn(listener => invalidateListeners.push(listener)),
       },
@@ -230,6 +232,20 @@ describe('ActorHttpLimitRate', () => {
       const action = { context: new ActionContext({}), input: url };
       await expect(actor.run(action)).rejects.toThrow('fetch failed');
       expect(actorHostData.get(host)?.rateLimited).toBeTruthy();
+    });
+    it('should cap the request interval', async() => {
+      const response = { ok: false, status: 503 };
+      jest.spyOn(Date, 'now')
+        .mockReturnValueOnce(0).mockReturnValueOnce(100_000)
+        .mockReturnValueOnce(0).mockReturnValueOnce(100_000);
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
+      const action = { context: new ActionContext({}), input: url };
+      await actor.run(action);
+      expect(actorHostData.get(host)?.requestInterval).toBe(maxRequestInterval);
+      await actor.run(action);
+      expect(globalThis.setTimeout).toHaveBeenNthCalledWith(1, expect.any(Function), maxRequestInterval);
+      expect(actorHostData.get(host)?.requestInterval).toBe(maxRequestInterval);
     });
   });
 
