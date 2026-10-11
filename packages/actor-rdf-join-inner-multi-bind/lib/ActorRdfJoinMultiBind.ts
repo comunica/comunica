@@ -247,11 +247,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
           if (op.metadata?.isHoistedLeftJoinFilter) {
             return { shortcut: false };
           }
-          // Other FILTERs are only bound when they are evaluated by a source, as one request per binding.
-          // Re-evaluating local FILTERs, and everything below them, for each binding can be very expensive,
-          // for example for sub-queries with property paths.
-          // Furthermore, they conflict when they use bound variables that are not in scope of their input,
-          // as these variables would be unbound when evaluating the FILTER without binding.
+          // Other FILTERs are only bound when they are evaluated by a source and variables are in scope.
           if (!boundVariables || !getOperationSource(op) ||
             ActorRdfJoinMultiBind.filterUsesOutOfScopeVariables(op, boundVarNames)) {
             valid = false;
