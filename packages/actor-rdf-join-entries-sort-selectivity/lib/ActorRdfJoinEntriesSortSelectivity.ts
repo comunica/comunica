@@ -37,8 +37,6 @@ export class ActorRdfJoinEntriesSortSelectivity extends ActorRdfJoinEntriesSort 
           entries: [ remainingEntry, ...finalEntries ],
           context: action.context,
         });
-        // On equal selectivity, prefer the entry with the lowest cardinality.
-        // This is always the case when picking the first entry, as selectivities of single entries are equal.
         if (selectivity < minSelectivity || (selectivity === minSelectivity &&
           remainingEntry.metadata.cardinality.value < remainingEntries[minEntryIndex].metadata.cardinality.value)) {
           minSelectivity = selectivity;
