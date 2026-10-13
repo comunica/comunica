@@ -311,4 +311,25 @@ describe('ActorQueryOperationProject', () => {
       ]);
     });
   });
+
+  describe('ActorQueryOperationProject#projectTermOrder', () => {
+    const a = { term: DF.variable('a'), direction: <const> 'asc' };
+    const b = { term: DF.variable('b'), direction: <const> 'desc' };
+
+    it('should keep no term order', () => {
+      expect(ActorQueryOperationProject.projectTermOrder(undefined, { a: true })).toBeUndefined();
+    });
+
+    it('should keep a term order on projected variables', () => {
+      expect(ActorQueryOperationProject.projectTermOrder([ a, b ], { a: true, b: true })).toEqual([ a, b ]);
+    });
+
+    it('should cut a term order at the first dropped variable', () => {
+      expect(ActorQueryOperationProject.projectTermOrder([ a, b ], { a: true })).toEqual([ a ]);
+    });
+
+    it('should drop a term order that starts with a dropped variable', () => {
+      expect(ActorQueryOperationProject.projectTermOrder([ b, a ], { a: true })).toBeUndefined();
+    });
+  });
 });
