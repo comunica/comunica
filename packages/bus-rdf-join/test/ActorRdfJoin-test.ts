@@ -783,6 +783,20 @@ IActorRdfJoinSelectivityOutput
       expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'a'), meta(3, 'b') ]))
         .toBe(15);
     });
+
+    it('should divide by the largest number of distinct values if every entry reports them', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([
+        { ...meta(10), variables: [{ variable: DF.variable('a'), canBeUndef: false, distinctValues: 2 }]},
+        { ...meta(5), variables: [{ variable: DF.variable('a'), canBeUndef: false, distinctValues: 4 }]},
+      ])).toBe(12.5);
+    });
+
+    it('should divide by the largest cardinality if not every entry reports distinct values', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([
+        { ...meta(10), variables: [{ variable: DF.variable('a'), canBeUndef: false, distinctValues: 2 }]},
+        meta(5, 'a'),
+      ])).toBe(5);
+    });
   });
 
   describe('constructResultMetadata', () => {

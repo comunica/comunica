@@ -100,12 +100,12 @@ function removeUnder(path: string): void {
 /**
  * Lay out the packages that npm installs for the given engine version.
  * The config package ends up both hoisted and nested below another package,
- * next to a package holding neither and a file that is not a package at all.
+ * next to a package holding neither and files that are not a package at all.
  */
 function installEngine(version: string): void {
   installedVersion = version;
   dirs[MODULES] = [ '@comunica/', 'rdf-parse/', '.package-lock.json' ];
-  dirs[`${MODULES}/@comunica`] = [ 'config-query-sparql/', 'query-sparql/' ];
+  dirs[`${MODULES}/@comunica`] = [ 'config-query-sparql/', 'query-sparql/', '.DS_Store' ];
   dirs[`${MODULES}/@comunica/query-sparql`] = [];
   for (const installed of [ HOISTED, NESTED ]) {
     dirs[installed] = [];
