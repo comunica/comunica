@@ -119,7 +119,8 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
     return {
       type: 'bindings',
       bindingsStream: sortedStream,
-      metadata: output.metadata,
+      // Sorting replaces the term order of the input
+      metadata: async() => ({ ...await output.metadata(), termOrder: undefined, canSeek: undefined }),
     };
   }
 

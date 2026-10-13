@@ -99,6 +99,10 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     // Create new metadata state
     accumulatedMetadata.state = new MetadataValidationState();
 
+    // Inputs are interleaved, so their term order is not kept
+    accumulatedMetadata.termOrder = undefined;
+    accumulatedMetadata.canSeek = undefined;
+
     // Propagate metadata invalidations
     const invalidateListener = (): void => accumulatedMetadata.state.invalidate();
     for (const metadata of metadatas) {
