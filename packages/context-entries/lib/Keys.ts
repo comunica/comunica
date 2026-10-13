@@ -326,9 +326,14 @@ export const KeysInitQuery = {
     '@comunica/actor-init-query:dereferenceFromNamedConflictMode',
   ),
   /**
-   * The RDF variant that determines which term types are allowed in which triple positions.
+   * The RDF variant that determines which term types expressions may use in the positions of a triple term.
    * Can be 'rdf' (default), 'symmetricRDF' (also literals and triple terms as subject),
    * or 'generalizedRDF' (any term in any position).
+   *
+   * This only applies to triple terms created during expression evaluation,
+   * i.e., by the TRIPLE function and by triple term expressions such as `<<( ?s ?p ?o )>>` in FILTER and BIND.
+   * Disallowed term types produce an expression error.
+   * Triples from sources, CONSTRUCT results, and update operations are not validated.
    */
   rdfVariant: new ActionContextKey<RdfVariant>('@comunica/actor-init-query:rdfVariant'),
 };
