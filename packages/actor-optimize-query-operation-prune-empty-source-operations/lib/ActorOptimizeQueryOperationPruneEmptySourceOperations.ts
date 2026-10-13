@@ -254,7 +254,8 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
   }
 
   /**
-   * Execute an ASK query, assuming results exist if it fails or does not complete within the ASK timeout.
+   * Execute an ASK query and return the result.
+   * Returns true if no reply was received within the timeout.
    * @param source A query source.
    * @param askOperation An ASK operation.
    * @param context The query context.
