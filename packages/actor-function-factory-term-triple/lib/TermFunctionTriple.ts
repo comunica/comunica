@@ -12,7 +12,7 @@ import {
  * https://www.w3.org/TR/sparql12-query/#func-triple
  *
  * Which term types are allowed in which positions depends on the configured RDF variant:
- * https://www.w3.org/TR/rdf12-concepts/
+ * https://www.w3.org/TR/rdf12-concepts/#section-generalizations-of-rdf
  */
 export class TermFunctionTriple extends TermFunctionBase {
   public constructor() {
