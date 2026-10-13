@@ -25,6 +25,7 @@
     "ccqs:config/optimize-query-operation/actors-v5-4-1.json",
     "ccqs:config/optimize-query-operation/mediators.json",
     "ccqs:config/query-operation/actors-v5-1-3.json",
+    "ccqs:config/query-operation/actors/query/union-ordered.json",
     "ccqs:config/query-operation/mediators.json",
     "ccqs:config/query-parse/actors.json",
     "ccqs:config/query-parse/mediators.json",

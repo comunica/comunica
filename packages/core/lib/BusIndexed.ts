@@ -49,6 +49,16 @@ export class BusIndexed<A extends Actor<I, T, O, any>, I extends IAction, T exte
     }
   }
 
+  public override reorderForDependencies(): void {
+    super.reorderForDependencies();
+    // Publishing goes through the index, so it must follow the order that dependencies impose.
+    if (this.dependencyLinks.size > 0) {
+      for (const actors of Object.values(this.actorsIndex)) {
+        actors.sort((left, right) => this.actors.indexOf(left) - this.actors.indexOf(right));
+      }
+    }
+  }
+
   public override unsubscribe(actor: A): boolean {
     const actorIds = this.getActorIdentifiers(actor) ?? [ '_undefined_' ];
     let unsubscribed = false;
