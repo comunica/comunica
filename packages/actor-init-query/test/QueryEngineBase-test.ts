@@ -457,6 +457,150 @@ describe('QueryEngineBase', () => {
     });
   });
 
+  describe('An QueryEngineBase instance for parsing RDF', () => {
+    const quad1 = DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+    let mediatorContextPreprocess: any;
+    let mediatorRdfParse: any;
+    let parsed: Readable;
+    let stream: Readable;
+    let queryEngine: QueryEngineBase;
+
+    beforeEach(() => {
+      mediatorContextPreprocess = {
+        mediate: jest.fn(async({ context }: any) => ({ context: context.setRaw('preprocessed', true) })),
+      };
+      parsed = Readable.from([ quad1 ]);
+      mediatorRdfParse = {
+        mediate: jest.fn(async() => ({ handle: { data: parsed }})),
+      };
+      stream = Readable.from([ '<ex:s1> <ex:p> <ex:o> .' ]);
+      queryEngine = new QueryEngineBase(new ActorInitQuery({
+        bus,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorContextPreprocess,
+        mediatorRdfParse,
+        name: 'actor',
+      }));
+    });
+
+    it('should parse the stream with the preprocessed options as context', async() => {
+      const options = { contentType: 'text/turtle', baseIRI: 'http://example.org/', version: '1.2' };
+
+      await expect(arrayifyStream(queryEngine.parseRdf(stream, options))).resolves.toEqualRdfQuadArray([ quad1 ]);
+
+      expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
+        context: new ActionContext(options),
+        initialize: true,
+      });
+      const context = new ActionContext({ ...options, preprocessed: true });
+      expect(mediatorRdfParse.mediate).toHaveBeenCalledWith({
+        context,
+        handle: {
+          data: stream,
+          metadata: { baseIRI: 'http://example.org/', version: '1.2' },
+          url: 'http://example.org/',
+          context,
+        },
+        handleMediaType: 'text/turtle',
+      });
+    });
+
+    it('should identify a stream without base IRI in error messages', async() => {
+      await arrayifyStream(queryEngine.parseRdf(stream, { contentType: 'text/turtle' }));
+
+      expect(mediatorRdfParse.mediate).toHaveBeenCalledWith(expect.objectContaining({
+        handle: expect.objectContaining({ url: 'a stream' }),
+      }));
+    });
+
+    it('should throw without content type', () => {
+      expect(() => queryEngine.parseRdf(stream, <any> { baseIRI: 'http://example.org/' }))
+        .toThrow(`Missing 'contentType' option while parsing.`);
+    });
+
+    it('should throw if the init actor has no mediators for parsing RDF', () => {
+      queryEngine = new QueryEngineBase(new ActorInitQuery({
+        bus,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+      }));
+
+      expect(() => queryEngine.parseRdf(stream, { contentType: 'text/turtle' })).toThrow(
+        'Parsing RDF requires the query init actor to have a mediatorContextPreprocess and a mediatorRdfParse',
+      );
+    });
+
+    it('should emit an error if no parser can handle the stream', async() => {
+      mediatorRdfParse.mediate = async() => {
+        throw new Error('Unsupported media type');
+      };
+
+      await expect(arrayifyStream(queryEngine.parseRdf(stream, { contentType: 'text/turtle' }))).rejects
+        .toThrow('Unsupported media type');
+    });
+
+    it('should emit an error if the parsed stream emits an error', async() => {
+      parsed = new Readable({
+        objectMode: true,
+        read() {
+          this.destroy(new Error('Invalid syntax'));
+        },
+      });
+
+      await expect(arrayifyStream(queryEngine.parseRdf(stream, { contentType: 'text/turtle' }))).rejects
+        .toThrow('Invalid syntax');
+    });
+
+    it('should forward prefix and context events of the parsed stream', async() => {
+      parsed = new Readable({
+        objectMode: true,
+        read() {
+          this.emit('prefix', 'ex', DF.namedNode('http://example.org/'));
+          this.emit('context', { ex: 'http://example.org/' });
+          this.push(quad1);
+          this.push(null);
+        },
+      });
+      const quads = queryEngine.parseRdf(stream, { contentType: 'text/turtle' });
+      const onPrefix = jest.fn();
+      const onContext = jest.fn();
+      quads.on('prefix', onPrefix);
+      quads.on('context', onContext);
+
+      await arrayifyStream(quads);
+
+      expect(onPrefix).toHaveBeenCalledWith('ex', DF.namedNode('http://example.org/'));
+      expect(onContext).toHaveBeenCalledWith({ ex: 'http://example.org/' });
+    });
+
+    it('should invalidate the HTTP cache if requested', async() => {
+      jest.spyOn(mediatorHttpInvalidate, 'mediate');
+
+      await arrayifyStream(queryEngine.parseRdf(stream, {
+        contentType: 'text/turtle',
+        [KeysInitQuery.invalidateCache.name]: true,
+      }));
+
+      expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should flush the logger when the parsed stream ends', async() => {
+      const logger = <Logger><unknown>{ flush: jest.fn() };
+
+      await arrayifyStream(queryEngine.parseRdf(stream, { contentType: 'text/turtle', [KeysCore.log.name]: logger }));
+
+      expect(logger.flush).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('internalToFinalResult', () => {
     it('converts bindings', async() => {
       const final = <QueryType & IQueryBindingsEnhanced> QueryEngineBase.internalToFinalResult({

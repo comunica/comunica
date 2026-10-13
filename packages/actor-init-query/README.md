@@ -35,7 +35,8 @@ After installing, this package can be added to your engine's configuration as fo
       "mediatorQueryResultSerializeMediaTypeFormatCombiner": { "@id": "urn:comunica:default:query-result-serialize/mediators#mediaTypeFormat" },
       "mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" },
       "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
-      "mediatorUpdateQuads": { "@id": "urn:comunica:default:rdf-update-quads/mediators#main" }
+      "mediatorUpdateQuads": { "@id": "urn:comunica:default:rdf-update-quads/mediators#main" },
+      "mediatorRdfParse": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" }
     }
   ]
 }
@@ -47,5 +48,6 @@ After installing, this package can be added to your engine's configuration as fo
 * `mediatorSparqlSerializeMediaTypeCombiner`: A mediator over the [query result serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-result-serialize).
 * `mediatorSparqlSerializeMediaTypeFormatCombiner`: A mediator over the [query result serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-result-serialize).
 * `mediatorHttpInvalidate`: A mediator over the [HTTP invalidate bus](https://github.com/comunica/comunica/tree/master/packages/bus-http-invalidate).
-* `mediatorContextPreprocess`: A mediator over the [context preprocess bus](https://github.com/comunica/comunica/tree/master/packages/bus-context-preprocess). _(optional, needed for `updateQuads`)_
+* `mediatorContextPreprocess`: A mediator over the [context preprocess bus](https://github.com/comunica/comunica/tree/master/packages/bus-context-preprocess). _(optional, needed for `updateQuads` and `parseRdf`)_
 * `mediatorUpdateQuads`: A mediator over the [RDF update quads bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-quads). _(optional, needed for `updateQuads`)_
+* `mediatorRdfParse`: A mediator over the [RDF parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse). _(optional, needed for `parseRdf`)_
