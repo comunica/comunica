@@ -3857,7 +3857,7 @@ CONSTRUCT {
 
   describe('parseRdf', () => {
     it('parses a stream against a base IRI', async() => {
-      const quads = engine.parseRdf(stringToStream('<s> <p> <o> .'), {
+      const quads = await engine.parseRdf(stringToStream('<s> <p> <o> .'), {
         contentType: 'text/turtle',
         baseIRI: 'http://example.org/',
       });
@@ -3886,7 +3886,7 @@ CONSTRUCT {
         name: 'Me',
       };
 
-      const quads = engine.parseRdf(stringToStream(JSON.stringify(document)), {
+      const quads = await engine.parseRdf(stringToStream(JSON.stringify(document)), {
         contentType: 'application/ld+json',
         fetch: customFetch,
       });
@@ -3897,19 +3897,22 @@ CONSTRUCT {
       expect(requestedUrls).toEqual([ 'https://example.org/parse-rdf-context.jsonld' ]);
     });
 
-    it('emits an error for an unsupported content type', async() => {
-      await expect(arrayifyStream(engine.parseRdf(stringToStream(''), { contentType: 'text/unknown' }))).rejects
+    it('rejects for an unsupported content type', async() => {
+      await expect(engine.parseRdf(stringToStream(''), { contentType: 'text/unknown' })).rejects
         .toThrow('none of the configured parsers were able to handle the media type text/unknown for a stream');
     });
 
-    it('throws without content type', () => {
-      expect(() => engine.parseRdf(stringToStream(''), <any> {}))
-        .toThrow(`Missing 'contentType' option while parsing.`);
+    it('rejects without content type', async() => {
+      await expect(engine.parseRdf(stringToStream(''), <any> {}))
+        .rejects.toThrow(`Missing 'contentType' option while parsing.`);
     });
 
     it('produces quads that can be inserted with updateQuads', async() => {
       const store = new Store();
-      const quads = engine.parseRdf(stringToStream('<ex:s> <ex:p> <ex:o1>, <ex:o2> .'), { contentType: 'text/turtle' });
+      const quads = await engine.parseRdf(
+        stringToStream('<ex:s> <ex:p> <ex:o1>, <ex:o2> .'),
+        { contentType: 'text/turtle' },
+      );
 
       await engine.updateQuads({ quadStreamInsert: wrap<RDF.Quad>(quads) }, { destination: store });
 

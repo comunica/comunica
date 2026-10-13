@@ -490,7 +490,7 @@ describe('QueryEngineBase', () => {
     it('should parse the stream with the preprocessed options as context', async() => {
       const options = { contentType: 'text/turtle', baseIRI: 'http://example.org/', version: '1.2' };
 
-      await expect(arrayifyStream(queryEngine.parseRdf(stream, options))).resolves.toEqualRdfQuadArray([ quad1 ]);
+      await expect(arrayifyStream(await queryEngine.parseRdf(stream, options))).resolves.toEqualRdfQuadArray([ quad1 ]);
 
       expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
         context: new ActionContext(options),
@@ -510,19 +510,19 @@ describe('QueryEngineBase', () => {
     });
 
     it('should identify a stream without base IRI in error messages', async() => {
-      await arrayifyStream(queryEngine.parseRdf(stream, { contentType: 'text/turtle' }));
+      await arrayifyStream(await queryEngine.parseRdf(stream, { contentType: 'text/turtle' }));
 
       expect(mediatorRdfParse.mediate).toHaveBeenCalledWith(expect.objectContaining({
         handle: expect.objectContaining({ url: 'a stream' }),
       }));
     });
 
-    it('should throw without content type', () => {
-      expect(() => queryEngine.parseRdf(stream, <any> { baseIRI: 'http://example.org/' }))
-        .toThrow(`Missing 'contentType' option while parsing.`);
+    it('should reject without content type', async() => {
+      await expect(queryEngine.parseRdf(stream, <any> { baseIRI: 'http://example.org/' }))
+        .rejects.toThrow(`Missing 'contentType' option while parsing.`);
     });
 
-    it('should throw if the init actor has no mediators for parsing RDF', () => {
+    it('should reject if the init actor has no mediators for parsing RDF', async() => {
       queryEngine = new QueryEngineBase(new ActorInitQuery({
         bus,
         mediatorHttpInvalidate,
@@ -533,17 +533,17 @@ describe('QueryEngineBase', () => {
         name: 'actor',
       }));
 
-      expect(() => queryEngine.parseRdf(stream, { contentType: 'text/turtle' })).toThrow(
+      await expect(queryEngine.parseRdf(stream, { contentType: 'text/turtle' })).rejects.toThrow(
         'Parsing RDF requires the query init actor to have a mediatorContextPreprocess and a mediatorRdfParse',
       );
     });
 
-    it('should emit an error if no parser can handle the stream', async() => {
+    it('should reject if no parser can handle the stream', async() => {
       mediatorRdfParse.mediate = async() => {
         throw new Error('Unsupported media type');
       };
 
-      await expect(arrayifyStream(queryEngine.parseRdf(stream, { contentType: 'text/turtle' }))).rejects
+      await expect(queryEngine.parseRdf(stream, { contentType: 'text/turtle' })).rejects
         .toThrow('Unsupported media type');
     });
 
@@ -555,11 +555,11 @@ describe('QueryEngineBase', () => {
         },
       });
 
-      await expect(arrayifyStream(queryEngine.parseRdf(stream, { contentType: 'text/turtle' }))).rejects
+      await expect(arrayifyStream(await queryEngine.parseRdf(stream, { contentType: 'text/turtle' }))).rejects
         .toThrow('Invalid syntax');
     });
 
-    it('should forward prefix and context events of the parsed stream', async() => {
+    it('should expose prefix and context events of the parsed stream', async() => {
       parsed = new Readable({
         objectMode: true,
         read() {
@@ -569,7 +569,7 @@ describe('QueryEngineBase', () => {
           this.push(null);
         },
       });
-      const quads = queryEngine.parseRdf(stream, { contentType: 'text/turtle' });
+      const quads = await queryEngine.parseRdf(stream, { contentType: 'text/turtle' });
       const onPrefix = jest.fn();
       const onContext = jest.fn();
       quads.on('prefix', onPrefix);
@@ -584,7 +584,7 @@ describe('QueryEngineBase', () => {
     it('should invalidate the HTTP cache if requested', async() => {
       jest.spyOn(mediatorHttpInvalidate, 'mediate');
 
-      await arrayifyStream(queryEngine.parseRdf(stream, {
+      await arrayifyStream(await queryEngine.parseRdf(stream, {
         contentType: 'text/turtle',
         [KeysInitQuery.invalidateCache.name]: true,
       }));
@@ -595,7 +595,10 @@ describe('QueryEngineBase', () => {
     it('should flush the logger when the parsed stream ends', async() => {
       const logger = <Logger><unknown>{ flush: jest.fn() };
 
-      await arrayifyStream(queryEngine.parseRdf(stream, { contentType: 'text/turtle', [KeysCore.log.name]: logger }));
+      await arrayifyStream(await queryEngine.parseRdf(stream, {
+        contentType: 'text/turtle',
+        [KeysCore.log.name]: logger,
+      }));
 
       expect(logger.flush).toHaveBeenCalledTimes(1);
     });
