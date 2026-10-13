@@ -25,6 +25,7 @@ import type {
   PartialResult,
   ILink,
   DereferenceFromNamedConflictModeResolver,
+  RdfVariant,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -324,6 +325,12 @@ export const KeysInitQuery = {
   dereferenceFromNamedConflictMode: new ActionContextKey<DereferenceFromNamedConflictModeResolver>(
     '@comunica/actor-init-query:dereferenceFromNamedConflictMode',
   ),
+  /**
+   * The RDF variant that determines which term types are allowed in which triple positions.
+   * Can be 'rdf' (default), 'symmetricRDF' (also literals and triple terms as subject),
+   * or 'generalizedRDF' (any term in any position).
+   */
+  rdfVariant: new ActionContextKey<RdfVariant>('@comunica/actor-init-query:rdfVariant'),
 };
 
 export const KeysExpressionEvaluator = {

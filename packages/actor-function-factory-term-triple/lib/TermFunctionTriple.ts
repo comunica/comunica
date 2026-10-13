@@ -1,5 +1,5 @@
 import { TermFunctionBase } from '@comunica/bus-function-factory';
-
+import { KeysInitQuery } from '@comunica/context-entries';
 import {
   declare,
   DefaultGraph,
@@ -10,6 +10,9 @@ import {
 
 /**
  * https://www.w3.org/TR/sparql12-query/#func-triple
+ *
+ * Which term types are allowed in which positions depends on the configured RDF variant:
+ * https://www.w3.org/TR/rdf12-concepts/
  */
 export class TermFunctionTriple extends TermFunctionBase {
   public constructor() {
@@ -18,12 +21,16 @@ export class TermFunctionTriple extends TermFunctionBase {
       operator: SparqlOperator.TRIPLE,
       overloads: declare(SparqlOperator.TRIPLE)
         .onTerm3(
-          _ => (subject, predicate, object) => {
-            if (subject.termType !== 'namedNode' && subject.termType !== 'blankNode') {
-              throw new ExpressionError(`Subjects in triple terms must either be named nodes or blank nodes`);
-            }
-            if (predicate.termType !== 'namedNode') {
-              throw new ExpressionError(`Predicates in triple terms must be named nodes`);
+          exprEval => (subject, predicate, object) => {
+            const rdfVariant = exprEval.context.get(KeysInitQuery.rdfVariant);
+            if (rdfVariant !== 'generalizedRDF') {
+              if (rdfVariant !== 'symmetricRDF' &&
+                subject.termType !== 'namedNode' && subject.termType !== 'blankNode') {
+                throw new ExpressionError(`Subjects in triple terms must either be named nodes or blank nodes`);
+              }
+              if (predicate.termType !== 'namedNode') {
+                throw new ExpressionError(`Predicates in triple terms must be named nodes`);
+              }
             }
             return new Quad(subject, predicate, object, new DefaultGraph());
           },
