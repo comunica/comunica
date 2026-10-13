@@ -73,6 +73,11 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
               if (this.inferHttpsEndpoint && action.url.startsWith('https') && !quad.object.value.startsWith('https')) {
                 metadata.sparqlService = metadata.sparqlService.replace(/^http:/u, 'https:');
               }
+              // Also fix a common mistake in SPARQL endpoint setups where the SD exposes an internal (local) address.
+              if (this.isLocalUrl(metadata.sparqlService) && !this.isLocalUrl(action.url)) {
+                this.logWarn(action.context, `Invalid metadata detected in ${action.url}: the SPARQL service description refers to the local endpoint ${metadata.sparqlService}. This has been corrected to ${action.url}, but the server should be reconfigured with a valid sd:endpoint.`);
+                metadata.sparqlService = action.url;
+              }
               break;
             case `${ActorRdfMetadataExtractSparqlService.SD}defaultDataset`:
               metadata.defaultDataset = quad.object.value;
@@ -144,6 +149,25 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
         }});
       });
     });
+  }
+
+  /**
+   * Check if the given URL refers to a loopback or unspecified host.
+   * @param url A URL.
+   */
+  public isLocalUrl(url: string): boolean {
+    let hostname: string;
+    try {
+      hostname = new URL(url).hostname;
+    } catch {
+      return false;
+    }
+    return hostname === 'localhost' ||
+      hostname.endsWith('.localhost') ||
+      hostname === '0.0.0.0' ||
+      /^127\.\d+\.\d+\.\d+$/u.test(hostname) ||
+      hostname === '[::]' ||
+      hostname === '[::1]';
   }
 }
 

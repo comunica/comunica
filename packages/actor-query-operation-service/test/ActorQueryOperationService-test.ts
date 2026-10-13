@@ -1,4 +1,4 @@
-import { KeysDereference, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysDereference, KeysHttp, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
@@ -189,6 +189,38 @@ describe('ActorQueryOperationService', () => {
       await createActor().run(op, undefined);
       const sourceContext = mediatorQuerySourceIdentify.mediate.mock.calls[0][0].querySourceUnidentified.context;
       expect(sourceContext.get(KeysDereference.blockFileAccess)).toBeUndefined();
+    });
+
+    it('should not set credentials by default', async() => {
+      const op: any = { operation: AF.createService(pattern(), endpoint), context: context() };
+      await createActor().run(op, undefined);
+      const sourceContext = mediatorQuerySourceIdentify.mediate.mock.calls[0][0].querySourceUnidentified.context;
+      expect(sourceContext.get(KeysHttp.auth)).toBeUndefined();
+    });
+
+    it('should move credentials in the target into the source context', async() => {
+      const op: any = {
+        operation: AF.createService(pattern(), DF.namedNode('http://user:secret@ex.org/sparql')),
+        context: context(),
+      };
+      await createActor().run(op, undefined);
+      const { querySourceUnidentified } = mediatorQuerySourceIdentify.mediate.mock.calls[0][0];
+      expect(querySourceUnidentified.value).toBe('http://ex.org/sparql');
+      expect(querySourceUnidentified.context.get(KeysHttp.auth)).toBe('user:secret');
+      expect(querySourceUnidentified.context.get(KeysDereference.blockFileAccess)).toBe(true);
+    });
+
+    it('should inherit credentials from a source with the same url', async() => {
+      const op: any = {
+        operation: AF.createService(pattern(), endpoint),
+        context: context().set(KeysQueryOperation.querySources, [ <any> {
+          source: { referenceValue: 'http://ex.org/sparql' },
+          context: new ActionContext().set(KeysHttp.auth, 'user:secret'),
+        } ]),
+      };
+      await createActor().run(op, undefined);
+      const sourceContext = mediatorQuerySourceIdentify.mediate.mock.calls[0][0].querySourceUnidentified.context;
+      expect(sourceContext.get(KeysHttp.auth)).toBe('user:secret');
     });
 
     it('should mark the source of a silent clause as silent', async() => {
