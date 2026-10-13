@@ -72,7 +72,7 @@
     "npm-cli-login": "^1.0.0",
     "rdf-data-factory": "^2.1.0",
     "rdf-quad": "^2.0.0",
-    "rdf-stores": "^2.5.0",
+    "rdf-stores": "^2.6.0",
     "rdf-test-suite": "^2.9.0",
     "rdf-test-suite-ldf": "^2.0.1",
     "setup-polly-jest": "^0.11.0",

@@ -7,6 +7,8 @@ streams that are sorted on shared join variables, by reading each side once and 
 the side that is behind.
 
 This only works if both join entries have a `termOrder` in their metadata.
+File sources have one when they are loaded into an ordered store (see
+[`@comunica/actor-query-source-identify-hypermedia-none`](https://github.com/comunica/comunica/tree/master/packages/actor-query-source-identify-hypermedia-none)).
 
 The output stays sorted on the key that was merged on, so merge joins can be chained.
 

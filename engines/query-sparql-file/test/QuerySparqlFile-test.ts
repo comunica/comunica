@@ -96,5 +96,29 @@ WHERE {
         await expect(arrayifyStream(await engine.queryBindings(queryCombined, context))).resolves.toHaveLength(5);
       });
     });
+
+    describe('joins over operators that do not keep the term order of their input', () => {
+      let context: QueryStringContext;
+
+      beforeEach(() => {
+        context = { sources: [{ value: path.join(path.relative(process.cwd(), __dirname), 'assets/ordered.ttl') }]};
+      });
+
+      it('should join a union', async() => {
+        const query = `SELECT * WHERE {
+          { ?s <http://ex/p0> ?o } UNION { ?s <http://ex/p1> ?o }
+          ?s <http://ex/q> ?x
+        }`;
+        await expect(arrayifyStream(await engine.queryBindings(query, context))).resolves.toHaveLength(20);
+      });
+
+      it('should join an order by', async() => {
+        const query = `SELECT * WHERE {
+          { SELECT ?s ?o WHERE { ?s <http://ex/p0> ?o } ORDER BY DESC(?s) }
+          ?s <http://ex/q> ?x
+        }`;
+        await expect(arrayifyStream(await engine.queryBindings(query, context))).resolves.toHaveLength(10);
+      });
+    });
   });
 });
