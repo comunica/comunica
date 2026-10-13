@@ -74,7 +74,7 @@ export class ActorHttpLimitRate extends ActorHttp {
       await new Promise(resolve => setTimeout(resolve, currentRequestDelay));
     }
 
-    const registerCompletedRequest = (success: boolean, status: number): void => {
+    const registerCompletedRequest = (success: boolean): void => {
       const requestDuration = (success ? 1 : this.failureMultiplier) *
         (Date.now() - currentTimestamp - currentRequestDelay);
       if (requestHostData.requestInterval < 0) {
@@ -84,7 +84,7 @@ export class ActorHttpLimitRate extends ActorHttp {
           requestDuration - requestHostData.requestInterval
         ));
       }
-      if (!success && status !== 404 && !requestHostData.rateLimited) {
+      if (!success && !requestHostData.rateLimited) {
         this.logDebug(action.context, 'Marking host as rate-limited', () => ({
           host: requestUrl.host,
         }));
@@ -97,12 +97,32 @@ export class ActorHttpLimitRate extends ActorHttp {
         ...action,
         context: action.context.set(ActorHttpLimitRate.keyWrapped, true),
       });
-      registerCompletedRequest(response.ok, response.status);
+      // Only responses that signal an overloaded server count as failures.
+      registerCompletedRequest(response.ok || !ActorHttpLimitRate.isOverloadStatus(response.status));
       return response;
     } catch (error: unknown) {
-      registerCompletedRequest(false, -1);
+      // Timeouts and aborts are imposed by the client, so they say nothing about the host's request rate.
+      if (!ActorHttpLimitRate.isClientAbort(error)) {
+        registerCompletedRequest(false);
+      }
       throw error;
     }
+  }
+
+  /**
+   * Check if the given HTTP status code indicates that the server is overloaded.
+   * @param status An HTTP status code.
+   */
+  public static isOverloadStatus(status: number): boolean {
+    return status === 429 || status === 503;
+  }
+
+  /**
+   * Check if the given error was caused by the client timing out or aborting the request.
+   * @param error An error.
+   */
+  public static isClientAbort(error: unknown): boolean {
+    return error instanceof Error && (error.name === 'TimeoutError' || error.name === 'AbortError');
   }
 
   /**

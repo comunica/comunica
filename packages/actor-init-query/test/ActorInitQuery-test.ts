@@ -379,12 +379,7 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          sources: [{
-            value: sourceHypermedia,
-            context: new ActionContext({
-              [KeysHttp.auth.name]: 'username:passwd',
-            }),
-          }],
+          sources: [{ value: sourceAuth }],
           log: expect.any(LoggerPretty),
         });
       });
@@ -399,13 +394,7 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          sources: [{
-            type: 'sparql',
-            value: sourceHypermedia,
-            context: new ActionContext({
-              [KeysHttp.auth.name]: 'username:passwd',
-            }),
-          }],
+          sources: [{ type: 'sparql', value: sourceAuth }],
           log: expect.any(LoggerPretty),
         });
       });

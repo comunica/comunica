@@ -44,10 +44,11 @@ export class ActorOptimizeQueryOperationLeftjoinExpressionPushdown extends Actor
             const intersectRight = self.variablesIntersect(variablesExpression, variablesRight);
             if (!intersectLeft && intersectRight) {
               self.logDebug(action.context, `Pushed down optional expression to right-hand operator`);
-              return algebraFactory.createLeftJoin(
-                op.input[0],
-                algebraFactory.createFilter(op.input[1], op.expression),
-              );
+              // Mark as left join filter, so that bind-joins remain possible.
+              // This is safe, as the expression does not use any left-hand variables.
+              const filter = algebraUtils.withMetadata(algebraFactory.createFilter(op.input[1], op.expression));
+              filter.metadata.isHoistedLeftJoinFilter = true;
+              return algebraFactory.createLeftJoin(op.input[0], filter);
             }
           }
 

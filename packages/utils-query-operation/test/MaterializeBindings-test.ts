@@ -1,4 +1,4 @@
-import { AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -1301,6 +1301,44 @@ describe('materializeOperation', () => {
           AF.createTermExpression(termVariableB),
         ]),
       ));
+  });
+
+  it('should materialize a filter with an operator expression and keep metadata', () => {
+    const metadata = { scopedSource: 'source' };
+    const operation = materializeOperation(
+      Object.assign(AF.createFilter(
+        AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+        AF.createTermExpression(termVariableB),
+      ), { metadata }),
+      bindingsA,
+      AF,
+      BF,
+    );
+    expect(operation.type).toBe(Algebra.Types.FILTER);
+    expect(operation.metadata).toEqual(metadata);
+  });
+
+  it('should materialize a filter with an existence expression and keep metadata', () => {
+    const metadata = { scopedSource: 'source' };
+    const operation = materializeOperation(
+      Object.assign(AF.createFilter(
+        AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+        AF.createExistenceExpression(
+          true,
+          AF.createPattern(termNamedNode, termNamedNode, termVariableA, termNamedNode),
+        ),
+      ), { metadata }),
+      bindingsA,
+      AF,
+      BF,
+    );
+    expect(operation).toEqual(Object.assign(AF.createFilter(
+      AF.createPattern(valueA, termNamedNode, termVariableB, termNamedNode),
+      AF.createExistenceExpression(
+        true,
+        AF.createPattern(termNamedNode, termNamedNode, valueA, termNamedNode),
+      ),
+    ), { metadata }));
   });
 
   it('should modify a filter expression with an existence expression with matching variables', () => {
