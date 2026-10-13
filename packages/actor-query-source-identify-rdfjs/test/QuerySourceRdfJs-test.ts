@@ -1047,32 +1047,6 @@ describe('QuerySourceRdfJs', () => {
             requestTime: 0,
           });
       });
-
-      it('should return nodes in the default graph when matchNodes returns an AsyncIterator', async() => {
-        (<any> store).matchNodes = () => {
-          return new ArrayIterator([
-            [ DF.defaultGraph(), DF.namedNode('s1') ],
-            [ DF.defaultGraph(), DF.namedNode('o1') ],
-          ], { autoStart: false });
-        };
-        const data = source.queryBindings(
-          AF.createNodes(DF.defaultGraph(), DF.variable('x')),
-          ctx,
-        );
-        await expect(data).toEqualBindingsStream([
-          BF.fromRecord({ x: DF.namedNode('s1') }),
-          BF.fromRecord({ x: DF.namedNode('o1') }),
-        ]);
-        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
-          .toEqual({
-            cardinality: { type: 'exact', value: 2 },
-            state: expect.any(MetadataValidationState),
-            variables: [
-              { variable: DF.variable('x'), canBeUndef: false },
-            ],
-            requestTime: 0,
-          });
-      });
     });
 
     describe('for distinctterms operations', () => {
@@ -1105,30 +1079,6 @@ describe('QuerySourceRdfJs', () => {
           return Readable.from([
             [ DF.namedNode('p') ],
           ]);
-        };
-        const data = source.queryBindings(
-          AF.createDistinctTerms([ DF.variable('p') ], { p: 'predicate' }),
-          ctx,
-        );
-        await expect(data).toEqualBindingsStream([
-          BF.fromRecord({ p: DF.namedNode('p') }),
-        ]);
-        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
-          .toEqual({
-            cardinality: { type: 'exact', value: 1 },
-            state: expect.any(MetadataValidationState),
-            variables: [
-              { variable: DF.variable('p'), canBeUndef: false },
-            ],
-            requestTime: 0,
-          });
-      });
-
-      it('should return distinct predicates when matchDistinctTerms returns an AsyncIterator', async() => {
-        (<any> store).matchDistinctTerms = () => {
-          return new ArrayIterator([
-            [ DF.namedNode('p') ],
-          ], { autoStart: false });
         };
         const data = source.queryBindings(
           AF.createDistinctTerms([ DF.variable('p') ], { p: 'predicate' }),

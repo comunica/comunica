@@ -2,14 +2,10 @@ import type { IServiceExecutor } from '@comunica/types';
 import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
-import type * as AsyncIterators from 'asynciterator';
+import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
 import { QueryEngine } from '../lib/QueryEngine';
-
-// The engine instantiates its actors through componentsjs, which requires the CommonJS build of 'asynciterator',
-// so iterators handed to it must come from that same build to pass its 'instanceof AsyncIterator' checks.
-const { ArrayIterator }: typeof AsyncIterators = require('asynciterator');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);

@@ -1,4 +1,5 @@
 import { existsSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 
@@ -34,6 +35,12 @@ export default defineConfig({
   resolve: {
     // Prefer TypeScript sources over their compiled siblings, mirroring the Jest 'moduleFileExtensions' order
     extensions: [ '.ts', '.js', '.mts', '.mjs', '.json' ],
+    alias: [
+      // 'asynciterator' ships separate CommonJS and ESM builds, and code checks its iterators with 'instanceof'.
+      // Node loads the CommonJS build for everything outside of Vite, such as dependencies like 'rdf-stores' and the
+      // actors that componentsjs instantiates for the engine tests, so what Vite imports must use that build as well.
+      { find: /^asynciterator$/u, replacement: createRequire(import.meta.url).resolve('asynciterator') },
+    ],
   },
   test: {
     environment: 'node',
