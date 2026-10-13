@@ -182,12 +182,12 @@ export interface IQueryEngine<
    * Parse a stream of RDF with the parsers of this engine.
    * @param stream A text stream in an RDF serialization.
    * @param options The content type of the stream, and optional parsing and context options.
-   * @return A stream of the parsed quads.
+   * @return A promise resolving to a stream of the parsed quads.
    */
   parseRdf?: (
     stream: NodeJS.ReadableStream,
     options: IRdfParseOptions & Partial<QueryAlgebraContextInner>,
-  ) => RDF.Stream & NodeJS.ReadableStream;
+  ) => Promise<RDF.Stream>;
   /**
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
