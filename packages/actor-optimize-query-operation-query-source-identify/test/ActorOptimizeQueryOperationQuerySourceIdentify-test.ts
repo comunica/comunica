@@ -6,7 +6,7 @@ import { KeysDereference, KeysHttp, KeysInitQuery, KeysQueryOperation, KeysStati
 import type { IAction } from '@comunica/core';
 import { ActionContext, ActionContextKey, Bus } from '@comunica/core';
 import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
-import type { IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import type { IActionContext, IQuerySourceWrapper, IServiceExecutor } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
@@ -19,6 +19,7 @@ const DF = new DataFactory();
 
 // The source context that SERVICE targets are identified with by default
 const serviceContextBlocked = new ActionContext().set(KeysDereference.blockFileAccess, true);
+const serviceExecutor: IServiceExecutor = { execute: async() => []};
 
 describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
   let bus: any;
@@ -188,7 +189,79 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         ]);
       });
 
+      it('with a SERVICE clause with a custom executor when the single source accepts the full query', async() => {
+        contextIn = contextIn
+          .set(KeysInitQuery.querySourcesUnidentified, [ 'sourceSparql' ])
+          .set(KeysInitQuery.serviceExecutors, { source1: serviceExecutor });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+        expect(contextOut.get(KeysQueryOperation.serviceSources)).toEqual({
+          source1: { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
+          source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+        });
+      });
+
+      it('with SERVICE clauses and an executor creator when the single source accepts the full query', async() => {
+        contextIn = contextIn
+          .set(KeysInitQuery.dataFactory, DF)
+          .set(KeysInitQuery.querySourcesUnidentified, [ 'sourceSparql' ])
+          .set(KeysInitQuery.serviceExecutorCreator, serviceNamedNode =>
+            serviceNamedNode.value === 'source1' ? serviceExecutor : undefined);
+        const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+        expect(contextOut.get(KeysQueryOperation.serviceSources)).toEqual({
+          source1: { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
+          source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+        });
+      });
+
+      it('with executors for other SERVICE targets when the single source accepts the full query', async() => {
+        contextIn = contextIn
+          .set(KeysInitQuery.querySourcesUnidentified, [ 'sourceSparql' ])
+          .set(KeysInitQuery.serviceExecutors, { other: serviceExecutor });
+        const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
+        expect(contextOut.has(KeysQueryOperation.serviceSources)).toBeFalsy();
+      });
+
+      it('should throw when both custom SERVICE executors and an executor creator are configured', async() => {
+        contextIn = contextIn
+          .set(KeysInitQuery.serviceExecutors, {})
+          .set(KeysInitQuery.serviceExecutorCreator, () => undefined);
+        await expect(actor.run({ context: contextIn, operation }))
+          .rejects.toThrow('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
+      });
+
+      it('should not cache SERVICE targets that have a custom SERVICE executor', async() => {
+        contextIn = contextIn.set(KeysInitQuery.serviceExecutors, { source1: serviceExecutor });
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation: operationService });
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation: operationService });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(3);
+        const services1 = contextOut1.get<Record<string, IQuerySourceWrapper>>(KeysQueryOperation.serviceSources)!;
+        const services2 = contextOut2.get<Record<string, IQuerySourceWrapper>>(KeysQueryOperation.serviceSources)!;
+        expect(services1.source1).not.toBe(services2.source1);
+        expect(services1.source2).toBe(services2.source2);
+      });
+
+      it('should not cache regular sources that have a custom SERVICE executor', async() => {
+        contextIn = contextIn
+          .set(KeysInitQuery.querySourcesUnidentified, [ 'source1' ])
+          .set(KeysInitQuery.serviceExecutors, { source1: serviceExecutor });
+        await actor.run({ context: contextIn, operation });
+        await actor.run({ context: contextIn, operation });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(2);
+      });
+
+      it('should still cache regular sources without a custom SERVICE executor', async() => {
+        contextIn = contextIn
+          .set(KeysInitQuery.querySourcesUnidentified, [ 'source1' ])
+          .set(KeysInitQuery.serviceExecutors, { other: serviceExecutor });
+        await actor.run({ context: contextIn, operation });
+        await actor.run({ context: contextIn, operation });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(1);
+      });
+
       it('with SERVICE clauses and multiple sources', async() => {
+        jest.mocked(mediatorQuerySourceIdentify.mediate).mockImplementation(async action => <any> ({
+          querySource: { ofUnidentified: action.querySourceUnidentified, source: {}},
+        }));
         const source3 = RdfStore.createDefault();
         contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
           'source1',
@@ -198,14 +271,79 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         const { context: contextOut } = await actor.run({ context: contextIn, operation: operationService });
         expect(contextOut).not.toBe(contextIn);
         expect(contextOut.get(KeysQueryOperation.serviceSources)).toEqual({
-          source1: { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
-          source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
+          source1: { ofUnidentified: expect.objectContaining({ value: 'source1' }), source: {}},
+          source2: { ofUnidentified: expect.objectContaining({ value: 'source2' }), source: {}},
         });
         expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
-          { ofUnidentified: expect.objectContaining({ value: 'source1' }) },
-          { ofUnidentified: expect.objectContaining({ value: 'source2' }) },
-          { ofUnidentified: expect.objectContaining({ value: source3 }) },
+          { ofUnidentified: expect.objectContaining({ value: 'source1' }), source: {}},
+          { ofUnidentified: expect.objectContaining({ value: 'source2' }), source: {}},
+          { ofUnidentified: expect.objectContaining({ value: source3 }), source: {}},
         ]);
+      });
+
+      it('with SERVICE clauses with credentials', async() => {
+        const { context: contextOut } = await actor.run({
+          context: contextIn,
+          operation: AF.createService(<any> {}, DF.namedNode('http://user:secret@example.org/sparql')),
+        });
+        expect(contextOut.get(KeysQueryOperation.serviceSources)).toEqual({
+          'http://user:secret@example.org/sparql': {
+            ofUnidentified: expect.objectContaining({ value: 'http://example.org/sparql' }),
+          },
+        });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
+          querySourceUnidentified: {
+            value: 'http://example.org/sparql',
+            context: serviceContextBlocked.set(KeysHttp.auth, 'user:secret'),
+          },
+          context: expect.anything(),
+        });
+      });
+
+      it('with SERVICE clauses with credentials and allowed file targets', async() => {
+        contextIn = contextIn.set(KeysInitQuery.serviceAllowFileTargets, true);
+        await actor.run({
+          context: contextIn,
+          operation: AF.createService(<any> {}, DF.namedNode('http://user:secret@example.org/sparql')),
+        });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
+          querySourceUnidentified: {
+            value: 'http://example.org/sparql',
+            context: new ActionContext().set(KeysHttp.auth, 'user:secret'),
+          },
+          context: expect.anything(),
+        });
+      });
+
+      it('with SERVICE clauses that inherit credentials from a source with the same url', async() => {
+        jest.mocked(mediatorQuerySourceIdentify.mediate).mockImplementation(async action => <any> ({
+          querySource: {
+            source: { referenceValue: action.querySourceUnidentified.value },
+            context: action.querySourceUnidentified.context,
+          },
+        }));
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          'http://user:secret@example.org/sparql',
+          'http://example.org/other',
+        ]);
+        await actor.run({
+          context: contextIn,
+          operation: AF.createJoin([
+            AF.createService(<any> {}, DF.namedNode('http://example.org/sparql')),
+            AF.createService(<any> {}, DF.namedNode('http://example.org/other')),
+          ]),
+        });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
+          querySourceUnidentified: {
+            value: 'http://example.org/sparql',
+            context: serviceContextBlocked.set(KeysHttp.auth, 'user:secret'),
+          },
+          context: expect.anything(),
+        });
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledWith({
+          querySourceUnidentified: { value: 'http://example.org/other', context: serviceContextBlocked },
+          context: expect.anything(),
+        });
       });
 
       it('should cache 2 identical sources in one call', async() => {
@@ -507,6 +645,68 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
               context: contextSource.set(new ActionContextKey('processed'), true),
             },
           },
+        ]);
+      });
+
+      it('with an unidentified string source with credentials', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          'http://user:secret@example.org/sparql',
+        ]);
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+        expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
+          {
+            ofUnidentified: {
+              value: 'http://example.org/sparql',
+              context: new ActionContext().set(KeysHttp.auth, 'user:secret'),
+            },
+          },
+        ]);
+      });
+
+      it('with an unidentified source with credentials and context', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          { type: 'sparql', value: 'http://user:secret@example.org/sparql', context: { a: 'b' }},
+        ]);
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+        expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
+          {
+            ofUnidentified: {
+              type: 'sparql',
+              value: 'http://example.org/sparql',
+              context: new ActionContext({ a: 'b' })
+                .set(new ActionContextKey('processed'), true)
+                .set(KeysHttp.auth, 'user:secret'),
+            },
+          },
+        ]);
+      });
+
+      it('with an unidentified source with credentials and explicit credentials in its context', async() => {
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          { value: 'http://user:secret@example.org/sparql', context: { [KeysHttp.auth.name]: 'other:secret' }},
+        ]);
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+        expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
+          {
+            ofUnidentified: {
+              value: 'http://example.org/sparql',
+              context: new ActionContext({ [KeysHttp.auth.name]: 'other:secret' })
+                .set(new ActionContextKey('processed'), true),
+            },
+          },
+        ]);
+      });
+
+      it('with an unidentified serialized source that looks like it has credentials', async() => {
+        const value = '<http://user:secret@example.org/s> <ex:p> <ex:o>.';
+        contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
+          { type: 'serialized', value: 'http://user:secret@example.org/', mediaType: 'text/turtle' },
+          { type: 'serialized', value, mediaType: 'text/turtle' },
+        ]);
+        const { context: contextOut } = await actor.run({ context: contextIn, operation });
+        expect(contextOut.get(KeysQueryOperation.querySources)).toEqual([
+          { ofUnidentified: expect.objectContaining({ value: 'http://user:secret@example.org/' }) },
+          { ofUnidentified: expect.objectContaining({ value }) },
         ]);
       });
 

@@ -52,7 +52,64 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
       });
     });
 
+    it('should run on joins nested in other operations', async() => {
+      const operation = factory.createJoin([
+        factory.createProject(factory.createJoin([
+          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+          factory.createPattern(DF.variable('c'), DF.namedNode('p2'), DF.variable('d')),
+          factory.createPattern(DF.variable('b'), DF.namedNode('p4'), DF.variable('e')),
+        ]), [ DF.variable('a'), DF.variable('c') ]),
+        factory.createPattern(DF.namedNode('s'), DF.namedNode('p3'), DF.namedNode('o')),
+      ]);
+      await expect(actor.run({ operation, context })).resolves.toEqual({
+        context,
+        operation: factory.createJoin([
+          factory.createProject(factory.createJoin([
+            factory.createJoin([
+              factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+              factory.createPattern(DF.variable('b'), DF.namedNode('p4'), DF.variable('e')),
+            ]),
+            factory.createPattern(DF.variable('c'), DF.namedNode('p2'), DF.variable('d')),
+          ], false), [ DF.variable('a'), DF.variable('c') ]),
+          factory.createPattern(DF.namedNode('s'), DF.namedNode('p3'), DF.namedNode('o')),
+        ], false),
+      });
+    });
+
+    it('should run on nested joins that are only connected through their parent', async() => {
+      const operation = factory.createJoin([
+        factory.createJoin([
+          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+          factory.createPattern(DF.variable('c'), DF.namedNode('p2'), DF.variable('d')),
+        ]),
+        factory.createPath(DF.variable('b'), factory.createLink(DF.namedNode('p3')), DF.variable('c')),
+      ], false);
+      await expect(actor.run({ operation, context })).resolves.toEqual({
+        context,
+        operation: factory.createJoin([
+          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+          factory.createPath(DF.variable('b'), factory.createLink(DF.namedNode('p3')), DF.variable('c')),
+          factory.createPattern(DF.variable('c'), DF.namedNode('p2'), DF.variable('d')),
+        ]),
+      });
+    });
+
     describe('cluster', () => {
+      it('should flatten nested joins', () => {
+        expect(ActorOptimizeQueryOperationJoinConnected.cluster(factory.createJoin([
+          factory.createJoin([
+            factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+            factory.createPattern(DF.variable('c'), DF.namedNode('p2'), DF.variable('d')),
+          ], false),
+          factory.createPattern(DF.variable('b'), DF.namedNode('p3'), DF.variable('c')),
+        ], false), factory))
+          .toEqual(factory.createJoin([
+            factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+            factory.createPattern(DF.variable('b'), DF.namedNode('p3'), DF.variable('c')),
+            factory.createPattern(DF.variable('c'), DF.namedNode('p2'), DF.variable('d')),
+          ]));
+      });
+
       it('should handle empty join entries', () => {
         expect(ActorOptimizeQueryOperationJoinConnected.cluster(factory.createJoin([]), factory))
           .toEqual(factory.createJoin([]));

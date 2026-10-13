@@ -689,7 +689,10 @@ IQueryOperationResultBindings
       });
 
       it('should reject on a right stream with conflicting FILTER', async() => {
-        const filterOp: any = FACTORY.createFilter(<any>{}, FACTORY.createTermExpression(DF.literal('')));
+        const filterOp: any = FACTORY.createFilter(
+          FACTORY.createPattern(DF.variable('b'), DF.namedNode('p1'), DF.namedNode('o1')),
+          FACTORY.createTermExpression(DF.variable('a')),
+        );
 
         await expect(actor.getJoinCoefficients(
           {
@@ -809,7 +812,7 @@ IQueryOperationResultBindings
         ]);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 7.2 },
+          cardinality: { type: 'estimate', value: 3 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: true },

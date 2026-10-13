@@ -4,7 +4,7 @@ import type {
   IActorOptimizeQueryOperationArgs,
 } from '@comunica/bus-optimize-query-operation';
 import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
-import { KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery, KeysQueryOperation, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type {
@@ -22,10 +22,12 @@ import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-qu
  */
 export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends ActorOptimizeQueryOperation {
   private readonly useAskIfSupported: boolean;
+  private readonly askTimeout: number;
 
   public constructor(args: IActorOptimizeQueryOperationPruneEmptySourceOperationsArgs) {
     super(args);
     this.useAskIfSupported = args.useAskIfSupported;
+    this.askTimeout = args.askTimeout ?? 3000;
   }
 
   public async test(action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
@@ -219,7 +221,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         { wildcardAcceptAllExtensionFunctions },
       );
       if (askSupported) {
-        return source.source.queryBoolean(askOperation, mergedContext);
+        return this.queryAsk(source, askOperation, mergedContext);
       }
     }
 
@@ -244,11 +246,57 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
         { wildcardAcceptAllExtensionFunctions },
       );
       if (askSupported) {
-        return source.source.queryBoolean(askOperation, mergedContext);
+        return this.queryAsk(source, askOperation, mergedContext);
       }
     }
 
     return cardinality.value > 0;
+  }
+
+  /**
+   * Execute an ASK query and return the result.
+   * Returns true if no reply was received within the timeout.
+   * @param source A query source.
+   * @param askOperation An ASK operation.
+   * @param context The query context.
+   */
+  public async queryAsk(
+    source: IQuerySourceWrapper,
+    askOperation: Algebra.Ask,
+    context: IActionContext,
+  ): Promise<boolean> {
+    let askContext = context;
+    let timeout: Promise<boolean> | undefined;
+    let timeoutHandle: NodeJS.Timeout | undefined;
+    if (this.askTimeout > 0) {
+      // Abort the request on timeout, so that it does not keep occupying the source.
+      const abortController = new AbortController();
+      const existingAbortSignal = context.get(KeysHttp.httpAbortSignal);
+      askContext = context.set(
+        KeysHttp.httpAbortSignal,
+        existingAbortSignal ?
+          AbortSignal.any([ existingAbortSignal, abortController.signal ]) :
+          abortController.signal,
+      );
+      timeout = new Promise<boolean>((resolve) => {
+        timeoutHandle = setTimeout(() => {
+          this.logDebug(context, `ASK query timed out after ${this.askTimeout} ms, assuming the source has results`);
+          resolve(true);
+          abortController.abort();
+        }, this.askTimeout);
+      });
+    }
+
+    try {
+      const ask = source.source.queryBoolean(askOperation, askContext);
+      return await (timeout ? Promise.race([ ask, timeout ]) : ask);
+    } catch (error: unknown) {
+      // Pruning is only an optimization, so a failing check must not fail the query.
+      this.logDebug(context, `ASK query failed, assuming the source has results: ${(<Error> error).message}`);
+      return true;
+    } finally {
+      clearTimeout(timeoutHandle);
+    }
   }
 }
 
@@ -259,4 +307,12 @@ export interface IActorOptimizeQueryOperationPruneEmptySourceOperationsArgs exte
    * @default {false}
    */
   useAskIfSupported: boolean;
+  /**
+   * Timeout in milliseconds for ASK queries, after which the source is assumed to have results.
+   * Failing ASK queries also lead to the source being assumed to have results.
+   * A value of 0 or less disables the timeout.
+   * @range {integer}
+   * @default {3000}
+   */
+  askTimeout?: number;
 }
