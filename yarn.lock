@@ -3335,7 +3335,7 @@
     obug "^2.1.1"
     tinyrainbow "^3.1.0"
 
-"@vitest/expect@4.1.11", "@vitest/expect@^4.1.11":
+"@vitest/expect@4.1.11":
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/@vitest/expect/-/expect-4.1.11.tgz#5f580d1f9cdbba314dbf23b2d911f8eb23878f5f"
   integrity sha512-VX2x5vNJXET47KAFzwERI+KRMtTTCSWTfSMKsW7JsUsXV4psq++e3DvZpuTDOpHcxytiDs6p2nhVb2tVDiiUYw==

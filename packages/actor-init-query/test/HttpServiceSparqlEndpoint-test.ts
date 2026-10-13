@@ -23,7 +23,6 @@ import { fs, testArgumentDict, testFileContentDict } from '../__mocks__/fs';
 // @ts-expect-error
 import { http, ServerResponseMock } from '../__mocks__/http';
 
-// @ts-expect-error
 import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { IQueryBody } from '../lib/HttpServiceSparqlEndpoint';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';

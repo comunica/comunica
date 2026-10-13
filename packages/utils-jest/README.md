@@ -17,12 +17,15 @@ $ yarn add --save-dev @comunica/utils-jest
 
 ## Configuration
 
+The matchers and test tables use Vitest's global `expect` and `test`,
+so `globals` must be enabled in your Vitest configuration.
 In order to use matchers in your tests,
-you'll have to make sure that they are imported.
-This can be done by adding the following entry to your Vitest configuration:
+you'll also have to make sure that they are imported.
+This can be done by adding the following entries to your Vitest configuration:
 ```javascript
 export default defineConfig({
   test: {
+    globals: true,
     setupFiles: ['@comunica/utils-jest'],
   },
 });

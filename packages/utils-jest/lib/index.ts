@@ -1,5 +1,4 @@
 import type * as RDF from '@rdfjs/types';
-import { expect } from 'vitest';
 import matchers from './matchers';
 
 export * from './expressionEvaluator/Aliases';
@@ -47,4 +46,6 @@ declare module 'vitest' {
   }
 }
 
-expect.extend(matchers);
+// The global 'expect' is used instead of importing it, as this package is built to CommonJS,
+// and 'vitest' throws when it is required rather than imported.
+(<any> globalThis).expect.extend(matchers);
