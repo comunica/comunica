@@ -40,9 +40,6 @@ const EMITTING = 2;
  * are at the same key, the full run of equal keys from `buffered` is materialized, and the run of equal
  * keys from `streamed` is emitted against it as a cross product.
  *
- * `read` is fully synchronous: it only stops when a source has nothing buffered, and resumes when that
- * source becomes readable again. It never awaits per binding.
- *
  * A side that can skip ahead is only asked to, once it has fallen behind the other side a number of times in a
  * row. A skip has a fixed cost, which is only worth paying for a gap that is longer than a few bindings, and
  * gaps are usually short when the keys of both sides interleave closely.
