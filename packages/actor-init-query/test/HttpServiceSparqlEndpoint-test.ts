@@ -51,10 +51,6 @@ vi.mock(import('node:http'), async() => (await import('../__mocks__/http')).http
 
 vi.mock(import('node:fs'), async() => (await import('../__mocks__/fs')).fs);
 
-// Jest's legacy fake timers, which these tests were written against, kept 'setImmediate' real so that
-// 'await new Promise(setImmediate)' still flushed the microtask queue, and left 'Date' alone.
-vi.useFakeTimers({ toFake: [ 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval' ]});
-
 const argsDefault = {
   moduleRootPath: 'moduleRootPath',
   defaultConfigPath: 'defaultConfigPath',
@@ -732,6 +728,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       const stdout = new PassThrough();
       const stderr = new PassThrough();
       beforeEach(() => {
+        vi.useFakeTimers();
         // Assume worker thread in all tests by default
         (<any> cluster).isMaster = true;
         (<any> cluster).fork = vi.fn();
@@ -741,6 +738,10 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Jest's legacy fake timers replaced these with mocks; vitest's fake timers do not
         vi.spyOn(globalThis, 'setTimeout');
         vi.spyOn(globalThis, 'clearTimeout');
+      });
+
+      afterEach(() => {
+        vi.useRealTimers();
       });
 
       it('should invoke fork for each worker', async() => {
