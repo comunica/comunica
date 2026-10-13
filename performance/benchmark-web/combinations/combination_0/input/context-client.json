@@ -1,3 +1,6 @@
 {
-  "sources": ["http://localhost/dummy"]
+  "sources": ["http://localhost/dummy"],
+  "httpRetryCount": 2,
+  "httpRetryDelayFallback": 1000,
+  "httpRetryDelayLimit": 10000
 }
