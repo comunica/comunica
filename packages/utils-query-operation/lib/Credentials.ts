@@ -1,28 +1,24 @@
 import { KeysHttp, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActionContext } from '@comunica/types';
 
+// Matches the scheme and the credentials within the authority of a URL.
+const URL_CREDENTIALS = /^([a-z][\d+.a-z-]*:\/\/)([^/?#]*)@/iu;
+
 /**
  * Split the credentials off a URL, as fetch does not accept URLs that include credentials.
  * @param value A URL that may include credentials, such as http://username:password@example.org/.
  * @return The URL without credentials, and its credentials as a decoded "username:password"-pair, if any.
  */
 export function extractUrlCredentials(value: string): { url: string; auth?: string } {
-  let parsed: URL;
-  try {
-    parsed = new URL(value);
-  } catch {
+  const match = URL_CREDENTIALS.exec(value);
+  if (!match) {
     return { url: value };
   }
-  if (!parsed.username && !parsed.password) {
-    return { url: value };
-  }
-  const auth = `${decodeURIComponent(parsed.username)}:${decodeURIComponent(parsed.password)}`;
-
-  // Remove the credentials from the original string, so that the remainder of the URL is not normalized.
-  const authorityStart = value.indexOf('//') + 2;
-  const authority = value.slice(authorityStart, authorityStart + value.slice(authorityStart).search(/[/?#]|$/u));
-  const url = value.slice(0, authorityStart) + value.slice(authorityStart + authority.lastIndexOf('@') + 1);
-  return { url, auth };
+  const auth = decodeURIComponent(match[2]);
+  return {
+    url: match[1] + value.slice(match[0].length),
+    auth: auth.includes(':') ? auth : `${auth}:`,
+  };
 }
 
 /**

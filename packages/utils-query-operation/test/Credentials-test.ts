@@ -11,6 +11,8 @@ describe('extractUrlCredentials', () => {
 
   it('should keep URLs without credentials', () => {
     expect(extractUrlCredentials('http://example.org/a@b')).toEqual({ url: 'http://example.org/a@b' });
+    expect(extractUrlCredentials('http://example.org/sparql?q=a:b@c'))
+      .toEqual({ url: 'http://example.org/sparql?q=a:b@c' });
   });
 
   it('should not normalize URLs', () => {
