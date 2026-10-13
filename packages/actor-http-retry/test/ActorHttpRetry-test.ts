@@ -237,15 +237,12 @@ describe('ActorHttpRetry', () => {
       expect(ActorHttpRetry.sleep).toHaveBeenNthCalledWith(1, 100);
     });
 
-    it('should retry requests that time out', async() => {
-      const response: Response = <any> { ok: true };
+    it('should not retry requests that time out', async() => {
       const error = new Error('Fetch timed out');
       error.name = 'TimeoutError';
-      jest.spyOn(mediatorHttp, 'mediate')
-        .mockRejectedValueOnce(error)
-        .mockResolvedValueOnce(response);
-      await expect(actor.run({ input, context })).resolves.toBe(response);
-      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+      jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
+      await expect(actor.run({ input, context })).rejects.toThrow(error);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
     });
 
     it('should throw the last error if the last attempt received a response', async() => {
@@ -398,6 +395,19 @@ describe('ActorHttpRetry', () => {
 
     it('should be false for other POST requests', () => {
       expect(ActorHttpRetry.isRetryableOnError(<any> { input, init: { method: 'POST', body: 'abc' }})).toBe(false);
+    });
+  });
+
+  describe('isTimeoutError', () => {
+    it('should be true for timeout errors', () => {
+      const error = new Error('Fetch timed out');
+      error.name = 'TimeoutError';
+      expect(ActorHttpRetry.isTimeoutError(error)).toBe(true);
+    });
+
+    it('should be false for other errors', () => {
+      expect(ActorHttpRetry.isTimeoutError(new Error('ECONNRESET'))).toBe(false);
+      expect(ActorHttpRetry.isTimeoutError('TimeoutError')).toBe(false);
     });
   });
 

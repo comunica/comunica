@@ -82,8 +82,8 @@ export class ActorHttpRetry extends ActorHttp {
         });
         lastError = undefined;
       } catch (error: unknown) {
-        // Requests aborted by the caller must not be retried, and neither may non-retryable requests.
-        if (!retryOnError || ActorHttpRetry.isAbortedByCaller(action)) {
+        // Timed out, aborted and non-retryable requests are not retried.
+        if (!retryOnError || ActorHttpRetry.isTimeoutError(error) || ActorHttpRetry.isAbortedByCaller(action)) {
           throw error;
         }
         this.logDebug(action.context, 'Request failed without response', () => ({
@@ -232,6 +232,16 @@ export class ActorHttpRetry extends ActorHttp {
       return params.has('query') && !params.has('update');
     }
     return false;
+  }
+
+  /**
+   * Check if the given error is caused by a timeout, such as from `KeysHttp.httpTimeout`.
+   * These are not retried, as the request would likely time out again,
+   * while the timeout would no longer bound the request duration.
+   * @param {unknown} error An error.
+   */
+  public static isTimeoutError(error: unknown): boolean {
+    return error instanceof Error && error.name === 'TimeoutError';
   }
 
   /**
