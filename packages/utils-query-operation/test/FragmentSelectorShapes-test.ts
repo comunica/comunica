@@ -2,6 +2,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { FragmentSelectorShape, IQuerySourceWrapper, IServiceExecutor } from '@comunica/types';
 import { Algebra, AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
+import { makeNamedAggregate } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import {
@@ -196,6 +197,33 @@ describe('FragmentSelectorShapes', () => {
         };
         expect(doesShapeAcceptOperation(shape, nodes)).toBeTruthy();
         expect(doesShapeAcceptOperation(shape, distinctTerms)).toBeFalsy();
+      });
+    });
+
+    describe('with extension aggregates', () => {
+      const shape: FragmentSelectorShape = {
+        type: 'operation',
+        operation: { operationType: 'wildcard' },
+      };
+      const expression = AF.createTermExpression(DF.variable('o'));
+
+      it('should not accept them with type wildcard', () => {
+        const group = AF.createGroup(AF.createBgp([]), [], [
+          makeNamedAggregate('http://example.org/median', [ expression ]),
+        ]);
+        expect(doesShapeAcceptOperation(shape, group)).toBeFalsy();
+        expect(doesShapeAcceptOperation(
+          shape,
+          AF.createProject(group, []),
+          { wildcardAcceptAllExtensionFunctions: true },
+        )).toBeFalsy();
+      });
+
+      it('should accept built-in aggregates with type wildcard', () => {
+        const group = AF.createGroup(AF.createBgp([]), [], [
+          AF.createBoundAggregate(DF.variable('var0'), 'sum', expression, false),
+        ]);
+        expect(doesShapeAcceptOperation(shape, group, { wildcardAcceptAllExtensionFunctions: true })).toBeTruthy();
       });
     });
 

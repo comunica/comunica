@@ -1,8 +1,7 @@
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { Bus } from '@comunica/core';
-import type { IActionContext, IExtensionAggregator } from '@comunica/types';
-import type { Algebra } from '@comunica/utils-algebra';
+import type { ExtensionAggregator, IActionContext, IExtensionAggregator } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import {
   BF,
@@ -10,24 +9,14 @@ import {
   getMockEEActionContext,
   getMockMediatorExpressionEvaluatorFactory,
   makeAggregate,
+  makeNamedAggregate,
 } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { ActorBindingsAggregatorFactoryExtensions } from '../lib';
 import { NamedAggregator } from '../lib/NamedAggregator';
 
 const AF = new AlgebraFactory(DF);
-
-function makeNamedAggregate(iri: string, distinct = false): Algebra.AggregateExpression {
-  return <Algebra.AggregateExpression> <unknown> {
-    ...AF.createNamedExpression(DF.namedNode(iri), [
-      AF.createTermExpression(DF.variable('x')),
-      AF.createTermExpression(DF.literal('a')),
-    ]),
-    aggregate: true,
-    distinct,
-    variable: DF.variable('var0'),
-  };
-}
+const args = [ AF.createTermExpression(DF.variable('x')), AF.createTermExpression(DF.literal('a')) ];
 
 describe('ActorBindingsAggregatorFactoryExtensions', () => {
   let bus: any;
@@ -59,22 +48,27 @@ describe('ActorBindingsAggregatorFactoryExtensions', () => {
       });
     });
 
-    describe('with extensionAggregators', () => {
+    describe.each([
+      [ 'extensionAggregators', (aggregate: ExtensionAggregator) => getMockEEActionContext()
+        .set(KeysInitQuery.extensionAggregators, { 'http://example.org/median': aggregate }) ],
+      [ 'extensionAggregatorCreator', (aggregate: ExtensionAggregator) => getMockEEActionContext()
+        .set(KeysInitQuery.extensionAggregatorCreator, (iri: RDF.NamedNode) =>
+          iri.value === 'http://example.org/median' ? aggregate : undefined) ],
+    ])('with %s', (_, makeContext) => {
       let context: IActionContext;
 
       beforeEach(() => {
-        context = getMockEEActionContext().set(KeysInitQuery.extensionAggregators, {
-          'http://example.org/median': extensionAggregator,
-        });
+        context = makeContext(extensionAggregator);
       });
 
       it('should test on a known extension aggregate', async() => {
-        await expect(actor.test({ context, expr: makeNamedAggregate('http://example.org/median') }))
-          .resolves.toPassTestVoid();
+        const result = await actor.test({ context, expr: makeNamedAggregate('http://example.org/median', args) });
+        expect(result).toPassTestVoid();
+        expect(result.getSideData()).toBe(extensionAggregator);
       });
 
       it('should not test on an unknown extension aggregate', async() => {
-        await expect(actor.test({ context, expr: makeNamedAggregate('http://example.org/other') }))
+        await expect(actor.test({ context, expr: makeNamedAggregate('http://example.org/other', args) }))
           .resolves.toFailTest(exception);
       });
 
@@ -82,73 +76,32 @@ describe('ActorBindingsAggregatorFactoryExtensions', () => {
         await expect(actor.test({ context, expr: makeAggregate('sum') }))
           .resolves.toFailTest(exception);
       });
+    });
 
-      it('should run', async() => {
-        await expect(actor.run({ context, expr: makeNamedAggregate('http://example.org/median') }))
+    describe('run', () => {
+      const context = getMockEEActionContext();
+
+      it('should create an aggregator', async() => {
+        await expect(actor
+          .run({ context, expr: makeNamedAggregate('http://example.org/median', args) }, extensionAggregator))
           .resolves.toBeInstanceOf(NamedAggregator);
         expect(extensionAggregator).toHaveBeenCalledTimes(1);
       });
 
       it('should put the evaluated arguments of the aggregate', async() => {
-        const bindingsAggregator = await actor.run({ context, expr: makeNamedAggregate('http://example.org/median') });
+        const bindingsAggregator = await actor
+          .run({ context, expr: makeNamedAggregate('http://example.org/median', args) }, extensionAggregator);
         await bindingsAggregator.putBindings(BF.bindings([[ DF.variable('x'), DF.literal('1') ]]));
         await expect(bindingsAggregator.result()).resolves.toEqual(DF.literal('result'));
         expect(aggregator.put).toHaveBeenCalledWith([ DF.literal('1'), DF.literal('a') ]);
       });
 
       it('should apply distinct to the arguments of the aggregate', async() => {
-        const bindingsAggregator = await actor.run({
-          context,
-          expr: makeNamedAggregate('http://example.org/median', true),
-        });
+        const bindingsAggregator = await actor
+          .run({ context, expr: makeNamedAggregate('http://example.org/median', args, true) }, extensionAggregator);
         await bindingsAggregator.putBindings(BF.bindings([[ DF.variable('x'), DF.literal('1') ]]));
         await bindingsAggregator.putBindings(BF.bindings([[ DF.variable('x'), DF.literal('1') ]]));
         expect(aggregator.put).toHaveBeenCalledTimes(1);
-      });
-
-      it('should skip bindings for which an argument is unbound', async() => {
-        const bindingsAggregator = await actor.run({ context, expr: makeNamedAggregate('http://example.org/median') });
-        await bindingsAggregator.putBindings(BF.bindings());
-        await expect(bindingsAggregator.result()).resolves.toEqual(DF.literal('result'));
-        expect(aggregator.put).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('with extensionAggregatorCreator', () => {
-      let context: IActionContext;
-      let extensionAggregatorCreator: jest.Mock;
-
-      beforeEach(() => {
-        extensionAggregatorCreator = jest.fn((iri: RDF.NamedNode) =>
-          iri.value === 'http://example.org/median' ? extensionAggregator : undefined);
-        context = getMockEEActionContext()
-          .set(KeysInitQuery.extensionAggregatorCreator, extensionAggregatorCreator);
-      });
-
-      it('should test on a known extension aggregate', async() => {
-        await expect(actor.test({ context, expr: makeNamedAggregate('http://example.org/median') }))
-          .resolves.toPassTestVoid();
-        expect(extensionAggregatorCreator).toHaveBeenCalledWith(DF.namedNode('http://example.org/median'));
-      });
-
-      it('should not test on an unknown extension aggregate', async() => {
-        await expect(actor.test({ context, expr: makeNamedAggregate('http://example.org/other') }))
-          .resolves.toFailTest(exception);
-      });
-
-      it('should run', async() => {
-        await expect(actor.run({ context, expr: makeNamedAggregate('http://example.org/median') }))
-          .resolves.toBeInstanceOf(NamedAggregator);
-        expect(extensionAggregator).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    describe('without extension aggregates', () => {
-      it('should not test on an extension aggregate', async() => {
-        await expect(actor.test({
-          context: getMockEEActionContext(),
-          expr: makeNamedAggregate('http://example.org/median'),
-        })).resolves.toFailTest(exception);
       });
     });
   });

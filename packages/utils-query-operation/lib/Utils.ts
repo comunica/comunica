@@ -3,6 +3,7 @@ import type { TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type {
   ComunicaDataFactory,
+  ExtensionAggregator,
   IActionContext,
   IDataDestination,
   IQueryOperationResult,
@@ -134,6 +135,28 @@ export function getServiceExecutorLookup(
   if (serviceExecutorCreator) {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     return serviceIri => serviceExecutorCreator(dataFactory.namedNode(serviceIri));
+  }
+}
+
+/**
+ * Obtain a function that looks up the extension aggregates that are registered in the given context.
+ * @param context The query context.
+ * @return A function that looks up the extension aggregate of an IRI, or undefined if no aggregates are registered.
+ */
+export function getExtensionAggregatorLookup(
+  context: IActionContext,
+): ((iri: string) => ExtensionAggregator | undefined) | undefined {
+  const extensionAggregators = context.get(KeysInitQuery.extensionAggregators);
+  const extensionAggregatorCreator = context.get(KeysInitQuery.extensionAggregatorCreator);
+  if (extensionAggregators && extensionAggregatorCreator) {
+    throw new Error('Illegal simultaneous usage of extensionAggregatorCreator and extensionAggregators in context');
+  }
+  if (extensionAggregators) {
+    return iri => extensionAggregators[iri];
+  }
+  if (extensionAggregatorCreator) {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    return iri => extensionAggregatorCreator(dataFactory.namedNode(iri));
   }
 }
 

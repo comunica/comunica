@@ -749,14 +749,23 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
       });
 
       describe('extension aggregate', () => {
-        let store: Store;
-        let integerType: RDF.NamedNode;
+        const integerType = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
+        let store: RdfStore;
         let product: ExtensionAggregator;
         const groupedQuery = (distinct = '') => `PREFIX ex: <http://example.org/>
         SELECT ?s (ex:product(${distinct} ?o) AS ?product) WHERE { ?s ?p ?o } GROUP BY ?s`;
+        const productBindings = (productA: string): Bindings[] => [
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:a') ],
+            [ DF.variable('product'), DF.literal(productA, integerType) ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:b') ],
+            [ DF.variable('product'), DF.literal('5', integerType) ],
+          ]),
+        ];
 
         beforeEach(() => {
-          integerType = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
           product = () => {
             let value = 1;
             return {
@@ -769,13 +778,11 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
               result: () => DF.literal(String(value), integerType),
             };
           };
-          store = new Store();
-          store.addQuads([
-            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p1'), DF.literal('2', integerType)),
-            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p2'), DF.literal('2', integerType)),
-            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p3'), DF.literal('3', integerType)),
-            DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:p1'), DF.literal('5', integerType)),
-          ]);
+          store = RdfStore.createDefault();
+          store.addQuad(DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p1'), DF.literal('2', integerType)));
+          store.addQuad(DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p2'), DF.literal('2', integerType)));
+          store.addQuad(DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p3'), DF.literal('3', integerType)));
+          store.addQuad(DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:p1'), DF.literal('5', integerType)));
         });
 
         it('rejects when the aggregate is not registered', async() => {
@@ -784,38 +791,15 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
           );
         });
 
-        it('aggregates groups given by record', async() => {
-          const bindingsStream = await engine.queryBindings(groupedQuery(), {
-            sources: [ store ],
-            extensionAggregators: { 'http://example.org/product': product },
-          });
-          await expect(bindingsStream).toEqualBindingsStream([
-            BF.bindings([
-              [ DF.variable('s'), DF.namedNode('ex:a') ],
-              [ DF.variable('product'), DF.literal('12', integerType) ],
-            ]),
-            BF.bindings([
-              [ DF.variable('s'), DF.namedNode('ex:b') ],
-              [ DF.variable('product'), DF.literal('5', integerType) ],
-            ]),
-          ]);
-        });
-
-        it('aggregates groups given by creator', async() => {
-          const bindingsStream = await engine.queryBindings(groupedQuery(), {
-            sources: [ store ],
-            extensionAggregatorCreator: iri => iri.value === 'http://example.org/product' ? product : undefined,
-          });
-          await expect(bindingsStream).toEqualBindingsStream([
-            BF.bindings([
-              [ DF.variable('s'), DF.namedNode('ex:a') ],
-              [ DF.variable('product'), DF.literal('12', integerType) ],
-            ]),
-            BF.bindings([
-              [ DF.variable('s'), DF.namedNode('ex:b') ],
-              [ DF.variable('product'), DF.literal('5', integerType) ],
-            ]),
-          ]);
+        it.each([
+          [ 'record', () => ({ extensionAggregators: { 'http://example.org/product': product }}) ],
+          [ 'creator', () => ({
+            extensionAggregatorCreator: (iri: RDF.NamedNode) =>
+              iri.value === 'http://example.org/product' ? product : undefined,
+          }) ],
+        ])('aggregates groups given by %s', async(_, makeContext) => {
+          const bindingsStream = await engine.queryBindings(groupedQuery(), { sources: [ store ], ...makeContext() });
+          await expect(bindingsStream).toEqualBindingsStream(productBindings('12'));
         });
 
         it('aggregates groups with DISTINCT', async() => {
@@ -823,16 +807,7 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
             sources: [ store ],
             extensionAggregators: { 'http://example.org/product': product },
           });
-          await expect(bindingsStream).toEqualBindingsStream([
-            BF.bindings([
-              [ DF.variable('s'), DF.namedNode('ex:a') ],
-              [ DF.variable('product'), DF.literal('6', integerType) ],
-            ]),
-            BF.bindings([
-              [ DF.variable('s'), DF.namedNode('ex:b') ],
-              [ DF.variable('product'), DF.literal('5', integerType) ],
-            ]),
-          ]);
+          await expect(bindingsStream).toEqualBindingsStream(productBindings('6'));
         });
 
         it('leaves the result unbound when the aggregate errors', async() => {
@@ -879,55 +854,14 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
         });
 
         it('does not push down the aggregate to a SPARQL endpoint', async() => {
-          await engine.invalidateHttpCache();
+          // The endpoint does not know the aggregate, so pushing it down would make the query fail
           const endpoint = 'http://example.com/aggregates/sparql';
-          const queries: string[] = [];
-          const fetch = async(input: string): Promise<Response> => {
-            if (input === endpoint) {
-              // Service description fetch
-              return new Response('', { status: 200, headers: { 'Content-Type': 'text/turtle' }});
-            }
-            queries.push(decodeURIComponent(input));
-            if (input.includes('ASK')) {
-              return new Response(
-                JSON.stringify({ head: {}, boolean: true }),
-                { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
-              );
-            }
-            return new Response(
-              JSON.stringify({
-                head: { vars: [ 's', 'p', 'o' ]},
-                results: {
-                  bindings: [
-                    {
-                      s: { type: 'uri', value: 'ex:a' },
-                      p: { type: 'uri', value: 'ex:p1' },
-                      o: { type: 'literal', value: '2', datatype: integerType.value },
-                    },
-                    {
-                      s: { type: 'uri', value: 'ex:a' },
-                      p: { type: 'uri', value: 'ex:p2' },
-                      o: { type: 'literal', value: '3', datatype: integerType.value },
-                    },
-                  ],
-                },
-              }),
-              { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
-            );
-          };
-          const bindingsStream = await engine.queryBindings(groupedQuery(), <QueryStringContext> {
+          const bindingsStream = await engine.queryBindings(groupedQuery(), {
             sources: [ endpoint ],
             extensionAggregators: { 'http://example.org/product': product },
-            fetch,
+            fetch: createSparqlEndpointsFetch({ [endpoint]: store }),
           });
-          await expect(bindingsStream).toEqualBindingsStream([
-            BF.bindings([
-              [ DF.variable('s'), DF.namedNode('ex:a') ],
-              [ DF.variable('product'), DF.literal('6', integerType) ],
-            ]),
-          ]);
-          expect(queries.length).toBeGreaterThan(0);
-          expect(queries.some(query => query.includes('http://example.org/product'))).toBeFalsy();
+          await expect(bindingsStream).toEqualBindingsStream(productBindings('12'));
         });
       });
 

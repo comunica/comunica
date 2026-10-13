@@ -24,6 +24,9 @@ export class NamedAggregator implements IBindingsAggregator {
     }
     try {
       const args = await Promise.all(this.evaluators.map(evaluator => evaluator.evaluate(bindings)));
+      if (this.errorOccurred) {
+        return;
+      }
       if (this.distinct) {
         const key = JSON.stringify(args.map(arg => termToString(arg)));
         if (this.putArguments.has(key)) {

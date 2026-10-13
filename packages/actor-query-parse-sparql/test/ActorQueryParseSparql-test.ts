@@ -3,10 +3,10 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
+import { makeNamedAggregate } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryParseSparql } from '..';
-import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);
@@ -166,14 +166,9 @@ describe('ActorQueryParseSparql', () => {
     describe('with extension aggregates', () => {
       const aggregateQuery = 'PREFIX ex: <http://example.org/> SELECT (ex:median(DISTINCT ?o) AS ?m) { ?s ?p ?o }';
       const extensionAggregator = jest.fn();
-      const expectedAggregates = [{
-        ...AF.createNamedExpression(DF.namedNode('http://example.org/median'), [
-          AF.createTermExpression(DF.variable('o')),
-        ]),
-        aggregate: true,
-        distinct: true,
-        variable: DF.variable('var0'),
-      }];
+      const expectedAggregates = [
+        makeNamedAggregate('http://example.org/median', [ AF.createTermExpression(DF.variable('o')) ], true),
+      ];
 
       it('should run without extension aggregates', async() => {
         await expect(actor.run({ query: aggregateQuery, context })).resolves.toMatchObject({

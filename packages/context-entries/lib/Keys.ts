@@ -252,12 +252,8 @@ export const KeysInitQuery = {
   ),
   /**
    * @range {(aggregateNamedNode: RDF.NamedNode) => ExtensionAggregator | undefined}
-   * Extension aggregate creator for a given aggregate IRI.
+   * Synchronous extension aggregate creator for a given aggregate IRI, see ExtensionAggregatorCreator.
    * Function calls with an IRI for which an extension aggregate is returned are evaluated as aggregates.
-   * The returned extension aggregate creates the aggregator of a single group.
-   * Undefined may be returned if no extension aggregate exists for the given IRI.
-   * Unlike extensionFunctionCreator, this creator is synchronous,
-   * as parsing a query requires knowing which function calls are aggregates.
    *
    * The dictionary-based extensionAggregators context entry may be used instead, but not simultaneously.
    */
@@ -266,7 +262,7 @@ export const KeysInitQuery = {
   ),
   /**
    * Dictionary of extension aggregates.
-   * Key is the IRI of the aggregate, and value creates the aggregator of a single group.
+   * Key is the IRI of the aggregate, and value is the extension aggregate.
    *
    * The callback-based extensionAggregatorCreator context entry may be used instead, but not simultaneously.
    */
