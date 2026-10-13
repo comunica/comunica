@@ -43,42 +43,26 @@ export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) =
 Promise<AsyncExtensionFunction | undefined>;
 
 /**
- * Instances of this interface perform a specific aggregation of bindings.
- * You can put bindings and when all bindings have been put, request the result.
+ * The aggregator of an extension aggregate for a single group.
+ * Errors thrown by it, and errors evaluating the arguments of the aggregate call, leave the result unbound.
  */
-export interface IBindingsAggregator {
+export interface IExtensionAggregator {
   /**
-   * Registers bindings to the aggregator. Each binding you put has the ability to change the aggregation result.
-   * @param bindings the bindings to put.
+   * Adds the evaluated arguments of the aggregate call for a solution of the group.
+   * Solutions for which an argument uses an unbound variable are skipped.
+   * If the aggregate is called with DISTINCT, each distinct list of arguments is only put once.
+   * @param args the evaluated arguments.
    */
-  putBindings: (bindings: RDF.Bindings) => Promise<void>;
-
+  put: (args: RDF.Term[]) => void | Promise<void>;
   /**
-   * Request the result term of aggregating the bindings you have put in the aggregator.
+   * The result of aggregating all arguments that have been put, or undefined to leave the result unbound.
    */
-  result: () => Promise<RDF.Term | undefined>;
-}
-
-/**
- * The call of an extension aggregate for which an aggregator is created.
- */
-export interface IExtensionAggregatorArgs {
-  /**
-   * Evaluates the arguments of the aggregate call against the given bindings.
-   * Rejects if evaluating an argument errors, for example because it uses a variable that is unbound in the bindings.
-   */
-  evaluateArguments: (bindings: RDF.Bindings) => Promise<RDF.Term[]>;
-  /**
-   * Whether the aggregate is called with DISTINCT,
-   * in which case the aggregator must ignore bindings whose arguments evaluate to values it has seen before.
-   */
-  distinct: boolean;
+  result: () => RDF.Term | undefined | Promise<RDF.Term | undefined>;
 }
 /**
  * Creates the aggregator of an extension aggregate for a single group.
  */
-export type ExtensionAggregator = (args: IExtensionAggregatorArgs) =>
-IBindingsAggregator | Promise<IBindingsAggregator>;
+export type ExtensionAggregator = () => IExtensionAggregator;
 /**
  * Returns the extension aggregate with the given IRI, or undefined if the IRI is no extension aggregate.
  * Unlike an `AsyncExtensionFunctionCreator`, this is synchronous,
@@ -142,6 +126,23 @@ export interface ITermComparator {
    * @param termB the second term
    */
   orderTypes: (termA: RDF.Term | undefined, termB: RDF.Term | undefined) => -1 | 0 | 1;
+}
+
+/**
+ * Instances of this interface perform a specific aggregation of bindings.
+ * You can put bindings and when all bindings have been put, request the result.
+ */
+export interface IBindingsAggregator {
+  /**
+   * Registers bindings to the aggregator. Each binding you put has the ability to change the aggregation result.
+   * @param bindings the bindings to put.
+   */
+  putBindings: (bindings: RDF.Bindings) => Promise<void>;
+
+  /**
+   * Request the result term of aggregating the bindings you have put in the aggregator.
+   */
+  result: () => Promise<RDF.Term | undefined>;
 }
 
 export interface IInternalEvaluator {

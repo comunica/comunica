@@ -757,18 +757,16 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
 
         beforeEach(() => {
           integerType = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
-          product = ({ evaluateArguments, distinct }) => {
-            const seen = new Set<string>();
+          product = () => {
             let value = 1;
             return {
-              async putBindings(bindings) {
-                const [ term ] = await evaluateArguments(bindings);
-                if (!distinct || !seen.has(term.value)) {
-                  seen.add(term.value);
-                  value *= Number.parseInt(term.value, 10);
+              put([ term ]) {
+                if (term.termType !== 'Literal') {
+                  throw new Error(`Can not multiply ${term.value}`);
                 }
+                value *= Number.parseInt(term.value, 10);
               },
-              result: async() => DF.literal(String(value), integerType),
+              result: () => DF.literal(String(value), integerType),
             };
           };
           store = new Store();
@@ -834,6 +832,18 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
               [ DF.variable('s'), DF.namedNode('ex:b') ],
               [ DF.variable('product'), DF.literal('5', integerType) ],
             ]),
+          ]);
+        });
+
+        it('leaves the result unbound when the aggregate errors', async() => {
+          const bindingsStream = await engine.queryBindings(`PREFIX ex: <http://example.org/>
+          SELECT ?s (ex:product(?p) AS ?product) WHERE { ?s ?p ?o } GROUP BY ?s`, {
+            sources: [ store ],
+            extensionAggregators: { 'http://example.org/product': product },
+          });
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:a') ]]),
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:b') ]]),
           ]);
         });
 

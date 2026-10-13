@@ -9,6 +9,7 @@ import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ExtensionAggregator, IActionContext } from '@comunica/types';
 import { Algebra, isKnownSubType } from '@comunica/utils-algebra';
+import { NamedAggregator } from './NamedAggregator';
 
 /**
  * A comunica Extensions Bindings Aggregator Factory Actor.
@@ -31,10 +32,7 @@ export class ActorBindingsAggregatorFactoryExtensions extends ActorBindingsAggre
     const aggregate = <Algebra.BoundNamedAggregate> <unknown> expr;
     const evaluators = await Promise.all(aggregate.args.map(arg =>
       this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: arg, context })));
-    return this.getExtensionAggregator(context, expr)!({
-      evaluateArguments: bindings => Promise.all(evaluators.map(evaluator => evaluator.evaluate(bindings))),
-      distinct: aggregate.distinct,
-    });
+    return new NamedAggregator(evaluators, aggregate.distinct, this.getExtensionAggregator(context, expr)!());
   }
 
   protected getExtensionAggregator(

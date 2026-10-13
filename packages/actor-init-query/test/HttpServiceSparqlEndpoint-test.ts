@@ -1597,8 +1597,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             },
           }).set(KeysInitQuery.extensionAggregators, {
             'https://example.org/aggregates#first': () => ({
-              putBindings: async() => {},
-              result: async() => undefined,
+              put: () => {},
+              result: () => undefined,
             }),
           }),
         });

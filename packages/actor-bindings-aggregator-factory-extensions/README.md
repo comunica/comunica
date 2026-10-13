@@ -8,8 +8,9 @@ passed by the `extensionAggregatorCreator` or `extensionAggregators`
 [context keys](https://github.com/comunica/comunica/blob/master/packages/context-entries/lib/Keys.ts).
 
 An extension aggregate creates the aggregator of a single group.
-It receives a function that evaluates the arguments of the aggregate call against bindings,
-and whether the aggregate is called with `DISTINCT`:
+Like for [extension functions](https://github.com/comunica/comunica/tree/master/packages/actor-function-factory-expression-extensions),
+the arguments of the aggregate call are evaluated beforehand,
+and the aggregator receives the evaluated arguments of each solution in the group:
 
 ```typescript
 const result = await engine.queryBindings(`
@@ -17,14 +18,13 @@ PREFIX ex: <http://example.org/>
 SELECT (ex:median(?o) AS ?median) WHERE { ?s ?p ?o } GROUP BY ?s`, {
   sources: [ 'https://www.rubensworks.net/' ],
   extensionAggregators: {
-    'http://example.org/median': ({ evaluateArguments, distinct }) => {
+    'http://example.org/median': () => {
       const values: number[] = [];
       return {
-        async putBindings(bindings) {
-          const [ term ] = await evaluateArguments(bindings);
+        put([ term ]) {
           values.push(Number.parseFloat(term.value));
         },
-        async result() {
+        result() {
           // Calculate and return the median of values as an RDF term
         },
       };
@@ -32,6 +32,11 @@ SELECT (ex:median(?o) AS ?median) WHERE { ?s ?p ?o } GROUP BY ?s`, {
   },
 });
 ```
+
+Like for the built-in aggregates:
+* With `DISTINCT`, each distinct list of arguments is only put once.
+* Solutions for which an argument uses an unbound variable are skipped.
+* Errors evaluating the arguments, or thrown by the aggregator, leave the result unbound.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
