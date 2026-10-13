@@ -43,9 +43,12 @@ export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
         }
       });
 
-      // If no value has been found, assume infinity.
+      // If no value has been found, report no cardinality at all.
+      // Reporting an estimate of zero instead would be wrong twice over: it claims a count that was
+      // never found, and because accumulating an estimate with anything yields an estimate, it makes
+      // every cardinality accumulated on top of it an estimate as well, even when they are exact.
       action.metadata.on('end', () => {
-        resolve({ metadata: { cardinality: { type: 'estimate', value: 0 }}});
+        resolve({ metadata: {}});
       });
     });
   }

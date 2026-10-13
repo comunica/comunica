@@ -60,7 +60,7 @@ describe('We should respect the plus-1-corrected spec', () => {
     arity: 2,
     testTable: `
       '${x4p}' '${x4q}' = '${int('3')}'
-      '${x5p}' '${x5q}' = '${decimal('3')}'
+      '${x5p}' '${x5q}' = '${decimal('3.0')}'
     `,
     errorTable: `
       '${x1p}' '${x1q}' = 'Argument types not valid for operator'

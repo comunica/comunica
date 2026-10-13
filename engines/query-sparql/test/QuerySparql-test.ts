@@ -1,3 +1,4 @@
+import { Readable } from 'node:stream';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { Logger } from '@comunica/types';
 import type { QueryBindings, QueryStringContext } from '@comunica/types';
@@ -8,6 +9,7 @@ import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
+import { ArrayIterator, wrap } from 'asynciterator';
 import '@comunica/utils-jest';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
@@ -36,6 +38,36 @@ describe('System test: QuerySparql', () => {
     // Unlike jest, vitest shares 'globalThis' between the test files of a worker
     globalThis.fetch = globalFetch;
   });
+
+  beforeEach(async() => {
+    // Tests should not share HTTP state, such as the rate limiting that a test with a slow host leaves behind
+    await engine.invalidateHttpCache();
+  });
+
+  /**
+   * Create a fetch function that exposes each given store as a SPARQL endpoint.
+   * @param endpoints A mapping from endpoint URLs to the stores they answer queries over.
+   * @return A fetch function that answers the queries and service description requests of these endpoints.
+   */
+  function createSparqlEndpointsFetch(endpoints: Record<string, RdfStore>): typeof fetch {
+    return async(input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+      const url = new URL(input instanceof Request ? input.url : input);
+      const query = url.searchParams.get('query') ??
+        (init?.body ? new URLSearchParams(String(init.body)).get('query') : null);
+      // Requests without a query are service description lookups
+      if (!query) {
+        return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
+      }
+      const { data } = await engine.resultToString(
+        await engine.query(query, { sources: [ endpoints[`${url.origin}${url.pathname}`] ]}),
+        'application/sparql-results+json',
+      );
+      return new Response(
+        await stringifyStream(data),
+        { status: 200, headers: { 'content-type': 'application/sparql-results+json' }},
+      );
+    };
+  }
 
   describe('instantiated multiple times', () => {
     it('should contain different actors', () => {
@@ -346,6 +378,50 @@ describe('System test: QuerySparql', () => {
         });
       });
 
+      describe('handle DESCRIBE queries that are not the outermost operation', () => {
+        let store: Store;
+        const quadDefault = DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+        const quadNamed = DF
+          .quad(DF.namedNode('ex:sg'), DF.namedNode('ex:pg'), DF.namedNode('ex:og'), DF.namedNode('ex:g'));
+
+        async function describeQuads(query: string): Promise<RDF.Quad[]> {
+          return arrayifyStream(await engine.queryQuads(query, <any> { sources: [ store ]}));
+        }
+
+        beforeEach(() => {
+          store = new Store();
+          store.addQuads([ quadDefault, quadNamed ]);
+        });
+
+        it('handles a describe wrapped in a FROM dataset', async() => {
+          await expect(describeQuads('DESCRIBE <ex:sg> FROM <ex:g>')).resolves
+            .toEqualRdfQuadArray([ DF.quad(DF.namedNode('ex:sg'), DF.namedNode('ex:pg'), DF.namedNode('ex:og')) ]);
+        });
+
+        it('handles a describe wrapped in a FROM dataset that excludes the term', async() => {
+          await expect(describeQuads('DESCRIBE <ex:s> FROM <ex:g>')).resolves.toEqualRdfQuadArray([]);
+        });
+
+        it('handles a describe with variable terms wrapped in a FROM dataset', async() => {
+          await expect(describeQuads('DESCRIBE ?s FROM <ex:g> WHERE { ?s ?p ?o }')).resolves
+            .toEqualRdfQuadArray([ DF.quad(DF.namedNode('ex:sg'), DF.namedNode('ex:pg'), DF.namedNode('ex:og')) ]);
+        });
+
+        it('handles a describe wrapped in a FROM NAMED dataset with an empty default graph', async() => {
+          // SPARQL 1.1 spec (13.2): when FROM NAMED is used without a FROM, the default graph must be empty
+          await expect(describeQuads('DESCRIBE <ex:s> FROM NAMED <ex:g>')).resolves.toEqualRdfQuadArray([]);
+        });
+
+        it('handles a describe wrapped in a slice', async() => {
+          await expect(describeQuads('DESCRIBE <ex:s> LIMIT 10')).resolves.toEqualRdfQuadArray([ quadDefault ]);
+        });
+
+        it('handles a describe wrapped in both a FROM dataset and a slice', async() => {
+          await expect(describeQuads('DESCRIBE <ex:sg> FROM <ex:g> LIMIT 10')).resolves
+            .toEqualRdfQuadArray([ DF.quad(DF.namedNode('ex:sg'), DF.namedNode('ex:pg'), DF.namedNode('ex:og')) ]);
+        });
+      });
+
       describe('extension function', () => {
         let funcAllow: string;
         let store: Store;
@@ -645,6 +721,35 @@ SELECT * WHERE {
             expect((await bindingsStream.toArray()).map(res => res.get(DF.variable('sum'))!.value)).toEqual([ '20' ]);
           });
         });
+
+        it('evaluates a HAVING with an extension function locally over the groups of an endpoint', async() => {
+          const queries: (string | null)[] = [];
+          const bindingsStream = await engine.queryBindings(`PREFIX func: <http://example.org/functions#>
+SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
+            sources: [{ type: 'sparql', value: 'http://example.org/having/sparql' }],
+            extensionFunctions: {
+              // Only the group of s1 passes
+              'http://example.org/functions#f': async(args: RDF.Term[]) =>
+                DF.literal(String(args[0].equals(DF.namedNode('http://example.org/s1'))), booleanType),
+            },
+            fetch: async(input: RequestInfo | URL) => {
+              queries.push(new URL(<string> input).searchParams.get('query'));
+              return new Response(JSON.stringify({
+                head: { vars: [ 's' ]},
+                results: { bindings: [
+                  { s: { type: 'uri', value: 'http://example.org/s1' }},
+                  { s: { type: 'uri', value: 'http://example.org/s2' }},
+                ]},
+              }), { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }});
+            },
+          });
+
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/s1') ]]),
+          ]);
+          // The endpoint does not declare support for the function, so it only receives the grouping
+          expect(queries).toEqual([ 'SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s' ]);
+        });
       });
 
       describe('functionArgumentsCache', () => {
@@ -913,6 +1018,49 @@ SELECT * WHERE {
         await expect(resultWithExtraFilter.execute()).resolves.toEqualBindingsStream(expectedResult);
       });
 
+      it('should handle a leftJoin expression on an optional subquery that can not be bound', async() => {
+        const store = new Store();
+        const xsdInteger = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
+        store.addQuads([
+          DF.quad(DF.namedNode('http://ex.org/a'), DF.namedNode('http://ex.org/id'), DF.literal('1', xsdInteger)),
+          DF.quad(DF.namedNode('http://ex.org/a'), DF.namedNode('http://ex.org/name'), DF.literal('a')),
+          DF.quad(DF.namedNode('http://ex.org/b'), DF.namedNode('http://ex.org/id'), DF.literal('2', xsdInteger)),
+          DF.quad(DF.namedNode('http://ex.org/b'), DF.namedNode('http://ex.org/name'), DF.literal('b')),
+          DF.quad(DF.namedNode('http://ex.org/b'), DF.namedNode('http://ex.org/name'), DF.literal('b2')),
+          DF.quad(DF.namedNode('http://ex.org/c'), DF.namedNode('http://ex.org/id'), DF.literal('3', xsdInteger)),
+        ]);
+
+        // The FILTER only shares ?id with the left side, and the GROUP BY subquery can not be bound,
+        // so this must be evaluated by a left join that evaluates the expression itself.
+        const result = <QueryBindings> await engine.query(`
+          PREFIX ex: <http://ex.org/>
+          SELECT ?s ?t ?c WHERE {
+            ?s ex:id ?id .
+            OPTIONAL {
+              { SELECT ?t (COUNT(*) AS ?c) WHERE { ?t ex:name ?n } GROUP BY ?t }
+              ?t ex:id ?id2 .
+              FILTER(?id = ?id2)
+            }
+          }
+          ORDER BY ?s`, { sources: [ store ]});
+
+        await expect(result.execute()).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://ex.org/a') ],
+            [ DF.variable('t'), DF.namedNode('http://ex.org/a') ],
+            [ DF.variable('c'), DF.literal('1', xsdInteger) ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://ex.org/b') ],
+            [ DF.variable('t'), DF.namedNode('http://ex.org/b') ],
+            [ DF.variable('c'), DF.literal('2', xsdInteger) ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://ex.org/c') ],
+          ]),
+        ]);
+      });
+
       it('should handle join with empty estimate cardinality', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -1116,7 +1264,7 @@ WHERE {
     sh:select ?query .
 } ORDER BY ?sq`, {
           sources: [{ type: 'file', value: 'https://lov.linkeddata.es/dataset/lov/sparql' }],
-        })).rejects.toThrow('RDF parsing failed');
+        })).rejects.toThrow('Could not determine the media type of https://lov.linkeddata.es/dataset/lov/sparql from its content type (text/plain;charset=UTF-8) or the extension of its URL');
       });
 
       it('on the LOV SPARQL service description with property paths (2)', async() => {
@@ -1130,7 +1278,7 @@ WHERE {
     sh:select|sh:ask|sh:construct|sh:describe ?query .
 } ORDER BY ?sq`, {
           sources: [{ type: 'file', value: 'https://lov.linkeddata.es/dataset/lov/sparql' }],
-        })).rejects.toThrow('RDF parsing failed');
+        })).rejects.toThrow('Could not determine the media type of https://lov.linkeddata.es/dataset/lov/sparql from its content type (text/plain;charset=UTF-8) or the extension of its URL');
       });
 
       it('should time out slow SPARQL service description requests and continue processing', async() => {
@@ -1849,6 +1997,63 @@ SELECT ?option WHERE {
           ]),
         ]);
       });
+
+      it('should handle zero-or-more path with variable subject and object over multiple SPARQL endpoints', async() => {
+        const endpoint1 = 'http://example.org/nodes1/sparql';
+        const endpoint2 = 'http://example.org/nodes2/sparql';
+        const store1 = RdfStore.createDefault();
+        store1.addQuad(DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p'), DF.namedNode('ex:b')));
+        store1.addQuad(DF.quad(DF.namedNode('ex:d'), DF.namedNode('ex:p'), DF.namedNode('ex:e')));
+        const store2 = RdfStore.createDefault();
+        store2.addQuad(DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:p'), DF.namedNode('ex:c')));
+
+        const bindingsStream = await engine.queryBindings(`
+        SELECT ?s ?o WHERE {
+          ?s <ex:p>* ?o .
+        }`, {
+          sources: [ endpoint1, endpoint2 ],
+          fetch: createSparqlEndpointsFetch({ [endpoint1]: store1, [endpoint2]: store2 }),
+        });
+
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:a') ],
+            [ DF.variable('o'), DF.namedNode('ex:a') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:a') ],
+            [ DF.variable('o'), DF.namedNode('ex:b') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:a') ],
+            [ DF.variable('o'), DF.namedNode('ex:c') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:b') ],
+            [ DF.variable('o'), DF.namedNode('ex:b') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:b') ],
+            [ DF.variable('o'), DF.namedNode('ex:c') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:c') ],
+            [ DF.variable('o'), DF.namedNode('ex:c') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:d') ],
+            [ DF.variable('o'), DF.namedNode('ex:d') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:d') ],
+            [ DF.variable('o'), DF.namedNode('ex:e') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:e') ],
+            [ DF.variable('o'), DF.namedNode('ex:e') ],
+          ]),
+        ], true);
+      });
     });
 
     describe('commutative count', () => {
@@ -2427,6 +2632,220 @@ WHERE { }
       ?s ?p ?o.
     }`, { sources: [ store ], unionDefaultGraph: true });
         await expect((arrayifyStream(await result.execute()))).resolves.toHaveLength(2);
+      });
+    });
+
+    describe('FROM (NAMED) as sources', () => {
+      const datasetIri = 'http://example.org/my-dataset.ttl';
+      const datasetTurtle = `
+        @prefix ex: <http://example.org/> .
+        ex:s1 ex:p1 ex:o1 .
+        ex:s2 ex:p2 ex:o2 .
+      `;
+      const mockFetch = (body: string, contentType = 'text/turtle'): typeof globalThis.fetch =>
+        <typeof globalThis.fetch> vi.fn(async(input: string, init?: RequestInit) => {
+          if (input === datasetIri) {
+            return <Response> {
+              status: 200,
+              ok: true,
+              headers: new Headers({ 'content-type': contentType }),
+              body: stringToStream(body),
+              url: input,
+            };
+          }
+          return fetch(input, init);
+        });
+
+      it('does not append FROM IRI as a real source when dereferenceFromNamed is false (default)', async() => {
+        await expect(engine.queryBindings(
+          `SELECT * FROM <${datasetIri}> WHERE { ?s ?p ?o }`,
+          {
+            sources: [],
+          },
+        )).rejects.toThrow('none of the configured actors were able to handle the operation type pattern');
+      });
+
+      it('appends the FROM IRI as a real source when dereferenceFromNamed is true', async() => {
+        const mockedFetch = mockFetch(datasetTurtle);
+
+        // No sources in context
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM <${datasetIri}> WHERE { ?s ?p ?o }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
+          },
+        );
+        const bindings = await bindingsStream.toArray();
+
+        expect(bindings).toHaveLength(2);
+        expect(bindings).toEqualBindingsArray([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p1') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
+          ]),
+        ]);
+
+        expect(mockedFetch).toHaveBeenCalledWith(
+          datasetIri,
+          expect.anything(),
+        );
+      });
+
+      it('exposes the FROM NAMED IRI as a named graph when dereferenceFromNamed is true', async() => {
+        const mockedFetch = mockFetch(datasetTurtle);
+
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { GRAPH ?g { ?s ?p ?o } }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
+          },
+        );
+
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode(datasetIri) ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p1') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode(datasetIri) ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
+          ]),
+        ]);
+      });
+
+      it('does not expose FROM NAMED data in the default graph', async() => {
+        const mockedFetch = mockFetch(datasetTurtle);
+
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { ?s ?p ?o }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
+          },
+        );
+
+        await expect(bindingsStream).toEqualBindingsStream([]);
+      });
+
+      it('errors on a FROM NAMED source that already contains named graphs', async() => {
+        const mockedFetch = mockFetch(`
+          @prefix ex: <http://example.org/> .
+          ex:s1 ex:p1 ex:o1 .
+          ex:g1 { ex:s2 ex:p2 ex:o2 . }
+        `, 'application/trig');
+
+        await expect(engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { GRAPH ?g { ?s ?p ?o } }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            fetch: mockedFetch,
+          },
+        )).rejects.toThrow(`Detected an existing named graph 'http://example.org/g1'`);
+      });
+
+      it('keeps the source\'s own named graphs when the conflict mode says so', async() => {
+        const mockedFetch = mockFetch(`
+          @prefix ex: <http://example.org/> .
+          ex:s1 ex:p1 ex:o1 .
+          ex:g1 { ex:s2 ex:p2 ex:o2 . }
+        `, 'application/trig');
+
+        const bindingsStream = await engine.queryBindings(
+          `SELECT * FROM NAMED <${datasetIri}> WHERE { GRAPH ?g { ?s ?p ?o } }`,
+          {
+            sources: [],
+            dereferenceFromNamed: true,
+            dereferenceFromNamedConflictMode: () => 'keepSource',
+            fetch: mockedFetch,
+          },
+        );
+
+        await expect(bindingsStream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode(datasetIri) ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p1') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('g'), DF.namedNode('http://example.org/g1') ],
+            [ DF.variable('s'), DF.namedNode('http://example.org/s2') ],
+            [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
+            [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
+          ]),
+        ]);
+      });
+    });
+
+    describe('RDF dataset construction with FROM and FROM NAMED', () => {
+      // These cases are defined by https://www.w3.org/TR/sparql11-query/#specifyingDataset
+      const G1 = 'http://example.org/g1';
+      const G2 = 'http://example.org/g2';
+      let store: RdfStore;
+
+      beforeEach(() => {
+        store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o1'), DF.namedNode(G1)));
+        store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o2'), DF.namedNode(G2)));
+      });
+
+      async function queryCount(query: string): Promise<number> {
+        return (await (await engine.queryBindings(query, { sources: [ store ]})).toArray()).length;
+      }
+
+      it('should query the default graph over the graphs in FROM', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> { ?s ?p ?o }`)).resolves.toBe(1);
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM <${G2}> { ?s ?p ?o }`)).resolves.toBe(2);
+      });
+
+      it('should have an empty default graph if only FROM NAMED is used', async() => {
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { ?s ?p ?o }`)).resolves.toBe(0);
+      });
+
+      it('should query the graphs in FROM NAMED via GRAPH', async() => {
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(1);
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> FROM NAMED <${G2}> { GRAPH ?g { ?s ?p ?o } }`))
+          .resolves.toBe(2);
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { GRAPH <${G1}> { ?s ?p ?o } }`)).resolves.toBe(1);
+      });
+
+      it('should have no named graphs if only FROM is used', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(0);
+        // Graphs from FROM are merged into the default graph, they are not available as named graph
+        await expect(queryCount(`SELECT * FROM <${G1}> { GRAPH <${G1}> { ?s ?p ?o } }`)).resolves.toBe(0);
+      });
+
+      it('should not make graphs from FROM available as named graphs', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM NAMED <${G2}> { GRAPH ?g { ?s ?p ?o } }`)).resolves.toBe(1);
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM NAMED <${G2}> { GRAPH <${G1}> { ?s ?p ?o } }`))
+          .resolves.toBe(0);
+      });
+
+      it('should combine the default graph and named graphs in a union', async() => {
+        await expect(queryCount(`SELECT * FROM <${G1}> FROM NAMED <${G2}> {
+          { ?s ?p ?o } UNION { GRAPH ?g { ?s ?p ?o } }
+        }`)).resolves.toBe(2);
+      });
+
+      it('should query the graphs in FROM NAMED via GRAPH with property paths', async() => {
+        await expect(queryCount(`SELECT * FROM NAMED <${G1}> { GRAPH ?g { ?s <ex:p>* ?o } }`)).resolves.toBe(3);
+        await expect(queryCount(`SELECT * FROM <${G1}> { GRAPH ?g { ?s <ex:p>* ?o } }`)).resolves.toBe(0);
       });
     });
 
@@ -3315,6 +3734,194 @@ CONSTRUCT {
           .toBe(1);
       });
     });
+
+    describe('with updateQuads', () => {
+      const quad = DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+
+      it('inserts and deletes quads in a destination RDFJS Store', async() => {
+        const quadPre = DF.quad(DF.namedNode('ex:s-pre'), DF.namedNode('ex:p-pre'), DF.namedNode('ex:o-pre'));
+        const store = new Store([ quadPre ]);
+
+        await engine.updateQuads({
+          quadStreamInsert: new ArrayIterator([ quad ], { autoStart: false }),
+          quadStreamDelete: new ArrayIterator([ quadPre ], { autoStart: false }),
+        }, { destination: store });
+
+        expect(store.size).toBe(1);
+        expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
+          .toBe(1);
+      });
+
+      it('inserts a parsed stream of quads', async() => {
+        const store = new Store();
+        const turtle = stringToStream('<ex:s> <ex:p> <ex:o1>, <ex:o2> .');
+        const quads = rdfParse.parse(turtle, { contentType: 'text/turtle' });
+
+        await engine.updateQuads({ quadStreamInsert: wrap<RDF.Quad>(quads) }, { destination: store });
+
+        expect(store.size).toBe(2);
+        expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o1'), DF.defaultGraph()))
+          .toBe(1);
+        expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o2'), DF.defaultGraph()))
+          .toBe(1);
+      });
+
+      it('inserts quads into a single source without destination', async() => {
+        const store = new Store();
+
+        await engine.updateQuads(
+          { quadStreamInsert: new ArrayIterator([ quad ], { autoStart: false }) },
+          { sources: [ store ]},
+        );
+
+        expect(store.size).toBe(1);
+      });
+
+      it('deletes graphs in a destination RDFJS Store', async() => {
+        const store = new Store([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.namedNode('ex:g1')),
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.namedNode('ex:g2')),
+        ]);
+
+        await engine.updateQuads({
+          deleteGraphs: { graphs: [ DF.namedNode('ex:g1') ], requireExistence: false, dropGraphs: true },
+        }, { destination: store });
+
+        expect(store.size).toBe(1);
+        expect(store.countQuads(null, null, null, DF.namedNode('ex:g2'))).toBe(1);
+      });
+
+      it('rejects creating a graph that already exists in a destination RDFJS Store', async() => {
+        const store = new Store([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.namedNode('ex:g1')),
+        ]);
+
+        await expect(engine.updateQuads({
+          createGraphs: { graphs: [ DF.namedNode('ex:g1') ], requireNonExistence: true },
+        }, { destination: store })).rejects.toThrow('Unable to create graph ex:g1 as it already exists');
+      });
+
+      it('streams the quads to insert into the body of a PATCH request', async() => {
+        const insert = new Readable({ objectMode: true, read: () => {} });
+        insert.push(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+        const patchBodies: string[] = [];
+        const customFetch = async(_input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+          if (init?.method === 'PATCH') {
+            insert.push(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+            insert.push(null);
+            patchBodies.push(await new Response(init.body).text());
+            return new Response(null, { status: 200 });
+          }
+          return new Response('', {
+            status: 200,
+            headers: { 'accept-patch': 'application/sparql-update', 'content-type': 'text/turtle' },
+          });
+        };
+
+        await engine.updateQuads(
+          { quadStreamInsert: wrap<RDF.Quad>(insert) },
+          { destination: 'https://example.org/update-quads', fetch: customFetch },
+        );
+
+        expect(patchBodies).toEqual([ `INSERT DATA {
+  <ex:s1> <ex:p> <ex:o> .
+  <ex:s2> <ex:p> <ex:o> .
+}` ]);
+      });
+
+      it('rejects in read-only mode', async() => {
+        const store = new Store();
+
+        await expect(engine.updateQuads(
+          { quadStreamInsert: new ArrayIterator([ quad ], { autoStart: false }) },
+          { destination: store, readOnly: true },
+        )).rejects.toThrow('Attempted a write operation in read-only mode');
+
+        expect(store.size).toBe(0);
+      });
+
+      it('rejects without destination', async() => {
+        await expect(engine.updateQuads({ quadStreamInsert: new ArrayIterator([ quad ], { autoStart: false }) }))
+          .rejects.toThrow('RDF updating failed: none of the configured actors were able to handle an update');
+      });
+
+      it('rejects if the stream of quads to insert emits an error', async() => {
+        const insert = new Readable({
+          objectMode: true,
+          read() {
+            this.destroy(new Error('Invalid quad'));
+          },
+        });
+
+        await expect(engine.updateQuads({ quadStreamInsert: wrap<RDF.Quad>(insert) }, { destination: new Store() }))
+          .rejects.toThrow('Invalid quad');
+      });
+    });
+  });
+
+  describe('parseRdf', () => {
+    it('parses a stream against a base IRI', async() => {
+      const quads = await engine.parseRdf(stringToStream('<s> <p> <o> .'), {
+        contentType: 'text/turtle',
+        baseIRI: 'http://example.org/',
+      });
+
+      await expect(arrayifyStream(quads)).resolves.toEqualRdfQuadArray([
+        DF.quad(
+          DF.namedNode('http://example.org/s'),
+          DF.namedNode('http://example.org/p'),
+          DF.namedNode('http://example.org/o'),
+        ),
+      ]);
+    });
+
+    it('fetches remote JSON-LD contexts with the fetch function in the options', async() => {
+      const requestedUrls: string[] = [];
+      const customFetch = async(input: RequestInfo | URL): Promise<Response> => {
+        requestedUrls.push(input instanceof Request ? input.url : input.toString());
+        return new Response(JSON.stringify({ '@context': { name: 'http://schema.org/name' }}), {
+          status: 200,
+          headers: { 'content-type': 'application/ld+json' },
+        });
+      };
+      const document = {
+        '@context': 'https://example.org/parse-rdf-context.jsonld',
+        '@id': 'http://example.org/me',
+        name: 'Me',
+      };
+
+      const quads = await engine.parseRdf(stringToStream(JSON.stringify(document)), {
+        contentType: 'application/ld+json',
+        fetch: customFetch,
+      });
+
+      await expect(arrayifyStream(quads)).resolves.toEqualRdfQuadArray([
+        DF.quad(DF.namedNode('http://example.org/me'), DF.namedNode('http://schema.org/name'), DF.literal('Me')),
+      ]);
+      expect(requestedUrls).toEqual([ 'https://example.org/parse-rdf-context.jsonld' ]);
+    });
+
+    it('rejects for an unsupported content type', async() => {
+      await expect(engine.parseRdf(stringToStream(''), { contentType: 'text/unknown' })).rejects
+        .toThrow('none of the configured parsers were able to handle the media type text/unknown for a stream');
+    });
+
+    it('rejects without content type', async() => {
+      await expect(engine.parseRdf(stringToStream(''), <any> {}))
+        .rejects.toThrow(`Missing 'contentType' option while parsing.`);
+    });
+
+    it('produces quads that can be inserted with updateQuads', async() => {
+      const store = new Store();
+      const quads = await engine.parseRdf(
+        stringToStream('<ex:s> <ex:p> <ex:o1>, <ex:o2> .'),
+        { contentType: 'text/turtle' },
+      );
+
+      await engine.updateQuads({ quadStreamInsert: wrap<RDF.Quad>(quads) }, { destination: store });
+
+      expect(store.size).toBe(2);
+    });
   });
 
   describe('DistinctTerms optimization', () => {
@@ -3553,6 +4160,34 @@ CONSTRUCT {
       // The inner SELECT DISTINCT should have been optimized
       expect(matchDistinctTermsSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('should not push DistinctTerms into a SPARQL endpoint', async() => {
+      const endpoint = 'http://example.org/distinct/sparql';
+      const store = RdfStore.createDefault();
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o1')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o2')));
+      store.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o1')));
+
+      const bindingsStream = await engine.queryBindings(`
+        SELECT ?s WHERE {
+          SERVICE <${endpoint}> {
+            SELECT DISTINCT ?s WHERE { ?s <ex:p> ?o }
+          }
+        }
+      `, {
+        sources: [ RdfStore.createDefault() ],
+        fetch: createSparqlEndpointsFetch({ [endpoint]: store }),
+      });
+
+      await expect(bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('s'), DF.namedNode('ex:s2') ],
+        ]),
+      ], true);
+    });
   });
 
   describe('explain', () => {
@@ -3627,15 +4262,13 @@ CONSTRUCT {
     }`, {
           sources: [ 'https://www.rubensworks.net/' ],
         }, 'physical');
-        expect(result).toEqual({
-          explain: true,
-          type: 'physical',
-          data: `project (o,p,s)
+        // Without statistics nothing of the live page itself is asserted
+        expect(result.data).toBe(`project (o,p,s)
   pattern (?s ?p ?o) src:0
 
 sources:
-  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`,
-        });
+  0: QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)`);
+        expect(result).toMatchObject({ explain: true, type: 'physical' });
       });
 
       it('explaining physical-json plan', async() => {
@@ -3650,11 +4283,19 @@ sources:
           data: {
             logical: 'project',
             variables: [ 'o', 'p', 's' ],
+            cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
+            cardinalityReal: expect.any(Number),
+            timeSelf: expect.any(Number),
+            timeLife: expect.any(Number),
             children: [
               {
                 logical: 'pattern',
                 pattern: '?s ?p ?o',
                 source: 'QuerySourceHypermedia(https://www.rubensworks.net/)(SkolemID:0)',
+                cardinality: { type: expect.stringMatching(/^(?:exact|estimate)$/u), value: expect.any(Number) },
+                cardinalityReal: expect.any(Number),
+                timeSelf: expect.any(Number),
+                timeLife: expect.any(Number),
               },
             ],
           },

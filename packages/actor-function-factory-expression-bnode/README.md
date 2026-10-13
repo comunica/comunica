@@ -1,6 +1,6 @@
 # Comunica Expression Function Bnode Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-bnode.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-bnode)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-bnode.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-bnode)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs an [expression function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)

@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^5.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "ccqs:config/config-default.json",
+    "ccqs:config/iterator-transform/actors.json",
+    "ccqs:config/iterator-transform/mediators.json",
+    "ccqs:config/rdf-join/actors-wrap-stream.json"
+  ]
+}

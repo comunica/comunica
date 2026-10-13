@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-source-identify-hypermedia-annotate-source.svg)](https://www.npmjs.com/package/@comunica/actor-query-source-identify-hypermedia-annotate-source)
 
-A Comunica Annotate Source Query Source Identify Hypermedia Actor. This actor wraps around other hypermedia sources and adds the
+A [Query Source Identify Hypermedia](https://github.com/comunica/comunica/tree/master/packages/bus-query-source-identify-hypermedia) actor that wraps around other hypermedia sources and adds the
 URL from which the bindings are derived to the binding's context.
 
 **Warning**: This actor does _not_ work when the `aggregateTraversalStore` is enabled in `ActorQuerySourceIdentifyHypermedia`.

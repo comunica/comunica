@@ -379,12 +379,7 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          sources: [{
-            value: sourceHypermedia,
-            context: new ActionContext({
-              [KeysHttp.auth.name]: 'username:passwd',
-            }),
-          }],
+          sources: [{ value: sourceAuth }],
           log: expect.any(LoggerPretty),
         });
       });
@@ -399,13 +394,7 @@ LIMIT 100
         expect(stdout).toContain(`{"a":"triple"}`);
         expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
           [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
-          sources: [{
-            type: 'sparql',
-            value: sourceHypermedia,
-            context: new ActionContext({
-              [KeysHttp.auth.name]: 'username:passwd',
-            }),
-          }],
+          sources: [{ type: 'sparql', value: sourceAuth }],
           log: expect.any(LoggerPretty),
         });
       });
@@ -602,6 +591,22 @@ LIMIT 100
           sources: [{ value: sourceHypermedia }],
           log: expect.any(LoggerPretty),
           [KeysInitQuery.lenient.name]: true,
+        });
+      });
+
+      it('handles the --serviceAllowVariableTargets flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--serviceAllowVariableTargets' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
+          [KeysInitQuery.serviceAllowVariableTargets.name]: true,
         });
       });
 
@@ -931,6 +936,40 @@ LIMIT 100
           log: expect.any(LoggerPretty),
           [KeysInitQuery.extensionFunctionsAlwaysPushdown.name]: true,
         });
+      });
+
+      it('handles the --dereferenceFromNamed flag', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--dereferenceFromNamed' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
+          [KeysInitQuery.dereferenceFromNamed.name]: true,
+        });
+      });
+
+      it('handles the --dereferenceFromNamedConflictMode option', async() => {
+        const stdout = await stringifyStream(<any> (await actor.run({
+          argv: [ sourceHypermedia, '-q', queryString, '--dereferenceFromNamedConflictMode', 'keepSource' ],
+          env: {},
+          stdin: <Readable><any> new PassThrough(),
+          context,
+        })).stdout);
+        expect(stdout).toContain(`{"a":"triple"}`);
+        expect(spyQueryOrExplain).toHaveBeenCalledWith(queryString, {
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          sources: [{ value: sourceHypermedia }],
+          log: expect.any(LoggerPretty),
+          [KeysInitQuery.dereferenceFromNamedConflictMode.name]: expect.any(Function),
+        });
+        expect(spyQueryOrExplain.mock.calls
+          .at(-1)![1][KeysInitQuery.dereferenceFromNamedConflictMode.name]()).toBe('keepSource');
       });
 
       it('handles the destination --to option', async() => {

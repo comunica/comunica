@@ -431,8 +431,10 @@ IActorRdfJoinSelectivityOutput
       await actor.run(action, await getSideData(action)).then(async(result: IQueryOperationResultBindings) => {
         await expect((<any> result).metadata()).resolves.toHaveProperty('cardinality', {
           type: 'estimate',
-          value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
-          (await (<any> action.entries[1].output).metadata()).cardinality.value,
+          value: Math.min(
+            (await (<any> action.entries[0].output).metadata()).cardinality.value,
+            (await (<any> action.entries[1].output).metadata()).cardinality.value,
+          ),
         });
 
         await expect(result.bindingsStream.toArray()).resolves.toEqual([]);
@@ -444,7 +446,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 20 },
+            cardinality: { type: 'estimate', value: 4 },
 
             variables: [
               { variable: DF.variable('a'), canBeUndef: false },
@@ -485,7 +487,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 20 },
+            cardinality: { type: 'estimate', value: 4 },
 
             variables: [
               { variable: DF.variable('a'), canBeUndef: false },
@@ -533,7 +535,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -656,7 +658,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -736,7 +738,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 20 },
+            cardinality: { type: 'estimate', value: 4 },
 
             variables: [
               { variable: DF.variable('a'), canBeUndef: false },
@@ -1222,8 +1224,10 @@ IActorRdfJoinSelectivityOutput
       await actor.run(action, await getSideData(action)).then(async(result: IQueryOperationResultBindings) => {
         await expect((<any> result).metadata()).resolves.toHaveProperty('cardinality', {
           type: 'estimate',
-          value: (await (<any> action.entries[0].output).metadata()).cardinality.value *
+          value: Math.min(
+            (await (<any> action.entries[0].output).metadata()).cardinality.value,
             (await (<any> action.entries[1].output).metadata()).cardinality.value,
+          ),
         });
 
         await expect(result.bindingsStream.toArray()).resolves.toEqual([]);
@@ -1235,7 +1239,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 20 },
+            cardinality: { type: 'estimate', value: 4 },
             variables: [
               { variable: DF.variable('a'), canBeUndef: false },
               { variable: DF.variable('b'), canBeUndef: false },
@@ -1275,7 +1279,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 20 },
+            cardinality: { type: 'estimate', value: 4 },
             variables: [
               { variable: DF.variable('a'), canBeUndef: true },
               { variable: DF.variable('b'), canBeUndef: false },
@@ -1321,7 +1325,7 @@ IActorRdfJoinSelectivityOutput
       await actor.run(action, await getSideData(action)).then(async(output: IQueryOperationResultBindings) => {
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: true },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -1443,7 +1447,7 @@ IActorRdfJoinSelectivityOutput
         ];
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: true },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -1523,7 +1527,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves
           .toEqual({
             state: expect.any(MetadataValidationState),
-            cardinality: { type: 'estimate', value: 20 },
+            cardinality: { type: 'estimate', value: 4 },
 
             variables: [
               { variable: DF.variable('a'), canBeUndef: false },
@@ -1591,7 +1595,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -1658,7 +1662,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -1707,7 +1711,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -1774,7 +1778,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -1821,7 +1825,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -1877,7 +1881,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -1933,7 +1937,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -2003,7 +2007,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -2075,7 +2079,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -2155,7 +2159,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },
@@ -2231,7 +2235,7 @@ IActorRdfJoinSelectivityOutput
         await expect(output.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
 
-          cardinality: { type: 'estimate', value: 20 },
+          cardinality: { type: 'estimate', value: 4 },
           variables: [
             { variable: DF.variable('a'), canBeUndef: false },
             { variable: DF.variable('b'), canBeUndef: false },

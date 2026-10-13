@@ -2,7 +2,7 @@ import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-
 import type {
   MediatorRdfJoinSelectivity,
 } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IAction, IActorArgs, Mediate, TestResult } from '@comunica/core';
 import { passTest, failTest, Actor } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -10,6 +10,7 @@ import type {
   IQueryOperationResultBindings,
   MetadataBindings,
   IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
   Bindings,
   IActionContext,
   IJoinEntry,
@@ -18,8 +19,9 @@ import type {
   MetadataVariable,
   LogicalJoinType,
 } from '@comunica/types';
-import { instrumentIterator } from '@comunica/utils-iterator';
+import type { Algebra } from '@comunica/utils-algebra';
 import { cachifyMetadata, MetadataValidationState } from '@comunica/utils-metadata';
+import { getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -42,7 +44,8 @@ TS
   public readonly mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
 
   /**
-   * If this actor will be logged in the debugger and physical query plan logger
+   * If this actor will be logged in the debugger.
+   * The physical query plan always includes every join actor that runs.
    */
   public includeInLogs = true;
   public readonly logicalType: LogicalJoinType;
@@ -63,11 +66,6 @@ TS
    */
   protected readonly canHandleUndefs: boolean;
   /**
-   * If this join operator will not invoke any other join or query operations below,
-   * and can therefore be considered a leaf of the join plan.
-   */
-  protected readonly isLeaf: boolean;
-  /**
    * If this join operator must only be used for join entries with (at least partially) common variables.
    */
   protected readonly requiresVariableOverlap?: boolean;
@@ -76,6 +74,14 @@ TS
    * This will typically only be true for bind-join-like operators.
    */
   protected readonly canHandleOperationRequired?: boolean;
+  /**
+   * If this join operator can handle join actions with an expression.
+   */
+  protected readonly canHandleExpression?: boolean;
+  /**
+   * If this actor pushes bindings of one entry into the source of another entry.
+   */
+  protected readonly pushesBindingsToSource?: boolean;
 
   /* eslint-disable max-len */
   /**
@@ -93,9 +99,21 @@ TS
     this.limitEntries = options.limitEntries ?? Number.POSITIVE_INFINITY;
     this.limitEntriesMin = options.limitEntriesMin ?? false;
     this.canHandleUndefs = options.canHandleUndefs ?? false;
-    this.isLeaf = options.isLeaf ?? true;
     this.requiresVariableOverlap = options.requiresVariableOverlap ?? false;
     this.canHandleOperationRequired = options.canHandleOperationRequired ?? false;
+    this.canHandleExpression = options.canHandleExpression ?? false;
+    this.pushesBindingsToSource = options.pushesBindingsToSource ?? false;
+  }
+
+  /**
+   * Check if the operation of the given join entry must be pushed into the join.
+   * Next to entries that explicitly request this, this holds for entries whose metadata requests it,
+   * such as SERVICE clauses of which the target is still an unbound variable.
+   * @param entry A join entry.
+   * @param metadata The metadata of that entry.
+   */
+  public static isOperationRequired(entry: IJoinEntry, metadata: MetadataBindings): boolean {
+    return Boolean(entry.operationRequired ?? metadata.operationRequired);
   }
 
   /**
@@ -232,6 +250,46 @@ TS
   }
 
   /**
+   * Estimate the cardinality of an equi-join from the cardinalities of its entries.
+   *
+   * Under the usual uniformity assumption, joining two entries on a shared variable divides their cross product by
+   * the number of distinct values that variable takes. That number is unknown here, so it is approximated by the
+   * cardinality of the largest entry binding the variable, which is its upper bound. For two entries sharing a
+   * variable this yields the cardinality of the smaller entry.
+   *
+   * Only the most selective shared variable is taken into account. Entries sharing several variables are more
+   * selective still, but applying the approximation once per variable compounds its error, which would collapse
+   * the estimate far below the smallest entry.
+   *
+   * @param metadatas Metadata of the join entries.
+   * @return The estimated cardinality, or undefined if the entries share no variables.
+   */
+  public static getSharedVariableJoinCardinality(metadatas: MetadataBindings[]): number | undefined {
+    // Collect, per variable, the cardinalities of the entries binding it and their distinct value counts
+    const valuesByVariable: Record<string, { cardinalities: number[]; distinctValues: (number | undefined)[] }> = {};
+    for (const metadata of metadatas) {
+      for (const { variable, distinctValues } of metadata.variables) {
+        const values = valuesByVariable[variable.value] ??= { cardinalities: [], distinctValues: []};
+        values.cardinalities.push(metadata.cardinality.value);
+        values.distinctValues.push(distinctValues);
+      }
+    }
+
+    let divisor = 0;
+    for (const { cardinalities, distinctValues } of Object.values(valuesByVariable)) {
+      if (cardinalities.length > 1) {
+        // Only usable when every entry reports them; the cardinality assumes one value per binding
+        const values = distinctValues.every(value => value !== undefined) ? distinctValues : cardinalities;
+        divisor = Math.max(divisor, Math.max(...values) ** (values.length - 1));
+      }
+    }
+    if (divisor === 0) {
+      return undefined;
+    }
+    return metadatas.reduce((acc, metadata) => acc * metadata.cardinality.value, 1) / divisor;
+  }
+
+  /**
    * Helper function to create a new metadata object for the join result.
    * For required metadata entries that are not provided, sane defaults are calculated.
    * @param entries Join entries.
@@ -266,6 +324,18 @@ TS
       // The cardinality should only be zero if one of the entries has zero cardinality, not due to float overflow
       if (!hasZeroCardinality || optional) {
         cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
+        // The selectivity heuristic is purely structural, so it can only scale down the cross product by a
+        // constant factor, no matter how large the entries are. Cap the estimate with one that does look at the
+        // cardinalities, so that joining two large entries on a shared variable is not estimated as their product.
+        // Optional joins keep all bindings of their first entry, so their cap is at least its cardinality.
+        let capped = ActorRdfJoin.getSharedVariableJoinCardinality(metadatas);
+        if (capped !== undefined && optional) {
+          capped = Math.max(capped, metadatas[0].cardinality.value);
+        }
+        if (capped !== undefined && capped < cardinalityJoined.value) {
+          cardinalityJoined.value = capped;
+          cardinalityJoined.type = 'estimate';
+        }
         if (cardinalityJoined.value === 0) {
           cardinalityJoined.value = Number.MIN_VALUE;
         }
@@ -349,12 +419,6 @@ TS
       return failTest(`${this.name} requires at least two join entries.`);
     }
 
-    // Check if operationRequired is supported.
-    const someOperationRequired = action.entries.some(entry => entry.operationRequired);
-    if (!this.canHandleOperationRequired && someOperationRequired) {
-      return failTest(`${this.name} does not work with operationRequired.`);
-    }
-
     // Check if this actor can handle the given number of streams
     if (this.limitEntriesMin ? action.entries.length < this.limitEntries : action.entries.length > this.limitEntries) {
       return failTest(`${this.name} requires ${this.limitEntries
@@ -372,6 +436,26 @@ TS
 
     const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
 
+    // Check if operationRequired is supported.
+    const someOperationRequired = action.entries
+      .some((entry, i) => ActorRdfJoin.isOperationRequired(entry, metadatas[i]));
+    if (!this.canHandleOperationRequired && someOperationRequired) {
+      return failTest(`${this.name} does not work with operationRequired.`);
+    }
+
+    // Check if a join expression is supported.
+    if (!this.canHandleExpression && action.expression) {
+      return failTest(`${this.name} can not handle join expressions.`);
+    }
+
+    // Pushing bindings into a source happens in chunks, with one source invocation per chunk.
+    // The target of a SERVICE SILENT clause must produce exactly one empty solution when it fails,
+    // which it could not do if it were invoked once per chunk.
+    if (this.pushesBindingsToSource && action.entries
+      .some(entry => getOperationSource(entry.operation)?.context?.get(KeysQueryOperation.silent))) {
+      return failTest(`${this.name} can not push bindings into the target of a SERVICE SILENT clause.`);
+    }
+
     // Check if this actor can handle undefs (for overlapping variables)
     let overlappingVariables: MetadataVariable[] | undefined;
     if (!this.canHandleUndefs) {
@@ -381,10 +465,11 @@ TS
       }
     }
 
-    // This actor only works with common variables
+    // This actor only works with common variables, unless entries are connected through a required operation
+    // or a join expression.
     if (this.requiresVariableOverlap &&
       (overlappingVariables ?? ActorRdfJoin.overlappingVariables(metadatas)).length === 0 &&
-      !someOperationRequired) {
+      !someOperationRequired && !action.expression) {
       return failTest(`Actor ${this.name} can only join entries with at least one common variable`);
     }
 
@@ -401,65 +486,48 @@ TS
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
   ): Promise<IQueryOperationResultBindings> {
-    // Prepare logging to physical plan
-    // This must be called before getOutput, because we need to override the plan node in the context
-    let parentPhysicalQueryPlanNode;
-    if (action.context.has(KeysInitQuery.physicalQueryPlanLogger)) {
-      parentPhysicalQueryPlanNode = action.context.get(KeysInitQuery.physicalQueryPlanNode);
-      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action);
-    }
-
-    // Log to physical plan
+    // Log to physical plan.
+    // This must happen before getOutput, because sub-operations need to see this node as their parent.
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context.get(KeysInitQuery
       .physicalQueryPlanLogger);
+    let planNode: IPhysicalQueryPlanNode | undefined;
     let planMetadata: any;
-    if (this.includeInLogs && physicalQueryPlanLogger) {
+    if (physicalQueryPlanLogger) {
       planMetadata = {};
-      // Stash non-join children, as they will be unstashed later in sub-joins.
-      physicalQueryPlanLogger.stashChildren(
-        parentPhysicalQueryPlanNode,
-        node => node.logicalOperator.startsWith('join'),
-      );
-      physicalQueryPlanLogger.logOperation(
-        `join-${this.logicalType}`,
-        this.physicalName,
-        action,
-        parentPhysicalQueryPlanNode,
-        this.name,
-        planMetadata,
-      );
+      planNode = physicalQueryPlanLogger.logOperation({
+        logicalOperator: `join-${this.logicalType}`,
+        physicalOperator: this.physicalName,
+        parentNode: action.context.get(KeysInitQuery.physicalQueryPlanNode),
+        actor: this.name,
+        metadata: planMetadata,
+      });
+      // The entries of this join were executed before this actor was selected,
+      // so their nodes are still attached to whatever ran them. Move them under this join.
+      for (const entry of action.entries) {
+        const entryNode = physicalQueryPlanLogger.getNodeForOutput(entry.output);
+        if (entryNode) {
+          planNode.adoptInput(entryNode);
+        }
+      }
+      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, planNode);
     }
 
     // Get action output
     const { result, physicalPlanMetadata } = await this.getOutput(action, sideData);
 
     // Fill in the physical plan metadata after determining action output
-    if (planMetadata) {
-      // eslint-disable-next-line ts/no-floating-promises
-      instrumentIterator(result.bindingsStream)
-        .then((counters) => {
-          physicalQueryPlanLogger!.appendMetadata(action, {
-            cardinalityReal: counters.count,
-            timeSelf: counters.timeSelf,
-            timeLife: counters.timeLife,
-          });
-        });
+    if (planNode) {
+      // Allow consumers of this output, such as an enclosing join, to find this node.
+      // This also starts the measurement of the produced results.
+      planNode.setOutput(result);
 
       Object.assign(planMetadata, physicalPlanMetadata);
       const cardinalities = sideData.metadatas.map(ActorRdfJoin.getCardinality);
       planMetadata.cardinalities = cardinalities;
       planMetadata.joinCoefficients = (await this.getJoinCoefficients(action, sideData)).getOrThrow();
 
-      // If this is a leaf operation, include join entries in plan metadata.
-      if (this.isLeaf) {
-        for (let i = 0; i < action.entries.length; i++) {
-          const entry = action.entries[i];
-          physicalQueryPlanLogger!.unstashChild(
-            entry.operation,
-            action,
-          );
-          physicalQueryPlanLogger!.appendMetadata(entry.operation, { cardinality: cardinalities[i] });
-        }
+      for (const [ i, entry ] of action.entries.entries()) {
+        physicalQueryPlanLogger!.getNodeForOutput(entry.output)?.appendMetadata({ cardinality: cardinalities[i] });
       }
     }
 
@@ -532,7 +600,11 @@ export interface IActorRdfJoinInternalOptions {
   /**
    * If this join operator will not invoke any other join or query operations below,
    * and can therefore be considered a leaf of the join plan.
-   * Defaults to true.
+   *
+   * @deprecated This is not used anymore. The physical query plan reports every join actor that ran,
+   * and finds the entries of a join by the outputs they produced, so it no longer needs to be told
+   * which joins have nothing below them.
+   * TODO: remove in the next major version.
    */
   isLeaf?: boolean;
   /**
@@ -544,6 +616,17 @@ export interface IActorRdfJoinInternalOptions {
    * This will typically only be true for bind-join-like operators.
    */
   canHandleOperationRequired?: boolean;
+  /**
+   * If this join operator can handle join actions with an expression.
+   * Defaults to false.
+   */
+  canHandleExpression?: boolean;
+  /**
+   * If this actor pushes bindings of one entry into the source of another entry,
+   * which it does in chunks, resulting in one source invocation per chunk.
+   * Defaults to false.
+   */
+  pushesBindingsToSource?: boolean;
 }
 
 export interface IActionRdfJoin extends IAction {
@@ -559,6 +642,12 @@ export interface IActionRdfJoin extends IAction {
    * If this join operation is within the scope of a GRAPH ?g.
    */
   graphVariableFromParentScope?: RDF.Variable;
+  /**
+   * An optional expression that joined bindings must satisfy.
+   * This is used for left joins with a filter expression that can not be pushed into the right entry,
+   * in which case left bindings without a joined binding satisfying the expression are kept as-is.
+   */
+  expression?: Algebra.Expression;
 }
 
 export interface IActorRdfJoinOutputInner {

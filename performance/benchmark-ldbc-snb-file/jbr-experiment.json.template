@@ -1,0 +1,22 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/ldbc-snb/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/sparql-endpoint-comunica/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^6.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-ldbc-snb-file",
+  "@type": "ExperimentLdbcSnb",
+  "scale": "0.1",
+  "hadoopMemory": "4G",
+  "queryCount": 2,
+  "querySeed": 12345,
+  "generateHdt": false,
+  "endpointUrl": "http://localhost:3001/sparql",
+  "queryRunnerReplication": 2,
+  "queryRunnerWarmupRounds": 1,
+  "queryRunnerRequestDelay": 0,
+  "queryRunnerEndpointAvailabilityCheckTimeout": 1000,
+  "queryRunnerUrlParams": {},
+  "hookSparqlEndpoint": %FACTOR-hookSparqlEndpoint%
+}

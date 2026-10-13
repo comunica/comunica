@@ -4,6 +4,7 @@ import { failTest } from '@comunica/core';
 import type {
   IQueryOperationResult,
   IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
   IActionContext,
   IMetadata,
 } from '@comunica/types';
@@ -47,16 +48,15 @@ TS = undefined,
     // Log to physical plan
     const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = action.context
       .get(KeysInitQuery.physicalQueryPlanLogger);
+    let planNode: IPhysicalQueryPlanNode | undefined;
     if (physicalQueryPlanLogger) {
-      physicalQueryPlanLogger.logOperation(
-        action.operation.type,
-        undefined,
-        action.operation,
-        action.context.get(KeysInitQuery.physicalQueryPlanNode),
-        this.name,
-        {},
-      );
-      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, action.operation);
+      planNode = physicalQueryPlanLogger.logOperation({
+        logicalOperator: action.operation.type,
+        parentNode: action.context.get(KeysInitQuery.physicalQueryPlanNode),
+        actor: this.name,
+        operation: action.operation,
+      });
+      action.context = action.context.set(KeysInitQuery.physicalQueryPlanNode, planNode);
     }
 
     const operation: O = <O> action.operation;
@@ -66,6 +66,8 @@ TS = undefined,
       output.metadata = <any>
         cachifyMetadata<IMetadata<RDF.QuadTermName | RDF.Variable>, RDF.QuadTermName | RDF.Variable>(output.metadata);
     }
+    // Allow consumers of this output to find the node that produced it
+    planNode?.setOutput(output);
     return output;
   }
 

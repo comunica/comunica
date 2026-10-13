@@ -1,11 +1,13 @@
 import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator, TestResult } from '@comunica/core';
 import { passTestWithSideData, ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IPhysicalQueryPlanLogger, IPlanNode, MetadataVariable } from '@comunica/types';
+import type { IPhysicalQueryPlanLogger, IPhysicalQueryPlanNode, MetadataVariable } from '@comunica/types';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import { BufferedIterator, MultiTransformIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { IActionRdfJoin, IActorRdfJoinTestSideData } from '../lib/ActorRdfJoin';
@@ -13,6 +15,7 @@ import '@comunica/utils-jest';
 import { ActorRdfJoin } from '../lib/ActorRdfJoin';
 
 const DF = new DataFactory();
+const AF = new AlgebraFactory(DF);
 const BF = new BindingsFactory(DF);
 
 // Dummy class to test instance of abstract class
@@ -28,6 +31,8 @@ IActorRdfJoinSelectivityOutput
     limitEntries?: number,
     limitEntriesMin?: boolean,
     canHandleUndefs?: boolean,
+    pushesBindingsToSource?: boolean,
+    canHandleExpression?: boolean,
   ) {
     super(
       { name: 'name', bus: new Bus({ name: 'bus' }), mediatorJoinSelectivity },
@@ -37,6 +42,8 @@ IActorRdfJoinSelectivityOutput
         limitEntries,
         limitEntriesMin,
         canHandleUndefs,
+        pushesBindingsToSource,
+        canHandleExpression,
       },
     );
   }
@@ -738,6 +745,46 @@ IActorRdfJoinSelectivityOutput
     });
   });
 
+  describe('getSharedVariableJoinCardinality', () => {
+    function meta(value: number, ...names: string[]) {
+      return {
+        state: new MetadataValidationState(),
+        cardinality: { type: <const> 'estimate', value },
+        variables: names.map(name => ({ variable: DF.variable(name), canBeUndef: false })),
+      };
+    }
+
+    it('should be undefined without shared variables', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'b') ]))
+        .toBeUndefined();
+    });
+
+    it('should be undefined without variables', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10), meta(5) ]))
+        .toBeUndefined();
+    });
+
+    it('should be the smallest cardinality for two entries sharing a variable', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'a') ]))
+        .toBe(5);
+    });
+
+    it('should divide by the largest cardinality once per additional entry sharing a variable', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'a'), meta(4, 'a') ]))
+        .toBe(2);
+    });
+
+    it('should divide by the most selective shared variable only', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a', 'b'), meta(5, 'a', 'b') ]))
+        .toBe(5);
+    });
+
+    it('should keep the cross product of entries that share nothing with the others', () => {
+      expect(ActorRdfJoin.getSharedVariableJoinCardinality([ meta(10, 'a'), meta(5, 'a'), meta(3, 'b') ]))
+        .toBe(15);
+    });
+  });
+
   describe('constructResultMetadata', () => {
     let instance: Dummy;
 
@@ -776,7 +823,7 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
         variables: [{ variable: DF.variable('a'), canBeUndef: true }],
       });
       await expect(instance.constructResultMetadata([], [
@@ -792,7 +839,7 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
         variables: [{ variable: DF.variable('a'), canBeUndef: true }],
       });
       await expect(instance.constructResultMetadata([], [
@@ -810,7 +857,7 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'estimate', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
 
         variables: [{ variable: DF.variable('a'), canBeUndef: false }],
       });
@@ -915,7 +962,57 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'exact', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 2 },
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
+      });
+    });
+
+    it('should cap optional cardinalities by their shared variables', async() => {
+      await expect(instance.constructResultMetadata([], [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 2 },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 1000 },
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
+        },
+      ], action.context, {}, true)).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'estimate', value: 2 },
+        variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('b'), canBeUndef: true },
+        ],
+      });
+    });
+
+    it('should not cap optional cardinalities below the first entry', async() => {
+      await expect(instance.constructResultMetadata([], [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 10 },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 2 },
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: false },
+          ],
+        },
+      ], action.context, {}, true)).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'estimate', value: 10 },
         variables: [
           { variable: DF.variable('a'), canBeUndef: false },
           { variable: DF.variable('b'), canBeUndef: true },
@@ -996,6 +1093,47 @@ IActorRdfJoinSelectivityOutput
       action.entries[1].operationRequired = true;
       instance = new Dummy(mediatorJoinSelectivity, 99);
       await expect(instance.test(action)).resolves.toFailTest(`name does not work with operationRequired.`);
+    });
+
+    it('should throw an error if the metadata of an entry requests operationRequired', async() => {
+      action.entries[1].output.metadata = async() => ({
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: 5 },
+        variables: variables1,
+        operationRequired: true,
+      });
+      instance = new Dummy(mediatorJoinSelectivity, 99);
+      await expect(instance.test(action)).resolves.toFailTest(`name does not work with operationRequired.`);
+    });
+
+    it('should throw an error if the action has an expression', async() => {
+      instance = new Dummy(mediatorJoinSelectivity, 99);
+      await expect(instance.test({ ...action, expression: <any> {}}))
+        .resolves.toFailTest(`name can not handle join expressions.`);
+    });
+
+    it('should not throw an error if the action has an expression that can be handled', async() => {
+      instance = new Dummy(mediatorJoinSelectivity, 99, undefined, undefined, undefined, true);
+      await expect(instance.test({ ...action, expression: <any> {}})).resolves.toPassTest(expect.anything());
+    });
+
+    it('should throw an error if bindings are pushed into the target of a SERVICE SILENT clause', async() => {
+      action.entries[1].operation = assignOperationSource(AF.createNop(), <any> {
+        source: {},
+        context: new ActionContext({ [KeysQueryOperation.silent.name]: true }),
+      });
+      instance = new Dummy(mediatorJoinSelectivity, 99, false, false, true);
+      await expect(instance.test(action)).resolves
+        .toFailTest(`name can not push bindings into the target of a SERVICE SILENT clause.`);
+    });
+
+    it('should not throw an error if bindings are not pushed into a source', async() => {
+      action.entries[1].operation = assignOperationSource(AF.createNop(), <any> {
+        source: {},
+        context: new ActionContext({ [KeysQueryOperation.silent.name]: true }),
+      });
+      instance = new Dummy(mediatorJoinSelectivity, 99);
+      await expect(instance.test(action)).resolves.toPassTest(expect.anything());
     });
 
     it('should return a value if both metadata objects are present', async() => {
@@ -1141,20 +1279,29 @@ IActorRdfJoinSelectivityOutput
       await instance.run(action, undefined!).then(async(result: any) => {
         return await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
-          cardinality: { type: 'estimate', value: 40 },
+          cardinality: { type: 'estimate', value: 5 },
           variables: [{ variable: DF.variable('a'), canBeUndef: true }],
         });
       });
     });
 
     it('invokes the physicalQueryPlanLogger', async() => {
-      const parentNode = '';
-      const logger: IPhysicalQueryPlanLogger = {
-        logOperation: vi.fn(),
-        toJson: vi.fn(),
-        stashChildren: vi.fn((node, filter) => filter ? filter(<IPlanNode> { logicalOperator: 'abc' }) : undefined),
-        unstashChild: vi.fn(),
+      const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
+      const entryNodes = action.entries.map(() => (<IPhysicalQueryPlanNode> {
         appendMetadata: vi.fn(),
+        adoptInput: vi.fn(),
+        setOutput: vi.fn(),
+      }));
+      const planNode: IPhysicalQueryPlanNode = {
+        appendMetadata: vi.fn(),
+        adoptInput: vi.fn(),
+        setOutput: vi.fn(),
+      };
+      const logger: IPhysicalQueryPlanLogger = {
+        logOperation: vi.fn().mockReturnValue(planNode),
+        finalize: vi.fn(),
+        getNodeForOutput: vi.fn(output => entryNodes[action.entries.findIndex(e => e.output === output)]),
+        toJson: vi.fn(),
       };
       action.context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
@@ -1180,13 +1327,12 @@ IActorRdfJoinSelectivityOutput
       await result.bindingsStream.toArray();
       await new Promise(setImmediate);
 
-      expect(logger.logOperation).toHaveBeenCalledWith(
-        'join-inner',
-        'PHYSICAL',
-        action,
+      expect(logger.logOperation).toHaveBeenCalledWith({
+        logicalOperator: 'join-inner',
+        physicalOperator: 'PHYSICAL',
         parentNode,
-        'name',
-        {
+        actor: 'name',
+        metadata: {
           meta: true,
           cardinalities: [
             { type: 'estimate', value: 10 },
@@ -1199,42 +1345,45 @@ IActorRdfJoinSelectivityOutput
             requestTime: 10,
           },
         },
-      );
-      expect(logger.appendMetadata).toHaveBeenCalledWith({}, {
+      });
+
+      // The entries are adopted as inputs of the join
+      expect(planNode.adoptInput).toHaveBeenCalledWith(entryNodes[0]);
+      expect(planNode.adoptInput).toHaveBeenCalledWith(entryNodes[1]);
+      expect(planNode.setOutput).toHaveBeenCalledWith(result);
+
+      expect(entryNodes[0].appendMetadata).toHaveBeenCalledWith({
         cardinality: { type: 'estimate', value: 10 },
       });
-      expect(logger.appendMetadata).toHaveBeenCalledWith({}, {
+      expect(entryNodes[1].appendMetadata).toHaveBeenCalledWith({
         cardinality: { type: 'estimate', value: 5 },
-      });
-      expect(logger.appendMetadata).toHaveBeenCalledWith(expect.anything(), {
-        cardinalityReal: 1,
-        timeLife: expect.anything(),
-        timeSelf: expect.anything(),
       });
       expect(instance.getOutput).toHaveBeenCalledWith({
         ...action,
         context: new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
-          [KeysInitQuery.physicalQueryPlanNode.name]: action,
+          [KeysInitQuery.physicalQueryPlanNode.name]: planNode,
         }),
       }, sideData);
     });
 
-    it('invokes the physicalQueryPlanLogger for a non-leaf operation', async() => {
-      const parentNode = '';
-      const logger: IPhysicalQueryPlanLogger = {
-        logOperation: vi.fn(),
-        toJson: vi.fn(),
-        stashChildren: vi.fn((node, filter) => filter ? filter(<IPlanNode> { logicalOperator: 'abc' }) : undefined),
-        unstashChild: vi.fn(),
+    it('invokes the physicalQueryPlanLogger for entries without a node', async() => {
+      const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
+      const planNode: IPhysicalQueryPlanNode = {
         appendMetadata: vi.fn(),
+        adoptInput: vi.fn(),
+        setOutput: vi.fn(),
+      };
+      const logger: IPhysicalQueryPlanLogger = {
+        logOperation: vi.fn().mockReturnValue(planNode),
+        finalize: vi.fn(),
+        getNodeForOutput: vi.fn(),
+        toJson: vi.fn(),
       };
       action.context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
         [KeysInitQuery.physicalQueryPlanNode.name]: parentNode,
       });
-      vi.spyOn(instance, 'getOutput');
-      (<any> instance).isLeaf = false;
 
       const sideData: IActorRdfJoinTestSideData = {
         metadatas: [
@@ -1254,38 +1403,7 @@ IActorRdfJoinSelectivityOutput
       await result.bindingsStream.toArray();
       await new Promise(setImmediate);
 
-      expect(logger.logOperation).toHaveBeenCalledWith(
-        'join-inner',
-        'PHYSICAL',
-        action,
-        parentNode,
-        'name',
-        {
-          meta: true,
-          cardinalities: [
-            { type: 'estimate', value: 10 },
-            { type: 'estimate', value: 5 },
-          ],
-          joinCoefficients: {
-            iterations: 5,
-            persistedItems: 2,
-            blockingItems: 3,
-            requestTime: 10,
-          },
-        },
-      );
-      expect(logger.appendMetadata).toHaveBeenCalledWith(expect.anything(), {
-        cardinalityReal: 1,
-        timeLife: expect.anything(),
-        timeSelf: expect.anything(),
-      });
-      expect(instance.getOutput).toHaveBeenCalledWith({
-        ...action,
-        context: new ActionContext({
-          [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
-          [KeysInitQuery.physicalQueryPlanNode.name]: action,
-        }),
-      }, sideData);
+      expect(planNode.adoptInput).not.toHaveBeenCalled();
     });
   });
 });

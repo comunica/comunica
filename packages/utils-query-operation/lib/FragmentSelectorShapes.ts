@@ -1,7 +1,7 @@
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { FragmentSelectorShape, IActionContext, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, algebraUtils, isKnownSubType } from '@comunica/utils-algebra';
-import { getDataDestinationValue } from './Utils';
+import { Algebra, algebraUtils, isKnownSubType, TypesComunica } from '@comunica/utils-algebra';
+import { getDataDestinationValue, getServiceExecutorLookup } from './Utils';
 
 /**
  * Check if the given shape accepts the given query operation.
@@ -97,7 +97,10 @@ function doesShapeAcceptOperationRecurseShape(
     }
     case 'wildcard': {
       // All possible operations are accepted by this shape.
-      // As exception, extension functions are not accepted through wildcards.
+      // As exception, Comunica's internal operations and extension functions are not accepted through wildcards.
+      if (isInternalOperation(operation)) {
+        return false;
+      }
       if (options?.wildcardAcceptAllExtensionFunctions) {
         return true;
       }
@@ -209,6 +212,12 @@ function isExtensionFunction(operation: Algebra.Operation): operation is Algebra
     isKnownSubType(operation, Algebra.ExpressionTypes.NAMED) && !isStandardSparqlFunction(operation.name.value);
 }
 
+const internalOperationTypes = new Set<string>(Object.values(TypesComunica));
+
+function isInternalOperation(operation: Algebra.Operation): boolean {
+  return internalOperationTypes.has(operation.type);
+}
+
 export type FragmentSelectorShapeTestFlags = {
   joinBindings?: boolean;
   filterBindings?: boolean;
@@ -220,7 +229,8 @@ export async function passFullOperationToSource(
   sources: IQuerySourceWrapper[],
   context: IActionContext,
 ): Promise<boolean> {
-  if (sources.length === 1) {
+  const lookupServiceExecutor = getServiceExecutorLookup(context);
+  if (sources.length === 1 && !hasServiceExecutorClause(operation, lookupServiceExecutor)) {
     const sourceWrapper = sources[0];
     const destination: IDataDestination | undefined = context.get(KeysRdfUpdateQuads.destination);
     if (!destination || sourceWrapper.source.referenceValue === getDataDestinationValue(destination)) {
@@ -236,4 +246,31 @@ export async function passFullOperationToSource(
     }
   }
   return false;
+}
+
+/**
+ * Check if the given operation contains a SERVICE clause of which the target has a custom SERVICE executor.
+ * @param operation An operation.
+ * @param lookupServiceExecutor A lookup function for custom SERVICE executors, or undefined if none are registered.
+ */
+function hasServiceExecutorClause(
+  operation: Algebra.Operation,
+  lookupServiceExecutor: ReturnType<typeof getServiceExecutorLookup>,
+): boolean {
+  if (!lookupServiceExecutor) {
+    return false;
+  }
+  let found = false;
+  algebraUtils.visitOperation(operation, {
+    [Algebra.Types.SERVICE]: {
+      preVisitor: (serviceOp) => {
+        if (serviceOp.name.termType === 'NamedNode' && lookupServiceExecutor(serviceOp.name.value) !== undefined) {
+          found = true;
+          return { shortcut: true };
+        }
+        return { continue: false };
+      },
+    },
+  });
+  return found;
 }

@@ -15,7 +15,7 @@ import {
 } from '@comunica/bus-query-process';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
-import { failTest, passTestVoid, ActionContextKey } from '@comunica/core';
+import { failTest, passTestVoid } from '@comunica/core';
 import type {
   ComunicaDataFactory,
   IActionContext,
@@ -48,7 +48,7 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   }
 
   public async test(action: IActionQueryProcess): Promise<TestResult<IActorTest>> {
-    if (action.context.get(KeysInitQuery.explain) ?? action.context.get(new ActionContextKey('explain'))) {
+    if (action.context.get(KeysInitQuery.explain)) {
       return failTest(`${this.name} is not able to explain queries.`);
     }
     return passTestVoid();
@@ -107,6 +107,9 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   }
 
   public async optimize(operation: Algebra.Operation, context: IActionContext): Promise<IQueryProcessSequentialOutput> {
+    // Open a scope that is unique to this query execution, for caches that must not outlive it
+    context = context.set(KeysInitQuery.queryExecutionScope, {});
+
     // Save initial query in context
     context = context.set(KeysInitQuery.query, operation);
 

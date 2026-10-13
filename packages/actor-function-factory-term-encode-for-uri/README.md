@@ -1,6 +1,6 @@
 # Comunica Term Function Encode For Uri Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-encode-for-uri.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-encode-for-uri)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-encode-for-uri.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-encode-for-uri)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)

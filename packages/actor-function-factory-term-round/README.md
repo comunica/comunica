@@ -1,6 +1,6 @@
 # Comunica Term Function Round Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-round.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-round)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-round.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-round)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)

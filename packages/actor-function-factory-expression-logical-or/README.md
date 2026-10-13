@@ -1,6 +1,6 @@
 # Comunica Expression Function Logical Or Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-function-logical-or.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-logical-or)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-expression-logical-or.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-expression-logical-or)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs an [expression function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)

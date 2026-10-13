@@ -1,4 +1,4 @@
-import { AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
@@ -171,6 +171,54 @@ describe('materializeTerm', () => {
 });
 
 describe('materializeOperation', () => {
+  it('should materialize the variable target of a service operation', () => {
+    const endpoint = DF.namedNode('http://example.org/sparql');
+    expect(materializeOperation(
+      AF.createService(AF.createPattern(termVariableB, termNamedNode, termVariableC), termVariableA),
+      BF.bindings([[ DF.variable('a'), endpoint ]]),
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createService(AF.createPattern(termVariableB, termNamedNode, termVariableC), endpoint));
+  });
+
+  it('should keep an unbound variable target of a service operation', () => {
+    expect(materializeOperation(
+      AF.createService(AF.createPattern(termVariableB, termNamedNode, termVariableC), termVariableD, true),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createService(AF.createPattern(termVariableB, termNamedNode, termVariableC), termVariableD, true));
+  });
+
+  it('should materialize within the body of a service operation', () => {
+    expect(materializeOperation(
+      AF.createService(AF.createPattern(termVariableA, termNamedNode, termVariableC), termNamedNode),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createService(AF.createPattern(valueA, termNamedNode, termVariableC), termNamedNode));
+  });
+
+  it('should materialize a service operation and keep metadata', () => {
+    const metadata = { a: 'b' };
+    expect(materializeOperation(
+      Object.assign(
+        AF.createService(AF.createPattern(termVariableA, termNamedNode, termVariableC), termNamedNode),
+        { metadata },
+      ),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(Object.assign(
+        AF.createService(AF.createPattern(valueA, termNamedNode, termVariableC), termNamedNode),
+        { metadata },
+      ));
+  });
+
   it('should materialize a quad pattern with empty bindings', () => {
     expect(materializeOperation(
       AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
@@ -883,6 +931,32 @@ describe('materializeOperation', () => {
       ));
   });
 
+  it('should modify a filter expression wrapping a filter expression without operator as expression', () => {
+    // The inner filter is left untouched, so the outer one has to be materialized on its own merits.
+    expect(materializeOperation(
+      AF.createFilter(
+        AF.createFilter(
+          AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+          AF.createTermExpression(termVariableB),
+        ),
+        AF.createOperatorExpression('!', [ AF.createTermExpression(termVariableA) ]),
+      ),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createFilter(
+        AF.createJoin([
+          AF.createValues([ termVariableA ], [ valuesBindingsA ]),
+          AF.createFilter(
+            AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+            AF.createTermExpression(termVariableB),
+          ),
+        ]),
+        AF.createOperatorExpression('!', [ AF.createTermExpression(valueA) ]),
+      ));
+  });
+
   it('should not modify a filter expression without matching variables', () => {
     const filterOp = AF.createFilter(
       AF.createBgp([
@@ -1227,6 +1301,44 @@ describe('materializeOperation', () => {
           AF.createTermExpression(termVariableB),
         ]),
       ));
+  });
+
+  it('should materialize a filter with an operator expression and keep metadata', () => {
+    const metadata = { scopedSource: 'source' };
+    const operation = materializeOperation(
+      Object.assign(AF.createFilter(
+        AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+        AF.createTermExpression(termVariableB),
+      ), { metadata }),
+      bindingsA,
+      AF,
+      BF,
+    );
+    expect(operation.type).toBe(Algebra.Types.FILTER);
+    expect(operation.metadata).toEqual(metadata);
+  });
+
+  it('should materialize a filter with an existence expression and keep metadata', () => {
+    const metadata = { scopedSource: 'source' };
+    const operation = materializeOperation(
+      Object.assign(AF.createFilter(
+        AF.createPattern(termVariableA, termNamedNode, termVariableB, termNamedNode),
+        AF.createExistenceExpression(
+          true,
+          AF.createPattern(termNamedNode, termNamedNode, termVariableA, termNamedNode),
+        ),
+      ), { metadata }),
+      bindingsA,
+      AF,
+      BF,
+    );
+    expect(operation).toEqual(Object.assign(AF.createFilter(
+      AF.createPattern(valueA, termNamedNode, termVariableB, termNamedNode),
+      AF.createExistenceExpression(
+        true,
+        AF.createPattern(termNamedNode, termNamedNode, valueA, termNamedNode),
+      ),
+    ), { metadata }));
   });
 
   it('should modify a filter expression with an existence expression with matching variables', () => {

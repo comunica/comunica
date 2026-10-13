@@ -176,11 +176,16 @@ export abstract class NumericLiteral extends Literal<number> {
   }
 
   public override str(): string {
-    return this.strValue ??
-      this.specificFormatter(this.typedValue);
+    return this.strValue ?? this.specificFormatter(this.typedValue);
   }
 }
 
+/**
+ * Integer datatype from XSD: https://www.w3.org/TR/xmlschema-2/#integer
+ *
+ * The canonical representation consists of a finite-length sequence of decimal digits (#x30-#x39),
+ * with leading + and leading zeroes prohibited.
+ */
 export class IntegerLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -191,11 +196,20 @@ export class IntegerLiteral extends NumericLiteral {
     super(typedValue, dataType ?? TypeURL.XSD_INTEGER, strValue, language);
   }
 
-  protected specificFormatter(val: number): string {
+  protected override specificFormatter(val: number): string {
+    // Force the number to not be represented as an exponential,
+    // even when large enough for JS to automatically try it.
     return val.toFixed(0);
   }
 }
 
+/**
+ * Decimal datatype from XSD: https://www.w3.org/TR/xmlschema-2/#decimal
+ *
+ * The canonical representation consists of a finite-length sequence of decimal digits (#x30-#x39),
+ * separated by a period as a decimal indicator. Leading + is prohibited. Leading and trailing zeroes
+ * are prohibited, except for the single mandatory digit on both sides of the decimal point.
+ */
 export class DecimalLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -206,26 +220,33 @@ export class DecimalLiteral extends NumericLiteral {
     super(typedValue, dataType ?? TypeURL.XSD_DECIMAL, strValue, language);
   }
 
-  protected specificFormatter(val: number): string {
-    return val.toString();
+  protected override specificFormatter(val: number): string {
+    let str = val.toString(10);
+
+    // When the number is so small that JavaScript forces exponential representation,
+    // the value must be forced into decimal format, and trailing zeroes must be stripped.
+    // This does not address accuracy issues, but it does ensure the output is a valid decimal.
+    if (str.includes('e')) {
+      str = val.toFixed(20).replace(/([0-9])0*$/u, '$1');
+    }
+
+    // Ensure there is at least one decimal place.
+    if (!str.includes('.')) {
+      str += '.0';
+    }
+
+    return str;
   }
 }
 
-export class FloatLiteral extends NumericLiteral {
-  public constructor(
-    public override typedValue: number,
-    dataType?: string,
-    public override strValue?: string,
-    public override language?: string,
-  ) {
-    super(typedValue, dataType ?? TypeURL.XSD_FLOAT, strValue, language);
-  }
-
-  protected specificFormatter(val: number): string {
-    return val.toString();
-  }
-}
-
+/**
+ * Double datatype from XSD: https://www.w3.org/TR/xmlschema-2/#double
+ *
+ * The canonical representation consists of a decimal mantissa, followed by E, followed by integer exponent.
+ * The mantissa must follow canonical decimal format, and if zero, must be `0.0`.
+ * The exponent must follow canonical integer format, and if zero, must be `0`.
+ * The canonical representation of zero is `0.0E0`.
+ */
 export class DoubleLiteral extends NumericLiteral {
   public constructor(
     public override typedValue: number,
@@ -236,30 +257,50 @@ export class DoubleLiteral extends NumericLiteral {
     super(typedValue, dataType ?? TypeURL.XSD_DOUBLE, strValue, language);
   }
 
-  protected specificFormatter(val: number): string {
-    if (!Number.isFinite(val)) {
-      if (val > 0) {
-        return 'INF';
+  protected override specificFormatter(val: number): string {
+    if (Number.isFinite(val)) {
+      let [ mantissa, exponent ] = val.toExponential().split('e');
+
+      // Remove leading + from the exponent
+      if (exponent.startsWith('+')) {
+        exponent = exponent.replace(/^\+/u, '');
       }
-      if (val < 0) {
-        return '-INF';
+
+      // Make sure the mantissa has a decimal slot
+      if (!mantissa.includes('.')) {
+        mantissa += '.0';
       }
-      return 'NaN';
+
+      return `${mantissa}E${exponent}`;
     }
 
-    const jsExponential = val.toExponential();
-    const [ jsMantisse, jsExponent ] = jsExponential.split('e');
+    if (val < 0) {
+      return '-INF';
+    }
 
-    // Leading + must be removed for integer
-    // https://www.w3.org/TR/xmlschema-2/#integer
-    const exponent = jsExponent.replace(/\+/u, '');
+    if (val > 0) {
+      return 'INF';
+    }
 
-    // SPARQL test suite prefers trailing zero's
-    const mantisse = jsMantisse.includes('.') ?
-      jsMantisse :
-      `${jsMantisse}.0`;
+    return 'NaN';
+  }
+}
 
-    return `${mantisse}E${exponent}`;
+/**
+ * Float datatype from XSD: https://www.w3.org/TR/xmlschema-2/#float
+ *
+ * Every float (32-bit) is stored as double (64-bit) number in JavaScript,
+ * and the canonical representations of the XSD types are identical,
+ * so the formatter implementation is shared through inheritance.
+ */
+export class FloatLiteral extends DoubleLiteral {
+  public constructor(
+    public override typedValue: number,
+    dataType?: string,
+    public override strValue?: string,
+    public override language?: string,
+  ) {
+    super(typedValue, dataType ?? TypeURL.XSD_FLOAT, strValue, language);
   }
 }
 

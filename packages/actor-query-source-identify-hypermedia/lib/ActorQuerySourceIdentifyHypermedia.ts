@@ -49,11 +49,17 @@ export class ActorQuerySourceIdentifyHypermedia extends ActorQuerySourceIdentify
   public async run(action: IActionQuerySourceIdentify): Promise<IActorQuerySourceIdentifyOutput> {
     const querySourceContext = action.querySourceUnidentified.context ?? new ActionContext();
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+
     return {
       querySource: {
         source: new QuerySourceHypermedia(
           this.cacheSize,
-          { url: <string> action.querySourceUnidentified.value, forceSourceType: action.querySourceUnidentified.type },
+          {
+            url: <string> action.querySourceUnidentified.value,
+            forceSourceType: action.querySourceUnidentified.type,
+            // The source's own context must also be available while dereferencing it
+            context: querySourceContext,
+          },
           this.maxIterators,
           {
             mediatorMetadataAccumulate: this.mediatorMetadataAccumulate,

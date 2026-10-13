@@ -1,6 +1,6 @@
 # Comunica Term Function Str Before Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-str-before.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-str-before)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-str-before.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-str-before)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)

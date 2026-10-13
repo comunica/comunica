@@ -29,7 +29,7 @@ export class ActorRdfJoinSingle extends ActorRdfJoin {
     if (action.entries.length !== 1) {
       return failTest(`Actor ${this.name} can only join a single entry`);
     }
-    return await this.getJoinCoefficients(action, undefined!);
+    return await this.getJoinCoefficients(action, { metadatas: await ActorRdfJoin.getMetadatas(action.entries) });
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {

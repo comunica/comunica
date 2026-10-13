@@ -3,7 +3,7 @@ import type { Algebra as TraqulaAlgebra } from '@traqula/algebra-transformations
 import { algebraUtils, Types } from '@traqula/algebra-transformations-1-2';
 
 // eslint-disable-next-line unused-imports/no-unused-imports,unused-imports/no-unused-imports-ts
-import type { TransformContext, VisitContext } from '@traqula/core';
+import type { Patch, PreOrderMappingReturn, Safeness, TransformContext, VisitContext } from '@traqula/core';
 import { TransformerSubTyped } from '@traqula/core';
 import type { KnownOperation, Operation } from './Algebra';
 import { TypesComunica } from './TypesComunica';
@@ -54,7 +54,7 @@ export function isKnownSubType<
 // ----------------------- manipulators --------------------
 
 type _NeedRefForReusabilityWithoutExplicitTypeDefinition = TraqulaAlgebra.Operation;
-export const transformer = new TransformerSubTyped<KnownOperation>({
+export const defaultObjectContext: TransformContext = {
   /**
    * Metadata often contains references to actors,
    * the transformer should not copy these actors, nor should it traverse the actors when visitingOperations.
@@ -63,7 +63,8 @@ export const transformer = new TransformerSubTyped<KnownOperation>({
    */
   shallowKeys: new Set([ 'metadata' ]),
   ignoreKeys: new Set([ 'metadata' ]),
-}, {
+};
+export const defaultNodePreVisitor: ConstructorParameters<typeof TransformerSubTyped<KnownOperation>>[1] = {
   // Optimization that causes search tree pruning
   [Types.PATTERN]: { ignoreKeys: new Set([ 'subject', 'predicate', 'object', 'graph', 'metadata' ]) },
   [Types.EXPRESSION]: { ignoreKeys: new Set([ 'name', 'term', 'wildcard', 'variable', 'metadata' ]) },
@@ -86,7 +87,9 @@ export const transformer = new TransformerSubTyped<KnownOperation>({
   [Types.MOVE]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
   [Types.COPY]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
   [TypesComunica.NODES]: { ignoreKeys: new Set([ 'variable', 'metadata' ]) },
-});
+};
+
+export const transformer = new TransformerSubTyped<KnownOperation>(defaultObjectContext, defaultNodePreVisitor);
 
 /**
  * Transform a single operation, similar to {@link mapOperation}, but using stricter typings.
@@ -133,6 +136,42 @@ export const transformer = new TransformerSubTyped<KnownOperation>({
  * using a transformer that works its way back up from the descendant to the startObject.
  */
 export const mapOperationStrict = transformer.transformNode.bind(transformer);
+
+export type AlgebraTransformer<Safe extends Safeness, T> = Patch<
+    Pick<typeof transformer, 'clone' | 'cloneObj' |
+        'transformObject' | 'transformObjectAsync' | 'transformObjectPreOrder' | 'transformObjectPreOrderAsync' |
+        'visitObject' | 'visitObjectAsync' |
+        'transformNode' | 'transformNodeAsync' | 'transformNodePreOrder' | 'transformNodePreOrderAsync' |
+        'visitNode' | 'visitNodeAsync' |
+        'transformNodeSpecific' | 'transformNodeSpecificAsync' | 'transformNodeSpecificPreOrder' |
+            'transformNodeSpecificPreOrderAsync' |
+        'visitNodeSpecific' | 'visitNodeSpecificAsync'>,
+    {
+      transformNode: typeof transformer.transformNode<Safe, T>;
+      transformNodeAsync: typeof transformer.transformNodeAsync<Safe, T>;
+      transformNodePreOrder: typeof transformer.transformNodePreOrder<Safe, T>;
+      transformNodePreOrderAsync: typeof transformer.transformNodePreOrderAsync<Safe, T>;
+      transformNodeSpecific: typeof transformer.transformNodeSpecific<Safe, T>;
+      transformNodeSpecificAsync: typeof transformer.transformNodeSpecificAsync<Safe, T>;
+      transformNodeSpecificPreOrder: typeof transformer.transformNodeSpecificPreOrder<Safe, T>;
+      transformNodeSpecificPreOrderAsync: typeof transformer.transformNodeSpecificPreOrderAsync<Safe, T>;
+    }
+>;
+
+export function algebraTransformer<Safe extends Safeness = 'unsafe', T = Operation>(
+  objectConfig?: typeof defaultObjectContext & { useDefaults?: boolean },
+  nodePreVisitor?: typeof defaultNodePreVisitor & { useDefaults?: boolean },
+): AlgebraTransformer<Safe, T> {
+  if (!objectConfig && !nodePreVisitor) {
+    return transformer;
+  }
+  const { useDefaults: objUseDef, ...objConf } = objectConfig ?? {};
+  const { useDefaults: nodesUseDef, ...nodeConf } = nodePreVisitor ?? {};
+  return new TransformerSubTyped<KnownOperation>(
+    objUseDef ?? true ? { ...defaultObjectContext, ...objConf } : objConf,
+    nodesUseDef ?? true ? { ...defaultNodePreVisitor, ...nodeConf } : nodeConf,
+  );
+}
 
 /**
  * Transform a single operation.
@@ -368,6 +407,70 @@ export const visitOperation = transformer.visitNode.bind(transformer);
 export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);
 
 /**
+ * Visit the values held directly by the given operation, without descending into them.
+ *
+ * @param operation The operation to take apart.
+ * @param visitor Called with each value, in the order the keys occur.
+ * @param ignoreKeys Keys to skip on top of the ones that are skipped anyway.
+ */
+export function visitOperationMembers(
+  operation: Operation,
+  visitor: (value: unknown, key: string) => void,
+  ignoreKeys?: Set<string>,
+): void {
+  const ignoreKeysAll = [
+    defaultObjectContext.ignoreKeys,
+    defaultNodePreVisitor?.[<KnownOperation['type']> operation.type]?.ignoreKeys,
+    ignoreKeys,
+  ];
+  for (const [ key, value ] of Object.entries(operation)) {
+    if (ignoreKeysAll.some(keys => keys?.has(key))) {
+      continue;
+    }
+    for (const entry of Array.isArray(value) ? value : [ value ]) {
+      visitor(entry, key);
+    }
+  }
+}
+
+/**
+ * The keys that hold something other than the operations an operation is composed of.
+ *
+ * These come on top of the keys that {@link defaultNodePreVisitor} already leaves alone.
+ */
+const nonOperationKeys: Partial<Record<string, Set<string>>> = {
+  [Types.PATH]: new Set([ 'predicate' ]),
+  [Types.CONSTRUCT]: new Set([ 'template' ]),
+  [Types.DELETE_INSERT]: new Set([ 'delete', 'insert' ]),
+};
+
+/**
+ * Obtain the operations that the given operation is directly composed of, in the order they occur.
+ *
+ * Expressions are not included.
+ *
+ * @param operation An operation.
+ * @return The operations directly nested within it.
+ */
+export function getSubOperations(operation: Operation): Operation[] {
+  const subOperations: Operation[] = [];
+  visitOperationMembers(operation, (value) => {
+    if (isOperationObject(value) && value.type !== Types.EXPRESSION) {
+      subOperations.push(value);
+    }
+  }, nonOperationKeys[operation.type]);
+  return subOperations;
+}
+
+/**
+ * If the given value is an algebra operation.
+ * @param value Any value occurring within an operation.
+ */
+export function isOperationObject(value: any): value is Operation {
+  return typeof value === 'object' && value !== null && typeof value.type === 'string';
+}
+
+/**
  * Detects all in-scope variables.
  * In practice this means iterating through the entire algebra tree, finding all variables,
  * and stopping when a project function is found.
@@ -378,7 +481,29 @@ export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer)
  */
 export const inScopeVariables: typeof algebraUtils.inScopeVariables =
   (op: Operation, visitor = <typeof algebraUtils.visitOperation>visitOperation): RDF.Variable[] =>
-    algebraUtils.inScopeVariables(op, visitor);
+    algebraUtils.inScopeVariables(op, (startObject, nodeCallBacks) =>
+      visitor(startObject, ignoreDefaultKeys(nodeCallBacks)));
+
+type VisitCallBacks = Parameters<typeof algebraUtils.visitOperation>[1];
+
+/**
+ * Make the pre-visitors of the given callbacks ignore the keys of the default object context on top of their own.
+ * Otherwise, their own keys replace the default ones, so metadata, which can contain cycles, would be traversed.
+ * @param nodeCallBacks Visitor callbacks per operation type.
+ * @return The callbacks with adjusted pre-visitors.
+ */
+function ignoreDefaultKeys(nodeCallBacks: VisitCallBacks): VisitCallBacks {
+  return Object.fromEntries(Object.entries(nodeCallBacks)
+    .map(([ type, callBacks ]): [ string, NonNullable<VisitCallBacks[keyof VisitCallBacks]> ] => {
+      const preVisitor = <((op: Operation) => VisitContext) | undefined> callBacks.preVisitor;
+      return [ type, { ...callBacks, preVisitor: preVisitor && ((op: Operation) => {
+        const context = preVisitor(op);
+        return context.ignoreKeys ?
+            { ...context, ignoreKeys: new Set([ ...defaultObjectContext.ignoreKeys!, ...context.ignoreKeys ]) } :
+          context;
+      }) }];
+    }));
+}
 
 /**
  * Returns an operation with an always-defined metadata property.

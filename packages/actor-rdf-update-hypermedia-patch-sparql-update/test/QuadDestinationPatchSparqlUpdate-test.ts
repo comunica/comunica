@@ -104,6 +104,19 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
 }`);
     });
 
+    it('should keep blank nodes in an insert', async() => {
+      await destination.update({
+        insert: fromArray([
+          DF.quad(DF.blankNode('b1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+        ]),
+      });
+
+      await expect(stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body))).resolves
+        .toBe(`INSERT DATA {
+  _:b1 <ex:p1> <ex:o1> .
+}`);
+    });
+
     it('should throw on a server error', async() => {
       mediatorHttp.mediate = () => ({ status: 400 });
       await expect(destination.update({ insert: fromArray<RDF.Quad>([]) })).rejects
@@ -143,6 +156,59 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         .toBe(`DELETE DATA {
   <ex:s1> <ex:p1> <ex:o1> .
   GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
+}`);
+    });
+
+    it('should throw on a blank node subject', async() => {
+      await expect(destination.update({
+        delete: fromArray<RDF.Quad>([
+          DF.quad(DF.blankNode('b1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+        ]),
+      })).rejects.toThrow(`Unable to delete '_:b1 <ex:p1> <ex:o1> .' via a SPARQL Update patch, as blank nodes can not be referred to by label. Consider replacing the contents of the destination instead.`);
+    });
+
+    it('should throw on a blank node object', async() => {
+      await expect(destination.update({
+        delete: fromArray<RDF.Quad>([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.blankNode('b1')),
+        ]),
+      })).rejects.toThrow(`Unable to delete '<ex:s1> <ex:p1> _:b1 .' via a SPARQL Update patch`);
+    });
+
+    it('should throw on a blank node graph', async() => {
+      await expect(destination.update({
+        delete: fromArray<RDF.Quad>([
+          DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.blankNode('b1')),
+        ]),
+      })).rejects.toThrow(`Unable to delete '<ex:s1> <ex:p1> <ex:o1> .' via a SPARQL Update patch`);
+    });
+
+    it('should throw on a blank node inside a quoted triple', async() => {
+      await expect(destination.update({
+        delete: fromArray<RDF.Quad>([
+          DF.quad(
+            DF.namedNode('ex:s1'),
+            DF.namedNode('ex:p1'),
+            DF.quad(DF.blankNode('b1'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+          ),
+        ]),
+      })).rejects.toThrow(`via a SPARQL Update patch, as blank nodes can not be referred to by label`);
+    });
+
+    it('should not throw on a quoted triple without blank nodes', async() => {
+      await destination.update({
+        delete: fromArray<RDF.Quad>([
+          DF.quad(
+            DF.namedNode('ex:s1'),
+            DF.namedNode('ex:p1'),
+            DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2')),
+          ),
+        ]),
+      });
+
+      await expect(stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body))).resolves
+        .toBe(`DELETE DATA {
+  <ex:s1> <ex:p1> <<<ex:s2> <ex:p2> <ex:o2>>> .
 }`);
     });
   });

@@ -79,10 +79,18 @@ export function elapsedDuration(
   const d1 = toUTCDate(first, defaultTimeZone);
   const d2 = toUTCDate(second, defaultTimeZone);
   const diff = d1.getTime() - d2.getTime();
+  // All components must share the sign of the difference, and seconds may be fractional
+  const sign = diff < 0 ? -1 : 1;
+  const abs = Math.abs(diff);
   return {
-    day: Math.floor(diff / (1_000 * 60 * 60 * 24)),
-    hours: Math.floor((diff % (1_000 * 60 * 60 * 24)) / (1_000 * 60 * 60)),
-    minutes: Math.floor(diff % (1_000 * 60 * 60) / (1_000 * 60)),
-    seconds: diff % (1_000 * 60),
+    day: signed(sign, Math.floor(abs / (1_000 * 60 * 60 * 24))),
+    hours: signed(sign, Math.floor((abs % (1_000 * 60 * 60 * 24)) / (1_000 * 60 * 60))),
+    minutes: signed(sign, Math.floor(abs % (1_000 * 60 * 60) / (1_000 * 60))),
+    seconds: signed(sign, (abs % (1_000 * 60)) / 1_000),
   };
+}
+
+function signed(sign: number, value: number): number {
+  // Avoid -0
+  return value === 0 ? 0 : sign * value;
 }

@@ -4,9 +4,15 @@ import {
 } from '@comunica/bus-query-operation';
 import type { MediatorRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { IQueryOperationResult, IActionContext, IJoinEntry } from '@comunica/types';
+import type {
+  IQueryOperationResult,
+  IActionContext,
+  IJoinEntry,
+  IPhysicalQueryPlanLogger,
+} from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
@@ -49,6 +55,25 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
       for (const entry of entries) {
         entry.output.bindingsStream.close();
       }
+
+      // No physical join actor runs in this case, so record why the plan stops here.
+      const physicalQueryPlanLogger: IPhysicalQueryPlanLogger | undefined = context
+        .get(KeysInitQuery.physicalQueryPlanLogger);
+      if (physicalQueryPlanLogger) {
+        const planNode = physicalQueryPlanLogger.logOperation({
+          logicalOperator: 'join-inner',
+          physicalOperator: 'empty',
+          parentNode: context.get(KeysInitQuery.physicalQueryPlanNode),
+          actor: this.name,
+        });
+        for (const entry of entries) {
+          const entryNode = physicalQueryPlanLogger.getNodeForOutput(entry.output);
+          if (entryNode) {
+            planNode.adoptInput(entryNode);
+          }
+        }
+      }
+
       return {
         bindingsStream: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
         metadata: async() => ({

@@ -1,5 +1,3 @@
-import { KeysHttp } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
 import { CliArgsHandlerBase } from '../../lib/cli/CliArgsHandlerBase';
 
 describe('CliArgsHandlerBase', () => {
@@ -18,36 +16,21 @@ describe('CliArgsHandlerBase', () => {
     });
 
     it('should work with type annotation', () => {
-      const hypermedia = 'hypermedia@http://example.org/';
+      const hypermedia = 'qpf@http://example.org/';
       expect(CliArgsHandlerBase.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/', type: 'hypermedia' });
+        .toEqual({ value: 'http://example.org/', type: 'qpf' });
     });
 
-    it('should work with authorization in url', () => {
+    it('should keep authorization in url', () => {
       const hypermedia = 'http://username:passwd@example.org/';
       expect(CliArgsHandlerBase.getSourceObjectFromString(hypermedia))
-        .toEqual({
-          value: 'http://example.org/',
-          context: new ActionContext({ [KeysHttp.auth.name]: 'username:passwd' }),
-        });
+        .toEqual({ value: 'http://username:passwd@example.org/' });
     });
 
-    it('should work with type annotation and authorization in url', () => {
-      const hypermedia = 'hypermedia@http://username:passwd@example.org/';
+    it('should work with type annotation and keep authorization in url', () => {
+      const hypermedia = 'qpf@http://username:passwd@example.org/';
       expect(CliArgsHandlerBase.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/', type: 'hypermedia', context: new ActionContext({ [KeysHttp.auth.name]: 'username:passwd' }) });
-    });
-
-    it('should work with empty username in authorization in url', () => {
-      const hypermedia = 'http://:passwd@example.org/';
-      expect(CliArgsHandlerBase.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/', context: new ActionContext({ [KeysHttp.auth.name]: ':passwd' }) });
-    });
-
-    it('should work with empty password in authorization in url', () => {
-      const hypermedia = 'http://username:@example.org/';
-      expect(CliArgsHandlerBase.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/', context: new ActionContext({ [KeysHttp.auth.name]: 'username:' }) });
+        .toEqual({ value: 'http://username:passwd@example.org/', type: 'qpf' });
     });
   });
 });
