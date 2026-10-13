@@ -3,7 +3,7 @@ import { ActorQueryParse } from '@comunica/bus-query-parse';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
-import type { ComunicaDataFactory } from '@comunica/types';
+import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import { AstFactory } from '@traqula/rules-sparql-1-2';
@@ -34,11 +34,13 @@ export class ActorQueryParseSparql extends ActorQueryParse {
 
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const namedAggregatorCallback = this.getNamedAggregatorCallback(action.context, dataFactory);
     const astFactory = new AstFactory();
     const parsedSyntax = this.parser.parse(action.query, {
       prefixes: this.prefixes,
       baseIRI: action.baseIRI,
       astFactory,
+      namedAggregatorCallback,
     });
     let baseIRI: string | undefined;
     if (astFactory.isQuery(parsedSyntax)) {
@@ -56,8 +58,32 @@ export class ActorQueryParseSparql extends ActorQueryParse {
         blankToVariable: true,
         baseIRI: action.baseIRI,
         dataFactory,
+        namedAggregatorCallback,
       }),
     };
+  }
+
+  /**
+   * Determine which function calls are calls of extension aggregates,
+   * based on the extensionAggregatorCreator or extensionAggregators context entries.
+   * @param context An action context.
+   * @param dataFactory The data factory.
+   */
+  protected getNamedAggregatorCallback(
+    context: IActionContext,
+    dataFactory: ComunicaDataFactory,
+  ): ((iri: string) => boolean) | undefined {
+    const extensionAggregatorCreator = context.get(KeysInitQuery.extensionAggregatorCreator);
+    const extensionAggregators = context.get(KeysInitQuery.extensionAggregators);
+    if (extensionAggregatorCreator && extensionAggregators) {
+      throw new Error('Illegal simultaneous usage of extensionAggregatorCreator and extensionAggregators in context');
+    }
+    if (extensionAggregatorCreator) {
+      return iri => extensionAggregatorCreator(dataFactory.namedNode(iri)) !== undefined;
+    }
+    if (extensionAggregators) {
+      return iri => extensionAggregators[iri] !== undefined;
+    }
   }
 }
 

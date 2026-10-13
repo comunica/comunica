@@ -627,6 +627,55 @@ describe('materializeOperation', () => {
     )).toThrow(new Error('Tried to bind ?a in a SUM aggregate.'));
   });
 
+  it('should error on a group operation with ' +
+    'a binding variable equal to the bound extension aggregate variable for strictTargetVariables', () => {
+    expect(() => materializeOperation(
+      AF.createGroup(
+        AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+        [ termVariableB, termVariableD ],
+        [ <Algebra.BoundAggregate> <unknown> {
+          ...AF.createNamedExpression(DF.namedNode('http://example.org/median'), [
+            AF.createTermExpression(termVariableC),
+          ]),
+          aggregate: true,
+          distinct: false,
+          variable: termVariableA,
+        } ],
+      ),
+      bindingsA,
+      AF,
+      BF,
+      { strictTargetVariables: true },
+    )).toThrow(new Error('Tried to bind ?a in a http://example.org/median aggregate.'));
+  });
+
+  it('should not modify a group operation with ' +
+    'a binding variable equal to the bound extension aggregate variable', () => {
+    const extensionAggregate = <Algebra.BoundAggregate> <unknown> {
+      ...AF.createNamedExpression(DF.namedNode('http://example.org/median'), [
+        AF.createTermExpression(termVariableC),
+      ]),
+      aggregate: true,
+      distinct: false,
+      variable: termVariableA,
+    };
+    expect(materializeOperation(
+      AF.createGroup(
+        AF.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
+        [ termVariableB, termVariableD ],
+        [ extensionAggregate ],
+      ),
+      bindingsA,
+      AF,
+      BF,
+    ))
+      .toEqual(AF.createGroup(
+        AF.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
+        [ termVariableB, termVariableD ],
+        [ extensionAggregate ],
+      ));
+  });
+
   it('should modify a group operation with aa binding variable equal to the bound aggregate variable', () => {
     expect(materializeOperation(
       AF.createGroup(

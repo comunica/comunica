@@ -275,14 +275,17 @@ export function materializeOperation(
           }
           return expressionOp;
         }
-        if (expressionOp.subType === 'aggregate' &&
+        if ((expressionOp.subType === 'aggregate' || expressionOp.subType === 'named') &&
       'variable' in expressionOp &&
       bindings.has(expressionOp.variable)) {
-          // Materialize a bound aggregate operation.
+          // Materialize a bound aggregate operation, which can also be an extension aggregate.
           // If strictTargetVariables is true, we throw if the expression target variable is attempted to be bound.
           // Otherwise, we ignore this operation.
           if (options.strictTargetVariables) {
-            throw new Error(`Tried to bind ${termToString(expressionOp.variable)} in a ${expressionOp.aggregator} aggregate.`);
+            const aggregator = expressionOp.subType === 'aggregate' ?
+              expressionOp.aggregator :
+              termToString(expressionOp.name);
+            throw new Error(`Tried to bind ${termToString(expressionOp.variable)} in a ${aggregator} aggregate.`);
           } else {
             return expressionOp;
           }

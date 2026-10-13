@@ -3,7 +3,7 @@
 import { Readable } from 'node:stream';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { Logger } from '@comunica/types';
-import type { QueryBindings, QueryStringContext } from '@comunica/types';
+import type { ExtensionAggregator, QueryBindings, QueryStringContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -745,6 +745,179 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
           ]);
           // The endpoint does not declare support for the function, so it only receives the grouping
           expect(queries).toEqual([ 'SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s' ]);
+        });
+      });
+
+      describe('extension aggregate', () => {
+        let store: Store;
+        let integerType: RDF.NamedNode;
+        let product: ExtensionAggregator;
+        const groupedQuery = (distinct = '') => `PREFIX ex: <http://example.org/>
+        SELECT ?s (ex:product(${distinct} ?o) AS ?product) WHERE { ?s ?p ?o } GROUP BY ?s`;
+
+        beforeEach(() => {
+          integerType = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
+          product = ({ evaluateArguments, distinct }) => {
+            const seen = new Set<string>();
+            let value = 1;
+            return {
+              async putBindings(bindings) {
+                const [ term ] = await evaluateArguments(bindings);
+                if (!distinct || !seen.has(term.value)) {
+                  seen.add(term.value);
+                  value *= Number.parseInt(term.value, 10);
+                }
+              },
+              result: async() => DF.literal(String(value), integerType),
+            };
+          };
+          store = new Store();
+          store.addQuads([
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p1'), DF.literal('2', integerType)),
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p2'), DF.literal('2', integerType)),
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p3'), DF.literal('3', integerType)),
+            DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:p1'), DF.literal('5', integerType)),
+          ]);
+        });
+
+        it('rejects when the aggregate is not registered', async() => {
+          await expect(engine.queryBindings(groupedQuery(), { sources: [ store ]})).rejects.toThrow(
+            `Creation of function evaluator failed: no configured actor was able to evaluate function http://example.org/product`,
+          );
+        });
+
+        it('aggregates groups given by record', async() => {
+          const bindingsStream = await engine.queryBindings(groupedQuery(), {
+            sources: [ store ],
+            extensionAggregators: { 'http://example.org/product': product },
+          });
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('ex:a') ],
+              [ DF.variable('product'), DF.literal('12', integerType) ],
+            ]),
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('ex:b') ],
+              [ DF.variable('product'), DF.literal('5', integerType) ],
+            ]),
+          ]);
+        });
+
+        it('aggregates groups given by creator', async() => {
+          const bindingsStream = await engine.queryBindings(groupedQuery(), {
+            sources: [ store ],
+            extensionAggregatorCreator: iri => iri.value === 'http://example.org/product' ? product : undefined,
+          });
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('ex:a') ],
+              [ DF.variable('product'), DF.literal('12', integerType) ],
+            ]),
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('ex:b') ],
+              [ DF.variable('product'), DF.literal('5', integerType) ],
+            ]),
+          ]);
+        });
+
+        it('aggregates groups with DISTINCT', async() => {
+          const bindingsStream = await engine.queryBindings(groupedQuery('DISTINCT'), {
+            sources: [ store ],
+            extensionAggregators: { 'http://example.org/product': product },
+          });
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('ex:a') ],
+              [ DF.variable('product'), DF.literal('6', integerType) ],
+            ]),
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('ex:b') ],
+              [ DF.variable('product'), DF.literal('5', integerType) ],
+            ]),
+          ]);
+        });
+
+        it('aggregates in HAVING', async() => {
+          const bindingsStream = await engine.queryBindings(`PREFIX ex: <http://example.org/>
+          SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (ex:product(?o) > 10)`, {
+            sources: [ store ],
+            extensionAggregators: { 'http://example.org/product': product },
+          });
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:a') ]]),
+          ]);
+        });
+
+        it('aggregates an empty input without grouping', async() => {
+          const bindingsStream = await engine.queryBindings(`PREFIX ex: <http://example.org/>
+          SELECT (ex:product(?o) AS ?product) WHERE { ?s ex:none ?o }`, {
+            sources: [ store ],
+            extensionAggregators: { 'http://example.org/product': product },
+          });
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('product'), DF.literal('1', integerType) ]]),
+          ]);
+        });
+
+        it('throws error when supplying both record and creator', async() => {
+          await expect(engine.queryBindings(groupedQuery(), {
+            sources: [ store ],
+            extensionAggregators: { 'http://example.org/product': product },
+            extensionAggregatorCreator: () => product,
+          })).rejects
+            .toThrow('Illegal simultaneous usage of extensionAggregatorCreator and extensionAggregators in context');
+        });
+
+        it('does not push down the aggregate to a SPARQL endpoint', async() => {
+          await engine.invalidateHttpCache();
+          const endpoint = 'http://example.com/aggregates/sparql';
+          const queries: string[] = [];
+          const fetch = async(input: string): Promise<Response> => {
+            if (input === endpoint) {
+              // Service description fetch
+              return new Response('', { status: 200, headers: { 'Content-Type': 'text/turtle' }});
+            }
+            queries.push(decodeURIComponent(input));
+            if (input.includes('ASK')) {
+              return new Response(
+                JSON.stringify({ head: {}, boolean: true }),
+                { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
+              );
+            }
+            return new Response(
+              JSON.stringify({
+                head: { vars: [ 's', 'p', 'o' ]},
+                results: {
+                  bindings: [
+                    {
+                      s: { type: 'uri', value: 'ex:a' },
+                      p: { type: 'uri', value: 'ex:p1' },
+                      o: { type: 'literal', value: '2', datatype: integerType.value },
+                    },
+                    {
+                      s: { type: 'uri', value: 'ex:a' },
+                      p: { type: 'uri', value: 'ex:p2' },
+                      o: { type: 'literal', value: '3', datatype: integerType.value },
+                    },
+                  ],
+                },
+              }),
+              { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }},
+            );
+          };
+          const bindingsStream = await engine.queryBindings(groupedQuery(), <QueryStringContext> {
+            sources: [ endpoint ],
+            extensionAggregators: { 'http://example.org/product': product },
+            fetch,
+          });
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('ex:a') ],
+              [ DF.variable('product'), DF.literal('6', integerType) ],
+            ]),
+          ]);
+          expect(queries.length).toBeGreaterThan(0);
+          expect(queries.some(query => query.includes('http://example.org/product'))).toBeFalsy();
         });
       });
 

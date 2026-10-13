@@ -3,6 +3,8 @@ import type {
   AsyncExtensionFunctionCreator,
   Bindings,
   ExistenceResolver,
+  ExtensionAggregator,
+  ExtensionAggregatorCreator,
   FunctionArgumentsCache,
   IActionContext,
   ICliArgsHandler,
@@ -247,6 +249,29 @@ export const KeysInitQuery = {
    */
   extensionFunctionsAlwaysPushdown: new ActionContextKey<boolean>(
     '@comunica/actor-init-query:extensionFunctionsAlwaysPushdown',
+  ),
+  /**
+   * @range {(aggregateNamedNode: RDF.NamedNode) => ExtensionAggregator | undefined}
+   * Extension aggregate creator for a given aggregate IRI.
+   * Function calls with an IRI for which an extension aggregate is returned are evaluated as aggregates.
+   * The returned extension aggregate creates the aggregator of a single group.
+   * Undefined may be returned if no extension aggregate exists for the given IRI.
+   * Unlike extensionFunctionCreator, this creator is synchronous,
+   * as parsing a query requires knowing which function calls are aggregates.
+   *
+   * The dictionary-based extensionAggregators context entry may be used instead, but not simultaneously.
+   */
+  extensionAggregatorCreator: new ActionContextKey<ExtensionAggregatorCreator>(
+    '@comunica/actor-init-query:extensionAggregatorCreator',
+  ),
+  /**
+   * Dictionary of extension aggregates.
+   * Key is the IRI of the aggregate, and value creates the aggregator of a single group.
+   *
+   * The callback-based extensionAggregatorCreator context entry may be used instead, but not simultaneously.
+   */
+  extensionAggregators: new ActionContextKey<Record<string, ExtensionAggregator>>(
+    '@comunica/actor-init-query:extensionAggregators',
   ),
   /**
    * Dictionary of custom SERVICE executors.
