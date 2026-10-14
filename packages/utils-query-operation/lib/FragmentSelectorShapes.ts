@@ -97,9 +97,9 @@ function doesShapeAcceptOperationRecurseShape(
     }
     case 'wildcard': {
       // All possible operations are accepted by this shape.
-      // As exception, Comunica's internal operations and extension functions are not accepted through wildcards,
-      // and neither are extension aggregates, as those are registered in, and thus evaluated by, Comunica.
-      if (isInternalOperation(operation) || containsExtensionAggregate(operation)) {
+      // As exception, Comunica's internal operations and extension functions are not accepted through wildcards.
+      // Extension aggregates are named expressions as well, so they are handled as extension functions.
+      if (isInternalOperation(operation)) {
         return false;
       }
       if (options?.wildcardAcceptAllExtensionFunctions) {
@@ -113,12 +113,12 @@ function doesShapeAcceptOperationRecurseShape(
       let hasUnsupportedExtensionFunction = false;
       algebraUtils.visitOperation(operation, {
         [Algebra.Types.EXPRESSION]: {
-          visitor: (subOp) => {
+          preVisitor: (subOp) => {
             if (isExtensionFunction(subOp) && !doesShapeAcceptOperation(shapeTop, subOp, options)) {
               hasUnsupportedExtensionFunction = true;
-              return false;
+              return { shortcut: true };
             }
-            return true;
+            return {};
           },
         },
       });
@@ -211,23 +211,6 @@ function isStandardSparqlFunction(iri: string): boolean {
 function isExtensionFunction(operation: Algebra.Operation): operation is Algebra.NamedExpression {
   return operation && operation.type === Algebra.Types.EXPRESSION &&
     isKnownSubType(operation, Algebra.ExpressionTypes.NAMED) && !isStandardSparqlFunction(operation.name.value);
-}
-
-/**
- * Check if the given operation contains a group with an extension aggregate.
- * @param operation An operation.
- */
-function containsExtensionAggregate(operation: Algebra.Operation): boolean {
-  let found = false;
-  algebraUtils.visitOperation(operation, {
-    [Algebra.Types.GROUP]: {
-      visitor: (group) => {
-        found ||= group.aggregates
-          .some(aggregate => isKnownSubType(aggregate, Algebra.ExpressionTypes.NAMED));
-      },
-    },
-  });
-  return found;
 }
 
 const internalOperationTypes = new Set<string>(Object.values(TypesComunica));

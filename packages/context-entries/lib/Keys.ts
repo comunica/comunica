@@ -254,6 +254,8 @@ export const KeysInitQuery = {
    * @range {(aggregateNamedNode: RDF.NamedNode) => ExtensionAggregator | undefined}
    * Synchronous extension aggregate creator for a given aggregate IRI, see ExtensionAggregatorCreator.
    * Function calls with an IRI for which an extension aggregate is returned are evaluated as aggregates.
+   * It must be synchronous, as parsing and algebra translation look up synchronously whether a function call
+   * is an aggregate.
    *
    * The dictionary-based extensionAggregators context entry may be used instead, but not simultaneously.
    */

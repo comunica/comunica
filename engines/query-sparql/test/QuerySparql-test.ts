@@ -853,12 +853,15 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
             .toThrow('Illegal simultaneous usage of extensionAggregatorCreator and extensionAggregators in context');
         });
 
-        it('does not push down the aggregate to a SPARQL endpoint', async() => {
+        it.each([
+          [ 'record', () => ({ extensionAggregators: { 'http://example.org/product': product }}) ],
+          [ 'creator', () => ({ extensionAggregatorCreator: () => product }) ],
+        ])('does not push down the aggregate given by %s to a SPARQL endpoint', async(_, makeContext) => {
           // The endpoint does not know the aggregate, so pushing it down would make the query fail
           const endpoint = 'http://example.com/aggregates/sparql';
           const bindingsStream = await engine.queryBindings(groupedQuery(), {
             sources: [ endpoint ],
-            extensionAggregators: { 'http://example.org/product': product },
+            ...makeContext(),
             fetch: createSparqlEndpointsFetch({ [endpoint]: store }),
           });
           await expect(bindingsStream).toEqualBindingsStream(productBindings('12'));

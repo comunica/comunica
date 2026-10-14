@@ -205,25 +205,33 @@ describe('FragmentSelectorShapes', () => {
         type: 'operation',
         operation: { operationType: 'wildcard' },
       };
-      const expression = AF.createTermExpression(DF.variable('o'));
+      const group = AF.createProject(AF.createGroup(AF.createBgp([]), [], [
+        makeNamedAggregate('http://example.org/median', [ AF.createTermExpression(DF.variable('o')) ]),
+      ]), []);
 
       it('should not accept them with type wildcard', () => {
-        const group = AF.createGroup(AF.createBgp([]), [], [
-          makeNamedAggregate('http://example.org/median', [ expression ]),
-        ]);
         expect(doesShapeAcceptOperation(shape, group)).toBeFalsy();
-        expect(doesShapeAcceptOperation(
-          shape,
-          AF.createProject(group, []),
-          { wildcardAcceptAllExtensionFunctions: true },
-        )).toBeFalsy();
       });
 
-      it('should accept built-in aggregates with type wildcard', () => {
-        const group = AF.createGroup(AF.createBgp([]), [], [
-          AF.createBoundAggregate(DF.variable('var0'), 'sum', expression, false),
-        ]);
+      it('should accept them with type wildcard if all extension functions are accepted', () => {
         expect(doesShapeAcceptOperation(shape, group, { wildcardAcceptAllExtensionFunctions: true })).toBeTruthy();
+      });
+
+      it('should accept them with type wildcard if they are supported as extension functions', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'disjunction',
+          children: [
+            shape,
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.Types.EXPRESSION,
+                extensionFunctions: [ 'http://example.org/median' ],
+              },
+            },
+          ],
+        }, group)).toBeTruthy();
       });
     });
 
