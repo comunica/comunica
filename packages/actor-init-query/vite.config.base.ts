@@ -1,6 +1,5 @@
 import * as path from 'node:path';
 import type { UserConfig } from 'vite';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 /**
@@ -8,7 +7,8 @@ import tsconfigPaths from 'vite-tsconfig-paths';
  *
  * This mirrors the shared webpack configuration ({@link ./webpack.config.js}),
  * but uses Vite as the bundler. It exposes the engine as a global `Comunica`
- * variable and includes polyfills for `process`, which is required by some dependencies.
+ * variable. It does not need a Node.js polyfill plugin, as the dependencies are
+ * browser-safe in the versions used here.
  *
  * @param packagePath The absolute path to the engine package that is being bundled.
  */
@@ -21,7 +21,6 @@ export default function createConfig(packagePath: string): UserConfig {
   return {
     plugins: [
       tsconfigPaths(),
-      nodePolyfills(),
     ],
     build: {
       // Keep the source next to the webpack bundle, without wiping other files.

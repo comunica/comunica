@@ -846,28 +846,6 @@ describe('ActorHttpRetryBody', () => {
   });
 
   describe('static helpers', () => {
-    it('getRequestMethod should derive the method from a Request input when init.method is undefined', () => {
-      const request = new Request(input, { method: 'DELETE' });
-      expect(ActorHttpRetryBody.getRequestMethod(<any> { input: request })).toBe('DELETE');
-    });
-
-    it('isReplayableRequestBody should return false for Request bodies (streams)', () => {
-      const request = new Request(input, { method: 'POST', body: 'abc' });
-      expect(ActorHttpRetryBody.isReplayableRequestBody(<any> { input: request })).toBe(false);
-    });
-
-    it('isReplayableBody should return true for supported BodyInit values', () => {
-      expect(ActorHttpRetryBody.isReplayableBody(null)).toBe(true);
-      expect(ActorHttpRetryBody.isReplayableBody(undefined)).toBe(true);
-      expect(ActorHttpRetryBody.isReplayableBody('abc')).toBe(true);
-      expect(ActorHttpRetryBody.isReplayableBody(new URLSearchParams('a=b'))).toBe(true);
-      expect(ActorHttpRetryBody.isReplayableBody(new FormData())).toBe(true);
-      expect(ActorHttpRetryBody.isReplayableBody(new ArrayBuffer(1))).toBe(true);
-      expect(ActorHttpRetryBody.isReplayableBody(new Uint8Array([ 1, 2, 3 ]))).toBe(true);
-      expect(ActorHttpRetryBody.isReplayableBody(new Blob([ 'a' ]))).toBe(true);
-      expect(ActorHttpRetryBody.isReplayableBody({})).toBe(false);
-    });
-
     it('sleep should resolve immediately for zero delay', async() => {
       await expect(ActorHttpRetryBody.sleep(0)).resolves.toBeUndefined();
     });

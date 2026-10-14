@@ -152,6 +152,52 @@ describe('ActorHttp', () => {
     });
   });
 
+  describe('request helpers', () => {
+    it('getRequestMethod should derive the method from init', () => {
+      expect(ActorHttp.getRequestMethod(<any> { input: 'http://example.org/', init: { method: 'POST' }})).toBe('POST');
+    });
+
+    it('getRequestMethod should fall back to GET', () => {
+      expect(ActorHttp.getRequestMethod(<any> { input: 'http://example.org/' })).toBe('GET');
+    });
+
+    it('getRequestMethod should derive the method from a Request input when init.method is undefined', () => {
+      const request = new Request('http://example.org/', { method: 'DELETE' });
+      expect(ActorHttp.getRequestMethod(<any> { input: request })).toBe('DELETE');
+    });
+
+    it('isReplayableRequestBody should return false for Request bodies (streams)', () => {
+      const request = new Request('http://example.org/', { method: 'POST', body: 'abc' });
+      expect(ActorHttp.isReplayableRequestBody(<any> { input: request })).toBe(false);
+    });
+
+    it('isReplayableBody should return true for supported BodyInit values', () => {
+      expect(ActorHttp.isReplayableBody(null)).toBe(true);
+      expect(ActorHttp.isReplayableBody(undefined)).toBe(true);
+      expect(ActorHttp.isReplayableBody('abc')).toBe(true);
+      expect(ActorHttp.isReplayableBody(new URLSearchParams('a=b'))).toBe(true);
+      expect(ActorHttp.isReplayableBody(new FormData())).toBe(true);
+      expect(ActorHttp.isReplayableBody(new ArrayBuffer(1))).toBe(true);
+      expect(ActorHttp.isReplayableBody(new Uint8Array([ 1, 2, 3 ]))).toBe(true);
+      expect(ActorHttp.isReplayableBody(new Blob([ 'a' ]))).toBe(true);
+      expect(ActorHttp.isReplayableBody({})).toBe(false);
+    });
+
+    it('isIdempotentMethod should detect idempotent methods', () => {
+      for (const method of [ 'GET', 'head', 'PUT', 'DELETE', 'OPTIONS', 'TRACE', 'QUERY' ]) {
+        expect(ActorHttp.isIdempotentMethod(method)).toBe(true);
+      }
+      expect(ActorHttp.isIdempotentMethod('POST')).toBe(false);
+      expect(ActorHttp.isIdempotentMethod('PATCH')).toBe(false);
+    });
+
+    it('isReplayableRequestBody should return true without body', () => {
+      expect(ActorHttp.isReplayableRequestBody(<any> { input: 'http://example.org/' })).toBe(true);
+      expect(ActorHttp.isReplayableRequestBody(<any> { input: 'http://example.org/', init: { body: 'abc' }}))
+        .toBe(true);
+    });
+  });
+
   describe('isBrowser', () => {
     afterEach(() => {
       delete (<any>globalThis).importScripts;

@@ -219,10 +219,79 @@ describe('ActorHttpRetry', () => {
       expect(ActorHttpRetry.parseRetryAfterHeader).not.toHaveBeenCalled();
     });
 
-    it('should propagate errors from the mediator', async() => {
+    it('should propagate errors from the mediator after retries', async() => {
       const error = new Error('mediator error');
       vi.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
       await expect(actor.run({ input, context })).rejects.toThrow(error);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+    });
+
+    it('should retry requests that fail without response', async() => {
+      const response: Response = <any> { ok: true };
+      vi.spyOn(mediatorHttp, 'mediate')
+        .mockRejectedValueOnce(new Error('ECONNRESET'))
+        .mockResolvedValueOnce(response);
+      await expect(actor.run({ input, context: context.set(KeysHttp.httpRetryDelayFallback, 100) }))
+        .resolves.toBe(response);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+      expect(ActorHttpRetry.sleep).toHaveBeenNthCalledWith(1, 100);
+    });
+
+    it('should not retry requests that time out', async() => {
+      const error = new Error('Fetch timed out');
+      error.name = 'TimeoutError';
+      vi.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
+      await expect(actor.run({ input, context })).rejects.toThrow(error);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw the last error if the last attempt received a response', async() => {
+      vi.spyOn(mediatorHttp, 'mediate')
+        .mockRejectedValueOnce(new Error('ECONNRESET'))
+        .mockResolvedValueOnce(<any> { ok: false, status: 429, headers: new Headers() });
+      await expect(actor.run({ input, context })).rejects.toThrow(`Request failed: ${input}`);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not retry requests aborted via the context', async() => {
+      const abortController = new AbortController();
+      abortController.abort();
+      const error = new Error('aborted');
+      vi.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
+      await expect(actor.run({ input, context: context.set(KeysHttp.httpAbortSignal, abortController.signal) }))
+        .rejects.toThrow(error);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not retry requests aborted via the request init', async() => {
+      const abortController = new AbortController();
+      abortController.abort();
+      const error = new Error('aborted');
+      vi.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
+      await expect(actor.run({ input, init: { signal: abortController.signal }, context })).rejects.toThrow(error);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not retry failed requests that are not retryable', async() => {
+      const error = new Error('ECONNRESET');
+      vi.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
+      const init = {
+        method: 'POST',
+        headers: { 'content-type': 'application/sparql-update' },
+        body: 'INSERT DATA {}',
+      };
+      await expect(actor.run({ input, init, context })).rejects.toThrow(error);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should retry failed POST requests of SPARQL queries', async() => {
+      const response: Response = <any> { ok: true };
+      vi.spyOn(mediatorHttp, 'mediate')
+        .mockRejectedValueOnce(new Error('ECONNRESET'))
+        .mockResolvedValueOnce(response);
+      const init = { method: 'POST', body: new URLSearchParams({ query: 'SELECT * {}' }) };
+      await expect(actor.run({ input, init, context })).resolves.toBe(response);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -294,6 +363,91 @@ describe('ActorHttpRetry', () => {
       activeDelays['example.com'] = { timeout: <any>undefined };
       actor.handleHttpInvalidateEvent({ context, url: 'http://example.org/abc' });
       expect(activeDelays).toStrictEqual({ 'example.com': { timeout: undefined }});
+    });
+  });
+
+  describe('isRetryableOnError', () => {
+    it('should be true for requests with idempotent methods', () => {
+      expect(ActorHttpRetry.isRetryableOnError(<any> { input })).toBe(true);
+      expect(ActorHttpRetry.isRetryableOnError(<any> { input, init: { method: 'HEAD' }})).toBe(true);
+      expect(ActorHttpRetry.isRetryableOnError(<any> { input, init: { method: 'QUERY', body: 'SELECT * {}' }}))
+        .toBe(true);
+    });
+
+    it('should be false for requests with non-replayable bodies', () => {
+      const request = new Request(input, { method: 'QUERY', body: 'SELECT * {}' });
+      expect(ActorHttpRetry.isRetryableOnError(<any> { input: request })).toBe(false);
+    });
+
+    it('should be true for POST requests of SPARQL queries', () => {
+      expect(ActorHttpRetry.isRetryableOnError(<any> {
+        input,
+        init: { method: 'POST', headers: { 'content-type': 'application/sparql-query' }, body: 'SELECT * {}' },
+      })).toBe(true);
+    });
+
+    it('should be false for POST requests of SPARQL updates', () => {
+      expect(ActorHttpRetry.isRetryableOnError(<any> {
+        input,
+        init: { method: 'POST', headers: { 'content-type': 'application/sparql-update' }, body: 'INSERT DATA {}' },
+      })).toBe(false);
+    });
+
+    it('should be false for other POST requests', () => {
+      expect(ActorHttpRetry.isRetryableOnError(<any> { input, init: { method: 'POST', body: 'abc' }})).toBe(false);
+    });
+  });
+
+  describe('isTimeoutError', () => {
+    it('should be true for timeout errors', () => {
+      const error = new Error('Fetch timed out');
+      error.name = 'TimeoutError';
+      expect(ActorHttpRetry.isTimeoutError(error)).toBe(true);
+    });
+
+    it('should be false for other errors', () => {
+      expect(ActorHttpRetry.isTimeoutError(new Error('ECONNRESET'))).toBe(false);
+      expect(ActorHttpRetry.isTimeoutError('TimeoutError')).toBe(false);
+    });
+  });
+
+  describe('isSparqlQueryBody', () => {
+    it('should be true for SPARQL query bodies', () => {
+      expect(ActorHttpRetry.isSparqlQueryBody({
+        headers: { 'Content-Type': 'application/sparql-query; charset=utf-8' },
+        body: 'SELECT * {}',
+      })).toBe(true);
+    });
+
+    it('should be true for form bodies with a query', () => {
+      expect(ActorHttpRetry.isSparqlQueryBody({ body: new URLSearchParams({ query: 'SELECT * {}' }) })).toBe(true);
+      expect(ActorHttpRetry.isSparqlQueryBody({
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        body: 'query=SELECT%20*%20%7B%7D',
+      })).toBe(true);
+    });
+
+    it('should be false for form bodies with an update', () => {
+      expect(ActorHttpRetry.isSparqlQueryBody({ body: new URLSearchParams({ update: 'INSERT DATA {}' }) }))
+        .toBe(false);
+      expect(ActorHttpRetry.isSparqlQueryBody({
+        body: new URLSearchParams({ query: 'SELECT * {}', update: 'INSERT DATA {}' }),
+      })).toBe(false);
+    });
+
+    it('should be false for string bodies without form content type', () => {
+      expect(ActorHttpRetry.isSparqlQueryBody({ body: 'query=SELECT%20*%20%7B%7D' })).toBe(false);
+    });
+
+    it('should be false for SPARQL update bodies', () => {
+      expect(ActorHttpRetry.isSparqlQueryBody({
+        headers: { 'content-type': 'application/sparql-update' },
+        body: 'INSERT DATA {}',
+      })).toBe(false);
+    });
+
+    it('should be false without init', () => {
+      expect(ActorHttpRetry.isSparqlQueryBody(undefined)).toBe(false);
     });
   });
 });
