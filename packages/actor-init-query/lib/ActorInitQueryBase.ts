@@ -1,3 +1,4 @@
+import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { MediatorHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { IActionInit, IActorInitArgs, IActorOutputInit } from '@comunica/bus-init';
 import { ActorInit } from '@comunica/bus-init';
@@ -7,6 +8,8 @@ import type {
   MediatorQueryResultSerializeMediaTypes,
   MediatorQueryResultSerializeMediaTypeFormats,
 } from '@comunica/bus-query-result-serialize';
+import type { MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
+import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 
@@ -19,6 +22,9 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
   public readonly mediatorQueryResultSerializeMediaTypeFormatCombiner: MediatorQueryResultSerializeMediaTypeFormats;
   public readonly mediatorHttpInvalidate: MediatorHttpInvalidate;
   public readonly mediatorQueryProcess: MediatorQueryProcess;
+  public readonly mediatorContextPreprocess?: MediatorContextPreprocess;
+  public readonly mediatorUpdateQuads?: MediatorRdfUpdateQuads;
+  public readonly mediatorRdfParse?: MediatorRdfParseHandle;
 
   public readonly queryString?: string;
   public readonly defaultQueryInputFormat?: string;
@@ -32,6 +38,9 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
     this.mediatorQueryResultSerializeMediaTypeFormatCombiner = args.mediatorQueryResultSerializeMediaTypeFormatCombiner;
     this.mediatorHttpInvalidate = args.mediatorHttpInvalidate;
     this.mediatorQueryProcess = args.mediatorQueryProcess;
+    this.mediatorContextPreprocess = args.mediatorContextPreprocess;
+    this.mediatorUpdateQuads = args.mediatorUpdateQuads;
+    this.mediatorRdfParse = args.mediatorRdfParse;
     this.queryString = args.queryString;
     this.defaultQueryInputFormat = args.defaultQueryInputFormat;
     this.allowNoSources = args.allowNoSources;
@@ -68,6 +77,21 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    * The HTTP cache invalidation mediator
    */
   mediatorHttpInvalidate: MediatorHttpInvalidate;
+  // TODO: make mandatory in next/major
+  /**
+   * The context preprocessing mediator, required for updating quads and parsing RDF.
+   */
+  mediatorContextPreprocess?: MediatorContextPreprocess;
+  // TODO: make mandatory in next/major
+  /**
+   * The RDF update quads mediator, required for updating quads.
+   */
+  mediatorUpdateQuads?: MediatorRdfUpdateQuads;
+  // TODO: make mandatory in next/major
+  /**
+   * The RDF parse mediator, required for parsing RDF.
+   */
+  mediatorRdfParse?: MediatorRdfParseHandle;
 
   /**
    * A SPARQL query string

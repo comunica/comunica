@@ -2,7 +2,7 @@ import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorQuerySourceIdentify } from '@comunica/bus-query-source-identify';
-import { KeysDereference, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysDereference, KeysHttp, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { ActionContext, failTest, passTestVoid } from '@comunica/core';
 import type {
@@ -19,6 +19,7 @@ import {
   assignOperationSource,
   doesShapeAcceptOperation,
   getSafeBindings,
+  getServiceTargetCredentials,
 } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { SingletonIterator, TransformIterator } from 'asynciterator';
@@ -98,9 +99,13 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
         // Replaces errors from the source by a single empty solution.
         .set(KeysQueryOperation.silent, true);
     }
+    const { url, auth } = getServiceTargetCredentials(target.value, context);
+    if (auth !== undefined) {
+      sourceContext = sourceContext.set(KeysHttp.auth, auth);
+    }
     const { querySource } = await this.mediatorQuerySourceIdentify.mediate({
       querySourceUnidentified: {
-        value: target.value,
+        value: url,
         type: this.forceSparqlEndpoint ? 'sparql' : undefined,
         context: sourceContext,
       },

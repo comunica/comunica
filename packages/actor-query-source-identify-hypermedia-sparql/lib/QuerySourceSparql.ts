@@ -1,6 +1,6 @@
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { MediatorQuerySerialize } from '@comunica/bus-query-serialize';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery } from '@comunica/context-entries';
 import { Actor } from '@comunica/core';
 import type {
   Bindings,
@@ -353,14 +353,26 @@ export class QuerySourceSparql implements IQuerySource {
           return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         }
 
-        const timeoutHandler = setTimeout(() => resolve({
-          type: 'estimate',
-          value: Number.POSITIVE_INFINITY,
-          dataset: this.url,
-        }), this.countTimeout);
+        // Abort the count request on timeout, so that it does not keep occupying the endpoint.
+        const abortController = new AbortController();
+        const existingAbortSignal = context.get(KeysHttp.httpAbortSignal);
+        const countContext = context.set(
+          KeysHttp.httpAbortSignal,
+          existingAbortSignal ?
+            AbortSignal.any([ existingAbortSignal, abortController.signal ]) :
+            abortController.signal,
+        );
+        const timeoutHandler = setTimeout(() => {
+          resolve({
+            type: 'estimate',
+            value: Number.POSITIVE_INFINITY,
+            dataset: this.url,
+          });
+          abortController.abort();
+        }, this.countTimeout);
         const varCount = this.dataFactory.variable('count');
         const bindingsStream: BindingsStream = await this
-          .queryBindingsRemote(this.url, countQuery, [ varCount ], context, []);
+          .queryBindingsRemote(this.url, countQuery, [ varCount ], countContext, []);
         bindingsStream
           .on('data', (bindings: Bindings) => {
             clearTimeout(timeoutHandler);
