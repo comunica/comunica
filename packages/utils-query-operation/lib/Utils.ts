@@ -5,6 +5,7 @@ import type {
   ComunicaDataFactory,
   ExtensionAggregator,
   IActionContext,
+  IActionContextKey,
   IDataDestination,
   IQueryOperationResult,
   IQueryOperationResultBindings,
@@ -117,6 +118,34 @@ export function removeOperationSource(operation: Algebra.Operation): void {
 }
 
 /**
+ * Obtain a function that looks up the values registered in the given context,
+ * either through a dictionary keyed by IRI or through a creator for named nodes, which may not be set both.
+ * @param context The query context.
+ * @param dictionaryKey The context key of the dictionary.
+ * @param creatorKey The context key of the creator.
+ * @return A function that looks up the value of an IRI, or undefined if no values are registered.
+ */
+function getDictionaryOrCreatorLookup<T>(
+  context: IActionContext,
+  dictionaryKey: IActionContextKey<Record<string, T>>,
+  creatorKey: IActionContextKey<(namedNode: RDF.NamedNode) => T | undefined>,
+): ((iri: string) => T | undefined) | undefined {
+  const dictionary = context.get(dictionaryKey);
+  const creator = context.get(creatorKey);
+  if (dictionary && creator) {
+    const shortName = (key: IActionContextKey<unknown>): string => key.name.slice(key.name.lastIndexOf(':') + 1);
+    throw new Error(`Illegal simultaneous usage of ${shortName(creatorKey)} and ${shortName(dictionaryKey)} in context`);
+  }
+  if (dictionary) {
+    return iri => dictionary[iri];
+  }
+  if (creator) {
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    return iri => creator(dataFactory.namedNode(iri));
+  }
+}
+
+/**
  * Obtain a function that looks up the custom SERVICE executors that are registered in the given context.
  * @param context The query context.
  * @return A function that looks up the executor of a SERVICE target IRI, or undefined if no executors are registered.
@@ -124,18 +153,7 @@ export function removeOperationSource(operation: Algebra.Operation): void {
 export function getServiceExecutorLookup(
   context: IActionContext,
 ): ((serviceIri: string) => IServiceExecutor | undefined) | undefined {
-  const serviceExecutors = context.get(KeysInitQuery.serviceExecutors);
-  const serviceExecutorCreator = context.get(KeysInitQuery.serviceExecutorCreator);
-  if (serviceExecutors && serviceExecutorCreator) {
-    throw new Error('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
-  }
-  if (serviceExecutors) {
-    return serviceIri => serviceExecutors[serviceIri];
-  }
-  if (serviceExecutorCreator) {
-    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    return serviceIri => serviceExecutorCreator(dataFactory.namedNode(serviceIri));
-  }
+  return getDictionaryOrCreatorLookup(context, KeysInitQuery.serviceExecutors, KeysInitQuery.serviceExecutorCreator);
 }
 
 /**
@@ -146,18 +164,11 @@ export function getServiceExecutorLookup(
 export function getExtensionAggregatorLookup(
   context: IActionContext,
 ): ((iri: string) => ExtensionAggregator | undefined) | undefined {
-  const extensionAggregators = context.get(KeysInitQuery.extensionAggregators);
-  const extensionAggregatorCreator = context.get(KeysInitQuery.extensionAggregatorCreator);
-  if (extensionAggregators && extensionAggregatorCreator) {
-    throw new Error('Illegal simultaneous usage of extensionAggregatorCreator and extensionAggregators in context');
-  }
-  if (extensionAggregators) {
-    return iri => extensionAggregators[iri];
-  }
-  if (extensionAggregatorCreator) {
-    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    return iri => extensionAggregatorCreator(dataFactory.namedNode(iri));
-  }
+  return getDictionaryOrCreatorLookup(
+    context,
+    KeysInitQuery.extensionAggregators,
+    KeysInitQuery.extensionAggregatorCreator,
+  );
 }
 
 /**
