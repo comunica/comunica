@@ -38,9 +38,9 @@ export type DereferenceFromNamedConflictModeResolver = (quad: RDF.Quad) => Deref
 
 /**
  * The RDF variant that determines which term types are allowed in which triple positions.
- * See KeysInitQuery.rdfVariant for where it is applied.
+ * See KeysInitQuery.rdfVariant .
  * https://www.w3.org/TR/rdf12-concepts/#section-generalizations-of-rdf
- * - rdf: subjects are IRIs or blank nodes, predicates are IRIs, objects can be any term.
+ * - undefined/ rdf: subjects are IRIs or blank nodes, predicates are IRIs, objects can be any term.
  * - symmetricRDF: subjects and objects can be any term, predicates are IRIs.
  * - generalizedRDF: any term is allowed in any position.
  */
