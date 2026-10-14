@@ -7,6 +7,7 @@ import { termToString } from 'rdf-string';
  * Aggregates bindings with an extension aggregate.
  * Evaluates the arguments of the aggregate call, handles DISTINCT and errors like the built-in aggregates do,
  * and puts the evaluated arguments into the extension aggregator.
+ * TODO(next major): extend AggregateEvaluator instead, once it supports lists of arguments.
  */
 export class NamedAggregator implements IBindingsAggregator {
   private readonly putArguments = new Set<string>();
