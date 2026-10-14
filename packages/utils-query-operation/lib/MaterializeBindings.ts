@@ -275,9 +275,9 @@ export function materializeOperation(
           }
           return expressionOp;
         }
-        if ((expressionOp.subType === 'aggregate' || expressionOp.subType === 'named') &&
-      'variable' in expressionOp &&
-      bindings.has(expressionOp.variable)) {
+        if (((expressionOp.subType === 'aggregate' && 'variable' in expressionOp) ||
+          algebraFactory.isBoundNamedAggregate(expressionOp)) &&
+          bindings.has(expressionOp.variable)) {
           // Materialize a bound aggregate operation, which can also be an extension aggregate.
           // If strictTargetVariables is true, we throw if the expression target variable is attempted to be bound.
           // Otherwise, we ignore this operation.

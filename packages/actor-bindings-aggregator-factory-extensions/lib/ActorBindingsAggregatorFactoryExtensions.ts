@@ -8,7 +8,8 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoidWithSideData } from '@comunica/core';
 import type { ExtensionAggregator } from '@comunica/types';
-import { Algebra, isKnownSubType } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { getExtensionAggregatorLookup } from '@comunica/utils-query-operation';
 import { NamedAggregator } from './NamedAggregator';
 
@@ -16,6 +17,8 @@ import { NamedAggregator } from './NamedAggregator';
  * A comunica Extensions Bindings Aggregator Factory Actor.
  */
 export class ActorBindingsAggregatorFactoryExtensions extends ActorBindingsAggregatorFactory<ExtensionAggregator> {
+  private readonly algebraFactory = new AlgebraFactory();
+
   public constructor(args: IActorBindingsAggregatorFactoryArgs<ExtensionAggregator>) {
     super(args);
   }
@@ -24,7 +27,7 @@ export class ActorBindingsAggregatorFactoryExtensions extends ActorBindingsAggre
   Promise<TestResult<IActorTest, ExtensionAggregator>> {
     // Extension aggregates are passed as named expressions instead of aggregate expressions
     const expression: Algebra.Expression = expr;
-    const extensionAggregator = isKnownSubType(expression, Algebra.ExpressionTypes.NAMED) ?
+    const extensionAggregator = this.algebraFactory.isBoundNamedAggregate(expression) ?
       getExtensionAggregatorLookup(context)?.(expression.name.value) :
       undefined;
     if (!extensionAggregator) {

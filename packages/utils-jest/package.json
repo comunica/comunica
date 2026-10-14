@@ -55,7 +55,7 @@
     "@comunica/utils-expression-evaluator": "^5.4.0",
     "@jest/expect-utils": "^30.2.0",
     "@rdfjs/types": "*",
-    "@traqula/algebra-sparql-1-2": "^1.5.0-alpha.1",
+    "@traqula/algebra-sparql-1-2": "^1.5.0-alpha.2",
     "@traqula/parser-sparql-1-2": "^1.5.0-alpha.1",
     "@types/object-inspect": "^1.13.0",
     "arrayify-stream": "^2.0.1",

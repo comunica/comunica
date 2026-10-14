@@ -48,12 +48,7 @@ export function makeNamedAggregate(
   distinct = false,
   variable: RDF.Variable = DF.variable('var0'),
 ): Algebra.BoundAggregate {
-  return <Algebra.BoundAggregate> <unknown> {
-    ...AF.createNamedExpression(DF.namedNode(iri), args),
-    aggregate: true,
-    distinct,
-    variable,
-  };
+  return <Algebra.BoundAggregate> <unknown> AF.createBoundNamedAggregate(variable, DF.namedNode(iri), args, distinct);
 }
 
 export function int(value: string): RDF.Term {

@@ -90,10 +90,10 @@
     "webpack-cli": "^7.0.0"
   },
   "resolutions": {
-    "@traqula/algebra-sparql-1-1": "1.5.0-alpha.1",
-    "@traqula/algebra-sparql-1-2": "1.5.0-alpha.1",
-    "@traqula/algebra-transformations-1-1": "1.5.0-alpha.1",
-    "@traqula/algebra-transformations-1-2": "1.5.0-alpha.1",
+    "@traqula/algebra-sparql-1-1": "1.5.0-alpha.2",
+    "@traqula/algebra-sparql-1-2": "1.5.0-alpha.2",
+    "@traqula/algebra-transformations-1-1": "1.5.0-alpha.2",
+    "@traqula/algebra-transformations-1-2": "1.5.0-alpha.2",
     "@traqula/generator-sparql-1-1": "1.5.0-alpha.1",
     "@traqula/generator-sparql-1-2": "1.5.0-alpha.1",
     "@traqula/parser-sparql-1-1": "1.5.0-alpha.1",
