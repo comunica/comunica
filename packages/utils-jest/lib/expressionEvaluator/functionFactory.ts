@@ -9,17 +9,17 @@ import { getMockEEFactory } from './helpers';
 import type { TestTableConfig } from './utils';
 import { runTestTable } from './utils';
 
-interface RunFuncTestTableArgs extends IActorFunctionFactoryArgs {
+interface RunFuncTestTableArgs extends IActorFunctionFactoryArgs<any> {
   mediatorFunctionFactory: MediatorFunctionFactory;
 }
 
 export interface FuncTestTableConfig<E> extends TestTableConfig {
-  registeredActors?: ((arg: RunFuncTestTableArgs & E) => ActorFunctionFactory)[];
+  registeredActors?: ((arg: RunFuncTestTableArgs & E) => ActorFunctionFactory<any>)[];
   additionalArgs?: E;
 }
 
 export function createFuncMediator<E extends object>(
-  registeredActors: ((arg: RunFuncTestTableArgs & E) => ActorFunctionFactory)[],
+  registeredActors: ((arg: RunFuncTestTableArgs & E) => ActorFunctionFactory<any>)[],
   additionalArgs: E,
 ): MediatorFunctionFactory {
   const bus = new BusFunctionFactory({ name: 'test-bus-function-factory' });
