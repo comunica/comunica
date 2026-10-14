@@ -28,7 +28,7 @@ export abstract class ActorFunctionFactory<TS = undefined> extends
     super(args);
   }
 
-  public abstract override run<T extends IActionFunctionFactory>(action: T, sideData: TS):
+  public abstract override run<T extends IActionFunctionFactory>(action: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput>;
 }
 
