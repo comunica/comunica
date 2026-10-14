@@ -6,6 +6,7 @@ import type {
 import { ActorQuerySerialize } from '@comunica/bus-query-serialize';
 import type { TestResult, IActorTest } from '@comunica/core';
 import { passTestVoid, failTest } from '@comunica/core';
+import { algebraUtils } from '@comunica/utils-algebra';
 import { toAst } from '@traqula/algebra-sparql-1-2';
 import type { Algebra as TraqualAlgebra } from '@traqula/algebra-transformations-1-2';
 import { traqulaIndentation } from '@traqula/core';
@@ -32,10 +33,17 @@ export class ActorQuerySerializeSparql extends ActorQuerySerialize {
       indentInc: action.indentWidth ?? 2,
     });
 
+    // Metadata can refer to sources and actors, whose cyclic references Traqula would traverse endlessly.
+    // Traqula does not need it, so we hand it a copy of the operation without metadata.
+    const operation = algebraUtils.transformer.transformObject(action.operation, (copy) => {
+      delete (<{ metadata?: unknown }> copy).metadata;
+      return copy;
+    });
+
     // This query source only handles the Known Algebra from @comunica/utils-algebra.
     // It will likely throw when unknown algebra operations are being translated
     // or the translation will not happen correctly.
-    const ast = toAst(<TraqualAlgebra.Operation> action.operation);
+    const ast = toAst(<TraqualAlgebra.Operation> operation);
     const query = generator.generate(ast).trim();
 
     return { query };

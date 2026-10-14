@@ -151,6 +151,41 @@ describe('ActorQuerySerializeSparql', () => {
           query: 'SELECT ( COUNT( ?o ) AS ?var0 ) ?s ( COUNT( ?o ) AS ?c ) WHERE { ?s ?p ?o . } GROUP BY ?s',
         });
       });
+
+      it('should not traverse the metadata of an extension of it when counting its results', async() => {
+        // Metadata can refer to sources and actors, whose cyclic references must not be traversed
+        const metadata = { scopedSource: { get actors(): never {
+          throw new Error('Traversed the metadata');
+        } }};
+        const extend = {
+          ...AF.createExtend(
+            AF.createGroup(bgp, [ DF.variable('s') ], [
+              AF.createBoundAggregate(DF.variable('var0'), 'count', AF.createTermExpression(DF.variable('o')), false),
+            ]),
+            DF.variable('c'),
+            AF.createTermExpression(DF.variable('var0')),
+          ),
+          metadata,
+        };
+        await expect(actor.run({
+          operation: AF.createProject(
+            AF.createExtend(
+              AF.createGroup(extend, [], [
+                AF.createBoundAggregate(DF.variable('var0'), 'count', AF.createWildcardExpression(), false),
+              ]),
+              DF.variable('count'),
+              AF.createTermExpression(DF.variable('var0')),
+            ),
+            [ DF.variable('count') ],
+          ),
+          queryFormat: { language: 'sparql', version: '1.2' },
+          context,
+          newlines: false,
+          indentWidth: 0,
+        })).resolves.toEqual({ query: 'SELECT ( COUNT( * ) AS ?count ) WHERE { ' +
+          'SELECT ( COUNT( ?o ) AS ?var0 ) ?s ( COUNT( ?o ) AS ?c ) WHERE { ?s ?p ?o . } GROUP BY ?s }' });
+        expect(extend.metadata).toBe(metadata);
+      });
     });
   });
 });
