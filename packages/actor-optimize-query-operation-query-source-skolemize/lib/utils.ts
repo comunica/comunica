@@ -1,6 +1,8 @@
 import type {
+  Bindings,
   BindingsStream,
   ComunicaDataFactory,
+  ISeekableBindingsStream,
   IQuerySource,
   MetadataBindings,
   MetadataQuads,
@@ -8,6 +10,7 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
+import { isSeekableBindingsStream } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { mapTermsNested } from 'rdf-terms';
@@ -119,6 +122,27 @@ export function skolemizeBindingsStream(
   sourceId: string,
 ): BindingsStream {
   const ret = iterator.map(bindings => skolemizeBindings(dataFactory, bindings, sourceId));
+
+  // Skolemizing maps bindings one to one and leaves their order alone, so a skip-ahead over the
+  // wrapped stream is still valid. The target is deskolemized first, so that the source is asked to
+  // skip to a term in its own naming.
+  if (isSeekableBindingsStream(iterator)) {
+    (<ISeekableBindingsStream> ret).seek = (target: Bindings): void => {
+      let deskolemized = target;
+      for (const [ key, value ] of target) {
+        const term = deskolemizeTerm(dataFactory, value, sourceId);
+        // A term skolemized by another source has no counterpart here, so there is nothing to skip to.
+        if (term === null) {
+          return;
+        }
+        if (term !== value) {
+          deskolemized = deskolemized.set(key, term);
+        }
+      }
+      iterator.seek(deskolemized);
+    };
+  }
+
   function inheritMetadata(): void {
     iterator.getProperty('metadata', (metadata: MetadataBindings) => {
       ret.setProperty('metadata', metadata);

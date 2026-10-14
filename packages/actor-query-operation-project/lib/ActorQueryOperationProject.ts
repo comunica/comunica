@@ -11,6 +11,7 @@ import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
   MetadataVariable,
+  TermsOrder,
 } from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
 import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
@@ -90,7 +91,31 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: async() => ({ ...outputMetadata, variables: variablesOutput }),
+      metadata: async() => ({
+        ...outputMetadata,
+        variables: variablesOutput,
+        termOrder: ActorQueryOperationProject.projectTermOrder(outputMetadata.termOrder, variablesOperationIndexed),
+      }),
     };
+  }
+
+  /**
+   * The longest prefix of a term order that only orders on projected variables.
+   * Later operators may bind a dropped variable again, which the order would then wrongly cover.
+   * @param termOrder The term order of the input.
+   * @param variables The projected variables, by name.
+   */
+  public static projectTermOrder(
+    termOrder: TermsOrder<RDF.Variable> | undefined,
+    variables: Record<string, unknown>,
+  ): TermsOrder<RDF.Variable> | undefined {
+    if (!termOrder) {
+      return undefined;
+    }
+    const end = termOrder.findIndex(entry => !(entry.term.value in variables));
+    if (end === 0) {
+      return undefined;
+    }
+    return end < 0 ? termOrder : termOrder.slice(0, end);
   }
 }
