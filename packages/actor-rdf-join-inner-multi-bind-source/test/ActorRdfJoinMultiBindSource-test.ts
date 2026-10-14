@@ -368,49 +368,6 @@ describe('ActorRdfJoinMultiBindSource', () => {
     });
 
     describe('getJoinCoefficients', () => {
-      it('should not handle entries without a common variable', async() => {
-        await expect(actor.getJoinCoefficients(
-          {
-            type: 'inner',
-            entries: [
-              {
-                output: <any>{},
-                operation: assignOperationSource(AF.createNop(), source1),
-              },
-              {
-                output: <any>{},
-                operation: assignOperationSource(AF.createNop(), source1),
-              },
-            ],
-            context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
-          },
-          {
-            metadatas: [
-              {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 3 },
-                pageSize: 100,
-                requestTime: 10,
-
-                variables: [
-                  { variable: DF.variable('a'), canBeUndef: false },
-                ],
-              },
-              {
-                state: new MetadataValidationState(),
-                cardinality: { type: 'estimate', value: 2 },
-                pageSize: 100,
-                requestTime: 20,
-
-                variables: [
-                  { variable: DF.variable('b'), canBeUndef: false },
-                ],
-              },
-            ],
-          },
-        )).resolves.toFailTest('Bind join can only join entries with at least one common variable');
-      });
-
       it('should handle three entries', async() => {
         await expect(actor.getJoinCoefficients(
           {

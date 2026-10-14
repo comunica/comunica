@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import MagicString from 'magic-string';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 
@@ -30,15 +31,51 @@ function preferTypeScriptSources(): Plugin {
   };
 }
 
+/**
+ * Loads the engines that componentsjs compiles into 'engine-default.js' through Vite instead of Node.
+ *
+ * These engines, and the engine classes wrapping them, obtain their actors through 'require',
+ * which Vitest leaves to Node, unlike Jest, which loaded required modules through its own module system.
+ * That would run the engine tests against the last build instead of the working tree,
+ * with copies of the classes that are distinct from those imported by tests,
+ * and without counting them towards coverage.
+ * @returns A Vite plugin turning each 'require' of, and within, such an engine into an import.
+ */
+function importCompiledEngines(): Plugin {
+  return {
+    name: 'comunica:import-compiled-engines',
+    enforce: 'pre',
+    transform(code, id) {
+      // Within an engine, 'require' obtains the exports of a package, and outside of it, the engine itself
+      const [ requires, importClause ] = id.endsWith('/engine-default.js') ?
+          [ /require\('([^']+)'\)/gu, (name: string) => `* as ${name}` ] :
+          [ /require\('(\.\.\/engine-default\.js)'\)/gu, (name: string) => name ];
+      const output = new MagicString(code);
+      const names = new Map<string, string>();
+      for (const match of code.matchAll(requires)) {
+        if (!names.has(match[1])) {
+          names.set(match[1], `__comunica_require_${names.size}`);
+        }
+        output.overwrite(match.index, match.index + match[0].length, names.get(match[1])!);
+      }
+      if (names.size === 0) {
+        return null;
+      }
+      output.prepend([ ...names ].map(([ source, name ]) => `import ${importClause(name)} from '${source}';\n`).join(''));
+      return { code: output.toString(), map: output.generateMap({ hires: true, source: id }) };
+    },
+  };
+}
+
 export default defineConfig({
-  plugins: [ preferTypeScriptSources() ],
+  plugins: [ preferTypeScriptSources(), importCompiledEngines() ],
   resolve: {
     // Prefer TypeScript sources over their compiled siblings, mirroring the Jest 'moduleFileExtensions' order
     extensions: [ '.ts', '.js', '.mts', '.mjs', '.json' ],
     alias: [
       // 'asynciterator' ships separate CommonJS and ESM builds, and code checks its iterators with 'instanceof'.
       // Node loads the CommonJS build for everything outside of Vite, such as dependencies like 'rdf-stores' and the
-      // actors that componentsjs instantiates for the engine tests, so what Vite imports must use that build as well.
+      // actors that componentsjs instantiates from a config at runtime, so what Vite imports must use that build too.
       { find: /^asynciterator$/u, replacement: createRequire(import.meta.url).resolve('asynciterator') },
     ],
   },

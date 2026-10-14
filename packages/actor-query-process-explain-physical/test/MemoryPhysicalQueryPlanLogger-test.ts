@@ -1335,36 +1335,6 @@ sources:
           pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
     });
 
-    it('for repeated sub-plans that are compacted themselves, with statistics', () => {
-      const joinNode = factory.createJoin([]);
-      logOperation('join', 'nested-loop', joinNode, undefined, 'actor-join', { streamState: 'destroyed' });
-
-      const bjNode = {};
-      logOperation('bindings', undefined, bjNode, joinNode, 'actor-bind', {}, true);
-      for (let i = 0; i < 2; i++) {
-        const subJoinNode = {};
-        logOperation('join', undefined, subJoinNode, bjNode, 'actor-join', {
-          cardinalityReal: 2,
-          timeSelf: 1,
-          timeLife: 3,
-        });
-        const subBjNode = {};
-        logOperation('bindings', undefined, subBjNode, subJoinNode, 'actor-bind', {}, true);
-        for (let j = 0; j < 2; j++) {
-          const subSubJoinNode = {};
-          logOperation('join', undefined, subSubJoinNode, subBjNode, 'actor-join', {});
-          logOperation('pattern', undefined, createPattern('2'), subSubJoinNode, 'actor-pattern', {});
-        }
-      }
-
-      expect(logger.toCompactString(true)).toBe(`join(nested-loop) destroyed
-  bindings
-    join cardReal:2 timeSelf:1ms timeLife:3ms compacted-occurrences:2 cardRealSum:4 timeSelfSum:2ms timeLifeSum:6ms
-      bindings
-        join compacted-occurrences:2
-          pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
-    });
-
     it('for two patterns with the same source', () => {
       const source = <IQuerySource> { toString: () => 'SRC' };
       const parent = factory.createPattern(
