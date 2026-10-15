@@ -38,6 +38,11 @@ TS
 }
 
 export interface IActionBindingsAggregatorFactory extends IAction {
+  /**
+   * The aggregate to create an aggregator for.
+   * Can also be an extension aggregate ({@link Algebra.BoundNamedAggregate}).
+   * TODO(next major): include Algebra.BoundNamedAggregate in the type.
+   */
   expr: Algebra.AggregateExpression;
 }
 

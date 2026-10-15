@@ -2,6 +2,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { FragmentSelectorShape, IQuerySourceWrapper, IServiceExecutor } from '@comunica/types';
 import { Algebra, AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
+import { makeNamedAggregate } from '@comunica/utils-jest';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import {
@@ -196,6 +197,41 @@ describe('FragmentSelectorShapes', () => {
         };
         expect(doesShapeAcceptOperation(shape, nodes)).toBeTruthy();
         expect(doesShapeAcceptOperation(shape, distinctTerms)).toBeFalsy();
+      });
+    });
+
+    describe('with extension aggregates', () => {
+      const shape: FragmentSelectorShape = {
+        type: 'operation',
+        operation: { operationType: 'wildcard' },
+      };
+      const group = AF.createProject(AF.createGroup(AF.createBgp([]), [], [
+        makeNamedAggregate('http://example.org/median', [ AF.createTermExpression(DF.variable('o')) ]),
+      ]), []);
+
+      it('should not accept them with type wildcard', () => {
+        expect(doesShapeAcceptOperation(shape, group)).toBeFalsy();
+      });
+
+      it('should accept them with type wildcard if all extension functions are accepted', () => {
+        expect(doesShapeAcceptOperation(shape, group, { wildcardAcceptAllExtensionFunctions: true })).toBeTruthy();
+      });
+
+      it('should accept them with type wildcard if they are supported as extension functions', () => {
+        expect(doesShapeAcceptOperation({
+          type: 'disjunction',
+          children: [
+            shape,
+            {
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: Algebra.Types.EXPRESSION,
+                extensionFunctions: [ 'http://example.org/median' ],
+              },
+            },
+          ],
+        }, group)).toBeTruthy();
       });
     });
 

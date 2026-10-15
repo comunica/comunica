@@ -7,6 +7,8 @@ import * as RdfString from 'rdf-string';
 /**
  * This is the base class for all aggregators.
  * NOTE: The wildcard count aggregator significantly differs from the others and overloads parts of this class.
+ * TODO(next major): generalize this class to a list of arguments, possibly empty, and to asynchronous putTerm and
+ *  termResult, so that the aggregator of extension aggregates (NamedAggregator) can extend it as well.
  */
 export abstract class AggregateEvaluator {
   private errorOccurred = false;
