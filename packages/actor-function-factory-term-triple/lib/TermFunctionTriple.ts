@@ -23,8 +23,8 @@ export class TermFunctionTriple extends TermFunctionBase {
         .onTerm3(
           exprEval => (subject, predicate, object) => {
             const rdfVariant = exprEval.context.get(KeysInitQuery.rdfVariant);
-            if (rdfVariant !== 'generalizedRDF') {
-              if (rdfVariant !== 'symmetricRDF' &&
+            if (rdfVariant !== 'generalizedRdf') {
+              if (rdfVariant !== 'symmetricRdf' &&
                 subject.termType !== 'namedNode' && subject.termType !== 'blankNode') {
                 throw new ExpressionError(`Subjects in triple terms must either be named nodes or blank nodes`);
               }

@@ -327,8 +327,8 @@ export const KeysInitQuery = {
   ),
   /**
    * The RDF variant the engine operates in https://www.w3.org/TR/rdf12-concepts/#section-generalizations-of-rdf.
-   * Can be undefined or 'rdf' (default), 'symmetricRDF' (also literals and triple terms as subject),
-   * or 'generalizedRDF' (any term in any position).
+   * Can be undefined or 'rdf' (default), 'symmetricRdf' (also literals and triple terms as subject),
+   * or 'generalizedRdf' (any term in any position).
    */
   rdfVariant: new ActionContextKey<RdfVariant>('@comunica/actor-init-query:rdfVariant'),
 };

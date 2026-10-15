@@ -41,10 +41,10 @@ export type DereferenceFromNamedConflictModeResolver = (quad: RDF.Quad) => Deref
  * See KeysInitQuery.rdfVariant .
  * https://www.w3.org/TR/rdf12-concepts/#section-generalizations-of-rdf
  * - undefined/ rdf: subjects are IRIs or blank nodes, predicates are IRIs, objects can be any term.
- * - symmetricRDF: subjects and objects can be any term, predicates are IRIs.
- * - generalizedRDF: any term is allowed in any position.
+ * - symmetricRdf: subjects and objects can be any term, predicates are IRIs.
+ * - generalizedRdf: any term is allowed in any position.
  */
-export type RdfVariant = 'rdf' | 'symmetricRDF' | 'generalizedRDF';
+export type RdfVariant = 'rdf' | 'symmetricRdf' | 'generalizedRdf';
 
 /**
  * Common query context interface

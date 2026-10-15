@@ -43,7 +43,7 @@ describe('evaluation of \'TRIPLE\'', () => {
   describe('for RDF variant symmetricRDF', () => {
     runFuncTestTable({
       ...config,
-      ...configFor('symmetricRDF'),
+      ...configFor('symmetricRdf'),
       testArray: [
         [ '<ex:a>', '<ex:b>', '<ex:c>', '<< <ex:a> <ex:b> <ex:c> >>' ],
         [ '<ex:a>', '<ex:b>', '"123"', '<< <ex:a> <ex:b> "123" >>' ],
@@ -61,7 +61,7 @@ describe('evaluation of \'TRIPLE\'', () => {
   describe('for RDF variant generalizedRDF', () => {
     runFuncTestTable({
       ...config,
-      ...configFor('generalizedRDF'),
+      ...configFor('generalizedRdf'),
       testArray: [
         [ '<ex:a>', '<ex:b>', '<ex:c>', '<< <ex:a> <ex:b> <ex:c> >>' ],
         [ '<ex:a>', '<ex:b>', '"123"', '<< <ex:a> <ex:b> "123" >>' ],
