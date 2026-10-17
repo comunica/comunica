@@ -7,6 +7,7 @@ import {
   bool,
   dateTime,
   dateTyped,
+  dateTimeTyped,
   merge,
   numeric,
   str,
@@ -140,6 +141,7 @@ describe('evaluation of \'=\'', () => {
         earlyZ lateN  = false
     
         edge1 edge2   = true
+        '${dateTimeTyped('2025-01-01T00:00:01.001Z')}' '${dateTimeTyped('2025-01-01T00:00:01Z')}' = false
       `,
     });
   });
