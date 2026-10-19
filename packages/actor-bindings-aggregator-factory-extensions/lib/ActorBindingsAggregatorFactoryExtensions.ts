@@ -43,6 +43,12 @@ export class ActorBindingsAggregatorFactoryExtensions extends ActorBindingsAggre
     const aggregate = <Algebra.BoundNamedAggregate> <unknown> expr;
     const evaluators = await Promise.all(aggregate.args.map(arg =>
       this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: arg, context })));
-    return new NamedAggregator(evaluators, aggregate.distinct, extensionAggregator());
+    return new NamedAggregator(
+      aggregate.name.value,
+      evaluators,
+      aggregate.distinct,
+      extensionAggregator(),
+      (message, data) => this.logWarn(context, message, data),
+    );
   }
 }
