@@ -103,6 +103,23 @@ describe('ActorBindingsAggregatorFactoryExtensions', () => {
         await bindingsAggregator.putBindings(BF.bindings([[ DF.variable('x'), DF.literal('1') ]]));
         expect(aggregator.put).toHaveBeenCalledTimes(1);
       });
+
+      it('should log a warning when the aggregate errors', async() => {
+        const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
+        aggregator.put = () => {
+          throw new Error('put error');
+        };
+        const bindingsAggregator = await actor
+          .run({ context, expr: makeNamedAggregate('http://example.org/median', args) }, extensionAggregator);
+        await bindingsAggregator.putBindings(BF.bindings([[ DF.variable('x'), DF.literal('1') ]]));
+        await expect(bindingsAggregator.result()).resolves.toBeUndefined();
+        expect(logWarnSpy).toHaveBeenCalledTimes(1);
+        expect(logWarnSpy).toHaveBeenCalledWith(
+          context,
+          'Error occurred while aggregating with extension aggregate http://example.org/median.',
+          expect.any(Function),
+        );
+      });
     });
   });
 });
