@@ -66,13 +66,18 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       })).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'exact', value: 2 },
-        availableOrders: undefined,
-        order: undefined,
         variables: [
           { variable: v1, canBeUndef: false },
           { variable: v2, canBeUndef: false },
           { variable: v3, canBeUndef: false },
         ],
+        // The full scan is served by the GPSO index.
+        termOrder: [
+          { term: v2, direction: 'asc' },
+          { term: v1, direction: 'asc' },
+          { term: v3, direction: 'asc' },
+        ],
+        canSeek: true,
         requestTime: 0,
       });
       await expect(stream).toEqualBindingsStream([
@@ -103,12 +108,16 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       })).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: 2 },
-        availableOrders: undefined,
-        order: undefined,
         variables: [
           { variable: v1, canBeUndef: false },
           { variable: v2, canBeUndef: false },
         ],
+        // The order stops at the repeated variable.
+        termOrder: [
+          { term: v2, direction: 'asc' },
+          { term: v1, direction: 'asc' },
+        ],
+        canSeek: true,
         requestTime: 0,
       });
       await expect(stream).toEqualBindingsStream([
@@ -119,7 +128,13 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       ]);
     });
 
-    it('loads into a default store by default', async() => {
+    it('loads into a default store with nonOrderedStore', async() => {
+      actor = new ActorQuerySourceIdentifyHypermediaNone({
+        name: 'actor',
+        bus,
+        mediatorMergeBindingsContext,
+        nonOrderedStore: true,
+      });
       const quads = streamifyArray([ quad('s2', 'p1', 'o1'), quad('s1', 'p1', 'o2') ]);
       const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
       const store: any = (<any> source).source;
@@ -139,16 +154,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
       expect(store.indexOrders).toEqual([]);
     });
 
-    describe('with an ordered store', () => {
-      beforeEach(() => {
-        actor = new ActorQuerySourceIdentifyHypermediaNone({
-          name: 'actor',
-          bus,
-          mediatorMergeBindingsContext,
-          orderedStore: true,
-        });
-      });
-
+    describe('with an ordered store by default', () => {
       it('loads into an ordered store, with GPSO first', async() => {
         const quads = streamifyArray([ quad('s1', 'p1', 'o1') ]);
         const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
@@ -206,7 +212,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
     describe.each([
       [ 'a default', false ],
       [ 'an ordered', true ],
-    ])('with a sourceAsNamedGraph-tagged context and %s store', (_, orderedStore) => {
+    ])('with a sourceAsNamedGraph-tagged context and %s store', (_, ordered) => {
       const namedGraph = DF.namedNode('http://example.org/g');
 
       beforeEach(() => {
@@ -214,7 +220,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
           name: 'actor',
           bus,
           mediatorMergeBindingsContext,
-          orderedStore,
+          nonOrderedStore: !ordered,
         });
         context = context.set(KeysQueryOperation.sourceAsNamedGraph, namedGraph);
       });

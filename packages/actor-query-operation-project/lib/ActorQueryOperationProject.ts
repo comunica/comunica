@@ -100,8 +100,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
   }
 
   /**
-   * The longest prefix of a term order that only orders on projected variables.
-   * Later operators may bind a dropped variable again, which the order would then wrongly cover.
+   * Compute the term order that would apply on the projected variables.
    * @param termOrder The term order of the input.
    * @param variables The projected variables, by name.
    */
