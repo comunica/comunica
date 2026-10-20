@@ -80,6 +80,8 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "extensionFunctionsAlwaysPushdown": "@comunica/actor-init-query:extensionFunctionsAlwaysPushdown",
    *   "extensionFunctionCreator": "@comunica/actor-init-query:extensionFunctionCreator",
    *   "functionArgumentsCache": "@comunica/actor-init-query:functionArgumentsCache",
+   *   "serviceExecutors": "@comunica/actor-init-query:serviceExecutors",
+   *   "serviceExecutorCreator": "@comunica/actor-init-query:serviceExecutorCreator",
    *   "explain": "@comunica/actor-init-query:explain",
    *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph",
    *   "traverse": "@comunica/bus-query-source-identify:traverse",
@@ -91,7 +93,8 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "existenceResolver": "@comunica/utils-expression-evaluator:existenceResolver",
    *   "rdfSerializationPrefixes": "@comunica/bus-rdf-serialize:rdfSerializationPrefixes",
    *   "dereferenceFromNamed": "@comunica/actor-init-query:dereferenceFromNamed",
-   *   "dereferenceFromNamedConflictMode": "@comunica/actor-init-query:dereferenceFromNamedConflictMode"
+   *   "dereferenceFromNamedConflictMode": "@comunica/actor-init-query:dereferenceFromNamedConflictMode",
+   *   "rdfVariant": "@comunica/actor-init-query:rdfVariant"
    * }}
    */
   contextKeyShortcuts: Record<string, string>;

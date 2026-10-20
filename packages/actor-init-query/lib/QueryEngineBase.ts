@@ -1,11 +1,13 @@
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
-import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
+import { KeysCore, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, ActionContextKey } from '@comunica/core';
 import type {
   IActionContext,
   IQueryOperationResult,
   IQueryEngine,
   IQueryExplained,
+  IQuadUpdate,
+  IRdfParseOptions,
   QueryFormatType,
   QueryType,
   QueryExplainMode,
@@ -151,6 +153,78 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
       return result;
     }
     return QueryEngineBase.internalToFinalResult(result);
+  }
+
+  /**
+   * Update the destination with the given quads and graphs, without serializing them into an update query.
+   * @param update The quads to insert and delete, and the graphs to delete and create.
+   * @param context A context, which determines the destination in the same way as for update queries.
+   * @return {Promise<void>} A promise that resolves when the destination has been updated.
+   */
+  public async updateQuads(update: IQuadUpdate, context?: Partial<QueryAlgebraContextInner>): Promise<void> {
+    const { mediatorContextPreprocess, mediatorUpdateQuads } = this.actorInitQuery;
+    if (!mediatorContextPreprocess || !mediatorUpdateQuads) {
+      throw new Error(
+        'Updating quads requires the query init actor to have a mediatorContextPreprocess and a mediatorUpdateQuads',
+      );
+    }
+
+    const actionContext = (await mediatorContextPreprocess.mediate({
+      context: ActionContext.ensureActionContext(context),
+      initialize: true,
+    })).context;
+    if (actionContext.get(KeysQueryOperation.readOnly)) {
+      throw new Error('Attempted a write operation in read-only mode');
+    }
+    if (actionContext.get(KeysInitQuery.invalidateCache)) {
+      await this.invalidateHttpCache();
+    }
+
+    const { execute } = await mediatorUpdateQuads.mediate({ ...update, context: actionContext });
+    await execute();
+    actionContext.get(KeysCore.log)?.flush();
+  }
+
+  /**
+   * Parse a stream of RDF with the parsers of this engine.
+   * @param stream A text stream in an RDF serialization.
+   * @param options The content type of the stream, and optional parsing and context options.
+   * @return A promise resolving to a stream of the parsed quads.
+   */
+  public async parseRdf(
+    stream: NodeJS.ReadableStream,
+    options: IRdfParseOptions & Partial<QueryAlgebraContextInner>,
+  ): Promise<RDF.Stream> {
+    const { mediatorContextPreprocess, mediatorRdfParse } = this.actorInitQuery;
+    if (!mediatorContextPreprocess || !mediatorRdfParse) {
+      throw new Error(
+        'Parsing RDF requires the query init actor to have a mediatorContextPreprocess and a mediatorRdfParse',
+      );
+    }
+    if (!options.contentType) {
+      throw new Error(`Missing 'contentType' option while parsing.`);
+    }
+
+    const context = (await mediatorContextPreprocess.mediate({
+      context: ActionContext.ensureActionContext(options),
+      initialize: true,
+    })).context;
+    if (context.get(KeysInitQuery.invalidateCache)) {
+      await this.invalidateHttpCache();
+    }
+
+    const { data } = (await mediatorRdfParse.mediate({
+      context,
+      handle: {
+        data: stream,
+        metadata: { baseIRI: options.baseIRI, version: options.version },
+        url: options.baseIRI ?? 'a stream',
+        context,
+      },
+      handleMediaType: options.contentType,
+    })).handle;
+    data.on('end', () => context.get(KeysCore.log)?.flush());
+    return data;
   }
 
   /**

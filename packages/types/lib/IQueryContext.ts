@@ -6,6 +6,7 @@ import type { IProxyHandler } from './IProxyHandler';
 import type { SourceType } from './IQueryEngine';
 import type { QueryExplainMode } from './IQueryOperationResult';
 import type { Logger } from './Logger';
+import type { IServiceExecutor, ServiceExecutorCreator } from './ServiceExecutor';
 
 // We omit `& RDF.QuerySourceContext<SourceType>` in the following two types
 // as the QuerySourceContext proved to be too developer-unfriendly.
@@ -34,6 +35,16 @@ export type DereferenceFromNamedConflictMode = 'error' | 'preferNamed' | 'keepSo
  * whether to error (default), rewrite it into the FROM NAMED graph, or keep it as-is.
  */
 export type DereferenceFromNamedConflictModeResolver = (quad: RDF.Quad) => DereferenceFromNamedConflictMode;
+
+/**
+ * The RDF variant that determines which term types are allowed in which triple positions.
+ * See KeysInitQuery.rdfVariant .
+ * https://www.w3.org/TR/rdf12-concepts/#section-generalizations-of-rdf
+ * - undefined/ rdf: subjects are IRIs or blank nodes, predicates are IRIs, objects can be any term.
+ * - symmetricRdf: subjects and objects can be any term, predicates are IRIs.
+ * - generalizedRdf: any term is allowed in any position.
+ */
+export type RdfVariant = 'rdf' | 'symmetricRdf' | 'generalizedRdf';
 
 /**
  * Common query context interface
@@ -79,6 +90,8 @@ export interface IQueryContextCommon {
   extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode)
   => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
   functionArgumentsCache?: FunctionArgumentsCache;
+  serviceExecutors?: Record<string, IServiceExecutor>;
+  serviceExecutorCreator?: ServiceExecutorCreator;
   explain?: QueryExplainMode;
   nonLexicalComparison?: boolean;
   fullTermComparison?: boolean;
@@ -91,6 +104,7 @@ export interface IQueryContextCommon {
   rdfSerializationPrefixes?: Record<string, string>;
   dereferenceFromNamed?: boolean;
   dereferenceFromNamedConflictMode?: DereferenceFromNamedConflictModeResolver;
+  rdfVariant?: RdfVariant;
 
   sources: SourceType[];
 }
