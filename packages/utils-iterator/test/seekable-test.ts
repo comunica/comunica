@@ -1,6 +1,6 @@
 import type { Bindings, BindingsStream } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
-import { isSeekableBindingsStream, seekBindingsStream } from '../lib/seekable';
+import { isSeekableBindingsStream, SeekableMappingIterator, seekBindingsStream } from '../lib/seekable';
 
 describe('seekable bindings streams', () => {
   const target = <Bindings> <any> { dummy: true };
@@ -32,6 +32,21 @@ describe('seekable bindings streams', () => {
 
     it('does nothing to a stream that cannot', () => {
       expect(() => seekBindingsStream(plain, target)).not.toThrow();
+    });
+  });
+
+  describe('SeekableMappingIterator', () => {
+    it('maps the items of its source', async() => {
+      const source = new ArrayIterator([ 1, 2 ], { autoStart: false });
+      const mapped = new SeekableMappingIterator(source, item => <Bindings> <any> { item }, seek);
+      await expect(mapped.toArray()).resolves.toEqual([{ item: 1 }, { item: 2 }]);
+    });
+
+    it('forwards seeks', () => {
+      const mapped = new SeekableMappingIterator(new ArrayIterator([], { autoStart: false }), item => item, seek);
+      expect(isSeekableBindingsStream(mapped)).toBe(true);
+      mapped.seek(target);
+      expect(seek).toHaveBeenCalledWith(target);
     });
   });
 });
