@@ -51,7 +51,9 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
       return operation;
     }
 
-    // The operation can only move into a source if the inputs of its (NOT) EXISTS expressions share that source.
+    // If the operation has expressions (e.g. `filter`), then we also consider grouping within its (NOT) EXISTS children.
+    // For operations without expressions, the returned `operation` will be unchanged after this operation,
+    // and `existenceInputs` will be an empty array.
     const [ existenceGroupedOperation, existenceInputs ] = await this.groupExistenceInputs(operation, context);
 
     // If operation has a single input, move source annotation upwards if the source can handle it.
