@@ -8,10 +8,10 @@ const BF = new BindingsFactory(DF);
 const v = DF.variable('v');
 
 describe('skolemizeBindingsStream seek forwarding', () => {
-  it('leaves a stream that cannot skip alone', () => {
+  it('does not skip in a stream that cannot', () => {
     const inner: any = new ArrayIterator([], { autoStart: false });
     const out: any = skolemizeBindingsStream(DF, inner, '0');
-    expect(out.seek).toBeUndefined();
+    expect(() => out.seek(BF.bindings([[ v, DF.namedNode('http://example.org/s') ]]))).not.toThrow();
   });
 
   it('deskolemizes the target before forwarding it', () => {

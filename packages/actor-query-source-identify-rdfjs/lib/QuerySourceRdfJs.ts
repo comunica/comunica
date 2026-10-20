@@ -2,7 +2,6 @@ import { filterMatchingQuotedQuads, getVariables, quadsToBindings } from '@comun
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type {
   BindingsStream,
-  ISeekableBindingsStream,
   ComunicaDataFactory,
   FragmentSelectorShape,
   IActionContext,
@@ -12,6 +11,7 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory, isKnownOperation, TypesComunica } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { SeekableMappingIterator } from '@comunica/utils-iterator';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
@@ -20,17 +20,32 @@ import { filterTermsNested, QUAD_TERM_NAMES, someTerms, someTermsNested, uniqTer
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
 /**
- * A bindings scan that knows the order it produces its results in, and can skip ahead within it.
+ * A bindings scan knows the order of results, and can skip ahead within it.
  * `rdf-stores` produces one of these for a store whose indexes have been ordered.
  */
 interface IOrderedBindingsScan {
-  resultOrder?: QuadTermName[];
+  resultOrder: QuadTermName[];
   seekTo?: (component: QuadTermName, term: RDF.Term) => void;
 }
 
 /**
- * Pair every component a scan varies over with the variable the pattern binds it to, dropping the
- * ones the pattern repeats, since a variable is only sorted on by its first occurrence.
+ * The ordered scan that a stream is, if it is one.
+ * @param stream A stream returned by a source.
+ */
+function getOrderedScan(stream: unknown): IOrderedBindingsScan | undefined {
+  const scan = <Partial<IOrderedBindingsScan>> stream;
+  if (!Array.isArray(scan.resultOrder)) {
+    return undefined;
+  }
+  return {
+    resultOrder: scan.resultOrder,
+    seekTo: typeof scan.seekTo === 'function' ? scan.seekTo : undefined,
+  };
+}
+
+/**
+ * Determine for every component the variable the pattern binds it to.
+ * Components the pattern repeats are dropped, since a variable is only sorted on by its first occurrence.
  * @param resultOrder The components the scan varies over, in the order it produces them.
  * @param operation The pattern being matched.
  */
@@ -222,14 +237,6 @@ export class QuerySourceRdfJs implements IQuerySource {
         rawStream :
         wrapAsyncIterator<RDF.Bindings>(rawStream, { autoStart: false });
 
-      // A scan that reports the components it varies over, in the order it produces them, is sorted on
-      // the variables those components carry. Read that off the raw stream: the wrappers below produce
-      // a different iterator, and only an unwrapped scan can still be asked to skip ahead.
-      const scan = <IOrderedBindingsScan> <any> it;
-      const order = scan.resultOrder ?
-        scanOrderToBindingsOrder(scan.resultOrder, operation) :
-        undefined;
-
       // Check if non-default-graph triples need to be filtered out.
       // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
       // But this is not the case when using union default graph semantics
@@ -247,29 +254,30 @@ export class QuerySourceRdfJs implements IQuerySource {
         operation.graph = this.dataFactory.defaultGraph();
       }
 
-      // The order and the skipping only survive while nothing was wrapped around the scan.
-      const ordered = it === <any> scan && order && order.length > 0 ? order : undefined;
-      if (ordered && scan.seekTo) {
-        const seekTo = scan.seekTo;
-        const [ component, variable ] = ordered[0];
-        (<ISeekableBindingsStream> <any> it).seek = (target: RDF.Bindings): void => {
+      // A scan is sorted on the variables of the components it varies over, which only holds while nothing
+      // was wrapped around it.
+      const scan = it === rawStream ? getOrderedScan(rawStream) : undefined;
+      const order = scan ? scanOrderToBindingsOrder(scan.resultOrder, operation) : [];
+      const seekTo = order.length > 0 ? scan?.seekTo : undefined;
+      if (seekTo) {
+        // A scan can only skip ahead on one component, so seeks skip on the first one of the order.
+        const [ component, variable ] = order[0];
+        it = new SeekableMappingIterator(it, bindings => bindings, (target) => {
           const term = target.get(variable);
           if (term) {
             seekTo(component, term);
           }
-        };
+        });
       }
 
       // Determine metadata
       if (!it.getProperty('metadata')) {
         const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
-        // Only stated when there is something to state, so that a source that reports neither leaves
-        // the metadata it produced before this exactly as it was.
         this.setMetadata(it, operation, context, forceEstimateCardinality, {
           variables,
-          ...ordered && {
-            termOrder: ordered.map(([ , variable ]) => ({ term: variable, direction: <const> 'asc' })),
-            canSeek: typeof (<ISeekableBindingsStream> <any> it).seek === 'function',
+          ...order.length > 0 && {
+            termOrder: order.map(([ , variable ]) => ({ term: variable, direction: <const> 'asc' })),
+            canSeek: Boolean(seekTo),
           },
         }).catch(error => it.destroy(error));
       }
