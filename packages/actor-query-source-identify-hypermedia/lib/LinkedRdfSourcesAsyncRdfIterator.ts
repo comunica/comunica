@@ -70,10 +70,8 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
   /**
    * Skip ahead to the first binding that is not before the given one.
-   * Only meaningful while this iterator reports a `termOrder`, which it only does when a single source
-   * contributes to it. The call is a hint: sources that cannot skip keep producing every binding,
-   * and bindings already buffered here are still emitted, so the consumer must stay tolerant of
-   * bindings before the target.
+   * This is only meaningful when this iterator reports a `termOrder` in its metadata.
+   * Calling this is considered a hint, and may potentially do nothing if the source prefers.
    * @param target The binding to skip to.
    */
   public seek(target: RDF.Bindings): void {
@@ -148,10 +146,9 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   protected abstract getSourceLinks(metadata: Record<string, any>, startSource: ISourceState): Promise<ILink[]>;
 
   /**
-   * Whether any links can be followed from a source with the given metadata.
-   * Unlike {@link LinkedRdfSourcesAsyncRdfIterator#getSourceLinks} this must leave no trace: it runs
-   * while the iterator is still lazy, so it may neither mark links as handled nor report them as
-   * discovered. Only used to decide whether an order may be reported, so the safe answer is `true`.
+   * This checks if there are links that can be followed from a source with the given metadata.
+   * Unlike {@link LinkedRdfSourcesAsyncRdfIterator#getSourceLinks} this has no side-effects,
+   * and leaves the iterator lazy and sources undiscovered.
    * @param _metadata The metadata of a source.
    */
   protected async hasSourceLinks(_metadata: Record<string, any>): Promise<boolean> {
@@ -159,21 +156,13 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   }
 
   /**
-   * {@link LinkedRdfSourcesAsyncRdfIterator#hasSourceLinks}, probed once per source state.
-   * A bind join creates an iterator per binding over the same source, and each of them asks for its
-   * metadata, so probing every time would resolve the same links over and over.
-   * This assumes that the links of a source do not depend on the operation it is queried with,
-   * which holds for the sources that report an order.
+   * A cached version of {@link LinkedRdfSourcesAsyncRdfIterator#hasSourceLinks}.
    * @param sourceState The state of the source.
    * @param metadata The metadata of the source.
    */
   protected hasSourceLinksCached(sourceState: ISourceState, metadata: Record<string, any>): Promise<boolean> {
-    let probe = SOURCE_LINK_PROBES.get(sourceState);
-    if (!probe) {
-      probe = this.hasSourceLinks(metadata);
-      SOURCE_LINK_PROBES.set(sourceState, probe);
-    }
-    return probe;
+    sourceState.hasSourceLinks ??= this.hasSourceLinks(metadata);
+    return sourceState.hasSourceLinks;
   }
 
   public override _read(count: number, done: () => void): void {
@@ -432,11 +421,6 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 }
 
 /**
- * The results of {@link LinkedRdfSourcesAsyncRdfIterator#hasSourceLinks}, per source state.
- */
-const SOURCE_LINK_PROBES = new WeakMap<ISourceState, Promise<boolean>>();
-
-/**
  * Whether metadata makes a claim about the order of its bindings.
  */
 function isOrdered(metadata: MetadataBindings): boolean {
@@ -478,6 +462,11 @@ export interface ISourceState {
    * The cache policy of the request's response.
    */
   cachePolicy?: ICachePolicy<IActionQuerySourceDereferenceLink>;
+  /**
+   * Whether links can be followed from this source, once probed.
+   * This assumes that the links of a source do not depend on the operation it is queried with.
+   */
+  hasSourceLinks?: Promise<boolean>;
 }
 
 export type SourceStateGetter = (link: ILink, handledDatasets: Record<string, boolean>) => Promise<ISourceState>;

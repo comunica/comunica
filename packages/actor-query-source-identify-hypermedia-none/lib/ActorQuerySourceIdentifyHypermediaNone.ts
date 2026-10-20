@@ -38,12 +38,12 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
   ];
 
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
-  public readonly orderedStore: boolean;
+  public readonly nonOrderedStore: boolean;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaNoneArgs) {
     super(args, 'file');
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
-    this.orderedStore = args.orderedStore ?? false;
+    this.nonOrderedStore = args.nonOrderedStore ?? false;
   }
 
   public async testMetadata(
@@ -63,7 +63,7 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
       await ActorQuerySourceIdentifyHypermediaNone.storeStream(
         action.quads,
         namedGraph ? { dataFactory, graph: namedGraph, url: action.url, resolveConflictMode } : undefined,
-        this.orderedStore,
+        !this.nonOrderedStore,
       ),
       dataFactory,
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
@@ -164,11 +164,11 @@ export interface IActorQuerySourceIdentifyHypermediaNoneArgs extends IActorQuery
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   /**
-   * If files must be loaded into an ordered store, which keeps its quads in the term order,
+   * If files must be loaded into a default store, whose scans have no order.
+   * Otherwise, files are loaded into an ordered store, which keeps its quads in the term order,
    * so that scans of it can report that order as `termOrder` and skip ahead within it, which merge joins make use of.
-   * A file is loaded in full before it is queried, which is what an ordered store is built for.
-   * If false, files are loaded into a default store, whose scans have no order.
+   * TODO: in the next major version, replace this by an `orderedStore` parameter that defaults to true.
    * @default {false}
    */
-  orderedStore?: boolean;
+  nonOrderedStore?: boolean;
 }

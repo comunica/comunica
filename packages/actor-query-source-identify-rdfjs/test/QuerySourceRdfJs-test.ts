@@ -193,6 +193,7 @@ describe('QuerySourceRdfJs', () => {
             { term: DF.variable('s'), direction: 'asc' },
             { term: DF.variable('o'), direction: 'asc' },
           ],
+          canSeek: true,
         });
 
       // The seek goes to the first component of that order, in the store's own terms.
@@ -202,6 +203,10 @@ describe('QuerySourceRdfJs', () => {
       // A target that binds nothing the scan is ordered on has nothing to skip to.
       data.seek(BF.bindings([[ DF.variable('other'), DF.namedNode('x') ]]));
       expect(sought).toEqual([[ 'subject', 's9' ]]);
+
+      await expect(data).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('s'), DF.namedNode('s1') ], [ DF.variable('o'), DF.namedNode('o1') ]]),
+      ]);
     });
 
     it('should stop the reported order at a variable the pattern repeats', async() => {
@@ -211,12 +216,14 @@ describe('QuerySourceRdfJs', () => {
         return it;
       };
 
-      const data = source.queryBindings(
+      const data: any = source.queryBindings(
         AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('s')),
         ctx,
       );
       await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
-        .toMatchObject({ termOrder: [{ term: DF.variable('s'), direction: 'asc' }]});
+        .toMatchObject({ termOrder: [{ term: DF.variable('s'), direction: 'asc' }], canSeek: false });
+      // The scan cannot skip ahead, so neither can the stream.
+      expect(data.seek).toBeUndefined();
     });
 
     it('should report no order when the scan varies over nothing the pattern binds', async() => {
