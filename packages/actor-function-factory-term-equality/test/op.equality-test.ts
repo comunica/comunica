@@ -141,7 +141,8 @@ describe('evaluation of \'=\'', () => {
         earlyZ lateN  = false
     
         edge1 edge2   = true
-        '${dateTimeTyped('2025-01-01T00:00:01.001Z')}' '${dateTimeTyped('2025-01-01T00:00:01Z')}' = false
+        '${dateTimeTyped('2026-10-20T13:01:02.001Z')}' '${dateTimeTyped('2026-10-20T13:01:02Z')}' = false
+        '${dateTimeTyped('2026-10-20T13:01:02.0001Z')}' '${dateTimeTyped('2026-10-20T13:01:02Z')}' = true
       `,
     });
   });
