@@ -43,7 +43,7 @@
     "version": "manual-git-changelog onversion && packages/utils-monorepo/sh/update-publiccode.sh"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.64.1",
     "@pollyjs/adapter-node-http": "^6.0.5",
     "@pollyjs/core": "^6.0.5",
     "@pollyjs/persister-fs": "^6.0.5",
