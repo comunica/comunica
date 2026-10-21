@@ -109,6 +109,74 @@ export abstract class ActorHttp<TS = undefined> extends Actor<IActionHttp, IActo
   }
 
   /**
+   * Determine the HTTP method for the given action.
+   * Falls back to `GET` if no method can be derived.
+   * @param {IActionHttp} action HTTP action.
+   */
+  public static getRequestMethod(action: IActionHttp): string {
+    if (action.init?.method !== undefined) {
+      return action.init.method;
+    }
+    if (action.input instanceof Request) {
+      return action.input.method;
+    }
+    return 'GET';
+  }
+
+  /**
+   * Check if the given method is idempotent.
+   * @param {string} method HTTP method.
+   */
+  public static isIdempotentMethod(method: string): boolean {
+    switch (method.toUpperCase()) {
+      case 'GET':
+      case 'HEAD':
+      case 'PUT':
+      case 'DELETE':
+      case 'OPTIONS':
+      case 'TRACE':
+      case 'QUERY':
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  /**
+   * Check if the request body can be replayed across retries.
+   * @param {IActionHttp} action HTTP action.
+   */
+  public static isReplayableRequestBody(action: IActionHttp): boolean {
+    if (action.init?.body !== undefined) {
+      return ActorHttp.isReplayableBody(action.init.body);
+    }
+    if (action.input instanceof Request && action.input.body) {
+      return ActorHttp.isReplayableBody(action.input.body);
+    }
+    return true;
+  }
+
+  /**
+   * Check if a body value is replayable, i.e., it can be sent again without re-reading a stream.
+   * @param {unknown} body A request body value.
+   */
+  public static isReplayableBody(body: unknown): boolean {
+    if (
+      body === null ||
+      body === undefined ||
+      typeof body === 'string' ||
+      body instanceof URLSearchParams ||
+      (typeof FormData !== 'undefined' && body instanceof FormData) ||
+      body instanceof ArrayBuffer ||
+      ArrayBuffer.isView(body) ||
+      (typeof Blob !== 'undefined' && body instanceof Blob)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * Attempts to determine whether the current environment is a browser or not.
    * @returns {boolean} True for browsers and web workers, false for other runtimes.
    */
