@@ -39,30 +39,34 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
    * Group operations belonging to the same source together, only if that source accepts the grouped operations.
    * This grouping will be done recursively for the whole operation tree.
    * Operations annotated with sources are considered leaves in the tree.
-   * @param operation An operation to group.
+   * @param genericOperation An operation to group.
    * @param context The action context.
    */
-  public async groupOperation(operation: Algebra.Operation, context: IActionContext): Promise<Algebra.Operation> {
+  public async groupOperation(
+    genericOperation: Algebra.Operation,
+    context: IActionContext,
+  ): Promise<Algebra.Operation | Algebra.Single | Algebra.Multi> {
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 
     // Return operation as-is if the operation already has a single source, or if the operation has no children.
-    if (getOperationSource(operation) ?? !('input' in operation)) {
-      return operation;
+    if (getOperationSource(genericOperation) ?? !('input' in genericOperation)) {
+      return genericOperation;
     }
 
     // If the operation has expressions (e.g. `filter`), then we also consider grouping
     // within its (NOT) EXISTS children. For operations without expressions,
     // the returned `operation` will be unchanged after this operation, and `existenceInputs` will be an empty array.
     // The input is never changed by this, and is read upfront as reassigning `operation` drops its narrowed type.
-    const input = operation.input;
-    let existenceInputs: Algebra.Operation[];
-    [ operation, existenceInputs ] = await this.groupExistenceInputs(operation, context);
+    const [ operation, existenceInputs ] = await this.groupExistenceInputs(
+      <Algebra.Single | Algebra.Multi> genericOperation,
+      context,
+    );
 
     // If operation has a single input, move source annotation upwards if the source can handle it.
-    if (!Array.isArray(input)) {
-      const groupedInput = await this.groupOperation(<Algebra.Operation> input, context);
-      return <Algebra.Operation> {
+    if (!Array.isArray(operation.input)) {
+      const groupedInput: Algebra.Operation = await this.groupOperation(operation.input, context);
+      return {
         ...await this.moveSourceAnnotationUpwardsIfPossible(
           operation,
           [ groupedInput, ...existenceInputs ],
@@ -74,7 +78,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     }
 
     // If operation has multiple inputs, cluster source annotations.
-    const inputs: Algebra.Operation[] = await Promise.all(input
+    const inputs: Algebra.Operation[] = await Promise.all(operation.input
       .map(subInput => this.groupOperation(subInput, context)));
     const clusters = this.clusterOperationsWithEqualSources(inputs);
 
@@ -82,7 +86,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     if (clusters.length === 1) {
       const newInputs = clusters[0];
       const source = getOperationSource(clusters[0][0])!;
-      return <Algebra.Operation> {
+      return {
         ...await this.moveSourceAnnotationUpwardsIfPossible(
           operation,
           [ ...newInputs, ...existenceInputs ],
