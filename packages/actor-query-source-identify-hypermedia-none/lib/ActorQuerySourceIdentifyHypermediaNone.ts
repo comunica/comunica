@@ -19,24 +19,11 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { compareTerms } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import { RdfStore } from 'rdf-stores';
-import type { QuadTermName } from 'rdf-terms';
 
 /**
  * A comunica None Query Source Identify Hypermedia Actor.
  */
 export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIdentifyHypermedia {
-  /**
-   * The indexes of an ordered store.
-   * GPSO comes first, so that it serves `?s <p> ?o`, which then comes back in subject order: star-shaped
-   * joins on the subject can merge such scans. It also serves subject-only patterns, by skipping from one
-   * predicate to the next, which is why it replaces GSPO rather than being added to it.
-   */
-  public static readonly ORDERED_INDEX_COMBINATIONS: QuadTermName[][] = [
-    [ 'graph', 'predicate', 'subject', 'object' ],
-    [ 'graph', 'predicate', 'object', 'subject' ],
-    [ 'graph', 'object', 'subject', 'predicate' ],
-  ];
-
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   public readonly nonOrderedStore: boolean;
 
@@ -82,7 +69,6 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     if (ordered) {
       return <RdfStore<any, Q>><unknown> RdfStore.createOrdered({
         termComparator: compareTerms,
-        indexCombinations: ActorQuerySourceIdentifyHypermediaNone.ORDERED_INDEX_COMBINATIONS,
         nodes: true,
       });
     }
