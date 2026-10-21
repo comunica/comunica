@@ -71,11 +71,11 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
           { variable: v2, canBeUndef: false },
           { variable: v3, canBeUndef: false },
         ],
-        // The full scan is served by the GPSO index.
+        // The full scan is served by the GSOP index.
         termOrder: [
-          { term: v2, direction: 'asc' },
           { term: v1, direction: 'asc' },
           { term: v3, direction: 'asc' },
+          { term: v2, direction: 'asc' },
         ],
         canSeek: true,
         requestTime: 0,
@@ -114,7 +114,6 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
         ],
         // The order stops at the repeated variable.
         termOrder: [
-          { term: v2, direction: 'asc' },
           { term: v1, direction: 'asc' },
         ],
         canSeek: true,
@@ -155,12 +154,12 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
     });
 
     describe('with an ordered store by default', () => {
-      it('loads into an ordered store, with GPSO first', async() => {
+      it('loads into an ordered store, with the default indexes of createOrdered', async() => {
         const quads = streamifyArray([ quad('s1', 'p1', 'o1') ]);
         const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
         const store: any = (<any> source).source;
         expect(store.indexOrders.map((order: string[]) => order.map(component => component[0]).join('')))
-          .toEqual([ 'gpso', 'gpos', 'gosp' ]);
+          .toEqual([ 'gsop', 'gpso', 'gops' ]);
       });
 
       it('scans in the term order, and says so in the metadata', async() => {
