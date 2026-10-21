@@ -57,7 +57,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     // If the operation has expressions (e.g. `filter`), then we also consider grouping
     // within its (NOT) EXISTS children. For operations without expressions,
     // the returned `operation` will be unchanged after this operation, and `existenceInputs` will be an empty array.
-    // The input is never changed by this, and is read upfront as reassigning `operation` drops its narrowed type.
+    // After this call, `operation` is used further instead of `genericOperation`.
     const [ operation, existenceInputs ] = await this.groupExistenceInputs(
       <Algebra.Single | Algebra.Multi> genericOperation,
       context,
