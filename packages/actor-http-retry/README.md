@@ -33,6 +33,11 @@ After installing, this package can be added to your engine's configuration as fo
 }
 ```
 
+Requests that fail without a response, such as on connection errors, are also retried.
+This does not apply to requests that the caller aborted, or that exceeded `KeysHttp.httpTimeout`.
+As the server may have processed such requests already, this only applies to idempotent methods (such as `GET` and `QUERY`)
+and `POST` requests of SPARQL queries, but not of SPARQL updates.
+
 ### Context Parameters
 
 * `KeysHttp.httpRetryCount`: The number of retries, added on top of the initial attempt.
