@@ -80,6 +80,24 @@ describe('ActorContextPreprocessSetDefaults', () => {
           [KeysInitQuery.extensionFunctions.name]: {},
         }));
       });
+
+      it.each([
+        [ KeysInitQuery.extensionAggregators.name, {}],
+        [ KeysInitQuery.extensionAggregatorCreator.name, () => undefined ],
+      ])('with a context with %s', async(key, value) => {
+        const contextIn = new ActionContext({ [key]: value });
+        const { context: contextOut } = await actor.run({ context: contextIn, initialize: true });
+        expect(contextOut).toEqual(new ActionContext({
+          [KeysInitQuery.dataFactory.name]: expect.any(DataFactory),
+          [KeysInitQuery.queryTimestamp.name]: expect.any(Date),
+          [KeysInitQuery.queryTimestampHighResolution.name]: expect.anything(),
+          [KeysQuerySourceIdentify.sourceIds.name]: new Map(),
+          [KeysCore.log.name]: 'L',
+          [KeysInitQuery.functionArgumentsCache.name]: {},
+          [KeysInitQuery.queryFormat.name]: { language: 'sparql', version: '1.1' },
+          [key]: value,
+        }));
+      });
     });
   });
 });

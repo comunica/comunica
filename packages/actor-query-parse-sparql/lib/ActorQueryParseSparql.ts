@@ -4,6 +4,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory } from '@comunica/types';
+import { getExtensionAggregatorLookup } from '@comunica/utils-query-operation';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import { AstFactory } from '@traqula/rules-sparql-1-2';
@@ -34,11 +35,15 @@ export class ActorQueryParseSparql extends ActorQueryParse {
 
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const extensionAggregatorLookup = getExtensionAggregatorLookup(action.context);
+    const namedAggregatorCallback = extensionAggregatorLookup &&
+      ((iri: string): boolean => extensionAggregatorLookup(iri) !== undefined);
     const astFactory = new AstFactory();
     const parsedSyntax = this.parser.parse(action.query, {
       prefixes: this.prefixes,
       baseIRI: action.baseIRI,
       astFactory,
+      namedAggregatorCallback,
     });
     let baseIRI: string | undefined;
     if (astFactory.isQuery(parsedSyntax)) {
@@ -56,6 +61,7 @@ export class ActorQueryParseSparql extends ActorQueryParse {
         blankToVariable: true,
         baseIRI: action.baseIRI,
         dataFactory,
+        namedAggregatorCallback,
       }),
     };
   }

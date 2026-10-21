@@ -24,6 +24,7 @@ export {
   getMockMediatorQueryOperation,
   getMockSuperTypeProvider,
   makeAggregate,
+  makeNamedAggregate,
   nonLiteral,
   string,
   int as termInt,

@@ -43,6 +43,34 @@ export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) =
 Promise<AsyncExtensionFunction | undefined>;
 
 /**
+ * The aggregator of an extension aggregate for a single group.
+ * Errors thrown by it, and errors evaluating the arguments of the aggregate call, leave the result unbound.
+ */
+export interface IExtensionAggregator {
+  /**
+   * Adds the evaluated arguments of the aggregate call for a solution of the group.
+   * Solutions for which an argument uses an unbound variable are skipped.
+   * If the aggregate is called with DISTINCT, each distinct list of arguments is only put once.
+   * @param args the evaluated arguments.
+   */
+  put: (args: RDF.Term[]) => void | Promise<void>;
+  /**
+   * The result of aggregating all arguments that have been put, or undefined to leave the result unbound.
+   */
+  result: () => RDF.Term | undefined | Promise<RDF.Term | undefined>;
+}
+/**
+ * Creates the aggregator of an extension aggregate for a single group.
+ */
+export type ExtensionAggregator = () => IExtensionAggregator;
+/**
+ * Returns the extension aggregate with the given IRI, or undefined if the IRI is no extension aggregate.
+ * Unlike an `AsyncExtensionFunctionCreator`, this is synchronous,
+ * as parsing a query requires knowing which function calls are aggregates.
+ */
+export type ExtensionAggregatorCreator = (aggregateNamedNode: RDF.NamedNode) => ExtensionAggregator | undefined;
+
+/**
  * Resolves a SPARQL `EXISTS` or `NOT EXISTS` expression against the given bindings.
  *
  * The resolver receives the expression as it appears in the algebra, so it is responsible for both

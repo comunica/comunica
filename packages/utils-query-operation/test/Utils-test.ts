@@ -1,12 +1,13 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { IServiceExecutor } from '@comunica/types';
+import type { ExtensionAggregator, IServiceExecutor } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import {
   assignOperationSource,
+  getExtensionAggregatorLookup,
   getOperationSource,
   getSafeBindings,
   getSafeBoolean,
@@ -141,6 +142,40 @@ describe('utils', () => {
       const lookup = getServiceExecutorLookup(contextExecutors)!;
       expect(lookup('urn:service')).toBe(serviceExecutor);
       expect(lookup('urn:other')).toBeUndefined();
+    });
+  });
+
+  describe('#getExtensionAggregatorLookup', () => {
+    const extensionAggregator: ExtensionAggregator = () => ({ put: () => {}, result: () => undefined });
+
+    it('should be undefined without extension aggregates', () => {
+      expect(getExtensionAggregatorLookup(context)).toBeUndefined();
+    });
+
+    it('should look up extension aggregates in the dictionary', () => {
+      const contextAggregators = context
+        .set(KeysInitQuery.extensionAggregators, { 'urn:aggregate': extensionAggregator });
+      const lookup = getExtensionAggregatorLookup(contextAggregators)!;
+      expect(lookup('urn:aggregate')).toBe(extensionAggregator);
+      expect(lookup('urn:other')).toBeUndefined();
+    });
+
+    it('should look up extension aggregates with the creator', () => {
+      const extensionAggregatorCreator = jest.fn((aggregateNamedNode: RDF.NamedNode) =>
+        aggregateNamedNode.value === 'urn:aggregate' ? extensionAggregator : undefined);
+      const contextCreator = context.set(KeysInitQuery.extensionAggregatorCreator, extensionAggregatorCreator);
+      const lookup = getExtensionAggregatorLookup(contextCreator)!;
+      expect(lookup('urn:aggregate')).toBe(extensionAggregator);
+      expect(lookup('urn:other')).toBeUndefined();
+      expect(extensionAggregatorCreator).toHaveBeenCalledWith(DF.namedNode('urn:aggregate'));
+    });
+
+    it('should throw when both extension aggregates and a creator are configured', () => {
+      const contextBoth = context
+        .set(KeysInitQuery.extensionAggregators, { 'urn:aggregate': extensionAggregator })
+        .set(KeysInitQuery.extensionAggregatorCreator, () => extensionAggregator);
+      expect(() => getExtensionAggregatorLookup(contextBoth))
+        .toThrow('Illegal simultaneous usage of extensionAggregatorCreator and extensionAggregators in context');
     });
   });
 
