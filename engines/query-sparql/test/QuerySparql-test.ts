@@ -2179,6 +2179,33 @@ SELECT ?option WHERE {
           ]),
         ], true);
       });
+
+      // https://github.com/comunica/comunica/issues/1896
+      it('should settle for many zero-or-more paths with a bound subject over a Readable source', async() => {
+        const store = new Store();
+        store.addQuads(await arrayifyStream(rdfParse.parse(stringToStream(`
+@prefix bot: <https://w3id.org/bot#> .
+@prefix ex: <http://ex/> .
+ex:b bot:hasStorey ex:s1, ex:s2, ex:s3, ex:s4 .
+ex:s1 bot:containsZone ex:z1, ex:z2 ; bot:hasSpace ex:r1, ex:r2 .
+ex:s3 bot:containsZone ex:z3, ex:z4 ; bot:hasSpace ex:r3, ex:r4 .
+ex:s4 bot:containsZone ex:z5 ; bot:hasSpace ex:r5 .
+`), { contentType: 'text/turtle' })));
+        const source = {
+          match: (s: RDF.Term, p: RDF.Term, o: RDF.Term, g: RDF.Term) =>
+            Readable.from(store.getQuads(s, p, o, g)),
+        };
+        // The hang depended on the interleaving of many concurrent path evaluations
+        const branches = Array.from({ length: 500 }, (_, i) =>
+          `{ ?b (bot:hasStorey|bot:containsZone)*/bot:hasSpace ?x${i} }`);
+
+        await expect(engine.queryBindings(`
+PREFIX bot: <https://w3id.org/bot#>
+SELECT ?b WHERE { ${branches.join(' UNION ')} }`, {
+          sources: [ <any> source ],
+          initialBindings: BF.bindings([[ DF.variable('b'), DF.namedNode('http://ex/b') ]]),
+        }).then(result => result.toArray())).resolves.toHaveLength(2_500);
+      });
     });
 
     describe('commutative count', () => {
