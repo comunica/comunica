@@ -1,12 +1,14 @@
 /* eslint-disable import/no-nodejs-modules */
 import { randomUUID } from 'node:crypto';
 import type * as http from 'node:http';
+import { PassThrough, Readable } from 'node:stream';
 import type * as url from 'node:url';
 import type { QueryQuads } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
+import { TransformIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { QueryEngineBase } from '..';
 
@@ -203,9 +205,9 @@ export class HttpServiceGraphStore {
         case 'DELETE':
           return await this.deleteGraph(engine, target.graph!);
         case 'PUT':
-          return await this.writeGraph(engine, target.graph, true, await readBody(), request, graphStoreIri);
+          return await this.writeGraph(engine, target.graph, true, request, graphStoreIri, readBody);
         case 'POST':
-          return await this.writeGraph(engine, target.graph, false, await readBody(), request, graphStoreIri);
+          return await this.writeGraph(engine, target.graph, false, request, graphStoreIri, readBody);
         default:
           return {
             status: 405,
@@ -256,17 +258,17 @@ export class HttpServiceGraphStore {
    * @param {RDF.NamedNode | RDF.DefaultGraph | undefined} graph The graph to store the payload in,
    *                                                            or undefined to create a new graph for it.
    * @param {boolean} replace If the previous contents of the graph must be replaced instead of merged with.
-   * @param {string} body The request body.
    * @param {module:http.IncomingMessage} request Request object.
    * @param {string} graphStoreIri The IRI of the graph store, under which new graphs are created.
+   * @param {() => Promise<string>} readBody A callback that reads the request body.
    */
   public async writeGraph(
     engine: QueryEngineBase,
     graph: RDF.NamedNode | RDF.DefaultGraph | undefined,
     replace: boolean,
-    body: string,
     request: http.IncomingMessage,
     graphStoreIri: string,
+    readBody: () => Promise<string>,
   ): Promise<IGraphStoreResult> {
     const created = graph ?? DF.namedNode(`${graphStoreIri}/${randomUUID()}`);
     const contentType = request.headers['content-type'];
@@ -274,20 +276,17 @@ export class HttpServiceGraphStore {
       throw new Error('A request with an RDF payload must declare its content type');
     }
 
-    const quads = await this
-      .parsePayload(engine, body, contentType, new URL(request.url ?? '', graphStoreIri).href);
+    const payloads = await this
+      .parsePayload(engine, request, contentType, new URL(request.url ?? '', graphStoreIri).href, readBody);
     const exists = graph !== undefined && await this.graphExists(engine, created);
 
-    const updates: Algebra.Operation[] = [];
     if (replace) {
-      updates.push(HttpServiceGraphStore.dropGraph(created));
+      await engine.queryVoid(HttpServiceGraphStore.dropGraph(created), this.context);
     }
-    if (quads.length > 0) {
-      updates.push(AF.createDeleteInsert(undefined, quads
-        .map(quad => AF.createPattern(quad.subject, quad.predicate, quad.object, created))));
-    }
-    if (updates.length > 0) {
-      await engine.queryVoid(AF.createCompositeUpdate(updates), this.context);
+    for (const quads of payloads) {
+      await engine.updateQuads({
+        quadStreamInsert: quads.map(quad => DF.quad(quad.subject, quad.predicate, quad.object, created)),
+      }, this.context);
     }
 
     if (graph && exists) {
@@ -299,36 +298,33 @@ export class HttpServiceGraphStore {
   /**
    * Parse the RDF payload of a request, which may consist of multiple parts.
    * @param {QueryEngineBase} engine A SPARQL engine.
-   * @param {string} body The request body.
+   * @param {module:http.IncomingMessage} request Request object.
    * @param {string} contentType The content type of the request body.
    * @param {string} baseIRI The base IRI that relative IRIs in the payload are resolved against.
+   * @param {() => Promise<string>} readBody A callback that reads the request body.
+   * @return {Promise<AsyncIterator<RDF.Quad>[]>} The quads of each part.
    */
   public async parsePayload(
     engine: QueryEngineBase,
-    body: string,
+    request: http.IncomingMessage,
     contentType: string,
     baseIRI: string,
-  ): Promise<RDF.Quad[]> {
-    const parts = contentType.includes('multipart/form-data') ?
-      HttpServiceGraphStore.splitMultipart(body, contentType) :
-        [{ body, contentType }];
+    readBody: () => Promise<string>,
+  ): Promise<AsyncIterator<RDF.Quad>[]> {
+    const parts: { contentType: string; body: NodeJS.ReadableStream }[] = contentType.includes('multipart/form-data') ?
+      HttpServiceGraphStore.splitMultipart(await readBody(), contentType)
+        .map(part => ({ contentType: part.contentType, body: Readable.from([ part.body ]) })) :
+        [{ contentType, body: request }];
 
-    const quads: RDF.Quad[] = [];
-    for (const part of parts) {
-      const result = <QueryQuads> await engine.query(
-        HttpServiceGraphStore.constructGraph(DF.defaultGraph()),
-        {
-          sources: [{
-            type: 'serialized',
-            value: part.body,
-            mediaType: HttpServiceGraphStore.getMediaType(part.contentType),
-            baseIRI,
-          }],
-        },
-      );
-      quads.push(...await (<AsyncIterator<RDF.Quad>> await result.execute()).toArray());
-    }
-    return quads;
+    return Promise.all(parts.map(async(part) => {
+      const text = new PassThrough({ encoding: 'utf8' });
+      const quads = await engine
+        .parseRdf(text, { contentType: HttpServiceGraphStore.getMediaType(part.contentType), baseIRI });
+      return new TransformIterator<RDF.Quad>(() => {
+        part.body.on('error', (error: Error) => text.destroy(error)).pipe(text);
+        return wrap<RDF.Quad>(quads);
+      }, { autoStart: false });
+    }));
   }
 
   /**

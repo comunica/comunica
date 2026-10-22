@@ -1,4 +1,5 @@
-import type { Algebra } from '@comunica/utils-algebra';
+import { Readable, Transform } from 'node:stream';
+import type { IQuadUpdate, IRdfParseOptions } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -14,9 +15,49 @@ const quad = DF.quad(
   DF.namedNode('http://example.org/p'),
   DF.namedNode('http://example.org/o'),
 );
+const triple = '<http://example.org/s> <http://example.org/p> <http://example.org/o> .\n';
 
-function makeRequest(method: string, url: string, contentType?: string): any {
-  return { method, url, headers: contentType ? { 'content-type': contentType } : {}};
+function makeRequest(
+  method: string,
+  url: string,
+  contentType?: string,
+  body: string | AsyncIterable<string> = triple,
+): any {
+  const request: any = Readable.from(typeof body === 'string' ? [ body ] : body);
+  request.method = method;
+  request.url = url;
+  request.headers = contentType ? { 'content-type': contentType } : {};
+  return request;
+}
+
+function parseTriples(text: NodeJS.ReadableStream): RDF.Stream {
+  let rest = '';
+  function pushTriples(parser: Transform, lines: string[], done: (error?: Error) => void): void {
+    for (const line of lines.filter(Boolean)) {
+      const terms = [ ...line.matchAll(/<([^>]*)>|"([^"]*)"/gu) ]
+        .map(match => match[1] === undefined ? DF.literal(match[2]) : DF.namedNode(match[1]));
+      if (terms.length !== 3) {
+        done(new Error(`Invalid triple: ${line}`));
+        return;
+      }
+      parser.push(DF.quad(<RDF.NamedNode> terms[0], <RDF.NamedNode> terms[1], terms[2]));
+    }
+    done();
+  }
+  const parser = new Transform({
+    decodeStrings: false,
+    readableObjectMode: true,
+    transform(chunk: string, _encoding, done) {
+      const lines = (rest + chunk).split('\n');
+      rest = lines.pop()!;
+      pushTriples(this, lines, done);
+    },
+    flush(done) {
+      pushTriples(this, [ rest ], done);
+    },
+  });
+  text.on('error', (error: Error) => parser.emit('error', error));
+  return text.pipe(parser);
 }
 
 function parseUrl(url: string): any {
@@ -32,12 +73,17 @@ function parseUrl(url: string): any {
 describe('HttpServiceGraphStore', () => {
   let engine: any;
   let quads: RDF.Quad[];
+  let inserted: RDF.Quad[];
+  let firstInserted: Promise<void>;
   let exists: boolean;
   let protocol: HttpServiceGraphStore;
   const context = { sources: [ 'store' ]};
 
   beforeEach(() => {
     quads = [ quad ];
+    inserted = [];
+    let insertFirst: () => void;
+    firstInserted = new Promise(resolve => insertFirst = resolve);
     exists = true;
     engine = {
       query: jest.fn(async() => ({
@@ -46,6 +92,21 @@ describe('HttpServiceGraphStore', () => {
       })),
       queryBoolean: jest.fn(async() => exists),
       queryVoid: jest.fn(async() => undefined),
+      parseRdf: jest.fn(async(text: NodeJS.ReadableStream, options: IRdfParseOptions) => {
+        if (options.contentType !== 'text/turtle') {
+          throw new Error(`No parser for ${options.contentType}`);
+        }
+        return parseTriples(text);
+      }),
+      updateQuads: jest.fn((update: IQuadUpdate) => new Promise<void>((resolve, reject) => {
+        update.quadStreamInsert!
+          .on('data', (insertedQuad: RDF.Quad) => {
+            inserted.push(insertedQuad);
+            insertFirst();
+          })
+          .on('error', reject)
+          .on('end', resolve);
+      })),
     };
     protocol = new HttpServiceGraphStore(context);
   });
@@ -300,12 +361,11 @@ describe('HttpServiceGraphStore', () => {
       const request = makeRequest('PUT', '/store/g', 'text/turtle');
       await expect(protocol.handleRequest(engine, request, { graph }, graphStoreIri, readBody))
         .resolves.toEqual({ status: 204 });
-      expect(engine.queryVoid).toHaveBeenCalledWith(AF.createCompositeUpdate([
-        AF.createDrop(graph, true),
-        AF.createDeleteInsert(undefined, [
-          AF.createPattern(quad.subject, quad.predicate, quad.object, graph),
-        ]),
-      ]), context);
+      expect(engine.queryVoid).toHaveBeenCalledWith(AF.createDrop(graph, true), context);
+      expect(engine.updateQuads).toHaveBeenCalledWith({ quadStreamInsert: expect.anything() }, context);
+      expect(engine.queryVoid.mock.invocationCallOrder[0])
+        .toBeLessThan(engine.updateQuads.mock.invocationCallOrder[0]);
+      expect(inserted).toEqual([ DF.quad(quad.subject, quad.predicate, quad.object, graph) ]);
     });
 
     it('should respond with 201 when PUT creates a graph', async() => {
@@ -316,32 +376,69 @@ describe('HttpServiceGraphStore', () => {
     });
 
     it('should only drop the graph when PUT has an empty payload', async() => {
-      quads = [];
-      const request = makeRequest('PUT', '/store/g', 'text/turtle');
+      const request = makeRequest('PUT', '/store/g', 'text/turtle', '');
       await expect(protocol.handleRequest(engine, request, { graph }, graphStoreIri, readBody))
         .resolves.toEqual({ status: 204 });
-      expect(engine.queryVoid).toHaveBeenCalledWith(AF.createCompositeUpdate([
-        AF.createDrop(graph, true),
-      ]), context);
+      expect(engine.queryVoid).toHaveBeenCalledWith(AF.createDrop(graph, true), context);
+      expect(inserted).toEqual([]);
+    });
+
+    it('should not drop the graph when no parser accepts the payload of a PUT', async() => {
+      const request = makeRequest('PUT', '/store/g', 'text/unknown');
+      await expect(protocol.handleRequest(engine, request, { graph }, graphStoreIri, readBody))
+        .resolves.toEqual({ status: 400, message: 'No parser for text/unknown' });
+      expect(engine.queryVoid).not.toHaveBeenCalled();
+      expect(engine.updateQuads).not.toHaveBeenCalled();
+    });
+
+    it('should store the triples of a payload while it is being received', async() => {
+      const request = makeRequest('PUT', '/store/g', 'text/turtle', (async function* () {
+        yield triple;
+        await firstInserted;
+        yield '<http://example.org/s> <http://example.org/p> <http://example.org/o2> .\n';
+      })());
+      await expect(protocol.handleRequest(engine, request, { graph }, graphStoreIri, readBody))
+        .resolves.toEqual({ status: 204 });
+      expect(inserted).toEqual([
+        DF.quad(quad.subject, quad.predicate, quad.object, graph),
+        DF.quad(quad.subject, quad.predicate, DF.namedNode('http://example.org/o2'), graph),
+      ]);
+    });
+
+    it('should only parse the payload once its triples are read', async() => {
+      jest.spyOn(engine, 'updateQuads').mockImplementation(async(update: any) => {
+        await new Promise(resolve => setTimeout(resolve, 10));
+        await update.quadStreamInsert.toArray();
+      });
+      const request = makeRequest('PUT', '/store/g', 'text/turtle', 'invalid\n');
+      await expect(protocol.handleRequest(engine, request, { graph }, graphStoreIri, readBody))
+        .resolves.toEqual({ status: 400, message: 'Invalid triple: invalid' });
+    });
+
+    it('should respond with 400 when the payload cannot be received', async() => {
+      const request = makeRequest('PUT', '/store/g', 'text/turtle', (async function* () {
+        yield triple;
+        throw new Error('Connection lost');
+      })());
+      await expect(protocol.handleRequest(engine, request, { graph }, graphStoreIri, readBody))
+        .resolves.toEqual({ status: 400, message: 'Connection lost' });
     });
 
     it('should merge into an existing graph on POST', async() => {
       const request = makeRequest('POST', '/store?graph=http://example.org/g', 'text/turtle');
       await expect(protocol.handleRequest(engine, request, { graph }, graphStoreIri, readBody))
         .resolves.toEqual({ status: 204 });
-      expect(engine.queryVoid).toHaveBeenCalledWith(AF.createCompositeUpdate([
-        AF.createDeleteInsert(undefined, [
-          AF.createPattern(quad.subject, quad.predicate, quad.object, graph),
-        ]),
-      ]), context);
+      expect(engine.queryVoid).not.toHaveBeenCalled();
+      expect(engine.updateQuads).toHaveBeenCalledWith({ quadStreamInsert: expect.anything() }, context);
+      expect(inserted).toEqual([ DF.quad(quad.subject, quad.predicate, quad.object, graph) ]);
     });
 
-    it('should not update the store when POST has an empty payload', async() => {
-      quads = [];
-      const request = makeRequest('POST', '/store?graph=http://example.org/g', 'text/turtle');
+    it('should not store anything when POST has an empty payload', async() => {
+      const request = makeRequest('POST', '/store?graph=http://example.org/g', 'text/turtle', '');
       await expect(protocol.handleRequest(engine, request, { graph }, graphStoreIri, readBody))
         .resolves.toEqual({ status: 204 });
       expect(engine.queryVoid).not.toHaveBeenCalled();
+      expect(inserted).toEqual([]);
     });
 
     it('should create a graph and return its location on POST to the graph store', async() => {
@@ -351,19 +448,17 @@ describe('HttpServiceGraphStore', () => {
       expect(result.status).toBe(201);
       expect(result.headers!.Location).toMatch(/^http:\/\/example\.org\/store\/[\da-f-]{36}$/u);
       expect(engine.queryBoolean).not.toHaveBeenCalled();
+      expect(inserted)
+        .toEqual([ DF.quad(quad.subject, quad.predicate, quad.object, DF.namedNode(result.headers!.Location)) ]);
     });
 
     it('should parse the payload against the request IRI', async() => {
       const request = makeRequest('PUT', '/store/person/1.ttl', 'text/turtle; charset=utf-8');
       await protocol.handleRequest(engine, request, { graph }, graphStoreIri, readBody);
 
-      expect(engine.query).toHaveBeenCalledWith(expect.anything(), {
-        sources: [{
-          type: 'serialized',
-          value: '<http://example.org/s> <http://example.org/p> <http://example.org/o> .',
-          mediaType: 'text/turtle',
-          baseIRI: 'http://example.org/store/person/1.ttl',
-        }],
+      expect(engine.parseRdf).toHaveBeenCalledWith(expect.anything(), {
+        contentType: 'text/turtle',
+        baseIRI: 'http://example.org/store/person/1.ttl',
       });
     });
 
@@ -372,10 +467,8 @@ describe('HttpServiceGraphStore', () => {
       delete request.url;
       await protocol.handleRequest(engine, request, { graph }, graphStoreIri, readBody);
 
-      expect(engine.query).toHaveBeenCalledWith(
-        expect.anything(),
-        { sources: [ expect.objectContaining({ baseIRI: graphStoreIri }) ]},
-      );
+      expect(engine.parseRdf)
+        .toHaveBeenCalledWith(expect.anything(), { contentType: 'text/turtle', baseIRI: graphStoreIri });
     });
 
     it('should merge every part of a multipart payload', async() => {
@@ -394,9 +487,12 @@ describe('HttpServiceGraphStore', () => {
       const request = makeRequest('POST', '/store/g', 'multipart/form-data; boundary=B');
       await protocol.handleRequest(engine, request, { graph }, graphStoreIri, async() => body);
 
-      expect(engine.query).toHaveBeenCalledTimes(2);
-      expect((<Algebra.CompositeUpdate> engine.queryVoid.mock.calls[0][0]).updates).toHaveLength(1);
-      expect((engine.queryVoid.mock.calls[0][0]).updates[0].insert).toHaveLength(2);
+      expect(engine.parseRdf).toHaveBeenCalledTimes(2);
+      expect(engine.updateQuads).toHaveBeenCalledTimes(2);
+      expect(inserted).toEqual([
+        DF.quad(quad.subject, quad.predicate, DF.literal('a'), graph),
+        DF.quad(quad.subject, quad.predicate, DF.literal('b'), graph),
+      ]);
     });
   });
 });
