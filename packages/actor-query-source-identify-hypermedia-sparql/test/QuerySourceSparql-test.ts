@@ -1,7 +1,7 @@
 import { PassThrough } from 'node:stream';
 import { ActorQuerySerializeSparql } from '@comunica/actor-query-serialize-sparql';
-import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
+import { KeysCore, KeysHttp, KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext, ActionContextKey } from '@comunica/core';
 import type { IActionContext, IDataset, QueryResultCardinality } from '@comunica/types';
 import { AlgebraFactory, Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -15,6 +15,27 @@ import 'jest-rdf';
 import { Readable } from 'readable-stream';
 import { QuerySourceSparql } from '../lib/QuerySourceSparql';
 import '@comunica/utils-jest';
+
+/**
+ * Match a context that equals the given context, extended with an abort signal for count requests.
+ * @param context The expected context without abort signal.
+ */
+function contextWithAbortSignal(context: IActionContext): any {
+  return {
+    asymmetricMatch(actual: IActionContext): boolean {
+      if (!(actual.get(KeysHttp.httpAbortSignal) instanceof AbortSignal)) {
+        return false;
+      }
+      try {
+        expect(actual.delete(KeysHttp.httpAbortSignal)).toEqual(context);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    toString: () => 'contextWithAbortSignal',
+  };
+}
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory();
@@ -163,6 +184,65 @@ describe('QuerySourceSparql', () => {
     });
   });
 
+  describe('when a physical query plan is logged', () => {
+    let planNode: any;
+    let planContext: IActionContext;
+
+    beforeEach(() => {
+      planNode = { appendMetadata: jest.fn(), adoptInput: jest.fn(), setOutput: jest.fn() };
+      planContext = ctx.set(KeysInitQuery.physicalQueryPlanNode, planNode);
+    });
+
+    it('should report the query that is sent for bindings', async() => {
+      await source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), planContext).toArray();
+
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({
+        sourceQuery: `SELECT ?p WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }`,
+      });
+    });
+
+    it('should report the query that is sent for quads', async() => {
+      // The stubbed endpoint always answers with bindings, which the quad parser rejects
+      await source.queryQuads(AF.createConstruct(
+        AF.createPattern(iriS, DF.variable('p'), iriO),
+        [ AF.createPattern(iriS, DF.variable('p'), iriO) ],
+      ), planContext).toArray().catch(() => {
+        // Ignore
+      });
+
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({ sourceQuery: expect.stringContaining('CONSTRUCT') });
+    });
+
+    it('should report the query that is sent for a boolean', async() => {
+      // The stubbed endpoint always answers with bindings, which the ASK parser rejects
+      await source.queryBoolean(<any> AF.createAsk(AF.createPattern(iriS, DF.variable('p'), iriO)), planContext)
+        .catch(() => {
+          // Ignore
+        });
+
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({ sourceQuery: expect.stringContaining('ASK') });
+    });
+
+    it('should report the query that is sent for a void operation', async() => {
+      await source.queryVoid(AF.createDeleteInsert([ AF.createPattern(iriS, iriP, iriO) ]), planContext);
+
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({ sourceQuery: expect.stringContaining('DELETE') });
+    });
+
+    it('should count the HTTP requests it makes', async() => {
+      await source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), planContext).toArray();
+
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({ httpRequests: 1 });
+      expect(planNode.appendMetadata).toHaveBeenCalledWith({ httpRequests: 2 });
+    });
+
+    it('should not count HTTP requests without a plan node', async() => {
+      await source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), ctx).toArray();
+
+      expect(planNode.appendMetadata).not.toHaveBeenCalled();
+    });
+  });
+
   describe('queryBindings', () => {
     it('should return data', async() => {
       await expect(source.queryBindings(AF.createPattern(
@@ -184,7 +264,7 @@ describe('QuerySourceSparql', () => {
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: ctx,
+        context: contextWithAbortSignal(ctx),
         init: {
           body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
@@ -946,7 +1026,7 @@ describe('QuerySourceSparql', () => {
         BF,
         false,
         64,
-        10,
+        10_000,
         true,
         true,
         0,
@@ -1290,7 +1370,7 @@ describe('QuerySourceSparql', () => {
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: ctx,
+        context: contextWithAbortSignal(ctx),
         init: {
           headers: expect.anything(),
           method: 'GET',
@@ -1346,7 +1426,7 @@ describe('QuerySourceSparql', () => {
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-          context: ctx,
+          context: contextWithAbortSignal(ctx),
           init: {
             body: new URLSearchParams({ query: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }' }),
             headers: expect.anything(),
@@ -1363,7 +1443,7 @@ describe('QuerySourceSparql', () => {
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-          context: ctx,
+          context: contextWithAbortSignal(ctx),
           init: {
             body: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }',
             headers: expect.anything(),
@@ -1423,7 +1503,7 @@ describe('QuerySourceSparql', () => {
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-          context: ctx,
+          context: contextWithAbortSignal(ctx),
           init: {
             body: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }',
             headers: expect.anything(),
@@ -1442,7 +1522,7 @@ describe('QuerySourceSparql', () => {
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-          context: ctx,
+          context: contextWithAbortSignal(ctx),
           init: {
             body: new URLSearchParams({ query: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }' }),
             headers: expect.anything(),
@@ -1545,7 +1625,7 @@ describe('QuerySourceSparql', () => {
       expect(lastQuery).toBe(`query=SELECT+%28+COUNT%28+*+%29+AS+%3Fcount+%29+WHERE+%7B+VALUES%28+%29%7B+%7D+%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: ctx,
+        context: contextWithAbortSignal(ctx),
         init: {
           body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { VALUES( ){ } <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
@@ -1580,7 +1660,7 @@ describe('QuerySourceSparql', () => {
       expect(lastQuery).toBe(`query=SELECT+%28+COUNT%28+*+%29+AS+%3Fcount+%29+WHERE+%7B+VALUES%28+%29%7B+%7D+%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: ctx.set(KeysInitQuery.queryString, 'abc'),
+        context: contextWithAbortSignal(ctx.set(KeysInitQuery.queryString, 'abc')),
         init: {
           body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { VALUES( ){ } <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
@@ -1625,6 +1705,97 @@ describe('QuerySourceSparql', () => {
 
           variables: [],
         });
+    });
+
+    it.each([
+      [ 'without', false ],
+      [ 'with', true ],
+    ])('should abort the count request on timeout %s an existing abort signal', async(_, withExisting) => {
+      jest.useFakeTimers();
+      const existingAbortController = new AbortController();
+      let countContext: IActionContext | undefined;
+      const thisMediator: any = {
+        mediate(action: any) {
+          countContext = action.context;
+          return new Promise(() => {
+            // Never resolve, like a hanging count query
+          });
+        },
+      };
+      source = new QuerySourceSparql(
+        url,
+        url,
+        ctx,
+        thisMediator,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        false,
+        0,
+        false,
+        {},
+      );
+      const queryContext = withExisting ? ctx.set(KeysHttp.httpAbortSignal, existingAbortController.signal) : ctx;
+      const stream = source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), queryContext);
+      const metadata = new Promise(resolve => stream.getProperty('metadata', resolve));
+      await jest.advanceTimersByTimeAsync(0);
+      const signal = countContext!.get(KeysHttp.httpAbortSignal)!;
+      expect(signal.aborted).toBeFalsy();
+
+      await jest.advanceTimersByTimeAsync(10);
+      await expect(metadata).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: url },
+      });
+      expect(signal.aborted).toBeTruthy();
+      expect(existingAbortController.signal.aborted).toBeFalsy();
+      jest.useRealTimers();
+    });
+
+    it('should abort the count request when an existing abort signal is aborted', async() => {
+      const existingAbortController = new AbortController();
+      let countContext: IActionContext | undefined;
+      const thisMediator: any = {
+        mediate(action: any) {
+          countContext = action.context;
+          return new Promise(() => {
+            // Never resolve, like a hanging count query
+          });
+        },
+      };
+      source = new QuerySourceSparql(
+        url,
+        url,
+        ctx,
+        thisMediator,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10_000,
+        true,
+        false,
+        0,
+        false,
+        {},
+      );
+      source.queryBindings(
+        AF.createPattern(iriS, DF.variable('p'), iriO),
+        ctx.set(KeysHttp.httpAbortSignal, existingAbortController.signal),
+      );
+      await new Promise(resolve => setImmediate(resolve));
+      const signal = countContext!.get(KeysHttp.httpAbortSignal)!;
+      expect(signal.aborted).toBeFalsy();
+      existingAbortController.abort();
+      expect(signal.aborted).toBeTruthy();
     });
 
     it('should emit metadata with infinity count with timeout', async() => {
@@ -1727,9 +1898,9 @@ describe('QuerySourceSparql', () => {
         ]);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: ctx
+        context: contextWithAbortSignal(ctx
           .set(KeysInitQuery.queryString, 'abc')
-          .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }),
+          .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' })),
         init: {
           body: new URLSearchParams({ query: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }' }),
           headers: expect.anything(),
@@ -2046,7 +2217,7 @@ describe('QuerySourceSparql', () => {
         BF,
         false,
         64,
-        10,
+        10_000,
         true,
         true,
         0,
@@ -2326,6 +2497,128 @@ describe('QuerySourceSparql', () => {
         },
         input: url,
       });
+    });
+  });
+
+  describe('request contexts', () => {
+    const keyUser = new ActionContextKey<string>('user');
+    const pattern = AF.createPattern(DF.variable('s'), iriP, DF.variable('p'), DF.defaultGraph());
+    let contexts: IActionContext[];
+    let mediatorHttpUser: any;
+    let respond: (action: any, requestIndex: number) => any;
+
+    // Creates a source that is created with the given context, and answers with the user of each request's context.
+    function createSource(context: IActionContext, urlBackup = url): QuerySourceSparql {
+      return new QuerySourceSparql(
+        url,
+        urlBackup,
+        context,
+        mediatorHttpUser,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10000,
+        false,
+        false,
+        0,
+        false,
+        {},
+      );
+    }
+
+    // Answers a request with the user of its context
+    function respondWithUser(action: any): any {
+      const user = action.context.get(keyUser) ?? 'anonymous';
+      const results = action.init.body.toString().includes('ASK') ?
+        `{ "head": {}, "boolean": ${user !== 'anonymous'} }` :
+        `{ "head": { "vars": [ "p" ] }, "results": { "bindings": [ { "p": { "type": "literal", "value": "${user}" } } ] } }`;
+      return {
+        headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        body: Readable.from([ results ]),
+        ok: true,
+        status: 200,
+      };
+    }
+
+    beforeEach(() => {
+      contexts = [];
+      respond = respondWithUser;
+      mediatorHttpUser = {
+        mediate: jest.fn(async(action: any) => {
+          const requestIndex = contexts.push(action.context);
+          // Let other requests start before this one ends
+          await new Promise(resolve => setImmediate(resolve));
+          return respond(action, requestIndex);
+        }),
+      };
+    });
+
+    it('should send bindings requests with the context of the call, not of the source creation', async() => {
+      source = createSource(ctx.set(keyUser, 'first'));
+      await expect(source.queryBindings(pattern, ctx)).toEqualBindingsStream([
+        BF.fromRecord({ p: DF.literal('anonymous') }),
+      ]);
+      expect(contexts).toEqual([ ctx ]);
+    });
+
+    it('should send quads requests with the context of the call, not of the source creation', async() => {
+      respond = () => ({
+        headers: new Headers({ 'Content-Type': 'text/turtle' }),
+        body: Readable.from([ '<ex:s> <ex:p> <ex:o>.' ]),
+        ok: true,
+        status: 200,
+      });
+      source = createSource(ctx.set(keyUser, 'first'));
+      await expect(source.queryQuads(AF.createConstruct(pattern, [ pattern ]), ctx).toArray())
+        .resolves.toHaveLength(1);
+      expect(contexts).toEqual([ ctx ]);
+    });
+
+    it('should send boolean requests with the context of the call, not of the source creation', async() => {
+      source = createSource(ctx.set(keyUser, 'first'));
+      await expect(source.queryBoolean(AF.createAsk(pattern), ctx)).resolves.toBe(false);
+      expect(contexts).toEqual([ ctx ]);
+    });
+
+    it('should send void requests with the context of the call, not of the source creation', async() => {
+      respond = () => ({ headers: new Headers(), body: Readable.from([ '' ]), ok: true, status: 200 });
+      source = createSource(ctx.set(keyUser, 'first'));
+      await source.queryVoid(AF.createDeleteInsert(undefined, [ pattern ]), ctx);
+      expect(contexts).toEqual([ ctx ]);
+    });
+
+    it('should send the requests of concurrent calls with their own context', async() => {
+      source = createSource(ctx);
+      const ctxA = ctx.set(keyUser, 'A');
+      const ctxB = ctx.set(keyUser, 'B');
+      await Promise.all([
+        expect(source.queryBindings(pattern, ctxA)).toEqualBindingsStream([ BF.fromRecord({ p: DF.literal('A') }) ]),
+        expect(source.queryBindings(pattern, ctxB)).toEqualBindingsStream([ BF.fromRecord({ p: DF.literal('B') }) ]),
+        expect(source.queryBoolean(AF.createAsk(pattern), ctxA)).resolves.toBe(true),
+        expect(source.queryBoolean(AF.createAsk(pattern), ctx)).resolves.toBe(false),
+      ]);
+      expect(contexts).toHaveLength(4);
+    });
+
+    it('should retry concurrent calls on the backup URL with their own context', async() => {
+      source = createSource(ctx, `${url}backup`);
+      const ctxA = ctx.set(keyUser, 'A');
+      const ctxB = ctx.set(keyUser, 'B');
+      // Let the first request fail, while the second one is still pending
+      respond = (action: any, requestIndex: number) => requestIndex === 1 ?
+          { headers: new Headers(), body: Readable.from([ 'not found' ]), ok: false, status: 404 } :
+        respondWithUser(action);
+      await Promise.all([
+        expect(source.queryBindings(pattern, ctxA)).toEqualBindingsStream([ BF.fromRecord({ p: DF.literal('A') }) ]),
+        expect(source.queryBindings(pattern, ctxB)).toEqualBindingsStream([ BF.fromRecord({ p: DF.literal('B') }) ]),
+      ]);
+      expect(contexts).toEqual([ ctxA, ctxB, ctxA ]);
+      expect(mediatorHttpUser.mediate.mock.calls.map((call: any) => call[0].input))
+        .toEqual([ url, url, `${url}backup` ]);
     });
   });
 

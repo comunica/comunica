@@ -1,6 +1,6 @@
 # Comunica Term Function Ucase Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-ucase.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-ucase)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-ucase.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-ucase)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)

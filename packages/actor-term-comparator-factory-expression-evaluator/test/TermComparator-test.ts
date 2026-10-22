@@ -222,3 +222,109 @@ describe('terms order', () => {
     );
   });
 });
+
+describe('the paths that short-circuit the lesser-than operator', () => {
+  // Every pair the fast path answers must get the same answer as the general path it short-circuits.
+  const terms: RDF.Term[] = [
+    DF.namedNode('ex:a'),
+    DF.namedNode('ex:b'),
+    DF.namedNode('ex:B'),
+    DF.namedNode('ex:aa'),
+    DF.namedNode('ex:a/b'),
+    DF.namedNode('http://example.org/1'),
+    DF.namedNode('http://example.org/10'),
+    DF.namedNode('http://example.org/2'),
+    DF.namedNode(''),
+    DF.namedNode('_:looksLikeABlankNode'),
+    DF.blankNode('a'),
+    DF.blankNode('b'),
+    DF.literal('a'),
+    DF.literal('b'),
+    string('a'),
+    string('B'),
+    int('1'),
+    int('10'),
+    int('2'),
+    bool('true'),
+    dateTime('2001-01-01T00:00:00Z'),
+    DF.literal('a', 'en'),
+    DF.literal('b', 'nl'),
+    DF.defaultGraph(),
+    DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
+  ];
+
+  it('agrees with the general path for every pair of terms', () => {
+    const evaluator = orderByFactory();
+    const general = (a: RDF.Term, b: RDF.Term): number => (<any> evaluator).orderTypesGeneral(a, b);
+    // Only distinct objects reach either path, since orderTypes short-circuits on reference equality.
+    const pairs = terms.flatMap(termA => terms
+      .filter(termB => termA !== termB)
+      .map(termB => ({ termA, termB })));
+    const actual = pairs.map(({ termA, termB }) =>
+      `${termA.value}|${termB.value}|${evaluator.orderTypes(termA, termB)}`);
+    const expected = pairs.map(({ termA, termB }) => `${termA.value}|${termB.value}|${general(termA, termB)}`);
+    expect(actual).toEqual(expected);
+
+    // Each path that can answer without the operator has to be reached, or the agreement above is vacuous.
+    const reaching = (predicate: (termA: RDF.Term, termB: RDF.Term) => boolean): number =>
+      pairs.filter(({ termA, termB }) => predicate(termA, termB)).length;
+    expect(reaching((a, b) => a.termType === 'NamedNode' && b.termType === 'NamedNode')).toBeGreaterThan(0);
+    expect(reaching((a, b) => a.termType === 'BlankNode' && b.termType === 'BlankNode')).toBeGreaterThan(0);
+    expect(reaching((a, b) => a.termType !== b.termType)).toBeGreaterThan(0);
+    // And every term type in the corpus has to be one the differing-types path can look up.
+    for (const term of terms) {
+      expect(Object.keys(TermFunctionLesserThan.TERM_ORDERING_PRIORITY))
+        .toContain(term.termType[0].toLowerCase() + term.termType.slice(1));
+    }
+  });
+
+  it('orders IRIs by their value', () => {
+    const evaluator = orderByFactory();
+    expect(evaluator.orderTypes(DF.namedNode('ex:a'), DF.namedNode('ex:b'))).toBe(-1);
+    expect(evaluator.orderTypes(DF.namedNode('ex:b'), DF.namedNode('ex:a'))).toBe(1);
+    expect(evaluator.orderTypes(DF.namedNode('ex:a'), DF.namedNode('ex:a'))).toBe(0);
+  });
+
+  it('orders blank nodes by their label', () => {
+    const evaluator = orderByFactory();
+    expect(evaluator.orderTypes(DF.blankNode('a'), DF.blankNode('b'))).toBe(-1);
+    expect(evaluator.orderTypes(DF.blankNode('b'), DF.blankNode('a'))).toBe(1);
+    expect(evaluator.orderTypes(DF.blankNode('a'), DF.blankNode('a'))).toBe(0);
+  });
+
+  it('keeps blank nodes before IRIs and IRIs before literals', () => {
+    const evaluator = orderByFactory();
+    expect(evaluator.orderTypes(DF.blankNode('z'), DF.namedNode('ex:a'))).toBe(-1);
+    expect(evaluator.orderTypes(DF.namedNode('ex:z'), DF.literal('a'))).toBe(-1);
+  });
+
+  it('orders differing types by the operator\'s own priority table', () => {
+    const evaluator = orderByFactory();
+    const byType: [RDF.Term, keyof typeof TermFunctionLesserThan.TERM_ORDERING_PRIORITY][] = [
+      [ DF.blankNode('x'), 'blankNode' ],
+      [ DF.namedNode('ex:x'), 'namedNode' ],
+      [ DF.literal('x'), 'literal' ],
+      [ DF.quad(DF.namedNode('ex:x'), DF.namedNode('ex:x'), DF.namedNode('ex:x')), 'quad' ],
+      [ DF.defaultGraph(), 'defaultGraph' ],
+    ];
+    for (const [ termA, keyA ] of byType) {
+      for (const [ termB, keyB ] of byType) {
+        if (keyA === keyB) {
+          continue;
+        }
+        const priority = TermFunctionLesserThan.TERM_ORDERING_PRIORITY;
+        expect(evaluator.orderTypes(termA, termB)).toBe(priority[keyA] < priority[keyB] ? -1 : 1);
+      }
+    }
+  });
+
+  it('leaves a term type the table does not cover to the operator', () => {
+    const evaluator = orderByFactory();
+    const general = (a: RDF.Term, b: RDF.Term): number => (<any> evaluator).orderTypesGeneral(a, b);
+    // A variable has no place in the priority table, so it has to fall through rather than be guessed at.
+    for (const other of [ DF.namedNode('ex:a'), DF.blankNode('a'), DF.literal('a'), DF.defaultGraph() ]) {
+      expect(evaluator.orderTypes(DF.variable('v'), other)).toBe(general(DF.variable('v'), other));
+      expect(evaluator.orderTypes(other, DF.variable('v'))).toBe(general(other, DF.variable('v')));
+    }
+  });
+});

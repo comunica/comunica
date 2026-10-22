@@ -21,7 +21,13 @@ import type {
 } from '@comunica/types';
 import { AlgebraFactory, Algebra, algebraUtils, inScopeVariables } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
+import {
+  getExpressionVariables,
+  getOperationSource,
+  getSafeBindings,
+  groupRepeatedSubOperations,
+  materializeOperation,
+} from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, UnionIterator } from 'asynciterator';
 
@@ -42,7 +48,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       logicalType: 'inner',
       physicalName: 'bind',
       canHandleUndefs: true,
-      isLeaf: false,
+      canHandleOperationRequired: true,
     });
     this.bindOrder = args.bindOrder;
     this.selectivityModifier = args.selectivityModifier;
@@ -146,7 +152,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     remainingEntries.splice(0, 1);
 
     // Bind the remaining patterns for each binding in the stream
-    const subContext = action.context
+    const subContext = groupRepeatedSubOperations(action.context, 'bindings', this.name)
       .set(KeysQueryOperation.joinLeftMetadata, entries[0].metadata)
       .set(KeysQueryOperation.joinRightMetadatas, remainingEntries.map(entry => entry.metadata));
     const bindingsStream: BindingsStream = ActorRdfJoinMultiBind.createBindStream(
@@ -177,8 +183,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       },
       physicalPlanMetadata: {
         bindIndex: sideData.entriesUnsorted.indexOf(entries[0]),
-        bindOperation: entries[0].operation,
-        bindOperationCardinality: entries[0].metadata.cardinality,
         bindOrder: this.bindOrder,
       },
     };
@@ -239,8 +243,13 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       },
       [Algebra.Types.FILTER]: {
         preVisitor: (op: Algebra.Filter) => {
-          // Conflict when FILTER is not a direct child of LEFT_JOIN
-          if (!op.metadata?.isHoistedLeftJoinFilter) {
+          // A FILTER that is a direct child of LEFT_JOIN may always use bound variables.
+          if (op.metadata?.isHoistedLeftJoinFilter) {
+            return { shortcut: false };
+          }
+          // Other FILTERs are only bound when they are evaluated by a source and variables are in scope.
+          if (!boundVariables || !getOperationSource(op) ||
+            ActorRdfJoinMultiBind.filterUsesOutOfScopeVariables(op, boundVarNames)) {
             valid = false;
             return { shortcut: true };
           }
@@ -262,6 +271,25 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     return valid;
   }
 
+  /**
+   * Check if the expression of the given FILTER uses any of the given variables
+   * that are not in scope of the FILTER's input.
+   * @param filter A FILTER operation.
+   * @param variableNames Variable names.
+   */
+  public static filterUsesOutOfScopeVariables(filter: Algebra.Filter, variableNames: string[]): boolean {
+    let expressionVariables: RDF.Variable[];
+    try {
+      expressionVariables = getExpressionVariables(filter.expression);
+    } catch {
+      // Unknown expression types are considered unsafe
+      return true;
+    }
+    const inputVariableNames = new Set(inScopeVariables(filter.input).map(variable => variable.value));
+    return expressionVariables
+      .some(variable => variableNames.includes(variable.value) && !inputVariableNames.has(variable.value));
+  }
+
   public async getJoinCoefficients(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
@@ -277,6 +305,18 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       return entriesTest;
     }
     const entriesSorted = entriesTest.get();
+
+    // Find the first entry that does not require operation pushdown.
+    const bindableIndex = entriesSorted
+      .findIndex(entry => !ActorRdfJoin.isOperationRequired(entry, entry.metadata));
+    if (bindableIndex < 0) {
+      return failTest(`Actor ${this.name} requires at least one entry of which the operation does not need to be pushed down`);
+    }
+    // This case could occur for variable SERVICE targets, which need to be bound later.
+    if (bindableIndex > 0) {
+      entriesSorted.unshift(...entriesSorted.splice(bindableIndex, 1));
+    }
+
     metadatas = entriesSorted.map(entry => entry.metadata);
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
@@ -291,9 +331,10 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     remainingRequestItemTimes.splice(0, 1);
 
     // Reject binding on some operation types
+    const boundVariables = metadatas[0].variables.map(variable => variable.variable);
     if (remainingEntries
-      .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation))) {
-      return failTest(`Actor ${this.name} can not bind on Extend and Group operations`);
+      .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation, boundVariables))) {
+      return failTest(`Actor ${this.name} can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations`);
     }
 
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.

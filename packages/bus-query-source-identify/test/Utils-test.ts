@@ -664,6 +664,7 @@ describe('Utils', () => {
           state: new MetadataValidationState(),
           cardinality: { type: 'estimate', value: 10 },
           order: [{ term: 'subject', direction: 'asc' }],
+          termOrder: [{ term: 'predicate', direction: 'asc' }, { term: 'subject', direction: 'asc' }],
           availableOrders: [
             {
               cost: {
@@ -693,6 +694,7 @@ describe('Utils', () => {
           { variable: DF.variable('b'), canBeUndef: false },
         ],
         order: [{ term: DF.variable('a'), direction: 'asc' }],
+        termOrder: [{ term: DF.variable('b'), direction: 'asc' }, { term: DF.variable('a'), direction: 'asc' }],
         availableOrders: [
           {
             cost: {

@@ -10,6 +10,7 @@ import type { IActionContext, IQueryOperationResultBindings } from '@comunica/ty
 import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -207,6 +208,64 @@ IQueryOperationResultBindings
 
             expect(ActorRdfJoinMultiBind.canBindWithOperation(minusOp, boundVariables)).toBe(false);
           });
+
+          it('should allow binding on a source FILTER that only uses bound variables in scope of its input', () => {
+            const filter = assignOperationSource(FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createOperatorExpression('&&', [
+                FACTORY.createTermExpression(DF.variable('a')),
+                FACTORY.createTermExpression(DF.variable('b')),
+              ]),
+            ), <any> {});
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('a') ])).toBe(true);
+          });
+
+          it('should reject binding on a local FILTER that only uses bound variables in scope of its input', () => {
+            const filter = FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createTermExpression(DF.variable('a')),
+            );
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('a') ])).toBe(false);
+          });
+
+          it('should allow binding on a source FILTER that uses unbound variables out of scope of its input', () => {
+            const filter = assignOperationSource(FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createTermExpression(DF.variable('c')),
+            ), <any> {});
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('a') ])).toBe(true);
+          });
+
+          it('should reject binding on a source FILTER that uses bound variables out of scope of its input', () => {
+            const filter = assignOperationSource(FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createTermExpression(DF.variable('c')),
+            ), <any> {});
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('c') ])).toBe(false);
+          });
+
+          it('should allow binding on a hoisted left join FILTER that uses bound variables out of scope', () => {
+            const filter = algebraUtils.withMetadata(FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createTermExpression(DF.variable('c')),
+            ));
+            filter.metadata.isHoistedLeftJoinFilter = true;
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('c') ])).toBe(true);
+          });
+
+          it('should reject binding on a source FILTER with an unsupported expression', () => {
+            const filter = assignOperationSource(FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createWildcardExpression(),
+            ), <any> {});
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('a') ])).toBe(false);
+          });
         });
       });
     });
@@ -400,6 +459,95 @@ IQueryOperationResultBindings
         });
       });
 
+      /**
+       * Two entries of which only the given index requires operation pushdown,
+       * ordered so that the entry sorting keeps them as given.
+       */
+      function actionWithOperationRequired(requiredIndex: number) {
+        mediatorJoinEntriesSort.mediate = <any> (async(sortAction: IActionRdfJoinEntriesSort) =>
+          ({ entries: [ ...sortAction.entries ]}));
+        const cardinalities = [ Number.POSITIVE_INFINITY, 2 ];
+        const entries = cardinalities.map((value, i) => ({
+          output: <any>{ metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value }}) },
+          operation: <any>{ index: i },
+          ...i === requiredIndex && { operationRequired: <const> true },
+        }));
+        const metadatas = cardinalities.map(value => ({
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value },
+          pageSize: 100,
+          requestTime: 10,
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+          ],
+        }));
+        return [{ type: 'inner', entries, context: new ActionContext() }, { metadatas }];
+      }
+
+      it('should move an entry with operationRequired out of the first position', async() => {
+        const [ action, sideData ] = actionWithOperationRequired(0);
+        const result = await actor.getJoinCoefficients(<any> action, <any> sideData);
+        expect(result.isPassed()).toBeTruthy();
+        // The entry that does not require pushdown is now first, so that it can bind the other
+        expect(result.getSideData().entriesSorted.map(entry => (<any> entry.operation).index)).toEqual([ 1, 0 ]);
+      });
+
+      it('should not reorder entries when the first entry does not require operationRequired', async() => {
+        const [ action, sideData ] = actionWithOperationRequired(1);
+        const result = await actor.getJoinCoefficients(<any> action, <any> sideData);
+        expect(result.isPassed()).toBeTruthy();
+        // No reordering is needed, so the sorted order is left untouched
+        expect(result.getSideData().entriesSorted.map(entry => (<any> entry.operation).index)).toEqual([ 0, 1 ]);
+      });
+
+      it('should reject when all entries have operationRequired', async() => {
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{
+                  metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 2 }}),
+                },
+                operation: <any>{},
+                operationRequired: true,
+              },
+              {
+                output: <any>{
+                  metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 3 }}),
+                },
+                operation: <any>{},
+                operationRequired: true,
+              },
+            ],
+            context: new ActionContext(),
+          },
+          {
+            metadatas: [
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                pageSize: 100,
+                requestTime: 10,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+              {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                pageSize: 100,
+                requestTime: 20,
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            ],
+          },
+        )).resolves
+          .toFailTest('Actor actor requires at least one entry of which the operation does not need to be pushed down');
+      });
+
       it('should reject on a right stream of type extend', async() => {
         await expect(actor.getJoinCoefficients(
           {
@@ -451,7 +599,8 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
+        )).resolves
+          .toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations');
       });
 
       it('should reject on a right stream of type group', async() => {
@@ -494,7 +643,8 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
+        )).resolves
+          .toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations');
       });
 
       it('should reject on a right stream containing group', async() => {
@@ -537,7 +687,8 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
+        )).resolves
+          .toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations');
       });
 
       it('should not reject on a left stream of type group', async() => {
@@ -1255,9 +1406,6 @@ IQueryOperationResultBindings
         // Validate physicalPlanMetadata
         expect(physicalPlanMetadata).toEqual({
           bindIndex: 1,
-          bindOperation: FACTORY
-            .createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.namedNode('ex:o')),
-          bindOperationCardinality: { type: 'estimate', value: 1 },
           bindOrder: 'depth-first',
         });
 

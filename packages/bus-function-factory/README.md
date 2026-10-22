@@ -15,8 +15,6 @@ and should only be used by [developers that want to build their own query engine
 $ yarn add @comunica/bus-function-factory
 ```
 
-## Usage
-
 ## Bus usage
 
 * **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-function-factory/^1.0.0/components/context.jsonld"`
@@ -27,4 +25,4 @@ We require this work around because Components.js does not support the complex t
 
 ## Creating actors on this bus
 
-Actors extending [`ActorFunctionFactory`](TODO:jsdoc_url) are automatically subscribed to this bus.
+Actors extending [`ActorFunctionFactory`](https://comunica.github.io/comunica/classes/_comunica_bus-function-factory.ActorFunctionFactory.html) are automatically subscribed to this bus.

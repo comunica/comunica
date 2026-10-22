@@ -1,6 +1,6 @@
 # Comunica Dereference RDF Parse Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Fbus-dereference-rdf.svg)](https://www.npmjs.com/package/@comunica/actor-dereference-rdf-parse)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-dereference-rdf-parse.svg)](https://www.npmjs.com/package/@comunica/actor-dereference-rdf-parse)
 
 An [dereference rdf](https://github.com/comunica/comunica/tree/master/packages/bus-dereference-rdf)
 actor for dereferencing a path or URL into a parsed stream of quads.

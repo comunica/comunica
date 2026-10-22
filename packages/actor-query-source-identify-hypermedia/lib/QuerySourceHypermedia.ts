@@ -138,7 +138,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     handledDatasets: Record<string, boolean>,
     context: IActionContext,
   ): Promise<ISourceState> {
-    let source = this.sourcesState.get(link.url);
+    const source = this.sourcesState.get(link.url);
     if (source) {
       return (async() => {
         // Check if cache policy is still valid
@@ -155,9 +155,17 @@ export class QuerySourceHypermedia implements IQuerySource {
         return sourceMaterialized;
       })();
     }
-    source = this.getSource(link, handledDatasets, context);
-    this.sourcesState.set(link.url, source);
-    return source;
+    const sourcePromise = this.getSource(link, handledDatasets, context);
+    this.sourcesState.set(link.url, sourcePromise);
+    // Remove failed sources from the cache, so that later calls can retry them.
+    // Without this, a source that (for example) did not exist yet at the time of the first request
+    // would remain unavailable for the lifetime of this query source.
+    sourcePromise.catch(() => {
+      if (this.sourcesState.get(link.url) === sourcePromise) {
+        this.sourcesState.delete(link.url);
+      }
+    });
+    return sourcePromise;
   }
 
   public toString(): string {

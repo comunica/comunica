@@ -1,0 +1,11 @@
+/componentsjs-error-state.json
+/node_modules
+/generated/*
+!/generated/.keep
+/output/*
+!/output/.keep
+/combinations/*/generated/*
+!/combinations/*/generated/.keep
+/combinations/*/output/*
+!/combinations/*/output/.keep
+plot_queries_data.*

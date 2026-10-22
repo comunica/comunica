@@ -145,6 +145,38 @@ describe('ActorQuerySourceIdentifySerialized', () => {
           }),
         ]);
       });
+
+      it('should identify the parsed data by its base IRI', async() => {
+        jest.spyOn(mediatorRdfParse, 'mediate');
+        await actor.run({
+          querySourceUnidentified: {
+            type: 'serialized',
+            value: sourceValue,
+            mediaType: sourceMediaType,
+            baseIRI: sourceBaseIri,
+          },
+          context: new ActionContext(),
+        });
+        expect(mediatorRdfParse.mediate).toHaveBeenCalledWith(expect.objectContaining({
+          handle: expect.objectContaining({ url: 'a serialized source with base IRI http://example.org/' }),
+          handleMediaType: sourceMediaType,
+        }));
+      });
+
+      it('should identify the parsed data without base IRI', async() => {
+        jest.spyOn(mediatorRdfParse, 'mediate');
+        await actor.run({
+          querySourceUnidentified: {
+            type: 'serialized',
+            value: sourceValue,
+            mediaType: sourceMediaType,
+          },
+          context: new ActionContext(),
+        });
+        expect(mediatorRdfParse.mediate).toHaveBeenCalledWith(expect.objectContaining({
+          handle: expect.objectContaining({ url: 'a serialized source' }),
+        }));
+      });
     });
   });
 });

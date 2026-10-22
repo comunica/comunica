@@ -50,6 +50,7 @@ TS
 
 export type MediatorQueryOperation = Mediate<IActionQueryOperation, IQueryOperationResult>;
 
+// TODO (next major): remove, unused leftovers of the sparqlee evaluator context.
 export interface IBaseExpressionContext {
   now?: Date;
   baseIRI?: string;
@@ -59,15 +60,19 @@ export interface IBaseExpressionContext {
   actionContext: IActionContext;
 }
 
+// TODO (next major): remove, unused leftovers of the sparqlee evaluator context.
 export interface ISyncExpressionContext extends IBaseExpressionContext {
   bnode: (input?: string | undefined) => RDF.BlankNode;
 }
 
+// TODO (next major): remove, unused leftovers of the sparqlee evaluator context.
 export interface IAsyncExpressionContext extends IBaseExpressionContext {
   bnode: (input?: string | undefined) => Promise<RDF.BlankNode>;
   exists?: (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean>;
 }
 
+// TODO (next major): remove, superseded by the copy in @comunica/utils-query-operation,
+//  which is the one actually used and which additionally carries wildcardAcceptAllExtensionFunctions.
 export type FragmentSelectorShapeTestFlags = {
   joinBindings?: boolean;
   filterBindings?: boolean;

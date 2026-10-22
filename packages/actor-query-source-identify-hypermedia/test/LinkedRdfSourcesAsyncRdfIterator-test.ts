@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { KeysStatistics } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
+import { ActionContext, ActionContextKey } from '@comunica/core';
 import { StatisticLinkDereference } from '@comunica/statistic-link-dereference';
 import type { ILink, IActionContext, IQueryBindingsOptions, MetadataBindings, ILinkQueue } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
@@ -789,6 +789,44 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       await new Promise(setImmediate);
       it.kickstart();
       expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('queries sources with the context of their link', async() => {
+      const keyQuery = new ActionContextKey<string>('query');
+      const keyLink = new ActionContextKey<string>('link');
+      const contextQuery = new ActionContext().set(keyQuery, 'query').set(keyLink, 'query');
+      const contexts: IActionContext[] = [];
+      const sourceStateGetterContexts = async(link: ILink): Promise<ISourceState> => ({
+        link,
+        handledDatasets: { [link.url]: true },
+        metadata: <any>{},
+        source: <any>{
+          queryBindings(_operation: Algebra.Operation, contextSource: IActionContext) {
+            contexts.push(contextSource);
+            const it = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+            it.setProperty('metadata', { next: link.url === 'first' ? 'P1' : undefined });
+            return it;
+          },
+        },
+      });
+      const it = new DummyIterator(
+        operation,
+        queryBindingsOptions,
+        contextQuery,
+        { url: 'first', context: new ActionContext().set(keyLink, 'first') },
+        sourceStateGetterContexts,
+      );
+
+      await new Promise(resolve => it.getProperty('metadata', resolve));
+      await expect(it).toEqualBindingsStream([]);
+      expect(contexts).toEqual([
+        // Metadata of the first link
+        contextQuery.set(keyLink, 'first'),
+        // Data of the first link
+        contextQuery.set(keyLink, 'first'),
+        // Data of the next link, which has no context of its own
+        contextQuery,
+      ]);
     });
   });
 });

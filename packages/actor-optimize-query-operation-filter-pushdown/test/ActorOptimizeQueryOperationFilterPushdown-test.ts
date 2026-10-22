@@ -653,6 +653,33 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         );
       }
 
+      describe('for an operation containing a SERVICE clause with a variable target', () => {
+        const servicePattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('v'));
+
+        it('is not pushed down into a join', async() => {
+          const service = AF.createService(servicePattern, DF.variable('e'));
+          const other = AF.createPattern(DF.variable('a'), DF.variable('b'), DF.variable('v'));
+          const join = AF.createJoin([ service, other ]);
+          const expression = AF.createTermExpression(DF.variable('v'));
+          expect(filterPushdown(expression, join)).toEqual([ false, AF.createFilter(join, expression) ]);
+        });
+
+        it('is not pushed down into a union', async() => {
+          const service = AF.createService(servicePattern, DF.variable('e'));
+          const other = AF.createPattern(DF.variable('a'), DF.variable('b'), DF.variable('v'));
+          const union = AF.createUnion([ service, other ]);
+          const expression = AF.createTermExpression(DF.variable('v'));
+          expect(filterPushdown(expression, union)).toEqual([ false, AF.createFilter(union, expression) ]);
+        });
+
+        it('is pushed down when the SERVICE target is an IRI', async() => {
+          const service = AF.createService(servicePattern, DF.namedNode('http://example.org/sparql'));
+          const join = AF.createJoin([ service ]);
+          const expression = AF.createTermExpression(DF.variable('v'));
+          expect(filterPushdown(expression, join)[0]).toBe(true);
+        });
+      });
+
       describe('for an extend operation', () => {
         it('is pushed down when variables do not overlap', async() => {
           expect(filterPushdown(

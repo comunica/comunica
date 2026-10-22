@@ -1,6 +1,6 @@
 # Comunica Term Function Xsd To Date Function Factory Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-function-xsd-to-date.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-xsd-to-date)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-function-factory-term-xsd-to-date.svg)](https://www.npmjs.com/package/@comunica/actor-function-factory-term-xsd-to-date)
 
 A [function factory](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory) actor
 that constructs a [term function](https://github.com/comunica/comunica/tree/master/packages/bus-function-factory/lib/ActorFunctionFactory.ts)

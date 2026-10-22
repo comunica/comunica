@@ -123,8 +123,9 @@ describe('ActorOptimizeQueryOperationDistinctTermsPushdown', () => {
 
         const { operation: operationOut } = await actor.run({ operation, context });
         expect(operationOut).toEqual(operation);
-        // GetSelectorShape is called during source collection, but optimization fails at variable mapping
-        expect(source.source.getSelectorShape).toHaveBeenCalledWith(expect.anything());
+        // The selector shape is only requested once the rewrite is known to be applicable,
+        // and the optimization already fails at variable mapping
+        expect(source.source.getSelectorShape).not.toHaveBeenCalled();
       });
 
       it('should optimize DISTINCT(PROJECT(PATTERN)) with supporting source', async() => {
@@ -156,6 +157,42 @@ describe('ActorOptimizeQueryOperationDistinctTermsPushdown', () => {
           terms: { s: 'subject', p: 'predicate' },
         });
         expect(source.source.getSelectorShape).toHaveBeenCalledWith(expect.anything());
+      });
+
+      it('should request the selector shape once for multiple distincts over the same source', async() => {
+        const source: IQuerySourceWrapper = <any> {
+          source: {
+            getSelectorShape: jest.fn(async() => ({
+              type: 'operation',
+              operation: {
+                operationType: 'type',
+                type: 'distinctterms',
+              },
+            })),
+          },
+        };
+
+        const createDistinct = (variable: string): Algebra.Distinct => AF.createDistinct(
+          AF.createProject(
+            assignOperationSource(
+              AF.createPattern(DF.variable(variable), DF.variable('p'), DF.variable('o')),
+              source,
+            ),
+            [ DF.variable(variable) ],
+          ),
+        );
+        const operation = AF.createJoin([ createDistinct('s1'), createDistinct('s2') ]);
+
+        const { operation: operationOut } = await actor.run({ operation, context });
+
+        expect(operationOut).toMatchObject({
+          type: 'join',
+          input: [
+            { type: 'distinctterms', variables: [ DF.variable('s1') ]},
+            { type: 'distinctterms', variables: [ DF.variable('s2') ]},
+          ],
+        });
+        expect(source.source.getSelectorShape).toHaveBeenCalledTimes(1);
       });
 
       it('should optimize and map all quad positions', async() => {

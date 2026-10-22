@@ -12,6 +12,6 @@
   "endpointUrl": "http://host.docker.internal:3001/sparql",
   "endpointUrlExternal": "http://localhost:3001/sparql",
   "warmupRuns": 5,
-  "runs": 10,
+  "runs": 15,
   "hookSparqlEndpoint": {"@id": "urn:jbr:benchmark-watdiv-file:combination_0:hookSparqlEndpoint","@type": "HookCli","entrypoint": [  "node",  "../../engines/query-sparql-file/bin/http.js",  "file@generated/dataset.nt",  "-p",  "3001"],"statsFilePath": "output/stats.csv"  }
 }

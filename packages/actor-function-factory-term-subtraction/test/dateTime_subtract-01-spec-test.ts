@@ -38,6 +38,23 @@ describe('dateTime subtract', () => {
     });
   });
 
+  describe('with fractional seconds and negative durations', () => {
+    runFuncTestTable({
+      registeredActors: [
+        args => new ActorFunctionFactoryTermSubtraction(args),
+      ],
+      operation: '-',
+      arity: 2,
+      notation: Notation.Infix,
+      testTable: `
+        '${dateTimeTyped('2012-07-20T20:24:21.582Z')}' '${dateTimeTyped('2012-07-18T10:01:00.000Z')}' = '${dayTimeDurationTyped('P2DT10H23M21.582S')}'
+        '${dateTimeTyped('1999-11-28T09:00:00Z')}' '${dateTimeTyped('2000-10-30T06:12:00-05:00')}' = '${dayTimeDurationTyped('-P337DT2H12M')}'
+        '${dateTimeTyped('2000-01-01T00:00:01.5Z')}' '${dateTimeTyped('2000-01-01T00:00:03Z')}' = '${dayTimeDurationTyped('-PT1.5S')}'
+        '${dateTimeTyped('2000-01-01T00:00:00Z')}' '${dateTimeTyped('2000-01-01T00:00:00Z')}' = '${dayTimeDurationTyped('PT0S')}'
+      `,
+    });
+  });
+
   /**
    * <?xml version="1.0" encoding="utf-8"?>
    * <sparql xmlns="http://www.w3.org/2005/sparql-results#">

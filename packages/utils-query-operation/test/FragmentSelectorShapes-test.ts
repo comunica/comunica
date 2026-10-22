@@ -1,9 +1,16 @@
-import type { FragmentSelectorShape } from '@comunica/types';
+import { KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
+import type { FragmentSelectorShape, IQuerySourceWrapper, IServiceExecutor } from '@comunica/types';
 import { Algebra, AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
-import { doesShapeAcceptOperation } from '../lib/FragmentSelectorShapes';
+import { DataFactory } from 'rdf-data-factory';
+import {
+  doesShapeAcceptOperation,
+  passFullOperationToSource,
+} from '../lib/FragmentSelectorShapes';
 
 const AF = new AlgebraFactory();
+const DF = new DataFactory();
 
 // Shape for QuerySourceSparql
 const SHAPE_SPARQL_1_1: FragmentSelectorShape = {
@@ -151,6 +158,45 @@ describe('FragmentSelectorShapes', () => {
           operationType: 'wildcard',
         },
       }, AF.createBgp([]))).toBeTruthy();
+    });
+
+    describe('with internal operations', () => {
+      let nodes: Algebra.Nodes;
+      let distinctTerms: Algebra.DistinctTerms;
+
+      beforeAll(() => {
+        nodes = AF.createNodes(AF.dataFactory.defaultGraph(), AF.dataFactory.variable!('s'));
+        distinctTerms = AF.createDistinctTerms([ AF.dataFactory.variable!('s') ], { s: 'subject' });
+      });
+
+      it('should not accept them with type wildcard', () => {
+        const shape: FragmentSelectorShape = {
+          type: 'operation',
+          operation: { operationType: 'wildcard' },
+        };
+        expect(doesShapeAcceptOperation(shape, nodes)).toBeFalsy();
+        expect(doesShapeAcceptOperation(shape, distinctTerms)).toBeFalsy();
+        expect(doesShapeAcceptOperation(shape, nodes, { wildcardAcceptAllExtensionFunctions: true })).toBeFalsy();
+        expect(doesShapeAcceptOperation(SHAPE_SPARQL_1_1, distinctTerms)).toBeFalsy();
+      });
+
+      it('should only accept the ones that are listed next to a wildcard', () => {
+        const shape: FragmentSelectorShape = {
+          type: 'disjunction',
+          children: [
+            {
+              type: 'operation',
+              operation: { operationType: 'wildcard' },
+            },
+            {
+              type: 'operation',
+              operation: { operationType: 'type', type: TypesComunica.NODES },
+            },
+          ],
+        };
+        expect(doesShapeAcceptOperation(shape, nodes)).toBeTruthy();
+        expect(doesShapeAcceptOperation(shape, distinctTerms)).toBeFalsy();
+      });
     });
 
     it('should not accept unequal operations with type type', () => {
@@ -1130,6 +1176,63 @@ describe('FragmentSelectorShapes', () => {
 
         expect(doesShapeAcceptOperation(SHAPE_RDFJS, construct)).toBeFalsy();
       });
+    });
+  });
+
+  describe('#passFullOperationToSource', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const serviceExecutor: IServiceExecutor = { execute: async() => []};
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
+    const contextExecutors = context.set(KeysInitQuery.serviceExecutors, { 'ex:executor': serviceExecutor });
+    let getSelectorShape: jest.Mock;
+    let source: IQuerySourceWrapper;
+
+    beforeEach(() => {
+      getSelectorShape = jest.fn(async() => SHAPE_SPARQL_1_1);
+      source = <any> { source: { referenceValue: 'ex:source', getSelectorShape }};
+    });
+
+    it('should be true for a single source that accepts the operation', async() => {
+      await expect(passFullOperationToSource(pattern, [ source ], context)).resolves.toBe(true);
+    });
+
+    it('should be true for SERVICE clauses without a custom executor', async() => {
+      const operation = AF.createJoin([ pattern, AF.createService(pattern, DF.namedNode('ex:other')) ]);
+      await expect(passFullOperationToSource(operation, [ source ], contextExecutors)).resolves.toBe(true);
+    });
+
+    it('should be true for SERVICE clauses with a variable target', async() => {
+      const operation = AF.createJoin([ pattern, AF.createService(pattern, DF.variable('service')) ]);
+      await expect(passFullOperationToSource(operation, [ source ], contextExecutors)).resolves.toBe(true);
+    });
+
+    it('should be true for a nested SERVICE clause with a custom executor', async() => {
+      const operation = AF.createService(
+        AF.createService(pattern, DF.namedNode('ex:executor')),
+        DF.namedNode('ex:other'),
+      );
+      await expect(passFullOperationToSource(operation, [ source ], contextExecutors)).resolves.toBe(true);
+    });
+
+    it('should be false for a SERVICE clause with a custom executor', async() => {
+      const operation = AF.createJoin([ pattern, AF.createService(pattern, DF.namedNode('ex:executor')) ]);
+      await expect(passFullOperationToSource(operation, [ source ], contextExecutors)).resolves.toBe(false);
+      expect(getSelectorShape).not.toHaveBeenCalled();
+    });
+
+    it('should be false for a SERVICE clause with a custom executor from the executor creator', async() => {
+      const operation = AF.createJoin([ pattern, AF.createService(pattern, DF.namedNode('ex:executor')) ]);
+      const contextCreator = context.set(
+        KeysInitQuery.serviceExecutorCreator,
+        (serviceNamedNode: RDF.NamedNode) => serviceNamedNode.value === 'ex:executor' ? serviceExecutor : undefined,
+      );
+      await expect(passFullOperationToSource(operation, [ source ], contextCreator)).resolves.toBe(false);
+    });
+
+    it('should throw when both custom SERVICE executors and an executor creator are configured', async() => {
+      const contextBoth = contextExecutors.set(KeysInitQuery.serviceExecutorCreator, () => undefined);
+      await expect(passFullOperationToSource(pattern, [], contextBoth))
+        .rejects.toThrow('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
     });
   });
 });

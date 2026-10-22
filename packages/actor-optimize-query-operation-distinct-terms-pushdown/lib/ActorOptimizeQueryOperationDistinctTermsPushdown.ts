@@ -7,7 +7,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { FragmentSelectorShape, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraTransformer, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import { assignOperationSource, doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { QuadTermName } from 'rdf-terms';
@@ -28,19 +28,25 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
     const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 
-    // Collect selector shapes of all operations
-    const sources = this.getSources(action.operation);
-    // eslint-disable-next-line ts/no-unnecessary-type-assertion
-    const sourceShapes = new Map(<[IQuerySourceWrapper, FragmentSelectorShape][]> await Promise.all(sources
-      .map(async source => [
-        source,
-        await source.source.getSelectorShape(source.context ? action.context.merge(source.context) : action.context),
-      ])));
+    // Selector shapes are requested lazily, so only sources that a rewrite candidate actually reaches
+    // are contacted, but at most once per source. The pending promise is memoized rather than the
+    // resolved shape, so simultaneous visits of the same source share a single request.
+    const sourceShapes = new Map<IQuerySourceWrapper, Promise<FragmentSelectorShape>>();
+    const getSelectorShape = (source: IQuerySourceWrapper): Promise<FragmentSelectorShape> => {
+      let shape = sourceShapes.get(source);
+      if (!shape) {
+        shape = source.source.getSelectorShape(
+          source.context ? action.context.merge(source.context) : action.context,
+        );
+        sourceShapes.set(source, shape);
+      }
+      return shape;
+    };
 
-    const operation = algebraUtils.mapOperation(action.operation, {
+    const operation = await algebraTransformer().transformNodeAsync(action.operation, {
       [Algebra.Types.DISTINCT]: {
         preVisitor: () => ({ continue: false }),
-        transform: (operation: Algebra.Distinct) => {
+        transform: async(operation: Algebra.Distinct) => {
           // Check if the Project wraps a Distinct Pattern
           let source: IQuerySourceWrapper | undefined;
           // If we have a JOIN with only one input, rewrite it to bring the sole JOIN child upwards one level.
@@ -70,7 +76,7 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
           );
 
           // Check if the source supports this operation
-          if (!doesShapeAcceptOperation(sourceShapes.get(source)!, distinctTermsOp)) {
+          if (!doesShapeAcceptOperation(await getSelectorShape(source), distinctTermsOp)) {
             return operation;
           }
 
@@ -87,6 +93,7 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
    * @param operation An operation.
    */
   public getSources(operation: Algebra.Operation): IQuerySourceWrapper[] {
+    // TODO (next-major): we no longer need this function
     const sources = new Set<IQuerySourceWrapper>();
     const sourceAdder = (subOperation: Algebra.Operation): boolean => {
       const src = getOperationSource(subOperation);

@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-process-annotate-source-binding.svg)](https://www.npmjs.com/package/@comunica/actor-query-process-annotate-source-binding)
 
-A comunica Annotate Source Binding Query Process Actor that wraps around [actor-query-process-sequential](https://www.npmjs.com/package/@comunica/actor-query-process-sequential).
+A [Query Process](https://github.com/comunica/comunica/tree/master/packages/bus-query-process) actor that wraps around [actor-query-process-sequential](https://www.npmjs.com/package/@comunica/actor-query-process-sequential).
 The wrapper processes sources in the context of any produced bindings.
 It creates a new binding variable ```_source``` with a value equal to the extracted sources, enabling any serialization actor to include the tracked source information.
 

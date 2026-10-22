@@ -47,6 +47,34 @@ export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermNam
    * All available alternative orders.
    */
   availableOrders?: RDF.QueryOperationOrder<OrderItemsType>[];
+
+  /**
+   * If the operation that produced this stream must be pushed into a join.
+   * This achieves the same as `IJoinEntry.operationRequired`, but can be expressed in metadata.
+   * This is for example set for SERVICE clauses of which the target is still an unbound variable,
+   * which can only be evaluated once a bind-join has bound that target.
+   */
+  operationRequired?: boolean;
+
+  /**
+   * The order of the bindings in the term order, rather than in the SPARQL order that `order` follows.
+   *
+   * The term order compares terms on term type, value, datatype, language, and base direction,
+   * as `compareTerms` from `@comunica/utils-iterator` does, without interpreting literals.
+   * Two terms are equal in it exactly if they are equal RDF terms.
+   * For example, "10"^^xsd:integer comes before "9"^^xsd:integer in this order.
+   *
+   * If termOrder is undefined, then the bindings are not known to be in the term order.
+   */
+  termOrder?: TermsOrder<OrderItemsType>;
+
+  /**
+   * Whether the stream can skip ahead within its `termOrder` instead of being read one binding at a time.
+   *
+   * Only meaningful together with `termOrder`.
+   * @see ISeekableBindingsStream
+   */
+  canSeek?: boolean;
 }
 
 export type TermsOrder<OrderItemsType> = { term: OrderItemsType; direction: 'asc' | 'desc' }[];
@@ -66,6 +94,11 @@ export type MetadataVariable = {
    * If this is false, then values for this variable are guaranteed to be defined in the bindingsStream.
    */
   canBeUndef: boolean;
+  /**
+   * The number of distinct values this variable takes in the bindings stream.
+   * Only set by sources that can determine it cheaply; the cardinality is the fallback upper bound.
+   */
+  distinctValues?: number;
 };
 export type MetadataQuads = IMetadata<RDF.QuadTermName>;
 

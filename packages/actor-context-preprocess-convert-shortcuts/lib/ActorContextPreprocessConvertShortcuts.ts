@@ -56,6 +56,8 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "queryTimestampHighResolution": "@comunica/actor-init-query:queryTimestampHighResolution",
    *   "httpProxyHandler": "@comunica/actor-http-proxy:httpProxyHandler",
    *   "lenient": "@comunica/actor-init-query:lenient",
+   *   "serviceAllowFileTargets": "@comunica/actor-init-query:serviceAllowFileTargets",
+   *   "serviceAllowVariableTargets": "@comunica/actor-init-query:serviceAllowVariableTargets",
    *   "parseUnsupportedVersions": "@comunica/actor-init-query:parseUnsupportedVersions",
    *   "httpIncludeCredentials": "@comunica/bus-http:include-credentials",
    *   "httpAuth": "@comunica/bus-http:auth",
@@ -78,6 +80,8 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "extensionFunctionsAlwaysPushdown": "@comunica/actor-init-query:extensionFunctionsAlwaysPushdown",
    *   "extensionFunctionCreator": "@comunica/actor-init-query:extensionFunctionCreator",
    *   "functionArgumentsCache": "@comunica/actor-init-query:functionArgumentsCache",
+   *   "serviceExecutors": "@comunica/actor-init-query:serviceExecutors",
+   *   "serviceExecutorCreator": "@comunica/actor-init-query:serviceExecutorCreator",
    *   "explain": "@comunica/actor-init-query:explain",
    *   "unionDefaultGraph": "@comunica/bus-query-operation:unionDefaultGraph",
    *   "traverse": "@comunica/bus-query-source-identify:traverse",
@@ -86,7 +90,11 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "distinctConstruct": "@comunica/actor-init-query:distinctConstruct",
    *   "nonLexicalComparison": "@comunica/utils-expression-evaluator:nonLexicalComparison",
    *   "fullTermComparison": "@comunica/utils-expression-evaluator:fullTermComparison",
-   *   "rdfSerializationPrefixes": "@comunica/bus-rdf-serialize:rdfSerializationPrefixes"
+   *   "existenceResolver": "@comunica/utils-expression-evaluator:existenceResolver",
+   *   "rdfSerializationPrefixes": "@comunica/bus-rdf-serialize:rdfSerializationPrefixes",
+   *   "dereferenceFromNamed": "@comunica/actor-init-query:dereferenceFromNamed",
+   *   "dereferenceFromNamedConflictMode": "@comunica/actor-init-query:dereferenceFromNamedConflictMode",
+   *   "rdfVariant": "@comunica/actor-init-query:rdfVariant"
    * }}
    */
   contextKeyShortcuts: Record<string, string>;

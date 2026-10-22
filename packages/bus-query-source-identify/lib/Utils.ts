@@ -239,6 +239,9 @@ export function quadsMetadataToBindingsMetadata(
     order: metadataQuads.order ?
       quadsOrderToBindingsOrder(dataFactory, metadataQuads.order, elementVariables) :
       undefined,
+    termOrder: metadataQuads.termOrder ?
+      quadsOrderToBindingsOrder(dataFactory, metadataQuads.termOrder, elementVariables) :
+      undefined,
     availableOrders: metadataQuads.availableOrders ?
       metadataQuads.availableOrders.map(orderDef => ({
         cost: orderDef.cost,

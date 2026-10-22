@@ -1,133 +1,201 @@
-import type { IPhysicalQueryPlanLogger, IPlanNode } from '@comunica/types';
+import type { ILogOperationArgs, IPhysicalQueryPlanLogger, IPhysicalQueryPlanNode } from '@comunica/types';
 import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
+import type { IInstrumentedIterator, InstrumentableIterator } from '@comunica/utils-iterator';
+import { instrumentIterator } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
+import { MemoryPlanNode } from './MemoryPlanNode';
+
+/**
+ * A stream that is being measured, together with the ongoing measurement of it.
+ */
+interface IMeasuredStream {
+  stream: InstrumentableIterator;
+  measurement: IInstrumentedIterator;
+}
 
 /**
  * A physical query plan logger that stores everything in memory.
  */
 export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
-  private readonly planNodes: Map<any, IPlanNode>;
-  private rootNode: IPlanNode | undefined;
+  private readonly nodesByOutput: WeakMap<any, MemoryPlanNode>;
+  private readonly measurements: IMeasuredStream[];
+  private readonly pending: Promise<void>[];
+  private rootNode: MemoryPlanNode | undefined;
 
   public constructor() {
-    this.planNodes = new Map();
+    this.nodesByOutput = new WeakMap();
+    this.measurements = [];
+    this.pending = [];
   }
 
-  public logOperation(
-    logicalOperator: string,
-    physicalOperator: string | undefined,
-    node: any,
-    parentNode: any,
-    actor: string,
-    metadata: any,
-  ): void {
-    const planNode: IPlanNode = {
-      actor,
-      logicalOperator,
-      physicalOperator,
-      rawNode: node,
-      children: [],
-      metadata,
-    };
-    this.planNodes.set(node, planNode);
+  public logOperation(args: ILogOperationArgs): IPhysicalQueryPlanNode {
+    if (args.repeated && args.parentNode) {
+      // A repetition group stands for all evaluations of one thing within one operation, so an
+      // operation that reaches for it once per evaluation must get the group it already opened.
+      const groupExisting = (<MemoryPlanNode> args.parentNode).children.find(child => child.repeated &&
+        child.logicalOperator === args.logicalOperator && child.actor === args.actor &&
+        child.operation === args.operation);
+      if (groupExisting) {
+        return groupExisting;
+      }
+    }
 
-    if (this.rootNode) {
-      if (!parentNode) {
-        throw new Error(`Detected more than one parent-less node`);
-      }
-      const planParentNode = this.planNodes.get(parentNode);
-      if (!planParentNode) {
-        throw new Error(`Could not find parent node`);
-      }
-      planParentNode.children.push(planNode);
-    } else {
-      if (parentNode) {
+    const planNode = new MemoryPlanNode(this, args);
+
+    if (args.parentNode) {
+      if (!this.rootNode) {
         throw new Error(`No root node has been set yet, while a parent is being referenced`);
+      }
+      planNode.attachTo(<MemoryPlanNode> args.parentNode);
+    } else {
+      if (this.rootNode) {
+        throw new Error(`Detected more than one parent-less node`);
       }
       this.rootNode = planNode;
     }
+
+    return planNode;
   }
 
-  public stashChildren(node: any, filter?: (planNodeFilter: IPlanNode) => boolean): void {
-    const planNode = this.planNodes.get(node);
-    if (!planNode) {
-      throw new Error(`Could not find plan node`);
-    }
-    planNode.children = filter ? planNode.children.filter(filter) : [];
+  public getNodeForOutput(output: unknown): IPhysicalQueryPlanNode | undefined {
+    return typeof output === 'object' && output !== null ? this.nodesByOutput.get(output) : undefined;
   }
 
-  public unstashChild(
-    node: any,
-    parentNode: any,
-  ): void {
-    const planNode = this.planNodes.get(node);
-    if (planNode) {
-      const planParentNode = this.planNodes.get(parentNode);
-      if (!planParentNode) {
-        throw new Error(`Could not find plan parent node`);
-      }
-      planParentNode.children.push(planNode);
+  /**
+   * Associate a query operation output with the given node, and start measuring it.
+   *
+   * An operation that passes its input's output through unchanged, such as a wrapping join,
+   * registers an output that was already registered by the operation below it. The last
+   * registration wins.
+   *
+   * @param output A query operation output.
+   * @param node The node that produced the output.
+   */
+  public registerOutput(output: unknown, node: MemoryPlanNode): void {
+    if (typeof output === 'object' && output !== null) {
+      this.nodesByOutput.set(output, node);
+      this.measureOutput(<any> output, node);
     }
   }
 
-  public appendMetadata(
-    node: any,
-    metadata: any,
-  ): void {
-    const planNode = this.planNodes.get(node);
-    if (planNode) {
-      planNode.metadata = {
-        ...planNode.metadata,
-        ...metadata,
-      };
+  /**
+   * Measure how many results the given output produced and how long that took.
+   * @param output A query operation output.
+   * @param node The node that produced the output.
+   */
+  private measureOutput(output: any, node: MemoryPlanNode): void {
+    const stream = output.bindingsStream ?? output.quadStream;
+    if (!stream) {
+      return;
     }
+
+    const measurement = instrumentIterator(stream);
+    this.measurements.push({ stream, measurement });
+    this.pending.push(measurement.counters
+      .then(async(counters) => {
+        node.appendMetadata({
+          cardinalityReal: counters.count,
+          timeSelf: counters.timeSelf,
+          timeLife: counters.timeLife,
+          ...counters.state === 'ended' ? {} : { streamState: counters.state },
+        });
+
+        if (node.metadata.cardinality === undefined) {
+          const metadata = await output.metadata();
+          node.appendMetadata({ cardinality: metadata.cardinality });
+        }
+      })
+      // The query itself reports failures, the plan just records what it could measure
+      .catch(() => {
+        // Ignore
+      }));
+  }
+
+  public async finalize(): Promise<void> {
+    // Operations below one that stopped early, such as a LIMIT, may still be running, and would
+    // otherwise keep going while the plan is being serialized. The whole result has been consumed
+    // by this point, so nothing is reading them anymore. Destroying them immediately, rather than
+    // first giving them time, keeps them from advancing further after the query itself is over.
+    for (const { stream } of this.measurements) {
+      stream.destroy();
+    }
+    // A stream that is neither ended nor destroyable would otherwise never settle
+    for (const { measurement } of this.measurements) {
+      measurement.finish();
+    }
+
+    await Promise.all(this.pending);
   }
 
   public toJson(): IPlanNodeJson | Record<string, never> {
     return this.rootNode ? this.planNodeToJson(this.rootNode) : {};
   }
 
-  private planNodeToJson(node: IPlanNode): IPlanNodeJson {
+  private planNodeToJson(node: MemoryPlanNode): IPlanNodeJson {
     const data: IPlanNodeJson = {
       logical: node.logicalOperator,
       physical: node.physicalOperator,
-      ...this.getLogicalMetadata(node.rawNode),
-      ...this.compactMetadata(node.metadata),
+      ...this.getLogicalMetadata(node.operation),
+      ...node.metadata,
     };
 
-    if (node.children.length > 0) {
-      data.children = node.children.map(child => this.planNodeToJson(child));
-    }
-
-    // Special case: compact children for bind joins.
-    if (data.physical === 'bind' && data.children) {
-      // Group children by query plan format
-      const childrenGrouped: Record<string, IPlanNodeJson[]> = {};
-      for (const child of data.children) {
-        const lastSubChild = child.children?.at(-1) ?? child;
-        const key = this.getPlanHash(lastSubChild).join(',');
-        if (!childrenGrouped[key]) {
-          childrenGrouped[key] = [];
+    // A repetition group without children summarizes nothing, so it is left out
+    const children = node.children
+      .filter(child => !child.repeated || child.children.length > 0)
+      .map(child => this.planNodeToJson(child));
+    if (node.repeated) {
+      // The children are repeated evaluations of the same operation, so summarize the repetitions
+      const childrenGrouped = new Map<string, IPlanNodeJson[]>();
+      for (const child of children) {
+        const key = this.getPlanHash(child).join(',');
+        const group = childrenGrouped.get(key);
+        if (group) {
+          group.push(child);
+        } else {
+          childrenGrouped.set(key, [ child ]);
         }
-        childrenGrouped[key].push(child);
       }
 
-      // Compact query plan occurrences
+      const childrenRemaining: IPlanNodeJson[] = [];
       const childrenCompact: IPlanNodeJsonChildCompact[] = [];
-      for (const children of Object.values(childrenGrouped)) {
-        childrenCompact.push({
-          occurrences: children.length,
-          firstOccurrence: children[0],
-        });
+      for (const group of childrenGrouped.values()) {
+        if (group.length === 1) {
+          childrenRemaining.push(group[0]);
+        } else {
+          childrenCompact.push({
+            occurrences: group.length,
+            ...MemoryPhysicalQueryPlanLogger.aggregateOccurrences(group),
+            firstOccurrence: group[0],
+          });
+        }
       }
-
-      // Replace children with compacted representation
-      data.childrenCompact = childrenCompact;
-      delete data.children;
+      if (childrenRemaining.length > 0) {
+        data.children = childrenRemaining;
+      }
+      if (childrenCompact.length > 0) {
+        data.childrenCompact = childrenCompact;
+      }
+    } else if (children.length > 0) {
+      data.children = children;
     }
 
     return data;
+  }
+
+  /**
+   * Summarize the measurements of the given repeated occurrences of the same sub-plan.
+   * @param occurrences Nodes that all have the same plan shape.
+   */
+  public static aggregateOccurrences(occurrences: IPlanNodeJson[]): IPlanNodeJsonAggregated {
+    const aggregated: IPlanNodeJsonAggregated = {};
+    for (const key of <const> [ 'cardinalityReal', 'timeSelf', 'timeLife' ]) {
+      const values = occurrences.map(occurrence => occurrence[key]).filter(value => value !== undefined);
+      if (values.length > 0) {
+        aggregated[`${key}Sum`] = values.reduce((sum, value) => sum + value, 0);
+      }
+    }
+    return aggregated;
   }
 
   private getPlanHash(node: IPlanNodeJson): string[] {
@@ -146,19 +214,10 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     return entries;
   }
 
-  private compactMetadata(metadata: any): any {
-    return Object.fromEntries(Object.entries(metadata)
-      .map(([ key, value ]) => [ key, this.compactMetadataValue(value) ]));
-  }
-
-  private compactMetadataValue(value: any): any {
-    return value && typeof value === 'object' && 'termType' in value ? this.getLogicalMetadata(value) : value;
-  }
-
   private getLogicalMetadata(rawNode: any): IPlanNodeJsonLogicalMetadata {
     const data: IPlanNodeJsonLogicalMetadata = {};
 
-    if ('type' in rawNode) {
+    if (rawNode && 'type' in rawNode) {
       const operation: Algebra.Operation = rawNode;
 
       if (operation.metadata?.scopedSource) {
@@ -179,43 +238,84 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
     return `${termToString(quad.subject)} ${termToString(quad.predicate)} ${termToString(quad.object)}${quad.graph.termType === 'DefaultGraph' ? '' : ` ${termToString(quad.graph)}`}`;
   }
 
-  public toCompactString(): string {
+  /**
+   * Serialize the collected query plan as an indented tree.
+   *
+   * @param statistics If the measurements of each operator are included. Without them the plan only
+   * says what ran, which is what most readers are after; with them every line also reports how much
+   * it produced and how long it took.
+   */
+  public toCompactString(statistics: boolean): string {
     const node = this.toJson();
     const lines: string[] = [];
-    const sources: Map<string, number> = new Map();
+    const legends: ICompactStringLegends = {
+      sources: new Map(),
+      sourceQueries: new Map(),
+      statistics,
+    };
 
     if ('logical' in node) {
-      this.nodeToCompactString(lines, sources, '', <IPlanNodeJson> node);
+      this.nodeToCompactString(lines, legends, '', <IPlanNodeJson> node);
     } else {
       lines.push('Empty');
     }
 
-    if (sources.size > 0) {
-      lines.push('');
-      lines.push('sources:');
-      for (const [ key, id ] of sources.entries()) {
-        lines.push(`  ${id}: ${key}`);
-      }
-    }
+    this.legendToCompactString(lines, 'sources', legends.sources);
+    this.legendToCompactString(lines, 'source queries', legends.sourceQueries);
 
     return lines.join('\n');
   }
 
+  /**
+   * Append a legend of interned values to the given lines.
+   * @param lines The lines to append to.
+   * @param label The label of the legend.
+   * @param legend A mapping of values to their identifier.
+   */
+  private legendToCompactString(lines: string[], label: string, legend: Map<string, number>): void {
+    if (legend.size > 0) {
+      lines.push('', `${label}:`);
+      for (const [ key, id ] of legend.entries()) {
+        lines.push(`  ${id}: ${key.split('\n').join('\n     ')}`);
+      }
+    }
+  }
+
+  /**
+   * Assign a stable identifier to the given value within the given legend.
+   * @param legend A mapping of values to their identifier.
+   * @param value The value to identify.
+   */
+  private identify(legend: Map<string, number>, value: string): number {
+    let id = legend.get(value);
+    if (id === undefined) {
+      id = legend.size;
+      legend.set(value, id);
+    }
+    return id;
+  }
+
   public nodeToCompactString(
     lines: string[],
-    sources: Map<string, number>,
+    legends: ICompactStringLegends,
     indent: string,
     node: IPlanNodeJson,
     metadata?: string,
   ): void {
-    let sourceId: number | undefined;
-    if (node.source) {
-      sourceId = sources.get(node.source);
-      if (sourceId === undefined) {
-        sourceId = sources.size;
-        sources.set(node.source, sourceId);
-      }
-    }
+    const sourceId = node.source === undefined ? undefined : this.identify(legends.sources, node.source);
+    const sourceQueryId = node.sourceQuery === undefined ?
+      undefined :
+      this.identify(legends.sourceQueries, node.sourceQuery);
+
+    const statistics = legends.statistics ?
+      `${
+        node.cardinality ? ` cardEst:${node.cardinality.type === 'estimate' ? '~' : ''}${numberToString(node.cardinality.value)}` : ''}${
+        node.cardinalityReal === undefined ? '' : ` cardReal:${node.cardinalityReal}`}${
+        node.timeSelf === undefined ? '' : ` timeSelf:${numberToString(node.timeSelf)}ms`}${
+        node.timeLife === undefined ? '' : ` timeLife:${numberToString(node.timeLife)}ms`}${
+        node.streamState ? ` ${node.streamState}` : ''}${
+        node.httpRequests === undefined ? '' : ` httpRequests:${node.httpRequests}`}` :
+      '';
 
     lines.push(`${
       indent}${
@@ -223,20 +323,43 @@ export class MemoryPhysicalQueryPlanLogger implements IPhysicalQueryPlanLogger {
       node.physical ? `(${node.physical})` : ''}${
       node.pattern ? ` (${node.pattern})` : ''}${
       node.variables ? ` (${node.variables.join(',')})` : ''}${
-      node.bindOperation ? ` bindOperation:(${node.bindOperation.pattern}) bindCardEst:${node.bindOperationCardinality.type === 'estimate' ? '~' : ''}${numberToString(node.bindOperationCardinality.value)}` : ''}${
-      node.cardinality ? ` cardEst:${node.cardinality.type === 'estimate' ? '~' : ''}${numberToString(node.cardinality.value)}` : ''}${
+      node.bindIndex === undefined ? '' : ` bindIndex:${node.bindIndex}`}${
       node.source ? ` src:${sourceId}` : ''}${
-      node.cardinalityReal ? ` cardReal:${node.cardinalityReal}` : ''}${
-      node.timeSelf ? ` timeSelf:${numberToString(node.timeSelf)}ms` : ''}${
-      node.timeLife ? ` timeLife:${numberToString(node.timeLife)}ms` : ''}${
+      statistics}${
+      sourceQueryId === undefined ? '' : ` srcQuery:${sourceQueryId}`}${
+      node.delegated ? ' delegated' : ''}${
       metadata ? ` ${metadata}` : ''}`);
     for (const child of node.children ?? []) {
-      this.nodeToCompactString(lines, sources, `${indent}  `, child);
+      this.nodeToCompactString(lines, legends, `${indent}  `, child);
     }
     for (const child of node.childrenCompact ?? []) {
-      this.nodeToCompactString(lines, sources, `${indent}  `, child.firstOccurrence, `compacted-occurrences:${child.occurrences}`);
+      this.nodeToCompactString(
+        lines,
+        legends,
+        `${indent}  `,
+        child.firstOccurrence,
+        MemoryPhysicalQueryPlanLogger.occurrencesToCompactString(child, legends.statistics),
+      );
     }
   }
+
+  /**
+   * Summarize a group of repeated occurrences as a suffix for the compact plan.
+   * @param child A group of repeated occurrences.
+   * @param statistics If the totals of the group are included.
+   */
+  public static occurrencesToCompactString(child: IPlanNodeJsonChildCompact, statistics: boolean): string {
+    return `compacted-occurrences:${child.occurrences}${
+      !statistics || child.cardinalityRealSum === undefined ? '' : ` cardRealSum:${child.cardinalityRealSum}`}${
+      !statistics || child.timeSelfSum === undefined ? '' : ` timeSelfSum:${numberToString(child.timeSelfSum)}ms`}${
+      !statistics || child.timeLifeSum === undefined ? '' : ` timeLifeSum:${numberToString(child.timeLifeSum)}ms`}`;
+  }
+}
+
+interface ICompactStringLegends {
+  sources: Map<string, number>;
+  sourceQueries: Map<string, number>;
+  statistics: boolean;
 }
 
 export function numberToString(value: number): string {
@@ -251,9 +374,15 @@ interface IPlanNodeJson extends IPlanNodeJsonLogicalMetadata {
   childrenCompact?: IPlanNodeJsonChildCompact[];
 }
 
-interface IPlanNodeJsonChildCompact {
+interface IPlanNodeJsonChildCompact extends IPlanNodeJsonAggregated {
   occurrences: number;
   firstOccurrence: IPlanNodeJson;
+}
+
+interface IPlanNodeJsonAggregated {
+  cardinalityRealSum?: number;
+  timeSelfSum?: number;
+  timeLifeSum?: number;
 }
 
 interface IPlanNodeJsonLogicalMetadata {

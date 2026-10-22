@@ -1,6 +1,6 @@
 # Comunica Bus Merge Binding Factory
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Fbus-merge-binding-factory.svg)](https://www.npmjs.com/package/@comunica/bus-merge-bindings-context)
+[![npm version](https://badge.fury.io/js/%40comunica%2Fbus-merge-bindings-context.svg)](https://www.npmjs.com/package/@comunica/bus-merge-bindings-context)
 
 A bus for creating merge handlers that are responsible for merging context entries in bindings with different values.
 
