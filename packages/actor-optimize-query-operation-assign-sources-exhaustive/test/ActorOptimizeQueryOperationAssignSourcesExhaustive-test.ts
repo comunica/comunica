@@ -3,7 +3,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getOperationOriginalQueryString, getOperationSource } from '@comunica/utils-query-operation';
+import { getOperationEquivalentQueryString, getOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import {
   ActorOptimizeQueryOperationAssignSourcesExhaustive,
@@ -161,7 +161,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource((<Algebra.Union><unknown>operationOut.patterns[1]).input[1])).toBe(sourcePattern);
       });
 
-      describe('with an original query string', () => {
+      describe('with an original query string in the context', () => {
         const contextQueryString = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
           .set(KeysInitQuery.queryString, 'abc')
           .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' });
@@ -172,7 +172,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
             context: contextQueryString.set(KeysQueryOperation.querySources, [ source1 ]),
           });
           expect(getOperationSource(operationOut)).toBe(source1);
-          expect(getOperationOriginalQueryString(operationOut)).toBe('abc');
+          expect(getOperationEquivalentQueryString(operationOut)).toBe('abc');
           expect(contextOut.get(KeysInitQuery.queryString)).toBe('abc');
         });
 
@@ -181,7 +181,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
             operation: AF.createNop(),
             context: contextQueryString.set(KeysQueryOperation.querySources, [ source1, source1 ]),
           });
-          expect(getOperationOriginalQueryString(operationOut)).toBeUndefined();
+          expect(getOperationEquivalentQueryString(operationOut)).toBeUndefined();
           expect(contextOut.get(KeysInitQuery.queryString)).toBe('abc');
         });
 
@@ -192,7 +192,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
               .set(KeysQueryOperation.querySources, [ source1 ])
               .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }),
           });
-          expect(getOperationOriginalQueryString(operationOut)).toBeUndefined();
+          expect(getOperationEquivalentQueryString(operationOut)).toBeUndefined();
         });
 
         it('should not attach it to the operation if initial bindings changed the operation', async() => {
@@ -202,7 +202,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
               .set(KeysQueryOperation.querySources, [ source1 ])
               .set(KeysInitQuery.initialBindings, BF.bindings()),
           });
-          expect(getOperationOriginalQueryString(operationOut)).toBeUndefined();
+          expect(getOperationEquivalentQueryString(operationOut)).toBeUndefined();
         });
       });
     });

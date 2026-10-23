@@ -6,7 +6,7 @@ import type { IActionContext, IDataset, QueryResultCardinality } from '@comunica
 import { AlgebraFactory, Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import { assignOperationOriginalQueryString } from '@comunica/utils-query-operation';
+import { assignOperationEquivalentQueryString } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -1636,9 +1636,9 @@ describe('QuerySourceSparql', () => {
       });
     });
 
-    it('should ignore the original query string for joinBindings', async() => {
+    it('should ignore the equivalent query string for joinBindings', async() => {
       await expect(source.queryBindings(
-        assignOperationOriginalQueryString(AF.createPattern(iriS, DF.variable('p'), iriO), 'abc'),
+        assignOperationEquivalentQueryString(AF.createPattern(iriS, DF.variable('p'), iriO), 'abc'),
         ctx,
         {
           joinBindings: {
@@ -1851,9 +1851,9 @@ describe('QuerySourceSparql', () => {
       jest.useRealTimers();
     });
 
-    it('should send the original query string attached to the operation', async() => {
+    it('should send the equivalent query string attached to the operation', async() => {
       await expect(source.queryBindings(
-        assignOperationOriginalQueryString(AF.createPattern(iriS, DF.variable('p'), iriO), 'abc'),
+        assignOperationEquivalentQueryString(AF.createPattern(iriS, DF.variable('p'), iriO), 'abc'),
         ctx,
       ))
         .toEqualBindingsStream([
@@ -2214,7 +2214,7 @@ describe('QuerySourceSparql', () => {
       ]);
     });
 
-    it('should send the original query string attached to the operation', async() => {
+    it('should send the equivalent query string attached to the operation', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
           headers: new Headers({ 'Content-Type': 'text/turtle' }),
@@ -2244,7 +2244,7 @@ describe('QuerySourceSparql', () => {
       );
 
       await expect(source.queryQuads(
-        assignOperationOriginalQueryString(
+        assignOperationEquivalentQueryString(
           AF.createConstruct(AF.createPattern(iriS, DF.variable('p'), iriO), []),
           'abc',
         ),
@@ -2317,7 +2317,7 @@ describe('QuerySourceSparql', () => {
       });
     });
 
-    it('should send the original query string attached to the operation', async() => {
+    it('should send the equivalent query string attached to the operation', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
@@ -2351,7 +2351,7 @@ describe('QuerySourceSparql', () => {
       );
 
       await expect(source.queryBoolean(
-        assignOperationOriginalQueryString(AF.createAsk(AF.createPattern(iriS, DF.variable('p'), iriO)), 'abc'),
+        assignOperationEquivalentQueryString(AF.createAsk(AF.createPattern(iriS, DF.variable('p'), iriO)), 'abc'),
         ctx,
       )).resolves.toBe(true);
 
@@ -2423,7 +2423,7 @@ describe('QuerySourceSparql', () => {
       });
     });
 
-    it('should send the original query string attached to the operation', async() => {
+    it('should send the equivalent query string attached to the operation', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
@@ -2453,7 +2453,7 @@ describe('QuerySourceSparql', () => {
       );
 
       await source.queryVoid(
-        assignOperationOriginalQueryString(AF.createDrop(iriS), 'abc'),
+        assignOperationEquivalentQueryString(AF.createDrop(iriS), 'abc'),
         ctx,
       );
 

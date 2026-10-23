@@ -104,26 +104,26 @@ export function assignOperationSource<O extends Algebra.Operation>(operation: O,
 }
 
 /**
- * Obtain the original query string that the given operation is equivalent to.
+ * Obtain the query string that is equivalent to the given operation, which a source may send instead of the operation.
  * @param operation An algebra operation.
- * @return The original query string, or undefined if the operation does not represent it.
+ * @return The equivalent query string, or undefined if none is attached.
  */
-export function getOperationOriginalQueryString(operation: Algebra.Operation): string | undefined {
-  return <string | undefined> operation.metadata?.originalQueryString;
+export function getOperationEquivalentQueryString(operation: Algebra.Operation): string | undefined {
+  return <string | undefined> operation.metadata?.equivalentQueryString;
 }
 
 /**
- * Attach the original query string to the given operation, so that its source may send it as-is.
+ * Attach an equivalent query string to the given operation, so that its source may send it as-is.
  * The operation is copied and returned.
- * @param operation An operation that is equivalent to the original query string.
- * @param originalQueryString The original query string.
- * @return A copy of the operation with the original query string attached.
+ * @param operation An operation.
+ * @param equivalentQueryString A query string that is equivalent to the operation.
+ * @return A copy of the operation with the equivalent query string attached.
  */
-export function assignOperationOriginalQueryString<O extends Algebra.Operation>(
+export function assignOperationEquivalentQueryString<O extends Algebra.Operation>(
   operation: O,
-  originalQueryString: string,
+  equivalentQueryString: string,
 ): O {
-  return { ...operation, metadata: { ...operation.metadata, originalQueryString }};
+  return { ...operation, metadata: { ...operation.metadata, equivalentQueryString }};
 }
 
 /**

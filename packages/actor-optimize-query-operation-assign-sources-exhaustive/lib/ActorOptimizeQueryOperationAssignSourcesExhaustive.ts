@@ -10,7 +10,7 @@ import { ActionContext, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import {
-  assignOperationOriginalQueryString,
+  assignOperationEquivalentQueryString,
   assignOperationSource,
   passFullOperationToSource,
 } from '@comunica/utils-query-operation';
@@ -37,10 +37,8 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       return { operation: action.operation, context: action.context };
     }
     if (await passFullOperationToSource(action.operation, sources, action.context)) {
-      return {
-        operation: this.assignOriginalQueryString(assignOperationSource(action.operation, sources[0]), action.context),
-        context: action.context,
-      };
+      const operation = assignOperationSource(action.operation, sources[0]);
+      return { operation: this.assignEquivalentQueryString(operation, action.context), context: action.context };
     }
     return {
       operation: this.assignExhaustive(algebraFactory, action.operation, sources, serviceSources),
@@ -49,19 +47,19 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
   }
 
   /**
-   * Attach the original SPARQL query string to the given operation, so that its source can send it as-is.
+   * Attach the original SPARQL query string to the given full operation as its equivalent query string.
    * Nothing is attached if the operation may differ from the query string, such as after applying initial bindings.
-   * @param operation The full operation, which is equivalent to the parsed query string.
+   * @param operation The full operation, which the original query string was parsed into.
    * @param context The action context.
-   * @return The operation, with the original query string attached if possible.
+   * @return The operation, with the equivalent query string attached if possible.
    */
-  public assignOriginalQueryString(operation: Algebra.Operation, context: IActionContext): Algebra.Operation {
+  public assignEquivalentQueryString(operation: Algebra.Operation, context: IActionContext): Algebra.Operation {
     const queryString = context.get(KeysInitQuery.queryString);
     if (!queryString || context.get(KeysInitQuery.queryFormat)?.language !== 'sparql' ||
       context.has(KeysInitQuery.initialBindings)) {
       return operation;
     }
-    return assignOperationOriginalQueryString(operation, queryString);
+    return assignOperationEquivalentQueryString(operation, queryString);
   }
 
   /**

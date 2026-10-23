@@ -20,7 +20,7 @@ import type { AlgebraFactory } from '@comunica/utils-algebra';
 import { Algebra, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import { estimateCardinality, getOperationOriginalQueryString } from '@comunica/utils-query-operation';
+import { estimateCardinality, getOperationEquivalentQueryString } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
@@ -268,8 +268,9 @@ export class QuerySourceSparql implements IQuerySource {
       // Prepare queries
       const operation = await operationPromise;
       const variables: RDF.Variable[] = algebraUtils.inScopeVariables(operation);
-      const originalQueryString = options?.joinBindings ? undefined : getOperationOriginalQueryString(operation);
-      const selectQuery: string = originalQueryString ??
+      // Join bindings modify the operation, so it is no longer equivalent to the attached query string.
+      const equivalentQueryString = options?.joinBindings ? undefined : getOperationEquivalentQueryString(operation);
+      const selectQuery: string = equivalentQueryString ??
         await this.operationToSelectQuery(this.algebraFactory, operation, variables);
       const undefVariables = QuerySourceSparql.getOperationUndefs(operation);
 
@@ -283,7 +284,7 @@ export class QuerySourceSparql implements IQuerySource {
 
   public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
     const quads = wrap<any>((async() => {
-      const query: string = getOperationOriginalQueryString(operation) ?? await this.operationToQuery(operation);
+      const query: string = getOperationEquivalentQueryString(operation) ?? await this.operationToQuery(operation);
       this.reportSourceQuery(context, query);
       const rawStream = await this.endpointFetcher.fetchTriples(this.url, query, this.getRequestOptions(context));
       return rawStream;
@@ -298,14 +299,14 @@ export class QuerySourceSparql implements IQuerySource {
       return true;
     }
     // Without propertyFeature overlap, perform the actual ASK query.
-    const query: string = getOperationOriginalQueryString(operation) ?? await this.operationToQuery(operation);
+    const query: string = getOperationEquivalentQueryString(operation) ?? await this.operationToQuery(operation);
     this.reportSourceQuery(context, query);
     const promise = this.endpointFetcher.fetchAsk(this.url, query, this.getRequestOptions(context));
     return promise;
   }
 
   public async queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
-    const query: string = getOperationOriginalQueryString(operation) ?? await this.operationToQuery(operation);
+    const query: string = getOperationEquivalentQueryString(operation) ?? await this.operationToQuery(operation);
     this.reportSourceQuery(context, query);
     const promise = this.endpointFetcher.fetchUpdate(this.url, query, this.getRequestOptions(context));
     return promise;
