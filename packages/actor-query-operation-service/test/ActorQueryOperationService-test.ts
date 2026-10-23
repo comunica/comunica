@@ -20,6 +20,10 @@ function pattern(): Algebra.Operation {
   return AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('x'));
 }
 
+function extensionFunctionFilter(): Algebra.Operation {
+  return AF.createFilter(pattern(), AF.createNamedExpression(DF.namedNode('ex:f'), []));
+}
+
 describe('ActorQueryOperationService', () => {
   let bus: any;
   let mediatorQueryOperation: any;
@@ -250,6 +254,24 @@ describe('ActorQueryOperationService', () => {
       expect(getOperationSource(operated)).toBeUndefined();
       expect(getOperationSource(operated.input[0])).toBe(querySource);
       expect(getOperationSource(operated.input[1])).toBe(querySource);
+    });
+
+    it('should only annotate leaves if the whole operation has an extension function', async() => {
+      const op: any = { operation: AF.createService(extensionFunctionFilter(), endpoint), context: context() };
+      await createActor().run(op, undefined);
+      const operated = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+      expect(getOperationSource(operated)).toBeUndefined();
+      expect(getOperationSource(operated.input)).toBe(querySource);
+    });
+
+    it('should annotate the whole operation with an extension function if it is pushed down', async() => {
+      const op: any = {
+        operation: AF.createService(extensionFunctionFilter(), endpoint),
+        context: context().set(KeysInitQuery.extensionFunctionsAlwaysPushdown, true),
+      };
+      await createActor().run(op, undefined);
+      const operated = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+      expect(getOperationSource(operated)).toBe(querySource);
     });
 
     it('should propagate errors for non-silent clauses', async() => {

@@ -33,7 +33,8 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
     const sources = action.context.get(KeysQueryOperation.querySources) ?? [];
     const serviceSources = action.context.get(KeysQueryOperation.serviceSources) ?? {};
     if (sources.length === 0 && Object.keys(serviceSources).length === 0) {
-      return { operation: action.operation, context: action.context };
+      // Drop the queryString, so sources identified later, such as variable SERVICE targets, do not receive it.
+      return { operation: action.operation, context: action.context.delete(KeysInitQuery.queryString) };
     }
     if (await passFullOperationToSource(action.operation, sources, action.context)) {
       return {

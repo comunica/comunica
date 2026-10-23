@@ -1,4 +1,4 @@
-import { KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { FragmentSelectorShape, IActionContext, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, algebraUtils, isKnownSubType, TypesComunica } from '@comunica/utils-algebra';
 import { getDataDestinationValue, getServiceExecutorLookup } from './Utils';
@@ -236,7 +236,8 @@ export async function passFullOperationToSource(
     if (!destination || sourceWrapper.source.referenceValue === getDataDestinationValue(destination)) {
       try {
         const shape = await sourceWrapper.source.getSelectorShape(context);
-        if (doesShapeAcceptOperation(shape, operation)) {
+        const wildcardAcceptAllExtensionFunctions = context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
+        if (doesShapeAcceptOperation(shape, operation, { wildcardAcceptAllExtensionFunctions })) {
           return true;
         }
       } catch {

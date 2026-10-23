@@ -125,7 +125,8 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     context: IActionContext,
   ): Promise<Algebra.Operation> {
     const shape = await querySource.source.getSelectorShape(context);
-    if (doesShapeAcceptOperation(shape, operation)) {
+    const wildcardAcceptAllExtensionFunctions = context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
+    if (doesShapeAcceptOperation(shape, operation, { wildcardAcceptAllExtensionFunctions })) {
       return assignOperationSource(operation, querySource);
     }
     const leafHandler = {

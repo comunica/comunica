@@ -67,6 +67,15 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(operationOut).toBe(operationIn);
       });
 
+      it('should not keep the queryString for no sources', async() => {
+        const { context: contextOut } = await actor.run({
+          operation: AF.createNop(),
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
+            .set(KeysInitQuery.queryString, 'abc'),
+        });
+        expect(contextOut.get(KeysInitQuery.queryString)).toBeUndefined();
+      });
+
       it('should pass operation for a zero-length sources array', async() => {
         const operationIn = AF.createNop();
         const { operation: operationOut } = await actor.run({
