@@ -4,6 +4,7 @@ import { DataFactory } from 'rdf-data-factory';
 import {
   estimateCardinality,
   estimateUnionCardinality,
+  getGroupOutputCardinality,
 } from '../lib/CardinalityEstimators';
 
 const DF = new DataFactory();
@@ -118,13 +119,8 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(2, (<any> operation).input);
     });
 
-    it('should return exact 1 for group without variables', async() => {
-      const operation = <Algebra.Operation>{
-        type: Algebra.Types.GROUP,
-        input: { type: Algebra.Types.NOP },
-        variables: [],
-        aggregates: [],
-      };
+    it('should return exact 1 for a group without variables without estimating its input', async() => {
+      const operation = AF.createGroup(AF.createValues([], []), [], []);
       await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'exact',
         value: 1,
@@ -134,38 +130,15 @@ describe('CardinalityEstimators', () => {
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(1, operation);
     });
 
-    it('should return estimate for group with variables using input', async() => {
-      const operation = <Algebra.Operation>{
-        type: Algebra.Types.GROUP,
-        input: { type: Algebra.Types.VALUES, variables: [], bindings: [{}, {}]},
-        variables: [ DF.variable('s') ],
-        aggregates: [],
-      };
-      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
-        type: 'estimate',
-        value: 2,
-        dataset: datasetUri,
-      });
+    it.each([
+      [ 'estimate for a group with variables', [{}, {}], 'estimate', 2 ],
+      [ 'exact 0 for a group with variables over an empty input', [], 'exact', 0 ],
+    ])('should return %s', async(_description, inputBindings, type, value) => {
+      const operation = AF.createGroup(AF.createValues([], inputBindings), [ DF.variable('s') ], []);
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({ type, value, dataset: datasetUri });
       expect(dataset.getCardinality).toHaveBeenCalledTimes(2);
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(1, operation);
-      expect(dataset.getCardinality).toHaveBeenNthCalledWith(2, (<any> operation).input);
-    });
-
-    it('should return exact 0 for group with variables over empty input', async() => {
-      const operation = <Algebra.Operation>{
-        type: Algebra.Types.GROUP,
-        input: { type: Algebra.Types.NOP },
-        variables: [ DF.variable('s') ],
-        aggregates: [],
-      };
-      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
-        type: 'exact',
-        value: 0,
-        dataset: datasetUri,
-      });
-      expect(dataset.getCardinality).toHaveBeenCalledTimes(2);
-      expect(dataset.getCardinality).toHaveBeenNthCalledWith(1, operation);
-      expect(dataset.getCardinality).toHaveBeenNthCalledWith(2, (<any> operation).input);
+      expect(dataset.getCardinality).toHaveBeenNthCalledWith(2, operation.input);
     });
 
     it.each([
@@ -353,6 +326,27 @@ describe('CardinalityEstimators', () => {
         dataset: datasetUri,
       });
       expect(dataset.getCardinality).toHaveBeenNthCalledWith(1, pattern);
+    });
+  });
+
+  describe('getGroupOutputCardinality', () => {
+    it.each<[string, string[], QueryResultCardinality, QueryResultCardinality]>([
+      [ 'exact 1 without variables', [], { type: 'exact', value: 0, dataset: datasetUri }, { type: 'exact', value: 1 }],
+      [
+        'an estimate of the input with variables',
+        [ 's' ],
+        { type: 'exact', value: 3, dataset: datasetUri },
+        { type: 'estimate', value: 3, dataset: datasetUri },
+      ],
+      [
+        'the input for an empty input with variables',
+        [ 's' ],
+        { type: 'exact', value: 0, dataset: datasetUri },
+        { type: 'exact', value: 0, dataset: datasetUri },
+      ],
+    ])('should return %s', (_description, variableNames, inputCardinality, outputCardinality) => {
+      const group = AF.createGroup(AF.createNop(), variableNames.map(name => DF.variable(name)), []);
+      expect(getGroupOutputCardinality(group, inputCardinality)).toEqual(outputCardinality);
     });
   });
 });

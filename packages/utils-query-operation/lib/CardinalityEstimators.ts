@@ -36,7 +36,7 @@ export async function estimateCardinality(
     case Algebra.Types.COPY:
       return { type: 'exact', value: 0, dataset: dataset.uri };
     case Algebra.Types.GROUP:
-      return estimateGroupCardinality((<Algebra.Group> operation), dataset);
+      return estimateGroupCardinality(<Algebra.Group> operation, dataset);
     case Algebra.Types.PROJECT:
     case Algebra.Types.FILTER:
     case Algebra.Types.ORDER_BY:
@@ -86,8 +86,28 @@ export async function estimateCardinality(
 }
 
 /**
- * Estimate the cardinality of a group, which produces a single group when there are no grouping variables,
- * and at most as many groups as its input otherwise.
+ * Determine the cardinality of a group's output from the cardinality of its input.
+ * @param group The group operation.
+ * @param inputCardinality The cardinality of the group's input.
+ * @return The cardinality of the group's output.
+ */
+export function getGroupOutputCardinality(
+  group: Algebra.Group,
+  inputCardinality: QueryResultCardinality,
+): QueryResultCardinality {
+  // Without grouping variables, all input forms a single group, which also exists for an empty input.
+  if (group.variables.length === 0) {
+    return { type: 'exact', value: 1 };
+  }
+  // Otherwise, there are at most as many groups as input bindings.
+  return inputCardinality.value > 0 ? { ...inputCardinality, type: 'estimate' } : inputCardinality;
+}
+
+/**
+ * Estimate the cardinality of a group, which only depends on its input if it has grouping variables.
+ * @param group The group operation.
+ * @param dataset The dataset to estimate the cardinality in.
+ * @return The estimated cardinality of the group's output.
  */
 export async function estimateGroupCardinality(
   group: Algebra.Group,
@@ -96,8 +116,7 @@ export async function estimateGroupCardinality(
   if (group.variables.length === 0) {
     return { type: 'exact', value: 1, dataset: dataset.uri };
   }
-  const estimate = await estimateCardinality(group.input, dataset);
-  return estimate.value > 0 ? { ...estimate, type: 'estimate' } : estimate;
+  return getGroupOutputCardinality(group, await estimateCardinality(group.input, dataset));
 }
 
 /**

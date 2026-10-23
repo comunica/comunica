@@ -11,11 +11,10 @@ import type {
   IActionContext,
   IQueryOperationResult,
   MetadataVariable,
-  QueryResultCardinality,
 } from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getSafeBindings } from '@comunica/utils-query-operation';
+import { getGroupOutputCardinality, getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { GroupsState } from './GroupsState';
 
@@ -95,28 +94,14 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       type: 'bindings',
       bindingsStream,
       metadata: async() => {
-        const metadata = await output.metadata();
+        const inputMetadata = await output.metadata();
         return {
-          ...metadata,
-          cardinality: ActorQueryOperationGroup.getCardinality(operation, metadata.cardinality),
+          ...inputMetadata,
+          cardinality: getGroupOutputCardinality(operation, inputMetadata.cardinality),
           variables,
         };
       },
     };
-  }
-
-  /**
-   * Determine the output cardinality of a group operation based on its input cardinality.
-   * @param operation The group operation.
-   * @param cardinality The cardinality of the group's input.
-   */
-  public static getCardinality(operation: Algebra.Group, cardinality: QueryResultCardinality): QueryResultCardinality {
-    // Without grouping variables, all input forms a single group, which also exists for an empty input.
-    if (operation.variables.length === 0) {
-      return { type: 'exact', value: 1 };
-    }
-    // Otherwise, there are at most as many groups as input bindings.
-    return cardinality.value > 0 ? { ...cardinality, type: 'estimate' } : cardinality;
   }
 }
 
