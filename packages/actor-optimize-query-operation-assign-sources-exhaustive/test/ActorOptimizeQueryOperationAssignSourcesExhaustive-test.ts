@@ -2,6 +2,7 @@ import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getOperationOriginalQueryString, getOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import {
@@ -11,6 +12,7 @@ import '@comunica/utils-jest';
 
 const AF = new AlgebraFactory();
 const DF = new DataFactory();
+const BF = new BindingsFactory(DF);
 
 describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
   let bus: any;
@@ -198,7 +200,7 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
             operation: AF.createNop(),
             context: contextQueryString
               .set(KeysQueryOperation.querySources, [ source1 ])
-              .set(KeysInitQuery.initialBindings, <any> {}),
+              .set(KeysInitQuery.initialBindings, BF.bindings()),
           });
           expect(getOperationOriginalQueryString(operationOut)).toBeUndefined();
         });

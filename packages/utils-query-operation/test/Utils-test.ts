@@ -1,6 +1,6 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { IServiceExecutor } from '@comunica/types';
+import type { IQuerySourceWrapper, IServiceExecutor } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -121,7 +121,7 @@ describe('utils', () => {
 
   describe('#assignOperationOriginalQueryString', () => {
     it('should copy the operation and keep its metadata', () => {
-      const source = <any> 'source';
+      const source = <IQuerySourceWrapper> { source: { referenceValue: 'source' }};
       const operationIn = assignOperationSource(AF.createNop(), source);
       const operationOut = assignOperationOriginalQueryString(operationIn, 'abc');
       expect(getOperationOriginalQueryString(operationIn)).toBeUndefined();
