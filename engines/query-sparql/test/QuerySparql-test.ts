@@ -925,6 +925,30 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
       });
     });
 
+    describe('join with an aggregate subquery', () => {
+      it('should keep the single result of an aggregate without GROUP BY over an empty pattern', async() => {
+        const store = new Store([
+          DF.quad(DF.namedNode('http://ex.org/s'), DF.namedNode('http://ex.org/p'), DF.namedNode('http://ex.org/o')),
+        ]);
+        const xsdInteger = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
+
+        const result = <QueryBindings> await engine.query(`
+          PREFIX ex: <http://ex.org/>
+          SELECT * WHERE {
+            ?s ex:p ?o .
+            { SELECT (COUNT(*) AS ?c) WHERE { ?x ex:none ?y } }
+          }`, { sources: [ store ]});
+
+        await expect(result.execute()).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://ex.org/s') ],
+            [ DF.variable('o'), DF.namedNode('http://ex.org/o') ],
+            [ DF.variable('c'), DF.literal('0', xsdInteger) ],
+          ]),
+        ]);
+      });
+    });
+
     describe('left join with an optional', () => {
       it('should handle filters inside the optional block', async() => {
         const store = new Store();

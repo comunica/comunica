@@ -35,10 +35,11 @@ export async function estimateCardinality(
     case Algebra.Types.MOVE:
     case Algebra.Types.COPY:
       return { type: 'exact', value: 0, dataset: dataset.uri };
+    case Algebra.Types.GROUP:
+      return estimateGroupCardinality((<Algebra.Group> operation), dataset);
     case Algebra.Types.PROJECT:
     case Algebra.Types.FILTER:
     case Algebra.Types.ORDER_BY:
-    case Algebra.Types.GROUP:
     case Algebra.Types.CONSTRUCT:
     case Algebra.Types.DISTINCT:
     case Algebra.Types.REDUCED:
@@ -82,6 +83,21 @@ export async function estimateCardinality(
       return { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: dataset.uri };
   }
   return { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: dataset.uri };
+}
+
+/**
+ * Estimate the cardinality of a group, which produces a single group when there are no grouping variables,
+ * and at most as many groups as its input otherwise.
+ */
+export async function estimateGroupCardinality(
+  group: Algebra.Group,
+  dataset: IDataset,
+): Promise<QueryResultCardinality> {
+  if (group.variables.length === 0) {
+    return { type: 'exact', value: 1, dataset: dataset.uri };
+  }
+  const estimate = await estimateCardinality(group.input, dataset);
+  return estimate.value > 0 ? { ...estimate, type: 'estimate' } : estimate;
 }
 
 /**

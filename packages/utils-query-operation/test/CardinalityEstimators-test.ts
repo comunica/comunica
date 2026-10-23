@@ -100,7 +100,6 @@ describe('CardinalityEstimators', () => {
       Algebra.Types.PROJECT,
       Algebra.Types.FILTER,
       Algebra.Types.ORDER_BY,
-      Algebra.Types.GROUP,
       Algebra.Types.CONSTRUCT,
       Algebra.Types.DISTINCT,
       Algebra.Types.REDUCED,
@@ -112,6 +111,56 @@ describe('CardinalityEstimators', () => {
       await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
         type: 'estimate',
         value: 2,
+        dataset: datasetUri,
+      });
+      expect(dataset.getCardinality).toHaveBeenCalledTimes(2);
+      expect(dataset.getCardinality).toHaveBeenNthCalledWith(1, operation);
+      expect(dataset.getCardinality).toHaveBeenNthCalledWith(2, (<any> operation).input);
+    });
+
+    it('should return exact 1 for group without variables', async() => {
+      const operation = <Algebra.Operation>{
+        type: Algebra.Types.GROUP,
+        input: { type: Algebra.Types.NOP },
+        variables: [],
+        aggregates: [],
+      };
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
+        type: 'exact',
+        value: 1,
+        dataset: datasetUri,
+      });
+      expect(dataset.getCardinality).toHaveBeenCalledTimes(1);
+      expect(dataset.getCardinality).toHaveBeenNthCalledWith(1, operation);
+    });
+
+    it('should return estimate for group with variables using input', async() => {
+      const operation = <Algebra.Operation>{
+        type: Algebra.Types.GROUP,
+        input: { type: Algebra.Types.VALUES, variables: [], bindings: [{}, {}]},
+        variables: [ DF.variable('s') ],
+        aggregates: [],
+      };
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
+        type: 'estimate',
+        value: 2,
+        dataset: datasetUri,
+      });
+      expect(dataset.getCardinality).toHaveBeenCalledTimes(2);
+      expect(dataset.getCardinality).toHaveBeenNthCalledWith(1, operation);
+      expect(dataset.getCardinality).toHaveBeenNthCalledWith(2, (<any> operation).input);
+    });
+
+    it('should return exact 0 for group with variables over empty input', async() => {
+      const operation = <Algebra.Operation>{
+        type: Algebra.Types.GROUP,
+        input: { type: Algebra.Types.NOP },
+        variables: [ DF.variable('s') ],
+        aggregates: [],
+      };
+      await expect(estimateCardinality(operation, dataset)).resolves.toEqual({
+        type: 'exact',
+        value: 0,
         dataset: datasetUri,
       });
       expect(dataset.getCardinality).toHaveBeenCalledTimes(2);
