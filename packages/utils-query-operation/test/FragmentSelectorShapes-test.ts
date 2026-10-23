@@ -6,6 +6,7 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import {
   doesShapeAcceptOperation,
+  doesShapeAcceptOperationInContext,
   passFullOperationToSource,
 } from '../lib/FragmentSelectorShapes';
 
@@ -1176,6 +1177,31 @@ describe('FragmentSelectorShapes', () => {
 
         expect(doesShapeAcceptOperation(SHAPE_RDFJS, construct)).toBeFalsy();
       });
+    });
+  });
+
+  describe('#doesShapeAcceptOperationInContext', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+    const extensionFunctionFilter = AF.createFilter(pattern, AF.createNamedExpression(DF.namedNode('ex:f'), []));
+    const context = new ActionContext();
+
+    it('should not accept an extension function without extensionFunctionsAlwaysPushdown', () => {
+      expect(doesShapeAcceptOperationInContext(SHAPE_SPARQL_1_1, extensionFunctionFilter, context)).toBe(false);
+    });
+
+    it('should accept an extension function with extensionFunctionsAlwaysPushdown', () => {
+      const contextPushdown = context.set(KeysInitQuery.extensionFunctionsAlwaysPushdown, true);
+      expect(doesShapeAcceptOperationInContext(SHAPE_SPARQL_1_1, extensionFunctionFilter, contextPushdown)).toBe(true);
+    });
+
+    it('should apply the given options', () => {
+      const shapeWithoutJoinBindings: FragmentSelectorShape = {
+        type: 'operation',
+        operation: { operationType: 'wildcard' },
+      };
+      expect(doesShapeAcceptOperationInContext(shapeWithoutJoinBindings, pattern, context)).toBe(true);
+      expect(doesShapeAcceptOperationInContext(shapeWithoutJoinBindings, pattern, context, { joinBindings: true }))
+        .toBe(false);
     });
   });
 

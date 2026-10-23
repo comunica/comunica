@@ -23,6 +23,26 @@ export function doesShapeAcceptOperation(
   return doesShapeAcceptOperationRecurseShape(shape, shape, operation, operationRecurseCache, options);
 }
 
+/**
+ * Check if the given shape accepts the given query operation, pushing down extension functions as the context demands.
+ * @param shape A shape to test the query operation against.
+ * @param operation A query operation to test.
+ * @param context The action context, holding the extensionFunctionsAlwaysPushdown setting.
+ * @param options Additional options to consider.
+ * @return If the shape accepts the operation.
+ */
+export function doesShapeAcceptOperationInContext(
+  shape: FragmentSelectorShape,
+  operation: Algebra.Operation,
+  context: IActionContext,
+  options?: Omit<FragmentSelectorShapeTestFlags, 'wildcardAcceptAllExtensionFunctions'>,
+): boolean {
+  return doesShapeAcceptOperation(shape, operation, {
+    ...options,
+    wildcardAcceptAllExtensionFunctions: context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown),
+  });
+}
+
 function doesShapeAcceptOperationRecurseShape(
   shapeTop: FragmentSelectorShape,
   shapeActive: FragmentSelectorShape,
@@ -236,8 +256,7 @@ export async function passFullOperationToSource(
     if (!destination || sourceWrapper.source.referenceValue === getDataDestinationValue(destination)) {
       try {
         const shape = await sourceWrapper.source.getSelectorShape(context);
-        const wildcardAcceptAllExtensionFunctions = context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
-        if (doesShapeAcceptOperation(shape, operation, { wildcardAcceptAllExtensionFunctions })) {
+        if (doesShapeAcceptOperationInContext(shape, operation, context)) {
           return true;
         }
       } catch {
