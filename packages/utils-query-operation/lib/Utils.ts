@@ -104,6 +104,29 @@ export function assignOperationSource<O extends Algebra.Operation>(operation: O,
 }
 
 /**
+ * Obtain the original query string that the given operation is equivalent to.
+ * @param operation An algebra operation.
+ * @return The original query string, or undefined if the operation does not represent it.
+ */
+export function getOperationOriginalQueryString(operation: Algebra.Operation): string | undefined {
+  return <string | undefined> operation.metadata?.originalQueryString;
+}
+
+/**
+ * Attach the original query string to the given operation, so that its source may send it as-is.
+ * The operation is copied and returned.
+ * @param operation An operation that is equivalent to the original query string.
+ * @param originalQueryString The original query string.
+ * @return A copy of the operation with the original query string attached.
+ */
+export function assignOperationOriginalQueryString<O extends Algebra.Operation>(
+  operation: O,
+  originalQueryString: string,
+): O {
+  return { ...operation, metadata: { ...operation.metadata, originalQueryString }};
+}
+
+/**
  * Remove the source wrapper from the given operation.
  * The operation is mutated.
  * @param operation An operation.

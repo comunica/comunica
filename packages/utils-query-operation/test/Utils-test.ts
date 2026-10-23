@@ -6,7 +6,9 @@ import { AlgebraFactory } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import {
+  assignOperationOriginalQueryString,
   assignOperationSource,
+  getOperationOriginalQueryString,
   getOperationSource,
   getSafeBindings,
   getSafeBoolean,
@@ -103,6 +105,28 @@ describe('utils', () => {
       expect(getOperationSource(opIn)).toBeUndefined();
       expect(getOperationSource(opOut1)).toBe(source1);
       expect(getOperationSource(opOut2)).toBe(source2);
+    });
+  });
+
+  describe('#getOperationOriginalQueryString', () => {
+    it('should be undefined without an original query string', () => {
+      expect(getOperationOriginalQueryString(AF.createNop())).toBeUndefined();
+    });
+
+    it('should return the attached original query string', () => {
+      const operation = assignOperationOriginalQueryString(AF.createNop(), 'abc');
+      expect(getOperationOriginalQueryString(operation)).toBe('abc');
+    });
+  });
+
+  describe('#assignOperationOriginalQueryString', () => {
+    it('should copy the operation and keep its metadata', () => {
+      const source = <any> 'source';
+      const operationIn = assignOperationSource(AF.createNop(), source);
+      const operationOut = assignOperationOriginalQueryString(operationIn, 'abc');
+      expect(getOperationOriginalQueryString(operationIn)).toBeUndefined();
+      expect(getOperationOriginalQueryString(operationOut)).toBe('abc');
+      expect(getOperationSource(operationOut)).toBe(source);
     });
   });
 
