@@ -93,7 +93,8 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: async() => ({ ...await output.metadata(), variables }),
+      // Groups are not emitted in the term order of the input, and aggregates may reuse its variable names
+      metadata: async() => ({ ...await output.metadata(), variables, termOrder: undefined, canSeek: undefined }),
     };
   }
 }
