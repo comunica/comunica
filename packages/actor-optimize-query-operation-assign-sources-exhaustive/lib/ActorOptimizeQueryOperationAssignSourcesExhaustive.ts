@@ -34,7 +34,8 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
     const sources = action.context.get(KeysQueryOperation.querySources) ?? [];
     const serviceSources = action.context.get(KeysQueryOperation.serviceSources) ?? {};
     if (sources.length === 0 && Object.keys(serviceSources).length === 0) {
-      return { operation: action.operation, context: action.context };
+      // Sources identified later on, such as variable SERVICE targets, may not receive the full queryString.
+      return { operation: action.operation, context: action.context.delete(KeysInitQuery.queryString) };
     }
     if (await passFullOperationToSource(action.operation, sources, action.context)) {
       const operation = assignOperationSource(action.operation, sources[0]);
@@ -42,21 +43,22 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
     }
     return {
       operation: this.assignExhaustive(algebraFactory, action.operation, sources, serviceSources),
-      context: action.context,
+      // We only keep queryString in the context if we only have a single source that accepts the full operation.
+      // In that case, the queryString can be sent to the source as-is.
+      context: action.context
+        .delete(KeysInitQuery.queryString),
     };
   }
 
   /**
    * Attach the original SPARQL query string to the given full operation as its equivalent query string.
-   * Nothing is attached if the operation may differ from the query string, such as after applying initial bindings.
    * @param operation The full operation, which the original query string was parsed into.
    * @param context The action context.
-   * @return The operation, with the equivalent query string attached if possible.
+   * @return The operation, with the equivalent query string attached if available.
    */
   public assignEquivalentQueryString(operation: Algebra.Operation, context: IActionContext): Algebra.Operation {
     const queryString = context.get(KeysInitQuery.queryString);
-    if (!queryString || context.get(KeysInitQuery.queryFormat)?.language !== 'sparql' ||
-      context.has(KeysInitQuery.initialBindings)) {
+    if (!queryString || context.get(KeysInitQuery.queryFormat)?.language !== 'sparql') {
       return operation;
     }
     return assignOperationEquivalentQueryString(operation, queryString);

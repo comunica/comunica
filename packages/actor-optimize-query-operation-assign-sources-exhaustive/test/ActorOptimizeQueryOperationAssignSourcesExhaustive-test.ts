@@ -2,7 +2,6 @@ import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
-import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getOperationEquivalentQueryString, getOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import {
@@ -12,7 +11,6 @@ import '@comunica/utils-jest';
 
 const AF = new AlgebraFactory();
 const DF = new DataFactory();
-const BF = new BindingsFactory(DF);
 
 describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
   let bus: any;
@@ -182,7 +180,12 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
             context: contextQueryString.set(KeysQueryOperation.querySources, [ source1, source1 ]),
           });
           expect(getOperationEquivalentQueryString(operationOut)).toBeUndefined();
-          expect(contextOut.get(KeysInitQuery.queryString)).toBe('abc');
+          expect(contextOut.get(KeysInitQuery.queryString)).toBeUndefined();
+        });
+
+        it('should not keep it in the context for no sources', async() => {
+          const { context: contextOut } = await actor.run({ operation: AF.createNop(), context: contextQueryString });
+          expect(contextOut.get(KeysInitQuery.queryString)).toBeUndefined();
         });
 
         it('should not attach it to the operation for a non-SPARQL query format', async() => {
@@ -191,16 +194,6 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
             context: contextQueryString
               .set(KeysQueryOperation.querySources, [ source1 ])
               .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }),
-          });
-          expect(getOperationEquivalentQueryString(operationOut)).toBeUndefined();
-        });
-
-        it('should not attach it to the operation if initial bindings changed the operation', async() => {
-          const { operation: operationOut } = await actor.run({
-            operation: AF.createNop(),
-            context: contextQueryString
-              .set(KeysQueryOperation.querySources, [ source1 ])
-              .set(KeysInitQuery.initialBindings, BF.bindings()),
           });
           expect(getOperationEquivalentQueryString(operationOut)).toBeUndefined();
         });

@@ -1636,10 +1636,10 @@ describe('QuerySourceSparql', () => {
       });
     });
 
-    it('should ignore the equivalent query string for joinBindings', async() => {
+    it('ignores queryString for joinBindings', async() => {
       await expect(source.queryBindings(
-        assignOperationEquivalentQueryString(AF.createPattern(iriS, DF.variable('p'), iriO), 'abc'),
-        ctx,
+        AF.createPattern(iriS, DF.variable('p'), iriO),
+        ctx.set(KeysInitQuery.queryString, 'abc'), // This must be ignored
         {
           joinBindings: {
             bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
@@ -1661,7 +1661,7 @@ describe('QuerySourceSparql', () => {
       expect(lastQuery).toBe(`query=SELECT+%28+COUNT%28+*+%29+AS+%3Fcount+%29+WHERE+%7B+VALUES%28+%29%7B+%7D+%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: contextWithAbortSignal(ctx),
+        context: contextWithAbortSignal(ctx.set(KeysInitQuery.queryString, 'abc')),
         init: {
           body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { VALUES( ){ } <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
@@ -1851,10 +1851,10 @@ describe('QuerySourceSparql', () => {
       jest.useRealTimers();
     });
 
-    it('should send the equivalent query string attached to the operation', async() => {
+    it('should pass the original queryString if defined', async() => {
       await expect(source.queryBindings(
-        assignOperationEquivalentQueryString(AF.createPattern(iriS, DF.variable('p'), iriO), 'abc'),
-        ctx,
+        AF.createPattern(iriS, DF.variable('p'), iriO),
+        ctx.set(KeysInitQuery.queryString, 'abc'),
       ))
         .toEqualBindingsStream([
           BF.fromRecord({
@@ -1869,9 +1869,62 @@ describe('QuerySourceSparql', () => {
         ]);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: ctx,
+        context: ctx.set(KeysInitQuery.queryString, 'abc'),
         init: {
           body: new URLSearchParams({ query: 'abc' }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: url,
+      });
+    });
+
+    it('should prefer the equivalent query string of the operation over the queryString', async() => {
+      await expect(source.queryBindings(
+        assignOperationEquivalentQueryString(AF.createPattern(iriS, DF.variable('p'), iriO), 'equivalent'),
+        ctx.set(KeysInitQuery.queryString, 'abc'),
+      )).toEqualBindingsStream([
+        BF.fromRecord({ p: DF.namedNode('p1') }),
+        BF.fromRecord({ p: DF.namedNode('p2') }),
+        BF.fromRecord({ p: DF.namedNode('p3') }),
+      ]);
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context: ctx.set(KeysInitQuery.queryString, 'abc'),
+        init: {
+          body: new URLSearchParams({ query: 'equivalent' }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: url,
+      });
+    });
+
+    it('should not pass the original queryString if queryFormat is not sparql', async() => {
+      await expect(source.queryBindings(
+        AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+        ctx
+          .set(KeysInitQuery.queryString, 'abc')
+          .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }),
+      ))
+        .toEqualBindingsStream([
+          BF.fromRecord({
+            p: DF.namedNode('p1'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p2'),
+          }),
+          BF.fromRecord({
+            p: DF.namedNode('p3'),
+          }),
+        ]);
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context: contextWithAbortSignal(ctx
+          .set(KeysInitQuery.queryString, 'abc')
+          .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' })),
+        init: {
+          body: new URLSearchParams({ query: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }' }),
           headers: expect.anything(),
           method: 'POST',
         },
@@ -2214,7 +2267,7 @@ describe('QuerySourceSparql', () => {
       ]);
     });
 
-    it('should send the equivalent query string attached to the operation', async() => {
+    it('should pass the original queryString if defined', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
           headers: new Headers({ 'Content-Type': 'text/turtle' }),
@@ -2244,11 +2297,8 @@ describe('QuerySourceSparql', () => {
       );
 
       await expect(source.queryQuads(
-        assignOperationEquivalentQueryString(
-          AF.createConstruct(AF.createPattern(iriS, DF.variable('p'), iriO), []),
-          'abc',
-        ),
-        ctx,
+        AF.createConstruct(AF.createPattern(iriS, DF.variable('p'), iriO), []),
+        ctx.set(KeysInitQuery.queryString, 'abc'),
       ).toArray()).resolves
         .toBeRdfIsomorphic([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
@@ -2256,7 +2306,7 @@ describe('QuerySourceSparql', () => {
         ]);
 
       expect(thisMediator.mediate).toHaveBeenCalledWith({
-        context: ctx,
+        context: ctx.set(KeysInitQuery.queryString, 'abc'),
         init: {
           body: new URLSearchParams({ query: 'abc' }),
           headers: expect.anything(),
@@ -2317,7 +2367,7 @@ describe('QuerySourceSparql', () => {
       });
     });
 
-    it('should send the equivalent query string attached to the operation', async() => {
+    it('should pass the original queryString if defined', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
@@ -2351,12 +2401,12 @@ describe('QuerySourceSparql', () => {
       );
 
       await expect(source.queryBoolean(
-        assignOperationEquivalentQueryString(AF.createAsk(AF.createPattern(iriS, DF.variable('p'), iriO)), 'abc'),
-        ctx,
+        AF.createAsk(AF.createPattern(iriS, DF.variable('p'), iriO)),
+        ctx.set(KeysInitQuery.queryString, 'abc'),
       )).resolves.toBe(true);
 
       expect(thisMediator.mediate).toHaveBeenCalledWith({
-        context: ctx,
+        context: ctx.set(KeysInitQuery.queryString, 'abc'),
         init: {
           body: new URLSearchParams({ query: 'abc' }),
           headers: expect.anything(),
@@ -2423,7 +2473,7 @@ describe('QuerySourceSparql', () => {
       });
     });
 
-    it('should send the equivalent query string attached to the operation', async() => {
+    it('should pass the original queryString if defined', async() => {
       const thisMediator: any = {
         mediate: jest.fn(() => ({
           headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
@@ -2453,12 +2503,12 @@ describe('QuerySourceSparql', () => {
       );
 
       await source.queryVoid(
-        assignOperationEquivalentQueryString(AF.createDrop(iriS), 'abc'),
-        ctx,
+        AF.createDrop(iriS),
+        ctx.set(KeysInitQuery.queryString, 'abc'),
       );
 
       expect(thisMediator.mediate).toHaveBeenCalledWith({
-        context: ctx,
+        context: ctx.set(KeysInitQuery.queryString, 'abc'),
         init: {
           body: 'abc',
           headers: {
