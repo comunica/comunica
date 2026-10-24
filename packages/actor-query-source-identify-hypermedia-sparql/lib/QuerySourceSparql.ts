@@ -20,7 +20,11 @@ import type { AlgebraFactory } from '@comunica/utils-algebra';
 import { Algebra, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import { estimateCardinality, getOperationEquivalentQueryString } from '@comunica/utils-query-operation';
+import {
+  estimateCardinality,
+  getOperationEquivalentQueryString,
+  getOriginalSparqlQueryString,
+} from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
@@ -613,19 +617,13 @@ export class QuerySourceSparql implements IQuerySource {
 
   /**
    * Obtain the SPARQL query string that may be sent as-is for the given operation.
-   * The context's queryString is only used as fallback for operations without an equivalent query string.
    * @param operation A query operation.
    * @param context The action context.
    * @return The query string to send as-is, or undefined if the operation must be serialized.
    */
   public static getQueryStringAsIs(operation: Algebra.Operation, context: IActionContext): string | undefined {
-    const equivalentQueryString = getOperationEquivalentQueryString(operation);
-    if (equivalentQueryString) {
-      return equivalentQueryString;
-    }
-    // TODO: next/major - remove this fallback, see KeysInitQuery.queryString.
-    const queryFormat = context.get(KeysInitQuery.queryFormat);
-    return !queryFormat || queryFormat.language === 'sparql' ? context.get(KeysInitQuery.queryString) : undefined;
+    // TODO: next/major - remove the fallback to the original query string, see KeysInitQuery.queryString.
+    return getOperationEquivalentQueryString(operation) ?? getOriginalSparqlQueryString(context);
   }
 
   /**

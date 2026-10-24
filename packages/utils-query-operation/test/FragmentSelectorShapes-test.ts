@@ -12,6 +12,8 @@ import {
 
 const AF = new AlgebraFactory();
 const DF = new DataFactory();
+const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+const extensionFunctionFilter = AF.createFilter(pattern, AF.createNamedExpression(DF.namedNode('ex:f'), []));
 
 // Shape for QuerySourceSparql
 const SHAPE_SPARQL_1_1: FragmentSelectorShape = {
@@ -1181,8 +1183,6 @@ describe('FragmentSelectorShapes', () => {
   });
 
   describe('#doesShapeAcceptOperationInContext', () => {
-    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-    const extensionFunctionFilter = AF.createFilter(pattern, AF.createNamedExpression(DF.namedNode('ex:f'), []));
     const context = new ActionContext();
 
     it('should not accept an extension function without extensionFunctionsAlwaysPushdown', () => {
@@ -1206,8 +1206,6 @@ describe('FragmentSelectorShapes', () => {
   });
 
   describe('#passFullOperationToSource', () => {
-    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-    const extensionFunctionFilter = AF.createFilter(pattern, AF.createNamedExpression(DF.namedNode('ex:f'), []));
     const serviceExecutor: IServiceExecutor = { execute: async() => []};
     const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     const contextExecutors = context.set(KeysInitQuery.serviceExecutors, { 'ex:executor': serviceExecutor });

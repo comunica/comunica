@@ -114,7 +114,6 @@ export function getOperationEquivalentQueryString(operation: Algebra.Operation):
 
 /**
  * Attach an equivalent query string to the given operation, so that its source may send it as-is.
- * The operation is copied and returned.
  * @param operation An operation.
  * @param equivalentQueryString A query string that is equivalent to the operation.
  * @return A copy of the operation with the equivalent query string attached.
@@ -124,6 +123,16 @@ export function assignOperationEquivalentQueryString<O extends Algebra.Operation
   equivalentQueryString: string,
 ): O {
   return { ...operation, metadata: { ...operation.metadata, equivalentQueryString }};
+}
+
+/**
+ * Obtain the original query string from the given context, if it is a SPARQL query.
+ * @param context An action context.
+ * @return The original query string, or undefined if it is absent or not SPARQL.
+ */
+export function getOriginalSparqlQueryString(context: IActionContext): string | undefined {
+  const queryFormat = context.get(KeysInitQuery.queryFormat);
+  return !queryFormat || queryFormat.language === 'sparql' ? context.get(KeysInitQuery.queryString) : undefined;
 }
 
 /**

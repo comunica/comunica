@@ -10,6 +10,7 @@ import {
   assignOperationSource,
   getOperationEquivalentQueryString,
   getOperationSource,
+  getOriginalSparqlQueryString,
   getSafeBindings,
   getSafeBoolean,
   getSafeQuads,
@@ -127,6 +128,24 @@ describe('utils', () => {
       expect(getOperationEquivalentQueryString(operationIn)).toBeUndefined();
       expect(getOperationEquivalentQueryString(operationOut)).toBe('abc');
       expect(getOperationSource(operationOut)).toBe(source);
+    });
+  });
+
+  describe('#getOriginalSparqlQueryString', () => {
+    const context = new ActionContext().set(KeysInitQuery.queryString, 'abc');
+
+    it('should return the query string without a query format', () => {
+      expect(getOriginalSparqlQueryString(context)).toBe('abc');
+    });
+
+    it('should return the query string for a SPARQL query format', () => {
+      expect(getOriginalSparqlQueryString(context
+        .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }))).toBe('abc');
+    });
+
+    it('should be undefined for a non-SPARQL query format', () => {
+      expect(getOriginalSparqlQueryString(context
+        .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }))).toBeUndefined();
     });
   });
 

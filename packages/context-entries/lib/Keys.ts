@@ -193,9 +193,9 @@ export const KeysInitQuery = {
   //  - QuerySourceSparql#getQueryStringAsIs: remove the fallback to this queryString.
   //  - ActorOptimizeQueryOperationAssignSourcesExhaustive#run: stop deleting this queryString.
   //  - ActorQueryProcessSequential#parse: stop deleting this queryString after applying initial bindings.
-  //  - ActorOptimizeQueryOperationAssignSourcesExhaustive#assignEquivalentQueryString: do not attach this queryString
+  //  - ActorOptimizeQueryOperationAssignSourcesExhaustive#run: do not attach this queryString to the operation
   //    if initial bindings are set, as these change the operation.
-  //  - Optimizers that change an operation with an equivalent query string must drop it,
+  //  - Actors that change the meaning of an operation with an equivalent query string must drop it,
   //    as mapOperation copies the operation metadata.
   //  - Document in the changelog that sources must use getOperationEquivalentQueryString instead of this queryString.
   queryString: new ActionContextKey<string>('@comunica/actor-init-query:queryString'),
