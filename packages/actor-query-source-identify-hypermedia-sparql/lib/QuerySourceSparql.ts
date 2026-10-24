@@ -624,8 +624,8 @@ export class QuerySourceSparql implements IQuerySource {
       return equivalentQueryString;
     }
     // TODO: next/major - remove this fallback, see KeysInitQuery.queryString.
-    const queryFormat: RDF.QueryFormat = context.getSafe(KeysInitQuery.queryFormat);
-    return queryFormat.language === 'sparql' ? context.get(KeysInitQuery.queryString) : undefined;
+    const queryFormat = context.get(KeysInitQuery.queryFormat);
+    return !queryFormat || queryFormat.language === 'sparql' ? context.get(KeysInitQuery.queryString) : undefined;
   }
 
   /**

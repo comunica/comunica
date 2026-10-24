@@ -2317,6 +2317,36 @@ describe('QuerySourceSparql', () => {
     });
   });
 
+  describe('getQueryStringAsIs', () => {
+    const operation = AF.createPattern(iriS, DF.variable('p'), iriO);
+    const contextQueryString = new ActionContext().set(KeysInitQuery.queryString, 'abc');
+
+    it('should return the equivalent query string of the operation', () => {
+      expect(QuerySourceSparql.getQueryStringAsIs(
+        assignOperationEquivalentQueryString(operation, 'equivalent'),
+        contextQueryString,
+      )).toBe('equivalent');
+    });
+
+    it('should fall back to the queryString without a query format', () => {
+      expect(QuerySourceSparql.getQueryStringAsIs(operation, contextQueryString)).toBe('abc');
+    });
+
+    it('should fall back to the queryString for a SPARQL query format', () => {
+      expect(QuerySourceSparql.getQueryStringAsIs(
+        operation,
+        contextQueryString.set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }),
+      )).toBe('abc');
+    });
+
+    it('should not fall back to the queryString for a non-SPARQL query format', () => {
+      expect(QuerySourceSparql.getQueryStringAsIs(
+        operation,
+        contextQueryString.set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }),
+      )).toBeUndefined();
+    });
+  });
+
   describe('queryBoolean', () => {
     it('should return data', async() => {
       const thisMediator: any = {
