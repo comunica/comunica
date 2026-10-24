@@ -10,7 +10,7 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, ComunicaDataFactory, IJoinEntry, MetadataBindings } from '@comunica/types';
+import type { Bindings, ComunicaDataFactory, IJoinEntry, MetadataBindings, TermsOrder } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { compareTerms } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
@@ -20,6 +20,7 @@ import { MultiMergeJoinIterator } from './MultiMergeJoinIterator';
  * A comunica Multi Merge RDF Join Actor.
  *
  * Joins three or more entries that are all sorted on the same variable in one pass.
+ * If they share a longer prefix of their term order, they are merged on all of it.
  *
  * Entries that are not sorted on that variable are joined with the result afterwards, through the join bus.
  */
@@ -97,6 +98,29 @@ export class ActorRdfJoinMultiMerge extends ActorRdfJoin<IActorRdfJoinMultiMerge
     return { variable: best.variable, indexes };
   }
 
+  /**
+   * Determine the key that the merged entries are joined on.
+   *
+   * This is the longest prefix of their term orders that they all share, in ascending order, of variables that
+   * none of them leaves undefined. It starts with the merge variable, and merging on more variables avoids
+   * checking the other ones within the cross product of the runs of every key.
+   * @param variable The variable that the merged entries are sorted on first.
+   * @param metadatas Metadata of the merged entries.
+   */
+  public static getMergeKey(variable: RDF.Variable, metadatas: MetadataBindings[]): TermsOrder<RDF.Variable> {
+    const key: TermsOrder<RDF.Variable> = [{ term: variable, direction: 'asc' }];
+    for (const { term } of metadatas[0].termOrder!.slice(1)) {
+      const index = key.length;
+      if (!metadatas.every(metadata => metadata.termOrder![index]?.term.equals(term) &&
+        metadata.termOrder![index].direction === 'asc' &&
+        metadata.variables.some(entry => entry.variable.equals(term) && !entry.canBeUndef))) {
+        break;
+      }
+      key.push({ term, direction: 'asc' });
+    }
+    return key;
+  }
+
   protected async getOutput(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinMultiMergeTestSideData,
@@ -104,11 +128,26 @@ export class ActorRdfJoinMultiMerge extends ActorRdfJoin<IActorRdfJoinMultiMerge
     const { variable, indexes } = sideData;
     const entries = indexes.map(index => action.entries[index]);
     const metadatas = indexes.map(index => sideData.metadatas[index]);
+    const termOrder = ActorRdfJoinMultiMerge.getMergeKey(variable, metadatas);
+    const compareFirst = (left: Bindings, right: Bindings): number =>
+      compareTerms(left.get(variable)!, right.get(variable)!);
+    const keyVariables = termOrder.map(entry => entry.term);
+    const compareAll = (left: Bindings, right: Bindings): number => {
+      for (const keyVariable of keyVariables) {
+        const comparison = compareTerms(left.get(keyVariable)!, right.get(keyVariable)!);
+        if (comparison !== 0) {
+          return comparison;
+        }
+      }
+      return 0;
+    };
+    const compareKey = keyVariables.length === 1 ? compareFirst : compareAll;
     const bindingsStream = new MultiMergeJoinIterator(
       entries.map(entry => entry.output.bindingsStream),
-      (left: Bindings, right: Bindings) => compareTerms(left.get(variable)!, right.get(variable)!),
+      compareKey,
+      MultiMergeJoinIterator.SEEK_AFTER_BEHIND,
+      compareFirst,
     );
-    const termOrder = [{ term: variable, direction: <const> 'asc' }];
     const canSeek = metadatas.every(metadata => metadata.canSeek);
     const output = {
       type: <const> 'bindings',

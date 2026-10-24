@@ -4,6 +4,7 @@
 
 An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that inner-joins three or
 more streams that are all sorted on the same variable in a single pass.
+If they share a longer prefix of their order, such as `?s` and then `?o`, they are merged on all of it.
 Note that this is not a leapfrog triejoin, as it does not descend into further variables.
 
 Unlike a chain of binary [merge joins](https://github.com/comunica/comunica/tree/master/packages/actor-rdf-join-inner-merge),

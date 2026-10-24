@@ -38,6 +38,7 @@ export class MultiMergeJoinIterator extends AsyncIterator<Bindings> {
   private readonly sources: AsyncIterator<Bindings>[];
   private readonly compareKeys: (left: Bindings, right: Bindings) => number;
   private readonly seekAfterBehind: number;
+  private readonly compareSeek: (left: Bindings, right: Bindings) => number;
 
   /**
    * The binding each source is at, undefined if it must still be read, or null if the source ended.
@@ -80,16 +81,20 @@ export class MultiMergeJoinIterator extends AsyncIterator<Bindings> {
    * @param sources The streams to join, all sorted on the join key, most selective first.
    * @param compareKeys Compares the join keys of two bindings.
    * @param seekAfterBehind The number of times in a row that a stream must fall behind before it is asked to skip.
+   * @param compareSeek Compares the first variable of the join keys of two bindings, if the key has more than one.
+   *                    Seeks are only compared on that variable, as a target may not bind the others.
    */
   public constructor(
     sources: AsyncIterator<Bindings>[],
     compareKeys: (left: Bindings, right: Bindings) => number,
     seekAfterBehind = MultiMergeJoinIterator.SEEK_AFTER_BEHIND,
+    compareSeek = compareKeys,
   ) {
     super();
     this.sources = sources;
     this.compareKeys = compareKeys;
     this.seekAfterBehind = seekAfterBehind;
+    this.compareSeek = compareSeek;
     this.heads = Array.from({ length: sources.length });
     this.behind = sources.map(() => 0);
     this.runs = sources.map(() => []);
@@ -144,7 +149,7 @@ export class MultiMergeJoinIterator extends AsyncIterator<Bindings> {
   }
 
   /**
-   * Skip ahead to the first binding whose key is not before that of the given one.
+   * Skip ahead to the first binding whose first key variable is not before that of the given one.
    * This is a hint: bindings of which the run was already found are still emitted.
    * @param target The binding to skip to.
    */
@@ -152,13 +157,15 @@ export class MultiMergeJoinIterator extends AsyncIterator<Bindings> {
     if (this.phase !== SEEKING) {
       return;
     }
-    if (this.candidate === undefined || this.compareKeys(this.candidate, target) < 0) {
-      this.candidate = target;
+    if (this.candidate === undefined || this.compareSeek(this.candidate, target) < 0) {
+      // A target may not bind the other key variables, so it only becomes the candidate for a single-variable key.
+      // Otherwise, the first source proposes the next candidate once it has skipped ahead.
+      this.candidate = this.compareSeek === this.compareKeys ? target : undefined;
       this.matched = 0;
     }
     for (let index = 0; index < this.sources.length; index++) {
       const held = this.heads[index];
-      if (held === undefined || (held !== null && this.compareKeys(held, target) < 0)) {
+      if (held === undefined || (held !== null && this.compareSeek(held, target) < 0)) {
         this.heads[index] = undefined;
         const source = this.sources[index];
         if (isSeekableBindingsStream(source)) {

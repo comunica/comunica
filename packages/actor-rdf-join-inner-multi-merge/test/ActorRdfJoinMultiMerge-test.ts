@@ -31,6 +31,10 @@ function order(name: string, direction: 'asc' | 'desc' = 'asc'): TermsOrder<RDF.
   return [{ term: DF.variable(name), direction }];
 }
 
+function orders(...names: string[]): TermsOrder<RDF.Variable> {
+  return names.flatMap(name => order(name));
+}
+
 function metadata(
   cardinality: number,
   variables: MetadataVariable[],
@@ -128,6 +132,50 @@ describe('ActorRdfJoinMultiMerge', () => {
         metadata(9, [ variable('a'), variable('b') ], order('a')),
         metadata(9, [ variable('a'), variable('b') ], order('b')),
       ])).toEqual({ variable: DF.variable('b'), indexes: [ 1, 3 ]});
+    });
+  });
+
+  describe('getMergeKey', () => {
+    const A = DF.variable('a');
+
+    it('extends the key with the variables that all orders share next', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeKey(A, [
+        metadata(1, [ variable('a'), variable('b'), variable('c') ], orders('a', 'b', 'c')),
+        metadata(1, [ variable('a'), variable('b'), variable('c') ], orders('a', 'b', 'c')),
+        metadata(1, [ variable('a'), variable('b'), variable('c'), variable('d') ], orders('a', 'b', 'c', 'd')),
+      ])).toEqual(orders('a', 'b', 'c'));
+    });
+
+    it('stops at an order that is shorter', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeKey(A, [
+        metadata(1, [ variable('a'), variable('b') ], orders('a', 'b')),
+        metadata(1, [ variable('a'), variable('b') ], orders('a')),
+        metadata(1, [ variable('a'), variable('b') ], orders('a', 'b')),
+      ])).toEqual(orders('a'));
+    });
+
+    it('stops at a variable that the orders do not share at the same position', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeKey(A, [
+        metadata(1, [ variable('a'), variable('b'), variable('c') ], orders('a', 'b')),
+        metadata(1, [ variable('a'), variable('b'), variable('c') ], orders('a', 'c', 'b')),
+        metadata(1, [ variable('a'), variable('b'), variable('c') ], orders('a', 'b')),
+      ])).toEqual(orders('a'));
+    });
+
+    it('stops at a variable that is sorted in descending order', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeKey(A, [
+        metadata(1, [ variable('a'), variable('b') ], [ ...order('a'), ...order('b', 'desc') ]),
+        metadata(1, [ variable('a'), variable('b') ], [ ...order('a'), ...order('b', 'desc') ]),
+        metadata(1, [ variable('a'), variable('b') ], [ ...order('a'), ...order('b', 'desc') ]),
+      ])).toEqual(orders('a'));
+    });
+
+    it('stops at a variable that an entry may leave undefined', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeKey(A, [
+        metadata(1, [ variable('a'), variable('b') ], orders('a', 'b')),
+        metadata(1, [ variable('a'), variable('b', true) ], orders('a', 'b')),
+        metadata(1, [ variable('a'), variable('b') ], orders('a', 'b')),
+      ])).toEqual(orders('a'));
     });
   });
 
@@ -284,6 +332,32 @@ describe('ActorRdfJoinMultiMerge', () => {
         canSeek: true,
       });
       expect(mediatorJoin.mediate).not.toHaveBeenCalled();
+    });
+
+    it('merges on all variables that the orders of the entries share', async() => {
+      const action: IActionRdfJoin = {
+        type: 'inner',
+        entries: [
+          entry(
+            [ bind({ a: '1', b: '1', c: 'c1' }), bind({ a: '1', b: '2', c: 'c2' }), bind({ a: '1', b: '3', c: 'c3' }) ],
+            metadata(3, [ variable('a'), variable('b'), variable('c') ], orders('a', 'b'), true),
+          ),
+          entry(
+            [ bind({ a: '1', b: '2', d: 'd2' }), bind({ a: '1', b: '3', d: 'd3' }) ],
+            metadata(2, [ variable('a'), variable('b'), variable('d') ], orders('a', 'b'), true),
+          ),
+          entry(
+            [ bind({ a: '1', b: '1', e: 'e1' }), bind({ a: '1', b: '3', e: 'e3' }) ],
+            metadata(2, [ variable('a'), variable('b'), variable('e') ], orders('a', 'b'), true),
+          ),
+        ],
+        context,
+      };
+      const { result } = await (<any> actor).getOutput(action, (await actor.test(action)).getSideData());
+      await expect(arrayifyStream(result.bindingsStream)).resolves.toEqualBindingsArray([
+        bind({ a: '1', b: '3', c: 'c3', d: 'd3', e: 'e3' }),
+      ]);
+      await expect(result.metadata()).resolves.toMatchObject({ termOrder: orders('a', 'b') });
     });
 
     it('does not claim that the result can skip when an entry cannot', async() => {
