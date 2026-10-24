@@ -119,9 +119,6 @@ export function skolemizeBindingsStream(
   iterator: BindingsStream,
   sourceId: string,
 ): BindingsStream {
-  // Skolemizing maps bindings one to one and leaves their order alone, so a skip-ahead over the
-  // wrapped stream is still valid. The target is deskolemized first, so that the source is asked to
-  // skip to a term in its own naming.
   const ret = new SeekableMappingIterator(
     iterator,
     bindings => skolemizeBindings(dataFactory, bindings, sourceId),
