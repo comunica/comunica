@@ -31,6 +31,10 @@ function order(name: string, direction: 'asc' | 'desc' = 'asc'): TermsOrder<RDF.
   return [{ term: DF.variable(name), direction }];
 }
 
+function orders(...names: string[]): TermsOrder<RDF.Variable> {
+  return names.flatMap(name => order(name));
+}
+
 function metadata(
   cardinality: number,
   variables: MetadataVariable[],
@@ -128,6 +132,50 @@ describe('ActorRdfJoinMultiMerge', () => {
         metadata(9, [ variable('a'), variable('b') ], order('a')),
         metadata(9, [ variable('a'), variable('b') ], order('b')),
       ])).toEqual({ variable: DF.variable('b'), indexes: [ 1, 3 ]});
+    });
+  });
+
+  describe('getMergeKey', () => {
+    const A = DF.variable('a');
+
+    it('extends the key with the variables that all orders share next', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeKey(A, [
+        metadata(1, [ variable('a'), variable('b'), variable('c') ], orders('a', 'b', 'c')),
+        metadata(1, [ variable('a'), variable('b'), variable('c') ], orders('a', 'b', 'c')),
+        metadata(1, [ variable('a'), variable('b'), variable('c'), variable('d') ], orders('a', 'b', 'c', 'd')),
+      ])).toEqual(orders('a', 'b', 'c'));
+    });
+
+    it('stops at an order that is shorter', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeKey(A, [
+        metadata(1, [ variable('a'), variable('b') ], orders('a', 'b')),
+        metadata(1, [ variable('a'), variable('b') ], orders('a')),
+        metadata(1, [ variable('a'), variable('b') ], orders('a', 'b')),
+      ])).toEqual(orders('a'));
+    });
+
+    it('stops at a variable that the orders do not share at the same position', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeKey(A, [
+        metadata(1, [ variable('a'), variable('b'), variable('c') ], orders('a', 'b')),
+        metadata(1, [ variable('a'), variable('b'), variable('c') ], orders('a', 'c', 'b')),
+        metadata(1, [ variable('a'), variable('b'), variable('c') ], orders('a', 'b')),
+      ])).toEqual(orders('a'));
+    });
+
+    it('stops at a variable that is sorted in descending order', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeKey(A, [
+        metadata(1, [ variable('a'), variable('b') ], [ ...order('a'), ...order('b', 'desc') ]),
+        metadata(1, [ variable('a'), variable('b') ], [ ...order('a'), ...order('b', 'desc') ]),
+        metadata(1, [ variable('a'), variable('b') ], [ ...order('a'), ...order('b', 'desc') ]),
+      ])).toEqual(orders('a'));
+    });
+
+    it('stops at a variable that an entry may leave undefined', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeKey(A, [
+        metadata(1, [ variable('a'), variable('b') ], orders('a', 'b')),
+        metadata(1, [ variable('a'), variable('b', true) ], orders('a', 'b')),
+        metadata(1, [ variable('a'), variable('b') ], orders('a', 'b')),
+      ])).toEqual(orders('a'));
     });
   });
 
@@ -284,6 +332,51 @@ describe('ActorRdfJoinMultiMerge', () => {
         canSeek: true,
       });
       expect(mediatorJoin.mediate).not.toHaveBeenCalled();
+    });
+
+    it('merges on all variables that the orders of the entries share', async() => {
+      const action: IActionRdfJoin = {
+        type: 'inner',
+        entries: [
+          entry(
+            [ bind({ a: '1', b: '1', c: 'c1' }), bind({ a: '1', b: '2', c: 'c2' }), bind({ a: '1', b: '3', c: 'c3' }) ],
+            metadata(3, [ variable('a'), variable('b'), variable('c') ], orders('a', 'b'), true),
+          ),
+          entry(
+            [ bind({ a: '1', b: '2', d: 'd2' }), bind({ a: '1', b: '3', d: 'd3' }) ],
+            metadata(2, [ variable('a'), variable('b'), variable('d') ], orders('a', 'b'), true),
+          ),
+          entry(
+            [ bind({ a: '1', b: '1', e: 'e1' }), bind({ a: '1', b: '3', e: 'e3' }) ],
+            metadata(2, [ variable('a'), variable('b'), variable('e') ], orders('a', 'b'), true),
+          ),
+        ],
+        context,
+      };
+      const { result } = await (<any> actor).getOutput(action, (await actor.test(action)).getSideData());
+      await expect(arrayifyStream(result.bindingsStream)).resolves.toEqualBindingsArray([
+        bind({ a: '1', b: '3', c: 'c3', d: 'd3', e: 'e3' }),
+      ]);
+      await expect(result.metadata()).resolves.toMatchObject({ termOrder: orders('a', 'b') });
+    });
+
+    it('joins entries that share more than one variable without a cross product of their runs', async() => {
+      // Every entry has 50 values of b for the same a, so merging on a alone would join 50 x 50 combinations.
+      const values = Array.from({ length: 50 }, (_, i) => String(i).padStart(2, '0'));
+      const action: IActionRdfJoin = {
+        type: 'inner',
+        entries: [ 'c', 'd', 'e' ].map(other => entry(
+          values.map(b => bind({ a: '1', b, [other]: b })),
+          metadata(50, [ variable('a'), variable('b'), variable(other) ], orders('a', 'b'), true),
+        )),
+        context,
+      };
+      const joinBindings = jest.spyOn(ActorRdfJoin, 'joinBindings');
+      const { result } = await (<any> actor).getOutput(action, (await actor.test(action)).getSideData());
+      await expect(arrayifyStream(result.bindingsStream)).resolves.toHaveLength(50);
+      // One join per entry after the first, for each of the 50 keys.
+      expect(joinBindings.mock.calls.length).toBeLessThanOrEqual(2 * 50);
+      joinBindings.mockRestore();
     });
 
     it('does not claim that the result can skip when an entry cannot', async() => {

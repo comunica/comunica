@@ -135,5 +135,23 @@ WHERE {
         await expect(arrayifyStream(await engine.queryBindings(query, context))).resolves.toHaveLength(10);
       });
     });
+
+    it('should join patterns that share their subject and object', async() => {
+      const context: QueryStringContext = {
+        sources: [{ value: path.join(path.relative(process.cwd(), __dirname), 'assets/shared-objects.ttl') }],
+      };
+      const query = `SELECT * WHERE {
+        ?s <http://ex/r1> ?o .
+        ?s <http://ex/r2> ?o .
+        ?s <http://ex/r3> ?o .
+      }`;
+      const bindings = await arrayifyStream(await engine.queryBindings(query, context));
+      expect(bindings.map(binding => `${binding.get('s')!.value} ${binding.get('o')!.value}`).sort()).toEqual([
+        'http://ex/s0 http://ex/o3',
+        'http://ex/s0 http://ex/o5',
+        'http://ex/s1 http://ex/o3',
+        'http://ex/s1 http://ex/o5',
+      ]);
+    });
   });
 });

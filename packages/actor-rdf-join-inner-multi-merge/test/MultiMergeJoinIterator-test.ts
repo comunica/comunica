@@ -32,6 +32,20 @@ function joined(a: number, ...others: [string, string][]): Bindings {
   ]);
 }
 
+const B = DF.variable('b');
+
+function compareOnBoth(left: Bindings, right: Bindings): number {
+  return compare(left, right) || compareTerms(left.get(B)!, right.get(B)!);
+}
+
+function bindBoth(a: number, b: number, other: string): Bindings {
+  return BF.bindings([
+    [ A, DF.literal(String(a).padStart(6, '0')) ],
+    [ B, DF.literal(String(b).padStart(6, '0')) ],
+    [ DF.variable(other), DF.literal(`${other}${a}-${b}`) ],
+  ]);
+}
+
 function array(items: Bindings[]): AsyncIterator<Bindings> {
   return new ArrayIterator<Bindings>(items, { autoStart: false });
 }
@@ -255,6 +269,30 @@ describe('MultiMergeJoinIterator', () => {
     expect(last.reads).toBe(0);
   });
 
+  it('joins on a key of more than one variable', async() => {
+    const it = new MultiMergeJoinIterator([
+      array([ bindBoth(1, 1, 'c'), bindBoth(1, 2, 'c'), bindBoth(1, 3, 'c'), bindBoth(2, 1, 'c') ]),
+      array([ bindBoth(1, 2, 'd'), bindBoth(1, 3, 'd'), bindBoth(2, 1, 'd') ]),
+      array([ bindBoth(1, 1, 'e'), bindBoth(1, 3, 'e'), bindBoth(2, 1, 'e') ]),
+    ], compareOnBoth, MultiMergeJoinIterator.SEEK_AFTER_BEHIND, compare);
+    await expect(arrayifyStream(it)).resolves.toEqualBindingsArray([
+      BF.bindings([
+        [ A, DF.literal('000001') ],
+        [ B, DF.literal('000003') ],
+        [ DF.variable('c'), DF.literal('c1-3') ],
+        [ DF.variable('d'), DF.literal('d1-3') ],
+        [ DF.variable('e'), DF.literal('e1-3') ],
+      ]),
+      BF.bindings([
+        [ A, DF.literal('000002') ],
+        [ B, DF.literal('000001') ],
+        [ DF.variable('c'), DF.literal('c2-1') ],
+        [ DF.variable('d'), DF.literal('d2-1') ],
+        [ DF.variable('e'), DF.literal('e2-1') ],
+      ]),
+    ]);
+  });
+
   describe('with seekable sources', () => {
     it('skips ahead in every stream that falls behind the furthest one', async() => {
       const long = (other: string): SeekableIterator => new SeekableIterator(
@@ -341,6 +379,21 @@ describe('MultiMergeJoinIterator', () => {
         joined(1, [ 'b', 'b1x' ], [ 'c', 'c1' ], [ 'd', 'd1' ]),
         joined(2, [ 'b', 'b2' ], [ 'c', 'c2' ], [ 'd', 'd2' ]),
       ]);
+    });
+
+    it('only compares the first key variable to a target, which may not bind the others', async() => {
+      const inputs = [ 'c', 'd', 'e' ].map(other => new SeekableIterator([
+        bindBoth(1, 1, other),
+        bindBoth(2, 1, other),
+        bindBoth(2, 2, other),
+        bindBoth(3, 1, other),
+      ]));
+      const it = new MultiMergeJoinIterator(inputs, compareOnBoth, MultiMergeJoinIterator.SEEK_AFTER_BEHIND, compare);
+      it.seek(bind(2, 'f', 'f'));
+      await expect(arrayifyStream(it)).resolves.toHaveLength(3);
+      for (const input of inputs) {
+        expect(input.skipped).toBe(1);
+      }
     });
 
     it('leaves sources alone that ended or cannot skip', async() => {
