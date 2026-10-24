@@ -746,6 +746,39 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
           // The endpoint does not declare support for the function, so it only receives the grouping
           expect(queries).toEqual([ 'SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s' ]);
         });
+
+        it('sends a query with an undeclared extension function as-is to a single endpoint', async() => {
+          const queries: (string | null)[] = [];
+          const query = `PREFIX func: <http://example.org/functions#>
+SELECT ?s ?label WHERE {
+  ?s a <http://example.org/C> ;
+    <http://example.org/label> ?label .
+  FILTER(func:contains(?label, "'term'"))
+}`;
+          const bindingsStream = await engine.queryBindings(query, {
+            sources: [{ type: 'sparql', value: 'http://example.org/verbatim/sparql' }],
+            fetch: async(input: RequestInfo | URL, init?: RequestInit) => {
+              queries.push(init?.body ?
+                new URLSearchParams(String(init.body)).get('query') :
+                new URL(<string> input).searchParams.get('query'));
+              return new Response(JSON.stringify({
+                head: { vars: [ 's', 'label' ]},
+                results: { bindings: [
+                  { s: { type: 'uri', value: 'http://example.org/s1' }, label: { type: 'literal', value: 'term' }},
+                ]},
+              }), { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }});
+            },
+          });
+
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+              [ DF.variable('label'), DF.literal('term') ],
+            ]),
+          ]);
+          // Without local extension functions, the endpoint is trusted to evaluate the function
+          expect(queries).toEqual([ query ]);
+        });
       });
 
       describe('functionArgumentsCache', () => {
