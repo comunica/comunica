@@ -3,12 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-inner-multi-merge.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-inner-multi-merge)
 
 An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that inner-joins three or
-more streams that are all sorted on the same variable in a single pass.
-If they share a longer prefix of their order, such as `?s` and then `?o`, they are merged on all of it.
-Note that this is not a leapfrog triejoin, as it does not descend into further variables.
-
-Unlike a chain of binary [merge joins](https://github.com/comunica/comunica/tree/master/packages/actor-rdf-join-inner-merge),
-every stream skips ahead to the furthest key among all of them.
+more streams that are all sorted on the same variables in a single pass.
 
 Streams that expose `seek(target)` (`ISeekableBindingsStream`) are only asked to skip once they fell behind a few
 times in a row.

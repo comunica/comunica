@@ -301,7 +301,7 @@ describe('ActorRdfJoinMultiMerge', () => {
           entry([], metadata(4, [ variable('a'), variable('b') ])),
         ],
         context,
-      })).resolves.toFailTest(`Actor actor leaves joins with an entry much smaller than its result to other actors`);
+      })).resolves.toFailTest(`Actor actor leaves joins with a small entry to other actors`);
     });
   });
 
