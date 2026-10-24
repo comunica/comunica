@@ -188,6 +188,16 @@ export const KeysInitQuery = {
   /**
    * The original query string.
    */
+  // TODO: next/major - stop sending this queryString as-is to sources, and only rely on the equivalent query string
+  //  that is attached to operations (getOperationEquivalentQueryString in @comunica/utils-query-operation):
+  //  - QuerySourceSparql#getQueryStringAsIs: remove the fallback to this queryString.
+  //  - ActorOptimizeQueryOperationAssignSourcesExhaustive#run: stop deleting this queryString.
+  //  - ActorQueryProcessSequential#parse: stop deleting this queryString after applying initial bindings.
+  //  - ActorOptimizeQueryOperationAssignSourcesExhaustive#assignEquivalentQueryString: do not attach this queryString
+  //    if initial bindings are set, as these change the operation.
+  //  - Optimizers that change an operation with an equivalent query string must drop it,
+  //    as mapOperation copies the operation metadata.
+  //  - Document in the changelog that sources must use getOperationEquivalentQueryString instead of this queryString.
   queryString: new ActionContextKey<string>('@comunica/actor-init-query:queryString'),
   /**
    * The original parsed query.

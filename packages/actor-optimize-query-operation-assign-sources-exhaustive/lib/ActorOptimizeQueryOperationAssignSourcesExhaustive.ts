@@ -35,6 +35,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
     const serviceSources = action.context.get(KeysQueryOperation.serviceSources) ?? {};
     if (sources.length === 0 && Object.keys(serviceSources).length === 0) {
       // Sources identified later on, such as variable SERVICE targets, may not receive the full queryString.
+      // TODO: next/major - stop deleting the queryString, see KeysInitQuery.queryString.
       return { operation: action.operation, context: action.context.delete(KeysInitQuery.queryString) };
     }
     if (await passFullOperationToSource(action.operation, sources, action.context)) {
@@ -45,6 +46,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       operation: this.assignExhaustive(algebraFactory, action.operation, sources, serviceSources),
       // We only keep queryString in the context if we only have a single source that accepts the full operation.
       // In that case, the queryString can be sent to the source as-is.
+      // TODO: next/major - stop deleting the queryString, see KeysInitQuery.queryString.
       context: action.context
         .delete(KeysInitQuery.queryString),
     };
@@ -57,6 +59,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
    * @return The operation, with the equivalent query string attached if available.
    */
   public assignEquivalentQueryString(operation: Algebra.Operation, context: IActionContext): Algebra.Operation {
+    // TODO: next/major - skip this if initial bindings are set, see KeysInitQuery.queryString.
     const queryString = context.get(KeysInitQuery.queryString);
     if (!queryString || context.get(KeysInitQuery.queryFormat)?.language !== 'sparql') {
       return operation;
