@@ -996,6 +996,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       function makeRequest() {
         request = Readable.from([ 'default_test_request_content' ]);
         request.url = 'url_sparql';
+        request.socket = {};
         request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist', accept: '*/*' };
         return request;
       }
@@ -1112,6 +1113,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should call writeQueryResult with correct arguments if request method equals POST', async() => {
         (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
+        request.headers['content-type'] = 'application/sparql-query';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(instance.writeQueryResult).toHaveBeenCalledWith(
@@ -1150,6 +1152,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it.each([ 'POST', 'QUERY' ])('should respond with 400 when the %s body can not be parsed', async(method) => {
         (<any> instance).parseBody = jest.fn(() => Promise.reject(new Error('Invalid request body')));
         request.method = method;
+        request.headers['content-type'] = 'application/sparql-query';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(instance.writeQueryResult).not.toHaveBeenCalled();
@@ -1391,6 +1394,117 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledWith(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*', Location: 'http://localhost:3000/sparql' });
         expect(response.end)
           .toHaveBeenCalledWith(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
+      });
+
+      describe('with the graph store enabled', () => {
+        let graphStoreInstance: HttpServiceSparqlEndpoint;
+
+        beforeEach(() => {
+          graphStoreInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, graphStore: true });
+          jest.spyOn(graphStoreInstance, 'writeQueryResult').mockImplementation();
+        });
+
+        it('should let the graph store handle a request that identifies a graph', async() => {
+          request.method = 'PUT';
+          request.url = 'url_store_graph';
+          request.headers['content-type'] = 'text/turtle';
+          jest.spyOn(graphStoreInstance.graphStore!, 'handleRequest')
+            .mockImplementation(async(...args: any[]) => ({ status: 204, message: await args[4]() }));
+
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(graphStoreInstance.graphStore!.handleRequest).toHaveBeenCalledWith(
+            engine,
+            request,
+            { graph: DF.namedNode('http://example.org/g') },
+            'http://localhost:3000/store',
+            expect.any(Function),
+          );
+          expect(response.writeHead).toHaveBeenCalledWith(204, {
+            'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN,
+            'Access-Control-Allow-Origin': '*',
+          });
+          expect(response.end).toHaveBeenCalledWith('default_test_request_content\n');
+          expect(graphStoreInstance.writeQueryResult).not.toHaveBeenCalled();
+        });
+
+        it('should respond with 405 to a DELETE on the graph store itself', async() => {
+          request.method = 'DELETE';
+          request.url = 'url_store';
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(405, {
+            'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN,
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS, POST',
+            Allow: 'OPTIONS, POST',
+          });
+        });
+
+        it('should answer a CORS preflight request for OPTIONS on the graph store itself', async() => {
+          request.method = 'OPTIONS';
+          request.url = 'url_store';
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(
+            204,
+            {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
+              'Access-Control-Max-Age': '86400',
+              'Access-Control-Allow-Methods': 'OPTIONS, POST',
+              Allow: 'OPTIONS, POST',
+            },
+          );
+        });
+
+        it('should leave the SPARQL endpoint to the SPARQL protocol', async() => {
+          request.method = 'GET';
+          request.url = 'url_sparql';
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(graphStoreInstance.writeQueryResult).toHaveBeenCalledWith(
+            engine,
+            stdout,
+            stderr,
+            request,
+            response,
+            { type: 'query', value: 'test_query' },
+            null,
+            false,
+            true,
+            0,
+          );
+        });
+
+        it('should answer a CORS preflight request for OPTIONS on a graph', async() => {
+          request.method = 'OPTIONS';
+          request.url = 'url_store_graph';
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(
+            204,
+            {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
+              'Access-Control-Max-Age': '86400',
+              'Access-Control-Allow-Methods': 'DELETE, GET, HEAD, OPTIONS, POST, PUT',
+              Allow: 'DELETE, GET, HEAD, OPTIONS, POST, PUT',
+            },
+          );
+          expect(graphStoreInstance.writeQueryResult).not.toHaveBeenCalled();
+        });
+
+        it('should respond with 404 to an OPTIONS request outside of both services', async() => {
+          request.method = 'OPTIONS';
+          request.url = 'not_urlsparql';
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(
+            404,
+            { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' },
+          );
+        });
       });
     });
 
@@ -2502,10 +2616,131 @@ INSERT DATA {
           .toBe('http://localhost:1234/sparql');
       });
 
+      it('should use the given path', () => {
+        expect(HttpServiceSparqlEndpoint
+          .getBaseIRI(<any> { headers: { host: 'example.org' }, socket: {}}, 3_000, '/store'))
+          .toBe('http://example.org/store');
+      });
+
       it('should use https when the request was received over an encrypted socket', () => {
         expect(HttpServiceSparqlEndpoint
           .getBaseIRI(<any> { headers: { host: 'example.org' }, socket: { encrypted: true }}, 3_000))
           .toBe('https://example.org/sparql');
+      });
+    });
+
+    describe('writeGraphStoreResult', () => {
+      let engine: any;
+      let response: any;
+      let stdout: PassThrough;
+      let request: any;
+      let endCalledPromise: Promise<string>;
+      let result: any;
+
+      beforeEach(async() => {
+        engine = await new QueryEngineFactoryBase().create();
+        response = new ServerResponseMock();
+        stdout = new PassThrough();
+        request = { method: 'GET', url: 'url_sparql_graph', headers: {}, socket: {}};
+        endCalledPromise = new Promise(resolve => response.onEnd = resolve);
+        result = { resultType: 'quads' };
+      });
+
+      it('should write a response without a graph', async() => {
+        await instance.writeGraphStoreResult(
+          engine,
+          stdout,
+          request,
+          response,
+          { status: 404, message: 'The graph does not exist.' },
+          'text/turtle',
+        );
+
+        expect(response.writeHead).toHaveBeenCalledWith(404, {
+          'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN,
+          'Access-Control-Allow-Origin': '*',
+        });
+        await expect(endCalledPromise).resolves.toBe('The graph does not exist.\n');
+      });
+
+      it('should write a response without a graph and without a message', async() => {
+        await instance.writeGraphStoreResult(
+          engine,
+          stdout,
+          request,
+          response,
+          { status: 201, headers: { Location: 'http://example.org/sparql/g' }},
+          'text/turtle',
+        );
+
+        expect(response.writeHead).toHaveBeenCalledWith(201, {
+          'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN,
+          'Access-Control-Allow-Origin': '*',
+          Location: 'http://example.org/sparql/g',
+        });
+        await expect(endCalledPromise).resolves.toBeUndefined();
+      });
+
+      it('should serialize a graph in the requested media type', async() => {
+        await instance
+          .writeGraphStoreResult(engine, stdout, request, response, { status: 200, result }, 'mtype_1');
+
+        expect(response.writeHead).toHaveBeenCalledWith(200, {
+          'content-type': 'mtype_1',
+          'Access-Control-Allow-Origin': '*',
+        });
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        response.push(null);
+        await expect(stringifyStream(response)).resolves.toBe('test_query_result');
+      });
+
+      it('should serialize a graph as Turtle by default', async() => {
+        await instance
+          .writeGraphStoreResult(engine, stdout, request, response, { status: 200, result }, <any> null);
+
+        expect(response.writeHead).toHaveBeenCalledWith(200, {
+          'content-type': 'text/turtle',
+          'Access-Control-Allow-Origin': '*',
+        });
+      });
+
+      it('should not write a body for a HEAD request', async() => {
+        request.method = 'HEAD';
+        await instance
+          .writeGraphStoreResult(engine, stdout, request, response, { status: 200, result }, 'mtype_1');
+
+        expect(response.writeHead).toHaveBeenCalledWith(200, {
+          'content-type': 'mtype_1',
+          'Access-Control-Allow-Origin': '*',
+        });
+        await expect(endCalledPromise).resolves.toBeUndefined();
+      });
+
+      it('should end the response when the graph could not be serialized', async() => {
+        await instance.writeGraphStoreResult(
+          engine,
+          stdout,
+          request,
+          response,
+          { status: 200, result },
+          'mediatype_throwerror',
+        );
+
+        await expect(endCalledPromise).resolves
+          .toBe('The graph could not be serialized for the requested media type.\n');
+      });
+
+      it('should end the response when the serialization errors', async() => {
+        await instance.writeGraphStoreResult(
+          engine,
+          stdout,
+          request,
+          response,
+          { status: 200, result },
+          'mediatype_queryresultstreamerror',
+        );
+
+        await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
       });
     });
 
