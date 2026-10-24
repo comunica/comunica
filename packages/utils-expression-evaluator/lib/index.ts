@@ -40,10 +40,10 @@ export {
   TypeURL,
   TypeAlias,
   SparqlOperator,
-  NamedOperator,
-  GeneralOperator,
-  KnownOperator,
-  KnownLiteralTypes,
+  type NamedOperator,
+  type GeneralOperator,
+  type KnownOperator,
+  type KnownLiteralTypes,
 } from './util/Consts';
 export { isSubTypeOf } from './util/TypeHandling';
 export {
@@ -86,7 +86,7 @@ export {
   NonLexicalLiteral,
   StringLiteral,
   isNonLexicalLiteral,
-  ISerializable,
+  type ISerializable,
 } from './expressions';
 export { addDurationToDateTime, elapsedDuration } from './util/SpecAlgos';
 export {

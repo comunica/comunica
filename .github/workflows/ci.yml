@@ -37,6 +37,8 @@ jobs:
         run: yarn run build:ts --esModuleInterop true
       - name: Run linter
         run: yarn run lint
+      - name: Type-check tests
+        run: yarn run test:types
       - name: Run depcheck
         run: yarn run depcheck
       - name: Check actor READMEs
