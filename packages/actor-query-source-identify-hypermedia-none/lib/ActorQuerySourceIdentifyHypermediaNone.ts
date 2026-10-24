@@ -150,9 +150,8 @@ export interface IActorQuerySourceIdentifyHypermediaNoneArgs extends IActorQuery
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   /**
-   * If files must be loaded into a default store, whose scans have no order.
-   * Otherwise, files are loaded into an ordered store, which keeps its quads in the term order,
-   * so that scans of it can report that order as `termOrder` and skip ahead within it, which merge joins make use of.
+   * If files must be loaded into a non-ordered store.
+   * This defaults to false, to enable efficient merge joining to happen.
    * TODO: in the next major version, replace this by an `orderedStore` parameter that defaults to true.
    * @default {false}
    */
