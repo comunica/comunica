@@ -19,10 +19,7 @@ import { MultiMergeJoinIterator } from './MultiMergeJoinIterator';
 /**
  * A comunica Multi Merge RDF Join Actor.
  *
- * Joins three or more entries that are all sorted on the same variable in one pass, by merging them on that
- * variable: every entry that is behind skips ahead to the furthest key among all entries. Other variables that
- * the entries share are only checked within the cross product of the runs of a key, so unlike a leapfrog triejoin,
- * this does not descend into further variables.
+ * Joins three or more entries that are all sorted on the same variable in one pass.
  *
  * Entries that are not sorted on that variable are joined with the result afterwards, through the join bus.
  */
