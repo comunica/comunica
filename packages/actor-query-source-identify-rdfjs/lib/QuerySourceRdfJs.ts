@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-nodejs-modules
+import type { EventEmitter } from 'node:events';
 import { filterMatchingQuotedQuads, getVariables, quadsToBindings } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type {
@@ -29,17 +31,16 @@ interface IOrderedBindingsScan {
 }
 
 /**
- * The ordered scan that a stream is, if it is one.
- * @param stream A stream returned by a source.
+ * Get the ordered scan of a stream.
+ * @param stream A bindings stream returned by the `matchBindings` method of a source.
  */
-function getOrderedScan(stream: unknown): IOrderedBindingsScan | undefined {
-  const scan = <Partial<IOrderedBindingsScan>> stream;
-  if (!Array.isArray(scan.resultOrder)) {
+function getOrderedScan(stream: EventEmitter & Partial<IOrderedBindingsScan>): IOrderedBindingsScan | undefined {
+  if (!Array.isArray(stream.resultOrder)) {
     return undefined;
   }
   return {
-    resultOrder: scan.resultOrder,
-    seekTo: typeof scan.seekTo === 'function' ? scan.seekTo : undefined,
+    resultOrder: stream.resultOrder,
+    seekTo: typeof stream.seekTo === 'function' ? stream.seekTo : undefined,
   };
 }
 
@@ -254,8 +255,7 @@ export class QuerySourceRdfJs implements IQuerySource {
         operation.graph = this.dataFactory.defaultGraph();
       }
 
-      // A scan is sorted on the variables of the components it varies over, which only holds while nothing
-      // was wrapped around it.
+      // If the stream has a `seekTo` method with a valid order, we make our iterator seekable.
       const scan = it === rawStream ? getOrderedScan(rawStream) : undefined;
       const order = scan ? scanOrderToBindingsOrder(scan.resultOrder, operation) : [];
       const seekTo = order.length > 0 ? scan?.seekTo : undefined;

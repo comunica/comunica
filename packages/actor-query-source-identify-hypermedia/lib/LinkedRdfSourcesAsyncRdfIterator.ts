@@ -298,10 +298,8 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
               // Create new metadata state
               returnMetadata.state = new MetadataValidationState();
 
-              // An order only survives while a single source feeds this iterator: reading several
-              // sorted sources round-robin does not produce a sorted stream. Whether more sources
-              // follow is only known once the links are in, so emitting is held back until then,
-              // but only for a source that has an order to lose.
+              // Order is only kept for single sources.
+              // For multiple sources, order is emitted once all links are known.
               const ordered = isOrdered(returnMetadata);
               if (!ordered) {
                 this.emitMetadata(returnMetadata);
