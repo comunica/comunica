@@ -360,6 +360,25 @@ describe('ActorRdfJoinMultiMerge', () => {
       await expect(result.metadata()).resolves.toMatchObject({ termOrder: orders('a', 'b') });
     });
 
+    it('joins entries that share more than one variable without a cross product of their runs', async() => {
+      // Every entry has 50 values of b for the same a, so merging on a alone would join 50 x 50 combinations.
+      const values = Array.from({ length: 50 }, (_, i) => String(i).padStart(2, '0'));
+      const action: IActionRdfJoin = {
+        type: 'inner',
+        entries: [ 'c', 'd', 'e' ].map(other => entry(
+          values.map(b => bind({ a: '1', b, [other]: b })),
+          metadata(50, [ variable('a'), variable('b'), variable(other) ], orders('a', 'b'), true),
+        )),
+        context,
+      };
+      const joinBindings = jest.spyOn(ActorRdfJoin, 'joinBindings');
+      const { result } = await (<any> actor).getOutput(action, (await actor.test(action)).getSideData());
+      await expect(arrayifyStream(result.bindingsStream)).resolves.toHaveLength(50);
+      // One join per entry after the first, for each of the 50 keys.
+      expect(joinBindings.mock.calls.length).toBeLessThanOrEqual(2 * 50);
+      joinBindings.mockRestore();
+    });
+
     it('does not claim that the result can skip when an entry cannot', async() => {
       const action: IActionRdfJoin = {
         type: 'inner',
