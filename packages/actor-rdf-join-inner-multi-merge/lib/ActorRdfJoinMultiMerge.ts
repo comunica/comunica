@@ -19,8 +19,7 @@ import { MultiMergeJoinIterator } from './MultiMergeJoinIterator';
 /**
  * A comunica Multi Merge RDF Join Actor.
  *
- * Joins three or more entries that are all sorted on the same variable in one pass.
- * If they share a longer prefix of their term order, they are merged on all of it.
+ * Joins three or more entries that are all sorted on the same variables in one pass.
  *
  * Entries that are not sorted on that variable are joined with the result afterwards, through the join bus.
  */
@@ -59,7 +58,6 @@ export class ActorRdfJoinMultiMerge extends ActorRdfJoin<IActorRdfJoinMultiMerge
 
   /**
    * Find the variable that most entries are sorted on first, in ascending order.
-   * Among variables that equally many entries are sorted on, the one whose smallest entry is smallest wins.
    * @param metadatas Metadata of the join entries.
    * @return The variable and the indexes of the entries sorted on it, from the smallest entry to the largest,
    *         or undefined if there is none.
@@ -101,9 +99,7 @@ export class ActorRdfJoinMultiMerge extends ActorRdfJoin<IActorRdfJoinMultiMerge
   /**
    * Determine the key that the merged entries are joined on.
    *
-   * This is the longest prefix of their term orders that they all share, in ascending order, of variables that
-   * none of them leaves undefined. It starts with the merge variable, and merging on more variables avoids
-   * checking the other ones within the cross product of the runs of every key.
+   * This is the longest prefix of their term orders that they all share, in ascending order.
    * @param variable The variable that the merged entries are sorted on first.
    * @param metadatas Metadata of the merged entries.
    */
@@ -193,9 +189,7 @@ export class ActorRdfJoinMultiMerge extends ActorRdfJoin<IActorRdfJoinMultiMerge
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
     const grouped = group.indexes.map(index => metadatas[index]);
 
-    // The smallest entry proposes every key, and a later entry is only read at the keys that all entries
-    // before it share, of which there are about as many as their estimated join result. An entry that can skip
-    // is read down to about that many bindings, as for the merge join, and one that cannot is read in full.
+    // Calculate the number of reads and keys that would be considered.
     let reads = grouped[0].cardinality.value;
     let keys = reads;
     for (let i = 1; i < grouped.length; i++) {
@@ -205,12 +199,10 @@ export class ActorRdfJoinMultiMerge extends ActorRdfJoin<IActorRdfJoinMultiMerge
       keys = Math.min(keys, ActorRdfJoin.getSharedVariableJoinCardinality(grouped.slice(0, i + 1))!);
     }
 
-    // Another entry that is much smaller than the result can only be joined after every key has been produced, while
-    // binding it into the merged entries only looks up its own bindings. Such an entry is usually a join, whose
-    // estimate tends to be too high, so its actual advantage is often larger still.
+    // If a join entry is much smaller than the others, other join actors will be more efficient.
     if (metadatas.some((metadata, index) => !group.indexes.includes(index) &&
       metadata.cardinality.value * ActorRdfJoinMultiMerge.OTHER_ENTRY_RATIO < keys)) {
-      return failTest(`Actor ${this.name} leaves joins with an entry much smaller than its result to other actors`);
+      return failTest(`Actor ${this.name} leaves joins with a small entry to other actors`);
     }
 
     const perBinding = grouped.every(metadata => metadata.canSeek) ?
@@ -229,7 +221,6 @@ export class ActorRdfJoinMultiMerge extends ActorRdfJoin<IActorRdfJoinMultiMerge
 
     return passTestWithSideData({
       iterations,
-      // Only one run per entry is held in memory.
       persistedItems: 0,
       blockingItems: 0,
       requestTime: metadatas.reduce((sum, metadata, i) => sum + requestInitialTimes[i] +

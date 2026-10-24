@@ -4,7 +4,7 @@ import { isSeekableBindingsStream } from '@comunica/utils-iterator';
 import { AsyncIterator } from 'asynciterator';
 
 /**
- * Marks that a source has no binding available yet, as opposed to having none left.
+ * Marks that a source has no binding available yet.
  */
 const PENDING = Symbol('pending');
 
@@ -13,21 +13,12 @@ const COLLECTING = 1;
 const EMITTING = 2;
 
 /**
- * An iterator that joins any number of streams that are all sorted on one join key, by skipping ahead:
- * a candidate key is checked against the streams in the order they were given, where every stream that is
- * behind it skips ahead to it, and a stream that is past it makes its own key the next candidate.
- * Once all streams are at the candidate, the runs of that key are emitted as a cross product.
+ * An iterator that joins any number of streams that are all sorted on one join key, by skipping ahead.
+ * Each candidate key is checked against all streams, which we can then skip to.
+ * Once a stream moves past the candidate key, this becomes the new candidate.
+ * Once all streams are at this candidate key, the cross product of its bindings are emitted.
  *
- * Unlike a chain of binary merge joins, every stream skips ahead to a key that all streams before it share,
- * so a selective stream saves reads in all others at once. Since a stream is only read at keys that all
- * streams before it have, the streams should be given with the most selective ones first: a key that the
- * first streams do not share then never reaches the others, as in a chain of merge joins.
- *
- * `read` is fully synchronous: it only stops when a source has nothing buffered, and resumes when that
- * source becomes readable again.
- *
- * As in the merge join, a stream is only asked to skip once it has fallen behind a number of times in a row,
- * since a skip has a fixed cost that only pays off over a gap of more than a few bindings.
+ * As in the merge join, a stream is only asked to skip once it has fallen behind a number of times in a row.
  */
 export class MultiMergeJoinIterator extends AsyncIterator<Bindings> {
   /**
@@ -63,8 +54,7 @@ export class MultiMergeJoinIterator extends AsyncIterator<Bindings> {
    */
   private collecting = 0;
   /**
-   * The runs in the order they are combined in: shortest first, so that the joins of the runs that only hold
-   * a single binding are shared by all combinations, rather than redone for each.
+   * The runs in shortest first order.
    */
   private combined: Bindings[][] = [];
   /**
@@ -81,8 +71,8 @@ export class MultiMergeJoinIterator extends AsyncIterator<Bindings> {
    * @param sources The streams to join, all sorted on the join key, most selective first.
    * @param compareKeys Compares the join keys of two bindings.
    * @param seekAfterBehind The number of times in a row that a stream must fall behind before it is asked to skip.
-   * @param compareSeek Compares the first variable of the join keys of two bindings, if the key has more than one.
-   *                    Seeks are only compared on that variable, as a target may not bind the others.
+   * @param compareSeek Compares the first variable of the join keys of two bindings.
+   *                    Seeks are only compared on that variable.
    */
   public constructor(
     sources: AsyncIterator<Bindings>[],
@@ -159,7 +149,6 @@ export class MultiMergeJoinIterator extends AsyncIterator<Bindings> {
     }
     if (this.candidate === undefined || this.compareSeek(this.candidate, target) < 0) {
       // A target may not bind the other key variables, so it only becomes the candidate for a single-variable key.
-      // Otherwise, the first source proposes the next candidate once it has skipped ahead.
       this.candidate = this.compareSeek === this.compareKeys ? target : undefined;
       this.matched = 0;
     }
