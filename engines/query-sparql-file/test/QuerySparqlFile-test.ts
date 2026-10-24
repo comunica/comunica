@@ -110,6 +110,20 @@ WHERE {
         const { data } = await new QueryEngine().explain(query, context, 'physical');
         expect(data).toContain('join-inner(merge)');
       });
+
+      it('should multi-merge-join the union with other patterns', async() => {
+        const context: QueryStringContext = {
+          sources: [{ value: path.join(path.relative(process.cwd(), __dirname), 'assets/ordered.ttl') }],
+        };
+        const query = `SELECT * WHERE {
+          { ?s <http://ex/p0> ?o } UNION { ?s <http://ex/p1> ?o }
+          ?s <http://ex/q> ?x .
+          ?s <http://ex/r> ?y .
+        }`;
+        await expect(arrayifyStream(await engine.queryBindings(query, context))).resolves.toHaveLength(20);
+        const { data } = await new QueryEngine().explain(query, context, 'physical');
+        expect(data).toContain('join-inner(multi-merge)');
+      });
     });
 
     describe('joins over operators that do not keep the term order of their input', () => {
