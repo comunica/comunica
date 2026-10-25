@@ -1,7 +1,7 @@
 {
   "name": "@comunica/actor-query-operation-union-ordered",
   "version": "5.4.0",
-  "description": "A query-operation actor for unions that keeps the term order shared by its inputs",
+  "description": "A query-operation actor for unions that keeps the term order of its inputs",
   "lsd:module": true,
   "license": "MIT",
   "funding": {

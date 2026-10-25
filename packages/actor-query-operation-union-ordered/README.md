@@ -2,7 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-operation-union-ordered.svg)](https://www.npmjs.com/package/@comunica/actor-query-operation-union-ordered)
 
-A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that handles [SPARQL `UNION`](https://www.w3.org/TR/sparql11-query/#alternatives) operations, and keeps the term order that its inputs share.
+A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that handles [SPARQL `UNION`](https://www.w3.org/TR/sparql11-query/#alternatives) operations, and keeps the term order of its inputs.
 
 It only handles unions that [`@comunica/actor-optimize-query-operation-annotate-union-order`](https://github.com/comunica/comunica/tree/master/packages/actor-optimize-query-operation-annotate-union-order) annotated with `orderUseful`: the variables that the union shares with the other inputs of the join it is in.
 Other unions are left to [`@comunica/actor-query-operation-union`](https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-union), which this actor must be placed before with `beforeActors`.

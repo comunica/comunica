@@ -8,14 +8,9 @@ import { passTestVoid } from '@comunica/core';
 import { Algebra, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 
 /**
- * A comunica Annotate Union Order Optimize Query Operation Actor.
- *
- * It annotates every union that is an input of a join with `orderUseful`: the names of the variables that it shares
- * with the other inputs of that join. A union whose inputs are sorted on one of them can emit its bindings in that
- * order, so that a merge join can join it. Elsewhere, keeping that order would only cost time.
- *
- * Unions below operators that keep the order of their input, such as filters and projections, and unions within
- * such unions, are annotated as well.
+ * An optimize actor that annotates unions with `orderUseful`.
+ * This is a metadata entry that contains variable names that are common
+ * among unions and their siblings within a join.
  */
 export class ActorOptimizeQueryOperationAnnotateUnionOrder extends ActorOptimizeQueryOperation {
   public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
@@ -32,7 +27,7 @@ export class ActorOptimizeQueryOperationAnnotateUnionOrder extends ActorOptimize
   }
 
   /**
-   * Annotate the unions among the inputs of a join with the variables they share with its other inputs.
+   * Annotate unions in joins.
    * @param join A join.
    * @return The join with annotated inputs.
    */
@@ -47,8 +42,7 @@ export class ActorOptimizeQueryOperationAnnotateUnionOrder extends ActorOptimize
   }
 
   /**
-   * Annotate the unions in an operation that pass their order on to its output.
-   * Operators that keep the order of their input are descended into, as are the inputs of a union.
+   * Annotate unions with variables that are useful for order-based joins.
    * @param operation An operation.
    * @param shared The names of the variables that the order of the output can be useful for.
    * @return The operation with annotated unions.

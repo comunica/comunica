@@ -8,14 +8,10 @@ const PLAIN = 1;
 const ORDERED = 2;
 
 /**
- * A union that emits the bindings of its inputs in the term order they share, or in no particular order.
+ * A union that emits the bindings of its inputs in the term order they share.
  *
- * Which of the two it does is decided once, by whichever comes first:
- * a call to {@link OrderedUnionIterator#useOrder}, or the first read.
- * A consumer that relies on the order asks for metadata before reading, which is where the order is decided on.
- *
- * In order, it holds the next binding of every input and emits the smallest one,
- * so it can only emit once every input that has not ended has a binding available.
+ * The term order is determined either by a call to {@link OrderedUnionIterator#useOrder},
+ * or the first read.
  */
 export class OrderedUnionIterator extends AsyncIterator<Bindings> implements ISeekableBindingsStream {
   private readonly sources: AsyncIterator<Bindings>[];

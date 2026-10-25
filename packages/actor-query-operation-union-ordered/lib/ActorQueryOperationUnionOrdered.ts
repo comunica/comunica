@@ -28,8 +28,7 @@ export class ActorQueryOperationUnionOrdered extends ActorQueryOperationTypedMed
   }
 
   /**
-   * The longest term order that all inputs are sorted on, on variables that every input binds,
-   * if it starts with one of the given variables.
+   * The longest term order that all inputs are sorted on.
    * @param metadatas The metadata of the inputs.
    * @param variables The names of the variables on which an order is useful.
    */
