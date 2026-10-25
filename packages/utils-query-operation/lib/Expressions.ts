@@ -12,7 +12,7 @@ export function getExpressionVariables(expression: Algebra.Expression): RDF.Vari
     return algebraUtils.inScopeVariables(expression.input);
   }
   if (isKnownSubType(expression, Algebra.ExpressionTypes.NAMED)) {
-    return [];
+    return uniqTerms(expression.args.flatMap(arg => getExpressionVariables(arg)));
   }
   if (isKnownSubType(expression, Algebra.ExpressionTypes.OPERATOR)) {
     return uniqTerms(expression.args.flatMap(arg => getExpressionVariables(arg)));
