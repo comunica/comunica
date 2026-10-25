@@ -33,7 +33,8 @@ export interface IActionHashBindings extends IAction {
 export interface IActorHashBindingsOutput extends IActorOutput {
   /**
    * A number-based hash factory of the given object.
-   * It is recommended to always return 32-bit numbers to enable SMI optimization.
+   * It is recommended to always return signed 32-bit integers (e.g. via `hash | 0`),
+   * so that hashes are small integers in V8 and fit in an Int32Array.
    *
    * Hash functions could produce collisions for non-equal bindings.
    *
