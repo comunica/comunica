@@ -19,7 +19,7 @@ import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';
+import { ArrayIterator, ClonedIterator, TransformIterator, wrap } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import { termToString as termToStringTtl } from 'rdf-string-ttl';
 import {
@@ -90,7 +90,7 @@ export class QuerySourceQpf implements IQuerySource {
       metadata = { ...metadata, state: new MetadataValidationState() };
       wrappedQuads.setProperty('metadata', metadata);
       this.cacheQuads(
-        wrappedQuads,
+        new InitialQuadsIterator(wrappedQuads),
         this.dataFactory.variable(''),
         this.dataFactory.variable(''),
         this.dataFactory.variable(''),
@@ -436,7 +436,8 @@ export class QuerySourceQpf implements IQuerySource {
     graph: RDF.Term,
   ): void {
     const patternId = this.getPatternId(subject, predicate, object, graph);
-    this.cachedQuads[patternId] = quads.clone();
+    // Initial quads already retain history and failures; cloning here would add another history layer.
+    this.cachedQuads[patternId] = quads instanceof InitialQuadsIterator ? quads : quads.clone();
   }
 
   protected getCachedQuads(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term):
@@ -467,6 +468,66 @@ export class QuerySourceQpf implements IQuerySource {
     _context: IActionContext,
   ): Promise<void> {
     throw new Error('queryVoid is not implemented in QuerySourceQpf');
+  }
+}
+
+/** A demand-driven clone that retains the first failure as well as quad history. */
+class InitialQuadsIterator extends ClonedIterator<RDF.Quad> {
+  private errorScheduled = false;
+
+  public constructor(
+    source: AsyncIterator<RDF.Quad>,
+    private readonly failure: { error?: Error } = {},
+  ) {
+    // Set up error handling before assigning the source: cloning may read synchronously.
+    super(undefined!);
+    this.on('error', () => {});
+    this.source = source;
+    if (failure.error) {
+      this.emit('error', failure.error);
+    }
+  }
+
+  public override clone(): ClonedIterator<RDF.Quad> {
+    return new InitialQuadsIterator(this, this.failure);
+  }
+
+  public override emit(event: string | symbol, ...args: any[]): boolean {
+    if (event !== 'error') {
+      return super.emit(event, ...args);
+    }
+    this.failure.error ??= args[0];
+    if (!this.errorScheduled && !this.done) {
+      this.errorScheduled = true;
+      // Let callers attach listeners, and let history notify every consumer before cleanup.
+      queueMicrotask(() => {
+        if (!this.done) {
+          try {
+            super.emit('error', this.failure.error);
+          } finally {
+            this.destroy();
+          }
+        }
+      });
+    }
+    return true;
+  }
+
+  public override read(): RDF.Quad | null {
+    if (this.failure.error) {
+      return null;
+    }
+    const quad = super.read();
+    return this.failure.error ? null : quad;
+  }
+
+  public override close(): void {
+    // A synchronous end after an error must not turn the failure into an empty success.
+    if (this.failure.error) {
+      this.emit('error', this.failure.error);
+    } else {
+      super.close();
+    }
   }
 }
 

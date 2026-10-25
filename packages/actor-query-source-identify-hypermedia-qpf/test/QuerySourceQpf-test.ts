@@ -1,5 +1,6 @@
 import 'jest-rdf';
 import { Readable } from 'node:stream';
+import { Worker } from 'node:worker_threads';
 import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
@@ -9,6 +10,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
+import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { PassThrough } from 'readable-stream';
@@ -146,6 +148,56 @@ describe('QuerySourceQpf', () => {
         );
         expect(s).toBeInstanceOf(QuerySourceQpf);
         expect((<any> s).initialQuads).toBeFalsy();
+      });
+
+      it('should invoke a subclass cacheQuads override during initialization', async() => {
+        const cacheHook = jest.fn();
+        class CustomQuerySourceQpf extends QuerySourceQpf {
+          protected override cacheQuads(
+            quads: AsyncIterator<RDF.Quad>,
+            subject: RDF.Term,
+            predicate: RDF.Term,
+            object: RDF.Term,
+            graph: RDF.Term,
+          ): void {
+            cacheHook(quads, subject, predicate, object, graph);
+            super.cacheQuads(quads, subject, predicate, object, graph);
+          }
+        }
+        const initialQuad = quad('s1', 'p1', 'o1', 'g1');
+        const s = new CustomQuerySourceQpf(
+          mediatorMetadata,
+          mediatorMetadataExtract,
+          mediatorDereferenceRdf,
+          DF,
+          AF,
+          BF,
+          's',
+          'p',
+          'o',
+          'g',
+          'url',
+          metadata,
+          false,
+          streamifyArray([ initialQuad ]),
+        );
+        expect(cacheHook).toHaveBeenCalledTimes(1);
+        expect(cacheHook).toHaveBeenCalledWith(
+          expect.anything(),
+          DF.variable(''),
+          DF.variable(''),
+          DF.variable(''),
+          DF.variable(''),
+        );
+        await expect(s.queryBindings(pAllQuad, ctx).toArray()).resolves.toEqual([
+          BF.fromRecord({
+            v1: initialQuad.subject,
+            v2: initialQuad.predicate,
+            v3: initialQuad.object,
+            v4: initialQuad.graph,
+          }),
+        ]);
+        expect(mediatorDereferenceRdf.mediate).not.toHaveBeenCalled();
       });
 
       it('should be constructable with initialQuads', async() => {
@@ -1310,6 +1362,358 @@ describe('QuerySourceQpf', () => {
             }),
           ]);
       });
+    });
+  });
+
+  describe('initialQuads lifecycle', () => {
+    // Deadlines are failure bounds, not delays used to sequence stream events.
+    async function bounded<T>(promise: Promise<T>): Promise<T | 'timeout'> {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      try {
+        return await Promise.race([
+          promise,
+          new Promise<'timeout'>((resolve) => {
+            timer = setTimeout(() => resolve('timeout'), 1_000);
+          }),
+        ]);
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+
+    function createSource(input: Readable): QuerySourceQpf {
+      return new QuerySourceQpf(
+        mediatorMetadata,
+        mediatorMetadataExtract,
+        mediatorDereferenceRdf,
+        DF,
+        AF,
+        BF,
+        's',
+        'p',
+        'o',
+        'g',
+        'url',
+        metadata,
+        false,
+        input,
+      );
+    }
+
+    function createInput() {
+      const quads = Array.from({ length: 100 }, (_, i) => quad(`s${i}`, 'p', 'o', 'DEFAULT_GRAPH'));
+      let produced = 0;
+      const input = new Readable({
+        objectMode: true,
+        highWaterMark: 1,
+        read() {
+          this.push(produced < quads.length ? quads[produced++] : null);
+        },
+      });
+      return { input, quads, produced: () => produced };
+    }
+
+    // Deferred: unconditional draining defeats demand-driven
+    // consumption and may retain unbounded quad history.
+    // See issue #1198; not fixed by this error-lifecycle patch.
+    // eslint-disable-next-line jest/no-disabled-tests -- Deferred for the resource-safety reason above.
+    it.skip('should consume and close initialQuads without a cache reader', async() => {
+      const { input, produced } = createInput();
+      let ended = false;
+      input.once('end', () => {
+        ended = true;
+      });
+      const closed = new Promise(resolve => input.once('close', () => resolve('closed')));
+      createSource(input);
+      try {
+        await bounded(closed);
+        expect({ produced: produced(), ended, closed: input.closed }).toEqual({
+          produced: 100,
+          ended: true,
+          closed: true,
+        });
+      } finally {
+        input.destroy();
+      }
+    });
+
+    it('should replay all cached quads to later readers after source completion', async() => {
+      const { input, quads } = createInput();
+      const closed = new Promise(resolve => input.once('close', resolve));
+      const source = createSource(input);
+      const readers: ReturnType<QuerySourceQpf['queryBindings']>[] = [];
+      try {
+        // Drain one reader so replay can be checked independently of the no-reader closure defect.
+        for (let i = 0; i < 3; i++) {
+          const reader = source.queryBindings(pAllQuad, ctx);
+          readers.push(reader);
+          const bindings = await bounded(reader.toArray());
+          expect(bindings).toEqual(quads.map((q: RDF.Quad) => BF.fromRecord({
+            v1: q.subject,
+            v2: q.predicate,
+            v3: q.object,
+            v4: q.graph,
+          })));
+          await bounded(closed);
+          expect(input.closed).toBe(true);
+        }
+        expect(mediatorDereferenceRdf.mediate).not.toHaveBeenCalled();
+      } finally {
+        for (const reader of readers) {
+          reader.destroy();
+        }
+        input.destroy();
+      }
+    });
+
+    it('should preserve metadata and default graph mapping after cancelling an early reader', async() => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+      metadata.defaultGraph = 'DEFAULT_GRAPH';
+      metadata.cardinality.value = 100;
+      const { input, quads } = createInput();
+      const source = createSource(input);
+      const early = source.queryBindings(pAllQuad, ctx);
+      let replay: ReturnType<QuerySourceQpf['queryBindings']> | undefined;
+      try {
+        const cancelled = new Promise(resolve => early.on('data', () => {
+          early.destroy();
+          resolve('cancelled');
+        }));
+        await expect(bounded(cancelled)).resolves.toBe('cancelled');
+        replay = source.queryBindings(pAllQuad, ctx);
+        const replayMetadata = new Promise(resolve => replay!.getProperty('metadata', resolve));
+        await expect(bounded(replay.toArray())).resolves.toEqual(quads.map((q: RDF.Quad) => BF.fromRecord({
+          v1: q.subject,
+          v2: q.predicate,
+          v3: q.object,
+          v4: DF.defaultGraph(),
+        })));
+        await expect(bounded(replayMetadata)).resolves.toMatchObject({
+          cardinality: { type: 'exact', value: 100 },
+          defaultGraph: 'DEFAULT_GRAPH',
+          searchForms: metadata.searchForms,
+          state: expect.any(MetadataValidationState),
+        });
+        expect(mediatorDereferenceRdf.mediate).not.toHaveBeenCalled();
+      } finally {
+        early.destroy();
+        replay?.destroy();
+        input.destroy();
+      }
+    });
+
+    // Run source errors outside Jest's process. In the no-reader case, observing an
+    // uncaught exception must neither crash Jest nor install a listener on the cache.
+    async function observeTerminalError(mode: 'unread' | 'active' | 'later'): Promise<unknown> {
+      const worker = new Worker(`
+        const { parentPort, workerData } = require('node:worker_threads');
+        require(workerData.register).register({
+          transpileOnly: true, preferTsExts: true, compilerOptions: { rootDir: '/' },
+        });
+        const { QuerySourceQpf } = require(workerData.source);
+        const { Readable } = require('node:stream');
+        const { DataFactory } = require(workerData.factory);
+        const { AlgebraFactory } = require(workerData.algebra);
+        const { BindingsFactory } = require(workerData.bindings);
+        const { ActionContext } = require(workerData.context);
+        const df = new DataFactory();
+        const af = new AlgebraFactory();
+        const terminalError = new Error('initialQuads terminal failure');
+        const unhandled = [];
+        if (workerData.mode === 'unread') process.on('uncaughtException', error => unhandled.push({
+          message: error.message, sameError: error === terminalError,
+        }));
+        const input = new Readable({ objectMode: true, read() {} });
+        const source = new QuerySourceQpf(
+          {}, {}, {}, df, af, new BindingsFactory(df), 's', 'p', 'o', 'g', 'url',
+          {
+            searchForms: { values: [{ mappings: { s: 'S', p: 'P', o: 'O', g: 'G' } }] },
+            cardinality: { type: 'exact', value: 0 },
+          },
+          false, input,
+        );
+        const pattern = af.createPattern(df.variable('s'), df.variable('p'), df.variable('o'), df.variable('g'));
+        const context = new ActionContext();
+        function observe(reader) {
+          return new Promise(resolve => {
+            const timer = setTimeout(() => finish({ terminal: 'timeout' }), 1000);
+            function finish(result) { clearTimeout(timer); resolve(result); }
+            reader.on('error', error => finish({ terminal: 'error', sameError: error === terminalError }));
+            reader.on('end', () => finish({ terminal: 'end' }));
+            reader.on('data', () => {});
+          });
+        }
+        (async() => {
+          if (workerData.mode === 'unread') {
+            input.destroy(terminalError);
+            // A stream destroy emits its error on nextTick, before this event-loop barrier.
+            await new Promise(resolve => setImmediate(resolve));
+            parentPort.postMessage(unhandled);
+          } else {
+            const active = source.queryBindings(pattern, context);
+            const activeResult = observe(active);
+            input.destroy(terminalError);
+            const result = await activeResult;
+            await new Promise(resolve => setImmediate(resolve));
+            if (workerData.mode === 'active') parentPort.postMessage(result);
+            else parentPort.postMessage({
+              active: result,
+              later: await observe(source.queryBindings(pattern, context)),
+            });
+          }
+        })().catch(error => { throw error; });
+      `, {
+        eval: true,
+        workerData: {
+          mode,
+          register: require.resolve('ts-node'),
+          source: require.resolve('../lib/QuerySourceQpf'),
+          factory: require.resolve('rdf-data-factory'),
+          algebra: require.resolve('@comunica/utils-algebra'),
+          bindings: require.resolve('@comunica/utils-bindings-factory'),
+          context: require.resolve('@comunica/core'),
+        },
+      });
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      try {
+        return await new Promise((resolve, reject) => {
+          timer = setTimeout(() => reject(new Error('INCONCLUSIVE: error worker exceeded its deadline')), 10_000);
+          worker.once('message', resolve);
+          worker.once('error', reject);
+          worker.once('exit', code => reject(new Error(`INCONCLUSIVE: error worker exited before reporting (${code})`)));
+        });
+      } finally {
+        clearTimeout(timer);
+        await worker.terminate();
+      }
+    }
+
+    it('should safely handle a terminal source error without a cache reader', async() => {
+      await expect(observeTerminalError('unread')).resolves.toEqual([]);
+    });
+
+    it('should propagate the same terminal source error to an active reader', async() => {
+      await expect(observeTerminalError('active')).resolves.toEqual({ terminal: 'error', sameError: true });
+    });
+
+    it('should propagate the same terminal source error to a later reader', async() => {
+      await expect(observeTerminalError('later')).resolves.toEqual({
+        active: { terminal: 'error', sameError: true },
+        later: { terminal: 'error', sameError: true },
+      });
+    });
+
+    it('should reject two late readers with the original unread failure', async() => {
+      const input = new Readable({ objectMode: true, read() {} });
+      const source = createSource(input);
+      const error = new Error('unread failure');
+      const closed = new Promise<void>(resolve => input.once('close', resolve));
+      input.destroy(error);
+      await closed;
+
+      const readers = [ source.queryBindings(pAllQuad, ctx), source.queryBindings(pAllQuad, ctx) ];
+      try {
+        await Promise.all(readers.map(async(reader) => {
+          await expect(bounded(reader.toArray())).rejects.toBe(error);
+        }));
+      } finally {
+        for (const reader of readers) {
+          reader.destroy();
+        }
+      }
+    });
+
+    it('should fail active readers after partial consumption without draining the input', async() => {
+      const { input, produced } = createInput();
+      const source = createSource(input);
+      const readers = [ source.queryBindings(pAllQuad, ctx), source.queryBindings(pAllQuad, ctx) ];
+      const error = new Error('partial failure');
+      try {
+        for (const reader of readers) {
+          await expect(bounded(new Promise(resolve => reader.once('data', resolve))))
+            .resolves.toEqual(BF.fromRecord({
+              v1: DF.namedNode('s0'),
+              v2: DF.namedNode('p'),
+              v3: DF.namedNode('o'),
+              v4: DF.namedNode('DEFAULT_GRAPH'),
+            }));
+        }
+        await new Promise<void>(resolve => setImmediate(resolve));
+        const pausedCount = produced();
+        await new Promise<void>(resolve => setImmediate(resolve));
+        expect(produced()).toBe(pausedCount);
+        expect(pausedCount).toBeLessThan(100);
+
+        const results = readers.map(async(reader) => {
+          await expect(bounded(reader.toArray())).rejects.toBe(error);
+        });
+        input.destroy(error);
+        await Promise.all(results);
+      } finally {
+        for (const reader of readers) {
+          reader.destroy();
+        }
+        input.destroy();
+      }
+    });
+
+    it('should retain a synchronous failure during cache construction instead of ending successfully', async() => {
+      metadata.defaultGraph = 'DEFAULT_GRAPH';
+      const input = new Readable({ objectMode: true, read() {} });
+      const error = new Error('synchronous failure');
+      jest.spyOn(input, 'read').mockImplementationOnce(() => {
+        input.emit('error', error);
+        input.emit('error', new Error('second failure'));
+        input.emit('end');
+        return null;
+      });
+      const source = createSource(input);
+      const reader = source.queryBindings(pAllQuad, ctx);
+      try {
+        await expect(bounded(reader.toArray())).rejects.toBe(error);
+      } finally {
+        reader.destroy();
+        input.destroy();
+      }
+    });
+
+    it('should emit one original error per consumer despite repeated and reentrant failures', async() => {
+      const input = new Readable({ objectMode: true, read() {} });
+      const source = createSource(input);
+      const error = new Error('first failure');
+      const replacement = new Error('reentrant failure');
+      const readers = [ source.queryBindings(pAllQuad, ctx), source.queryBindings(pAllQuad, ctx) ];
+      const errors: Error[][] = [[], [], []];
+      let reentrantResult: Promise<unknown> | undefined;
+      readers[0].on('error', () => {
+        input.emit('error', replacement);
+        const reentrant = source.queryBindings(pAllQuad, ctx);
+        readers.push(reentrant);
+        reentrant.on('error', e => errors[2].push(e));
+        reentrantResult = bounded(reentrant.toArray().catch(e => e));
+        readers[0].destroy();
+      });
+      for (const [ index, reader ] of readers.entries()) {
+        reader.on('error', e => errors[index].push(e));
+      }
+      const results = readers.map(reader => bounded(reader.toArray().catch(e => e)));
+      try {
+        input.emit('error', error);
+        input.emit('error', replacement);
+        expect(errors).toEqual([[], [], []]);
+        await expect(Promise.all(results)).resolves.toEqual([ error, error ]);
+        await expect(reentrantResult).resolves.toBe(error);
+        await new Promise<void>(resolve => setImmediate(resolve));
+        for (const observed of errors) {
+          expect(observed).toHaveLength(1);
+          expect(observed[0]).toBe(error);
+        }
+      } finally {
+        for (const reader of readers) {
+          reader.destroy();
+        }
+        input.destroy();
+      }
     });
   });
 });
