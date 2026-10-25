@@ -17,12 +17,7 @@ import type * as RDF from '@rdfjs/types';
 import { OrderedUnionIterator } from './OrderedUnionIterator';
 
 /**
- * A comunica Union Query Operation Actor that keeps the term order that its inputs share.
- *
- * It only handles unions that an optimizer annotated with `orderUseful`: the variables that the union shares
- * with the other inputs of the join it is in, which a merge join could join it on.
- * When all inputs are sorted on a common prefix starting with one of those variables, the bindings are emitted in
- * that order, and the union reports it as its `termOrder`. Otherwise, the inputs are read in turn.
+ * A union actor that keeps term orders of its inputs.
  */
 export class ActorQueryOperationUnionOrdered extends ActorQueryOperationTypedMediated<Algebra.Union> {
   public readonly mediatorRdfMetadataAccumulate: MediatorRdfMetadataAccumulate;
