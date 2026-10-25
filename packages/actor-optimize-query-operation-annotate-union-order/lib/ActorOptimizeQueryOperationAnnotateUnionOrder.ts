@@ -13,6 +13,9 @@ import { Algebra, algebraUtils, isKnownOperation } from '@comunica/utils-algebra
  * It annotates every union that is an input of a join with `orderUseful`: the names of the variables that it shares
  * with the other inputs of that join. A union whose inputs are sorted on one of them can emit its bindings in that
  * order, so that a merge join can join it. Elsewhere, keeping that order would only cost time.
+ *
+ * Unions below operators that keep the order of their input, such as filters and projections, and unions within
+ * such unions, are annotated as well.
  */
 export class ActorOptimizeQueryOperationAnnotateUnionOrder extends ActorOptimizeQueryOperation {
   public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
@@ -34,22 +37,60 @@ export class ActorOptimizeQueryOperationAnnotateUnionOrder extends ActorOptimize
    * @return The join with annotated inputs.
    */
   public static annotate(join: Algebra.Join): Algebra.Join {
-    if (!join.input.some(input => isKnownOperation(input, Algebra.Types.UNION))) {
-      return join;
-    }
     const variables = join.input.map(input => algebraUtils.inScopeVariables(input).map(variable => variable.value));
     const input = join.input.map((operation, index) => {
-      if (!isKnownOperation(operation, Algebra.Types.UNION)) {
-        return operation;
-      }
       const others = new Set(variables.flatMap((entry, otherIndex) => otherIndex === index ? [] : entry));
-      const orderUseful = variables[index].filter(variable => others.has(variable));
+      return ActorOptimizeQueryOperationAnnotateUnionOrder
+        .annotateOrderPreserving(operation, variables[index].filter(variable => others.has(variable)));
+    });
+    return { ...join, input };
+  }
+
+  /**
+   * Annotate the unions in an operation that pass their order on to its output.
+   * Operators that keep the order of their input are descended into, as are the inputs of a union.
+   * @param operation An operation.
+   * @param shared The names of the variables that the order of the output can be useful for.
+   * @return The operation with annotated unions.
+   */
+  public static annotateOrderPreserving(operation: Algebra.Operation, shared: string[]): Algebra.Operation {
+    if (shared.length === 0) {
+      return operation;
+    }
+    if (isKnownOperation(operation, Algebra.Types.UNION)) {
+      const inScope = new Set(algebraUtils.inScopeVariables(operation).map(variable => variable.value));
+      const orderUseful = shared.filter(variable => inScope.has(variable));
       if (orderUseful.length === 0) {
         return operation;
       }
-      const annotated: Algebra.Union = { ...operation, metadata: { ...operation.metadata, orderUseful }};
+      const annotated: Algebra.Union = {
+        ...operation,
+        input: operation.input
+          .map(input => ActorOptimizeQueryOperationAnnotateUnionOrder.annotateOrderPreserving(input, orderUseful)),
+        metadata: { ...operation.metadata, orderUseful },
+      };
       return annotated;
-    });
-    return { ...join, input };
+    }
+    if (isKnownOperation(operation, Algebra.Types.PROJECT)) {
+      const projected = new Set(operation.variables.map(variable => variable.value));
+      const project: Algebra.Project = {
+        ...operation,
+        input: ActorOptimizeQueryOperationAnnotateUnionOrder
+          .annotateOrderPreserving(operation.input, shared.filter(variable => projected.has(variable))),
+      };
+      return project;
+    }
+    if (isKnownOperation(operation, Algebra.Types.FILTER) ||
+      isKnownOperation(operation, Algebra.Types.EXTEND) ||
+      isKnownOperation(operation, Algebra.Types.DISTINCT) ||
+      isKnownOperation(operation, Algebra.Types.REDUCED) ||
+      isKnownOperation(operation, Algebra.Types.SLICE)) {
+      const wrapper: typeof operation = {
+        ...operation,
+        input: ActorOptimizeQueryOperationAnnotateUnionOrder.annotateOrderPreserving(operation.input, shared),
+      };
+      return wrapper;
+    }
+    return operation;
   }
 }
