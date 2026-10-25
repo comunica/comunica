@@ -584,6 +584,35 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         )).toEqual([]);
       });
 
+      it('returns variables from a named expression', async() => {
+        expect(getExpressionVariables(
+          AF.createNamedExpression(DF.namedNode('http://example.org/function'), [
+            AF.createTermExpression(DF.variable('label')),
+          ]),
+        )).toEqual([ DF.variable('label') ]);
+      });
+
+      it('deduplicates variables from a named expression', async() => {
+        expect(getExpressionVariables(
+          AF.createNamedExpression(DF.namedNode('http://example.org/function'), [
+            AF.createTermExpression(DF.variable('label')),
+            AF.createTermExpression(DF.variable('label')),
+          ]),
+        )).toEqual([ DF.variable('label') ]);
+      });
+
+      it('collects variables from nested expressions in a named expression', async() => {
+        expect(getExpressionVariables(
+          AF.createNamedExpression(DF.namedNode('http://example.org/function'), [
+            AF.createOperatorExpression('+', [
+              AF.createTermExpression(DF.variable('a')),
+              AF.createTermExpression(DF.variable('b')),
+            ]),
+            AF.createTermExpression(DF.variable('a')),
+          ]),
+        )).toEqual([ DF.variable('a'), DF.variable('b') ]);
+      });
+
       it('returns a variable for a term expression with a variable', async() => {
         expect(getExpressionVariables(
           AF.createTermExpression(DF.variable('s')),
@@ -785,6 +814,30 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
       });
 
       describe('for a join operation', () => {
+        it('pushes a named function filter only into the join operand binding its argument', async() => {
+          const expression = AF.createNamedExpression(DF.namedNode('http://example.org/function'), [
+            AF.createTermExpression(DF.variable('label')),
+          ]);
+          const personPattern = AF.createPattern(
+            DF.variable('person'),
+            DF.namedNode('http://example.org/type'),
+            DF.namedNode('http://example.org/Painter'),
+          );
+          const labelPattern = AF.createPattern(
+            DF.variable('person'),
+            DF.namedNode('http://example.org/label'),
+            DF.variable('label'),
+          );
+
+          expect(filterPushdown(
+            expression,
+            AF.createJoin([ personPattern, labelPattern ]),
+          )).toEqual([ true, AF.createJoin([
+            AF.createFilter(labelPattern, expression),
+            personPattern,
+          ]) ]);
+        });
+
         it('is pushed down for fully-overlapping variables', async() => {
           expect(filterPushdown(
             AF.createTermExpression(DF.variable('s')),
