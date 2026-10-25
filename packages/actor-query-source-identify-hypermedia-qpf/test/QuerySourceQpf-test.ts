@@ -1381,7 +1381,7 @@ describe('QuerySourceQpf', () => {
       }
     }
 
-    function createSource(input: Readable): QuerySourceQpf {
+    function createSource(input: Readable | AsyncIterator<RDF.Quad>): QuerySourceQpf {
       return new QuerySourceQpf(
         mediatorMetadata,
         mediatorMetadataExtract,
@@ -1673,6 +1673,80 @@ describe('QuerySourceQpf', () => {
         await expect(bounded(reader.toArray())).rejects.toBe(error);
       } finally {
         reader.destroy();
+        input.destroy();
+      }
+    });
+
+    it('should suppress a quad when the source fails synchronously during a cache read', async() => {
+      const firstQuad = quad('first', 'p', 'o', 'DEFAULT_GRAPH');
+      const rejectedQuad = quad('rejected', 'p', 'o', 'DEFAULT_GRAPH');
+      const error = new Error('failure during read');
+      const replacement = new Error('second failure during read');
+      let failures = 0;
+      const input = new ArrayIterator<RDF.Quad>([
+        firstQuad,
+        rejectedQuad,
+        quad('unread', 'p', 'o', 'DEFAULT_GRAPH'),
+      ], { autoStart: false }).map((value) => {
+        if (value === rejectedQuad) {
+          failures++;
+          input.destroy(error);
+          input.emit('error', replacement);
+        }
+        return value;
+      });
+      const source = createSource(input);
+      const reader: AsyncIterator<RDF.Quad> = (<any> source).getCachedQuads(v1, v2, v3, v4);
+      const readers = [ reader ];
+      const errors: Error[][] = [[], []];
+      let ends = 0;
+      reader.on('end', () => ends++);
+      const failed = new Promise<void>((resolve) => {
+        reader.on('error', (observed) => {
+          errors[0].push(observed);
+          resolve();
+        });
+      });
+      try {
+        expect(reader.read()).toBe(firstQuad);
+        expect(failures).toBe(0);
+        expect(errors[0]).toEqual([]);
+
+        // MappingIterator invokes its mapper synchronously inside read(). Its
+        // destroy(error) emits immediately, but that read still returns the quad.
+        // Observe the real read without replacing it to prove it must be suppressed.
+        const inputRead = jest.spyOn(input, 'read');
+        expect(reader.read()).toBeNull();
+        expect(failures).toBe(1);
+        expect(inputRead).toHaveReturnedWith(rejectedQuad);
+        expect(reader.read()).toBeNull();
+        expect(inputRead).toHaveBeenCalledTimes(1);
+        expect(errors[0]).toEqual([]);
+        await failed;
+
+        const later: AsyncIterator<RDF.Quad> = (<any> source).getCachedQuads(v1, v2, v3, v4);
+        readers.push(later);
+        later.on('end', () => ends++);
+        const laterFailed = new Promise<void>((resolve) => {
+          later.on('error', (observed) => {
+            errors[1].push(observed);
+            resolve();
+          });
+        });
+        expect(later.read()).toBeNull();
+        await laterFailed;
+        expect(errors.map(observed => observed.length)).toEqual([ 1, 1 ]);
+        expect(errors[0][0]).toBe(error);
+        expect(errors[1][0]).toBe(error);
+        expect(ends).toBe(0);
+        for (const consumer of readers) {
+          expect(consumer.destroyed).toBe(true);
+          expect(consumer.read()).toBeNull();
+        }
+      } finally {
+        for (const consumer of readers) {
+          consumer.destroy();
+        }
         input.destroy();
       }
     });
