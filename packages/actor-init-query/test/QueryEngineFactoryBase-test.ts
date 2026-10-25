@@ -35,6 +35,14 @@ describe('QueryEngineFactoryBase', () => {
         .toBeInstanceOf(QueryEngineBase);
     });
 
+    it('should return a query engine with a mainModulePath option', async() => {
+      const opts = {
+        mainModulePath: Path.join(__dirname, '../'),
+      };
+      await expect(factory.create(opts)).resolves
+        .toBeInstanceOf(QueryEngineBase);
+    });
+
     describe('with a mocked config instantiation', () => {
       let actorQuery: any;
       let actorOther: any;
