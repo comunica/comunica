@@ -187,63 +187,6 @@ IQueryOperationResultBindings
     });
 
     describe('getJoinCoefficients', () => {
-      function action(): any {
-        return {
-          type: 'optional',
-          entries: [
-            { output: <any>{}, operation: <any>{}},
-            { output: <any>{}, operation: <any>{}},
-          ],
-          context,
-        };
-      }
-
-      function metadatas(extra: Record<string, any>): any {
-        return {
-          metadatas: [ 3, 2 ].map(value => ({
-            state: new MetadataValidationState(),
-            cardinality: { type: 'estimate', value },
-            variables: [{ variable: DF.variable('a'), canBeUndef: false }],
-            ...extra,
-          })),
-        };
-      }
-
-      it('should add the sub-query cost for every left binding of local entries', async() => {
-        actor = new ActorRdfJoinOptionalBind({
-          name: 'actor',
-          bus,
-          bindOrder: 'depth-first',
-          selectivityModifier: 0.1,
-          subQueryCost: 100,
-          mediatorQueryOperation,
-          mediatorJoinSelectivity,
-          mediatorMergeBindingsContext,
-        });
-        await expect(actor.getJoinCoefficients(action(), metadatas({}))).resolves.toPassTest({
-          iterations: 3 * (2 * 0.08 + 100),
-          persistedItems: 0,
-          blockingItems: 0,
-          requestTime: 0,
-        });
-      });
-
-      it('should not add the sub-query cost for remote entries', async() => {
-        actor = new ActorRdfJoinOptionalBind({
-          name: 'actor',
-          bus,
-          bindOrder: 'depth-first',
-          selectivityModifier: 0.1,
-          subQueryCost: 100,
-          mediatorQueryOperation,
-          mediatorJoinSelectivity,
-          mediatorMergeBindingsContext,
-        });
-        const result = (await actor.getJoinCoefficients(action(), metadatas({ pageSize: 100, requestTime: 10 }))).get();
-        expect(result.iterations).toBeCloseTo(3 * 2 * 0.08);
-        expect(result.requestTime).toBeCloseTo(0.348);
-      });
-
       it('should handle two entries', async() => {
         await expect(actor.getJoinCoefficients(
           {

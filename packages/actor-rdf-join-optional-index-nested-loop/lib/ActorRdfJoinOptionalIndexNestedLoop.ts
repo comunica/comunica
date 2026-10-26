@@ -25,9 +25,10 @@ import { getOperationSource } from '@comunica/utils-query-operation';
  * by looking up the pattern bound to each left binding, and keeping left bindings without results.
  * As for the inner index nested-loop join, bound patterns are sent to their source directly,
  * which requires a source that can look them up synchronously.
+ * It is estimated like the optional bind join, which it replaces wherever both apply.
  */
 export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
-  public readonly lookupCost: number;
+  public readonly selectivityModifier: number;
 
   public constructor(args: IActorRdfJoinOptionalIndexNestedLoopArgs) {
     super(args, {
@@ -37,7 +38,7 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
       canHandleUndefs: true,
       requiresVariableOverlap: true,
     });
-    this.lookupCost = args.lookupCost;
+    this.selectivityModifier = args.selectivityModifier;
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
@@ -78,11 +79,13 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
       return failTest(`Actor ${this.name} requires a right entry that is a quad pattern over a source that supports synchronous lookups`);
     }
 
-    const bound = new Set(metadatas[0].variables.map(variable => variable.variable.value));
-    const fanout = ActorRdfJoinMultiIndexNestedLoop
-      .estimateFanout({ ...action.entries[1], metadata: metadatas[1] }, bound);
+    const selectivity = (await this.mediatorJoinSelectivity.mediate({
+      entries: action.entries,
+      context: action.context,
+    })).selectivity * this.selectivityModifier;
     return passTestWithSideData({
-      iterations: metadatas[0].cardinality.value * (this.lookupCost + Math.max(1, fanout)),
+      // The same estimate as the optional bind join, which only differs in the selectivity modifier.
+      iterations: metadatas[0].cardinality.value * metadatas[1].cardinality.value * selectivity,
       persistedItems: 0,
       blockingItems: 0,
       // Only the left entry is requested, as lookups are synchronous.
@@ -94,9 +97,11 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
 
 export interface IActorRdfJoinOptionalIndexNestedLoopArgs extends IActorRdfJoinArgs {
   /**
-   * The cost of looking up a single bound pattern, expressed in produced rows.
+   * Multiplier for selectivity values.
+   * This defaults to half the one of the optional bind join, so that this actor is preferred where both apply,
+   * as it does the same, without planning and awaiting a lookup per binding.
    * @range {double}
-   * @default {1}
+   * @default {0.0000005}
    */
-  lookupCost: number;
+  selectivityModifier: number;
 }

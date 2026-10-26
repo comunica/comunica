@@ -25,7 +25,6 @@ import { getSafeBindings, groupRepeatedSubOperations } from '@comunica/utils-que
 export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
   public readonly bindOrder: BindOrder;
   public readonly selectivityModifier: number;
-  public readonly subQueryCost: number;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
@@ -41,7 +40,6 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     });
     this.bindOrder = args.bindOrder;
     this.selectivityModifier = args.selectivityModifier;
-    this.subQueryCost = args.subQueryCost ?? 0;
     this.mediatorQueryOperation = args.mediatorQueryOperation;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
@@ -135,13 +133,8 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
       context: action.context,
     })).selectivity * this.selectivityModifier;
 
-    // Each left binding plans and runs the bound right operation again.
-    // This does not apply to remote sources, where this cost is already incorporated into requestTime.
-    const isRemoteAccess = requestItemTimes.some(time => time > 0);
-    const subPlanCost = isRemoteAccess ? 0 : this.subQueryCost;
-
     return passTestWithSideData({
-      iterations: metadatas[0].cardinality.value * (metadatas[1].cardinality.value * selectivity + subPlanCost),
+      iterations: metadatas[0].cardinality.value * metadatas[1].cardinality.value * selectivity,
       persistedItems: 0,
       blockingItems: 0,
       requestTime: requestInitialTimes[0] +
@@ -166,14 +159,6 @@ export interface IActorRdfJoinOptionalBindArgs extends IActorRdfJoinArgs {
    * @default {0.000001}
    */
   selectivityModifier: number;
-  // TODO: in next major, make mandatory.
-  /**
-   * The cost of planning and evaluating the bound right operation for one left binding, expressed in produced rows.
-   * Not applied to remote sources.
-   * @range {double}
-   * @default {0}
-   */
-  subQueryCost?: number;
   /**
    * The query operation mediator
    */

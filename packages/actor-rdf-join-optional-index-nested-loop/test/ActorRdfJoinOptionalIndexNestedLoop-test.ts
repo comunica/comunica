@@ -31,8 +31,13 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
-    mediatorJoinSelectivity = <any> { mediate: async() => ({ selectivity: 1 }) };
-    actor = new ActorRdfJoinOptionalIndexNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity, lookupCost: 1 });
+    mediatorJoinSelectivity = <any> { mediate: async() => ({ selectivity: 0.5 }) };
+    actor = new ActorRdfJoinOptionalIndexNestedLoop({
+      name: 'actor',
+      bus,
+      mediatorJoinSelectivity,
+      selectivityModifier: 0.1,
+    });
     store = RdfStore.createDefault();
     for (const [ s, p, o ] of [
       [ 'ex:review1', 'ex:reviewFor', 'ex:product' ],
@@ -86,7 +91,7 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
   describe('test', () => {
     it('should pass on a local right pattern', async() => {
       await expect(actor.test({ type: 'optional', entries: entries(), context })).resolves.toPassTest({
-        iterations: 2 * (1 + 1),
+        iterations: 2 * 1 * 0.5 * 0.1,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 0,
@@ -103,7 +108,7 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
       joinEntries[0] = entry(joinEntries[0].operation, metadata(2, [ 'review' ], { requestTime: 100, pageSize: 10 }));
       joinEntries[1] = entry(joinEntries[1].operation, metadata(1, [ 'review', 'rating' ], { requestTime: 1 }));
       await expect(actor.test({ type: 'optional', entries: joinEntries, context })).resolves.toPassTest({
-        iterations: 2 * (1 + 1),
+        iterations: 2 * 1 * 0.5 * 0.1,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 2 * 100 / 10,
@@ -167,7 +172,7 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
       ]);
       expect(joinEntries[1].output.bindingsStream.done).toBeTruthy();
       await expect(result.metadata()).resolves.toMatchObject({
-        cardinality: { type: 'exact', value: 2 },
+        cardinality: { type: 'exact', value: 1 },
         variables: [
           { variable: DF.variable('review'), canBeUndef: false },
           { variable: DF.variable('rating'), canBeUndef: true },
@@ -179,7 +184,11 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
       const queryBindingsSynchronous = jest.fn(() => []);
       const contextSource: IQuerySourceWrapper = <any> {
         source: {
-          getSelectorShape: async() => ({ type: 'operation', operation: { operationType: 'wildcard' }, synchronous: true }),
+          getSelectorShape: async() => ({
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            synchronous: true,
+          }),
           queryBindingsSynchronous,
         },
         context: new ActionContext({ x: 'y' }),

@@ -264,7 +264,11 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       const queryBindingsSynchronous = jest.fn(() => []);
       const contextSource: IQuerySourceWrapper = <any> {
         source: {
-          getSelectorShape: async() => ({ type: 'operation', operation: { operationType: 'wildcard' }, synchronous: true }),
+          getSelectorShape: async() => ({
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            synchronous: true,
+          }),
           queryBindingsSynchronous,
         },
         context: new ActionContext({ x: 'y' }),

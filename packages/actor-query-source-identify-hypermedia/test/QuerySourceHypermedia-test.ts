@@ -357,7 +357,11 @@ describe('QuerySourceHypermedia', () => {
 
       beforeEach(() => {
         inner = {
-          getSelectorShape: async() => ({ type: 'operation', operation: { operationType: 'wildcard' }, synchronous: true }),
+          getSelectorShape: async() => ({
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            synchronous: true,
+          }),
           queryBindings: jest.fn(() => new ArrayIterator([], { autoStart: false })),
           queryBindingsSynchronous: jest.fn(() => [ BF.fromRecord({ s: DF.namedNode('s') }) ]),
         };

@@ -8,7 +8,10 @@ and keeping the left bindings for which the lookup has no results.
 
 As for the [inner index nested-loop join](https://github.com/comunica/comunica/tree/master/packages/actor-rdf-join-inner-multi-index-nested-loop),
 bound patterns are passed to their source directly,
-which must be a local source that can look up quad patterns synchronously (`IQuerySource#queryBindingsSync`).
+which must be a source that can look up quad patterns synchronously (`IQuerySource#queryBindingsSynchronous`),
+as indicated by the `synchronous` flag in its selector shape.
+It is estimated like the [optional bind join](https://github.com/comunica/comunica/tree/master/packages/actor-rdf-join-optional-bind),
+which it replaces wherever both apply.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -44,4 +47,4 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
-* `lookupCost`: The cost of looking up a single bound pattern, expressed in produced rows. _(defaults to `1`)_
+* `selectivityModifier`: Multiplier for selectivity values, which defaults to half the one of the optional bind join, so that this actor is preferred where both apply. _(defaults to `0.0000005`)_

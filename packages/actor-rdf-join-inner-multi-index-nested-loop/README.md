@@ -7,8 +7,8 @@ by evaluating one entry, and looking up each of the other entries, which must be
 
 Unlike the bind join, the order of the lookups is determined once,
 and bound patterns are passed to their source directly, instead of being planned again for every binding.
-This actor only applies to local sources that can look up quad patterns synchronously (`IQuerySource#queryBindingsSync`),
-such as indexed in-memory stores.
+This actor only applies to sources that can look up quad patterns synchronously (`IQuerySource#queryBindingsSynchronous`),
+such as indexed in-memory stores, as indicated by the `synchronous` flag in their selector shape.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

@@ -113,9 +113,11 @@ sources:
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n OPTIONAL { ?s foaf:knows ?f } }`)).resolves
         .toBe(`project (f,n,s) cardEst:~5 cardReal:6 timeSelf:Xms timeLife:Xms
   leftjoin cardEst:~5 cardReal:6 timeSelf:Xms timeLife:Xms
-    join-optional(hash-def-nonblocking) cardEst:~5 cardReal:6 timeSelf:Xms timeLife:Xms
+    join-optional(bind) cardEst:~5 cardReal:6 timeSelf:Xms timeLife:Xms
       pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
-      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:5 cardReal:0 timeSelf:Xms timeLife:Xms
+      bindings
+        pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -331,12 +333,14 @@ sources:
     });
 
     it('summarizes repetition without the totals it stands for', async() => {
-      await expect(explainPhysicalPlain(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n FILTER EXISTS { ?s foaf:knows ?f } }`))
-        .resolves.toBe(`project (n,s)
-  filter
-    pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0
-    exists
-      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 compacted-occurrences:5
+      await expect(explainPhysicalPlain(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n OPTIONAL { ?s foaf:knows ?f } }`))
+        .resolves.toBe(`project (f,n,s)
+  leftjoin
+    join-optional(bind)
+      pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0
+      pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0
+      bindings
+        pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 compacted-occurrences:5
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -456,7 +460,7 @@ sources:
       expect([ ...plans ]).toHaveLength(1);
     }, 60_000);
 
-    it('produces the same plan for repeated runs of an optional under a limit', async() => {
+    it('produces the same plan for repeated runs of a bind join under a limit', async() => {
       // A limit leaves the operators below it cut short. How far each of them got before the engine
       // tore them down is up to scheduling, and only shows in whether they report as destroyed, so
       // that is the one part of the plan that a limited query is allowed to differ in between runs.
@@ -468,9 +472,11 @@ sources:
       expect([ ...plans ]).toEqual([ `slice cardEst:~2 cardReal:2 timeSelf:Xms timeLife:Xms
   project (f,n,s) cardEst:~5 cardReal:2 timeSelf:Xms timeLife:Xms
     leftjoin cardEst:~5 cardReal:2 timeSelf:Xms timeLife:Xms
-      join-optional(hash-def-nonblocking) cardEst:~5 cardReal:2 timeSelf:Xms timeLife:Xms
+      join-optional(bind) cardEst:~5 cardReal:2 timeSelf:Xms timeLife:Xms
         pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
-        pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+        pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:5 cardReal:0 timeSelf:Xms timeLife:Xms
+        bindings
+          pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:4 cardRealSum:4 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)` ]);
