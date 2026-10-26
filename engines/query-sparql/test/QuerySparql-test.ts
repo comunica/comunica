@@ -3,7 +3,7 @@
 import { Readable } from 'node:stream';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { Logger } from '@comunica/types';
-import type { QueryBindings, QueryStringContext } from '@comunica/types';
+import type { ExtensionAggregator, QueryBindings, QueryStringContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -745,6 +745,121 @@ SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (func:f(?s))`, {
           ]);
           // The endpoint does not declare support for the function, so it only receives the grouping
           expect(queries).toEqual([ 'SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s' ]);
+        });
+      });
+
+      describe('extension aggregate', () => {
+        const integerType = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
+        const product: ExtensionAggregator = () => {
+          let value = 1;
+          return {
+            put([ term ]) {
+              if (term.termType !== 'Literal') {
+                throw new Error(`Can not multiply ${term.value}`);
+              }
+              value *= Number.parseInt(term.value, 10);
+            },
+            result: () => DF.literal(String(value), integerType),
+          };
+        };
+        const byRecord = { extensionAggregators: { 'http://example.org/product': product }};
+        const byCreator = {
+          extensionAggregatorCreator: (iri: RDF.NamedNode) => iri.value === 'http://example.org/product' ? product : undefined,
+        };
+        const registrations: [string, Record<string, unknown>][] = [[ 'record', byRecord ], [ 'creator', byCreator ]];
+        let store: RdfStore;
+        const groupedQuery = (distinct = '') => `PREFIX ex: <http://example.org/>
+        SELECT ?s (ex:product(${distinct} ?o) AS ?product) WHERE { ?s ?p ?o } GROUP BY ?s`;
+        const productBindings = (productA: string): Bindings[] => [
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:a') ],
+            [ DF.variable('product'), DF.literal(productA, integerType) ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('ex:b') ],
+            [ DF.variable('product'), DF.literal('5', integerType) ],
+          ]),
+        ];
+
+        beforeEach(() => {
+          store = RdfStore.createDefault();
+          store.addQuad(DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p1'), DF.literal('2', integerType)));
+          store.addQuad(DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p2'), DF.literal('2', integerType)));
+          store.addQuad(DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p3'), DF.literal('3', integerType)));
+          store.addQuad(DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:p1'), DF.literal('5', integerType)));
+        });
+
+        it('rejects when the aggregate is not registered', async() => {
+          await expect(engine.queryBindings(groupedQuery(), { sources: [ store ]})).rejects.toThrow(
+            `Creation of function evaluator failed: no configured actor was able to evaluate function http://example.org/product`,
+          );
+        });
+
+        it.each(registrations)('aggregates groups given by %s', async(_, registration) => {
+          const bindingsStream = await engine.queryBindings(groupedQuery(), { sources: [ store ], ...registration });
+          await expect(bindingsStream).toEqualBindingsStream(productBindings('12'));
+        });
+
+        it('aggregates groups with DISTINCT', async() => {
+          const bindingsStream = await engine.queryBindings(groupedQuery('DISTINCT'), {
+            sources: [ store ],
+            ...byRecord,
+          });
+          await expect(bindingsStream).toEqualBindingsStream(productBindings('6'));
+        });
+
+        it('leaves the result unbound when the aggregate errors', async() => {
+          const bindingsStream = await engine.queryBindings(`PREFIX ex: <http://example.org/>
+          SELECT ?s (ex:product(?p) AS ?product) WHERE { ?s ?p ?o } GROUP BY ?s`, {
+            sources: [ store ],
+            ...byRecord,
+          });
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:a') ]]),
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:b') ]]),
+          ]);
+        });
+
+        it('aggregates in HAVING', async() => {
+          const bindingsStream = await engine.queryBindings(`PREFIX ex: <http://example.org/>
+          SELECT ?s WHERE { ?s ?p ?o } GROUP BY ?s HAVING (ex:product(?o) > 10)`, {
+            sources: [ store ],
+            ...byRecord,
+          });
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:a') ]]),
+          ]);
+        });
+
+        it('aggregates an empty input without grouping', async() => {
+          const bindingsStream = await engine.queryBindings(`PREFIX ex: <http://example.org/>
+          SELECT (ex:product(?o) AS ?product) WHERE { ?s ex:none ?o }`, {
+            sources: [ store ],
+            ...byRecord,
+          });
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('product'), DF.literal('1', integerType) ]]),
+          ]);
+        });
+
+        it('throws error when supplying both record and creator', async() => {
+          await expect(engine.queryBindings(groupedQuery(), {
+            sources: [ store ],
+            ...byRecord,
+            ...byCreator,
+          })).rejects
+            .toThrow('Illegal simultaneous usage of extensionAggregatorCreator and extensionAggregators in context');
+        });
+
+        it.each(registrations)('does not push down the %s aggregate to a SPARQL endpoint', async(_, registration) => {
+          // The endpoint does not know the aggregate, so pushing it down would make the query fail
+          const endpoint = 'http://example.com/aggregates/sparql';
+          const bindingsStream = await engine.queryBindings(groupedQuery(), {
+            sources: [ endpoint ],
+            ...registration,
+            fetch: createSparqlEndpointsFetch({ [endpoint]: store }),
+          });
+          await expect(bindingsStream).toEqualBindingsStream(productBindings('12'));
         });
       });
 

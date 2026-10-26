@@ -129,7 +129,9 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
                 metadata.basicFederatedQuery = true;
               }
               break;
+            // Extension aggregates are called like extension functions, so sources support them in the same way
             case `${ActorRdfMetadataExtractSparqlService.SD}extensionFunction`:
+            case `${ActorRdfMetadataExtractSparqlService.SD}extensionAggregate`:
               extensionFunctions.add(quad.object.value);
               break;
           }

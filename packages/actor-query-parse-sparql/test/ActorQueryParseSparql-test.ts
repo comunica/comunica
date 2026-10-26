@@ -3,9 +3,10 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
+import { makeNamedAggregate } from '@comunica/utils-jest';
+import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryParseSparql } from '..';
-import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);
@@ -159,6 +160,55 @@ describe('ActorQueryParseSparql', () => {
           DF.namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#type'),
           DF.variable('b'),
         ) ]), [ DF.variable('a'), DF.variable('b') ]),
+      });
+    });
+
+    describe('with extension aggregates', () => {
+      const aggregateQuery = 'PREFIX ex: <http://example.org/> SELECT (ex:median(DISTINCT ?o) AS ?m) { ?s ?p ?o }';
+      const extensionAggregator = jest.fn();
+      const expectedAggregates = [
+        makeNamedAggregate('http://example.org/median', [ AF.createTermExpression(DF.variable('o')) ], true),
+      ];
+
+      it('should run without extension aggregates', async() => {
+        await expect(actor.run({ query: aggregateQuery, context })).resolves.toMatchObject({
+          operation: { input: { type: 'extend', input: { type: 'bgp' }}},
+        });
+      });
+
+      it('should run with extensionAggregators', async() => {
+        context = context.set(KeysInitQuery.extensionAggregators, {
+          'http://example.org/median': extensionAggregator,
+        });
+        await expect(actor.run({ query: aggregateQuery, context })).resolves.toMatchObject({
+          operation: { input: { type: 'extend', input: { type: 'group', aggregates: expectedAggregates }}},
+        });
+      });
+
+      it('should run with extensionAggregatorCreator', async() => {
+        const extensionAggregatorCreator = jest.fn((iri: RDF.NamedNode) =>
+          iri.value === 'http://example.org/median' ? extensionAggregator : undefined);
+        context = context.set(KeysInitQuery.extensionAggregatorCreator, extensionAggregatorCreator);
+        await expect(actor.run({ query: aggregateQuery, context })).resolves.toMatchObject({
+          operation: { input: { type: 'extend', input: { type: 'group', aggregates: expectedAggregates }}},
+        });
+        expect(extensionAggregatorCreator).toHaveBeenCalledWith(DF.namedNode('http://example.org/median'));
+      });
+
+      it('should not parse unknown functions as aggregates', async() => {
+        context = context.set(KeysInitQuery.extensionAggregators, {
+          'http://example.org/other': extensionAggregator,
+        });
+        await expect(actor.run({ query: aggregateQuery, context })).rejects
+          .toThrow('DISTINCT is only allowed in a function call of a custom aggregate');
+      });
+
+      it('should throw when extensionAggregators and extensionAggregatorCreator are both set', async() => {
+        context = context
+          .set(KeysInitQuery.extensionAggregators, {})
+          .set(KeysInitQuery.extensionAggregatorCreator, () => undefined);
+        await expect(actor.run({ query: aggregateQuery, context })).rejects
+          .toThrow('Illegal simultaneous usage of extensionAggregatorCreator and extensionAggregators in context');
       });
     });
   });
