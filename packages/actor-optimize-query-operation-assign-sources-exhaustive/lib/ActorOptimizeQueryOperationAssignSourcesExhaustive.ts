@@ -10,7 +10,9 @@ import { ActionContext, passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import {
+  assignOperationEquivalentQueryString,
   assignOperationSource,
+  getOriginalSparqlQueryString,
   passFullOperationToSource,
 } from '@comunica/utils-query-operation';
 
@@ -33,11 +35,16 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
     const sources = action.context.get(KeysQueryOperation.querySources) ?? [];
     const serviceSources = action.context.get(KeysQueryOperation.serviceSources) ?? {};
     if (sources.length === 0 && Object.keys(serviceSources).length === 0) {
-      return { operation: action.operation, context: action.context };
+      // Sources identified later on, such as variable SERVICE targets, may not receive the full queryString.
+      // TODO: next/major - stop deleting the queryString, see KeysInitQuery.queryString.
+      return { operation: action.operation, context: action.context.delete(KeysInitQuery.queryString) };
     }
     if (await passFullOperationToSource(action.operation, sources, action.context)) {
+      const operation = assignOperationSource(action.operation, sources[0]);
+      // TODO: next/major - skip this if initial bindings are set, see KeysInitQuery.queryString.
+      const queryString = getOriginalSparqlQueryString(action.context);
       return {
-        operation: assignOperationSource(action.operation, sources[0]),
+        operation: queryString ? assignOperationEquivalentQueryString(operation, queryString) : operation,
         context: action.context,
       };
     }
@@ -45,6 +52,7 @@ export class ActorOptimizeQueryOperationAssignSourcesExhaustive extends ActorOpt
       operation: this.assignExhaustive(algebraFactory, action.operation, sources, serviceSources),
       // We only keep queryString in the context if we only have a single source that accepts the full operation.
       // In that case, the queryString can be sent to the source as-is.
+      // TODO: next/major - stop deleting the queryString, see KeysInitQuery.queryString.
       context: action.context
         .delete(KeysInitQuery.queryString),
     };

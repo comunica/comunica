@@ -11,7 +11,7 @@ import type { ComunicaDataFactory, FragmentSelectorShape, IActionContext, IQuery
 import { Algebra, AlgebraFactory, algebraTransformer, isKnownOperation, isKnownSubType } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
-  doesShapeAcceptOperation,
+  doesShapeAcceptOperationInContext,
   getOperationSource,
   removeOperationSource,
 } from '@comunica/utils-query-operation';
@@ -251,14 +251,13 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     shape: FragmentSelectorShape,
     context: IActionContext,
   ): boolean {
-    const wildcardAcceptAllExtensionFunctions = context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
-    if (doesShapeAcceptOperation(shape, operation, { wildcardAcceptAllExtensionFunctions })) {
+    if (doesShapeAcceptOperationInContext(shape, operation, context)) {
       const extensionFunctions = context.get(KeysInitQuery.extensionFunctions);
       const expression: Algebra.Expression | undefined = (<any> operation).expression;
       return !extensionFunctions ||
         !(expression && isKnownSubType(expression, Algebra.ExpressionTypes.NAMED)) ||
         !(expression?.name.value in extensionFunctions) ||
-        doesShapeAcceptOperation(shape, expression, { wildcardAcceptAllExtensionFunctions });
+        doesShapeAcceptOperationInContext(shape, expression, context);
     }
     return false;
   }

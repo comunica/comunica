@@ -6,11 +6,14 @@ import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import {
   doesShapeAcceptOperation,
+  doesShapeAcceptOperationInContext,
   passFullOperationToSource,
 } from '../lib/FragmentSelectorShapes';
 
 const AF = new AlgebraFactory();
 const DF = new DataFactory();
+const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+const extensionFunctionFilter = AF.createFilter(pattern, AF.createNamedExpression(DF.namedNode('ex:f'), []));
 
 // Shape for QuerySourceSparql
 const SHAPE_SPARQL_1_1: FragmentSelectorShape = {
@@ -1200,8 +1203,30 @@ describe('FragmentSelectorShapes', () => {
     });
   });
 
+  describe('#doesShapeAcceptOperationInContext', () => {
+    const context = new ActionContext();
+
+    it('should not accept an extension function without extensionFunctionsAlwaysPushdown', () => {
+      expect(doesShapeAcceptOperationInContext(SHAPE_SPARQL_1_1, extensionFunctionFilter, context)).toBe(false);
+    });
+
+    it('should accept an extension function with extensionFunctionsAlwaysPushdown', () => {
+      const contextPushdown = context.set(KeysInitQuery.extensionFunctionsAlwaysPushdown, true);
+      expect(doesShapeAcceptOperationInContext(SHAPE_SPARQL_1_1, extensionFunctionFilter, contextPushdown)).toBe(true);
+    });
+
+    it('should apply the given options', () => {
+      const shapeWithoutJoinBindings: FragmentSelectorShape = {
+        type: 'operation',
+        operation: { operationType: 'wildcard' },
+      };
+      expect(doesShapeAcceptOperationInContext(shapeWithoutJoinBindings, pattern, context)).toBe(true);
+      expect(doesShapeAcceptOperationInContext(shapeWithoutJoinBindings, pattern, context, { joinBindings: true }))
+        .toBe(false);
+    });
+  });
+
   describe('#passFullOperationToSource', () => {
-    const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
     const serviceExecutor: IServiceExecutor = { execute: async() => []};
     const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     const contextExecutors = context.set(KeysInitQuery.serviceExecutors, { 'ex:executor': serviceExecutor });
@@ -1215,6 +1240,15 @@ describe('FragmentSelectorShapes', () => {
 
     it('should be true for a single source that accepts the operation', async() => {
       await expect(passFullOperationToSource(pattern, [ source ], context)).resolves.toBe(true);
+    });
+
+    it('should be false for an extension function without extensionFunctionsAlwaysPushdown', async() => {
+      await expect(passFullOperationToSource(extensionFunctionFilter, [ source ], context)).resolves.toBe(false);
+    });
+
+    it('should be true for an extension function with extensionFunctionsAlwaysPushdown', async() => {
+      const contextPushdown = context.set(KeysInitQuery.extensionFunctionsAlwaysPushdown, true);
+      await expect(passFullOperationToSource(extensionFunctionFilter, [ source ], contextPushdown)).resolves.toBe(true);
     });
 
     it('should be true for SERVICE clauses without a custom executor', async() => {
