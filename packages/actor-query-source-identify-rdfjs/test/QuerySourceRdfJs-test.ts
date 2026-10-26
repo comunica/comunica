@@ -1158,6 +1158,66 @@ describe('QuerySourceRdfJs', () => {
     });
   });
 
+  describe('queryBindingsSynchronous', () => {
+    beforeEach(() => {
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o2'), DF.namedNode('g')));
+    });
+
+    it('should return the bindings of the default graph', () => {
+      expect(source.queryBindingsSynchronous(
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      )).toEqualBindingsArray([
+        BF.bindings([[ DF.variable('o'), DF.namedNode('o1') ]]),
+      ]);
+    });
+
+    it('should return the bindings of all graphs in union default graph mode', () => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+      expect(source.queryBindingsSynchronous(
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      )).toEqualBindingsArray([
+        BF.bindings([[ DF.variable('o'), DF.namedNode('o1') ]]),
+        BF.bindings([[ DF.variable('o'), DF.namedNode('o2') ]]),
+      ]);
+    });
+
+    it('should only bind graph variables to named graphs', () => {
+      expect(source.queryBindingsSynchronous(
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o'), DF.variable('g')),
+        ctx,
+      )).toEqualBindingsArray([
+        BF.bindings([[ DF.variable('o'), DF.namedNode('o2') ], [ DF.variable('g'), DF.namedNode('g') ]]),
+      ]);
+    });
+
+    it('should bind graph variables to all graphs in union default graph mode', () => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+      expect(source.queryBindingsSynchronous(
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o'), DF.variable('g')),
+        ctx,
+      )).toHaveLength(2);
+    });
+
+    it('should not handle quoted triples', () => {
+      for (const term of [ 'subject', 'object', 'graph' ]) {
+        const pattern = AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'));
+        (<any> pattern)[term] = DF.quad(DF.variable('a'), DF.namedNode('b'), DF.variable('c'));
+        expect(source.queryBindingsSynchronous(pattern, ctx)).toBeUndefined();
+      }
+    });
+
+    it('should not handle sources without synchronous lookups', () => {
+      source = new QuerySourceRdfJs(new Store(), DF, BF);
+      expect(source.queryBindingsSynchronous(
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      )).toBeUndefined();
+    });
+  });
+
   describe('cardinality caching', () => {
     const pattern = AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'));
 

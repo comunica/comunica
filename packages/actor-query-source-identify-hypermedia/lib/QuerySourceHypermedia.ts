@@ -3,6 +3,7 @@ import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-a
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type {
+  Bindings,
   BindingsStream,
   ComunicaDataFactory,
   FragmentSelectorShape,
@@ -34,6 +35,15 @@ export class QuerySourceHypermedia implements IQuerySource {
 
   private readonly cacheSize: number;
   private readonly maxIterators: number;
+
+  /**
+   * The state of the first source, once it is known that no links can be followed from it.
+   * Operations are then delegated to that source directly, as traversal would not add anything.
+   */
+  private directSourceState: ISourceState | undefined;
+  private directSourceProbe: Promise<void> | undefined;
+  private directContextIn: IActionContext | undefined;
+  private directContextOut: IActionContext | undefined;
 
   public constructor(
     cacheSize: number,
@@ -68,11 +78,16 @@ export class QuerySourceHypermedia implements IQuerySource {
     context: IActionContext,
     options?: IQueryBindingsOptions,
   ): BindingsStream {
+    if (this.directSourceState) {
+      return this.directSourceState.source.queryBindings(operation, this.getDirectContext(context), options);
+    }
+
     // Initialize the sources state on first call
     if (this.sourcesState.size === 0) {
       this.getSourceCached(this.firstLink, {}, context)
         .catch(error => it.destroy(error));
     }
+    this.probeDirectSource(context);
 
     const it: MediatedLinkedRdfSourcesAsyncRdfIterator = new MediatedLinkedRdfSourcesAsyncRdfIterator(
       operation,
@@ -87,6 +102,62 @@ export class QuerySourceHypermedia implements IQuerySource {
     );
 
     return it;
+  }
+
+  public queryBindingsSynchronous(operation: Algebra.Pattern, context: IActionContext): Bindings[] | undefined {
+    if (!this.directSourceState) {
+      this.probeDirectSource(context);
+      return undefined;
+    }
+    return this.directSourceState.source.queryBindingsSynchronous?.(operation, this.getDirectContext(context));
+  }
+
+  /**
+   * Check, once, if operations can be delegated directly to the first source.
+   * This is the case if no links can be followed from it,
+   * and if its metadata contains nothing that accumulating would change.
+   * Like ISourceState.hasSourceLinks, this assumes that links do not depend on the operation.
+   * @param context The action context.
+   */
+  protected probeDirectSource(context: IActionContext): void {
+    if (this.directSourceProbe) {
+      return;
+    }
+    this.directSourceProbe = (async() => {
+      const sourceState = await this.getSourceCached(this.firstLink, {}, context);
+      const metadata: Record<string, any> = sourceState.metadata;
+      if (sourceState.cachePolicy !== undefined || 'cardinality' in metadata || 'pageSize' in metadata ||
+        Boolean(metadata.requestTime)) {
+        return;
+      }
+      let links: ILink[];
+      try {
+        links = (await this.mediators.mediatorRdfResolveHypermediaLinks.mediate({ context, metadata })).links;
+      } catch {
+        links = [];
+      }
+      if (links.length === 0) {
+        this.directSourceState = sourceState;
+      }
+    })().catch(() => {
+      // Sources that fail are handled by the regular path
+    });
+  }
+
+  /**
+   * The context for querying the direct source, which includes the context of its link.
+   * @param context The action context.
+   */
+  protected getDirectContext(context: IActionContext): IActionContext {
+    const linkContext = this.directSourceState!.link.context;
+    if (!linkContext) {
+      return context;
+    }
+    if (this.directContextIn !== context) {
+      this.directContextIn = context;
+      this.directContextOut = context.merge(linkContext);
+    }
+    return this.directContextOut!;
   }
 
   public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {

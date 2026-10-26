@@ -1,7 +1,7 @@
 import type { Algebra, TypesComunica } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { BindingsStream } from './Bindings';
+import type { Bindings, BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
 import type { ILink } from './ILink';
 import type { MetadataBindings } from './IMetadata';
@@ -106,6 +106,23 @@ export interface IQuerySource {
     context: IActionContext,
     options?: IQueryBindingsOptions,
   ) => BindingsStream;
+
+  /**
+   * Synchronously returns all bindings matching the given quad pattern.
+   *
+   * This is optional, and only meant for sources that can answer pattern lookups without I/O,
+   * such as indexed in-memory stores, to enable cheap index nested-loop joins.
+   * Unlike `queryBindings`, no metadata is determined.
+   *
+   * @param {Algebra.Pattern} operation The quad pattern to match.
+   * @param {IActionContext} context    The query context.
+   * @return The matching bindings, or undefined if the pattern can not be matched synchronously,
+   *         in which case `queryBindings` must be used instead.
+   */
+  queryBindingsSynchronous?: (
+    operation: Algebra.Pattern,
+    context: IActionContext,
+  ) => Bindings[] | undefined;
 
   /**
    * Returns a (possibly lazy) stream that returns all quads matching the operation.

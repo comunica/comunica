@@ -3,6 +3,7 @@ import type { EventEmitter } from 'node:events';
 import { filterMatchingQuotedQuads, getVariables, quadsToBindings } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type {
+  Bindings,
   BindingsStream,
   ComunicaDataFactory,
   FragmentSelectorShape,
@@ -322,6 +323,46 @@ export class QuerySourceRdfJs implements IQuerySource {
       this.bindingsFactory,
       Boolean(context.get(KeysQueryOperation.unionDefaultGraph)),
     );
+  }
+
+  public queryBindingsSynchronous(operation: Algebra.Pattern, context: IActionContext): Bindings[] | undefined {
+    if (!('getBindings' in this.source) || !this.source.getBindings ||
+      QuerySourceRdfJs.hasQuotedVariables(operation)) {
+      return undefined;
+    }
+
+    // Same graph semantics as queryBindings
+    const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
+    const graph = operation.graph.termType === 'DefaultGraph' && unionDefaultGraph ?
+      this.dummyDefaultGraph :
+      operation.graph;
+    let bindings = this.source.getBindings(
+      this.bindingsFactory,
+      operation.subject,
+      operation.predicate,
+      operation.object,
+      graph,
+    );
+    if (graph.termType === 'Variable') {
+      if (unionDefaultGraph) {
+        if (graph === this.dummyDefaultGraph) {
+          bindings = bindings.map(binding => binding.delete(this.dummyDefaultGraph));
+        }
+      } else {
+        bindings = bindings.filter(binding => binding.get(graph)!.termType !== 'DefaultGraph');
+      }
+    }
+    return bindings;
+  }
+
+  /**
+   * Check if the given pattern contains quoted triples with variables,
+   * which require post-filtering that sync lookups do not do.
+   * @param operation A quad pattern.
+   */
+  public static hasQuotedVariables(operation: Algebra.Pattern): boolean {
+    return operation.subject.termType === 'Quad' || operation.object.termType === 'Quad' ||
+      operation.graph.termType === 'Quad';
   }
 
   /**

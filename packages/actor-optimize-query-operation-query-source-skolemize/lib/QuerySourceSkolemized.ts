@@ -1,5 +1,6 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import type {
+  Bindings,
   BindingsStream,
   ComunicaDataFactory,
   FragmentSelectorShape,
@@ -13,7 +14,13 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
-import { deskolemizeOperation, skolemizeBindingsStream, skolemizeQuadStream } from './utils';
+import {
+  deskolemizeOperation,
+  deskolemizePattern,
+  skolemizeBindings,
+  skolemizeBindingsStream,
+  skolemizeQuadStream,
+} from './utils';
 
 /**
  * A IQuerySource wrapper that skolemizes outgoing quads and bindings.
@@ -62,6 +69,19 @@ export class QuerySourceSkolemized implements IQuerySource {
       this.innerSource.queryBindings(operationMapped, context, options),
       this.sourceId,
     );
+  }
+
+  public queryBindingsSynchronous(operation: Algebra.Pattern, context: IActionContext): Bindings[] | undefined {
+    if (!this.innerSource.queryBindingsSynchronous) {
+      return undefined;
+    }
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const operationMapped = deskolemizePattern(dataFactory, operation, this.sourceId);
+    if (!operationMapped) {
+      return [];
+    }
+    return this.innerSource.queryBindingsSynchronous(operationMapped, context)
+      ?.map(bindings => skolemizeBindings(dataFactory, bindings, this.sourceId));
   }
 
   public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {
