@@ -65,7 +65,39 @@ export class QuerySourceHypermedia implements IQuerySource {
 
   public async getSelectorShape(context: IActionContext): Promise<FragmentSelectorShape> {
     const source = await this.getSourceCached(this.firstLink, {}, context);
-    return source.source.getSelectorShape(context);
+    const shape = await source.source.getSelectorShape(context);
+    // Synchronous lookups are only possible if operations are delegated to the first source directly.
+    this.probeDirectSource(context);
+    await this.directSourceProbe;
+    return this.directSourceState ? shape : QuerySourceHypermedia.withoutSynchronous(shape);
+  }
+
+  /**
+   * Remove the synchronous flag from the given shape.
+   * @param shape A selector shape.
+   * @return The shape without synchronous flag, which is the given shape if it has none.
+   */
+  public static withoutSynchronous(shape: FragmentSelectorShape): FragmentSelectorShape {
+    switch (shape.type) {
+      case 'operation': {
+        const children = shape.children?.map(child => QuerySourceHypermedia.withoutSynchronous(child));
+        if (!shape.synchronous && (!children || children.every((child, i) => child === shape.children![i]))) {
+          return shape;
+        }
+        const { synchronous: _synchronous, ...rest } = shape;
+        return children ? { ...rest, children } : rest;
+      }
+      case 'conjunction':
+      case 'disjunction': {
+        const children = shape.children.map(child => QuerySourceHypermedia.withoutSynchronous(child));
+        return children.every((child, i) => child === shape.children[i]) ? shape : { ...shape, children };
+      }
+      case 'negation':
+      case 'arity': {
+        const child = QuerySourceHypermedia.withoutSynchronous(shape.child);
+        return child === shape.child ? shape : { ...shape, child };
+      }
+    }
   }
 
   public async getFilterFactor(context: IActionContext): Promise<number> {

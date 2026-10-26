@@ -9,9 +9,15 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { ComunicaDataFactory, IJoinEntryWithMetadata, IQuerySourceWrapper } from '@comunica/types';
+import type {
+  ComunicaDataFactory,
+  IActionContext,
+  IJoinEntry,
+  IJoinEntryWithMetadata,
+  IQuerySourceWrapper,
+} from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
-import { getOperationSource } from '@comunica/utils-query-operation';
+import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type { IIndexNestedLoopLookup } from './IndexNestedLoopIterator';
 import { IndexNestedLoopIterator } from './IndexNestedLoopIterator';
 
@@ -22,7 +28,8 @@ import { IndexNestedLoopIterator } from './IndexNestedLoopIterator';
  * Unlike the bind join, the order of the lookups is determined once,
  * and the bound patterns are sent to their source directly, instead of being planned again for every binding.
  * This only pays off for sources that can look up bound patterns cheaply,
- * which is why it requires sources that can do so synchronously, such as indexed in-memory stores.
+ * which is why it requires sources that can do so synchronously, such as indexed in-memory stores,
+ * as indicated by the `synchronous` flag in their selector shape.
  */
 export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoinMultiIndexNestedLoopTestSideData> {
   public readonly lookupCost: number;
@@ -82,6 +89,21 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
         lookupOrder: order,
       },
     };
+  }
+
+  /**
+   * Check if the given entry can be looked up, which requires a quad pattern over a source that can look it up
+   * synchronously, as indicated by its selector shape.
+   * @param entry A join entry.
+   * @param context The action context.
+   */
+  public static async canLookUp(entry: IJoinEntry, context: IActionContext): Promise<boolean> {
+    const sourceWrapper = getOperationSource(entry.operation);
+    if (entry.operation.type !== Algebra.Types.PATTERN || Boolean(entry.operationModified) || !sourceWrapper) {
+      return false;
+    }
+    const shape = await sourceWrapper.source.getSelectorShape(context);
+    return doesShapeAcceptOperation(shape, entry.operation, { synchronous: true });
   }
 
   /**
@@ -148,15 +170,9 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
     const { metadatas } = sideData;
     const entries = action.entries.map((entry, i) => ({ ...entry, metadata: metadatas[i] }));
 
-    // Lookups are only cheap for local sources.
-    if (metadatas.some(metadata => metadata.pageSize ?? metadata.requestTime)) {
-      return failTest(`Actor ${this.name} can only join entries from local sources`);
-    }
-
     // Any entry that can be looked up synchronously can be looked up, and any other one can be first.
-    const lookupable = entries.map(entry => entry.operation.type === Algebra.Types.PATTERN &&
-      !entry.operationModified &&
-      Boolean(getOperationSource(entry.operation)?.source.queryBindingsSynchronous));
+    const lookupable = await Promise.all(entries
+      .map(entry => ActorRdfJoinMultiIndexNestedLoop.canLookUp(entry, action.context)));
     const firstCandidates = entries.map((entry, i) => i)
       .filter(i => !ActorRdfJoin.isOperationRequired(entries[i], metadatas[i]) &&
         lookupable.every((canLookup, j) => canLookup || j === i));
@@ -173,11 +189,14 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       }
     }
 
+    // Only the first entry is requested, as lookups are synchronous.
+    const requestTime = ActorRdfJoin.getRequestInitialTimes(metadatas)[best!.first] +
+      metadatas[best!.first].cardinality.value * ActorRdfJoin.getRequestItemTimes(metadatas)[best!.first];
     return passTestWithSideData({
       iterations: best!.iterations,
       persistedItems: 0,
       blockingItems: 0,
-      requestTime: 0,
+      requestTime,
     }, { ...sideData, first: best!.first, order: best!.order, cardinality: best!.cardinality });
   }
 }

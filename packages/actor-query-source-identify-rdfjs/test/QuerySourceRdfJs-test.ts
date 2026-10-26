@@ -45,6 +45,23 @@ describe('QuerySourceRdfJs', () => {
           DF.variable('p'),
           DF.variable('o'),
         ],
+        synchronous: true,
+      });
+    });
+
+    it('should return a selector shape without synchronous lookups for sources without getBindings', async() => {
+      source = new QuerySourceRdfJs(new Store(), DF, BF);
+      await expect(source.getSelectorShape()).resolves.toEqual({
+        type: 'operation',
+        operation: {
+          operationType: 'pattern',
+          pattern: AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+        },
+        variablesOptional: [
+          DF.variable('s'),
+          DF.variable('p'),
+          DF.variable('o'),
+        ],
       });
     });
 
@@ -63,6 +80,7 @@ describe('QuerySourceRdfJs', () => {
               DF.variable('p'),
               DF.variable('o'),
             ],
+            synchronous: true,
           },
           {
             type: 'operation',

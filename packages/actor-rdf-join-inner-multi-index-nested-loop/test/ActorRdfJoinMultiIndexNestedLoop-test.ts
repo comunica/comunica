@@ -187,7 +187,9 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
     });
 
     it('should fail on sources without synchronous lookups', async() => {
-      const other: IQuerySourceWrapper = <any> { source: {}};
+      const other: IQuerySourceWrapper = <any> {
+        source: { getSelectorShape: async() => ({ type: 'operation', operation: { operationType: 'wildcard' }}) },
+      };
       const entries = reviewEntries();
       entries[0] = entry(pattern('?review', 'ex:reviewer', '?reviewer', other), await entries[0].output.metadata());
       entries[2] = entry(pattern('?reviewer', 'ex:name', '?name', other), await entries[2].output.metadata());
@@ -226,14 +228,19 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       })).resolves.toFailTest(`Actor actor requires all entries but one to be quad patterns over sources that support synchronous lookups`);
     });
 
-    it('should fail on remote entries', async() => {
+    it('should only count the request time of the first entry', async() => {
       const entries = reviewEntries();
       entries[0] = entry(entries[0].operation, metadata(2, [ 'review', 'reviewer' ], { requestTime: 10 }));
-      await expect(actor.test({ type: 'inner', entries, context })).resolves
-        .toFailTest(`Actor actor can only join entries from local sources`);
-      entries[0] = entry(entries[0].operation, metadata(2, [ 'review', 'reviewer' ], { pageSize: 100 }));
-      await expect(actor.test({ type: 'inner', entries, context })).resolves
-        .toFailTest(`Actor actor can only join entries from local sources`);
+      entries[2] = entry(AF.createJoin([ entries[2].operation ]), metadata(1, [ 'reviewer', 'name' ], {
+        requestTime: 100,
+        pageSize: 10,
+      }));
+      await expect(actor.test({ type: 'inner', entries, context })).resolves.toPassTest({
+        iterations: 1 + 1 * (1 + 1) + 1 * (1 + 1),
+        persistedItems: 0,
+        blockingItems: 0,
+        requestTime: 10,
+      });
     });
   });
 
@@ -256,7 +263,10 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
     it('should look up within the context of the source', async() => {
       const queryBindingsSynchronous = jest.fn(() => []);
       const contextSource: IQuerySourceWrapper = <any> {
-        source: { queryBindingsSynchronous },
+        source: {
+          getSelectorShape: async() => ({ type: 'operation', operation: { operationType: 'wildcard' }, synchronous: true }),
+          queryBindingsSynchronous,
+        },
         context: new ActionContext({ x: 'y' }),
       };
       const entries = reviewEntries();

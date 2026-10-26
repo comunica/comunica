@@ -14,7 +14,8 @@ import type { TestResult } from '@comunica/core';
 import { failTest, passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { ComunicaDataFactory, IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import type { Algebra } from '@comunica/utils-algebra';
+import { AlgebraFactory } from '@comunica/utils-algebra';
 import { getOperationSource } from '@comunica/utils-query-operation';
 
 /**
@@ -73,22 +74,20 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
     sideData: IActorRdfJoinTestSideData,
   ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
     const { metadatas } = sideData;
-    if (metadatas.some(metadata => metadata.pageSize ?? metadata.requestTime)) {
-      return failTest(`Actor ${this.name} can only join entries from local sources`);
-    }
-    const right = action.entries[1];
-    if (right.operation.type !== Algebra.Types.PATTERN || Boolean(right.operationModified) ||
-      !getOperationSource(right.operation)?.source.queryBindingsSynchronous) {
+    if (!await ActorRdfJoinMultiIndexNestedLoop.canLookUp(action.entries[1], action.context)) {
       return failTest(`Actor ${this.name} requires a right entry that is a quad pattern over a source that supports synchronous lookups`);
     }
 
     const bound = new Set(metadatas[0].variables.map(variable => variable.variable.value));
-    const fanout = ActorRdfJoinMultiIndexNestedLoop.estimateFanout({ ...right, metadata: metadatas[1] }, bound);
+    const fanout = ActorRdfJoinMultiIndexNestedLoop
+      .estimateFanout({ ...action.entries[1], metadata: metadatas[1] }, bound);
     return passTestWithSideData({
       iterations: metadatas[0].cardinality.value * (this.lookupCost + Math.max(1, fanout)),
       persistedItems: 0,
       blockingItems: 0,
-      requestTime: 0,
+      // Only the left entry is requested, as lookups are synchronous.
+      requestTime: ActorRdfJoin.getRequestInitialTimes(metadatas)[0] +
+        metadatas[0].cardinality.value * ActorRdfJoin.getRequestItemTimes(metadatas)[0],
     }, sideData);
   }
 }

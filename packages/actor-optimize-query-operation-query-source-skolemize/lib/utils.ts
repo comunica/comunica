@@ -259,7 +259,7 @@ export function deskolemizePattern(
 }
 
 /**
- * Deskolemize all terms in the given operation.
+ * Deskolemize all terms in the given quad.
  * Will return undefined if there is at least one blank node not in scope for this sourceId.
  * @param dataFactory The data factory.
  * @param operation An algebra operation.
@@ -270,9 +270,6 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
   operation: O,
   sourceId: string,
 ): O | undefined {
-  if (operation.type === Algebra.Types.PATTERN) {
-    return <O | undefined> deskolemizePattern(dataFactory, <Algebra.Pattern> <unknown> operation, sourceId);
-  }
   const factory = new AlgebraFactory();
   try {
     return <O> algebraUtils.mapOperation(operation, {

@@ -557,6 +557,27 @@ describe('FragmentSelectorShapes', () => {
       }, AF.createNop(), { filterBindings: true })).toBeFalsy();
     });
 
+    it('should accept valid synchronous', () => {
+      expect(doesShapeAcceptOperation({
+        type: 'operation',
+        synchronous: true,
+        operation: {
+          operationType: 'type',
+          type: Algebra.Types.NOP,
+        },
+      }, AF.createNop(), { synchronous: true })).toBeTruthy();
+    });
+
+    it('should not accept invalid synchronous', () => {
+      expect(doesShapeAcceptOperation({
+        type: 'operation',
+        operation: {
+          operationType: 'type',
+          type: Algebra.Types.NOP,
+        },
+      }, AF.createNop(), { synchronous: true })).toBeFalsy();
+    });
+
     it('should not accept shapes with unsupported sub-operations', () => {
       expect(doesShapeAcceptOperation({
         type: 'operation',

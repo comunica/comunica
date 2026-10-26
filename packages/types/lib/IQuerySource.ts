@@ -112,6 +112,7 @@ export interface IQuerySource {
    *
    * This is optional, and only meant for sources that can answer pattern lookups without I/O,
    * such as indexed in-memory stores, to enable cheap index nested-loop joins.
+   * Sources that can do this indicate so with the `synchronous` flag in their selector shape.
    * Unlike `queryBindings`, no metadata is determined.
    *
    * @param {Algebra.Pattern} operation The quad pattern to match.
@@ -251,6 +252,10 @@ export type FragmentSelectorShape = {
    * If bindings can be passed into the source as a filter.
    */
   filterBindings?: true;
+  /**
+   * If quad patterns of this shape can be passed to `queryBindingsSynchronous`.
+   */
+  synchronous?: true;
 } | {
   type: 'conjunction';
   children: FragmentSelectorShape[];

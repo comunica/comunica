@@ -98,11 +98,26 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
         .toFailTest(`actor can only handle logical joins of type 'optional', while 'inner' was given.`);
     });
 
-    it('should fail on remote entries', async() => {
+    it('should only count the request time of the left entry', async() => {
       const joinEntries = entries();
+      joinEntries[0] = entry(joinEntries[0].operation, metadata(2, [ 'review' ], { requestTime: 100, pageSize: 10 }));
       joinEntries[1] = entry(joinEntries[1].operation, metadata(1, [ 'review', 'rating' ], { requestTime: 1 }));
+      await expect(actor.test({ type: 'optional', entries: joinEntries, context })).resolves.toPassTest({
+        iterations: 2 * (1 + 1),
+        persistedItems: 0,
+        blockingItems: 0,
+        requestTime: 2 * 100 / 10,
+      });
+    });
+
+    it('should fail on a right source that can not look up synchronously', async() => {
+      const other: IQuerySourceWrapper = <any> {
+        source: { getSelectorShape: async() => ({ type: 'operation', operation: { operationType: 'wildcard' }}) },
+      };
+      const joinEntries = entries();
+      joinEntries[1] = entry(pattern('?review', 'ex:rating', '?rating', other), metadata(1, [ 'review', 'rating' ]));
       await expect(actor.test({ type: 'optional', entries: joinEntries, context })).resolves
-        .toFailTest(`Actor actor can only join entries from local sources`);
+        .toFailTest(`Actor actor requires a right entry that is a quad pattern over a source that supports synchronous lookups`);
     });
 
     it('should fail on a right entry that is not a pattern', async() => {
@@ -163,7 +178,10 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
     it('should look up within the context of the source', async() => {
       const queryBindingsSynchronous = jest.fn(() => []);
       const contextSource: IQuerySourceWrapper = <any> {
-        source: { queryBindingsSynchronous },
+        source: {
+          getSelectorShape: async() => ({ type: 'operation', operation: { operationType: 'wildcard' }, synchronous: true }),
+          queryBindingsSynchronous,
+        },
         context: new ActionContext({ x: 'y' }),
       };
       const joinEntries = entries();

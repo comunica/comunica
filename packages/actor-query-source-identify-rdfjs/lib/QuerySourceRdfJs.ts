@@ -108,6 +108,7 @@ export class QuerySourceRdfJs implements IQuerySource {
         this.dataFactory.variable('p'),
         this.dataFactory.variable('o'),
       ],
+      ...'getBindings' in this.source && this.source.getBindings ? { synchronous: true } : {},
     };
     const additionalShapes: FragmentSelectorShape[] = [];
     if ('features' in this.source && this.source.features?.indexNodes) {
