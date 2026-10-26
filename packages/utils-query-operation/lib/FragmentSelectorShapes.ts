@@ -1,4 +1,4 @@
-import { KeysRdfUpdateQuads } from '@comunica/context-entries';
+import { KeysInitQuery, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { FragmentSelectorShape, IActionContext, IDataDestination, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, algebraUtils, isKnownSubType, TypesComunica } from '@comunica/utils-algebra';
 import { getDataDestinationValue, getServiceExecutorLookup } from './Utils';
@@ -21,6 +21,26 @@ export function doesShapeAcceptOperation(
   // shape child would otherwise redundantly re-traverse the entire operation subtree.
   const operationRecurseCache = new Map<Algebra.Operation, boolean>();
   return doesShapeAcceptOperationRecurseShape(shape, shape, operation, operationRecurseCache, options);
+}
+
+/**
+ * Check if the given shape accepts the given query operation, pushing down extension functions as the context demands.
+ * @param shape A shape to test the query operation against.
+ * @param operation A query operation to test.
+ * @param context The action context, holding the extensionFunctionsAlwaysPushdown setting.
+ * @param options Additional options to consider.
+ * @return If the shape accepts the operation.
+ */
+export function doesShapeAcceptOperationInContext(
+  shape: FragmentSelectorShape,
+  operation: Algebra.Operation,
+  context: IActionContext,
+  options?: Omit<FragmentSelectorShapeTestFlags, 'wildcardAcceptAllExtensionFunctions'>,
+): boolean {
+  return doesShapeAcceptOperation(shape, operation, {
+    ...options,
+    wildcardAcceptAllExtensionFunctions: context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown),
+  });
 }
 
 function doesShapeAcceptOperationRecurseShape(
@@ -236,7 +256,7 @@ export async function passFullOperationToSource(
     if (!destination || sourceWrapper.source.referenceValue === getDataDestinationValue(destination)) {
       try {
         const shape = await sourceWrapper.source.getSelectorShape(context);
-        if (doesShapeAcceptOperation(shape, operation)) {
+        if (doesShapeAcceptOperationInContext(shape, operation, context)) {
           return true;
         }
       } catch {
