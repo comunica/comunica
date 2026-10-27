@@ -40,8 +40,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
 
-    // Get result stream for the input query.
-    // A limit above this operation can not end the input early, as all of it is grouped.
+    // Get result stream for the input query
     const { input, aggregates } = operation;
     const outputRaw = await this.mediatorQueryOperation
       .mediate({ operation: input, context: context.delete(KeysQueryOperation.limitIndicator) });

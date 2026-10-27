@@ -44,7 +44,6 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
 
   public async runOperation(operation: Algebra.OrderBy, context: IActionContext):
   Promise<IQueryOperationResult> {
-    // A limit above this operation can not end the input early, as all of it is sorted.
     const outputRaw = await this.mediatorQueryOperation
       .mediate({ operation: operation.input, context: context.delete(KeysQueryOperation.limitIndicator) });
     const output = getSafeBindings(outputRaw);
