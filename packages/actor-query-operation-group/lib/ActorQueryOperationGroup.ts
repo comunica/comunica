@@ -2,7 +2,7 @@ import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-a
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type {
@@ -40,9 +40,11 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const bindingsFactory = await BindingsFactory.create(this.mediatorMergeBindingsContext, context, dataFactory);
 
-    // Get result stream for the input query
+    // Get result stream for the input query.
+    // A limit above this operation can not end the input early, as all of it is grouped.
     const { input, aggregates } = operation;
-    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: input, context });
+    const outputRaw = await this.mediatorQueryOperation
+      .mediate({ operation: input, context: context.delete(KeysQueryOperation.limitIndicator) });
     const output = getSafeBindings(outputRaw);
 
     // The variables in scope are the variables on which we group, i.e. pattern.variables.

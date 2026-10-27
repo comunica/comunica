@@ -2,6 +2,7 @@ import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expressio
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { Bindings, IActionContext, IExpressionEvaluator, IQueryOperationResult } from '@comunica/types';
@@ -43,7 +44,9 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
 
   public async runOperation(operation: Algebra.OrderBy, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
+    // A limit above this operation can not end the input early, as all of it is sorted.
+    const outputRaw = await this.mediatorQueryOperation
+      .mediate({ operation: operation.input, context: context.delete(KeysQueryOperation.limitIndicator) });
     const output = getSafeBindings(outputRaw);
     const { bindingsStream } = output;
 
