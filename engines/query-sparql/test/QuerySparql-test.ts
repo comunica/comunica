@@ -34,14 +34,14 @@ describe('System test: QuerySparql', () => {
     engine = new QueryEngine();
   });
 
-  afterAll(() => {
-    // Unlike jest, vitest shares 'globalThis' between the test files of a worker
-    globalThis.fetch = globalFetch;
-  });
-
   beforeEach(async() => {
     // Tests should not share HTTP state, such as the rate limiting that a test with a slow host leaves behind
     await engine.invalidateHttpCache();
+  });
+
+  afterAll(() => {
+    // Unlike jest, vitest shares 'globalThis' between the test files of a worker
+    globalThis.fetch = globalFetch;
   });
 
   /**

@@ -406,7 +406,7 @@ describe('HttpServiceGraphStore', () => {
     });
 
     it('should only parse the payload once its triples are read', async() => {
-      vi.spyOn(engine, 'updateQuads').mockImplementation(async(update: any) => {
+      engine.updateQuads.mockImplementation(async(update: any) => {
         await new Promise(resolve => setTimeout(resolve, 10));
         await update.quadStreamInsert.toArray();
       });

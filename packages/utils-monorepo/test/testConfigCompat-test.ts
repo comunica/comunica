@@ -2,13 +2,13 @@ import { exec } from 'node:child_process';
 import { copy, emptyDir, pathExists, readdir, readFile } from 'fs-extra';
 import { isSemVerEqual, testConfigCompat } from '../lib/testConfigCompat';
 
-vi.mock('node:child_process', () => {
+vi.mock(import('node:child_process'), () => {
   return <any> {
     exec: vi.fn(),
   };
 });
 
-vi.mock('fs-extra', () => {
+vi.mock(import('fs-extra'), () => {
   return <any> {
     readdir: vi.fn(),
     pathExists: vi.fn(),
