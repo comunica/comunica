@@ -202,6 +202,14 @@ describe('IndexNestedLoopIterator', () => {
     await expect(it.toArray()).rejects.toThrow('lookup failure');
   });
 
+  it('only needs a bindings factory for lookups that are not patterns', () => {
+    expect(IndexNestedLoopIterator.needsBindingsFactory([ lookup('?x', 'ex:p', '?y', syncSource) ])).toBe(false);
+    expect(IndexNestedLoopIterator.needsBindingsFactory([
+      lookup('?x', 'ex:p', '?y', syncSource),
+      { operation: AF.createJoin([]), source: syncSource, context },
+    ])).toBe(true);
+  });
+
   it('destroys its input when ended early', () => {
     const stream = input();
     const it = new IndexNestedLoopIterator(stream, [ lookup('?x', 'ex:p', '?y', syncSource) ], AF, BF);

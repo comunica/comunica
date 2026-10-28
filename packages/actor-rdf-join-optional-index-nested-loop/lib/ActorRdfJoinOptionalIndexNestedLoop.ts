@@ -1,3 +1,4 @@
+import type { IIndexNestedLoopLookup } from '@comunica/actor-rdf-join-inner-multi-index-nested-loop';
 import {
   ActorRdfJoinMultiIndexNestedLoop,
   IndexNestedLoopIterator,
@@ -43,19 +44,24 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
     action.entries[1].output.bindingsStream.destroy();
     const operation = action.entries[1].operation;
     const sourceWrapper = <IQuerySourceWrapper> getOperationSource(operation);
+    const lookups: IIndexNestedLoopLookup[] = [{
+      operation,
+      source: sourceWrapper.source,
+      context: sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
+      optional: true,
+    }];
+    // Quad patterns are bound without bindings factory, so it is only created for other operations.
+    const bindingsFactory = IndexNestedLoopIterator.needsBindingsFactory(lookups) ?
+      await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory) :
+      undefined;
     return {
       result: {
         type: 'bindings',
         bindingsStream: new IndexNestedLoopIterator(
           action.entries[0].output.bindingsStream,
-          [{
-            operation,
-            source: sourceWrapper.source,
-            context: sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
-            optional: true,
-          }],
+          lookups,
           new AlgebraFactory(dataFactory),
-          await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
+          bindingsFactory,
         ),
         metadata: async() => await this.constructResultMetadata(
           action.entries,

@@ -71,6 +71,11 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       };
     });
 
+    // Quad patterns are bound without bindings factory, so it is only created for other operations.
+    const bindingsFactory = IndexNestedLoopIterator.needsBindingsFactory(lookups) ?
+      await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory) :
+      undefined;
+
     return {
       result: {
         type: 'bindings',
@@ -78,7 +83,7 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
           action.entries[first].output.bindingsStream,
           lookups,
           algebraFactory,
-          await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
+          bindingsFactory,
         ),
         metadata: async() => {
           const metadata = await this.constructResultMetadata(action.entries, sideData.metadatas, action.context);

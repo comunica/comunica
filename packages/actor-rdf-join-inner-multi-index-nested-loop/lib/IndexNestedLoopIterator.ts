@@ -43,13 +43,13 @@ export class IndexNestedLoopIterator extends AsyncIterator<Bindings> {
    * @param input The stream of bindings to join.
    * @param lookups The operations to look up, in order.
    * @param algebraFactory The algebra factory.
-   * @param bindingsFactory The bindings factory.
+   * @param bindingsFactory The bindings factory, which is only needed if a lookup is not a quad pattern.
    */
   public constructor(
     private readonly input: BindingsStream,
     private readonly lookups: IIndexNestedLoopLookup[],
     private readonly algebraFactory: AlgebraFactory,
-    private readonly bindingsFactory: BindingsFactory,
+    private readonly bindingsFactory?: BindingsFactory,
   ) {
     super();
     input.on('error', error => this.destroy(error));
@@ -147,7 +147,15 @@ export class IndexNestedLoopIterator extends AsyncIterator<Bindings> {
         materializeTerm(operation.graph, bindings),
       ), { metadata: operation.metadata });
     }
-    return materializeOperation(operation, bindings, this.algebraFactory, this.bindingsFactory);
+    return materializeOperation(operation, bindings, this.algebraFactory, this.bindingsFactory!);
+  }
+
+  /**
+   * Check if the given lookups need a bindings factory, which is the case if one of them is not a quad pattern.
+   * @param lookups The operations to look up.
+   */
+  public static needsBindingsFactory(lookups: IIndexNestedLoopLookup[]): boolean {
+    return lookups.some(lookup => !isKnownOperation(lookup.operation, Algebra.Types.PATTERN));
   }
 
   protected override _end(destroy?: boolean): void {

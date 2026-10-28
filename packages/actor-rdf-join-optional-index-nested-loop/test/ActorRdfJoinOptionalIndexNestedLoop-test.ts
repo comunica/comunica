@@ -24,6 +24,7 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
   let bus: any;
   let context: IActionContext;
   let mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
+  let mediatorMergeBindingsContext: any;
   let actor: ActorRdfJoinOptionalIndexNestedLoop;
   let store: RdfStore;
   let source: IQuerySourceWrapper;
@@ -32,11 +33,12 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     mediatorJoinSelectivity = <any> { mediate: async() => ({ selectivity: 0.5 }) };
+    mediatorMergeBindingsContext = { mediate: jest.fn(async() => ({})) };
     actor = new ActorRdfJoinOptionalIndexNestedLoop({
       name: 'actor',
       bus,
       mediatorJoinSelectivity,
-      mediatorMergeBindingsContext: <any> { mediate: async() => ({}) },
+      mediatorMergeBindingsContext,
       selectivityModifier: 0.1,
     });
     store = RdfStore.createDefault();
@@ -188,6 +190,7 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
         ]),
       ]);
       expect(joinEntries[1].output.bindingsStream.done).toBeTruthy();
+      expect(mediatorMergeBindingsContext.mediate).not.toHaveBeenCalled();
       await expect(result.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 1 },
         variables: [
@@ -195,6 +198,35 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
           { variable: DF.variable('rating'), canBeUndef: true },
         ],
       });
+    });
+
+    it('should bind a right entry that is not a pattern', async() => {
+      const queryBindingsSynchronous = jest.fn(() => []);
+      const other: IQuerySourceWrapper = <any> {
+        source: {
+          getSelectorShape: async() => ({
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            synchronous: true,
+          }),
+          queryBindingsSynchronous,
+        },
+      };
+      const joinEntries = entries();
+      joinEntries[1] = entry(
+        assignOperationSource(AF.createJoin([ joinEntries[1].operation ]), other),
+        metadata(1, [ 'review', 'rating' ]),
+      );
+      const action: IActionRdfJoin = { type: 'optional', entries: joinEntries, context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      await expect(result.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('review'), DF.namedNode('ex:review1') ]]),
+        BF.bindings([[ DF.variable('review'), DF.namedNode('ex:review2') ]]),
+      ]);
+      expect(mediatorMergeBindingsContext.mediate).toHaveBeenCalledTimes(1);
+      const bound = (<any> queryBindingsSynchronous.mock.calls[0])[0];
+      expect(bound.type).toBe('join');
+      expect(bound.input[0].subject).toEqual(term('ex:review1'));
     });
 
     it('should look up within the context of the source', async() => {
