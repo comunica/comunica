@@ -20,7 +20,8 @@
     {
       "@id": "urn:comunica:default:rdf-join/actors#optional-index-nested-loop",
       "@type": "ActorRdfJoinOptionalIndexNestedLoop",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#optional-hash-def-nonblocking",

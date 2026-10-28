@@ -39,7 +39,13 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     mediatorJoinSelectivity = <any> { mediate: async() => ({ selectivity: 1 }) };
-    actor = new ActorRdfJoinMultiIndexNestedLoop({ name: 'actor', bus, mediatorJoinSelectivity, lookupCost: 1 });
+    actor = new ActorRdfJoinMultiIndexNestedLoop({
+      name: 'actor',
+      bus,
+      mediatorJoinSelectivity,
+      mediatorMergeBindingsContext: <any> { mediate: async() => ({}) },
+      lookupCost: 1,
+    });
     store = RdfStore.createDefault();
     for (const [ s, p, o ] of [
       [ 'ex:review1', 'ex:reviewFor', 'ex:product' ],
@@ -183,7 +189,32 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       entries[1] = entry(AF.createJoin([ entries[1].operation ]), await entries[1].output.metadata());
       entries[2] = entry(AF.createJoin([ entries[2].operation ]), await entries[2].output.metadata());
       await expect(actor.test({ type: 'inner', entries, context })).resolves
-        .toFailTest(`Actor actor requires all entries but one to be quad patterns over sources that support synchronous lookups`);
+        .toFailTest(`Actor actor requires all entries but one to be operations over sources that support synchronous lookups`);
+    });
+
+    it('should look up operations other than patterns if their source accepts them synchronously', async() => {
+      const other: IQuerySourceWrapper = <any> {
+        source: {
+          getSelectorShape: async() => ({
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            synchronous: true,
+          }),
+        },
+      };
+      const entries = reviewEntries();
+      entries[1] = entry(
+        assignOperationSource(AF.createJoin([ entries[1].operation ]), other),
+        await entries[1].output.metadata(),
+      );
+      entries[2] = entry(
+        assignOperationSource(AF.createJoin([ entries[2].operation ]), other),
+        await entries[2].output.metadata(),
+      );
+      await expect(ActorRdfJoinMultiIndexNestedLoop.canLookUp(entries[1], context)).resolves.toBe(true);
+      const sideData = (await actor.test({ type: 'inner', entries, context })).getSideData();
+      expect(sideData.first).toBe(2);
+      expect(sideData.order).toEqual([ 0, 1 ]);
     });
 
     it('should fail on sources without synchronous lookups', async() => {
@@ -194,7 +225,7 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       entries[0] = entry(pattern('?review', 'ex:reviewer', '?reviewer', other), await entries[0].output.metadata());
       entries[2] = entry(pattern('?reviewer', 'ex:name', '?name', other), await entries[2].output.metadata());
       await expect(actor.test({ type: 'inner', entries, context })).resolves
-        .toFailTest(`Actor actor requires all entries but one to be quad patterns over sources that support synchronous lookups`);
+        .toFailTest(`Actor actor requires all entries but one to be operations over sources that support synchronous lookups`);
     });
 
     it('should fail on entries without source', async() => {
@@ -204,7 +235,7 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       entries[2] = entry(AF.createPattern(term('?reviewer'), term('ex:name'), term('?name')), await entries[2]
         .output.metadata());
       await expect(actor.test({ type: 'inner', entries, context })).resolves
-        .toFailTest(`Actor actor requires all entries but one to be quad patterns over sources that support synchronous lookups`);
+        .toFailTest(`Actor actor requires all entries but one to be operations over sources that support synchronous lookups`);
     });
 
     it('should not look up modified operations', async() => {
@@ -212,7 +243,7 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       entries[0] = { ...entries[0], operationModified: true };
       entries[2] = { ...entries[2], operationModified: true };
       await expect(actor.test({ type: 'inner', entries, context })).resolves
-        .toFailTest(`Actor actor requires all entries but one to be quad patterns over sources that support synchronous lookups`);
+        .toFailTest(`Actor actor requires all entries but one to be operations over sources that support synchronous lookups`);
     });
 
     it('should not start from an entry that requires its operation', async() => {
@@ -225,7 +256,7 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         .toFailTest(`actor does not work with operationRequired.`);
       await expect((<any> actor).getJoinCoefficients({ type: 'inner', entries, context }, {
         metadatas: await Promise.all(entries.map(joinEntry => joinEntry.output.metadata())),
-      })).resolves.toFailTest(`Actor actor requires all entries but one to be quad patterns over sources that support synchronous lookups`);
+      })).resolves.toFailTest(`Actor actor requires all entries but one to be operations over sources that support synchronous lookups`);
     });
 
     it('should only count the request time of the first entry', async() => {

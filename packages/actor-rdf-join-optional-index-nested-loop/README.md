@@ -5,8 +5,8 @@
 An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that optionally joins 2 streams
 as an index nested loop join.
 
-Bound patterns are passed to their source directly
-if they can look up quad patterns synchronously (`IQuerySource#queryBindingsSynchronous`).
+Bound operations are passed to their source directly
+if it can look up operations synchronously (`IQuerySource#queryBindingsSynchronous`).
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -33,7 +33,8 @@ After installing, this package can be added to your engine's configuration as fo
     {
       "@id": "urn:comunica:default:rdf-join/actors#optional-index-nested-loop",
       "@type": "ActorRdfJoinOptionalIndexNestedLoop",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     }
   ]
 }
@@ -42,4 +43,5 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `mediatorJoinSelectivity`: A mediator over the [RDF Join Selectivity bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join-selectivity).
+* `mediatorMergeBindingsContext`: A mediator over the [Merge Bindings Context bus](https://github.com/comunica/comunica/tree/master/packages/bus-merge-bindings-context).
 * `selectivityModifier`: Multiplier for selectivity values, which defaults to half the one of the optional bind join, so that this actor is preferred where both apply. _(defaults to `0.0000005`)_

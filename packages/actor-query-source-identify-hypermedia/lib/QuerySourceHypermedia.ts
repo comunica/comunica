@@ -109,7 +109,7 @@ export class QuerySourceHypermedia implements IQuerySource {
     return it;
   }
 
-  public queryBindingsSynchronous(operation: Algebra.Pattern, context: IActionContext): Bindings[] | undefined {
+  public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
     if (!this.directSourceState) {
       this.probeDirectSource(context);
       return undefined;

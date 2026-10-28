@@ -210,6 +210,16 @@ describe('QuerySourceSkolemized', () => {
       ), context)).toEqual([]);
       expect(sourceInner.queryBindingsSynchronous).not.toHaveBeenCalled();
     });
+
+    it('should deskolemize operations that are not patterns', () => {
+      Object.assign(sourceInner, { queryBindingsSynchronous: jest.fn(() => []) });
+      expect(source.queryBindingsSynchronous(AF.createJoin([ inScope ]), context)).toEqual([]);
+      expect(sourceInner.queryBindingsSynchronous).toHaveBeenCalledWith(AF.createJoin([ AF.createPattern(
+        DF.namedNode('s'),
+        DF.namedNode('p'),
+        DF.blankNode('a1'),
+      ) ]), context);
+    });
   });
 
   it('should delegate queryBoolean', async() => {

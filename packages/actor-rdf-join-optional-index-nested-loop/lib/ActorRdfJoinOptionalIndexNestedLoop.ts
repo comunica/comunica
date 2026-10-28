@@ -2,6 +2,7 @@ import {
   ActorRdfJoinMultiIndexNestedLoop,
   IndexNestedLoopIterator,
 } from '@comunica/actor-rdf-join-inner-multi-index-nested-loop';
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
@@ -14,8 +15,8 @@ import type { TestResult } from '@comunica/core';
 import { failTest, passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type { ComunicaDataFactory, IQuerySourceWrapper } from '@comunica/types';
-import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getOperationSource } from '@comunica/utils-query-operation';
 
 /**
@@ -23,6 +24,7 @@ import { getOperationSource } from '@comunica/utils-query-operation';
  */
 export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
   public readonly selectivityModifier: number;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorRdfJoinOptionalIndexNestedLoopArgs) {
     super(args, {
@@ -33,25 +35,27 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
       requiresVariableOverlap: true,
     });
     this.selectivityModifier = args.selectivityModifier;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     action.entries[1].output.bindingsStream.destroy();
-    const pattern = <Algebra.Pattern> action.entries[1].operation;
-    const sourceWrapper = <IQuerySourceWrapper> getOperationSource(pattern);
+    const operation = action.entries[1].operation;
+    const sourceWrapper = <IQuerySourceWrapper> getOperationSource(operation);
     return {
       result: {
         type: 'bindings',
         bindingsStream: new IndexNestedLoopIterator(
           action.entries[0].output.bindingsStream,
           [{
-            pattern,
+            operation,
             source: sourceWrapper.source,
             context: sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
             optional: true,
           }],
           new AlgebraFactory(dataFactory),
+          await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
         ),
         metadata: async() => await this.constructResultMetadata(
           action.entries,
@@ -70,7 +74,7 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
   ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
     const { metadatas } = sideData;
     if (!await ActorRdfJoinMultiIndexNestedLoop.canLookUp(action.entries[1], action.context)) {
-      return failTest(`Actor ${this.name} requires a right entry that is a quad pattern over a source that supports synchronous lookups`);
+      return failTest(`Actor ${this.name} requires a right entry that is an operation over a source that supports synchronous lookups`);
     }
 
     const selectivity = (await this.mediatorJoinSelectivity.mediate({
@@ -98,4 +102,8 @@ export interface IActorRdfJoinOptionalIndexNestedLoopArgs extends IActorRdfJoinA
    * @default {0.0000005}
    */
   selectivityModifier: number;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }

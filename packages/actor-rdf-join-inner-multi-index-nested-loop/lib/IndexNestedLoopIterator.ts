@@ -1,17 +1,19 @@
 import type { Bindings, BindingsStream, IActionContext, IQuerySource } from '@comunica/types';
-import type { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
-import { materializeTerm } from '@comunica/utils-query-operation';
+import type { AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
+import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { materializeOperation, materializeTerm } from '@comunica/utils-query-operation';
 import { AsyncIterator } from 'asynciterator';
 
 /**
- * A quad pattern that is looked up.
+ * An operation that is looked up.
  */
 export interface IIndexNestedLoopLookup {
-  pattern: Algebra.Pattern;
+  operation: Algebra.Operation;
   source: IQuerySource;
   context: IActionContext;
   /**
-   * If bindings without results for this pattern must be kept, as for OPTIONAL.
+   * If bindings without results for this operation must be kept, as for OPTIONAL.
    */
   optional?: boolean;
 }
@@ -28,7 +30,7 @@ interface ILevel {
 }
 
 /**
- * An iterator that joins every binding in a stream with a sequence of quad patterns.
+ * An iterator that joins every binding in a stream with a sequence of operations.
  *
  * Lookups are done synchronously when the source supports it,
  * and are otherwise collected from the source's bindings stream.
@@ -39,13 +41,15 @@ export class IndexNestedLoopIterator extends AsyncIterator<Bindings> {
 
   /**
    * @param input The stream of bindings to join.
-   * @param lookups The patterns to look up, in order.
+   * @param lookups The operations to look up, in order.
    * @param algebraFactory The algebra factory.
+   * @param bindingsFactory The bindings factory.
    */
   public constructor(
     private readonly input: BindingsStream,
     private readonly lookups: IIndexNestedLoopLookup[],
     private readonly algebraFactory: AlgebraFactory,
+    private readonly bindingsFactory: BindingsFactory,
   ) {
     super();
     input.on('error', error => this.destroy(error));
@@ -103,12 +107,12 @@ export class IndexNestedLoopIterator extends AsyncIterator<Bindings> {
   }
 
   /**
-   * Look up the next pattern, bound to the given bindings, as a new level.
-   * @param bindings The bindings that the next pattern must be bound to.
+   * Look up the next operation, bound to the given bindings, as a new level.
+   * @param bindings The bindings that the next operation must be bound to.
    */
   protected lookup(bindings: Bindings): void {
-    const { pattern, source, context, optional = false } = this.lookups[this.levels.length];
-    const bound = this.bindPattern(pattern, bindings);
+    const { operation, source, context, optional = false } = this.lookups[this.levels.length];
+    const bound = this.bindOperation(operation, bindings);
     const results = source.queryBindingsSynchronous?.(bound, context);
     if (results) {
       this.levels.push({ parent: bindings, results, index: 0, optional, produced: false });
@@ -129,17 +133,21 @@ export class IndexNestedLoopIterator extends AsyncIterator<Bindings> {
   }
 
   /**
-   * Replace the variables of the given pattern by their values in the given bindings.
-   * @param pattern A quad pattern.
+   * Replace the variables of the given operation by their values in the given bindings.
+   * @param operation An operation.
    * @param bindings The bindings to bind with.
    */
-  protected bindPattern(pattern: Algebra.Pattern, bindings: Bindings): Algebra.Pattern {
-    return Object.assign(this.algebraFactory.createPattern(
-      materializeTerm(pattern.subject, bindings),
-      materializeTerm(pattern.predicate, bindings),
-      materializeTerm(pattern.object, bindings),
-      materializeTerm(pattern.graph, bindings),
-    ), { metadata: pattern.metadata });
+  protected bindOperation(operation: Algebra.Operation, bindings: Bindings): Algebra.Operation {
+    // Patterns are bound directly, as they are the most common lookups.
+    if (isKnownOperation(operation, Algebra.Types.PATTERN)) {
+      return Object.assign(this.algebraFactory.createPattern(
+        materializeTerm(operation.subject, bindings),
+        materializeTerm(operation.predicate, bindings),
+        materializeTerm(operation.object, bindings),
+        materializeTerm(operation.graph, bindings),
+      ), { metadata: operation.metadata });
+    }
+    return materializeOperation(operation, bindings, this.algebraFactory, this.bindingsFactory);
   }
 
   protected override _end(destroy?: boolean): void {

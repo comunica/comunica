@@ -108,19 +108,19 @@ export interface IQuerySource {
   ) => BindingsStream;
 
   /**
-   * Synchronously returns all bindings matching the given quad pattern.
+   * Synchronously returns all bindings of the given operation.
    *
-   * This is optional, and only meant for sources that can answer pattern lookups without I/O.
-   * When present, `synchronous` should be `true` in the selector shape.
-   * Unlike `queryBindings`, no metadata is determined, as callers plan with the metadata of the unbound pattern.
+   * This is optional, and only meant for sources that can answer lookups without I/O.
+   * When present, `synchronous` should be `true` in the selector shape, for the operations that can be passed here.
+   * Unlike `queryBindings`, no metadata is determined, as callers plan with the metadata of the unbound operation.
    *
-   * @param {Algebra.Pattern} operation The quad pattern to match.
-   * @param {IActionContext} context    The query context.
-   * @return The matching bindings, or undefined if the pattern can not be matched synchronously,
+   * @param {Algebra.Operation} operation The operation to evaluate.
+   * @param {IActionContext} context      The query context.
+   * @return The resulting bindings, or undefined if the operation can not be evaluated synchronously,
    *         in which case `queryBindings` must be used instead.
    */
   queryBindingsSynchronous?: (
-    operation: Algebra.Pattern,
+    operation: Algebra.Operation,
     context: IActionContext,
   ) => Bindings[] | undefined;
 
@@ -252,7 +252,7 @@ export type FragmentSelectorShape = {
    */
   filterBindings?: true;
   /**
-   * If quad patterns of this shape can be passed to `queryBindingsSynchronous`.
+   * If operations of this shape can be passed to `queryBindingsSynchronous`.
    */
   synchronous?: true;
 } | {

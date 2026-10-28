@@ -98,7 +98,8 @@
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-multi-index-nested-loop",
       "@type": "ActorRdfJoinMultiIndexNestedLoop",
-      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" },
+      "mediatorMergeBindingsContext": { "@id": "urn:comunica:default:merge-bindings-context/mediators#main" }
     },
     {
       "@id": "urn:comunica:default:rdf-join/actors#inner-nested-loop",
