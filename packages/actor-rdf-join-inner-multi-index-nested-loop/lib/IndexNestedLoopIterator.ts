@@ -4,7 +4,7 @@ import { materializeTerm } from '@comunica/utils-query-operation';
 import { AsyncIterator } from 'asynciterator';
 
 /**
- * A quad pattern that is looked up for every binding that reaches it.
+ * A quad pattern that is looked up.
  */
 export interface IIndexNestedLoopLookup {
   pattern: Algebra.Pattern;
@@ -28,8 +28,7 @@ interface ILevel {
 }
 
 /**
- * An iterator that joins every binding of a stream with a sequence of quad patterns,
- * by binding the first pattern to it, looking it up, binding the next pattern to each result, and so on.
+ * An iterator that joins every binding in a stream with a sequence of quad patterns.
  *
  * Lookups are done synchronously when the source supports it,
  * and are otherwise collected from the source's bindings stream.

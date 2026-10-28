@@ -3,12 +3,9 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-inner-multi-index-nested-loop.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-inner-multi-index-nested-loop)
 
 An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that inner-joins 2 or more streams
-by evaluating one entry, and looking up each of the other entries, which must be quad patterns, bound to each of its bindings.
+as an index nested loop join.
 
-Unlike the bind join, the order of the lookups is determined once,
-and bound patterns are passed to their source directly, instead of being planned again for every binding.
-This actor only applies to sources that can look up quad patterns synchronously (`IQuerySource#queryBindingsSynchronous`),
-such as indexed in-memory stores, as indicated by the `synchronous` flag in their selector shape.
+This actor only applies to sources that can look up quad patterns synchronously (`IQuerySource#queryBindingsSynchronous`).
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

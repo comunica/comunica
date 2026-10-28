@@ -3,15 +3,10 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-join-optional-index-nested-loop.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-join-optional-index-nested-loop)
 
 An [RDF Join](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-join) actor that optionally joins 2 streams
-by looking up the right entry, which must be a quad pattern, bound to each binding of the left entry,
-and keeping the left bindings for which the lookup has no results.
+as an index nested loop join.
 
-As for the [inner index nested-loop join](https://github.com/comunica/comunica/tree/master/packages/actor-rdf-join-inner-multi-index-nested-loop),
-bound patterns are passed to their source directly,
-which must be a source that can look up quad patterns synchronously (`IQuerySource#queryBindingsSynchronous`),
-as indicated by the `synchronous` flag in its selector shape.
-It is estimated like the [optional bind join](https://github.com/comunica/comunica/tree/master/packages/actor-rdf-join-optional-bind),
-which it replaces wherever both apply.
+Bound patterns are passed to their source directly
+if they can look up quad patterns synchronously (`IQuerySource#queryBindingsSynchronous`).
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

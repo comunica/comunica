@@ -20,12 +20,6 @@ import { getOperationSource } from '@comunica/utils-query-operation';
 
 /**
  * A comunica Optional Index Nested Loop RDF Join Actor.
- *
- * Joins the bindings of the left entry with a quad pattern on the right,
- * by looking up the pattern bound to each left binding, and keeping left bindings without results.
- * As for the inner index nested-loop join, bound patterns are sent to their source directly,
- * which requires a source that can look them up synchronously.
- * It is estimated like the optional bind join, which it replaces wherever both apply.
  */
 export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
   public readonly selectivityModifier: number;

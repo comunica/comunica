@@ -110,10 +110,9 @@ export interface IQuerySource {
   /**
    * Synchronously returns all bindings matching the given quad pattern.
    *
-   * This is optional, and only meant for sources that can answer pattern lookups without I/O,
-   * such as indexed in-memory stores, to enable cheap index nested-loop joins.
-   * Sources that can do this indicate so with the `synchronous` flag in their selector shape.
-   * Unlike `queryBindings`, no metadata is determined.
+   * This is optional, and only meant for sources that can answer pattern lookups without I/O.
+   * When present, `synchronous` should be `true` in the selector shape.
+   * Unlike `queryBindings`, no metadata is determined, as callers plan with the metadata of the unbound pattern.
    *
    * @param {Algebra.Pattern} operation The quad pattern to match.
    * @param {IActionContext} context    The query context.

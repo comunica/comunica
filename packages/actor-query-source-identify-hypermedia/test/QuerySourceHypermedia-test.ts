@@ -505,35 +505,6 @@ describe('QuerySourceHypermedia', () => {
       });
     });
 
-    describe('withoutSynchronous', () => {
-      const plain: any = { type: 'operation', operation: { operationType: 'wildcard' }};
-      const sync: any = { ...plain, synchronous: true };
-
-      it('should keep shapes without synchronous flag', () => {
-        const shapes: any[] = [
-          plain,
-          { ...plain, children: [ plain ]},
-          { type: 'disjunction', children: [ plain ]},
-          { type: 'negation', child: plain },
-        ];
-        for (const shape of shapes) {
-          expect(QuerySourceHypermedia.withoutSynchronous(shape)).toBe(shape);
-        }
-      });
-
-      it('should remove synchronous flags', () => {
-        expect(QuerySourceHypermedia.withoutSynchronous(sync)).toEqual(plain);
-        expect(QuerySourceHypermedia.withoutSynchronous({ ...plain, children: [ sync ]}))
-          .toEqual({ ...plain, children: [ plain ]});
-        expect(QuerySourceHypermedia.withoutSynchronous({ ...sync, children: [ plain ]}))
-          .toEqual({ ...plain, children: [ plain ]});
-        expect(QuerySourceHypermedia.withoutSynchronous({ type: 'conjunction', children: [ plain, sync ]}))
-          .toEqual({ type: 'conjunction', children: [ plain, plain ]});
-        expect(QuerySourceHypermedia.withoutSynchronous({ type: 'arity', min: 1, child: sync }))
-          .toEqual({ type: 'arity', min: 1, child: plain });
-      });
-    });
-
     describe('queryQuads', () => {
       it('should throw', async() => {
         await expect(source.queryQuads(<any> undefined, context).toArray()).resolves
