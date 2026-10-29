@@ -1,4 +1,4 @@
-FROM node:24
+FROM node:26
 
 # Install location
 WORKDIR /home/comunica/query-sparql/
