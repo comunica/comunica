@@ -51,7 +51,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
 
     beforeEach(() => {
       mediatorQuerySourceIdentify = <any> {
-        mediate: jest.fn(async(action: IActionQuerySourceIdentify) => {
+        mediate: vi.fn(async(action: IActionQuerySourceIdentify) => {
           if (action.querySourceUnidentified.value === 'sourceSparql') {
             return { querySource: <any> {
               ofUnidentified: action.querySourceUnidentified,
@@ -259,7 +259,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       });
 
       it('with SERVICE clauses and multiple sources', async() => {
-        jest.mocked(mediatorQuerySourceIdentify.mediate).mockImplementation(async action => <any> ({
+        vi.mocked(mediatorQuerySourceIdentify.mediate).mockImplementation(async action => <any> ({
           querySource: { ofUnidentified: action.querySourceUnidentified, source: {}},
         }));
         const source3 = RdfStore.createDefault();
@@ -316,7 +316,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       });
 
       it('with SERVICE clauses that inherit credentials from a source with the same url', async() => {
-        jest.mocked(mediatorQuerySourceIdentify.mediate).mockImplementation(async action => <any> ({
+        vi.mocked(mediatorQuerySourceIdentify.mediate).mockImplementation(async action => <any> ({
           querySource: {
             source: { referenceValue: action.querySourceUnidentified.value },
             context: action.querySourceUnidentified.context,
@@ -556,8 +556,8 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       });
 
       it('should reuse sources with a source context object only for the same object', async() => {
-        const fetch1 = jest.fn();
-        const fetch2 = jest.fn();
+        const fetch1 = vi.fn();
+        const fetch2 = vi.fn();
         contextIn = contextIn.set(KeysInitQuery.querySourcesUnidentified, [
           { value: 'source1', context: new ActionContext().set(KeysHttp.fetch, fetch1) },
           { value: 'source1', context: new ActionContext().set(KeysHttp.fetch, fetch1) },
@@ -729,9 +729,9 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       });
 
       it('should record dereference events when passed dereference statistic', async() => {
-        const cb = jest.fn(() => {});
-        jest.useFakeTimers();
-        jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
+        const cb = vi.fn(() => {});
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
 
         // Define actor that does return required field source with reference value
         mediatorQuerySourceIdentify = <any> {
@@ -779,7 +779,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           },
         );
 
-        jest.useRealTimers();
+        vi.useRealTimers();
       });
     });
 
@@ -807,8 +807,8 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       });
 
       it('should contain the identity of source context objects', () => {
-        const fetch1 = jest.fn();
-        const fetch2 = jest.fn();
+        const fetch1 = vi.fn();
+        const fetch2 = vi.fn();
         const getQualifier = (value: any): string => actor.getCacheQualifier({
           value: 'http://ex.org/',
           context: new ActionContext().set(KeysHttp.fetch, value),
@@ -846,7 +846,7 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
         },
       };
       httpInvalidator = <any>{
-        addInvalidateListener: jest.fn(),
+        addInvalidateListener: vi.fn(),
       };
       actor = new ActorOptimizeQueryOperationQuerySourceIdentify({
         name: 'actor',
@@ -896,14 +896,14 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
 
     beforeEach(() => {
       mediatorQuerySourceIdentify = <any> {
-        mediate: jest.fn(async(action: IActionQuerySourceIdentify) => {
+        mediate: vi.fn(async(action: IActionQuerySourceIdentify) => {
           return {
             querySource: <any> { ofUnidentified: action.querySourceUnidentified, source: { referenceValue: 'abc' }},
           };
         }),
       };
       httpInvalidator = <any>{
-        addInvalidateListener: jest.fn(),
+        addInvalidateListener: vi.fn(),
       };
       actor = new ActorOptimizeQueryOperationQuerySourceIdentify({
         name: 'actor',

@@ -27,16 +27,16 @@ describe('ActorQueryProcessSequential', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorContextPreprocess = <any> {
-      mediate: jest.fn((action: any) => Promise.resolve(action)),
+      mediate: vi.fn((action: any) => Promise.resolve(action)),
     };
     mediatorQueryParse = <any> {
-      mediate: jest.fn((action: any) => Promise.resolve({
+      mediate: vi.fn((action: any) => Promise.resolve({
         operation: 'PARSED',
         context: action.context,
       })),
     };
     mediatorOptimizeQueryOperation = <any> {
-      mediate: jest.fn((action: any) => Promise.resolve({
+      mediate: vi.fn((action: any) => Promise.resolve({
         operation: AF.createJoin([
           action.operation,
         ], false),
@@ -44,7 +44,7 @@ describe('ActorQueryProcessSequential', () => {
       })),
     };
     mediatorQueryOperation = <any> {
-      mediate: jest.fn((action: any) => Promise.resolve({
+      mediate: vi.fn((action: any) => Promise.resolve({
         type: 'bindings',
         ...action,
       })),
@@ -171,7 +171,7 @@ describe('ActorQueryProcessSequential', () => {
       });
 
       it('parses a query with baseIRI in query', async() => {
-        jest.spyOn((<any> mediatorQueryParse), 'mediate').mockImplementation((action: any) => Promise.resolve({
+        vi.spyOn(mediatorQueryParse, 'mediate').mockImplementation((action: any) => Promise.resolve(<any> {
           operation: 'PARSED',
           context: action.context,
           baseIRI: 'BASE',

@@ -7,8 +7,8 @@ import {
 } from '@inrupt/solid-client-authn-core';
 import type { App } from '@solid/community-server';
 import { AppRunner, resolveModulePath } from '@solid/community-server';
-import 'jest-rdf';
 import fetch from 'node-fetch';
+import '@comunica/utils-jest';
 import { QueryEngine } from '../lib/QueryEngine';
 
 const squad = require('rdf-quad');
@@ -23,7 +23,7 @@ const config = [{
 const globalFetch = globalThis.fetch;
 
 // Use an increased timeout, since the CSS server takes too much setup time.
-jest.setTimeout(40_000);
+vi.setConfig({ testTimeout: 40_000, hookTimeout: 40_000 });
 
 function createApp() {
   return new AppRunner().create(
@@ -106,13 +106,13 @@ describe('System test: QuerySparql over Solid Pods', () => {
 
     // Override global fetch with auth fetch
     // @ts-expect-error
-    jest.spyOn(globalThis, 'fetch').mockImplementation(authFetch);
+    vi.spyOn(globalThis, 'fetch').mockImplementation(authFetch);
   });
 
   afterAll(async() => {
     await app.stop();
 
-    // Reset global fetch. This is probably redundant, as jest clears the DOM after each file.
+    // Reset global fetch. This is probably redundant, as vitest clears the DOM after each file.
     globalThis.fetch = globalFetch;
   });
 

@@ -1038,7 +1038,7 @@ IActorRdfJoinSelectivityOutput
       ], action.context, {});
       expect(metadataOut.state.valid).toBeTruthy();
 
-      const invalidateLister = jest.fn();
+      const invalidateLister = vi.fn();
       metadataOut.state.addInvalidateListener(invalidateLister);
       expect(invalidateLister).not.toHaveBeenCalled();
 
@@ -1288,26 +1288,26 @@ IActorRdfJoinSelectivityOutput
     it('invokes the physicalQueryPlanLogger', async() => {
       const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
       const entryNodes = action.entries.map(() => (<IPhysicalQueryPlanNode> {
-        appendMetadata: jest.fn(),
-        adoptInput: jest.fn(),
-        setOutput: jest.fn(),
+        appendMetadata: vi.fn(),
+        adoptInput: vi.fn(),
+        setOutput: vi.fn(),
       }));
       const planNode: IPhysicalQueryPlanNode = {
-        appendMetadata: jest.fn(),
-        adoptInput: jest.fn(),
-        setOutput: jest.fn(),
+        appendMetadata: vi.fn(),
+        adoptInput: vi.fn(),
+        setOutput: vi.fn(),
       };
       const logger: IPhysicalQueryPlanLogger = {
-        logOperation: jest.fn().mockReturnValue(planNode),
-        finalize: jest.fn(),
-        getNodeForOutput: jest.fn(output => entryNodes[action.entries.findIndex(e => e.output === output)]),
-        toJson: jest.fn(),
+        logOperation: vi.fn().mockReturnValue(planNode),
+        finalize: vi.fn(),
+        getNodeForOutput: vi.fn(output => entryNodes[action.entries.findIndex(e => e.output === output)]),
+        toJson: vi.fn(),
       };
       action.context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
         [KeysInitQuery.physicalQueryPlanNode.name]: parentNode,
       });
-      jest.spyOn(instance, 'getOutput');
+      vi.spyOn(instance, 'getOutput');
 
       const sideData: IActorRdfJoinTestSideData = {
         metadatas: [
@@ -1370,15 +1370,15 @@ IActorRdfJoinSelectivityOutput
     it('invokes the physicalQueryPlanLogger for entries without a node', async() => {
       const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
       const planNode: IPhysicalQueryPlanNode = {
-        appendMetadata: jest.fn(),
-        adoptInput: jest.fn(),
-        setOutput: jest.fn(),
+        appendMetadata: vi.fn(),
+        adoptInput: vi.fn(),
+        setOutput: vi.fn(),
       };
       const logger: IPhysicalQueryPlanLogger = {
-        logOperation: jest.fn().mockReturnValue(planNode),
-        finalize: jest.fn(),
-        getNodeForOutput: jest.fn(),
-        toJson: jest.fn(),
+        logOperation: vi.fn().mockReturnValue(planNode),
+        finalize: vi.fn(),
+        getNodeForOutput: vi.fn(),
+        toJson: vi.fn(),
       };
       action.context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,

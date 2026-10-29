@@ -22,8 +22,8 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
   });
 
   describe('An ActorIteratorTransformRecordIntermediateResults instance', () => {
@@ -104,7 +104,7 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
         });
       });
       it('should apply transform to input quad stream', async() => {
-        const statisticEmitSpy = jest.spyOn(statisticIntermediateResults, 'emit');
+        const statisticEmitSpy = vi.spyOn(statisticIntermediateResults, 'emit');
         actionQuads.context = actionQuads.context.set(KeysStatistics.intermediateResults, statisticIntermediateResults);
 
         const output = await actor.run(actionQuads);
@@ -142,7 +142,7 @@ describe('ActorIteratorTransformRecordIntermediateResults', () => {
       });
 
       it('should apply transform to input bindings stream', async() => {
-        const statisticEmitSpy = jest.spyOn(statisticIntermediateResults, 'emit');
+        const statisticEmitSpy = vi.spyOn(statisticIntermediateResults, 'emit');
         actionBindings.context = actionBindings.context.set(
           KeysStatistics.intermediateResults,
           statisticIntermediateResults,

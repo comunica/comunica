@@ -55,9 +55,9 @@ describe('MediatorAll', () => {
         busm.subscribe(a0 = new DummyActor(10, 10, busm, false));
         busm.subscribe(a1 = new DummyActor(100, 0, busm, false));
         busm.subscribe(a2 = new DummyActor(1, 20, busm, false));
-        jest.spyOn(a0, 'runObservable');
-        jest.spyOn(a1, 'runObservable');
-        jest.spyOn(a2, 'runObservable');
+        vi.spyOn(a0, 'runObservable');
+        vi.spyOn(a1, 'runObservable');
+        vi.spyOn(a2, 'runObservable');
       });
 
       it('should mediate to all resolving actors', async() => {
@@ -81,9 +81,9 @@ describe('MediatorAll', () => {
         busm.subscribe(a0 = new DummyActor(10, 10, busm, true));
         busm.subscribe(a1 = new DummyActor(100, 0, busm, true));
         busm.subscribe(a2 = new DummyActor(1, 20, busm, true));
-        jest.spyOn(a0, 'runObservable');
-        jest.spyOn(a1, 'runObservable');
-        jest.spyOn(a2, 'runObservable');
+        vi.spyOn(a0, 'runObservable');
+        vi.spyOn(a1, 'runObservable');
+        vi.spyOn(a2, 'runObservable');
       });
 
       it('should mediate over no actors', async() => {
@@ -107,9 +107,9 @@ describe('MediatorAll', () => {
         busm.subscribe(a0 = new DummyActor(10, 10, busm, false));
         busm.subscribe(a1 = new DummyActor(100, 0, busm, true));
         busm.subscribe(a2 = new DummyActor(1, 20, busm, false));
-        jest.spyOn(a0, 'runObservable');
-        jest.spyOn(a1, 'runObservable');
-        jest.spyOn(a2, 'runObservable');
+        vi.spyOn(a0, 'runObservable');
+        vi.spyOn(a1, 'runObservable');
+        vi.spyOn(a2, 'runObservable');
       });
 
       it('should mediate over the non-rejecting actors', async() => {

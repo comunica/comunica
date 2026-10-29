@@ -1,5 +1,7 @@
-const stringToStream = require('streamify-string');
-const { ActionContext } = require('@comunica/core');
+import { ActionContext } from '@comunica/core';
+import stringToStream from 'streamify-string';
+import { vi } from 'vitest';
+import { QueryEngineBase } from '../lib/QueryEngineBase';
 
 class EngineMock {
   constructor(){
@@ -54,7 +56,7 @@ class QueryEngineFactoryBase {
 
   create(options) {
     let mock = new EngineMock();
-    mock.invalidateHttpCache = jest.fn();
+    mock.invalidateHttpCache = vi.fn();
 
     if (options && options.mainModulePath === "rejecting_engine_promise") {
       return Promise.reject("REASON");
@@ -64,7 +66,4 @@ class QueryEngineFactoryBase {
   }
 }
 
-module.exports = {
-  QueryEngineFactoryBase: QueryEngineFactoryBase,
-  QueryEngineBase: require('../lib/QueryEngineBase').QueryEngineBase,
-};
+export { QueryEngineBase, QueryEngineFactoryBase };

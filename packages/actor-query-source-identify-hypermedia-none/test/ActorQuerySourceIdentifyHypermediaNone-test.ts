@@ -324,7 +324,7 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
         it('should apply a different conflict mode to each existing named graph', async() => {
           const graphA = DF.namedNode('http://example.org/graph-a');
           const graphB = DF.namedNode('http://example.org/graph-b');
-          const resolveConflictMode = jest.fn(
+          const resolveConflictMode = vi.fn(
             (quad: RDF.Quad): DereferenceFromNamedConflictMode =>
               quad.graph.equals(graphA) ? 'keepSource' : 'preferNamed',
           );

@@ -1,17 +1,17 @@
-
-const IncomingMessage = require('http').IncomingMessage;
+import { IncomingMessage } from 'node:http';
+import { vi } from 'vitest';
 
 let options = {
   statusCode: 200
 };
 
-function mockSetup(mock) {
+export function mockSetup(mock) {
   options = mock;
 }
 
 function request(settings, func) {
   let body = new IncomingMessage();
-  body.destroy = jest.fn();
+  body.destroy = vi.fn();
   Object.assign(settings.headers, options.headers || {});
   Object.assign(body, options.body || {}, {
     input: settings,
@@ -44,8 +44,5 @@ function request(settings, func) {
 
 function Agent() {}
 
-module.exports = {
-  http: { request, Agent },
-  https: { request, Agent },
-  mockSetup
-};
+export const http = { request, Agent };
+export const https = { request, Agent };

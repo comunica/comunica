@@ -1,7 +1,6 @@
 import { PassThrough, Readable } from 'node:stream';
 import { KeysRdfParseHtmlScript } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { ActorRdfParseShaclc } from '../lib/ActorRdfParseShaclc';

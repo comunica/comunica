@@ -8,6 +8,7 @@ import { getMetadataBindings, MetadataValidationState } from '@comunica/utils-me
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import type { Mock } from 'vitest';
 import { QuerySourceServiceExecutor } from '../lib/QuerySourceServiceExecutor';
 import '@comunica/utils-jest';
 
@@ -16,8 +17,8 @@ const AF = new AlgebraFactory(DF);
 const BF = new BindingsFactory(DF);
 
 describe('QuerySourceServiceExecutor', () => {
-  let execute: jest.Mock;
-  let getMetadata: jest.Mock;
+  let execute: Mock;
+  let getMetadata: Mock;
   let source: QuerySourceServiceExecutor;
   let context: IActionContext;
   let body: Algebra.Operation;
@@ -34,8 +35,8 @@ describe('QuerySourceServiceExecutor', () => {
   };
 
   beforeEach(() => {
-    execute = jest.fn();
-    getMetadata = jest.fn();
+    execute = vi.fn();
+    getMetadata = vi.fn();
     source = new QuerySourceServiceExecutor('urn:service', { execute }, DF, AF);
     context = new ActionContext();
     body = AF.createPattern(DF.variable('s'), DF.namedNode('urn:p'), DF.variable('o'));

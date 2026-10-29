@@ -9,7 +9,6 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { QuerySourceSkolemized } from '../lib/QuerySourceSkolemized';
 import '@comunica/utils-jest';
-import 'jest-rdf';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -21,9 +20,9 @@ describe('QuerySourceSkolemized', () => {
 
   beforeEach(() => {
     sourceInner = {
-      getFilterFactor: <any> jest.fn(() => 1),
-      getSelectorShape: <any> jest.fn(() => 'SHAPE'),
-      queryBindings: <any> jest.fn(() => {
+      getFilterFactor: <any> vi.fn(() => 1),
+      getSelectorShape: <any> vi.fn(() => 'SHAPE'),
+      queryBindings: <any> vi.fn(() => {
         const it = new ArrayIterator([
           BF.fromRecord({ a: DF.namedNode('a0') }),
           BF.fromRecord({ a: DF.blankNode('a1') }),
@@ -32,8 +31,8 @@ describe('QuerySourceSkolemized', () => {
         it.setProperty('metadata', { state: new MetadataValidationState() });
         return it;
       }),
-      queryBoolean: <any> jest.fn(async() => true),
-      queryQuads: <any> jest.fn(() => {
+      queryBoolean: <any> vi.fn(async() => true),
+      queryQuads: <any> vi.fn(() => {
         const it = new ArrayIterator([
           DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.blankNode('o1')),
           DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.blankNode('o2')),
@@ -41,8 +40,8 @@ describe('QuerySourceSkolemized', () => {
         it.setProperty('metadata', { state: new MetadataValidationState() });
         return it;
       }),
-      queryVoid: <any> jest.fn(),
-      toString: <any> jest.fn(() => 'STR'),
+      queryVoid: <any> vi.fn(),
+      toString: <any> vi.fn(() => 'STR'),
       referenceValue: 'REF',
     };
     source = new QuerySourceSkolemized(sourceInner, '0');

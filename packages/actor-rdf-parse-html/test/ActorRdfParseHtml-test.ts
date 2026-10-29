@@ -7,7 +7,6 @@ import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bu
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IBus } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
@@ -34,7 +33,7 @@ describe('ActorRdfParseHtml', () => {
         mediaTypeFormats: {},
         name: 'jsonldParser',
         mediatorHttp,
-        httpInvalidator: <any> { addInvalidateListener: jest.fn() },
+        httpInvalidator: <any> { addInvalidateListener: vi.fn() },
         cacheSize: 10,
       },
     );
@@ -213,7 +212,7 @@ describe('ActorRdfParseHtml', () => {
             handleMediaType: 'text/html',
           })))
           .handle.data))
-          .rejects.toThrow(new Error('Unexpected COMMA(",") in state KEY'));
+          .rejects.toThrow('Unexpected COMMA(",") in state KEY');
       });
 
       it('should delegate error events (with no metadata provided in input handle)', async() => {
@@ -224,7 +223,7 @@ describe('ActorRdfParseHtml', () => {
             handleMediaType: 'text/html',
           })))
           .handle.data))
-          .rejects.toThrow(new Error('Unexpected COMMA(",") in state KEY'));
+          .rejects.toThrow('Unexpected COMMA(",") in state KEY');
       });
 
       it('should produce an error in the stream if there is an error getting html parsers', async() => {

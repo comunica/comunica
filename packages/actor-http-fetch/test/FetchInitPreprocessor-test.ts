@@ -37,9 +37,9 @@ describe('FetchInitPreprocessor', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
-    jest.resetAllMocks();
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
+    vi.resetAllMocks();
     globalThis.AbortController = originalController;
   });
 

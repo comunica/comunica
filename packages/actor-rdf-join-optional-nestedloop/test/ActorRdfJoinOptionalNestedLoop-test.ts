@@ -11,6 +11,7 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import type { Mock } from 'vitest';
 import { ActorRdfJoinOptionalNestedLoop } from '../lib/ActorRdfJoinOptionalNestedLoop';
 import '@comunica/utils-jest';
 
@@ -202,7 +203,7 @@ IActorRdfJoinSelectivityOutput
   });
   describe('An ActorRdfJoinOptionalNestedLoop instance with an expression evaluator', () => {
     let actor: ActorRdfJoinOptionalNestedLoop;
-    let evaluateAsEBV: jest.Mock;
+    let evaluateAsEBV: Mock;
     let mediatorExpressionEvaluatorFactory: any;
     const expression = FACTORY.createTermExpression(DF.literal('true'));
 
@@ -245,10 +246,10 @@ IActorRdfJoinSelectivityOutput
     }
 
     beforeEach(() => {
-      evaluateAsEBV = jest.fn(async(bindings: RDF.Bindings) =>
+      evaluateAsEBV = vi.fn(async(bindings: RDF.Bindings) =>
         bindings.get('id')!.value === bindings.get('id2')!.value);
       mediatorExpressionEvaluatorFactory = {
-        mediate: jest.fn(async() => ({ evaluateAsEBV })),
+        mediate: vi.fn(async() => ({ evaluateAsEBV })),
       };
       actor = new ActorRdfJoinOptionalNestedLoop({
         name: 'actor',
@@ -307,7 +308,7 @@ IActorRdfJoinSelectivityOutput
       });
 
       it('should treat expression errors as false and log them', async() => {
-        const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
+        const logWarnSpy = vi.spyOn(<any> actor, 'logWarn');
         evaluateAsEBV.mockImplementation(async() => {
           throw new ExpressionError('expression error');
         });

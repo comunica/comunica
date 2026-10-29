@@ -7,11 +7,11 @@ describe('Setup', () => {
   describe('The Setup module', () => {
     beforeEach(() => {
       // Mock manager
-      jest.spyOn((<any> ComponentsManagerBuilder).prototype, 'build').mockImplementation(() => {
+      vi.spyOn((<any> ComponentsManagerBuilder).prototype, 'build').mockImplementation(() => {
         return {
-          instantiate: async() => ({ run: jest.fn(), initialize: jest.fn(), deinitialize: jest.fn() }),
+          instantiate: async() => ({ run: vi.fn(), initialize: vi.fn(), deinitialize: vi.fn() }),
           configRegistry: {
-            register: jest.fn(),
+            register: vi.fn(),
           },
         };
       });
@@ -20,7 +20,7 @@ describe('Setup', () => {
     it('should throw an error when constructed', () => {
       expect(() => {
         new (<any> Setup)();
-      }).toThrow('Setup is not a constructor');
+      }).toThrow('is not a constructor');
     });
 
     it('should have a \'run\' function', () => {
@@ -37,17 +37,17 @@ describe('Setup', () => {
 
     it('should throw an error when the runner resolves to false when calling \'run\'', async() => {
       // Mock manager
-      jest.spyOn((<any> ComponentsManagerBuilder).prototype, 'build').mockImplementation(() => {
+      vi.spyOn((<any> ComponentsManagerBuilder).prototype, 'build').mockImplementation(() => {
         return {
           instantiate: async() => ({
             run: async() => {
               throw new Error('Failure setup runner');
             },
-            initialize: jest.fn(),
-            deinitialize: jest.fn(),
+            initialize: vi.fn(),
+            deinitialize: vi.fn(),
           }),
           configRegistry: {
-            register: jest.fn(),
+            register: vi.fn(),
           },
         };
       });

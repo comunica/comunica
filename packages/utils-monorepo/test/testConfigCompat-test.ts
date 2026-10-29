@@ -2,19 +2,19 @@ import { exec } from 'node:child_process';
 import { copy, emptyDir, pathExists, readdir, readFile } from 'fs-extra';
 import { isSemVerEqual, testConfigCompat } from '../lib/testConfigCompat';
 
-jest.mock<typeof import('node:child_process')>('node:child_process', () => {
+vi.mock(import('node:child_process'), () => {
   return <any> {
-    exec: jest.fn(),
+    exec: vi.fn(),
   };
 });
 
-jest.mock<typeof import('fs-extra')>('fs-extra', () => {
+vi.mock(import('fs-extra'), () => {
   return <any> {
-    readdir: jest.fn(),
-    pathExists: jest.fn(),
-    readFile: jest.fn(),
-    emptyDir: jest.fn(),
-    copy: jest.fn(),
+    readdir: vi.fn(),
+    pathExists: vi.fn(),
+    readFile: vi.fn(),
+    emptyDir: vi.fn(),
+    copy: vi.fn(),
   };
 });
 
@@ -100,12 +100,12 @@ function removeUnder(path: string): void {
 /**
  * Lay out the packages that npm installs for the given engine version.
  * The config package ends up both hoisted and nested below another package,
- * next to a package holding neither and a file that is not a package at all.
+ * next to a package holding neither and files that are not a package at all.
  */
 function installEngine(version: string): void {
   installedVersion = version;
   dirs[MODULES] = [ '@comunica/', 'rdf-parse/', '.package-lock.json' ];
-  dirs[`${MODULES}/@comunica`] = [ 'config-query-sparql/', 'query-sparql/' ];
+  dirs[`${MODULES}/@comunica`] = [ 'config-query-sparql/', 'query-sparql/', '.DS_Store' ];
   dirs[`${MODULES}/@comunica/query-sparql`] = [];
   for (const installed of [ HOISTED, NESTED ]) {
     dirs[installed] = [];
@@ -244,7 +244,7 @@ function unchangedConfigs(): ConfigPackage {
 
 describe('testConfigCompat', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     dirs = {};
     files = {};
@@ -252,30 +252,30 @@ describe('testConfigCompat', () => {
     instantiations = [];
     installedVersion = '';
 
-    jest.spyOn(console, 'log').mockImplementation(() => {
+    vi.spyOn(console, 'log').mockImplementation(() => {
       // Keep the test output clean
     });
 
-    jest.mocked(readdir).mockImplementation(<any> (async(path: string) => {
+    vi.mocked(readdir).mockImplementation(<any> (async(path: string) => {
       const entries = dirs[normalize(path)];
       if (!entries) {
         throw new Error(`Virtual readdir of unknown directory ${path}`);
       }
       return entries.map(entry => dirent(normalize(path), entry));
     }));
-    jest.mocked(readFile).mockImplementation(<any> (async(path: string) => {
+    vi.mocked(readFile).mockImplementation(<any> (async(path: string) => {
       const contents = files[normalize(path)];
       if (contents === undefined) {
         throw new Error(`Virtual readFile of unknown file ${path}`);
       }
       return contents;
     }));
-    jest.mocked(pathExists).mockImplementation(<any> (async(path: string) =>
+    vi.mocked(pathExists).mockImplementation(<any> (async(path: string) =>
       normalize(path) in files || normalize(path) in dirs));
-    jest.mocked(emptyDir).mockImplementation(<any> (async(path: string) => {
+    vi.mocked(emptyDir).mockImplementation(<any> (async(path: string) => {
       removeUnder(normalize(path));
     }));
-    jest.mocked(copy).mockImplementation(<any> (async(source: string, target: string, options: any) => {
+    vi.mocked(copy).mockImplementation(<any> (async(source: string, target: string, options: any) => {
       const to = normalize(target);
       dirs[to] = [];
       // Copying does not remove what is already there, which is why the target is emptied first
@@ -292,7 +292,7 @@ describe('testConfigCompat', () => {
       }
     }));
 
-    jest.mocked(exec).mockImplementation(<any> ((command: string, options: any, callback: any) => {
+    vi.mocked(exec).mockImplementation(<any> ((command: string, options: any, callback: any) => {
       try {
         if (command.startsWith('npm view')) {
           callback(null, { stdout: JSON.stringify(Object.keys(releases)), stderr: '' });
@@ -312,7 +312,7 @@ describe('testConfigCompat', () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('for a config package that did not change since its release', () => {
@@ -504,8 +504,8 @@ describe('testConfigCompat', () => {
 
     it('should skip engine versions that do not depend on the config package', async() => {
       setUpScenario({ configs: unchangedConfigs(), ...releasedState(), engineConfig: CONFIG_V5_1_3 });
-      const withoutConfigPackage = jest.mocked(exec).getMockImplementation()!;
-      jest.mocked(exec).mockImplementation(<any> ((command: string, options: any, callback: any) => {
+      const withoutConfigPackage = vi.mocked(exec).getMockImplementation()!;
+      vi.mocked(exec).mockImplementation(<any> ((command: string, options: any, callback: any) => {
         withoutConfigPackage(command, options, callback);
         if (command.startsWith('npm install')) {
           delete dirs[HOISTED];

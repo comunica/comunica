@@ -105,7 +105,7 @@ describe('ActorQueryOperationWrapStream', () => {
 
       mediatorQueryOperation = {
         async mediate(a: any): Promise<IQueryOperationResultQuads | IQueryOperationResultBindings> {
-          // Record the context it was called with, as jest calledWith looks only at object reference
+          // Record the context it was called with, as vitest calledWith looks only at object reference
           // Which is mutated in .run(a), resulting in failing tests that test behavior of mediate
           // correct.
           calledWithContext = a.context;
@@ -207,7 +207,7 @@ describe('ActorQueryOperationWrapStream', () => {
         expect(actorTransform2.transformCalls).toBe(2);
       });
       it('should record query operation metadata and context', async() => {
-        const _spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
+        const _spyQueryOperation = vi.spyOn(mediatorQueryOperation, 'mediate')
           .mockResolvedValue({
             type: 'bindings',
             bindingsStream: bsOutput,
@@ -216,7 +216,7 @@ describe('ActorQueryOperationWrapStream', () => {
             },
             context: new ActionContext({ c: 'value3' }),
           });
-        const spyIteratorTransform = jest.spyOn(mediatorIteratorTransform, 'mediate');
+        const spyIteratorTransform = vi.spyOn(mediatorIteratorTransform, 'mediate');
 
         const _output: IQueryOperationResultBindings =
           <IQueryOperationResultBindings> await actorWrapStream.run(actionBindings);
@@ -230,7 +230,7 @@ describe('ActorQueryOperationWrapStream', () => {
         });
       });
       it('should record empty metadata and context', async() => {
-        const _spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
+        const _spyQueryOperation = vi.spyOn(mediatorQueryOperation, 'mediate')
           .mockResolvedValue({
             type: 'bindings',
             bindingsStream: bsOutput,
@@ -239,7 +239,7 @@ describe('ActorQueryOperationWrapStream', () => {
             },
             context: undefined,
           });
-        const spyIteratorTransform = jest.spyOn(mediatorIteratorTransform, 'mediate');
+        const spyIteratorTransform = vi.spyOn(mediatorIteratorTransform, 'mediate');
 
         const _output: IQueryOperationResultBindings =
           <IQueryOperationResultBindings> await actorWrapStream.run(actionBindings);
@@ -272,7 +272,7 @@ describe('ActorQueryOperationWrapStream', () => {
         expect(actorTransform2.transformCalls).toBe(1);
       });
       it('should record query operation metadata and context', async() => {
-        const _spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
+        const _spyQueryOperation = vi.spyOn(mediatorQueryOperation, 'mediate')
           .mockResolvedValue({
             type: 'quads',
             quadStream: quadOutput,
@@ -281,7 +281,7 @@ describe('ActorQueryOperationWrapStream', () => {
             },
             context: new ActionContext({ c: 'value3' }),
           });
-        const spyIteratorTransform = jest.spyOn(mediatorIteratorTransform, 'mediate');
+        const spyIteratorTransform = vi.spyOn(mediatorIteratorTransform, 'mediate');
 
         const _output: IQueryOperationResultQuads =
           <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
@@ -295,7 +295,7 @@ describe('ActorQueryOperationWrapStream', () => {
         });
       });
       it('should record empty metadata and context', async() => {
-        const _spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
+        const _spyQueryOperation = vi.spyOn(mediatorQueryOperation, 'mediate')
           .mockResolvedValue({
             type: 'quads',
             quadStream: quadOutput,
@@ -304,7 +304,7 @@ describe('ActorQueryOperationWrapStream', () => {
             },
             context: undefined,
           });
-        const spyIteratorTransform = jest.spyOn(mediatorIteratorTransform, 'mediate');
+        const spyIteratorTransform = vi.spyOn(mediatorIteratorTransform, 'mediate');
 
         const _output: IQueryOperationResultQuads =
           <IQueryOperationResultQuads> await actorWrapStream.run(actionQuads);
@@ -319,7 +319,7 @@ describe('ActorQueryOperationWrapStream', () => {
       });
     });
     it('should return input action when unsupported type is given', async() => {
-      const _spyQueryOperation = jest.spyOn(mediatorQueryOperation, 'mediate')
+      const _spyQueryOperation = vi.spyOn(mediatorQueryOperation, 'mediate')
         .mockResolvedValue({
           type: 'boolean',
           quadStream: quadOutput,

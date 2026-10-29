@@ -25,7 +25,7 @@ describe('MediatorJoinCoefficientsFixed', () => {
         timeWeight: 1,
         ioWeight: 1,
       });
-      debugLog = jest.fn();
+      debugLog = vi.fn();
       action = <any> {
         entries: [
           {

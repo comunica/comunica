@@ -4,6 +4,7 @@ import type { FragmentSelectorShape, IQuerySourceWrapper, IServiceExecutor } fro
 import { Algebra, AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
+import type { Mock } from 'vitest';
 import {
   doesShapeAcceptOperation,
   doesShapeAcceptOperationInContext,
@@ -1209,11 +1210,11 @@ describe('FragmentSelectorShapes', () => {
     const serviceExecutor: IServiceExecutor = { execute: async() => []};
     const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     const contextExecutors = context.set(KeysInitQuery.serviceExecutors, { 'ex:executor': serviceExecutor });
-    let getSelectorShape: jest.Mock;
+    let getSelectorShape: Mock;
     let source: IQuerySourceWrapper;
 
     beforeEach(() => {
-      getSelectorShape = jest.fn(async() => SHAPE_SPARQL_1_1);
+      getSelectorShape = vi.fn(async() => SHAPE_SPARQL_1_1);
       source = <any> { source: { referenceValue: 'ex:source', getSelectorShape }};
     });
 

@@ -3,9 +3,9 @@ import '@comunica/utils-jest';
 import { ActorInitExpressions } from '../lib/ActorInitExpressions';
 
 describe('ActorInitExpressions', () => {
-  const mediatorExpressionEvaluatorFactory: any = { mediate: jest.fn() };
-  const mediatorTermComparatorFactory: any = { mediate: jest.fn() };
-  const mediatorBindingsAggregatorFactory: any = { mediate: jest.fn() };
+  const mediatorExpressionEvaluatorFactory: any = { mediate: vi.fn() };
+  const mediatorTermComparatorFactory: any = { mediate: vi.fn() };
+  const mediatorBindingsAggregatorFactory: any = { mediate: vi.fn() };
   let actor: ActorInitExpressions;
 
   beforeEach(() => {

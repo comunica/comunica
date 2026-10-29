@@ -11,6 +11,7 @@ import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import type { MockInstance } from 'vitest';
 import type {
   IActorRdfJoinMultiBindSourceTestSideData,
 } from '../lib/ActorRdfJoinMultiBindSource';
@@ -35,7 +36,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
     let mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
     let mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
     let actor: ActorRdfJoinMultiBindSource;
-    let logSpy: jest.SpyInstance;
+    let logSpy: MockInstance;
     let source1: IQuerySourceWrapper;
     let source2: IQuerySourceWrapper;
     let source3TriplePattern: IQuerySourceWrapper;
@@ -61,7 +62,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
       });
-      logSpy = jest.spyOn((<any> actor), 'logDebug').mockImplementation();
+      logSpy = vi.spyOn((<any> actor), 'logDebug').mockImplementation(() => {});
       source1 = <IQuerySourceWrapper> <any> {
         source: {
           getSelectorShape() {
@@ -71,7 +72,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               joinBindings: true,
             };
           },
-          queryBindings: jest.fn((operation: any, ctx: any, options: any) => {
+          queryBindings: vi.fn((operation: any, ctx: any, options: any) => {
             return options.joinBindings.bindings.transform({
               map(binding: RDF.Bindings): RDF.Bindings {
                 return binding.merge(BF.bindings([
@@ -114,7 +115,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
               joinBindings: true,
             };
           },
-          queryBindings: jest.fn((operation: any, ctx: any, options: any) => {
+          queryBindings: vi.fn((operation: any, ctx: any, options: any) => {
             return options.joinBindings.bindings.transform({
               map(binding: RDF.Bindings): RDF.Bindings {
                 return binding.merge(BF.bindings([

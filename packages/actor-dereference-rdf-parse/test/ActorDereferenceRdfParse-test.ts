@@ -23,7 +23,7 @@ describe('ActorAbstractDereferenceParse', () => {
       bus: new Bus({ name: 'bus' }),
       // @ts-expect-error
       mediatorDereference: {
-        mediate: jest.fn(async(action: IActionDereference): Promise<IActorDereferenceOutput> => {
+        mediate: vi.fn(async(action: IActionDereference): Promise<IActorDereferenceOutput> => {
           const ext = (<any>action.context).hasRaw('extension') ?
               (<any>action.context).getRaw('extension') :
             'index.html';
@@ -47,7 +47,7 @@ describe('ActorAbstractDereferenceParse', () => {
       },
       // @ts-expect-error
       mediatorParse: {
-        mediate: jest.fn(async(action: IActionAbstractMediaTypedHandle<IActionParse<any>>):
+        mediate: vi.fn(async(action: IActionAbstractMediaTypedHandle<IActionParse<any>>):
         Promise<IActorOutputAbstractMediaTypedHandle<IActorParseOutput<any, any>>> => {
           const data = new Readable();
           if ((<any>action.context).hasRaw('emitParseError')) {
@@ -139,7 +139,7 @@ describe('ActorAbstractDereferenceParse', () => {
 
   it('should run and ignore parse errors in lenient mode', async() => {
     context = new ActionContext({ emitParseError: true, [KeysInitQuery.lenient.name]: true });
-    const spy = jest.spyOn(actor, <any> 'logWarn');
+    const spy = vi.spyOn(actor, <any> 'logWarn');
     const output = await actor.run({ url: 'https://www.google.com/', context });
     expect(output.url).toBe('https://www.google.com/index.html');
     await expect(arrayifyStream(output.data)).resolves.toEqual([]);
@@ -148,7 +148,7 @@ describe('ActorAbstractDereferenceParse', () => {
 
   it('should run and ignore parse errors in lenient mode and log them', async() => {
     const logger = new LoggerVoid();
-    const spy = jest.spyOn(logger, 'warn');
+    const spy = vi.spyOn(logger, 'warn');
     context = new ActionContext({
       emitParseError: true,
       [KeysInitQuery.lenient.name]: true,
@@ -164,7 +164,7 @@ describe('ActorAbstractDereferenceParse', () => {
 
   it('should run and not log on an abort error', async() => {
     context = new ActionContext({ emitAbortError: true, [KeysInitQuery.lenient.name]: true });
-    const spy = jest.spyOn(actor, <any> 'logWarn');
+    const spy = vi.spyOn(actor, <any> 'logWarn');
     const output = await actor.run({ url: 'https://www.google.com/', context });
     expect(output.url).toBe('https://www.google.com/index.html');
     await expect(arrayifyStream(output.data)).resolves.toEqual([]);
@@ -186,7 +186,7 @@ describe('ActorAbstractDereferenceParse', () => {
 
   it('should run and ignore parse rejects in lenient mode', async() => {
     context = new ActionContext({ parseReject: true, extension: 'other.x', [KeysInitQuery.lenient.name]: true });
-    const spy = jest.spyOn(actor, <any> 'logWarn');
+    const spy = vi.spyOn(actor, <any> 'logWarn');
     const output = await actor.run({ url: 'https://www.google.com/', context });
     expect(output.url).toBe('https://www.google.com/other.x');
     await expect(arrayifyStream(output.data)).resolves.toEqual([]);
@@ -195,7 +195,7 @@ describe('ActorAbstractDereferenceParse', () => {
 
   it('should run and ignore parse rejects in lenient mode and log them', async() => {
     const logger = new LoggerVoid();
-    const spy = jest.spyOn(logger, 'warn');
+    const spy = vi.spyOn(logger, 'warn');
     const url = 'https://www.google.com/';
     context = new ActionContext({
       parseReject: true,
@@ -224,7 +224,7 @@ describe('ActorAbstractDereferenceParse', () => {
 
   it('should explain parse rejects of documents without a media type in lenient mode', async() => {
     const logger = new LoggerVoid();
-    const spy = jest.spyOn(logger, 'warn');
+    const spy = vi.spyOn(logger, 'warn');
     const url = 'https://www.google.com/';
     context = new ActionContext({
       parseReject: true,

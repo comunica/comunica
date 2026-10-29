@@ -147,7 +147,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('A LinkedRdfSourcesAsyncRdfIterator instance with negative maxIterators', () => {
@@ -163,7 +163,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         [ 'g', 'h', 'i' ],
       ]]);
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       await expect(it).toEqualBindingsStream(data.flat());
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(4);
@@ -180,7 +180,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         [ 'g', 'h', 'i' ],
       ]]);
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
         firstPageToken: true,
@@ -200,7 +200,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         [ 'g', 'h', 'i' ],
       ]]);
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
         firstPageToken: true,
@@ -237,10 +237,10 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         [ 'g', 'h', 'i' ],
       ]]);
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
 
-      const spy = jest.fn();
-      const spyError = jest.fn();
+      const spy = vi.fn();
+      const spyError = vi.fn();
       it.on('error', spyError);
       it.getProperty('metadata', spy);
       await new Promise(setImmediate);
@@ -258,7 +258,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       ]]);
       const it =
         new DummyIteratorErrorAccumulate(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
         firstPageToken: true,
@@ -275,7 +275,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         [ 'g', 'h', 'i' ],
       ]]);
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       await expect(it).toEqualBindingsStream(data.flat());
 
@@ -291,14 +291,14 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
     it('handles a single empty page', async() => {
       data = toBindings([[]]);
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
       await expect(it).toEqualBindingsStream(data.flat());
     });
 
     it('handles metadata for a single empty page before consuming data', async() => {
       data = toBindings([[]]);
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       await expect(new Promise(resolve => it.getProperty('metadata', resolve))).resolves.toEqual({
         firstPageToken: true,
@@ -314,7 +314,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
     it('handles metadata for a single empty page after consuming data', async() => {
       data = toBindings([[]]);
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
 
       await expect(it).toEqualBindingsStream(data.flat());
 
@@ -346,7 +346,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         ],
       ]);
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
       await expect(it).toEqualBindingsStream(data.flat());
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledWith({ first: true }, false);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledWith({ first: true }, true);
@@ -375,7 +375,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         { url: 'first' },
         sourceStateGetter,
       );
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
       await expect(it).toEqualBindingsStream(toBindings([
         [
           [ 'a', 'b', 'c' ],
@@ -429,7 +429,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
 
       // Wait until sub-iterator has been created
       const subIt = await new Promise(resolve => createdSubIterator.on('data', resolve));
-      const destroySpy = jest.spyOn(<any> subIt, 'destroy');
+      const destroySpy = vi.spyOn(<any> subIt, 'destroy');
 
       // Sanity check to make sure sub-iterator has been created
       expect((<any> it).currentIterators).toHaveLength(1);
@@ -541,7 +541,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         };
       };
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetterThis);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
       await expect(it).toEqualBindingsStream(data.flat());
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(6);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
@@ -572,7 +572,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         };
       };
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetterThis);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
       await expect(it).toEqualBindingsStream(data.flat());
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(3);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
@@ -601,7 +601,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         };
       };
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetterThis);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
       await expect(it).toEqualBindingsStream(data.flat());
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenCalledTimes(2);
       expect((<any> it).startIteratorsForNextUrls).toHaveBeenNthCalledWith(1, { first: true }, false);
@@ -732,9 +732,9 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
     });
 
     it('records dereference events when passed a dereference statistic', async() => {
-      const cb = jest.fn(() => {});
-      jest.useFakeTimers();
-      jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
+      const cb = vi.fn(() => {});
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
 
       const statisticTracker: StatisticLinkDereference = new StatisticLinkDereference();
       statisticTracker.on(cb);
@@ -766,9 +766,9 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         [ 'g', 'h', 'i' ],
       ]]);
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
 
-      const spy = jest.spyOn(<any> it, '_fillBufferAsync');
+      const spy = vi.spyOn(<any> it, '_fillBufferAsync');
       it.kickstart();
       expect(spy).toHaveBeenCalledTimes(1);
     });
@@ -780,9 +780,9 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         [ 'g', 'h', 'i' ],
       ]]);
       const it = new DummyIterator(operation, queryBindingsOptions, context, { url: 'first' }, sourceStateGetter);
-      jest.spyOn(<any> it, 'startIteratorsForNextUrls');
+      vi.spyOn(<any> it, 'startIteratorsForNextUrls');
 
-      const spy = jest.spyOn(<any> it, '_fillBufferAsync');
+      const spy = vi.spyOn(<any> it, '_fillBufferAsync');
       it.kickstart();
       await new Promise(setImmediate);
       it.kickstart();

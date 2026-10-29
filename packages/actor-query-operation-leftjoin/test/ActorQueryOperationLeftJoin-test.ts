@@ -37,7 +37,7 @@ describe('ActorQueryOperationLeftJoin', () => {
       }),
     };
     mediatorJoin = {
-      mediate: jest.fn((arg: any) => Promise.resolve({
+      mediate: vi.fn((arg: any) => Promise.resolve({
         bindingsStream: new UnionIterator(
           arg.entries.map((entry: IJoinEntry) => entry.output.bindingsStream),
           { autoStart: false },

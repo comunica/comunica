@@ -65,7 +65,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should recurse into sub-operations and leave other values alone', () => {
       const operation = AF.createSlice(AF.createNop(), 10, 20);
-      const recursiveCb = jest.fn(() => marker);
+      const recursiveCb = vi.fn(() => marker);
       const copied = <Algebra.Slice> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
       expect(copied).not.toBe(operation);
       expect(copied.input).toBe(marker);
@@ -77,7 +77,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should recurse into every entry of an array of sub-operations', () => {
       const operation = AF.createJoin([ AF.createNop(), AF.createBgp([]) ], false);
-      const recursiveCb = jest.fn(() => marker);
+      const recursiveCb = vi.fn(() => marker);
       const copied = <Algebra.Join> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
       expect(copied.input).toEqual([ marker, marker ]);
       expect(recursiveCb).toHaveBeenCalledTimes(2);
@@ -85,7 +85,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should not recurse into the variables of a project', () => {
       const operation = AF.createProject(AF.createNop(), [ DF.variable('v') ]);
-      const recursiveCb = jest.fn(() => marker);
+      const recursiveCb = vi.fn(() => marker);
       const copied = <Algebra.Project> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
       expect(copied.variables).toBe(operation.variables);
       expect(recursiveCb).toHaveBeenCalledTimes(1);
@@ -97,7 +97,7 @@ describe('ActorQueryOperationFromQuad', () => {
         AF.createNop(),
         [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ],
       );
-      const recursiveCb = jest.fn(() => marker);
+      const recursiveCb = vi.fn(() => marker);
       const copied = <Algebra.Construct> ActorQueryOperationFromQuad.copyOperation(operation, recursiveCb);
       expect(copied.template).toBe(operation.template);
       expect(recursiveCb).toHaveBeenCalledTimes(1);

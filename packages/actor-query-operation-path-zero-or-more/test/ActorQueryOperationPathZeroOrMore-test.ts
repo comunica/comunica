@@ -33,7 +33,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     };
 
     mediatorQueryOperation = {
-      mediate: jest.fn((arg: any) => {
+      mediate: vi.fn((arg: any) => {
         const vars: RDF.Variable[] = [];
         const distinct: boolean = arg.operation.type === 'distinct';
 

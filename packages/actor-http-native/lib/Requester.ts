@@ -3,13 +3,11 @@
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/util/Request.js */
 
 import { EventEmitter } from 'node:events';
-import type { AgentOptions, ClientRequest, IncomingMessage, IncomingHttpHeaders } from 'node:http';
+import type { AgentOptions, IncomingMessage, IncomingHttpHeaders } from 'node:http';
 import * as url from 'node:url';
 import * as zlib from 'node:zlib';
 import { ActorHttp } from '@comunica/bus-http';
-
-const { http } = require('follow-redirects');
-const { https } = require('follow-redirects');
+import { http, https } from 'follow-redirects';
 
 // Decode encoded streams with these decoders
 const DECODERS = { gzip: zlib.createGunzip, deflate: zlib.createInflate };
@@ -46,7 +44,7 @@ export default class Requester {
       });
     }
     settings.headers = headersObject;
-    const request: ClientRequest = requester.request(settings, (response: IncomingMessage) => {
+    const request = requester.request(settings, (response: IncomingMessage) => {
       response = this.decode(response);
       settings.headers = response.headers;
       response.setEncoding('utf8');

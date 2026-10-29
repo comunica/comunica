@@ -16,7 +16,6 @@ import {
   setMetadata,
 } from '../lib';
 import '@comunica/utils-jest';
-import 'jest-rdf';
 
 const quad = require('rdf-quad');
 

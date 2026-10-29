@@ -68,9 +68,9 @@ describe('ActorRdfParseHtmlMicrodata', () => {
             return null;
           },
         };
-        emit = jest.fn();
-        error = jest.fn();
-        end = jest.fn();
+        emit = vi.fn();
+        error = vi.fn();
+        end = vi.fn();
         action = { baseIRI, headers, emit, error, end, context };
       });
 

@@ -43,9 +43,9 @@ describe('ActorQueryOperationService', () => {
             { type: 'operation', operation: { operationType: 'type', type: Algebra.Types.PATTERN }}),
       },
     };
-    mediatorQuerySourceIdentify = { mediate: jest.fn(() => Promise.resolve({ querySource })) };
+    mediatorQuerySourceIdentify = { mediate: vi.fn(() => Promise.resolve({ querySource })) };
     mediatorQueryOperation = {
-      mediate: jest.fn((action: any) => Promise.resolve({
+      mediate: vi.fn((action: any) => Promise.resolve({
         type: 'bindings',
         bindingsStream: new ArrayIterator([
           BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),

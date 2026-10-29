@@ -43,13 +43,13 @@ describe('BusIndexed', () => {
         // Do nothing
       };
 
-      jest.spyOn(actor1, 'test');
-      jest.spyOn(actor2, 'test');
-      jest.spyOn(actor3, 'test');
+      vi.spyOn(actor1, 'test');
+      vi.spyOn(actor2, 'test');
+      vi.spyOn(actor3, 'test');
 
-      jest.spyOn(observer1, 'onRun');
-      jest.spyOn(observer2, 'onRun');
-      jest.spyOn(observer3, 'onRun');
+      vi.spyOn(observer1, 'onRun');
+      vi.spyOn(observer2, 'onRun');
+      vi.spyOn(observer3, 'onRun');
 
       bus = new BusIndexed({ name: 'bus', actorIdentifierFields: [ 'ACTOR' ], actionIdentifierFields: [ 'ACTION' ]});
     });
@@ -229,14 +229,14 @@ describe('BusIndexed', () => {
         // Do nothing
       };
 
-      jest.spyOn(actor1, 'test');
-      jest.spyOn(actor2, 'test');
-      jest.spyOn(actor3, 'test');
-      jest.spyOn(actor4, 'test');
+      vi.spyOn(actor1, 'test');
+      vi.spyOn(actor2, 'test');
+      vi.spyOn(actor3, 'test');
+      vi.spyOn(actor4, 'test');
 
-      jest.spyOn(observer1, 'onRun');
-      jest.spyOn(observer2, 'onRun');
-      jest.spyOn(observer3, 'onRun');
+      vi.spyOn(observer1, 'onRun');
+      vi.spyOn(observer2, 'onRun');
+      vi.spyOn(observer3, 'onRun');
 
       bus = new BusIndexed({ name: 'bus', actorIdentifierFields: [ 'type' ], actionIdentifierFields: [ 'a' ]});
     });

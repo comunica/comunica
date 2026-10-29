@@ -21,7 +21,7 @@ describe('ActorQueryOperationLoad', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: jest.fn().mockResolvedValue({
+      mediate: vi.fn().mockResolvedValue({
         quadStream: new ArrayIterator([
           DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
         ], { autoStart: false }),
@@ -30,12 +30,12 @@ describe('ActorQueryOperationLoad', () => {
       }),
     };
     mediatorUpdateQuads = {
-      mediate: jest.fn(() => Promise.resolve({
+      mediate: vi.fn(() => Promise.resolve({
         execute: () => Promise.resolve(),
       })),
     };
     mediatorQuerySourceIdentify = {
-      mediate: jest.fn(() => Promise.resolve({
+      mediate: vi.fn(() => Promise.resolve({
         querySource: 'SRC',
       })),
     };

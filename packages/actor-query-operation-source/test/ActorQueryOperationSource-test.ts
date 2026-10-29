@@ -16,7 +16,6 @@ import { assignOperationSource } from '@comunica/utils-query-operation';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationSource } from '../lib/ActorQueryOperationSource';
-import 'jest-rdf';
 import '@comunica/utils-jest';
 
 const AF = new AlgebraFactory();
@@ -35,12 +34,12 @@ describe('ActorQueryOperationSource', () => {
     source1 = <any> {
       source: {
         referenceValue: 'source1',
-        queryBindings: jest.fn(() => {
+        queryBindings: vi.fn(() => {
           const bindingsStream = new ArrayIterator([], { autoStart: false });
           bindingsStream.setProperty('metadata', { cardinality: { value: 10 }, variables: []});
           return bindingsStream;
         }),
-        queryQuads: jest.fn(() => {
+        queryQuads: vi.fn(() => {
           const quadStream = new ArrayIterator([], { autoStart: false });
           quadStream.setProperty('metadata', { cardinality: { value: 10 }});
           return quadStream;
@@ -112,7 +111,7 @@ describe('ActorQueryOperationSource', () => {
 
       function silentSource(makeStream: () => any): IQuerySourceWrapper {
         return <any> {
-          source: { referenceValue: 'silent', queryBindings: jest.fn(makeStream) },
+          source: { referenceValue: 'silent', queryBindings: vi.fn(makeStream) },
           context: new ActionContext({ [KeysQueryOperation.silent.name]: true }),
         };
       }
@@ -332,15 +331,15 @@ describe('ActorQueryOperationSource', () => {
       it('should handle bindings operations and invokes the logger', async() => {
         const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
         const planNode: IPhysicalQueryPlanNode = {
-          appendMetadata: jest.fn(),
-          adoptInput: jest.fn(),
-          setOutput: jest.fn(),
+          appendMetadata: vi.fn(),
+          adoptInput: vi.fn(),
+          setOutput: vi.fn(),
         };
         const logger: IPhysicalQueryPlanLogger = {
-          logOperation: jest.fn().mockReturnValue(planNode),
-          finalize: jest.fn(),
-          getNodeForOutput: jest.fn(),
-          toJson: jest.fn(),
+          logOperation: vi.fn().mockReturnValue(planNode),
+          finalize: vi.fn(),
+          getNodeForOutput: vi.fn(),
+          toJson: vi.fn(),
         };
         ctx = new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
@@ -369,15 +368,15 @@ describe('ActorQueryOperationSource', () => {
       it('should log the operations that the source handles itself', async() => {
         const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
         const planNode: IPhysicalQueryPlanNode = {
-          appendMetadata: jest.fn(),
-          adoptInput: jest.fn(),
-          setOutput: jest.fn(),
+          appendMetadata: vi.fn(),
+          adoptInput: vi.fn(),
+          setOutput: vi.fn(),
         };
         const logger: IPhysicalQueryPlanLogger = {
-          logOperation: jest.fn().mockReturnValue(planNode),
-          getNodeForOutput: jest.fn(),
-          finalize: jest.fn(),
-          toJson: jest.fn(),
+          logOperation: vi.fn().mockReturnValue(planNode),
+          getNodeForOutput: vi.fn(),
+          finalize: vi.fn(),
+          toJson: vi.fn(),
         };
         ctx = new ActionContext({
           [KeysInitQuery.physicalQueryPlanLogger.name]: logger,

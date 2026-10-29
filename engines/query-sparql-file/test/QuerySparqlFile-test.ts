@@ -1,9 +1,6 @@
-/** @jest-environment setup-polly-jest/jest-environment-node */
-
 import * as path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { QueryStringContext } from '@comunica/types';
-import 'jest-rdf';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';

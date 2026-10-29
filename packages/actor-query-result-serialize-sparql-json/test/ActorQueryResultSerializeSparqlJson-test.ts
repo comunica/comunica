@@ -119,7 +119,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
     beforeEach(() => {
       observedActors = [ 'urn:comunica:default:http/actors#fetch' ];
       httpInvalidator = <any> {
-        addInvalidateListener: jest.fn((listener: IInvalidateListener) => {
+        addInvalidateListener: vi.fn((listener: IInvalidateListener) => {
           lastListener = listener;
         }),
       };

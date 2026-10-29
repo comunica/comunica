@@ -6,11 +6,11 @@ describe('LinkQueueWrapper', () => {
   let wrapper: ILinkQueue;
   beforeEach(() => {
     wrapped = {
-      push: jest.fn(() => true),
-      getSize: jest.fn(() => 123),
-      isEmpty: jest.fn(() => true),
-      pop: jest.fn(() => ({ url: 'L1' })),
-      peek: jest.fn(() => ({ url: 'L2' })),
+      push: vi.fn(() => true),
+      getSize: vi.fn(() => 123),
+      isEmpty: vi.fn(() => true),
+      pop: vi.fn(() => ({ url: 'L1' })),
+      peek: vi.fn(() => ({ url: 'L2' })),
     };
     wrapper = new LinkQueueWrapper(wrapped);
   });

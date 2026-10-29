@@ -2,8 +2,8 @@ import { LoggerPretty } from '../lib/LoggerPretty';
 
 describe('LoggerPretty', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.spyOn(process.stderr, 'write').mockImplementation();
+    vi.clearAllMocks();
+    vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
   });
 
   it('should work on complex values', () => {

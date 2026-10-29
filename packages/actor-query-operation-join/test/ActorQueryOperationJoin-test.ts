@@ -1,6 +1,7 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IJoinEntry } from '@comunica/types';
+import type { IJoinEntry, IPhysicalQueryPlanLogger, IPhysicalQueryPlanNode } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
@@ -172,6 +173,50 @@ describe('ActorQueryOperationJoin', () => {
         ],
       });
       await expect(output.bindingsStream).toEqualBindingsStream([]);
+    });
+
+    it('should log an empty join in the physical query plan when one of the join entries is empty', async() => {
+      mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
+        bindingsStream: new ArrayIterator([], { autoStart: false }),
+        metadata: () => Promise.resolve({
+          cardinality: { type: 'exact', value: 0 },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        }),
+        operated: arg,
+        type: 'bindings',
+      });
+      const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
+      const entryNode: IPhysicalQueryPlanNode = <any> { id: 'entry' };
+      const planNode: IPhysicalQueryPlanNode = {
+        appendMetadata: vi.fn(),
+        adoptInput: vi.fn(),
+        setOutput: vi.fn(),
+      };
+      const logger: IPhysicalQueryPlanLogger = {
+        logOperation: vi.fn().mockReturnValue(planNode),
+        finalize: vi.fn(),
+        // Only the first entry was logged as a node of its own
+        getNodeForOutput: vi.fn().mockReturnValueOnce(entryNode),
+        toJson: vi.fn(),
+      };
+      const context = new ActionContext({
+        [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
+        [KeysInitQuery.physicalQueryPlanNode.name]: parentNode,
+      });
+
+      const op: any = { operation: { type: 'join', input: [{}, {}]}, context };
+      const output = getSafeBindings(await actor.run(op, undefined));
+      await expect(output.bindingsStream).toEqualBindingsStream([]);
+      // The first logged operation is the join itself, under which no physical join actor runs
+      expect(logger.logOperation).toHaveBeenNthCalledWith(2, {
+        logicalOperator: 'join-inner',
+        physicalOperator: 'empty',
+        parentNode: planNode,
+        actor: 'actor',
+      });
+      expect(logger.getNodeForOutput).toHaveBeenCalledTimes(2);
+      expect(planNode.adoptInput).toHaveBeenCalledTimes(1);
+      expect(planNode.adoptInput).toHaveBeenCalledWith(entryNode);
     });
   });
 });

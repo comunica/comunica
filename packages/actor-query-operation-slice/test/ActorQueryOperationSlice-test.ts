@@ -23,7 +23,7 @@ describe('ActorQueryOperationSlice', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: jest.fn((arg: any) => Promise.resolve({
+      mediate: vi.fn((arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
           BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),

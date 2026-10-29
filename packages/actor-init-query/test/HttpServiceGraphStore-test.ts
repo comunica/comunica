@@ -86,19 +86,19 @@ describe('HttpServiceGraphStore', () => {
     firstInserted = new Promise(resolve => insertFirst = resolve);
     exists = true;
     engine = {
-      query: jest.fn(async() => ({
+      query: vi.fn(async() => ({
         resultType: 'quads',
         execute: async() => new ArrayIterator(quads, { autoStart: false }),
       })),
-      queryBoolean: jest.fn(async() => exists),
-      queryVoid: jest.fn(async() => undefined),
-      parseRdf: jest.fn(async(text: NodeJS.ReadableStream, options: IRdfParseOptions) => {
+      queryBoolean: vi.fn(async() => exists),
+      queryVoid: vi.fn(async() => undefined),
+      parseRdf: vi.fn(async(text: NodeJS.ReadableStream, options: IRdfParseOptions) => {
         if (options.contentType !== 'text/turtle') {
           throw new Error(`No parser for ${options.contentType}`);
         }
         return parseTriples(text);
       }),
-      updateQuads: jest.fn((update: IQuadUpdate) => new Promise<void>((resolve, reject) => {
+      updateQuads: vi.fn((update: IQuadUpdate) => new Promise<void>((resolve, reject) => {
         update.quadStreamInsert!
           .on('data', (insertedQuad: RDF.Quad) => {
             inserted.push(insertedQuad);
@@ -406,7 +406,7 @@ describe('HttpServiceGraphStore', () => {
     });
 
     it('should only parse the payload once its triples are read', async() => {
-      jest.spyOn(engine, 'updateQuads').mockImplementation(async(update: any) => {
+      engine.updateQuads.mockImplementation(async(update: any) => {
         await new Promise(resolve => setTimeout(resolve, 10));
         await update.quadStreamInsert.toArray();
       });

@@ -6,7 +6,7 @@ import {
 import { ActorFunctionFactoryTermRegex } from '../lib';
 
 // Eventually, it might be nice to have a spec compliant regex engine
-// eslint-disable-next-line jest/no-disabled-tests
+// eslint-disable-next-line vitest/no-disabled-tests
 describe.skip('unfortunately our engine is not spec compliant', () => {
   runFuncTestTable({
     registeredActors: [

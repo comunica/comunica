@@ -1,4 +1,4 @@
-/* eslint-disable jest/prefer-spy-on,jest/no-mocks-import */
+/* eslint-disable vitest/prefer-spy-on,vitest/no-mocks-import */
 import type { Cluster } from 'node:cluster';
 import { PassThrough } from 'node:stream';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
@@ -15,7 +15,7 @@ import { DataFactory } from 'rdf-data-factory';
 import { Readable } from 'readable-stream';
 
 // @ts-expect-error
-import { QueryEngineFactoryBase, QueryEngineBase } from '../__mocks__';
+import { QueryEngineFactoryBase } from '../__mocks__';
 
 // @ts-expect-error
 import { fs, testArgumentDict, testFileContentDict } from '../__mocks__/fs';
@@ -23,8 +23,6 @@ import { fs, testArgumentDict, testFileContentDict } from '../__mocks__/fs';
 // @ts-expect-error
 import { http, ServerResponseMock } from '../__mocks__/http';
 
-// @ts-expect-error
-import { parse } from '../__mocks__/url';
 import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { IQueryBody } from '../lib/HttpServiceSparqlEndpoint';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
@@ -38,28 +36,24 @@ const cluster: Cluster = clusterUntyped;
 
 const quad = require('rdf-quad');
 
-jest.mock<typeof import('..')>('..', () => {
+// 'vi.mock' is hoisted above the imports, so the mocks have to be pulled in inside the factories
+vi.mock(import('..'), async() => {
+  // @ts-expect-error
+  const mocks = await import('../__mocks__');
   return <any> {
-    QueryEngineBase,
-    QueryEngineFactoryBase,
+    QueryEngineBase: mocks.QueryEngineBase,
+    QueryEngineFactoryBase: mocks.QueryEngineFactoryBase,
   };
 });
 
-jest.mock<typeof import('node:url')>('node:url', () => {
-  return <any> {
-    parse,
-  };
-});
+// @ts-expect-error
+vi.mock(import('node:url'), async() => <any> { parse: (await import('../__mocks__/url')).parse });
 
-jest.mock<typeof import('node:http')>('node:http', () => {
-  return http;
-});
+// @ts-expect-error
+vi.mock(import('node:http'), async() => (await import('../__mocks__/http')).http);
 
-jest.mock<typeof import('node:fs')>('node:fs', () => {
-  return fs;
-});
-
-jest.useFakeTimers({ legacyFakeTimers: true });
+// @ts-expect-error
+vi.mock(import('node:fs'), async() => (await import('../__mocks__/fs')).fs);
 
 const argsDefault = {
   moduleRootPath: 'moduleRootPath',
@@ -80,19 +74,31 @@ const BF = new BindingsFactory(DF);
 
 describe('HttpServiceSparqlEndpoint', () => {
   let originalCluster: typeof cluster;
+  // Vitest's fork pool talks to its worker over these events, so only the listeners that the service
+  // under test registers may be cleaned up between tests.
+  const preexistingListeners: Record<string, Function[]> = {};
+
   beforeAll(() => {
     originalCluster = { ...cluster };
+    for (const event of [ 'message', 'uncaughtException' ]) {
+      preexistingListeners[event] = process.listeners(<any> event);
+    }
   });
 
   beforeEach(() => {
-    process.exit = <any> jest.fn();
+    process.exit = <any> vi.fn();
 
     // Assume worker thread in all tests by default
     (<any> cluster).isMaster = false;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
-    process.removeAllListeners('message');
-    process.removeAllListeners('uncaughtException');
+    for (const [ event, listeners ] of Object.entries(preexistingListeners)) {
+      for (const listener of process.listeners(<any> event)) {
+        if (!listeners.includes(listener)) {
+          process.removeListener(<any> event, <any> listener);
+        }
+      }
+    }
   });
 
   afterAll(() => {
@@ -145,7 +151,7 @@ describe('HttpServiceSparqlEndpoint', () => {
     const moduleRootPath = 'test_modulerootpath';
     const env = { COMUNICA_CONFIG: 'test_config' };
     const defaultConfigPath = 'test_defaultConfigPath';
-    const exit = jest.fn();
+    const exit = vi.fn();
 
     beforeEach(() => {
       exit.mockClear();
@@ -267,7 +273,7 @@ describe('HttpServiceSparqlEndpoint', () => {
     });
 
     it('handles the -v option', async() => {
-      jest.spyOn(CliArgsHandlerBase, 'isDevelopmentEnvironment').mockReturnValue(false);
+      vi.spyOn(CliArgsHandlerBase, 'isDevelopmentEnvironment').mockReturnValue(false);
       await HttpServiceSparqlEndpoint.runArgsInProcess(
         [ source, '-v' ],
         stdout,
@@ -328,7 +334,7 @@ describe('HttpServiceSparqlEndpoint', () => {
     const moduleRootPath = 'test_modulerootpath';
     let env: any;
     let stderr: any;
-    const exit = jest.fn();
+    const exit = vi.fn();
     const defaultConfigPath = 'test_defaultConfigPath';
     beforeEach(() => {
       env = { COMUNICA_CONFIG: 'test_config' };
@@ -543,7 +549,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       const stderr = new PassThrough();
       beforeEach(() => {
         http.createServer.mockClear();
-        (<any> instance.handleRequest).bind = jest.fn(() => 'handleRequest_bound');
+        (<any> instance.handleRequest).bind = vi.fn(() => 'handleRequest_bound');
       });
 
       it('should set the server\'s port number correctly', async() => {
@@ -593,7 +599,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Open new connection
         const response1 = new EventEmitter();
-        (response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = vi.fn((message, resolve) => resolve());
         server.emit('request', undefined, response1);
 
         // Send shutdown message
@@ -618,10 +624,10 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Open new connections
         const response1 = new EventEmitter();
-        (response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = vi.fn((message, resolve) => resolve());
         server.emit('request', undefined, response1);
         const response2 = new EventEmitter();
-        (response2).end = jest.fn((message, resolve) => resolve());
+        (response2).end = vi.fn((message, resolve) => resolve());
         server.emit('request', undefined, response2);
 
         // Send shutdown message
@@ -649,10 +655,10 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Open new connections
         const response1 = new EventEmitter();
-        (response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = vi.fn((message, resolve) => resolve());
         server.emit('request', undefined, response1);
         const response2 = new EventEmitter();
-        (response2).end = jest.fn((message, resolve) => resolve());
+        (response2).end = vi.fn((message, resolve) => resolve());
         server.emit('request', undefined, response2);
         response2.emit('close');
 
@@ -679,7 +685,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Open new connection
         const response1 = new EventEmitter();
-        (response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = vi.fn((message, resolve) => resolve());
         server.emit('request', undefined, response1);
 
         // Send shutdown message
@@ -704,10 +710,10 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Open new connections
         const response1 = new EventEmitter();
-        (response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = vi.fn((message, resolve) => resolve());
         server.emit('request', undefined, response1);
         const response2 = new EventEmitter();
-        (response2).end = jest.fn((message, resolve) => resolve());
+        (response2).end = vi.fn((message, resolve) => resolve());
         server.emit('request', undefined, response2);
 
         // Send shutdown message
@@ -726,12 +732,20 @@ describe('HttpServiceSparqlEndpoint', () => {
       const stdout = new PassThrough();
       const stderr = new PassThrough();
       beforeEach(() => {
+        vi.useFakeTimers();
         // Assume worker thread in all tests by default
         (<any> cluster).isMaster = true;
-        (<any> cluster).fork = jest.fn();
-        (<any> cluster).disconnect = jest.fn();
-        (<any> cluster).on = jest.fn();
-        (<any> process).once = jest.fn();
+        (<any> cluster).fork = vi.fn();
+        (<any> cluster).disconnect = vi.fn();
+        (<any> cluster).on = vi.fn();
+        (<any> process).once = vi.fn();
+        // Jest's legacy fake timers replaced these with mocks; vitest's fake timers do not
+        vi.spyOn(globalThis, 'setTimeout');
+        vi.spyOn(globalThis, 'clearTimeout');
+      });
+
+      afterEach(() => {
+        vi.useRealTimers();
       });
 
       it('should invoke fork for each worker', async() => {
@@ -746,7 +760,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Simulate listening event
         const dummyWorker = new EventEmitter();
         (dummyWorker).process = {};
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> vi.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event
         dummyWorker.emit('exit');
@@ -762,7 +776,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         const dummyWorker = new EventEmitter();
         (dummyWorker).exitedAfterDisconnect = true;
         (dummyWorker).process = {};
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> vi.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event
         dummyWorker.emit('exit');
@@ -776,7 +790,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Simulate listening event
         const dummyWorker = new EventEmitter();
         (dummyWorker).process = {};
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> vi.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event
         dummyWorker.emit('exit', 9);
@@ -791,7 +805,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Simulate listening event
         const dummyWorker = new EventEmitter();
         (dummyWorker).process = {};
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> vi.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate exit event
         dummyWorker.emit('exit', undefined, 'SIGKILL');
@@ -805,12 +819,12 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Simulate listening event
         const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
+        dummyWorker.send = vi.fn();
+        dummyWorker.isConnected = vi.fn(() => true);
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> vi.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
         dummyWorker.emit('message', { type: 'start', queryId: 0 });
@@ -820,7 +834,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(dummyWorker.send).not.toHaveBeenCalled();
 
         // Simulate timeout is passed
-        jest.runAllTimers();
+        vi.runAllTimers();
 
         expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
       });
@@ -830,12 +844,12 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Simulate listening event
         const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
+        dummyWorker.send = vi.fn();
+        dummyWorker.isConnected = vi.fn(() => true);
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> vi.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
         dummyWorker.emit('message', { type: 'start', queryId: 0 });
@@ -849,7 +863,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(clearTimeout).toHaveBeenCalledTimes(1);
 
         // Simulate timeout is passed
-        jest.runAllTimers();
+        vi.runAllTimers();
 
         expect(dummyWorker.send).not.toHaveBeenCalled();
       });
@@ -859,12 +873,12 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Simulate listening event
         const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
+        dummyWorker.send = vi.fn();
+        dummyWorker.isConnected = vi.fn(() => true);
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> vi.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
         dummyWorker.emit('message', { type: 'start', queryId: 0 });
@@ -881,7 +895,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(dummyWorker.send).not.toHaveBeenCalled();
 
         // Simulate timeout is passed
-        jest.runAllTimers();
+        vi.runAllTimers();
 
         expect(dummyWorker.send).not.toHaveBeenCalled();
       });
@@ -891,12 +905,12 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Simulate listening event
         const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
+        dummyWorker.send = vi.fn();
+        dummyWorker.isConnected = vi.fn(() => true);
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> vi.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
         dummyWorker.emit('message', { type: 'start', queryId: 0 });
@@ -906,7 +920,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(dummyWorker.send).not.toHaveBeenCalled();
 
         // Simulate timeout is passed
-        jest.runAllTimers();
+        vi.runAllTimers();
 
         expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
 
@@ -920,7 +934,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         await instance.run(stdout, stderr);
 
         // Simulate SIGINT event
-        (<any> jest.mocked(process.once).mock.calls[0][1])();
+        (<any> vi.mocked(process.once).mock.calls[0][1])();
 
         expect(cluster.disconnect).toHaveBeenCalledTimes(1);
       });
@@ -930,14 +944,14 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Simulate listening event
         const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn(() => {
+        dummyWorker.send = vi.fn(() => {
           throw new Error('shutdown exception');
         });
-        dummyWorker.isConnected = jest.fn(() => true);
+        dummyWorker.isConnected = vi.fn(() => true);
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> vi.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
         dummyWorker.emit('message', { type: 'start', queryId: 0 });
@@ -947,7 +961,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(dummyWorker.send).not.toHaveBeenCalled();
 
         // Simulate timeout is passed
-        jest.runAllTimers();
+        vi.runAllTimers();
 
         expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
       });
@@ -957,12 +971,12 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Simulate listening event
         const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => false);
+        dummyWorker.send = vi.fn();
+        dummyWorker.isConnected = vi.fn(() => false);
         dummyWorker.process = {
           pid: 123,
         };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+        (<any> vi.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
         // Simulate start event
         dummyWorker.emit('message', { type: 'start', queryId: 0 });
@@ -972,7 +986,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(dummyWorker.send).not.toHaveBeenCalled();
 
         // Simulate timeout is passed
-        jest.runAllTimers();
+        vi.runAllTimers();
 
         expect(dummyWorker.send).not.toHaveBeenCalled();
       });
@@ -986,7 +1000,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       let request: any;
       let response: any;
       beforeEach(async() => {
-        jest.spyOn(instance, 'writeQueryResult').mockImplementation();
+        vi.spyOn(instance, 'writeQueryResult').mockResolvedValue(undefined);
         engine = await new QueryEngineFactoryBase().create();
         variants = [{ type: 'test_type', quality: 1 }];
         request = makeRequest();
@@ -1111,7 +1125,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should call writeQueryResult with correct arguments if request method equals POST', async() => {
-        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
+        (<any> instance).parseBody = vi.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         request.headers['content-type'] = 'application/sparql-query';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
@@ -1131,7 +1145,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should call writeQueryResult with correct arguments if request method equals QUERY', async() => {
-        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
+        (<any> instance).parseBody = vi.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'QUERY';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
@@ -1150,7 +1164,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it.each([ 'POST', 'QUERY' ])('should respond with 400 when the %s body can not be parsed', async(method) => {
-        (<any> instance).parseBody = jest.fn(() => Promise.reject(new Error('Invalid request body')));
+        (<any> instance).parseBody = vi.fn(() => Promise.reject(new Error('Invalid request body')));
         request.method = method;
         request.headers['content-type'] = 'application/sparql-query';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
@@ -1194,7 +1208,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         variants = [{ type: chosen, quality: 1 }];
         request.headers = { accept: chosen };
 
-        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
+        (<any> instance).parseBody = vi.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
@@ -1216,7 +1230,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         variants = [{ type: 'a/a', quality: 1 }, { type: 'b/b', quality: 0.9 }];
         request.headers = { accept: 'a/a,b/b' };
 
-        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
+        (<any> instance).parseBody = vi.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
@@ -1238,7 +1252,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         variants = [{ type: 'b/b', quality: 0.9 }, { type: 'a/a', quality: 1 }];
         request.headers = { accept: 'a/a,b/b' };
 
-        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
+        (<any> instance).parseBody = vi.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
@@ -1260,7 +1274,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         variants = [{ type: 'a/a', quality: 1 }, { type: 'b/b', quality: 0.9 }];
         request.headers = { accept: 'b/b' };
 
-        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
+        (<any> instance).parseBody = vi.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
@@ -1282,7 +1296,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         variants = [{ type: 'a/a', quality: 1 }, { type: 'b/b', quality: 0.9 }];
         request.headers = { accept: 'x/x,a/a;q=0.8,b/b;q=0.9' };
 
-        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
+        (<any> instance).parseBody = vi.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
@@ -1303,7 +1317,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should choose a null media type if accept header is *', async() => {
         request.headers = { accept: '*' };
 
-        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
+        (<any> instance).parseBody = vi.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
@@ -1324,7 +1338,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should choose a null media type if accept header is */*', async() => {
         request.headers = { accept: '*/*' };
 
-        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
+        (<any> instance).parseBody = vi.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
@@ -1345,7 +1359,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should choose a null mediaType if accept header is not set', async() => {
         request.headers = {};
 
-        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
+        (<any> instance).parseBody = vi.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
@@ -1401,14 +1415,14 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         beforeEach(() => {
           graphStoreInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, graphStore: true });
-          jest.spyOn(graphStoreInstance, 'writeQueryResult').mockImplementation();
+          vi.spyOn(graphStoreInstance, 'writeQueryResult').mockResolvedValue(undefined);
         });
 
         it('should let the graph store handle a request that identifies a graph', async() => {
           request.method = 'PUT';
           request.url = 'url_store_graph';
           request.headers['content-type'] = 'text/turtle';
-          jest.spyOn(graphStoreInstance.graphStore!, 'handleRequest')
+          vi.spyOn(graphStoreInstance.graphStore!, 'handleRequest')
             .mockImplementation(async(...args: any[]) => ({ status: 204, message: await args[4]() }));
 
           await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
@@ -1714,9 +1728,9 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
-        const spyWriteServiceDescription = jest.spyOn(localInstance, 'writeServiceDescription');
-        const spyGetResultMediaTypeFormats = jest.spyOn(engine, 'getResultMediaTypeFormats');
-        const spyResultToString = jest.spyOn(engine, 'resultToString');
+        const spyWriteServiceDescription = vi.spyOn(localInstance, 'writeServiceDescription');
+        const spyGetResultMediaTypeFormats = vi.spyOn(engine, 'getResultMediaTypeFormats');
+        const spyResultToString = vi.spyOn(engine, 'resultToString');
 
         // Invoke writeQueryResult
         await localInstance.writeQueryResult(
@@ -1770,9 +1784,9 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should write the service description header when no query was defined for HEAD', async() => {
         // Create spies
         const engine = await new QueryEngineFactoryBase().create();
-        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
-        const spyGetResultMediaTypeFormats = jest.spyOn(engine, 'getResultMediaTypeFormats');
-        const spyResultToString = jest.spyOn(engine, 'resultToString');
+        const spyWriteServiceDescription = vi.spyOn(instance, 'writeServiceDescription');
+        const spyGetResultMediaTypeFormats = vi.spyOn(engine, 'getResultMediaTypeFormats');
+        const spyResultToString = vi.spyOn(engine, 'resultToString');
 
         // Invoke writeQueryResult
         await instance.writeQueryResult(
@@ -1816,7 +1830,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should handle errors in service description stringification', async() => {
         // Create spies
-        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+        const spyWriteServiceDescription = vi.spyOn(instance, 'writeServiceDescription');
 
         mediaType = 'mediatype_queryresultstreamerror';
         await instance.writeQueryResult(
@@ -1856,7 +1870,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         });
 
         // Create spies
-        const spyWriteServiceDescription = jest.spyOn(localInstance, 'writeServiceDescription');
+        const spyWriteServiceDescription = vi.spyOn(localInstance, 'writeServiceDescription');
 
         mediaType = 'mediatype_queryresultstreamerror';
         await localInstance.writeQueryResult(
@@ -1953,8 +1967,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           // Create spies
           const engine = await new QueryEngineFactoryBase().create();
           engine.queryBindings = queryBindings;
-          const spyGetVoIDQuads = jest.spyOn(localInstance.voidMetadataEmitter, 'getVoIDQuads');
-          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          const spyGetVoIDQuads = vi.spyOn(localInstance.voidMetadataEmitter, 'getVoIDQuads');
+          const spyResultToString = vi.spyOn(engine, 'resultToString');
 
           // Invoke writeQueryResult
           await localInstance.writeQueryResult(
@@ -2012,7 +2026,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           // Create spies
           const engine = await new QueryEngineFactoryBase().create();
           engine.queryBindings = queryBindings;
-          const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
+          const spyQueryBindings = vi.spyOn(engine, 'queryBindings');
 
           await localInstance.writeQueryResult(
             engine,
@@ -2167,7 +2181,7 @@ INSERT DATA {
       });
 
       it('should emit process start and end events', async() => {
-        jest.spyOn(process, 'send').mockImplementation();
+        vi.spyOn(process, 'send').mockImplementation(() => true);
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => ({ resultType: 'bindings' });
 
@@ -2193,7 +2207,7 @@ INSERT DATA {
       });
 
       it('should emit the process end event when the client disconnects during the query', async() => {
-        jest.spyOn(process, 'send').mockImplementation();
+        vi.spyOn(process, 'send').mockImplementation(() => true);
         const engine = await new QueryEngineFactoryBase().create();
         // A query that never settles, so that the response closes while the execution is still running
         engine.query = () => new Promise(() => {
@@ -2222,7 +2236,7 @@ INSERT DATA {
       });
 
       it('should emit the process end event for a query that fails', async() => {
-        jest.spyOn(process, 'send').mockImplementation();
+        vi.spyOn(process, 'send').mockImplementation(() => true);
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => Promise.reject(new Error('Query failure'));
 
@@ -2276,7 +2290,7 @@ INSERT DATA {
         // The update quads mediator consumes the quad streams of the update,
         // so its execution only ever settles the first time it is invoked.
         let started = false;
-        const execute = jest.fn(() => {
+        const execute = vi.fn(() => {
           if (started) {
             return new Promise<void>(() => {
               // Never settles, as the quad streams have already been consumed
@@ -2342,7 +2356,7 @@ INSERT DATA {
 
       it('should set readOnly in the context if called with readOnly true', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        jest.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
+        vi.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
 
         await instance.writeQueryResult(
           engine,
@@ -2366,7 +2380,7 @@ INSERT DATA {
 
       it('should set not readOnly in the context if called with readOnly false', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        jest.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
+        vi.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
 
         await instance.writeQueryResult(
           engine,
@@ -2387,7 +2401,7 @@ INSERT DATA {
 
       it('should not override context entries by default', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        jest.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
+        vi.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
 
         query.context = { overrideKey: 'overrideValue' };
 
@@ -2410,7 +2424,7 @@ INSERT DATA {
 
       it('should override context entries if contextOverride is enabled', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        jest.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
+        vi.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
 
         query.context = { overrideKey: 'overrideValue' };
 
@@ -2440,7 +2454,7 @@ INSERT DATA {
 
         beforeEach(async() => {
           engine = await new QueryEngineFactoryBase().create();
-          jest.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
+          vi.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
         });
 
         async function writeResult(): Promise<void> {
@@ -2469,7 +2483,7 @@ INSERT DATA {
 
         it('should wrap a query in the protocol-specified dataset', async() => {
           request.url = 'url_sparql_dataset';
-          engine.explain = jest.fn(() => Promise.resolve({ data: ask }));
+          engine.explain = vi.fn(() => Promise.resolve({ data: ask }));
 
           await writeResult();
 
@@ -2478,7 +2492,7 @@ INSERT DATA {
 
         it('should replace the dataset that the query itself defines', async() => {
           request.url = 'url_sparql_dataset';
-          engine.explain = jest.fn(() => Promise.resolve({
+          engine.explain = vi.fn(() => Promise.resolve({
             data: { type: Algebra.Types.FROM, input: ask, default: [ DF.namedNode('http://example.org/other') ], named: []},
           }));
 
@@ -2490,7 +2504,7 @@ INSERT DATA {
         it('should apply the protocol-specified dataset to the where clause of an update', async() => {
           request.url = 'url_sparql_using';
           query = { type: 'void', value: 'default_test_query', context: undefined };
-          engine.explain = jest.fn(() => Promise.resolve({
+          engine.explain = vi.fn(() => Promise.resolve({
             data: { type: Algebra.Types.DELETE_INSERT, insert: [], where: bgp },
           }));
 
@@ -2508,7 +2522,7 @@ INSERT DATA {
     describe('a configured base IRI', () => {
       it('should take precedence over the base IRI of the endpoint', async() => {
         const engine = await new QueryEngineFactoryBase().create();
-        jest.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
+        vi.spyOn(engine, 'query').mockImplementation(() => ({ resultType: 'bindings' }));
         const response: any = new ServerResponseMock();
         const request: any = Readable.from([ 'default_request_content' ]);
         request.url = '/sparql';
@@ -2742,12 +2756,28 @@ INSERT DATA {
 
         await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
       });
+
+      it('should not re-end the response when already ended and the serialization errors', async() => {
+        response.end('ENDED EARLY');
+        Object.defineProperty(response, 'writableEnded', { value: true });
+        await instance.writeGraphStoreResult(
+          engine,
+          stdout,
+          request,
+          response,
+          { status: 200, result },
+          'mediatype_queryresultstreamerror',
+        );
+
+        await expect(endCalledPromise).resolves.toBe('ENDED EARLY');
+        expect(response.end).toHaveBeenCalledTimes(1);
+      });
     });
 
     describe('stopResponse', () => {
       let response: any;
       let eventEmitter: any;
-      const endListener = jest.fn();
+      const endListener = vi.fn();
       let stderr: PassThrough;
       beforeEach(() => {
         endListener.mockClear();
@@ -2897,7 +2927,7 @@ INSERT DATA {
       });
 
       it('should call writeHtmlView when Accept header contains text/html and no query', async() => {
-        const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
+        const spyWriteHtmlView = vi.spyOn(instance, 'writeHtmlView');
 
         await instance.writeQueryResult(
           await new QueryEngineFactoryBase().create(),
@@ -2922,8 +2952,8 @@ INSERT DATA {
 
       it('should not call writeHtmlView when Accept header does not contain text/html', async() => {
         request.headers.accept = 'application/json';
-        const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
-        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+        const spyWriteHtmlView = vi.spyOn(instance, 'writeHtmlView');
+        const spyWriteServiceDescription = vi.spyOn(instance, 'writeServiceDescription');
 
         await instance.writeQueryResult(
           await new QueryEngineFactoryBase().create(),
@@ -2943,7 +2973,7 @@ INSERT DATA {
       });
 
       it('should not call writeHtmlView when query is provided even with text/html Accept header', async() => {
-        const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
+        const spyWriteHtmlView = vi.spyOn(instance, 'writeHtmlView');
 
         await instance.writeQueryResult(
           await new QueryEngineFactoryBase().create(),

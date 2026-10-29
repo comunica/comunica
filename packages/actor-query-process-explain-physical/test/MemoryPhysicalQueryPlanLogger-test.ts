@@ -4,6 +4,7 @@ import { assignOperationSource } from '@comunica/utils-query-operation';
 import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { MemoryPhysicalQueryPlanLogger } from '../lib/MemoryPhysicalQueryPlanLogger';
+import { MemoryPlanNode } from '../lib/MemoryPlanNode';
 
 const factory = new AlgebraFactory();
 const DF = new DataFactory();
@@ -287,6 +288,21 @@ describe('MemoryPhysicalQueryPlanLogger', () => {
               { logical: 'pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
             ],
           },
+        ],
+      });
+    });
+
+    it('attaches a node that has no parent yet', () => {
+      const rootOperation = {};
+      logOperation('join', undefined, rootOperation, undefined, 'actor-join', {});
+      const node = new MemoryPlanNode(logger, { logicalOperator: 'pattern', operation: createPattern('1') });
+
+      nodes.get(rootOperation)!.adoptInput(node);
+
+      expect(logger.toJson()).toEqual({
+        logical: 'join',
+        children: [
+          { logical: 'pattern', pattern: 'ex:s1 ex:p1 ?o1 ex:g1' },
         ],
       });
     });

@@ -23,7 +23,7 @@ describe('ActorQueryOperationPathNps', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: jest.fn((arg: any) => {
+      mediate: vi.fn((arg: any) => {
         const vars: RDF.Variable[] = [];
         for (const name of QUAD_TERM_NAMES) {
           if (arg.operation[name].termType === 'Variable' || arg.operation[name].termType === 'BlankNode') {

@@ -12,7 +12,6 @@ import { DataFactory } from 'rdf-data-factory';
 import { RdfStore } from 'rdf-stores';
 import { QuerySourceRdfJs } from '../lib';
 import '@comunica/utils-jest';
-import 'jest-rdf';
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory();
@@ -1172,7 +1171,7 @@ describe('QuerySourceRdfJs', () => {
     });
 
     it('should not count the same pattern twice within one query execution', async() => {
-      const countQuads = jest.spyOn(<any> store, 'countQuads');
+      const countQuads = vi.spyOn(<any> store, 'countQuads');
       const scoped = new ActionContext({ [KeysInitQuery.queryExecutionScope.name]: {}});
 
       await expect(cardinalityOf(source.queryBindings(pattern, scoped))).resolves.toBe(2);
@@ -1182,7 +1181,7 @@ describe('QuerySourceRdfJs', () => {
     });
 
     it('should not reuse counts across query executions', async() => {
-      const countQuads = jest.spyOn(<any> store, 'countQuads');
+      const countQuads = vi.spyOn(<any> store, 'countQuads');
 
       await expect(cardinalityOf(source.queryBindings(
         pattern,
@@ -1198,7 +1197,7 @@ describe('QuerySourceRdfJs', () => {
     });
 
     it('should not cache without a query execution scope in the context', async() => {
-      const countQuads = jest.spyOn(<any> store, 'countQuads');
+      const countQuads = vi.spyOn(<any> store, 'countQuads');
 
       await expect(cardinalityOf(source.queryBindings(pattern, ctx))).resolves.toBe(2);
       await expect(cardinalityOf(source.queryBindings(pattern, ctx))).resolves.toBe(2);
@@ -1207,7 +1206,7 @@ describe('QuerySourceRdfJs', () => {
     });
 
     it('should not cache patterns that are cheap to count', async() => {
-      const countQuads = jest.spyOn(<any> store, 'countQuads');
+      const countQuads = vi.spyOn(<any> store, 'countQuads');
       const scoped = new ActionContext({ [KeysInitQuery.queryExecutionScope.name]: {}});
       const bound = AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o'));
 

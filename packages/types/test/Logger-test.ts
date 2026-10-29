@@ -48,14 +48,14 @@ describe('Logger', () => {
     });
 
     it('should emit the first message immediately', () => {
-      const emit = jest.fn();
+      const emit = vi.fn();
       logger.logGrouped('warn', emit);
       expect(emit).toHaveBeenCalledTimes(1);
       expect(emit).toHaveBeenCalledWith(1);
     });
 
     it('should buffer subsequent messages', () => {
-      const emit = jest.fn();
+      const emit = vi.fn();
       logger.logGrouped('warn', emit);
       logger.logGrouped('warn', emit);
       logger.logGrouped('warn', emit);
@@ -64,7 +64,7 @@ describe('Logger', () => {
     });
 
     it('should flush pending messages', () => {
-      const emit = jest.fn();
+      const emit = vi.fn();
       logger.logGrouped('warn', emit);
       logger.logGrouped('warn', emit);
       logger.logGrouped('warn', emit);
@@ -75,7 +75,7 @@ describe('Logger', () => {
     });
 
     it('should not emit when flushing a group without buffered messages', () => {
-      const emit = jest.fn();
+      const emit = vi.fn();
       logger.logGrouped('warn', emit);
       expect(emit).toHaveBeenCalledTimes(1);
 
@@ -84,8 +84,8 @@ describe('Logger', () => {
     });
 
     it('should handle interleaving messages within limit', () => {
-      const emitA = jest.fn();
-      const emitB = jest.fn();
+      const emitA = vi.fn();
+      const emitB = vi.fn();
 
       logger.logGrouped('A', emitA);
 
@@ -104,8 +104,8 @@ describe('Logger', () => {
     });
 
     it('should start new group if interleaving messages exceed limit', () => {
-      const emitA = jest.fn();
-      const emitB = jest.fn();
+      const emitA = vi.fn();
+      const emitB = vi.fn();
 
       logger.logGrouped('A', emitA);
 
@@ -122,8 +122,8 @@ describe('Logger', () => {
     });
 
     it('should flush buffered messages when limit exceeded', () => {
-      const emitA = jest.fn();
-      const emitB = jest.fn();
+      const emitA = vi.fn();
+      const emitB = vi.fn();
 
       logger.logGrouped('A', emitA);
       logger.logGrouped('A', emitA);
@@ -142,14 +142,14 @@ describe('Logger', () => {
     });
 
     it('should do nothing when flush is called with no pending messages', () => {
-      const emit = jest.fn();
+      const emit = vi.fn();
       logger.flush();
       expect(emit).not.toHaveBeenCalled();
     });
 
     it('should flush all groups when multiple groups have pending messages', () => {
-      const emitA = jest.fn();
-      const emitB = jest.fn();
+      const emitA = vi.fn();
+      const emitB = vi.fn();
 
       logger.logGrouped('A', emitA);
       logger.logGrouped('A', emitA);
@@ -168,7 +168,7 @@ describe('Logger', () => {
     });
 
     it('should do nothing when flush is called twice', () => {
-      const emit = jest.fn();
+      const emit = vi.fn();
       logger.logGrouped('warn', emit);
       logger.logGrouped('warn', emit);
 

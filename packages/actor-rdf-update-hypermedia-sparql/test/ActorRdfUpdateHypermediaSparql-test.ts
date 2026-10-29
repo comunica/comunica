@@ -14,7 +14,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = {
-      mediate: jest.fn(() => ({
+      mediate: vi.fn(() => ({
         body: 'BODY',
       })),
     };

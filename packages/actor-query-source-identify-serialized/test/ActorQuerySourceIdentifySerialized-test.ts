@@ -147,7 +147,7 @@ describe('ActorQuerySourceIdentifySerialized', () => {
       });
 
       it('should identify the parsed data by its base IRI', async() => {
-        jest.spyOn(mediatorRdfParse, 'mediate');
+        vi.spyOn(mediatorRdfParse, 'mediate');
         await actor.run({
           querySourceUnidentified: {
             type: 'serialized',
@@ -164,7 +164,7 @@ describe('ActorQuerySourceIdentifySerialized', () => {
       });
 
       it('should identify the parsed data without base IRI', async() => {
-        jest.spyOn(mediatorRdfParse, 'mediate');
+        vi.spyOn(mediatorRdfParse, 'mediate');
         await actor.run({
           querySourceUnidentified: {
             type: 'serialized',

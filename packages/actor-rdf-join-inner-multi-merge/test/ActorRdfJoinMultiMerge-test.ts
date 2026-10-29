@@ -79,7 +79,7 @@ describe('ActorRdfJoinMultiMerge', () => {
     context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     mediatorJoinSelectivity = { mediate: async() => ({ selectivity: 1 }) };
     mediatorJoin = {
-      mediate: jest.fn(async(action: IActionRdfJoin) => ({
+      mediate: vi.fn(async(action: IActionRdfJoin) => ({
         type: 'bindings',
         bindingsStream: new ArrayIterator([], { autoStart: false }),
         metadata: async() => metadata(0, []),
@@ -115,6 +115,14 @@ describe('ActorRdfJoinMultiMerge', () => {
         metadata(9, [ variable('a') ], order('a')),
         metadata(9, [ variable('a') ], order('a')),
       ])).toEqual({ variable: DF.variable('a'), indexes: [ 1, 2 ]});
+    });
+
+    it('keeps the variable that most entries are sorted on over a later variable', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeVariable([
+        metadata(9, [ variable('a'), variable('b') ], order('a')),
+        metadata(9, [ variable('a'), variable('b') ], order('a')),
+        metadata(1, [ variable('a'), variable('b') ], order('b')),
+      ])).toEqual({ variable: DF.variable('a'), indexes: [ 0, 1 ]});
     });
 
     it('orders the entries from the smallest to the largest', () => {
@@ -371,7 +379,7 @@ describe('ActorRdfJoinMultiMerge', () => {
         )),
         context,
       };
-      const joinBindings = jest.spyOn(ActorRdfJoin, 'joinBindings');
+      const joinBindings = vi.spyOn(ActorRdfJoin, 'joinBindings');
       const { result } = await (<any> actor).getOutput(action, (await actor.test(action)).getSideData());
       await expect(arrayifyStream(result.bindingsStream)).resolves.toHaveLength(50);
       // One join per entry after the first, for each of the 50 keys.

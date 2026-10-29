@@ -81,21 +81,21 @@ describe('ActorQueryOperationTyped', () => {
     it('should run and invoke the physicalQueryPlanLogger', async() => {
       const parentNode: IPhysicalQueryPlanNode = <any> { id: 'parent' };
       const planNode: IPhysicalQueryPlanNode = {
-        appendMetadata: jest.fn(),
-        adoptInput: jest.fn(),
-        setOutput: jest.fn(),
+        appendMetadata: vi.fn(),
+        adoptInput: vi.fn(),
+        setOutput: vi.fn(),
       };
       const logger: IPhysicalQueryPlanLogger = {
-        logOperation: jest.fn().mockReturnValue(planNode),
-        finalize: jest.fn(),
-        getNodeForOutput: jest.fn(),
-        toJson: jest.fn(),
+        logOperation: vi.fn().mockReturnValue(planNode),
+        finalize: vi.fn(),
+        getNodeForOutput: vi.fn(),
+        toJson: vi.fn(),
       };
       const context = new ActionContext({
         [KeysInitQuery.physicalQueryPlanLogger.name]: logger,
         [KeysInitQuery.physicalQueryPlanNode.name]: parentNode,
       });
-      jest.spyOn(actor, 'runOperation');
+      vi.spyOn(actor, 'runOperation');
 
       const operation = { type: 'op' };
       const action = { operation, context };

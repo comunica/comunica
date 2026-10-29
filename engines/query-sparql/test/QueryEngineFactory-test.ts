@@ -1,12 +1,11 @@
 import type { QueryStringContext } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import 'jest-rdf';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';
 import { QueryEngineFactory } from '../lib/QueryEngineFactory';
 
 // Use an increased timeout
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000, hookTimeout: 60_000 });
 
 const DF = new DataFactory();
 const queryEngineFactory = new QueryEngineFactory();

@@ -135,7 +135,7 @@ describe('OrderedUnionIterator', () => {
     });
 
     it('skips the bindings before a seek target', async() => {
-      const seek = jest.fn();
+      const seek = vi.fn();
       const seekable = Object.assign(array([ bindings('1'), bindings('2'), bindings('5') ]), { seek });
       const union = new OrderedUnionIterator([ seekable, array([ bindings('3'), bindings('6') ]) ]);
       union.useOrder(orderA);
@@ -147,7 +147,7 @@ describe('OrderedUnionIterator', () => {
     });
 
     it('keeps a held binding that is not before a seek target', async() => {
-      const seek = jest.fn();
+      const seek = vi.fn();
       const seekable = Object.assign(array([ bindings('5') ]), { seek });
       const union = new OrderedUnionIterator([ seekable, array([ bindings('1'), bindings('6') ]) ]);
       union.useOrder(orderA);

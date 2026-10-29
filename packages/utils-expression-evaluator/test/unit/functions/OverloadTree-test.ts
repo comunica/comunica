@@ -132,8 +132,8 @@ describe('OverloadTree', () => {
     expect(functionArgumentsCache['+']).toBeDefined();
     additionFunction.applyOnTerms([ two, one ], expressionEvaluator);
 
-    const innerSpy = jest.fn();
-    const spy = jest.fn(() => innerSpy);
+    const innerSpy = vi.fn();
+    const spy = vi.fn(() => innerSpy);
     functionArgumentsCache['+'].cache![TypeURL.XSD_INTEGER].cache![TypeURL.XSD_INTEGER].func = spy;
     additionFunction.applyOnTerms([ one, two ], expressionEvaluator);
     expect(spy).toHaveBeenCalledTimes(1);

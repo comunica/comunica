@@ -1,4 +1,3 @@
-import 'jest-rdf';
 import { Readable } from 'node:stream';
 import type { IActorDereferenceRdfOutput } from '@comunica/bus-dereference-rdf';
 import { KeysQueryOperation } from '@comunica/context-entries';
@@ -63,7 +62,7 @@ describe('QuerySourceQpf', () => {
       }),
     };
     mediatorDereferenceRdf = {
-      mediate: jest.fn((args: any) => Promise.resolve({
+      mediate: vi.fn((args: any) => Promise.resolve({
         url: args.url,
         data: streamifyArray([
           quad('s1', 'p1', 'o1'),

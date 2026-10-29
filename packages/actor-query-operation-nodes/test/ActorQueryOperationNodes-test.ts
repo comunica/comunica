@@ -7,7 +7,6 @@ import { assignOperationSource } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationNodes } from '../lib/ActorQueryOperationNodes';
-import 'jest-rdf';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -61,7 +60,7 @@ describe('ActorQueryOperationNodes', () => {
 
     describe('run', () => {
       it('should rewrite operations into distinct-union-pattern', async() => {
-        jest.spyOn(mediatorQueryOperation, 'mediate');
+        vi.spyOn(mediatorQueryOperation, 'mediate');
         const source1 = <any>{};
         const opIn = assignOperationSource(
           AF.createNodes(DF.defaultGraph(), DF.variable('x')),

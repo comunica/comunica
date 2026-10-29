@@ -21,9 +21,9 @@ describe('PathVariableObjectIterator', () => {
   beforeEach(() => {
     createdBindingsStreams = [];
     mediatorQueryOperation = <any> {
-      mediate: jest.fn(() => {
+      mediate: vi.fn(() => {
         const bindingsStream = new BufferedIterator<RDF.Bindings>({ autoStart: false });
-        jest.spyOn(bindingsStream, 'destroy');
+        vi.spyOn(bindingsStream, 'destroy');
         createdBindingsStreams.push(bindingsStream);
         return { type: 'bindings', bindingsStream };
       }),

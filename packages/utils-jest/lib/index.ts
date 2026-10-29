@@ -31,18 +31,21 @@ export {
   double as termDouble,
 } from './expressionEvaluator/helpers';
 
-declare global {
-  // eslint-disable-next-line ts/no-namespace
-  namespace jest {
-    interface Matchers<R> {
-      toEqualBindings: (actual: RDF.Bindings) => R;
-      toEqualBindingsArray: (actual: RDF.Bindings[], ignoreOrder?: boolean) => R;
-      toEqualBindingsStream: (actual: RDF.Bindings[], ignoreOrder?: boolean) => Promise<R>;
-      toPassTest: (actual: any) => R;
-      toPassTestVoid: () => R;
-      toFailTest: (actual: string) => R;
-    }
+declare module 'vitest' {
+  interface Matchers<T = any> {
+    toEqualBindings: (actual: RDF.Bindings) => T;
+    toEqualBindingsArray: (actual: RDF.Bindings[], ignoreOrder?: boolean) => T;
+    toEqualBindingsStream: (actual: RDF.Bindings[], ignoreOrder?: boolean) => Promise<T>;
+    toPassTest: (actual: any) => T;
+    toPassTestVoid: () => T;
+    toFailTest: (actual: string) => T;
+    toBeRdfIsomorphic: (actual: Iterable<RDF.BaseQuad>) => T;
+    toEqualRdfTerm: (actual: RDF.Term) => T;
+    toEqualRdfQuad: (actual: RDF.BaseQuad) => T;
+    toEqualRdfQuadArray: (actual: RDF.BaseQuad[]) => T;
   }
 }
 
+// The global 'expect' is used instead of importing it, as this package is built to CommonJS,
+// and 'vitest' throws when it is required rather than imported.
 (<any> globalThis).expect.extend(matchers);

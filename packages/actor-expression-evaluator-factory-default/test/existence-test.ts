@@ -7,6 +7,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMockEEActionContext, getMockEEFactory } from '@comunica/utils-jest';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import type { Mock } from 'vitest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
@@ -102,10 +103,10 @@ describe('should be able to handle EXIST filters', () => {
   });
 
   describe('with an existenceResolver in the context', () => {
-    let existenceResolver: jest.Mock;
+    let existenceResolver: Mock;
 
     beforeEach(() => {
-      existenceResolver = jest.fn().mockResolvedValue(true);
+      existenceResolver = vi.fn().mockResolvedValue(true);
       context = context.set(KeysExpressionEvaluator.existenceResolver, existenceResolver);
       mediatorQueryOperation.mediate = () => {
         throw new Error('mediatorQueryOperation must not be reached');

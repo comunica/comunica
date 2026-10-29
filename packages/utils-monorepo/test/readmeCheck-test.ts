@@ -13,7 +13,7 @@ actor that joins things.
 
 describe('validateActorReadme', () => {
   it('accepts a valid description', () => {
-    const busExists = jest.fn(() => true);
+    const busExists = vi.fn(() => true);
     expect(validateActorReadme(VALID, busExists)).toBeUndefined();
     expect(busExists).toHaveBeenCalledWith('rdf-join');
   });

@@ -1,11 +1,11 @@
 import type { TestResult } from '@comunica/core';
-import { equals } from '@jest/expect-utils';
+import type { MatcherState } from 'vitest';
 
 // eslint-disable-next-line ts/no-require-imports,ts/no-var-requires
 const inspect = require('object-inspect');
 
 export default {
-  toPassTest(received: TestResult<any>, actual: any) {
+  toPassTest(this: MatcherState, received: TestResult<any>, actual: any) {
     if (!received.isPassed()) {
       return {
         message: () => `expected a failed test result "${received.getFailMessage()}" to pass to value "${inspect(actual)}"`,
@@ -13,7 +13,7 @@ export default {
       };
     }
 
-    if (!equals(received.get(), actual)) {
+    if (!this.equals(received.get(), actual)) {
       return {
         message: () => `expected a passed test result "${inspect(received.get())}" to pass to value "${inspect(actual)}"`,
         pass: false,

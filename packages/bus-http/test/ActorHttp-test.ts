@@ -6,11 +6,11 @@ const readableToWeb = require('readable-stream-node-to-web');
 
 describe('ActorHttp', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   describe('toNodeReadable', () => {
@@ -104,7 +104,7 @@ describe('ActorHttp', () => {
       expect(globalThis.window).toBeUndefined();
       expect(globalThis.process).toBeUndefined();
       expect(globalThis.navigator).toBeUndefined();
-      jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(true);
+      vi.spyOn(ActorHttp, 'isBrowser').mockReturnValue(true);
       expect(ActorHttp.createUserAgent(actorName, actorVersion)).toBeUndefined();
     });
 
@@ -112,7 +112,7 @@ describe('ActorHttp', () => {
       expect(globalThis.window).toBeUndefined();
       expect(globalThis.process).toBeUndefined();
       expect(globalThis.navigator).toBeUndefined();
-      jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
+      vi.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
       globalThis.navigator = <any>{ userAgent: 'Runtime/2.3.4' };
       const userAgent = ActorHttp.createUserAgent(actorName, actorVersion);
       expect(userAgent).toBeDefined();
@@ -122,7 +122,7 @@ describe('ActorHttp', () => {
     it('should construct custom agent from navigator.userAgent in non-browser environments with platform data', () => {
       expect(globalThis.window).toBeUndefined();
       expect(globalThis.navigator).toBeUndefined();
-      jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
+      vi.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
       globalThis.process = <any>{ platform: 'abc', arch: 'x128' };
       globalThis.navigator = <any>{ userAgent: 'Runtime/2.3.4' };
       const userAgent = ActorHttp.createUserAgent(actorName, actorVersion);
@@ -134,7 +134,7 @@ describe('ActorHttp', () => {
       expect(globalThis.window).toBeUndefined();
       expect(globalThis.process).toBeUndefined();
       expect(globalThis.navigator).toBeUndefined();
-      jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
+      vi.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
       globalThis.process = <any>{ versions: { node: '20.3.4' }};
       const userAgent = ActorHttp.createUserAgent(actorName, actorVersion);
       expect(userAgent).toBeDefined();
@@ -145,7 +145,7 @@ describe('ActorHttp', () => {
       expect(globalThis.window).toBeUndefined();
       expect(globalThis.process).toBeUndefined();
       expect(globalThis.navigator).toBeUndefined();
-      jest.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
+      vi.spyOn(ActorHttp, 'isBrowser').mockReturnValue(false);
       const userAgent = ActorHttp.createUserAgent(actorName, actorVersion);
       expect(userAgent).toBeDefined();
       expect(userAgent).toMatch(/^Comunica\/1.0 ActorHttp\/1.2.3$/u);

@@ -53,8 +53,8 @@ describe('ActorQueryProcessExplainQuery', () => {
         },
       };
       const mediatorQuerySerialize: any = {
-        mediate: jest.fn((action: any) => new ActorQuerySerializeSparql(<any> {
-          bus: { subscribe: jest.fn() },
+        mediate: vi.fn((action: any) => new ActorQuerySerializeSparql(<any> {
+          bus: { subscribe: vi.fn() },
         }).run(action)),
       };
       actor = new ActorQueryProcessExplainQuery({ name: 'actor', bus, queryProcessor, mediatorQuerySerialize });

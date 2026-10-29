@@ -8,7 +8,6 @@ import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfUpdateQuadsRdfJsStore } from '../lib/ActorRdfUpdateQuadsRdfJsStore';
 import { RdfJsQuadDestination } from '../lib/RdfJsQuadDestination';
-import 'jest-rdf';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();

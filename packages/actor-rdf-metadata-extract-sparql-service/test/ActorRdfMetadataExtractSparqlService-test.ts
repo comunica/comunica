@@ -193,7 +193,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     });
 
     it('should replace a local sd:endpoint by the requested URL for non-local sources, and warn', async() => {
-      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const logWarn = vi.spyOn(<any> actor, 'logWarn');
       const url = 'https://example.org/query';
       const input = streamifyArray([
         DF.quad(DF.blankNode(), serviceDescriptionEndpoint, DF.namedNode('https://0.0.0.0:8080/x-query')),
@@ -208,7 +208,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     });
 
     it('should keep a local sd:endpoint for local sources', async() => {
-      const logWarn = jest.spyOn(<any> actor, 'logWarn');
+      const logWarn = vi.spyOn(<any> actor, 'logWarn');
       const input = streamifyArray([
         DF.quad(DF.blankNode(), serviceDescriptionEndpoint, DF.namedNode('http://127.0.0.1:8080/x-query')),
       ]);

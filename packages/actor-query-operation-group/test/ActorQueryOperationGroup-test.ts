@@ -793,7 +793,7 @@ describe('ActorQueryOperationGroup', () => {
 
     it('should reject in case something unexpected happens when collecting results', async() => {
       const temp = GroupsState.prototype.collectResults;
-      jest.spyOn(GroupsState.prototype, 'collectResults').mockImplementation()
+      vi.spyOn(GroupsState.prototype, 'collectResults')
         .mockImplementationOnce(async() => {
           throw new Error('test error');
         });
@@ -804,22 +804,14 @@ describe('ActorQueryOperationGroup', () => {
         inputOp: simpleXYZinput,
         aggregates: [ countY ],
       });
-      try {
-        await arrayifyStream((<any> await actor.run(op, undefined)).bindingsStream);
-        // eslint-disable-next-line jest/no-jasmine-globals
-        fail();
-      } catch (error: unknown) {
-        // eslint-disable-next-line jest/no-conditional-expect
-        expect(() => {
-          throw error;
-        }).toThrow('test error');
-      }
+      await expect(arrayifyStream((<any> await actor.run(op, undefined)).bindingsStream))
+        .rejects.toThrow('test error');
       GroupsState.prototype.collectResults = temp;
     });
 
     it('should reject in case something unexpected happens when consuming the stream', async() => {
       const temp = GroupsState.prototype.consumeBindings;
-      jest.spyOn(GroupsState.prototype, 'consumeBindings')
+      vi.spyOn(GroupsState.prototype, 'consumeBindings')
         .mockImplementation(async() => {
           throw new Error('test error');
         });
@@ -830,16 +822,8 @@ describe('ActorQueryOperationGroup', () => {
         inputOp: simpleXYZinput,
         aggregates: [ countY ],
       });
-      try {
-        await arrayifyStream((<any> await actor.run(op, undefined)).bindingsStream);
-        // eslint-disable-next-line jest/no-jasmine-globals
-        fail('BindingStream did not error when it should');
-      } catch (error: unknown) {
-        // eslint-disable-next-line jest/no-conditional-expect
-        expect(() => {
-          throw error;
-        }).toThrow('test error');
-      }
+      await expect(arrayifyStream((<any> await actor.run(op, undefined)).bindingsStream))
+        .rejects.toThrow('test error');
       GroupsState.prototype.consumeBindings = temp;
     });
 
@@ -1320,7 +1304,7 @@ describe('ActorQueryOperationGroup', () => {
     });
 
     it('should return before executing the grouping', async() => {
-      const spy = jest.spyOn(GroupsState.prototype, 'collectResults');
+      const spy = vi.spyOn(GroupsState.prototype, 'collectResults');
 
       const { op, actor } = constructCase({
         inputBindings: [

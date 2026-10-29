@@ -16,7 +16,7 @@ describe('ActorInitQueryBase', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryProcess = <any>{
-      mediate: jest.fn().mockRejectedValue(new Error('Invalid query')),
+      mediate: vi.fn().mockRejectedValue(new Error('Invalid query')),
     };
     mediatorSparqlSerialize = {
       mediate: (arg: any) => Promise.resolve(arg.mediaTypes ?

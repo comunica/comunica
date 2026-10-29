@@ -12,8 +12,8 @@ describe('StatisticLinkDiscovery', () => {
 
   beforeEach(() => {
     mockStatisticBase = new MockStatisticBase();
-    cb = jest.fn(() => {});
-    cb1 = jest.fn(() => {});
+    cb = vi.fn(() => {});
+    cb1 = vi.fn(() => {});
   });
 
   describe('An StatisticLinkDereference instance should', () => {

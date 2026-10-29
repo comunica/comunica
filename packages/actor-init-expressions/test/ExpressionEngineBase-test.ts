@@ -16,9 +16,9 @@ describe('ExpressionEngineBase', () => {
   let engine: ExpressionEngineBase;
 
   beforeEach(() => {
-    mediatorExpressionEvaluatorFactory = { mediate: jest.fn().mockResolvedValue('evaluator') };
-    mediatorTermComparatorFactory = { mediate: jest.fn().mockResolvedValue('comparator') };
-    mediatorBindingsAggregatorFactory = { mediate: jest.fn().mockResolvedValue('aggregator') };
+    mediatorExpressionEvaluatorFactory = { mediate: vi.fn().mockResolvedValue('evaluator') };
+    mediatorTermComparatorFactory = { mediate: vi.fn().mockResolvedValue('comparator') };
+    mediatorBindingsAggregatorFactory = { mediate: vi.fn().mockResolvedValue('aggregator') };
     engine = new ExpressionEngineBase(new ActorInitExpressions({
       bus: new Bus({ name: 'bus' }),
       name: 'actor',

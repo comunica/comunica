@@ -29,7 +29,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: jest.fn((arg: any) => {
+      mediate: vi.fn((arg: any) => {
         if (arg.operation.type === 'nodes' || arg.operation.type === 'union') {
           return Promise.resolve({
             bindingsStream: new ArrayIterator([

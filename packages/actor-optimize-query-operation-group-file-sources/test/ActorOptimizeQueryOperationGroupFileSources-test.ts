@@ -9,12 +9,12 @@ function createMockSource(referenceValue: any = 'http://example.org/source', for
     source: {
       referenceValue,
       firstLink: forceSourceType === undefined ? undefined : { url: referenceValue, forceSourceType },
-      getFilterFactor: jest.fn(),
-      getSelectorShape: jest.fn(),
-      queryBindings: jest.fn(),
-      queryQuads: jest.fn(),
-      queryBoolean: jest.fn(),
-      queryVoid: jest.fn(),
+      getFilterFactor: vi.fn(),
+      getSelectorShape: vi.fn(),
+      queryBindings: vi.fn(),
+      queryQuads: vi.fn(),
+      queryBoolean: vi.fn(),
+      queryVoid: vi.fn(),
     },
   };
 }
@@ -33,7 +33,7 @@ describe('ActorOptimizeQueryOperationGroupFileSources', () => {
 
     compositeWrapper = createFileMockSource('http://example.org/file1.ttl\nhttp://example.org/file2.ttl');
     mediatorQuerySourceIdentify = {
-      mediate: jest.fn().mockResolvedValue({ querySource: compositeWrapper }),
+      mediate: vi.fn().mockResolvedValue({ querySource: compositeWrapper }),
     };
   });
 

@@ -223,7 +223,7 @@ describe('ActionContext', () => {
 
       if (context.has(key1)) {
         const value1_2 = context.get(key1);
-        // eslint-disable-next-line jest/no-conditional-expect
+        // eslint-disable-next-line vitest/no-conditional-expect
         expect(value1_2).toBe('abc');
       }
     });

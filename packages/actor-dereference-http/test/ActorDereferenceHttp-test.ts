@@ -108,8 +108,8 @@ describe('ActorDereferenceHttp', () => {
         let body = action.input === 'https://www.google.com/noweb' ?
           require('readable-stream-node-to-web')(dummyBodyStream) :
           dummyBodyStream;
-        // eslint-disable-next-line jest/prefer-spy-on
-        body.cancel = jest.fn();
+        // eslint-disable-next-line vitest/prefer-spy-on
+        body.cancel = vi.fn();
         if (action.input.includes('nobody')) {
           body = undefined;
         }
@@ -247,7 +247,7 @@ describe('ActorDereferenceHttp', () => {
 
     it('should run on a 404 in lenient mode', async() => {
       context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
-      const spy = jest.spyOn(actor, <any> 'logWarn');
+      const spy = vi.spyOn(actor, <any> 'logWarn');
       const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', context });
       expect(output.url).toBe('https://www.nogoogle.com/notfound');
       expect(spy).toHaveBeenCalledTimes(1);
@@ -255,7 +255,7 @@ describe('ActorDereferenceHttp', () => {
 
     it('should run and not log on an abort error', async() => {
       context = new ActionContext({ [KeysInitQuery.lenient.name]: true });
-      const spy = jest.spyOn(actor, <any> 'logWarn');
+      const spy = vi.spyOn(actor, <any> 'logWarn');
       const output = await actor.run({ url: 'https://www.nogoogle.com/aborted', context });
       expect(output.url).toBe('https://www.nogoogle.com/aborted');
       expect(spy).not.toHaveBeenCalledWith();
@@ -296,7 +296,7 @@ describe('ActorDereferenceHttp', () => {
 
     it('should run and ignore http rejects in lenient mode', async() => {
       context = new ActionContext({ httpReject: true, [KeysInitQuery.lenient.name]: true });
-      const spy = jest.spyOn(actor, <any> 'logWarn');
+      const spy = vi.spyOn(actor, <any> 'logWarn');
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toBe('https://www.google.com/');
       expect(spy).toHaveBeenCalledTimes(1);
@@ -304,7 +304,7 @@ describe('ActorDereferenceHttp', () => {
 
     it('should run and ignore http rejects in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
-      const spy = jest.spyOn(logger, 'warn');
+      const spy = vi.spyOn(logger, 'warn');
       const url = 'https://www.google.com/';
       context = new ActionContext({
         httpReject: true,

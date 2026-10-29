@@ -2,7 +2,6 @@ import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
 import type { IActionRdfParseHtml, IHtmlParseListener } from '@comunica/bus-rdf-parse-html';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfParseHtmlScript } from '../lib/ActorRdfParseHtmlScript';
@@ -30,7 +29,7 @@ describe('ActorRdfParseHtml', () => {
         mediaTypeFormats: {},
         name: 'jsonldParser',
         mediatorHttp,
-        httpInvalidator: <any> { addInvalidateListener: jest.fn() },
+        httpInvalidator: <any> { addInvalidateListener: vi.fn() },
         cacheSize: 10,
       },
     );
@@ -110,10 +109,10 @@ describe('ActorRdfParseHtml', () => {
       beforeEach(() => {
         baseIRI = 'http://example.org/';
         headers = null;
-        emit = jest.fn();
+        emit = vi.fn();
         onEnd = new Promise((resolve, reject) => {
-          end = jest.fn(resolve);
-          error = jest.fn(reject);
+          end = vi.fn(resolve);
+          error = vi.fn(reject);
         });
         action = { baseIRI, headers, emit, error, end, context: new ActionContext({
           [KeysInitQuery.dataFactory.name]: DF,
@@ -132,7 +131,7 @@ describe('ActorRdfParseHtml', () => {
         });
 
         it('should identify the parsed script by the document base IRI', async() => {
-          jest.spyOn(mediator, 'mediate');
+          vi.spyOn(mediator, 'mediate');
           listener.onTagOpen('script', { type: 'application/ld+json' });
           listener.onText(`{ "@id": "http://example.org/a", "http://example.org/b": "http://example.org/c" }`);
           listener.onTagClose();
@@ -349,7 +348,7 @@ describe('ActorRdfParseHtml', () => {
           listener.onTagClose();
           listener.onEnd();
 
-          await expect(onEnd).rejects.toThrow(new Error('Unexpected STRING("@id") in state COLON'));
+          await expect(onEnd).rejects.toThrow('Unexpected STRING("@id") in state COLON');
         });
 
         it('should ignore mediator failures', async() => {
@@ -441,10 +440,10 @@ describe('ActorRdfParseHtml', () => {
       beforeEach(() => {
         baseIRI = 'http://example.org/#scriptId';
         headers = null;
-        emit = jest.fn();
+        emit = vi.fn();
         onEnd = new Promise((resolve, reject) => {
-          end = jest.fn(resolve);
-          error = jest.fn(reject);
+          end = vi.fn(resolve);
+          error = vi.fn(reject);
         });
         action = { baseIRI, headers, emit, error, end, context: new ActionContext({
           [KeysInitQuery.dataFactory.name]: DF,
@@ -544,7 +543,7 @@ describe('ActorRdfParseHtml', () => {
           listener.onTagClose();
           listener.onEnd();
 
-          await expect(onEnd).rejects.toThrow(new Error('Failed to find targeted script id "scriptId"'));
+          await expect(onEnd).rejects.toThrow('Failed to find targeted script id "scriptId"');
         });
 
         it('should error when a script with the given id was found with an unsupported content type', async() => {
@@ -561,7 +560,7 @@ describe('ActorRdfParseHtml', () => {
           listener.onTagClose();
           listener.onEnd();
 
-          await expect(onEnd).rejects.toThrow(new Error('Targeted script "scriptId" does not have a supported type'));
+          await expect(onEnd).rejects.toThrow('Targeted script "scriptId" does not have a supported type');
         });
 
         it('should not ignore mediator failures when targeting this script', async() => {
@@ -578,7 +577,7 @@ describe('ActorRdfParseHtml', () => {
           listener.onTagClose();
           listener.onEnd();
 
-          await expect(onEnd).rejects.toThrow(new Error('Parsing failure'));
+          await expect(onEnd).rejects.toThrow('Parsing failure');
         });
       });
     });
@@ -595,10 +594,10 @@ describe('ActorRdfParseHtml', () => {
       beforeEach(() => {
         baseIRI = 'http://example.org/';
         headers = null;
-        emit = jest.fn();
+        emit = vi.fn();
         onEnd = new Promise((resolve, reject) => {
-          end = jest.fn(resolve);
-          error = jest.fn(reject);
+          end = vi.fn(resolve);
+          error = vi.fn(reject);
         });
         action = { baseIRI, headers, emit, error, end, context: new ActionContext({
           [KeysInitQuery.dataFactory.name]: DF,
@@ -665,10 +664,10 @@ describe('ActorRdfParseHtml', () => {
       beforeEach(() => {
         baseIRI = 'http://example.org/#scriptId';
         headers = null;
-        emit = jest.fn();
+        emit = vi.fn();
         onEnd = new Promise((resolve, reject) => {
-          end = jest.fn(resolve);
-          error = jest.fn(reject);
+          end = vi.fn(resolve);
+          error = vi.fn(reject);
         });
         action = { baseIRI, headers, emit, error, end, context: new ActionContext({
           [KeysInitQuery.dataFactory.name]: DF,
@@ -769,7 +768,7 @@ describe('ActorRdfParseHtml', () => {
           listener.onTagClose();
           listener.onEnd();
 
-          await expect(onEnd).rejects.toThrow(new Error('Failed to find targeted script id "scriptId"'));
+          await expect(onEnd).rejects.toThrow('Failed to find targeted script id "scriptId"');
         });
 
         it('should error when a script with the given id was found with an unsupported content type', async() => {
@@ -786,7 +785,7 @@ describe('ActorRdfParseHtml', () => {
           listener.onTagClose();
           listener.onEnd();
 
-          await expect(onEnd).rejects.toThrow(new Error('Targeted script "scriptId" does not have a supported type'));
+          await expect(onEnd).rejects.toThrow('Targeted script "scriptId" does not have a supported type');
         });
       });
     });

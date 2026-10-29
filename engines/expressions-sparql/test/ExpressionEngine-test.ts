@@ -86,7 +86,7 @@ describe('ExpressionEngine', () => {
     });
 
     it('leaves the not flag to the resolver.', async() => {
-      const resolver = jest.fn(async(expr: Algebra.ExistenceExpression) => expr.not);
+      const resolver = vi.fn(async(expr: Algebra.ExistenceExpression) => expr.not);
       const evaluator = await engine.createEvaluator(
         AF.createExistenceExpression(true, AF.createBgp([])),
         new ActionContext({ [KeysExpressionEvaluator.existenceResolver.name]: resolver }),

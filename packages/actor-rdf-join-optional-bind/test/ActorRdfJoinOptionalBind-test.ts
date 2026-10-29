@@ -49,7 +49,7 @@ IQueryOperationResultBindings
         mediate: async() => ({ selectivity: 0.8 }),
       };
       mediatorQueryOperation = <any> {
-        mediate: jest.fn(async(arg: IActionQueryOperation): Promise<IQueryOperationResultBindings> => {
+        mediate: vi.fn(async(arg: IActionQueryOperation): Promise<IQueryOperationResultBindings> => {
           let data: Bindings[] = [];
           switch ((<Algebra.Pattern> arg.operation).subject.value) {
             case '1':

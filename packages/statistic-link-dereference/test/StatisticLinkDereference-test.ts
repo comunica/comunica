@@ -49,8 +49,8 @@ describe('StatisticLinkDereference', () => {
   let statisticLinkDereference: StatisticLinkDereference;
 
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
     statisticLinkDereference = new StatisticLinkDereference();
   });
 
@@ -61,7 +61,7 @@ describe('StatisticLinkDereference', () => {
 
     beforeEach(() => {
       link = { url: 'url', metadata: { key: 'value' }};
-      cb = jest.fn(() => {});
+      cb = vi.fn(() => {});
 
       source = new MockQuerySource('url');
     });
@@ -107,6 +107,6 @@ describe('StatisticLinkDereference', () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 });

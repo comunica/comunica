@@ -38,8 +38,8 @@ describe('ActorContextPreprocessConvertShortcuts', () => {
       });
 
       it('with a non-empty context', async() => {
-        const serviceExecutors = { 'urn:service': jest.fn() };
-        const serviceExecutorCreator = jest.fn();
+        const serviceExecutors = { 'urn:service': vi.fn() };
+        const serviceExecutorCreator = vi.fn();
         const contextIn = new ActionContext({
           sources: [ 'a' ],
           destination: 'd',

@@ -199,7 +199,7 @@ describe('utils', () => {
     });
 
     it('should obtain executors from the executor creator', () => {
-      const serviceExecutorCreator = jest.fn((serviceNamedNode: RDF.NamedNode) =>
+      const serviceExecutorCreator = vi.fn((serviceNamedNode: RDF.NamedNode) =>
         serviceNamedNode.value === 'urn:service' ? serviceExecutor : undefined);
       const contextCreator = context.set(KeysInitQuery.serviceExecutorCreator, serviceExecutorCreator);
       expect(getServiceExecutor('urn:service', contextCreator)).toBe(serviceExecutor);

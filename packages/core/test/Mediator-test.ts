@@ -36,13 +36,13 @@ describe('Mediator', () => {
       actor2.run = actorRun;
       actor3.run = actorRun;
 
-      jest.spyOn(mediator, 'mediateWith');
-      jest.spyOn(actor1, 'test');
-      jest.spyOn(actor2, 'test');
-      jest.spyOn(actor3, 'test');
-      jest.spyOn(actor1, 'run');
-      jest.spyOn(actor2, 'run');
-      jest.spyOn(actor3, 'run');
+      vi.spyOn(mediator, 'mediateWith');
+      vi.spyOn(actor1, 'test');
+      vi.spyOn(actor2, 'test');
+      vi.spyOn(actor3, 'test');
+      vi.spyOn(actor1, 'run');
+      vi.spyOn(actor2, 'run');
+      vi.spyOn(actor3, 'run');
     });
 
     it('should have a \'name\' field', () => {

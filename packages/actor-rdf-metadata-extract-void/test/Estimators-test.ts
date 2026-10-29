@@ -74,8 +74,8 @@ describe('Estimators', () => {
   const datasetTripleCount = 4321;
 
   beforeEach(() => {
-    jest.resetAllMocks();
-    jest.restoreAllMocks();
+    vi.resetAllMocks();
+    vi.restoreAllMocks();
     dataset = {
       classes: 0,
       classPartitions: {},

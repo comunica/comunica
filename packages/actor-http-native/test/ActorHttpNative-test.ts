@@ -9,8 +9,13 @@ import arrayifyStream from 'arrayify-stream';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 import '@comunica/utils-jest';
 
-// eslint-disable-next-line jest/no-mocks-import
-const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
+// @ts-expect-error
+// eslint-disable-next-line vitest/no-mocks-import
+import { mockSetup } from './__mocks__/follow-redirects';
+
+// Unlike jest, vitest does not pick up '__mocks__' entries for node modules automatically
+// @ts-expect-error
+vi.mock(import('follow-redirects'), () => import('./__mocks__/follow-redirects'));
 
 describe('ActorHttpNative', () => {
   let bus: any;
@@ -205,7 +210,7 @@ describe('ActorHttpNative', () => {
 
     it('should run with a logger', async() => {
       const logger = new LoggerVoid();
-      const spy = jest.spyOn(logger, 'info');
+      const spy = vi.spyOn(logger, 'info');
       mockSetup({ statusCode: 200 });
       await actor.run({
         input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) }),

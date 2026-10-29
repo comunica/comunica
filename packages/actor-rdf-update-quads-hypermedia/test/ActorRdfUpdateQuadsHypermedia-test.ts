@@ -28,7 +28,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
 
     beforeEach(() => {
       mediatorDereferenceRdf = {
-        mediate: jest.fn(async({ url }: any) => {
+        mediate: vi.fn(async({ url }: any) => {
           let cachePolicy: ICachePolicy<IActionDereferenceRdf> | undefined;
           if (url.includes('cachepolicytrue')) {
             cachePolicy = <any> {
@@ -56,7 +56,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
         }),
       };
       mediatorMetadata = {
-        mediate: jest.fn(({ quads }: IActionRdfMetadata): Promise<IActorRdfMetadataOutput> =>
+        mediate: vi.fn(({ quads }: IActionRdfMetadata): Promise<IActorRdfMetadataOutput> =>
           Promise.resolve<IActorRdfMetadataOutput>(
             {
               quads,
@@ -66,11 +66,11 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
           )),
       };
       mediatorMetadataExtract = {
-        mediate: jest.fn(({ metadata }: any) => Promise.resolve({ metadata })),
+        mediate: vi.fn(({ metadata }: any) => Promise.resolve({ metadata })),
       };
       destId = 0;
       mediatorRdfUpdateHypermedia = {
-        mediate: jest.fn(() => Promise.resolve({ destination: `DEST${destId++}` })),
+        mediate: vi.fn(() => Promise.resolve({ destination: `DEST${destId++}` })),
       };
       httpInvalidator = {
         addInvalidateListener: (l: any) => httpInvalidatorListener = l,
@@ -269,7 +269,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
       });
 
       it('should delegate exist-false dereferences to the destination', async() => {
-        jest.spyOn(mediatorDereferenceRdf, 'mediate').mockImplementation(async({ url }: any) => {
+        mediatorDereferenceRdf.mediate.mockImplementation(async({ url }: any) => {
           const data = {
             quads: 'QUADS',
             exists: false,

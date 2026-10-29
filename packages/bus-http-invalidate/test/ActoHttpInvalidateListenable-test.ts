@@ -44,8 +44,8 @@ describe('ActorHttpInvalidateListenable', () => {
     let l1: IInvalidateListener;
     beforeEach(() => {
       actor = new ActorHttpInvalidateListenable({ bus, name: 'actor' });
-      l0 = jest.fn();
-      l1 = jest.fn();
+      l0 = vi.fn();
+      l1 = vi.fn();
       actor.addInvalidateListener(l0);
       actor.addInvalidateListener(l1);
     });

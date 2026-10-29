@@ -22,11 +22,11 @@ import { Parser } from '@traqula/parser-sparql-1-2';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import type { Mock } from 'vitest';
 import { QueryEngineBase } from '../lib';
 import { ActorInitQuery } from '../lib/ActorInitQuery';
 import { ActorInitQueryBase } from '../lib/ActorInitQueryBase';
 import '@comunica/utils-jest';
-import 'jest-rdf';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF, {});
@@ -56,7 +56,7 @@ describe('QueryEngineBase', () => {
       input.push(null);
     };
     mediatorQueryProcess = <any>{
-      mediate: jest.fn((action: any) => {
+      mediate: vi.fn((action: any) => {
         if (action.context.has(KeysInitQuery.explain)) {
           return Promise.resolve({
             result: {
@@ -132,7 +132,7 @@ describe('QueryEngineBase', () => {
 
     describe('invalidateHttpCache', () => {
       it('should call the HTTP invalidate mediator', async() => {
-        jest.spyOn(mediatorHttpInvalidate, 'mediate');
+        vi.spyOn(mediatorHttpInvalidate, 'mediate');
         await queryEngine.invalidateHttpCache('a');
         expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledWith({ context, url: 'a' });
       });
@@ -204,7 +204,7 @@ describe('QueryEngineBase', () => {
       });
 
       it('should expand the explain shortcut before processing the query', async() => {
-        jest.spyOn(mediatorQueryProcess, 'mediate');
+        vi.spyOn(mediatorQueryProcess, 'mediate');
         await (<any> queryEngine).queryOrExplain('SELECT * WHERE { ?s ?p ?o }', { explain: 'parsed' });
 
         const { context } = (mediatorQueryProcess.mediate).mock.calls[0][0];
@@ -242,7 +242,7 @@ describe('QueryEngineBase', () => {
         });
 
         it('rejects for an invalid bindings query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
           await expect(queryEngine.queryBindings('INSERT ...')).rejects
             .toThrow(`Query result type 'bindings' was expected, while 'void' was found.`);
         });
@@ -253,7 +253,7 @@ describe('QueryEngineBase', () => {
           input = new ArrayIterator([
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
           ], { autoStart: false });
-          jest.spyOn(mediatorQueryProcess, 'mediate')
+          vi.spyOn(mediatorQueryProcess, 'mediate')
             .mockResolvedValue({ result: { type: 'quads', quadStream: input }});
           await expect(arrayifyStream(await queryEngine.queryQuads('CONSTRUCT ...'))).resolves.toEqualRdfQuadArray([
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:a'), DF.namedNode('ex:a')),
@@ -261,7 +261,7 @@ describe('QueryEngineBase', () => {
         });
 
         it('rejects for an invalid bindings query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
           await expect(queryEngine.queryQuads('INSERT ...')).rejects
             .toThrow(`Query result type 'quads' was expected, while 'void' was found.`);
         });
@@ -269,7 +269,7 @@ describe('QueryEngineBase', () => {
 
       describe('queryBoolean', () => {
         it('handles a valid boolean query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
             result: {
               type: 'boolean',
               execute: () => Promise.resolve(true),
@@ -279,7 +279,7 @@ describe('QueryEngineBase', () => {
         });
 
         it('rejects for an invalid boolean query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({ result: { type: 'void' }});
           await expect(queryEngine.queryBoolean('INSERT ...')).rejects
             .toThrow(`Query result type 'boolean' was expected, while 'void' was found.`);
         });
@@ -287,7 +287,7 @@ describe('QueryEngineBase', () => {
 
       describe('queryVoid', () => {
         it('handles a valid void query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
             result: {
               type: 'void',
               execute: () => Promise.resolve(true),
@@ -297,7 +297,7 @@ describe('QueryEngineBase', () => {
         });
 
         it('rejects for an invalid void query', async() => {
-          jest.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
+          vi.spyOn(mediatorQueryProcess, 'mediate').mockResolvedValue({
             result: { type: 'boolean' },
           });
           await expect(queryEngine.queryVoid('ASK ...')).rejects
@@ -362,16 +362,16 @@ describe('QueryEngineBase', () => {
     const quad2 = DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
     let mediatorContextPreprocess: any;
     let mediatorUpdateQuads: any;
-    let execute: jest.Mock;
+    let execute: Mock;
     let queryEngine: QueryEngineBase;
 
     beforeEach(() => {
       mediatorContextPreprocess = {
-        mediate: jest.fn(async({ context }: any) => ({ context: context.setRaw('preprocessed', true) })),
+        mediate: vi.fn(async({ context }: any) => ({ context: context.setRaw('preprocessed', true) })),
       };
-      execute = jest.fn(async() => {});
+      execute = vi.fn(async() => {});
       mediatorUpdateQuads = {
-        mediate: jest.fn(async() => ({ execute })),
+        mediate: vi.fn(async() => ({ execute })),
       };
       queryEngine = new QueryEngineBase(new ActorInitQuery({
         bus,
@@ -434,7 +434,7 @@ describe('QueryEngineBase', () => {
     });
 
     it('should invalidate the HTTP cache if requested', async() => {
-      jest.spyOn(mediatorHttpInvalidate, 'mediate');
+      vi.spyOn(mediatorHttpInvalidate, 'mediate');
 
       await queryEngine.updateQuads({}, { [KeysInitQuery.invalidateCache.name]: true });
 
@@ -449,7 +449,7 @@ describe('QueryEngineBase', () => {
     });
 
     it('should flush the logger after the update', async() => {
-      const logger = <Logger><unknown>{ flush: jest.fn() };
+      const logger = <Logger><unknown>{ flush: vi.fn() };
 
       await queryEngine.updateQuads({}, { [KeysCore.log.name]: logger });
 
@@ -467,11 +467,11 @@ describe('QueryEngineBase', () => {
 
     beforeEach(() => {
       mediatorContextPreprocess = {
-        mediate: jest.fn(async({ context }: any) => ({ context: context.setRaw('preprocessed', true) })),
+        mediate: vi.fn(async({ context }: any) => ({ context: context.setRaw('preprocessed', true) })),
       };
       parsed = Readable.from([ quad1 ]);
       mediatorRdfParse = {
-        mediate: jest.fn(async() => ({ handle: { data: parsed }})),
+        mediate: vi.fn(async() => ({ handle: { data: parsed }})),
       };
       stream = Readable.from([ '<ex:s1> <ex:p> <ex:o> .' ]);
       queryEngine = new QueryEngineBase(new ActorInitQuery({
@@ -570,8 +570,8 @@ describe('QueryEngineBase', () => {
         },
       });
       const quads = await queryEngine.parseRdf(stream, { contentType: 'text/turtle' });
-      const onPrefix = jest.fn();
-      const onContext = jest.fn();
+      const onPrefix = vi.fn();
+      const onContext = vi.fn();
       quads.on('prefix', onPrefix);
       quads.on('context', onContext);
 
@@ -582,7 +582,7 @@ describe('QueryEngineBase', () => {
     });
 
     it('should invalidate the HTTP cache if requested', async() => {
-      jest.spyOn(mediatorHttpInvalidate, 'mediate');
+      vi.spyOn(mediatorHttpInvalidate, 'mediate');
 
       await arrayifyStream(await queryEngine.parseRdf(stream, {
         contentType: 'text/turtle',
@@ -593,7 +593,7 @@ describe('QueryEngineBase', () => {
     });
 
     it('should flush the logger when the parsed stream ends', async() => {
-      const logger = <Logger><unknown>{ flush: jest.fn() };
+      const logger = <Logger><unknown>{ flush: vi.fn() };
 
       await arrayifyStream(await queryEngine.parseRdf(stream, {
         contentType: 'text/turtle',
@@ -694,7 +694,7 @@ describe('QueryEngineBase', () => {
 
       beforeEach(() => {
         mockLogger = <Logger><unknown>{
-          flush: jest.fn(),
+          flush: vi.fn(),
         };
       });
 

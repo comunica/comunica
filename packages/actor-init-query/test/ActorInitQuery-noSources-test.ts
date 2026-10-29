@@ -22,7 +22,7 @@ describe('ActorInitQuery', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryProcess = <any>{
-      mediate: jest.fn((action: any) => {
+      mediate: vi.fn((action: any) => {
         if (action.context.has(KeysInitQuery.explain)) {
           return Promise.resolve({
             result: {
@@ -82,7 +82,7 @@ describe('ActorInitQuery', () => {
         allowNoSources: true,
       });
 
-      spyQueryOrExplain = jest.spyOn(QueryEngineBase.prototype, 'queryOrExplain');
+      spyQueryOrExplain = vi.spyOn(QueryEngineBase.prototype, 'queryOrExplain');
     });
 
     describe('with allowNoSources', () => {

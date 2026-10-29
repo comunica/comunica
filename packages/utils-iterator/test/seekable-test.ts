@@ -1,16 +1,17 @@
 import type { Bindings, BindingsStream } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
+import type { Mock } from 'vitest';
 import { isSeekableBindingsStream, SeekableMappingIterator, seekBindingsStream } from '../lib/seekable';
 
 describe('seekable bindings streams', () => {
   const target = <Bindings> <any> { dummy: true };
   let plain: BindingsStream;
   let seekable: BindingsStream;
-  let seek: jest.Mock;
+  let seek: Mock;
 
   beforeEach(() => {
     plain = <BindingsStream> <any> new ArrayIterator([], { autoStart: false });
-    seek = jest.fn();
+    seek = vi.fn();
     seekable = Object.assign(<BindingsStream> <any> new ArrayIterator([], { autoStart: false }), { seek });
   });
 

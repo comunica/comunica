@@ -3,7 +3,6 @@ import { ActorRdfParseN3 } from '@comunica/actor-rdf-parse-n3';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import 'jest-rdf';
 import type { IActionContext } from '@comunica/types';
 import arrayifyStream from 'arrayify-stream';
 import { DataFactory } from 'rdf-data-factory';

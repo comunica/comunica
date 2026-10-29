@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "include": [
     "engines/**/*.ts",
-    "jest.config.ts",
+    "vitest.config.ts",
     "packages/**/*.ts",
     "playwright.config.ts",
     "performance/**/*.ts"

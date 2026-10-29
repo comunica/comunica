@@ -20,12 +20,12 @@ describe('QuadDestinationPutLdp', () => {
 
   beforeEach(() => {
     mediatorHttp = {
-      mediate: jest.fn(() => ({
+      mediate: vi.fn(() => ({
         status: 200,
       })),
     };
     mediatorRdfSerializeMediatypes = {
-      mediate: jest.fn(() => ({
+      mediate: vi.fn(() => ({
         mediaTypes: {
           'text/turtle': 0.5,
           'application/ld+json': 0.7,
@@ -34,7 +34,7 @@ describe('QuadDestinationPutLdp', () => {
       })),
     };
     mediatorRdfSerialize = {
-      mediate: jest.fn(() => ({
+      mediate: vi.fn(() => ({
         handle: {
           data: Readable.from([ 'TRIPLES' ]),
         },
@@ -125,7 +125,7 @@ describe('QuadDestinationPutLdp', () => {
     });
 
     it('should close body if available', async() => {
-      const cancel = jest.fn();
+      const cancel = vi.fn();
       mediatorHttp.mediate = () => ({
         status: 200,
         body: { cancel },

@@ -5,7 +5,7 @@ import { getMockEEActionContext, getMockEEFactory, getMockExpression } from '@co
 import type { Builder } from '../../../lib';
 import { NonLexicalLiteral, TypeURL, bool, declare, integer, nonLexicalComparisonHandler } from '../../../lib';
 
-import fn = jest.fn;
+const fn = vi.fn;
 
 describe('The function helper file', () => {
   describe('has a builder', () => {

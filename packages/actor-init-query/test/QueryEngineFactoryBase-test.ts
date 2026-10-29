@@ -5,13 +5,13 @@ import { QueryEngineFactoryBase } from '../lib/QueryEngineFactoryBase';
 
 // Instantiating a full engine from the Components.js config requires a scan of the whole module tree,
 // and can take a while on slower CI machines.
-jest.setTimeout(60_000);
+vi.setConfig({ testTimeout: 60_000, hookTimeout: 60_000 });
 
-jest.mock<typeof import('@comunica/runner')>('@comunica/runner', () => {
-  const actual = jest.requireActual('@comunica/runner');
+vi.mock(import('@comunica/runner'), async(importOriginal) => {
+  const actual = await importOriginal();
   return {
     ...actual,
-    instantiateComponent: jest.fn(actual.instantiateComponent),
+    instantiateComponent: vi.fn(actual.instantiateComponent),
   };
 });
 
@@ -50,11 +50,11 @@ describe('QueryEngineFactoryBase', () => {
       beforeEach(() => {
         actorQuery = { name: 'urn:comunica:default:init/actors#query' };
         actorOther = { name: 'urn:comunica:other' };
-        jest.mocked(instantiateComponent).mockResolvedValue(new Runner(<any> {}, [ actorQuery, actorOther ]));
+        vi.mocked(instantiateComponent).mockResolvedValue(new Runner(<any> {}, [ actorQuery, actorOther ]));
       });
 
       afterEach(() => {
-        jest.mocked(instantiateComponent).mockReset();
+        vi.mocked(instantiateComponent).mockReset();
       });
 
       it('should return a query engine without options', async() => {

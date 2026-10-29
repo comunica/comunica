@@ -13,17 +13,17 @@ describe('ActorRdfUpdateHypermediaPutLdp', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = {
-      mediate: jest.fn(() => ({
+      mediate: vi.fn(() => ({
         body: 'BODY',
       })),
     };
     mediatorRdfSerializeMediatypes = {
-      mediate: jest.fn(() => ({
+      mediate: vi.fn(() => ({
         todo: 'TRUE',
       })),
     };
     mediatorRdfSerialize = {
-      mediate: jest.fn(() => ({
+      mediate: vi.fn(() => ({
         todo: 'TRUE',
       })),
     };

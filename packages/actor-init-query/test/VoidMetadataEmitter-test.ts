@@ -1,4 +1,4 @@
-/* eslint-disable jest/no-mocks-import */
+/* eslint-disable vitest/no-mocks-import */
 import { PassThrough } from 'node:stream';
 import type { BindingsStream } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -171,7 +171,7 @@ describe('VoidMetadataEmitter', () => {
     // Create spies
     const engine = await new QueryEngineFactoryBase().create();
     engine.queryBindings = queryBindings;
-    const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
+    const spyQueryBindings = vi.spyOn(engine, 'queryBindings');
 
     // Request VoID description twice
     await emitter.getVoIDQuads(
@@ -197,8 +197,8 @@ describe('VoidMetadataEmitter', () => {
     engine.queryBindings = (): BindingsStream => <BindingsStream>(new ArrayIterator<RDF.Bindings>([ BF.bindings([
       [ DF.variable('error'), DF.literal('error') ],
     ]) ], { autoStart: false }));
-    const spyGetVoIDQuads = jest.spyOn(emitter, 'getVoIDQuads');
-    const spyQueryBindings = jest.spyOn(engine, 'queryBindings');
+    const spyGetVoIDQuads = vi.spyOn(emitter, 'getVoIDQuads');
+    const spyQueryBindings = vi.spyOn(engine, 'queryBindings');
 
     await emitter.getVoIDQuads(
       engine,

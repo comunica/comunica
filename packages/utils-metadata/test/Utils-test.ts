@@ -92,7 +92,7 @@ describe('Utils', () => {
   describe('#cachifyMetadata', () => {
     it('should remember an instance', async() => {
       let counter = 0;
-      const cb = jest.fn(async() => ({ state: new MetadataValidationState(), value: counter++ }));
+      const cb = vi.fn(async() => ({ state: new MetadataValidationState(), value: counter++ }));
       const cached = cachifyMetadata(<any> cb);
       expect((await cached()).value).toBe(0);
       expect((await cached()).value).toBe(0);
@@ -102,7 +102,7 @@ describe('Utils', () => {
     it('should handle invalidation', async() => {
       let counter = 0;
       const state = new MetadataValidationState();
-      const cb = jest.fn(async() => ({ state, value: counter++ }));
+      const cb = vi.fn(async() => ({ state, value: counter++ }));
       const cached = cachifyMetadata(<any> cb);
       expect((await cached()).value).toBe(0);
       expect((await cached()).value).toBe(0);

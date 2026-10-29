@@ -22,7 +22,7 @@ describe('adjust time duration', () => {
    */
 
   // ADJUST has jet to be implemented
-  // eslint-disable-next-line jest/no-disabled-tests
+  // eslint-disable-next-line vitest/no-disabled-tests
   describe.skip('respect the adjust_time-01 spec', () => {
     runFuncTestTable({
       operation: 'ADJUST',

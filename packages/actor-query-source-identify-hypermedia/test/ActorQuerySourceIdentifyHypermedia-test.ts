@@ -11,7 +11,6 @@ import { MetadataValidationState } from '@comunica/utils-metadata';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQuerySourceIdentifyHypermedia } from '../lib/ActorQuerySourceIdentifyHypermedia';
 import { mediators as utilMediators } from './MediatorDereferenceRdf-util';
-import 'jest-rdf';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -34,7 +33,7 @@ describe('ActorQuerySourceIdentifyHypermedia', () => {
     mediatorQuerySourceDereferenceLink = utilMediators.mediatorQuerySourceDereferenceLink;
     mediatorRdfResolveHypermediaLinks = utilMediators.mediatorRdfResolveHypermediaLinks;
     mediatorRdfResolveHypermediaLinksQueue = utilMediators.mediatorRdfResolveHypermediaLinksQueue;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('The ActorQuerySourceIdentifyHypermedia module', () => {

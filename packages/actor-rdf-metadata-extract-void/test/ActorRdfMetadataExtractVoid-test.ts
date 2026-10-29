@@ -27,8 +27,8 @@ import {
   VOID_VOCABULARY,
 } from '../lib/Definitions';
 
-jest.mock('@comunica/actor-init-query');
-jest.mock('@comunica/bus-rdf-metadata-extract');
+vi.mock(import('@comunica/actor-init-query'));
+vi.mock(import('@comunica/bus-rdf-metadata-extract'));
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);
@@ -40,7 +40,7 @@ describe('ActorRdfMetadataExtractVoid', () => {
   const sparqlEndpoint = DF.namedNode('http://localhost:3000/sparql');
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     bus = new Bus({ name: 'bus' });
     actor = new ActorRdfMetadataExtractVoid({
       bus,

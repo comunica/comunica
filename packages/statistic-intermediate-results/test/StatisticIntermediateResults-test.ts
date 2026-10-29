@@ -10,8 +10,8 @@ describe('StatisticIntermediateResults', () => {
   let statisticIntermediateResults: StatisticIntermediateResults;
 
   beforeEach(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2021-01-01T00:00:00Z').getTime());
     statisticIntermediateResults = new StatisticIntermediateResults();
   });
 
@@ -19,7 +19,7 @@ describe('StatisticIntermediateResults', () => {
     let cb: (data: PartialResult) => void;
 
     beforeEach(() => {
-      cb = jest.fn((_data: PartialResult) => {});
+      cb = vi.fn((_data: PartialResult) => {});
     });
 
     it('attach an event listener', () => {
@@ -73,6 +73,6 @@ describe('StatisticIntermediateResults', () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 });

@@ -155,8 +155,8 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should not extend bindings on erroring expressions', async() => {
-      const warn = jest.fn();
-      jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
+      const warn = vi.fn();
+      vi.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
 
       const op: any = { operation: example(faultyExpression), context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
@@ -172,12 +172,12 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should emit error when evaluation code returns a hard error', async() => {
-      const warn = jest.fn();
-      jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
+      const warn = vi.fn();
+      vi.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
 
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
-      // eslint-disable-next-line jest/prefer-spy-on
-      (<any> sparqlee).isExpressionError = jest.fn(() => false);
+      // eslint-disable-next-line vitest/prefer-spy-on
+      (<any> sparqlee).isExpressionError = vi.fn(() => false);
 
       const op: any = { operation: example(faultyExpression), context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);

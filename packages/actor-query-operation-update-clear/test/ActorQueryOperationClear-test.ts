@@ -17,7 +17,7 @@ describe('ActorQueryOperationClear', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorUpdateQuads = {
-      mediate: jest.fn(() => Promise.resolve({
+      mediate: vi.fn(() => Promise.resolve({
         execute: () => Promise.resolve(),
       })),
     };

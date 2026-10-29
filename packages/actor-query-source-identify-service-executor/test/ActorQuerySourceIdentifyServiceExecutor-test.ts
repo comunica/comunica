@@ -43,7 +43,7 @@ describe('ActorQuerySourceIdentifyServiceExecutor', () => {
 
     beforeEach(() => {
       actor = new ActorQuerySourceIdentifyServiceExecutor({ name: 'actor', bus });
-      serviceExecutor = { execute: jest.fn() };
+      serviceExecutor = { execute: vi.fn() };
       contextEmpty = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
       contextExecutors = contextEmpty.set(KeysInitQuery.serviceExecutors, { 'urn:service': serviceExecutor });
       contextCreator = contextEmpty.set(
