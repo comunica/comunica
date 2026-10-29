@@ -1,3 +1,5 @@
+// eslint-disable-next-line import/no-nodejs-modules
+import type { EventEmitter } from 'node:events';
 import { filterMatchingQuotedQuads, getVariables, quadsToBindings } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type {
@@ -11,11 +13,60 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory, isKnownOperation, TypesComunica } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { SeekableMappingIterator } from '@comunica/utils-iterator';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
+import type { QuadTermName } from 'rdf-terms';
 import { filterTermsNested, QUAD_TERM_NAMES, someTerms, someTermsNested, uniqTerms } from 'rdf-terms';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
+
+/**
+ * A bindings scan knows the order of results, and can skip ahead within it.
+ * `rdf-stores` produces one of these for a store whose indexes have been ordered.
+ */
+interface IOrderedBindingsScan {
+  resultOrder: QuadTermName[];
+  seekTo?: (component: QuadTermName, term: RDF.Term) => void;
+}
+
+/**
+ * Get the ordered scan of a stream.
+ * @param stream A bindings stream returned by the `matchBindings` method of a source.
+ */
+function getOrderedScan(stream: EventEmitter & Partial<IOrderedBindingsScan>): IOrderedBindingsScan | undefined {
+  if (!Array.isArray(stream.resultOrder)) {
+    return undefined;
+  }
+  return {
+    resultOrder: stream.resultOrder,
+    seekTo: typeof stream.seekTo === 'function' ? stream.seekTo : undefined,
+  };
+}
+
+/**
+ * Determine for every component the variable the pattern binds it to.
+ * Components the pattern repeats are dropped, since a variable is only sorted on by its first occurrence.
+ * @param resultOrder The components the scan varies over, in the order it produces them.
+ * @param operation The pattern being matched.
+ */
+function scanOrderToBindingsOrder(
+  resultOrder: QuadTermName[],
+  operation: Algebra.Pattern,
+): [QuadTermName, RDF.Variable][] {
+  const order: [QuadTermName, RDF.Variable][] = [];
+  const seen = new Set<string>();
+  for (const component of resultOrder) {
+    const term = operation[component];
+    if (term.termType !== 'Variable' || seen.has(term.value)) {
+      // A scan only varies over variables, and a repeated one adds nothing to the order.
+      break;
+    }
+    seen.add(term.value);
+    order.push([ component, term ]);
+  }
+  return order;
+}
 
 export class QuerySourceRdfJs implements IQuerySource {
   protected readonly selectorShape: FragmentSelectorShape;
@@ -204,11 +255,31 @@ export class QuerySourceRdfJs implements IQuerySource {
         operation.graph = this.dataFactory.defaultGraph();
       }
 
+      // If the stream has a `seekTo` method with a valid order, we make our iterator seekable.
+      const scan = it === rawStream ? getOrderedScan(rawStream) : undefined;
+      const order = scan ? scanOrderToBindingsOrder(scan.resultOrder, operation) : [];
+      const seekTo = order.length > 0 ? scan?.seekTo : undefined;
+      if (seekTo) {
+        // A scan can only skip ahead on one component, so seeks skip on the first one of the order.
+        const [ component, variable ] = order[0];
+        it = new SeekableMappingIterator(it, bindings => bindings, (target) => {
+          const term = target.get(variable);
+          if (term) {
+            seekTo(component, term);
+          }
+        });
+      }
+
       // Determine metadata
       if (!it.getProperty('metadata')) {
         const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
-        this.setMetadata(it, operation, context, forceEstimateCardinality, { variables })
-          .catch(error => it.destroy(error));
+        this.setMetadata(it, operation, context, forceEstimateCardinality, {
+          variables,
+          ...order.length > 0 && {
+            termOrder: order.map(([ , variable ]) => ({ term: variable, direction: <const> 'asc' })),
+            canSeek: Boolean(seekTo),
+          },
+        }).catch(error => it.destroy(error));
       }
 
       return it;

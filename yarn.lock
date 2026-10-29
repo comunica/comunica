@@ -4520,10 +4520,10 @@ asynciterator@^3.10.0, asynciterator@^3.8.0, asynciterator@^3.8.1, asynciterator
   dependencies:
     tiny-set-immediate "^1.0.2"
 
-asyncjoin@^1.2.5:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-1.2.5.tgz#1c7570109671d0e64ce945bde8e0696d6f7c2df6"
-  integrity sha512-zOiIPVKNo1S1YvpCUkGTn4VehJEiinG2WUNsr85fhrna/UlqJrbdfZ9RQfvCkehUU2zDXj+QX3PWSd9oq3+Plg==
+asyncjoin@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-2.0.0.tgz#54fca39bf008017075792102ef9f179f0b306d5a"
+  integrity sha512-e6rzYeQcUhF3NVlIlzUAfVDE17ijQbSMMP1/GwlGOFA0JpB5dP1txPwe3ayeDrwLjNAlNGWfVRJUDs7uS+H84A==
   dependencies:
     asynciterator "^3.9.0"
 
@@ -4863,9 +4863,9 @@ browserslist@^4.24.0:
     node-releases "^2.0.27"
     update-browserslist-db "^1.2.0"
 
-bs-logger@0.x:
+bs-logger@^0.2.6:
   version "0.2.6"
-  resolved "https://registry.npmjs.org/bs-logger/-/bs-logger-0.2.6.tgz"
+  resolved "https://registry.yarnpkg.com/bs-logger/-/bs-logger-0.2.6.tgz#eb7d365307a72cf974cc6cda76b68354ad336bd8"
   integrity sha512-pd8DCoxmbgc7hyPKOvxtqNcjYoOsABPQdcCUjGp3d42VR2CX1ORhk2A87oqqu5R1kk+76nsxZupkmyd+MVtCog==
   dependencies:
     fast-json-stable-stringify "2.x"
@@ -8070,6 +8070,18 @@ handlebars@4.7.9:
   optionalDependencies:
     uglify-js "^3.1.4"
 
+handlebars@^4.7.9:
+  version "4.7.10"
+  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.7.10.tgz#12419ea1b41391b3ffcf003f2164dcbce090c417"
+  integrity sha512-P5VJMVM7qgBn6vjXMw8WG9uVI+ncf2pi72j4de4yz5ZULLj2RGqLYaKOYGsgyrViQ0tePOVlN1tDCCXXtFqXKg==
+  dependencies:
+    minimist "^1.2.8"
+    neo-async "^2.6.2"
+    source-map "^0.6.1"
+    wordwrap "^1.0.0"
+  optionalDependencies:
+    uglify-js "^3.1.4"
+
 har-schema@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/har-schema/-/har-schema-2.0.0.tgz#a94c2224ebcac04782a0d9035521f24735b7ec92"
@@ -9403,7 +9415,7 @@ jest-util@30.2.0:
     graceful-fs "^4.2.11"
     picomatch "^4.0.2"
 
-jest-util@^29.0.0, jest-util@^29.7.0:
+jest-util@^29.7.0:
   version "29.7.0"
   resolved "https://registry.yarnpkg.com/jest-util/-/jest-util-29.7.0.tgz#23c2b62bfb22be82b44de98055802ff3710fc0bc"
   integrity sha512-z6EbKajIpqGKU56y5KBUgy1dt1ihhQJgWzUlZHArA/+X2ad7Cb5iF+AK1EWVL/Bo7Rz9uurpqw6SiBCefUbCGA==
@@ -10113,9 +10125,9 @@ lodash.isstring@^4.0.1:
   resolved "https://registry.yarnpkg.com/lodash.isstring/-/lodash.isstring-4.0.1.tgz#d527dfb5456eca7cc9bb95d5daeaf88ba54a5451"
   integrity sha512-0wJxfxH1wgO3GrbuP+dTTk7op+6L41QCXbGINEmD+ny/G/eCqGzxyCsh7159S+mgDDcoarnBw6PC1PS5+wUGgw==
 
-lodash.memoize@4.x:
+lodash.memoize@^4.1.2:
   version "4.1.2"
-  resolved "https://registry.npmjs.org/lodash.memoize/-/lodash.memoize-4.1.2.tgz"
+  resolved "https://registry.yarnpkg.com/lodash.memoize/-/lodash.memoize-4.1.2.tgz#bcc6c49a42a2840ed997f323eada5ecd182e0bfe"
   integrity sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==
 
 lodash.merge@^4.6.2:
@@ -10259,7 +10271,7 @@ make-dir@^4.0.0:
   dependencies:
     semver "^7.5.3"
 
-make-error@1.x, make-error@^1.1.1:
+make-error@^1.1.1, make-error@^1.3.6:
   version "1.3.6"
   resolved "https://registry.npmjs.org/make-error/-/make-error-1.3.6.tgz"
   integrity sha512-s8UhlNe7vPKomQhC1qFelMokr/Sc3AgNbso3n74mVPA5LTZwkB9NlXf4XPamLxJE8h0gh73rM94xvwRT2CVInw==
@@ -10611,7 +10623,7 @@ minimist-options@4.1.0:
     is-plain-obj "^1.1.0"
     kind-of "^6.0.3"
 
-minimist@1.2.8, minimist@^1.2.0, minimist@^1.2.5, minimist@^1.2.6, minimist@^1.2.7:
+minimist@1.2.8, minimist@^1.2.0, minimist@^1.2.5, minimist@^1.2.6, minimist@^1.2.7, minimist@^1.2.8:
   version "1.2.8"
   resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.8.tgz"
   integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
@@ -12508,10 +12520,20 @@ rdf-store-stream@^3.0.0:
   dependencies:
     rdf-stores "^2.0.0"
 
-rdf-stores@^2.0.0, rdf-stores@^2.5.0:
-  version "2.5.0"
-  resolved "https://registry.yarnpkg.com/rdf-stores/-/rdf-stores-2.5.0.tgz#d054e2a443139ad342eaf02a8d4068988ad3e2d1"
-  integrity sha512-Ut+QkXGtOdmRoDV4IYtWZ4mQT2CV5RgxmkINXfZqI6vNfYUiSXFMxw58sydcTViVai+Eny8xwxLn52AokCC+3A==
+rdf-stores@^2.0.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/rdf-stores/-/rdf-stores-2.6.0.tgz#355133fbdeadb394f0de012b4cd926b0f4ac9f25"
+  integrity sha512-RCe/bx6OLIlSkUPKkUVoGe2RSXYmDpb6KX5VdOOriORWF8OJ+0V9kUzPuHxAeHF/yf5iuY7ZXlhdOBpVvpS1hg==
+  dependencies:
+    asynciterator "^3.8.0"
+    rdf-data-factory "^2.0.1"
+    rdf-string "^2.0.0"
+    rdf-terms "^2.0.0"
+
+rdf-stores@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/rdf-stores/-/rdf-stores-2.8.0.tgz#dc8821db8b1cdb39f56e89c7aba7f557c4fafeb9"
+  integrity sha512-GdVUkvU/OTLNraeowcqjBbcmfKpfxqezGGOQrbYBpDWzv21wb/wWpSObgzTAf5rwNk2Cbn0H9VwxQgxX5aAKbQ==
   dependencies:
     asynciterator "^3.8.0"
     rdf-data-factory "^2.0.1"
@@ -14420,19 +14442,20 @@ ts-api-utils@^1.0.1, ts-api-utils@^1.3.0:
   resolved "https://registry.npmjs.org/ts-api-utils/-/ts-api-utils-1.3.0.tgz"
   integrity sha512-UQMIo7pb8WRomKR1/+MFVLTroIvDVtMX3K6OUir8ynLyzB8Jeriont2bTAtmNPa1ekAgN7YPDyf6V+ygrdU+eQ==
 
-ts-jest@^29.0.5:
-  version "29.1.2"
-  resolved "https://registry.npmjs.org/ts-jest/-/ts-jest-29.1.2.tgz"
-  integrity sha512-br6GJoH/WUX4pu7FbZXuWGKGNDuU7b8Uj77g/Sp7puZV6EXzuByl6JrECvm0MzVzSTkSHWTihsXt+5XYER5b+g==
+ts-jest@^29.4.14:
+  version "29.4.14"
+  resolved "https://registry.yarnpkg.com/ts-jest/-/ts-jest-29.4.14.tgz#cb36c043df0fada861c8b604a5d514f953126180"
+  integrity sha512-+943G6wCX5E3VpzTQhBGBFntCmdT+QAkTvUlp03edTONFBvqskuXPhpyX16xdUotO4P5HQKyppldSWjocoltLQ==
   dependencies:
-    bs-logger "0.x"
-    fast-json-stable-stringify "2.x"
-    jest-util "^29.0.0"
+    bs-logger "^0.2.6"
+    fast-json-stable-stringify "^2.1.0"
+    handlebars "^4.7.9"
     json5 "^2.2.3"
-    lodash.memoize "4.x"
-    make-error "1.x"
-    semver "^7.5.3"
-    yargs-parser "^21.0.1"
+    lodash.memoize "^4.1.2"
+    make-error "^1.3.6"
+    semver "^7.8.5"
+    type-fest "^4.41.0"
+    yargs-parser "^21.1.1"
 
 ts-loader@^9.5.4:
   version "9.5.4"
@@ -14582,6 +14605,11 @@ type-fest@^0.8.1:
   version "0.8.1"
   resolved "https://registry.npmjs.org/type-fest/-/type-fest-0.8.1.tgz"
   integrity sha512-4dbzIzqvjtgiM5rw1k5rEHtBANKmdudhGyBEajN01fEyhaAIhsoKNy6y7+IN93IfpFtwY9iqi7kD+xwKhQsNJA==
+
+type-fest@^4.41.0:
+  version "4.41.0"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-4.41.0.tgz#6ae1c8e5731273c2bf1f58ad39cbae2c91a46c58"
+  integrity sha512-TeTSQ6H5YHvpqVwBRcnLDCBnDOHWYu7IvGbHT6N8AOymcr9PJGjc1GTtiWZTYg0NCgYwvnYWEkVChQAr9bjfwA==
 
 type-is@~1.6.18:
   version "1.6.18"
@@ -15414,7 +15442,7 @@ yaml@^2.8.1:
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.8.1.tgz#1870aa02b631f7e8328b93f8bc574fac5d6c4d79"
   integrity sha512-lcYcMxX2PO9XMGvAJkJ3OsNMw+/7FKes7/hgerGUYWIoWu5j/+YQqcZr5JnPZWzOsEBgMbSbiSTn/dv/69Mkpw==
 
-yargs-parser@21.1.1, yargs-parser@^21.0.1, yargs-parser@^21.1.1:
+yargs-parser@21.1.1, yargs-parser@^21.1.1:
   version "21.1.1"
   resolved "https://registry.npmjs.org/yargs-parser/-/yargs-parser-21.1.1.tgz"
   integrity sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==

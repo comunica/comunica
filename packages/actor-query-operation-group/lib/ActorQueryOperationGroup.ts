@@ -93,12 +93,15 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     return {
       type: 'bindings',
       bindingsStream,
+      // Groups are not emitted in the term order of the input, and aggregates may reuse its variable names
       metadata: async() => {
         const inputMetadata = await output.metadata();
         return {
           ...inputMetadata,
           cardinality: getGroupOutputCardinality(operation, inputMetadata.cardinality),
           variables,
+          termOrder: undefined,
+          canSeek: undefined,
         };
       },
     };

@@ -268,6 +268,25 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       ]);
     });
 
+    it('should not keep the term order of its input', async() => {
+      const mediate = mediatorQueryOperation.mediate;
+      mediatorQueryOperation.mediate = async(arg: any) => ({
+        ...await mediate(arg),
+        metadata: async() => ({
+          cardinality: 3,
+          termOrder: [{ term: DF.variable('a'), direction: 'asc' }],
+          canSeek: true,
+        }),
+      });
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context,
+      };
+      const output = await actor.run(op, undefined);
+      await expect(getSafeBindings(output).metadata()).resolves
+        .toEqual({ cardinality: 3, termOrder: undefined, canSeek: undefined });
+    });
+
     it('should only emit the first results when a sort limit was pushed down', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ], metadata: { sortLimit: 2 }},
