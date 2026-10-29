@@ -91,7 +91,7 @@ function getDefaultMediatorQueryOperation() {
         BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('3') ]]),
       ], { autoStart: false }),
-      metadata: () => Promise.resolve({ cardinality: 3 }),
+      metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 3 }}),
       operated: arg,
       type: 'bindings',
       variables: [ DF.variable('a') ],
@@ -198,7 +198,7 @@ function constructCase(
         mediate: (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator(inputBindings, { autoStart: false }),
           metadata: () => Promise.resolve({
-            cardinality: inputBindings.length,
+            cardinality: { type: 'exact', value: inputBindings.length },
             variables: inputVariables.map(name => ({ variable: DF.variable(name), canBeUndef: false })),
           }),
           operated: arg,
@@ -379,9 +379,12 @@ describe('ActorQueryOperationGroup', () => {
         BF.bindings([[ DF.variable('x'), DF.literal('bbb') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('ccc') ]]),
       ]);
-      await expect(output.metadata()).resolves.toMatchObject({ variables: [
-        { variable: DF.variable('x'), canBeUndef: false },
-      ]});
+      await expect(output.metadata()).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: 5 },
+        variables: [
+          { variable: DF.variable('x'), canBeUndef: false },
+        ],
+      });
     });
 
     it('should not keep the term order of its input', async() => {
@@ -764,7 +767,7 @@ describe('ActorQueryOperationGroup', () => {
       const myMediatorQueryOperation = {
         mediate: (arg: any) => Promise.resolve({
           bindingsStream,
-          metadata: () => Promise.resolve({ cardinality: inputBindings.length }),
+          metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: inputBindings.length }}),
           operated: arg,
           type: 'bindings',
           variables: [ 'x', 'y' ],
@@ -873,7 +876,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves.toEqual({
-        cardinality: 4,
+        cardinality: { type: 'exact', value: 1 },
         variables: [
           { variable: DF.variable('c'), canBeUndef: false },
         ],
@@ -902,7 +905,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves.toEqual({
-        cardinality: 4,
+        cardinality: { type: 'exact', value: 1 },
         variables: [
           { variable: DF.variable('c'), canBeUndef: false },
         ],
@@ -921,7 +924,7 @@ describe('ActorQueryOperationGroup', () => {
       const output = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
       await expect(output.metadata()).resolves.toEqual({
-        cardinality: 0,
+        cardinality: { type: 'exact', value: 0 },
         variables: [
           { variable: DF.variable('g'), canBeUndef: false },
           { variable: DF.variable('c'), canBeUndef: false },
@@ -945,7 +948,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('c'), canBeUndef: false },
         ]});
     });
@@ -971,7 +974,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('s'), canBeUndef: false },
         ]});
     });
@@ -992,7 +995,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('s'), canBeUndef: false },
         ]});
     });
@@ -1024,7 +1027,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('s'), canBeUndef: false },
         ]});
     });
@@ -1050,7 +1053,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('m'), canBeUndef: false },
         ]});
     });
@@ -1069,7 +1072,7 @@ describe('ActorQueryOperationGroup', () => {
         BF.bindings(),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('m'), canBeUndef: false },
         ]});
     });
@@ -1093,7 +1096,7 @@ describe('ActorQueryOperationGroup', () => {
         BF.bindings([[ DF.variable('m'), termInt('4') ]]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('m'), canBeUndef: false },
         ]});
     });
@@ -1112,7 +1115,7 @@ describe('ActorQueryOperationGroup', () => {
         BF.bindings(),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('m'), canBeUndef: false },
         ]});
     });
@@ -1144,7 +1147,7 @@ describe('ActorQueryOperationGroup', () => {
         BF.bindings([[ DF.variable('a'), float('2.5E0') ]]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('a'), canBeUndef: false },
         ]});
     });
@@ -1178,7 +1181,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('a'), canBeUndef: false },
         ]});
     });
@@ -1199,7 +1202,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('a'), canBeUndef: false },
         ]});
     });
@@ -1221,7 +1224,7 @@ describe('ActorQueryOperationGroup', () => {
       const output = <any> await actor.run(op, undefined);
       expect((await arrayifyStream(output.bindingsStream))[0]).toBeTruthy();
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('s'), canBeUndef: false },
         ]});
     });
@@ -1240,7 +1243,7 @@ describe('ActorQueryOperationGroup', () => {
         BF.bindings(),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('s'), canBeUndef: false },
         ]});
     });
@@ -1266,7 +1269,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('g'), canBeUndef: false },
         ]});
     });
@@ -1287,7 +1290,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 0, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('g'), canBeUndef: false },
         ]});
     });
@@ -1314,7 +1317,7 @@ describe('ActorQueryOperationGroup', () => {
         ]),
       ]);
       await expect(output.metadata()).resolves
-        .toEqual({ cardinality: 4, variables: [
+        .toEqual({ cardinality: { type: 'exact', value: 1 }, variables: [
           { variable: DF.variable('g'), canBeUndef: false },
         ]});
     });
