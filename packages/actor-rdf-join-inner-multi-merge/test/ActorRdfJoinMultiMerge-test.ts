@@ -117,6 +117,14 @@ describe('ActorRdfJoinMultiMerge', () => {
       ])).toEqual({ variable: DF.variable('a'), indexes: [ 1, 2 ]});
     });
 
+    it('keeps the variable that most entries are sorted on over a later variable', () => {
+      expect(ActorRdfJoinMultiMerge.getMergeVariable([
+        metadata(9, [ variable('a'), variable('b') ], order('a')),
+        metadata(9, [ variable('a'), variable('b') ], order('a')),
+        metadata(1, [ variable('a'), variable('b') ], order('b')),
+      ])).toEqual({ variable: DF.variable('a'), indexes: [ 0, 1 ]});
+    });
+
     it('orders the entries from the smallest to the largest', () => {
       expect(ActorRdfJoinMultiMerge.getMergeVariable([
         metadata(50, [ variable('a') ], order('a')),
