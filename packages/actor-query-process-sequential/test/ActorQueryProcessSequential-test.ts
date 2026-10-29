@@ -171,7 +171,7 @@ describe('ActorQueryProcessSequential', () => {
       });
 
       it('parses a query with baseIRI in query', async() => {
-        vi.spyOn(mediatorQueryParse, 'mediate').mockImplementation((action: any) => Promise.resolve({
+        vi.spyOn(mediatorQueryParse, 'mediate').mockImplementation((action: any) => Promise.resolve(<any> {
           operation: 'PARSED',
           context: action.context,
           baseIRI: 'BASE',

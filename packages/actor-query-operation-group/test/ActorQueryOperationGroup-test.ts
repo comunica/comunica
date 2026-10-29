@@ -384,6 +384,35 @@ describe('ActorQueryOperationGroup', () => {
       ]});
     });
 
+    it('should not keep the term order of its input', async() => {
+      const { op, actor } = constructCase({
+        inputBindings: [ BF.bindings([[ DF.variable('x'), DF.literal('aaa') ]]) ],
+        groupVariables: [ 'x' ],
+        inputVariables: [ 'x' ],
+        inputOp: simpleXYZinput,
+        aggregates: [],
+      });
+      const mediator: any = actor.mediatorQueryOperation;
+      const mediate = mediator.mediate;
+      mediator.mediate = async(arg: any) => {
+        const output = await mediate(arg);
+        const metadata = await output.metadata();
+        return {
+          ...output,
+          metadata: async() => ({
+            ...metadata,
+            termOrder: [{ term: DF.variable('x'), direction: 'asc' }],
+            canSeek: true,
+          }),
+        };
+      };
+
+      const output = <any> await actor.run(op, undefined);
+      const metadata = await output.metadata();
+      expect(metadata.termOrder).toBeUndefined();
+      expect(metadata.canSeek).toBeUndefined();
+    });
+
     it('should group on multiple vars', async() => {
       const { op, actor } = constructCase({
         inputBindings: [

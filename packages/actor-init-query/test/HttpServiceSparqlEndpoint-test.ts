@@ -38,6 +38,7 @@ const quad = require('rdf-quad');
 
 // 'vi.mock' is hoisted above the imports, so the mocks have to be pulled in inside the factories
 vi.mock(import('..'), async() => {
+  // @ts-expect-error
   const mocks = await import('../__mocks__');
   return <any> {
     QueryEngineBase: mocks.QueryEngineBase,
@@ -45,10 +46,13 @@ vi.mock(import('..'), async() => {
   };
 });
 
+// @ts-expect-error
 vi.mock(import('node:url'), async() => <any> { parse: (await import('../__mocks__/url')).parse });
 
+// @ts-expect-error
 vi.mock(import('node:http'), async() => (await import('../__mocks__/http')).http);
 
+// @ts-expect-error
 vi.mock(import('node:fs'), async() => (await import('../__mocks__/fs')).fs);
 
 const argsDefault = {

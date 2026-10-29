@@ -1,10 +1,12 @@
 import * as url from 'node:url';
 import Requester from '../lib/Requester';
 
+// @ts-expect-error
 // eslint-disable-next-line vitest/no-mocks-import
 import { mockSetup } from './__mocks__/follow-redirects';
 
 // Unlike jest, vitest does not pick up '__mocks__' entries for node modules automatically
+// @ts-expect-error
 vi.mock(import('follow-redirects'), () => import('./__mocks__/follow-redirects'));
 
 describe('Requester', () => {

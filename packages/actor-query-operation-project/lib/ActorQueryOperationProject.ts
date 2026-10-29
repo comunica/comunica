@@ -11,6 +11,7 @@ import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
   MetadataVariable,
+  TermsOrder,
 } from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
 import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
@@ -90,7 +91,30 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: async() => ({ ...outputMetadata, variables: variablesOutput }),
+      metadata: async() => ({
+        ...outputMetadata,
+        variables: variablesOutput,
+        termOrder: ActorQueryOperationProject.projectTermOrder(outputMetadata.termOrder, variablesOperationIndexed),
+      }),
     };
+  }
+
+  /**
+   * Compute the term order that would apply on the projected variables.
+   * @param termOrder The term order of the input.
+   * @param variables The projected variables, by name.
+   */
+  public static projectTermOrder(
+    termOrder: TermsOrder<RDF.Variable> | undefined,
+    variables: Record<string, unknown>,
+  ): TermsOrder<RDF.Variable> | undefined {
+    if (!termOrder) {
+      return undefined;
+    }
+    const end = termOrder.findIndex(entry => !(entry.term.value in variables));
+    if (end === 0) {
+      return undefined;
+    }
+    return end < 0 ? termOrder : termOrder.slice(0, end);
   }
 }

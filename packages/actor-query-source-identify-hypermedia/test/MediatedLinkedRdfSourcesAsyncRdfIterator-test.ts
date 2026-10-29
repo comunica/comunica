@@ -98,6 +98,36 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
     });
 
+    describe('hasSourceLinks', () => {
+      it('is true when the links mediator reports links', async() => {
+        const source = sourceFactory();
+        await expect(source.hasSourceLinks({ baseURL: 'http://base.org/' })).resolves.toBe(true);
+        source.destroy();
+        await new Promise(setImmediate);
+      });
+
+      it('is false when the links mediator reports none', async() => {
+        const source = sourceFactory();
+        mediatorRdfResolveHypermediaLinks.mediate = <any> (() => Promise.resolve({ links: []}));
+        await expect(source.hasSourceLinks({ baseURL: 'http://base.org/' })).resolves.toBe(false);
+        source.destroy();
+        await new Promise(setImmediate);
+      });
+
+      it('leaves no url marked as handled', async() => {
+        const source = sourceFactory();
+        await expect(source.hasSourceLinks({ baseURL: 'http://base.org/' })).resolves.toBe(true);
+        // The same links are still followed afterwards.
+        await expect(source.getSourceLinks({ baseURL: 'http://base.org/' }, <any> { link: { url: 'first' }}))
+          .resolves.toEqual([
+            { url: 'http://base.org/url1' },
+            { url: 'http://base.org/url2' },
+          ]);
+        source.destroy();
+        await new Promise(setImmediate);
+      });
+    });
+
     describe('getSourceLinks', () => {
       // Else isClosable tests will time out due to async nature of 'should update discover statistic data'
       afterEach(() => {

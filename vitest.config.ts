@@ -76,7 +76,7 @@ export default defineConfig({
       // 'asynciterator' ships separate CommonJS and ESM builds, and code checks its iterators with 'instanceof'.
       // Node loads the CommonJS build for everything outside of Vite, such as dependencies like 'rdf-stores' and the
       // actors that componentsjs instantiates from a config at runtime, so what Vite imports must use that build too.
-      { find: /^asynciterator$/u, replacement: createRequire(import.meta.url).resolve('asynciterator') },
+      { find: /^asynciterator$/u, replacement: createRequire(__filename).resolve('asynciterator') },
     ],
   },
   test: {

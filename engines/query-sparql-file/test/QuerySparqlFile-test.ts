@@ -93,5 +93,89 @@ WHERE {
         await expect(arrayifyStream(await engine.queryBindings(queryCombined, context))).resolves.toHaveLength(5);
       });
     });
+
+    describe('joins over a union whose inputs share a term order', () => {
+      it('should merge-join the union', async() => {
+        const context: QueryStringContext = {
+          sources: [{ value: path.join(path.relative(process.cwd(), __dirname), 'assets/ordered.ttl') }],
+        };
+        const query = `SELECT * WHERE {
+          { ?s <http://ex/p0> ?o } UNION { ?s <http://ex/p1> ?o }
+          ?s <http://ex/q> ?x
+        }`;
+        await expect(arrayifyStream(await engine.queryBindings(query, context))).resolves.toHaveLength(20);
+        const { data } = await new QueryEngine().explain(query, context, 'physical');
+        expect(data).toContain('join-inner(merge)');
+      });
+
+      it('should merge-join a filtered union', async() => {
+        const context: QueryStringContext = {
+          sources: [{ value: path.join(path.relative(process.cwd(), __dirname), 'assets/ordered.ttl') }],
+        };
+        const query = `SELECT * WHERE {
+          { { ?s <http://ex/p0> ?o } UNION { ?s <http://ex/p1> ?o } FILTER(?o != <http://ex/none>) }
+          ?s <http://ex/q> ?x
+        }`;
+        await expect(arrayifyStream(await engine.queryBindings(query, context))).resolves.toHaveLength(20);
+        const { data } = await new QueryEngine().explain(query, context, 'physical');
+        expect(data).toContain('join-inner(merge)');
+      });
+
+      it('should multi-merge-join the union with other patterns', async() => {
+        const context: QueryStringContext = {
+          sources: [{ value: path.join(path.relative(process.cwd(), __dirname), 'assets/ordered.ttl') }],
+        };
+        const query = `SELECT * WHERE {
+          { ?s <http://ex/p0> ?o } UNION { ?s <http://ex/p1> ?o }
+          ?s <http://ex/q> ?x .
+          ?s <http://ex/r> ?y .
+        }`;
+        await expect(arrayifyStream(await engine.queryBindings(query, context))).resolves.toHaveLength(20);
+        const { data } = await new QueryEngine().explain(query, context, 'physical');
+        expect(data).toContain('join-inner(multi-merge)');
+      });
+    });
+
+    describe('joins over operators that do not keep the term order of their input', () => {
+      let context: QueryStringContext;
+
+      beforeEach(() => {
+        context = { sources: [{ value: path.join(path.relative(process.cwd(), __dirname), 'assets/ordered.ttl') }]};
+      });
+
+      it('should join a union', async() => {
+        const query = `SELECT * WHERE {
+          { ?s <http://ex/p0> ?o } UNION { ?s <http://ex/p1> ?o }
+          ?s <http://ex/q> ?x
+        }`;
+        await expect(arrayifyStream(await engine.queryBindings(query, context))).resolves.toHaveLength(20);
+      });
+
+      it('should join an order by', async() => {
+        const query = `SELECT * WHERE {
+          { SELECT ?s ?o WHERE { ?s <http://ex/p0> ?o } ORDER BY DESC(?s) }
+          ?s <http://ex/q> ?x
+        }`;
+        await expect(arrayifyStream(await engine.queryBindings(query, context))).resolves.toHaveLength(10);
+      });
+    });
+
+    it('should join patterns that share their subject and object', async() => {
+      const context: QueryStringContext = {
+        sources: [{ value: path.join(path.relative(process.cwd(), __dirname), 'assets/shared-objects.ttl') }],
+      };
+      const query = `SELECT * WHERE {
+        ?s <http://ex/r1> ?o .
+        ?s <http://ex/r2> ?o .
+        ?s <http://ex/r3> ?o .
+      }`;
+      const bindings = await arrayifyStream(await engine.queryBindings(query, context));
+      expect(bindings.map(binding => `${binding.get('s')!.value} ${binding.get('o')!.value}`).sort()).toEqual([
+        'http://ex/s0 http://ex/o3',
+        'http://ex/s0 http://ex/o5',
+        'http://ex/s1 http://ex/o3',
+        'http://ex/s1 http://ex/o5',
+      ]);
+    });
   });
 });

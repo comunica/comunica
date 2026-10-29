@@ -9,10 +9,12 @@ import arrayifyStream from 'arrayify-stream';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 import '@comunica/utils-jest';
 
+// @ts-expect-error
 // eslint-disable-next-line vitest/no-mocks-import
 import { mockSetup } from './__mocks__/follow-redirects';
 
 // Unlike jest, vitest does not pick up '__mocks__' entries for node modules automatically
+// @ts-expect-error
 vi.mock(import('follow-redirects'), () => import('./__mocks__/follow-redirects'));
 
 describe('ActorHttpNative', () => {
