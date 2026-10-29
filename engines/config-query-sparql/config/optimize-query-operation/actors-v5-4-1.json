@@ -5,6 +5,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-describe-to-constructs-subject/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-assign-sources-exhaustive/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-bgp/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-path-to-patterns/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-bgp-to-join/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-connected/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-prune-empty-source-operations/^5.0.0/components/context.jsonld",
@@ -61,6 +62,13 @@
     {
       "@id": "urn:comunica:default:optimize-query-operation/actors#query-source-skolemize",
       "@type": "ActorOptimizeQueryOperationQuerySourceSkolemize",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#assign-sources-exhaustive" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#path-to-patterns",
+      "@type": "ActorOptimizeQueryOperationPathToPatterns",
       "beforeActors": [
         { "@id": "urn:comunica:default:optimize-query-operation/actors#assign-sources-exhaustive" }
       ]
