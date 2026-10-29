@@ -65,6 +65,14 @@ describe('ActorOptimizeQueryOperationPathToPatterns', () => {
     expect((<Algebra.Pattern> (<Algebra.Join> result.input).input[1]).graph).toEqual(graph);
   });
 
+  it('should project variables within quoted triples', async() => {
+    const quoted = DF.quad(DF.variable('a'), p, s);
+    const result = <Algebra.Project> await rewrite(
+      AF.createPath(quoted, AF.createSeq([ AF.createLink(p), AF.createLink(q) ]), o),
+    );
+    expect(result.variables).toEqual([ DF.variable('a'), s, o ]);
+  });
+
   it('should rewrite alternatives into unions', async() => {
     await expect(rewrite(AF.createPath(s, AF.createAlt([ AF.createLink(p), AF.createInv(AF.createLink(q)) ]), o)))
       .resolves.toEqual(AF.createUnion([

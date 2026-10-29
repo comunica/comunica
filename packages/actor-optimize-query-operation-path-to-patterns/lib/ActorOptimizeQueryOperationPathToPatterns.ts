@@ -6,7 +6,6 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { ComunicaDataFactory } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 
@@ -25,7 +24,7 @@ export class ActorOptimizeQueryOperationPathToPatterns extends ActorOptimizeQuer
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
     let variableCounter = 0;
     const generateVariable = (): RDF.Variable => dataFactory.variable(`__comunica:path${variableCounter++}`);
@@ -83,10 +82,10 @@ export class ActorOptimizeQueryOperationPathToPatterns extends ActorOptimizeQuer
           entries.push(subPath(joiner, subPredicate, next));
           joiner = next;
         }
-        const variables = <RDF.Variable[]> [ subject, object, graph ]
-          .filter((term, i, terms) => term.termType === 'Variable' &&
-            terms.findIndex(other => other.equals(term)) === i);
-        return algebraFactory.createProject(algebraFactory.createJoin(entries), variables);
+        return algebraFactory.createProject(
+          algebraFactory.createJoin(entries),
+          ActorOptimizeQueryOperationPathToPatterns.getVariables([ subject, object, graph ]),
+        );
       }
       case Algebra.Types.ALT:
         return algebraFactory.createUnion((<Algebra.Alt> predicate).input
@@ -94,5 +93,29 @@ export class ActorOptimizeQueryOperationPathToPatterns extends ActorOptimizeQuer
       default:
         return path;
     }
+  }
+
+  /**
+   * Get the distinct variables in the given terms, including those within quoted triples.
+   * @param terms RDF terms.
+   */
+  public static getVariables(terms: RDF.Term[]): RDF.Variable[] {
+    const variables: RDF.Variable[] = [];
+    const visit = (term: RDF.Term): void => {
+      if (term.termType === 'Variable') {
+        if (!variables.some(variable => variable.equals(term))) {
+          variables.push(term);
+        }
+      } else if (term.termType === 'Quad') {
+        visit(term.subject);
+        visit(term.predicate);
+        visit(term.object);
+        visit(term.graph);
+      }
+    };
+    for (const term of terms) {
+      visit(term);
+    }
+    return variables;
   }
 }
