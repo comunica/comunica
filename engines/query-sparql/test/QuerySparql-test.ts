@@ -779,6 +779,50 @@ SELECT ?s ?label WHERE {
           // Without local extension functions, the endpoint is trusted to evaluate the function
           expect(queries).toEqual([ query ]);
         });
+
+        it('pushes down an undeclared extension function only into the patterns binding its arguments', async() => {
+          const queries: string[] = [];
+          const query = `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?person ?label WHERE {
+  ?person a <http://example.org/Painter> ;
+    rdfs:label ?label .
+  FILTER(<bif:contains>(?label, "'rembrandt'"))
+}`;
+          const bindingsStream = await engine.queryBindings(query, {
+            // Multiple endpoints prevent sending the query as-is, so the filter is pushed down
+            sources: [
+              { type: 'sparql', value: 'http://example.org/pushdown1/sparql' },
+              { type: 'sparql', value: 'http://example.org/pushdown2/sparql' },
+            ],
+            fetch: async(input: RequestInfo | URL, init?: RequestInit) => {
+              const sparqlQuery = init?.body ?
+                new URLSearchParams(String(init.body)).get('query') :
+                new URL(<string> input).searchParams.get('query');
+              if (!sparqlQuery) {
+                // Service description
+                return new Response('', { status: 200, headers: { 'Content-Type': 'text/turtle' }});
+              }
+              queries.push(sparqlQuery);
+              if (sparqlQuery.startsWith('ASK')) {
+                return new Response(JSON.stringify({ head: {}, boolean: true }), {
+                  status: 200,
+                  headers: { 'Content-Type': 'application/sparql-results+json' },
+                });
+              }
+              return new Response(JSON.stringify({ head: { vars: []}, results: { bindings: []}}), {
+                status: 200,
+                headers: { 'Content-Type': 'application/sparql-results+json' },
+              });
+            },
+          });
+          await expect(bindingsStream.toArray()).resolves.toEqual([]);
+
+          // The filter must never be sent along with a pattern that does not bind ?label
+          expect(queries.filter(sparqlQuery => sparqlQuery.includes('bif:contains') &&
+            !sparqlQuery.includes('<http://www.w3.org/2000/01/rdf-schema#label> ?label'))).toEqual([]);
+          expect(queries.filter(sparqlQuery => sparqlQuery === 'SELECT ?person ?label WHERE { ?person <http://www.w3.org/2000/01/rdf-schema#label> ?label . FILTER ( <bif:contains> ( ?label , "\'rembrandt\'"^^<http://www.w3.org/2001/XMLSchema#string> ) ) }'))
+            .toHaveLength(2);
+        });
       });
 
       describe('functionArgumentsCache', () => {
