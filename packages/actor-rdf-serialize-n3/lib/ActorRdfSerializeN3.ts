@@ -7,6 +7,7 @@ import {
   ActorRdfSerializeFixedMediaTypes,
 } from '@comunica/bus-rdf-serialize';
 import { KeysRdfSerialize } from '@comunica/context-entries';
+import type { Writer } from 'n3';
 import { StreamWriter } from 'n3';
 
 /**
@@ -36,17 +37,31 @@ export class ActorRdfSerializeN3 extends ActorRdfSerializeFixedMediaTypes {
 
   public async runHandle(action: IActionRdfSerialize, mediaType: string):
   Promise<IActorRdfSerializeOutput> {
+    const prefixes = action.context.get(KeysRdfSerialize.rdfSerializationPrefixes);
     const writer = new StreamWriter({
       format: mediaType,
-      prefixes: action.context.get(KeysRdfSerialize.rdfSerializationPrefixes),
+      prefixes,
     });
+    const prefixNames = new Set(Object.keys(prefixes ?? {}));
+    action.quadStream.on('prefix', (prefix, iri) => {
+      // Keep context prefixes and the first definition of each stream prefix.
+      // N3 retains old namespace mappings on rebinding, which can change the meaning of later quads.
+      if (!prefixNames.has(prefix)) {
+        prefixNames.add(prefix);
+        // Match N3 StreamWriter.import(): _writer is an internal API omitted from its typings.
+        (<StreamWriter & { _writer: Writer }> writer)._writer.addPrefix(prefix, iri);
+      }
+    });
+    action.quadStream.on('error', error => writer.emit('error', error));
     let data: NodeJS.ReadableStream;
     if ('pipe' in action.quadStream) {
       // Prefer piping if possible, to maintain backpressure
-      action.quadStream.on('error', error => writer.emit('error', error));
       data = (<any> action.quadStream).pipe(writer);
     } else {
-      data = <any> writer.import(action.quadStream);
+      // Match import() without its unconditional prefix forwarding.
+      action.quadStream.on('data', quad => writer.write(quad));
+      action.quadStream.on('end', () => writer.end());
+      data = writer;
     }
     return { data, triples: mediaType === 'text/turtle' ||
       mediaType === 'application/n-triples' ||
