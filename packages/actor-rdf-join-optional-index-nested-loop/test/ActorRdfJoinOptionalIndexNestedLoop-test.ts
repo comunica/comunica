@@ -200,6 +200,24 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
       });
     });
 
+    it('should keep the term order of the left entry', async() => {
+      const termOrder = [{ term: DF.variable('review'), direction: <const> 'asc' }];
+      const joinEntries = entries();
+      joinEntries[0] = entry(
+        pattern('?review', 'ex:reviewFor', 'ex:product'),
+        metadata(2, [ 'review' ], { termOrder }),
+      );
+      const action: IActionRdfJoin = { type: 'optional', entries: joinEntries, context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      await expect(result.metadata()).resolves.toMatchObject({ termOrder });
+    });
+
+    it('should have no term order if the left entry has none', async() => {
+      const action: IActionRdfJoin = { type: 'optional', entries: entries(), context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      expect((await result.metadata()).termOrder).toBeUndefined();
+    });
+
     it('should bind a right entry that is not a pattern', async() => {
       const queryBindingsSynchronous = jest.fn(() => []);
       const other: IQuerySourceWrapper = <any> {

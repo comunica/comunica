@@ -360,6 +360,27 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       await expect(result.metadata()).resolves.toMatchObject({ cardinality: { type: 'estimate', value: 1 }});
     });
 
+    it('should keep the term order of the first entry', async() => {
+      const termOrder = [{ term: DF.variable('reviewer'), direction: <const> 'asc' }];
+      const entries = reviewEntries();
+      entries[1] = entry(pattern('?review', 'ex:reviewFor', 'ex:product'), metadata(2, [ 'review' ], {
+        termOrder: [{ term: DF.variable('review'), direction: 'asc' }],
+      }));
+      entries[2] = entry(pattern('?reviewer', 'ex:name', '?name'), metadata(1, [ 'reviewer', 'name' ], { termOrder }));
+      const action: IActionRdfJoin = { type: 'inner', entries, context };
+      const sideData = (await actor.test(action)).getSideData();
+      expect(sideData.first).toBe(2);
+      const result = await actor.run(action, sideData);
+      await expect(result.metadata()).resolves.toMatchObject({ termOrder });
+    });
+
+    it('should have no term order if the first entry has none', async() => {
+      const entries = reviewEntries();
+      const action: IActionRdfJoin = { type: 'inner', entries, context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      expect((await result.metadata()).termOrder).toBeUndefined();
+    });
+
     it('should keep the default cardinality when it is lower', async() => {
       const entries = reviewEntries();
       const action: IActionRdfJoin = { type: 'inner', entries, context };

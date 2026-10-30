@@ -63,13 +63,16 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
           new AlgebraFactory(dataFactory),
           bindingsFactory,
         ),
-        metadata: async() => await this.constructResultMetadata(
-          action.entries,
-          await ActorRdfJoin.getMetadatas(action.entries),
-          action.context,
-          {},
-          true,
-        ),
+        metadata: async() => {
+          const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
+          return await this.constructResultMetadata(
+            action.entries,
+            metadatas,
+            action.context,
+            { termOrder: metadatas[0].termOrder },
+            true,
+          );
+        },
       },
     };
   }
