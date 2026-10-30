@@ -19,7 +19,7 @@ import type { MediatorFunctionFactory } from '@comunica/bus-function-factory';
 import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type { Bindings, IActionContext } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
@@ -356,6 +356,19 @@ describe('ActorQueryOperationGroup', () => {
         aggregates: [{ ...countY, distinct: true }],
       });
       await expect(actor.test(op)).resolves.toPassTestVoid();
+    });
+
+    it('should not pass a limit indicator to its input', async() => {
+      const { op, actor, mediatorQueryOperation } = constructCase({
+        inputBindings: [],
+        groupVariables: [ 'x' ],
+        inputVariables: [ 'x' ],
+        inputOp: simpleXYZinput,
+        aggregates: [],
+      });
+      const spy = jest.spyOn(mediatorQueryOperation, 'mediate');
+      await actor.run({ ...op, context: op.context.set(KeysQueryOperation.limitIndicator, 1) }, undefined);
+      expect((<any> spy.mock.calls[0][0]).context.has(KeysQueryOperation.limitIndicator)).toBe(false);
     });
 
     it('should group on a single var', async() => {
