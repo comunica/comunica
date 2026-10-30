@@ -187,6 +187,7 @@
     "@comunica/actor-optimize-query-operation-join-bgp": "^5.4.0",
     "@comunica/actor-optimize-query-operation-join-connected": "^5.4.0",
     "@comunica/actor-optimize-query-operation-leftjoin-expression-pushdown": "^5.4.0",
+    "@comunica/actor-optimize-query-operation-path-to-patterns": "^5.4.0",
     "@comunica/actor-optimize-query-operation-prune-empty-source-operations": "^5.4.0",
     "@comunica/actor-optimize-query-operation-query-source-identify": "^5.4.0",
     "@comunica/actor-optimize-query-operation-query-source-skolemize": "^5.4.0",
