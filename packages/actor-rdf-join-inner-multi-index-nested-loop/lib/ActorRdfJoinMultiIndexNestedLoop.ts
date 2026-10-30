@@ -17,11 +17,13 @@ import type {
   IJoinEntryWithMetadata,
   IQuerySourceWrapper,
 } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
 import type { IIndexNestedLoopLookup } from './IndexNestedLoopIterator';
-import { IndexNestedLoopIterator } from './IndexNestedLoopIterator';
+import { getArbitraryLengthPathLookup, IndexNestedLoopIterator } from './IndexNestedLoopIterator';
 
 /**
  * A comunica Inner Multi Index Nested Loop RDF Join Actor.
@@ -60,11 +62,12 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
 
     const lookups = order.map((index): IIndexNestedLoopLookup => {
       const operation = action.entries[index].operation;
-      const sourceWrapper = <IQuerySourceWrapper> getOperationSource(operation);
+      const sourceWrapper = <IQuerySourceWrapper> ActorRdfJoinMultiIndexNestedLoop.getLookupSource(operation);
       return {
         operation,
         source: sourceWrapper.source,
         context: sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
+        path: getArbitraryLengthPathLookup(operation),
       };
     });
 
@@ -100,16 +103,39 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
   }
 
   /**
+   * Get the source in which the given operation is looked up.
+   * For arbitrary length paths, this is the source of the followed predicate.
+   * @param operation An operation.
+   */
+  public static getLookupSource(operation: Algebra.Operation): IQuerySourceWrapper | undefined {
+    const path = getArbitraryLengthPathLookup(operation);
+    return getOperationSource(path ? path.link : operation);
+  }
+
+  /**
    * Check if the given entry can be looked up synchronously in its source.
+   * Arbitrary length paths can be looked up if their predicate can be looked up.
    * @param entry A join entry.
    * @param context The action context.
    */
   public static async canLookUp(entry: IJoinEntry, context: IActionContext): Promise<boolean> {
-    const sourceWrapper = getOperationSource(entry.operation);
+    const sourceWrapper = ActorRdfJoinMultiIndexNestedLoop.getLookupSource(entry.operation);
     if (Boolean(entry.operationModified) || !sourceWrapper) {
       return false;
     }
     const shape = await sourceWrapper.source.getSelectorShape(context);
+    const path = getArbitraryLengthPathLookup(entry.operation);
+    if (path) {
+      const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+      const algebraFactory = new AlgebraFactory(dataFactory);
+      const step = algebraFactory.createPattern(
+        dataFactory.variable('s'),
+        path.predicate,
+        dataFactory.variable('o'),
+        (<Algebra.Path> entry.operation).graph,
+      );
+      return doesShapeAcceptOperation(shape, step, { synchronous: true });
+    }
     return doesShapeAcceptOperation(shape, entry.operation, { synchronous: true });
   }
 
@@ -119,6 +145,14 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
    * @param bound The names of the bound variables.
    */
   public static estimateFanout(entry: IJoinEntryWithMetadata, bound: Set<string>): number {
+    // Paths can only be looked up from a bound subject or object.
+    if (getArbitraryLengthPathLookup(entry.operation)) {
+      const path = <Algebra.Path> entry.operation;
+      const isBound = (term: RDF.Term): boolean => term.termType !== 'Variable' || bound.has(term.value);
+      if (!isBound(path.subject) && !isBound(path.object)) {
+        return Number.POSITIVE_INFINITY;
+      }
+    }
     const cardinality = entry.metadata.cardinality.value;
     let fanout = cardinality;
     for (const variable of entry.metadata.variables) {
@@ -189,20 +223,23 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
     let best: { first: number; order: number[]; iterations: number; cardinality: number } | undefined;
     for (const first of firstCandidates) {
       const lookupOrder = ActorRdfJoinMultiIndexNestedLoop.getLookupOrder(entries, first, this.lookupCost);
-      if (!best || lookupOrder.iterations < best.iterations) {
+      if (Number.isFinite(lookupOrder.iterations) && (!best || lookupOrder.iterations < best.iterations)) {
         best = { first, ...lookupOrder };
       }
     }
+    if (!best) {
+      return failTest(`Actor ${this.name} requires an order in which every path is looked up from a bound term`);
+    }
 
     // Only the first entry is requested, as lookups are synchronous.
-    const requestTime = ActorRdfJoin.getRequestInitialTimes(metadatas)[best!.first] +
-      metadatas[best!.first].cardinality.value * ActorRdfJoin.getRequestItemTimes(metadatas)[best!.first];
+    const requestTime = ActorRdfJoin.getRequestInitialTimes(metadatas)[best.first] +
+      metadatas[best.first].cardinality.value * ActorRdfJoin.getRequestItemTimes(metadatas)[best.first];
     return passTestWithSideData({
-      iterations: best!.iterations,
+      iterations: best.iterations,
       persistedItems: 0,
       blockingItems: 0,
       requestTime,
-    }, { ...sideData, first: best!.first, order: best!.order, cardinality: best!.cardinality });
+    }, { ...sideData, first: best.first, order: best.order, cardinality: best.cardinality });
   }
 }
 
