@@ -24,6 +24,7 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
   let bus: any;
   let context: IActionContext;
   let mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
+  let mediatorMergeBindingsContext: any;
   let actor: ActorRdfJoinOptionalIndexNestedLoop;
   let store: RdfStore;
   let source: IQuerySourceWrapper;
@@ -32,10 +33,12 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
     bus = new Bus({ name: 'bus' });
     context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
     mediatorJoinSelectivity = <any> { mediate: async() => ({ selectivity: 0.5 }) };
+    mediatorMergeBindingsContext = { mediate: jest.fn(async() => ({})) };
     actor = new ActorRdfJoinOptionalIndexNestedLoop({
       name: 'actor',
       bus,
       mediatorJoinSelectivity,
+      mediatorMergeBindingsContext,
       selectivityModifier: 0.1,
     });
     store = RdfStore.createDefault();
@@ -122,28 +125,44 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
       const joinEntries = entries();
       joinEntries[1] = entry(pattern('?review', 'ex:rating', '?rating', other), metadata(1, [ 'review', 'rating' ]));
       await expect(actor.test({ type: 'optional', entries: joinEntries, context })).resolves
-        .toFailTest(`Actor actor requires a right entry that is a quad pattern over a source that supports synchronous lookups`);
+        .toFailTest(`Actor actor requires a right entry that is an operation over a source that supports synchronous lookups`);
     });
 
-    it('should fail on a right entry that is not a pattern', async() => {
+    it('should accept a right entry that is not a pattern if its source accepts it synchronously', async() => {
+      const other: IQuerySourceWrapper = <any> {
+        source: {
+          getSelectorShape: async() => ({
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            synchronous: true,
+          }),
+        },
+      };
       const joinEntries = entries();
-      joinEntries[1] = entry(AF.createJoin([ joinEntries[1].operation ]), metadata(1, [ 'review', 'rating' ]));
-      await expect(actor.test({ type: 'optional', entries: joinEntries, context })).resolves
-        .toFailTest(`Actor actor requires a right entry that is a quad pattern over a source that supports synchronous lookups`);
+      joinEntries[1] = entry(
+        assignOperationSource(AF.createJoin([ joinEntries[1].operation ]), other),
+        metadata(1, [ 'review', 'rating' ]),
+      );
+      await expect(actor.test({ type: 'optional', entries: joinEntries, context })).resolves.toPassTest({
+        iterations: 2 * 1 * 0.5 * 0.1,
+        persistedItems: 0,
+        blockingItems: 0,
+        requestTime: 0,
+      });
     });
 
     it('should fail on a modified right entry', async() => {
       const joinEntries = entries();
       joinEntries[1] = { ...joinEntries[1], operationModified: true };
       await expect(actor.test({ type: 'optional', entries: joinEntries, context })).resolves
-        .toFailTest(`Actor actor requires a right entry that is a quad pattern over a source that supports synchronous lookups`);
+        .toFailTest(`Actor actor requires a right entry that is an operation over a source that supports synchronous lookups`);
     });
 
     it('should fail on a right entry without synchronous lookups', async() => {
       const joinEntries = entries();
       joinEntries[1] = entry(pattern('?review', 'ex:rating', '?rating', null), metadata(1, [ 'review', 'rating' ]));
       await expect(actor.test({ type: 'optional', entries: joinEntries, context })).resolves
-        .toFailTest(`Actor actor requires a right entry that is a quad pattern over a source that supports synchronous lookups`);
+        .toFailTest(`Actor actor requires a right entry that is an operation over a source that supports synchronous lookups`);
     });
 
     it('should fail on join expressions', async() => {
@@ -171,6 +190,7 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
         ]),
       ]);
       expect(joinEntries[1].output.bindingsStream.done).toBeTruthy();
+      expect(mediatorMergeBindingsContext.mediate).not.toHaveBeenCalled();
       await expect(result.metadata()).resolves.toMatchObject({
         cardinality: { type: 'exact', value: 1 },
         variables: [
@@ -178,6 +198,35 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
           { variable: DF.variable('rating'), canBeUndef: true },
         ],
       });
+    });
+
+    it('should bind a right entry that is not a pattern', async() => {
+      const queryBindingsSynchronous = jest.fn(() => []);
+      const other: IQuerySourceWrapper = <any> {
+        source: {
+          getSelectorShape: async() => ({
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            synchronous: true,
+          }),
+          queryBindingsSynchronous,
+        },
+      };
+      const joinEntries = entries();
+      joinEntries[1] = entry(
+        assignOperationSource(AF.createJoin([ joinEntries[1].operation ]), other),
+        metadata(1, [ 'review', 'rating' ]),
+      );
+      const action: IActionRdfJoin = { type: 'optional', entries: joinEntries, context };
+      const result = await actor.run(action, (await actor.test(action)).getSideData());
+      await expect(result.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('review'), DF.namedNode('ex:review1') ]]),
+        BF.bindings([[ DF.variable('review'), DF.namedNode('ex:review2') ]]),
+      ]);
+      expect(mediatorMergeBindingsContext.mediate).toHaveBeenCalledTimes(1);
+      const bound = (<any> queryBindingsSynchronous.mock.calls[0])[0];
+      expect(bound.type).toBe('join');
+      expect(bound.input[0].subject).toEqual(term('ex:review1'));
     });
 
     it('should look up within the context of the source', async() => {

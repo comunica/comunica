@@ -44,6 +44,38 @@ export function doesShapeAcceptOperationInContext(
   });
 }
 
+/**
+ * Remove a flag from the given shape and all of its nested shapes.
+ * @param shape A selector shape.
+ * @param flag The flag to remove.
+ * @return The shape without the flag, which is the given shape if it has none.
+ */
+export function removeShapeFlag(
+  shape: FragmentSelectorShape,
+  flag: 'joinBindings' | 'filterBindings' | 'synchronous',
+): FragmentSelectorShape {
+  switch (shape.type) {
+    case 'operation': {
+      const children = shape.children?.map(child => removeShapeFlag(child, flag));
+      if (!shape[flag] && (!children || children.every((child, i) => child === shape.children![i]))) {
+        return shape;
+      }
+      const { [flag]: _flag, ...rest } = shape;
+      return children ? { ...rest, children } : rest;
+    }
+    case 'conjunction':
+    case 'disjunction': {
+      const children = shape.children.map(child => removeShapeFlag(child, flag));
+      return children.every((child, i) => child === shape.children[i]) ? shape : { ...shape, children };
+    }
+    case 'negation':
+    case 'arity': {
+      const child = removeShapeFlag(shape.child, flag);
+      return child === shape.child ? shape : { ...shape, child };
+    }
+  }
+}
+
 function doesShapeAcceptOperationRecurseShape(
   shapeTop: FragmentSelectorShape,
   shapeActive: FragmentSelectorShape,

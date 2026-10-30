@@ -1227,6 +1227,12 @@ describe('QuerySourceRdfJs', () => {
       }
     });
 
+    it('should not handle operations other than patterns', () => {
+      expect(source.queryBindingsSynchronous(AF.createJoin([
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o')),
+      ]), ctx)).toBeUndefined();
+    });
+
     it('should not handle sources without synchronous lookups', () => {
       source = new QuerySourceRdfJs(new Store(), DF, BF);
       expect(source.queryBindingsSynchronous(

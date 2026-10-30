@@ -9,7 +9,7 @@ import type {
   IQuerySource,
   QuerySourceReference,
 } from '@comunica/types';
-import type { Algebra } from '@comunica/utils-algebra';
+import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -71,12 +71,14 @@ export class QuerySourceSkolemized implements IQuerySource {
     );
   }
 
-  public queryBindingsSynchronous(operation: Algebra.Pattern, context: IActionContext): Bindings[] | undefined {
+  public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
     if (!this.innerSource.queryBindingsSynchronous) {
       return undefined;
     }
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const operationMapped = deskolemizePattern(dataFactory, operation, this.sourceId);
+    const operationMapped = isKnownOperation(operation, Algebra.Types.PATTERN) ?
+      deskolemizePattern(dataFactory, operation, this.sourceId) :
+      deskolemizeOperation(dataFactory, operation, this.sourceId);
     if (!operationMapped) {
       return [];
     }

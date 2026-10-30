@@ -326,9 +326,9 @@ export class QuerySourceRdfJs implements IQuerySource {
     );
   }
 
-  public queryBindingsSynchronous(operation: Algebra.Pattern, context: IActionContext): Bindings[] | undefined {
-    if (!('getBindings' in this.source) || !this.source.getBindings ||
-      QuerySourceRdfJs.hasQuotedVariables(operation)) {
+  public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
+    if (!isKnownOperation(operation, Algebra.Types.PATTERN) || !('getBindings' in this.source) ||
+      !this.source.getBindings || QuerySourceRdfJs.hasQuotedVariables(operation)) {
       return undefined;
     }
 

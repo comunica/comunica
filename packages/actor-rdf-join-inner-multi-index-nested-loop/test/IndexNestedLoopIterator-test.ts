@@ -43,7 +43,7 @@ describe('IndexNestedLoopIterator', () => {
     source: IQuerySource,
     optional?: boolean,
   ): IIndexNestedLoopLookup => ({
-    pattern: AF.createPattern(
+    operation: AF.createPattern(
       subject.startsWith('?') ? DF.variable(subject.slice(1)) : DF.namedNode(subject),
       DF.namedNode(predicate),
       DF.variable(object.slice(1)),
@@ -64,7 +64,7 @@ describe('IndexNestedLoopIterator', () => {
     const it = new IndexNestedLoopIterator(input(), [
       lookup('?x', 'ex:p', '?y', syncSource),
       lookup('?y', 'ex:q', '?z', syncSource),
-    ], AF);
+    ], AF, BF);
     await expect(it).toEqualBindingsStream([
       BF.bindings([
         [ DF.variable('x'), DF.namedNode('ex:a') ],
@@ -77,7 +77,7 @@ describe('IndexNestedLoopIterator', () => {
   });
 
   it('binds the variables of a looked up pattern', async() => {
-    const it = new IndexNestedLoopIterator(input(), [ lookup('?x', 'ex:p', '?y', syncSource) ], AF);
+    const it = new IndexNestedLoopIterator(input(), [ lookup('?x', 'ex:p', '?y', syncSource) ], AF, BF);
     await it.toArray();
     expect(syncSource.queryBindingsSynchronous).toHaveBeenCalledWith(
       AF.createPattern(DF.namedNode('ex:a'), DF.namedNode('ex:p'), DF.variable('y')),
@@ -85,11 +85,38 @@ describe('IndexNestedLoopIterator', () => {
     );
   });
 
+  it('binds the variables of a looked up operation that is not a pattern', async() => {
+    const source = <IQuerySource> <any> {
+      queryBindingsSynchronous: jest.fn(() => [
+        BF.bindings([
+          [ DF.variable('y'), DF.namedNode('ex:b') ],
+          [ DF.variable('z'), DF.namedNode('ex:d') ],
+        ]),
+      ]),
+    };
+    const operation = AF.createJoin([
+      AF.createPattern(DF.variable('x'), DF.namedNode('ex:p'), DF.variable('y')),
+      AF.createPattern(DF.variable('y'), DF.namedNode('ex:q'), DF.variable('z')),
+    ]);
+    const it = new IndexNestedLoopIterator(input(), [{ operation, source, context }], AF, BF);
+    await expect(it).toEqualBindingsStream([
+      BF.bindings([
+        [ DF.variable('x'), DF.namedNode('ex:a') ],
+        [ DF.variable('y'), DF.namedNode('ex:b') ],
+        [ DF.variable('z'), DF.namedNode('ex:d') ],
+      ]),
+    ]);
+    expect(source.queryBindingsSynchronous).toHaveBeenCalledWith(AF.createJoin([
+      AF.createPattern(DF.namedNode('ex:a'), DF.namedNode('ex:p'), DF.variable('y')),
+      AF.createPattern(DF.variable('y'), DF.namedNode('ex:q'), DF.variable('z')),
+    ]), context);
+  });
+
   it('falls back to the bindings stream when a synchronous lookup is not possible', async() => {
     const it = new IndexNestedLoopIterator(input(), [
       lookup('?x', 'ex:p', '?y', asyncSource),
       lookup('?y', 'ex:q', '?z', streamOnlySource),
-    ], AF);
+    ], AF, BF);
     await expect(it).toEqualBindingsStream([
       BF.bindings([
         [ DF.variable('x'), DF.namedNode('ex:a') ],
@@ -106,7 +133,7 @@ describe('IndexNestedLoopIterator', () => {
       lookup('?x', 'ex:p', '?y', syncSource),
       lookup('?y', 'ex:q', '?z', asyncSource, true),
       lookup('?z', 'ex:r', '?w', syncSource, true),
-    ], AF);
+    ], AF, BF);
     await expect(it).toEqualBindingsStream([
       BF.bindings([
         [ DF.variable('x'), DF.namedNode('ex:a') ],
@@ -128,7 +155,7 @@ describe('IndexNestedLoopIterator', () => {
         BF.bindings([[ DF.variable('y'), DF.namedNode('ex:b') ]]),
       ],
     };
-    const it = new IndexNestedLoopIterator(input(), [ lookup('?x', 'ex:p', '?y', conflicting) ], AF);
+    const it = new IndexNestedLoopIterator(input(), [ lookup('?x', 'ex:p', '?y', conflicting) ], AF, BF);
     await expect(it).toEqualBindingsStream([
       BF.bindings([
         [ DF.variable('x'), DF.namedNode('ex:a') ],
@@ -140,13 +167,13 @@ describe('IndexNestedLoopIterator', () => {
   it('produces nothing for an empty input', async() => {
     const it = new IndexNestedLoopIterator(new ArrayIterator<Bindings>([], { autoStart: false }), [
       lookup('?x', 'ex:p', '?y', syncSource),
-    ], AF);
+    ], AF, BF);
     await expect(it).toEqualBindingsStream([]);
   });
 
   it('waits for input that is not available yet', async() => {
     const delayed = new BufferedIterator<Bindings>({ autoStart: false });
-    const it = new IndexNestedLoopIterator(delayed, [ lookup('?x', 'ex:p', '?y', syncSource) ], AF);
+    const it = new IndexNestedLoopIterator(delayed, [ lookup('?x', 'ex:p', '?y', syncSource) ], AF, BF);
     expect(it.read()).toBeNull();
     expect(it.readable).toBeFalsy();
     const result = it.toArray();
@@ -157,7 +184,7 @@ describe('IndexNestedLoopIterator', () => {
 
   it('destroys itself on input errors', async() => {
     const failing = new BufferedIterator<Bindings>({ autoStart: false });
-    const it = new IndexNestedLoopIterator(failing, [ lookup('?x', 'ex:p', '?y', syncSource) ], AF);
+    const it = new IndexNestedLoopIterator(failing, [ lookup('?x', 'ex:p', '?y', syncSource) ], AF, BF);
     const result = it.toArray();
     failing.destroy(new Error('input failure'));
     await expect(result).rejects.toThrow('input failure');
@@ -171,13 +198,21 @@ describe('IndexNestedLoopIterator', () => {
         return stream;
       },
     };
-    const it = new IndexNestedLoopIterator(input(), [ lookup('?x', 'ex:p', '?y', failingSource) ], AF);
+    const it = new IndexNestedLoopIterator(input(), [ lookup('?x', 'ex:p', '?y', failingSource) ], AF, BF);
     await expect(it.toArray()).rejects.toThrow('lookup failure');
+  });
+
+  it('only needs a bindings factory for lookups that are not patterns', () => {
+    expect(IndexNestedLoopIterator.needsBindingsFactory([ lookup('?x', 'ex:p', '?y', syncSource) ])).toBe(false);
+    expect(IndexNestedLoopIterator.needsBindingsFactory([
+      lookup('?x', 'ex:p', '?y', syncSource),
+      { operation: AF.createJoin([]), source: syncSource, context },
+    ])).toBe(true);
   });
 
   it('destroys its input when ended early', () => {
     const stream = input();
-    const it = new IndexNestedLoopIterator(stream, [ lookup('?x', 'ex:p', '?y', syncSource) ], AF);
+    const it = new IndexNestedLoopIterator(stream, [ lookup('?x', 'ex:p', '?y', syncSource) ], AF, BF);
     it.destroy();
     expect(stream.done).toBeTruthy();
   });

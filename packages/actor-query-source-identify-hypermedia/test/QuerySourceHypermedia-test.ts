@@ -434,16 +434,44 @@ describe('QuerySourceHypermedia', () => {
         expect(directSource.queryBindings(operation, context)).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
       });
 
-      it('should not delegate queryBindings if the source has a cache policy', async() => {
+      it('should delegate queryBindings if the source has a cache policy and a request time', async() => {
         cachePolicy = { satisfiesWithoutRevalidation: async() => true };
+        sourceMetadata = { ...sourceMetadata, requestTime: 10 };
         await probe();
-        expect(directSource.queryBindings(operation, context)).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
+        expect(directSource.queryBindings(operation, context)).toBe(inner.queryBindings.mock.results.at(-1).value);
+      });
+
+      it('should probe the first source again once it was fetched again', async() => {
+        let valid = true;
+        cachePolicy = { satisfiesWithoutRevalidation: async() => valid };
+        await directSource.getSelectorShape(context);
+        const firstState = (<any> directSource).directSourceState;
+        expect(firstState).toBeDefined();
+
+        valid = false;
+        await expect(directSource.getSelectorShape(context)).resolves
+          .toEqual({ type: 'operation', operation: { operationType: 'wildcard' }, synchronous: true });
+        expect((<any> directSource).directSourceState).toBeDefined();
+        expect((<any> directSource).directSourceState).not.toBe(firstState);
+      });
+
+      it('should share the link check with the state of the first source', async() => {
+        await probe();
+        const sourceState = (<any> directSource).directSourceState;
+        await expect(sourceState.hasSourceLinks).resolves.toBe(false);
+      });
+
+      it('should reuse a link check of the state of the first source', async() => {
+        const sourceState = await directSource.getSourceCached({ url: 'firstUrl' }, {}, context);
+        sourceState.hasSourceLinks = Promise.resolve(true);
+        await probe();
+        expect((<any> directSource).directSourceState).toBeUndefined();
+        expect((<any> directSource).mediators.mediatorRdfResolveHypermediaLinks.mediate).not.toHaveBeenCalled();
       });
 
       it.each([
         { cardinality: { type: 'exact', value: 1 }},
         { pageSize: 10 },
-        { requestTime: 10 },
       ])('should not delegate queryBindings if the source metadata must be accumulated: %o', async(extra) => {
         sourceMetadata = { ...sourceMetadata, ...extra };
         await probe();
@@ -502,35 +530,6 @@ describe('QuerySourceHypermedia', () => {
         withContext.queryBindingsSynchronous(<Algebra.Pattern> operation, otherContext);
         expect(inner.queryBindingsSynchronous)
           .toHaveBeenLastCalledWith(operation, otherContext.merge(new ActionContext({ x: 'y' })));
-      });
-    });
-
-    describe('withoutSynchronous', () => {
-      const plain: any = { type: 'operation', operation: { operationType: 'wildcard' }};
-      const sync: any = { ...plain, synchronous: true };
-
-      it('should keep shapes without synchronous flag', () => {
-        const shapes: any[] = [
-          plain,
-          { ...plain, children: [ plain ]},
-          { type: 'disjunction', children: [ plain ]},
-          { type: 'negation', child: plain },
-        ];
-        for (const shape of shapes) {
-          expect(QuerySourceHypermedia.withoutSynchronous(shape)).toBe(shape);
-        }
-      });
-
-      it('should remove synchronous flags', () => {
-        expect(QuerySourceHypermedia.withoutSynchronous(sync)).toEqual(plain);
-        expect(QuerySourceHypermedia.withoutSynchronous({ ...plain, children: [ sync ]}))
-          .toEqual({ ...plain, children: [ plain ]});
-        expect(QuerySourceHypermedia.withoutSynchronous({ ...sync, children: [ plain ]}))
-          .toEqual({ ...plain, children: [ plain ]});
-        expect(QuerySourceHypermedia.withoutSynchronous({ type: 'conjunction', children: [ plain, sync ]}))
-          .toEqual({ type: 'conjunction', children: [ plain, plain ]});
-        expect(QuerySourceHypermedia.withoutSynchronous({ type: 'arity', min: 1, child: sync }))
-          .toEqual({ type: 'arity', min: 1, child: plain });
       });
     });
 

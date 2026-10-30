@@ -1,3 +1,4 @@
+import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
@@ -16,7 +17,8 @@ import type {
   IJoinEntryWithMetadata,
   IQuerySourceWrapper,
 } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { AlgebraFactory } from '@comunica/utils-algebra';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
 import type { IIndexNestedLoopLookup } from './IndexNestedLoopIterator';
 import { IndexNestedLoopIterator } from './IndexNestedLoopIterator';
@@ -24,15 +26,13 @@ import { IndexNestedLoopIterator } from './IndexNestedLoopIterator';
 /**
  * A comunica Inner Multi Index Nested Loop RDF Join Actor.
  *
- * Joins the bindings of one entry with quad patterns, by looking up each pattern bound to each binding.
- * Unlike the bind join, the order of the lookups is determined once,
- * and the bound patterns are sent to their source directly, instead of being planned again for every binding.
- * This only pays off for sources that can look up bound patterns cheaply,
- * which is why it requires sources that can do so synchronously, such as indexed in-memory stores,
- * as indicated by the `synchronous` flag in their selector shape.
+ * In contrast to most other multi join actors, this actor here does not
+ * delegate back to the join bus, but instead takes care of the full join
+ * internally.
  */
 export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoinMultiIndexNestedLoopTestSideData> {
   public readonly lookupCost: number;
+  public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
   public constructor(args: IActorRdfJoinMultiIndexNestedLoopArgs) {
     super(args, {
@@ -40,6 +40,7 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       physicalName: 'index-nested-loop',
     });
     this.lookupCost = args.lookupCost;
+    this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
   }
 
   protected async getOutput(
@@ -58,14 +59,19 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
     }
 
     const lookups = order.map((index): IIndexNestedLoopLookup => {
-      const pattern = <Algebra.Pattern> action.entries[index].operation;
-      const sourceWrapper = <IQuerySourceWrapper> getOperationSource(pattern);
+      const operation = action.entries[index].operation;
+      const sourceWrapper = <IQuerySourceWrapper> getOperationSource(operation);
       return {
-        pattern,
+        operation,
         source: sourceWrapper.source,
         context: sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context,
       };
     });
+
+    // Only create BF when absolutely required.
+    const bindingsFactory = IndexNestedLoopIterator.needsBindingsFactory(lookups) ?
+      await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory) :
+      undefined;
 
     return {
       result: {
@@ -74,10 +80,10 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
           action.entries[first].output.bindingsStream,
           lookups,
           algebraFactory,
+          bindingsFactory,
         ),
         metadata: async() => {
           const metadata = await this.constructResultMetadata(action.entries, sideData.metadatas, action.context);
-          // The fanouts along the lookup order take the bound variables of every lookup into account.
           if (sideData.cardinality < metadata.cardinality.value) {
             metadata.cardinality = { type: 'estimate', value: sideData.cardinality };
           }
@@ -92,14 +98,13 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
   }
 
   /**
-   * Check if the given entry can be looked up, which requires a quad pattern over a source that can look it up
-   * synchronously, as indicated by its selector shape.
+   * Check if the given entry can be looked up synchronously in its source.
    * @param entry A join entry.
    * @param context The action context.
    */
   public static async canLookUp(entry: IJoinEntry, context: IActionContext): Promise<boolean> {
     const sourceWrapper = getOperationSource(entry.operation);
-    if (entry.operation.type !== Algebra.Types.PATTERN || Boolean(entry.operationModified) || !sourceWrapper) {
+    if (Boolean(entry.operationModified) || !sourceWrapper) {
       return false;
     }
     const shape = await sourceWrapper.source.getSelectorShape(context);
@@ -108,8 +113,6 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
 
   /**
    * Estimate how many results a lookup of the given entry produces when the given variables are bound.
-   * A variable of which the number of distinct values is unknown is assumed to identify a single result.
-   * An entry sharing no bound variables is joined as a cross product.
    * @param entry A join entry.
    * @param bound The names of the bound variables.
    */
@@ -177,7 +180,7 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       .filter(i => !ActorRdfJoin.isOperationRequired(entries[i], metadatas[i]) &&
         lookupable.every((canLookup, j) => canLookup || j === i));
     if (firstCandidates.length === 0) {
-      return failTest(`Actor ${this.name} requires all entries but one to be quad patterns over sources that support synchronous lookups`);
+      return failTest(`Actor ${this.name} requires all entries but one to be operations over sources that support synchronous lookups`);
     }
 
     // Pick the first entry that leads to the cheapest order.
@@ -204,11 +207,15 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
 export interface IActorRdfJoinMultiIndexNestedLoopArgs
   extends IActorRdfJoinArgs<IActorRdfJoinMultiIndexNestedLoopTestSideData> {
   /**
-   * The cost of looking up a single bound pattern, expressed in produced rows.
+   * The cost of looking up a single bound operation, expressed in produced rows.
    * @range {double}
    * @default {1}
    */
   lookupCost: number;
+  /**
+   * A mediator for creating binding context merge handlers
+   */
+  mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 }
 
 export interface IActorRdfJoinMultiIndexNestedLoopTestSideData extends IActorRdfJoinTestSideData {
