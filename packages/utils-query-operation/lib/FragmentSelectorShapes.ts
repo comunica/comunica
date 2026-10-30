@@ -10,6 +10,7 @@ import { getDataDestinationValue, getServiceExecutorLookup } from './Utils';
  * @param options Additional options to consider.
  * @param options.joinBindings If additional bindings will be pushed down to the source for joining.
  * @param options.filterBindings If additional bindings will be pushed down to the source for filtering.
+ * @param options.synchronous If the operation will be passed to the source's `queryBindingsSynchronous`.
  */
 export function doesShapeAcceptOperation(
   shape: FragmentSelectorShape,
@@ -41,6 +42,38 @@ export function doesShapeAcceptOperationInContext(
     ...options,
     wildcardAcceptAllExtensionFunctions: context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown),
   });
+}
+
+/**
+ * Remove a flag from the given shape and all of its nested shapes.
+ * @param shape A selector shape.
+ * @param flag The flag to remove.
+ * @return The shape without the flag, which is the given shape if it has none.
+ */
+export function removeShapeFlag(
+  shape: FragmentSelectorShape,
+  flag: 'joinBindings' | 'filterBindings' | 'synchronous',
+): FragmentSelectorShape {
+  switch (shape.type) {
+    case 'operation': {
+      const children = shape.children?.map(child => removeShapeFlag(child, flag));
+      if (!shape[flag] && (!children || children.every((child, i) => child === shape.children![i]))) {
+        return shape;
+      }
+      const { [flag]: _flag, ...rest } = shape;
+      return children ? { ...rest, children } : rest;
+    }
+    case 'conjunction':
+    case 'disjunction': {
+      const children = shape.children.map(child => removeShapeFlag(child, flag));
+      return children.every((child, i) => child === shape.children[i]) ? shape : { ...shape, children };
+    }
+    case 'negation':
+    case 'arity': {
+      const child = removeShapeFlag(shape.child, flag);
+      return child === shape.child ? shape : { ...shape, child };
+    }
+  }
 }
 
 function doesShapeAcceptOperationRecurseShape(
@@ -78,6 +111,9 @@ function doesShapeAcceptOperationRecurseShape(
   // Validate options
   if ((options?.joinBindings && !shapeActive.joinBindings) ??
     (options?.filterBindings && !shapeActive.filterBindings)) {
+    return false;
+  }
+  if (options?.synchronous && !shapeActive.synchronous) {
     return false;
   }
 
@@ -241,6 +277,7 @@ function isInternalOperation(operation: Algebra.Operation): boolean {
 export type FragmentSelectorShapeTestFlags = {
   joinBindings?: boolean;
   filterBindings?: boolean;
+  synchronous?: boolean;
   wildcardAcceptAllExtensionFunctions?: boolean;
 };
 

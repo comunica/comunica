@@ -8,6 +8,7 @@ import {
   doesShapeAcceptOperation,
   doesShapeAcceptOperationInContext,
   passFullOperationToSource,
+  removeShapeFlag,
 } from '../lib/FragmentSelectorShapes';
 
 const AF = new AlgebraFactory();
@@ -558,6 +559,27 @@ describe('FragmentSelectorShapes', () => {
           type: Algebra.Types.NOP,
         },
       }, AF.createNop(), { filterBindings: true })).toBeFalsy();
+    });
+
+    it('should accept valid synchronous', () => {
+      expect(doesShapeAcceptOperation({
+        type: 'operation',
+        synchronous: true,
+        operation: {
+          operationType: 'type',
+          type: Algebra.Types.NOP,
+        },
+      }, AF.createNop(), { synchronous: true })).toBeTruthy();
+    });
+
+    it('should not accept invalid synchronous', () => {
+      expect(doesShapeAcceptOperation({
+        type: 'operation',
+        operation: {
+          operationType: 'type',
+          type: Algebra.Types.NOP,
+        },
+      }, AF.createNop(), { synchronous: true })).toBeFalsy();
     });
 
     it('should not accept shapes with unsupported sub-operations', () => {
@@ -1179,6 +1201,37 @@ describe('FragmentSelectorShapes', () => {
 
         expect(doesShapeAcceptOperation(SHAPE_RDFJS, construct)).toBeFalsy();
       });
+    });
+  });
+
+  describe('#removeShapeFlag', () => {
+    const plain: FragmentSelectorShape = { type: 'operation', operation: { operationType: 'wildcard' }};
+    const sync: FragmentSelectorShape = { ...plain, synchronous: true };
+
+    it('should keep shapes without the flag', () => {
+      const shapes: FragmentSelectorShape[] = [
+        plain,
+        { ...plain, joinBindings: true },
+        { ...plain, children: [ plain ]},
+        { type: 'disjunction', children: [ plain ]},
+        { type: 'negation', child: plain },
+      ];
+      for (const shape of shapes) {
+        expect(removeShapeFlag(shape, 'synchronous')).toBe(shape);
+      }
+    });
+
+    it('should remove the flag', () => {
+      expect(removeShapeFlag(sync, 'synchronous')).toEqual(plain);
+      expect(removeShapeFlag({ ...plain, children: [ sync ]}, 'synchronous'))
+        .toEqual({ ...plain, children: [ plain ]});
+      expect(removeShapeFlag({ ...sync, children: [ plain ]}, 'synchronous'))
+        .toEqual({ ...plain, children: [ plain ]});
+      expect(removeShapeFlag({ type: 'conjunction', children: [ plain, sync ]}, 'synchronous'))
+        .toEqual({ type: 'conjunction', children: [ plain, plain ]});
+      expect(removeShapeFlag({ type: 'arity', min: 1, child: sync }, 'synchronous'))
+        .toEqual({ type: 'arity', min: 1, child: plain });
+      expect(removeShapeFlag({ ...sync, joinBindings: true }, 'joinBindings')).toEqual(sync);
     });
   });
 

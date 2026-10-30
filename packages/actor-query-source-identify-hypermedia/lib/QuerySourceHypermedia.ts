@@ -3,6 +3,7 @@ import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-a
 import type { MediatorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { MediatorRdfResolveHypermediaLinksQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type {
+  Bindings,
   BindingsStream,
   ComunicaDataFactory,
   FragmentSelectorShape,
@@ -13,6 +14,7 @@ import type {
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { removeShapeFlag } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
@@ -35,6 +37,15 @@ export class QuerySourceHypermedia implements IQuerySource {
   private readonly cacheSize: number;
   private readonly maxIterators: number;
 
+  /**
+   * The state of the first source, once it is known that no links can be followed from it.
+   * Operations are then delegated to that source directly.
+   */
+  private directSourceState: ISourceState | undefined;
+  private directSourceProbe: Promise<ISourceState | undefined> | undefined;
+  private directContextIn: IActionContext | undefined;
+  private directContextOut: IActionContext | undefined;
+
   public constructor(
     cacheSize: number,
     firstUrl: ILink,
@@ -55,7 +66,24 @@ export class QuerySourceHypermedia implements IQuerySource {
 
   public async getSelectorShape(context: IActionContext): Promise<FragmentSelectorShape> {
     const source = await this.getSourceCached(this.firstLink, {}, context);
-    return source.source.getSelectorShape(context);
+    const shape = await source.source.getSelectorShape(context);
+    return await this.hasDirectSourceState(source, context) ? shape : removeShapeFlag(shape, 'synchronous');
+  }
+
+  /**
+   * Check if operations can be delegated directly to the first source.
+   * @param sourceState The current state of the first source.
+   * @param context The action context.
+   */
+  protected async hasDirectSourceState(sourceState: ISourceState, context: IActionContext): Promise<boolean> {
+    // A first source that was fetched again, e.g. because its cache policy expired, is probed again.
+    if (this.directSourceProbe && await this.directSourceProbe !== sourceState) {
+      this.directSourceState = undefined;
+      this.directSourceProbe = undefined;
+    }
+    this.probeDirectSource(context);
+    await this.directSourceProbe;
+    return this.directSourceState !== undefined;
   }
 
   public async getFilterFactor(context: IActionContext): Promise<number> {
@@ -68,11 +96,16 @@ export class QuerySourceHypermedia implements IQuerySource {
     context: IActionContext,
     options?: IQueryBindingsOptions,
   ): BindingsStream {
+    if (this.directSourceState) {
+      return this.directSourceState.source.queryBindings(operation, this.getDirectContext(context), options);
+    }
+
     // Initialize the sources state on first call
     if (this.sourcesState.size === 0) {
       this.getSourceCached(this.firstLink, {}, context)
         .catch(error => it.destroy(error));
     }
+    this.probeDirectSource(context);
 
     const it: MediatedLinkedRdfSourcesAsyncRdfIterator = new MediatedLinkedRdfSourcesAsyncRdfIterator(
       operation,
@@ -87,6 +120,65 @@ export class QuerySourceHypermedia implements IQuerySource {
     );
 
     return it;
+  }
+
+  public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
+    if (!this.directSourceState) {
+      this.probeDirectSource(context);
+      return undefined;
+    }
+    return this.directSourceState.source.queryBindingsSynchronous?.(operation, this.getDirectContext(context));
+  }
+
+  /**
+   * Check, once, if operations can be delegated directly to the first source.
+   * Its promise resolves to the probed state of the first source, if it could be fetched.
+   * @param context The action context.
+   */
+  protected probeDirectSource(context: IActionContext): void {
+    this.directSourceProbe ??= (async() => {
+      try {
+        const sourceState = await this.getSourceCached(this.firstLink, {}, context);
+        if (await this.canDelegateTo(sourceState, context)) {
+          this.directSourceState = sourceState;
+        }
+        return sourceState;
+      } catch {
+        // Sources that fail are handled by the regular path
+      }
+    })();
+  }
+
+  /**
+   * Check if operations can be delegated directly to the given source.
+   * This is the case if no links can be followed from it.
+   * @param sourceState The state of a source.
+   * @param context The action context.
+   */
+  protected async canDelegateTo(sourceState: ISourceState, context: IActionContext): Promise<boolean> {
+    const metadata: Record<string, any> = sourceState.metadata;
+    if ('cardinality' in metadata || 'pageSize' in metadata) {
+      return false;
+    }
+    sourceState.hasSourceLinks ??= this.mediators.mediatorRdfResolveHypermediaLinks.mediate({ context, metadata })
+      .then(({ links }) => links.length > 0, () => false);
+    return !await sourceState.hasSourceLinks;
+  }
+
+  /**
+   * The context for querying the direct source, which includes the context of its link.
+   * @param context The action context.
+   */
+  protected getDirectContext(context: IActionContext): IActionContext {
+    const linkContext = this.directSourceState!.link.context;
+    if (!linkContext) {
+      return context;
+    }
+    if (this.directContextIn !== context) {
+      this.directContextIn = context;
+      this.directContextOut = context.merge(linkContext);
+    }
+    return this.directContextOut!;
   }
 
   public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {

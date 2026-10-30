@@ -164,6 +164,64 @@ describe('QuerySourceSkolemized', () => {
     expect(sourceInner.queryBindings).not.toHaveBeenCalled();
   });
 
+  describe('queryBindingsSynchronous', () => {
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
+    const inScope = AF.createPattern(
+      DF.namedNode('s'),
+      DF.namedNode('p'),
+      new BlankNodeScoped('bc_0_a1', DF.namedNode('urn:comunica_skolem:source_0:a1')),
+    );
+
+    it('should not handle inner sources without synchronous lookups', () => {
+      expect(source.queryBindingsSynchronous(inScope, context)).toBeUndefined();
+    });
+
+    it('should not handle inner sources that can not look up the pattern synchronously', () => {
+      Object.assign(sourceInner, { queryBindingsSynchronous: jest.fn(() => undefined) });
+      expect(source.queryBindingsSynchronous(inScope, context)).toBeUndefined();
+    });
+
+    it('should deskolemize the pattern and skolemize the bindings', () => {
+      const plain = BF.fromRecord({ a: DF.namedNode('a0') });
+      Object.assign(sourceInner, { queryBindingsSynchronous: jest.fn(() => [
+        plain,
+        BF.fromRecord({ a: DF.blankNode('a1') }),
+      ]) });
+      const bindings = source.queryBindingsSynchronous(inScope, context)!;
+      expect(bindings).toEqualBindingsArray([
+        plain,
+        BF.fromRecord({ a: new BlankNodeScoped('bc_0_a1', DF.namedNode('urn:comunica_skolem:source_0:a1')) }),
+      ]);
+      // Bindings without blank nodes are not copied
+      expect(bindings[0]).toBe(plain);
+      expect(sourceInner.queryBindingsSynchronous).toHaveBeenCalledWith(AF.createPattern(
+        DF.namedNode('s'),
+        DF.namedNode('p'),
+        DF.blankNode('a1'),
+      ), context);
+    });
+
+    it('should return no bindings for a pattern that is not in scope', () => {
+      Object.assign(sourceInner, { queryBindingsSynchronous: jest.fn() });
+      expect(source.queryBindingsSynchronous(AF.createPattern(
+        DF.namedNode('s'),
+        DF.namedNode('p'),
+        new BlankNodeScoped('bc_0_a1', DF.namedNode('urn:comunica_skolem:source_1:a1')),
+      ), context)).toEqual([]);
+      expect(sourceInner.queryBindingsSynchronous).not.toHaveBeenCalled();
+    });
+
+    it('should deskolemize operations that are not patterns', () => {
+      Object.assign(sourceInner, { queryBindingsSynchronous: jest.fn(() => []) });
+      expect(source.queryBindingsSynchronous(AF.createJoin([ inScope ]), context)).toEqual([]);
+      expect(sourceInner.queryBindingsSynchronous).toHaveBeenCalledWith(AF.createJoin([ AF.createPattern(
+        DF.namedNode('s'),
+        DF.namedNode('p'),
+        DF.blankNode('a1'),
+      ) ]), context);
+    });
+  });
+
   it('should delegate queryBoolean', async() => {
     const op: any = {};
     const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });

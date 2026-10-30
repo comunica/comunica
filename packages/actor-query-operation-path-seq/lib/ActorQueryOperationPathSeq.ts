@@ -53,8 +53,9 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 
     const join = getSafeBindings(await this.mediatorJoin
       .mediate({ type: 'inner', entries, context }));
-    // Remove the generated variable from the bindings
+    // Remove the generated variable from the bindings.
     const bindingsStream = join.bindingsStream.transform<Bindings>({
+      autoStart: false,
       transform(item, next, push) {
         for (const generatedVariableName of generatedVariableNames) {
           item = item.delete(generatedVariableName);
