@@ -26,12 +26,9 @@ import { IndexNestedLoopIterator } from './IndexNestedLoopIterator';
 /**
  * A comunica Inner Multi Index Nested Loop RDF Join Actor.
  *
- * Joins the bindings of one entry with the other entries, by looking up each of them bound to each binding.
- * Unlike the bind join, the order of the lookups is determined once,
- * and the bound operations are sent to their source directly, instead of being planned again for every binding.
- * This only pays off for sources that can look up bound operations cheaply,
- * which is why it requires sources that can do so synchronously, such as indexed in-memory stores,
- * as indicated by the `synchronous` flag in their selector shape.
+ * In contrast to most other multi join actors, this actor here does not
+ * delegate back to the join bus, but instead takes care of the full join
+ * internally.
  */
 export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoinMultiIndexNestedLoopTestSideData> {
   public readonly lookupCost: number;
@@ -71,7 +68,7 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       };
     });
 
-    // Quad patterns are bound without bindings factory, so it is only created for other operations.
+    // Only create BF when absolutely required.
     const bindingsFactory = IndexNestedLoopIterator.needsBindingsFactory(lookups) ?
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory) :
       undefined;
@@ -87,7 +84,6 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
         ),
         metadata: async() => {
           const metadata = await this.constructResultMetadata(action.entries, sideData.metadatas, action.context);
-          // The fanouts along the lookup order take the bound variables of every lookup into account.
           if (sideData.cardinality < metadata.cardinality.value) {
             metadata.cardinality = { type: 'estimate', value: sideData.cardinality };
           }
@@ -102,8 +98,7 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
   }
 
   /**
-   * Check if the given entry can be looked up, which requires an operation that its source can look up
-   * synchronously, as indicated by its selector shape.
+   * Check if the given entry can be looked up synchronously in its source.
    * @param entry A join entry.
    * @param context The action context.
    */
@@ -118,8 +113,6 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
 
   /**
    * Estimate how many results a lookup of the given entry produces when the given variables are bound.
-   * A variable of which the number of distinct values is unknown is assumed to identify a single result.
-   * An entry sharing no bound variables is joined as a cross product.
    * @param entry A join entry.
    * @param bound The names of the bound variables.
    */

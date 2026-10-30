@@ -14,7 +14,7 @@ import type {
 } from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getSafeBindings } from '@comunica/utils-query-operation';
+import { getGroupOutputCardinality, getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { GroupsState } from './GroupsState';
 
@@ -94,7 +94,16 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       type: 'bindings',
       bindingsStream,
       // Groups are not emitted in the term order of the input, and aggregates may reuse its variable names
-      metadata: async() => ({ ...await output.metadata(), variables, termOrder: undefined, canSeek: undefined }),
+      metadata: async() => {
+        const inputMetadata = await output.metadata();
+        return {
+          ...inputMetadata,
+          cardinality: getGroupOutputCardinality(operation, inputMetadata.cardinality),
+          variables,
+          termOrder: undefined,
+          canSeek: undefined,
+        };
+      },
     };
   }
 }

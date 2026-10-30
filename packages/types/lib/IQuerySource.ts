@@ -112,7 +112,6 @@ export interface IQuerySource {
    *
    * This is optional, and only meant for sources that can answer lookups without I/O.
    * When present, `synchronous` should be `true` in the selector shape, for the operations that can be passed here.
-   * Unlike `queryBindings`, no metadata is determined, as callers plan with the metadata of the unbound operation.
    *
    * @param {Algebra.Operation} operation The operation to evaluate.
    * @param {IActionContext} context      The query context.
