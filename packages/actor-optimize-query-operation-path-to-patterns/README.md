@@ -3,11 +3,11 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-optimize-query-operation-path-to-patterns.svg)](https://www.npmjs.com/package/@comunica/actor-optimize-query-operation-path-to-patterns)
 
 An [Optimize Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation) actor
-that rewrites property paths that need no path evaluation into quad patterns, joins and unions.
+that rewrites possible parts of property paths into quad patterns, joins and unions.
 
 Links become quad patterns, inverse paths swap their subject and object,
-sequences become joins over fresh variables that are projected away, and alternatives become unions.
-Arbitrary-length paths, zero-or-one paths and negated property sets remain paths.
+sequences become joins, and alternatives become unions.
+Arbitrary-length paths, zero-or-one paths and negated paths are not handled.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

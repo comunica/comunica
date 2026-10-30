@@ -12,11 +12,10 @@ import type * as RDF from '@rdfjs/types';
 /**
  * A comunica Path to Patterns Optimize Query Operation Actor.
  *
- * Rewrites the parts of property paths that need no path evaluation into regular operations,
- * as defined for the evaluation of property paths in SPARQL 1.1:
- * links become quad patterns, inverse paths swap their subject and object,
- * sequences become joins over fresh variables that are projected away, and alternatives become unions.
- * Arbitrary-length paths, zero-or-one paths and negated property sets remain paths.
+ * Rewrites possible parts of property paths into regular operations.
+ * Links become quad patterns, inverse paths swap their subject and object,
+ * sequences become joins, and alternatives become unions.
+ * Arbitrary-length paths, zero-or-one paths and negated paths are not handled.
  */
 export class ActorOptimizeQueryOperationPathToPatterns extends ActorOptimizeQueryOperation {
   public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
