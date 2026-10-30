@@ -83,7 +83,10 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
           bindingsFactory,
         ),
         metadata: async() => {
-          const metadata = await this.constructResultMetadata(action.entries, sideData.metadatas, action.context);
+          // Lookups keep the order of the first entry.
+          const metadata = await this.constructResultMetadata(action.entries, sideData.metadatas, action.context, {
+            termOrder: sideData.metadatas[first].termOrder,
+          });
           if (sideData.cardinality < metadata.cardinality.value) {
             metadata.cardinality = { type: 'estimate', value: sideData.cardinality };
           }
