@@ -22,7 +22,7 @@ export class DereferenceCachePolicyHttpWrapper implements ICachePolicy<IActionDe
     return this.cachePolicy.satisfiesWithoutRevalidation({
       input: action.url,
       init: {
-        // Establishing the accept header is expensive, and only needed if the response varies on it.
+        // Only calculate expensive accept header when absolutely required.
         headers: this.isVaryingOnAccept() ?
           await ActorDereferenceHttpBase.establishAcceptHeader(action, this.maxAcceptHeaderLength) :
           new Headers(action.headers),
