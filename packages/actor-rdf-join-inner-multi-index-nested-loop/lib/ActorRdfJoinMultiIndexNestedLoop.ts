@@ -25,6 +25,10 @@ import { IndexNestedLoopIterator } from './IndexNestedLoopIterator';
 
 /**
  * A comunica Inner Multi Index Nested Loop RDF Join Actor.
+ *
+ * In contrast to most other multi join actors, this actor here does not
+ * delegate back to the join bus, but instead takes care of the full join
+ * internally.
  */
 export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoinMultiIndexNestedLoopTestSideData> {
   public readonly lookupCost: number;
