@@ -7,6 +7,8 @@ import { ActorDereferenceHttpBase } from './ActorDereferenceHttpBase';
  * A wrapper around an HTTP request cache policy that exposes it as a dereference cache policy.
  */
 export class DereferenceCachePolicyHttpWrapper implements ICachePolicy<IActionDereference> {
+  private variesOnAccept: boolean | undefined;
+
   public constructor(
     private readonly cachePolicy: ICachePolicy<IActionHttp>,
     private readonly maxAcceptHeaderLength: number,
@@ -20,11 +22,24 @@ export class DereferenceCachePolicyHttpWrapper implements ICachePolicy<IActionDe
     return this.cachePolicy.satisfiesWithoutRevalidation({
       input: action.url,
       init: {
-        headers: await ActorDereferenceHttpBase.establishAcceptHeader(action, this.maxAcceptHeaderLength),
+        // Establishing the accept header is expensive, and only needed if the response varies on it.
+        headers: this.isVaryingOnAccept() ?
+          await ActorDereferenceHttpBase.establishAcceptHeader(action, this.maxAcceptHeaderLength) :
+          new Headers(action.headers),
         method: action.method,
       },
       context: action.context,
     });
+  }
+
+  /**
+   * Check if the response varies on the accept header of the request.
+   */
+  protected isVaryingOnAccept(): boolean {
+    this.variesOnAccept ??= (this.cachePolicy.responseHeaders().get('vary') ?? '')
+      .split(',')
+      .some(field => field.trim().toLowerCase() === 'accept');
+    return this.variesOnAccept;
   }
 
   public responseHeaders(): Headers {
