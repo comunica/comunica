@@ -160,7 +160,6 @@ export class QuerySourceHypermedia implements IQuerySource {
     if ('cardinality' in metadata || 'pageSize' in metadata) {
       return false;
     }
-    // Shared with the link traversal iterators.
     sourceState.hasSourceLinks ??= this.mediators.mediatorRdfResolveHypermediaLinks.mediate({ context, metadata })
       .then(({ links }) => links.length > 0, () => false);
     return !await sourceState.hasSourceLinks;
