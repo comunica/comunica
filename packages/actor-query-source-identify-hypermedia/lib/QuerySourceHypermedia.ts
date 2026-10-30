@@ -151,9 +151,7 @@ export class QuerySourceHypermedia implements IQuerySource {
 
   /**
    * Check if operations can be delegated directly to the given source.
-   * This is the case if no links can be followed from it,
-   * and if its metadata contains nothing that accumulating would change.
-   * Its request time is not kept, as the source is only requested once.
+   * This is the case if no links can be followed from it.
    * @param sourceState The state of a source.
    * @param context The action context.
    */
