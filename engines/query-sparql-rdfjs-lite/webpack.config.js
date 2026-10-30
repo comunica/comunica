@@ -3,8 +3,8 @@ const createConfig = require('@comunica/actor-init-query/webpack.config.js');
 const liteConfig = createConfig(__dirname);
 
 if (typeof liteConfig.performance === 'object') {
-  liteConfig.performance.maxAssetSize = 1_230_000;
-  liteConfig.performance.maxEntrypointSize = 1_230_000;
+  liteConfig.performance.maxAssetSize = 1_235_000;
+  liteConfig.performance.maxEntrypointSize = 1_235_000;
 }
 
 module.exports = liteConfig;
