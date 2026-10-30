@@ -65,7 +65,6 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
         ),
         metadata: async() => {
           const metadatas = await ActorRdfJoin.getMetadatas(action.entries);
-          // Lookups keep the order of the left entry.
           return await this.constructResultMetadata(
             action.entries,
             metadatas,
