@@ -3,7 +3,12 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator, TestResult } from '@comunica/core';
 import { passTestWithSideData, ActionContext, Bus } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { IPhysicalQueryPlanLogger, IPhysicalQueryPlanNode, MetadataVariable } from '@comunica/types';
+import type {
+  IPhysicalQueryPlanLogger,
+  IPhysicalQueryPlanNode,
+  MetadataBindings,
+  MetadataVariable,
+} from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -553,6 +558,92 @@ IActorRdfJoinSelectivityOutput
         { variable: DF.variable('a'), canBeUndef: false },
         { variable: DF.variable('b'), canBeUndef: false },
         { variable: DF.variable('c'), canBeUndef: true },
+      ]);
+    });
+  });
+
+  describe('joinVariables with distinct values', () => {
+    function meta(
+      cardinality: number,
+      variables: [string, number | undefined][],
+      undefs: string[] = [],
+    ): MetadataBindings {
+      return {
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: cardinality },
+        variables: variables.map(([ name, distinctValues ]) => ({
+          variable: DF.variable(name),
+          canBeUndef: undefs.includes(name),
+          ...distinctValues === undefined ? {} : { distinctValues },
+        })),
+      };
+    }
+
+    it('should keep the smallest known distinct values for an inner join', () => {
+      expect(ActorRdfJoin.joinVariables(DF, [
+        meta(10, [[ 'a', 5 ], [ 'b', undefined ], [ 'c', 8 ]]),
+        meta(10, [[ 'a', 3 ], [ 'b', 4 ], [ 'c', undefined ]]),
+      ])).toEqual([
+        { variable: DF.variable('a'), canBeUndef: false, distinctValues: 3 },
+        { variable: DF.variable('b'), canBeUndef: false, distinctValues: 4 },
+        { variable: DF.variable('c'), canBeUndef: false, distinctValues: 8 },
+      ]);
+    });
+
+    it('should keep the distinct values of the first entry for an optional join', () => {
+      expect(ActorRdfJoin.joinVariables(DF, [
+        meta(10, [[ 'a', 5 ], [ 'b', undefined ]]),
+        meta(10, [[ 'a', 3 ], [ 'b', 4 ], [ 'c', 2 ]]),
+      ], true)).toEqual([
+        { variable: DF.variable('a'), canBeUndef: false, distinctValues: 5 },
+        { variable: DF.variable('b'), canBeUndef: false },
+        { variable: DF.variable('c'), canBeUndef: true, distinctValues: 2 },
+      ]);
+    });
+
+    it('should take the values of an inner join entry that always binds a variable another may leave undefined', () => {
+      expect(ActorRdfJoin.joinVariables(DF, [
+        meta(10, [[ 'a', 5 ], [ 'b', 6 ], [ 'c', undefined ]], [ 'a', 'c' ]),
+        meta(10, [[ 'a', 8 ], [ 'b', 3 ], [ 'c', 4 ]], [ 'b' ]),
+      ])).toEqual([
+        { variable: DF.variable('a'), canBeUndef: true, distinctValues: 8 },
+        { variable: DF.variable('b'), canBeUndef: true, distinctValues: 6 },
+        { variable: DF.variable('c'), canBeUndef: true, distinctValues: 4 },
+      ]);
+    });
+
+    it('should add the values of entries that may both leave a variable undefined', () => {
+      expect(ActorRdfJoin.joinVariables(DF, [
+        meta(10, [[ 'a', 5 ], [ 'b', undefined ]], [ 'a', 'b' ]),
+        meta(10, [[ 'a', 3 ], [ 'b', 4 ]], [ 'a', 'b' ]),
+      ])).toEqual([
+        { variable: DF.variable('a'), canBeUndef: true, distinctValues: 8 },
+        { variable: DF.variable('b'), canBeUndef: true },
+      ]);
+      expect(ActorRdfJoin.joinVariables(DF, [
+        meta(10, [[ 'a', 5 ]], [ 'a' ]),
+        meta(10, [[ 'a', 3 ]]),
+      ], true)).toEqual([
+        { variable: DF.variable('a'), canBeUndef: true, distinctValues: 8 },
+      ]);
+    });
+
+    it('should not know the distinct values of an inner join if no entry knows them', () => {
+      expect(ActorRdfJoin.joinVariables(DF, [
+        meta(10, [[ 'a', undefined ]]),
+        meta(10, [[ 'a', undefined ]]),
+      ])).toEqual([
+        { variable: DF.variable('a'), canBeUndef: false },
+      ]);
+    });
+
+    it('should bound distinct values by the cardinality', () => {
+      expect(ActorRdfJoin.joinVariables(DF, [
+        meta(10, [[ 'a', 5 ]]),
+        meta(10, [[ 'a', 8 ], [ 'b', 9 ]]),
+      ], false, 6)).toEqual([
+        { variable: DF.variable('a'), canBeUndef: false, distinctValues: 5 },
+        { variable: DF.variable('b'), canBeUndef: false, distinctValues: 6 },
       ]);
     });
   });

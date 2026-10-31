@@ -147,24 +147,52 @@ TS
    * @param dataFactory The data factory.
    * @param {MetadataBindings[]} metadatas An array of metadata objects for the entries.
    * @param optional If an optional join is being performed.
+   * @param cardinality The cardinality of the joined bindings, which bounds the number of distinct values.
    * @returns {RDF.Variable[]} An array of joined variables.
    */
   public static joinVariables(
     dataFactory: ComunicaDataFactory,
     metadatas: MetadataBindings[],
     optional = false,
+    cardinality?: number,
   ): MetadataVariable[] {
-    const variablesIndexed: Record<string, boolean> = {};
+    const variablesIndexed: Record<string, { canBeUndef: boolean; distinctValues?: number }> = {};
     let first = true;
     for (const metadata of metadatas) {
       for (const variable of metadata.variables) {
-        variablesIndexed[variable.variable.value] = variablesIndexed[variable.variable.value] || variable.canBeUndef ||
-          (!first && optional && !(variable.variable.value in variablesIndexed));
+        const existing = variablesIndexed[variable.variable.value];
+        let distinctValues = variable.distinctValues;
+        if (existing) {
+          if (optional ? existing.canBeUndef : existing.canBeUndef && variable.canBeUndef) {
+            // Values can come from either side
+            distinctValues = existing.distinctValues === undefined || variable.distinctValues === undefined ?
+              undefined :
+              existing.distinctValues + variable.distinctValues;
+          } else if (optional || variable.canBeUndef) {
+            // Values come from the existing side
+            distinctValues = existing.distinctValues;
+          } else if (!existing.canBeUndef) {
+            // Values must occur on both sides
+            const known = [ existing.distinctValues, variable.distinctValues ]
+              .filter((value): value is number => value !== undefined);
+            distinctValues = known.length === 0 ? undefined : Math.min(...known);
+          }
+        }
+        variablesIndexed[variable.variable.value] = {
+          canBeUndef: Boolean(existing?.canBeUndef) || variable.canBeUndef || (!first && optional && !existing),
+          distinctValues,
+        };
       }
       first = false;
     }
     return Object.entries(variablesIndexed)
-      .map(([ variableLabel, canBeUndef ]) => ({ variable: dataFactory.variable(variableLabel), canBeUndef }));
+      .map(([ variableLabel, { canBeUndef, distinctValues }]) => ({
+        variable: dataFactory.variable(variableLabel),
+        canBeUndef,
+        ...distinctValues === undefined ?
+            {} :
+            { distinctValues: cardinality === undefined ? distinctValues : Math.min(distinctValues, cardinality) },
+      }));
   }
 
   /**
@@ -349,7 +377,12 @@ TS
         type: cardinalityJoined.type,
         value: cardinalityJoined.value,
       },
-      variables: ActorRdfJoin.joinVariables(context.getSafe(KeysInitQuery.dataFactory), metadatas, optional),
+      variables: ActorRdfJoin.joinVariables(
+        context.getSafe(KeysInitQuery.dataFactory),
+        metadatas,
+        optional,
+        cardinalityJoined.value,
+      ),
     };
   }
 
