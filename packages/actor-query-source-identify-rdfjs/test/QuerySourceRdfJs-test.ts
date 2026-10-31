@@ -145,7 +145,7 @@ describe('QuerySourceRdfJs', () => {
           cardinality: { type: 'exact', value: 2 },
           state: expect.any(MetadataValidationState),
           variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('s'), canBeUndef: false, distinctValues: 2 },
             { variable: DF.variable('o'), canBeUndef: false, distinctValues: 2 },
           ],
           requestTime: 0,
@@ -359,7 +359,7 @@ describe('QuerySourceRdfJs', () => {
           cardinality: { type: 'exact', value: 1 },
           state: expect.any(MetadataValidationState),
           variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('s'), canBeUndef: false, distinctValues: 1 },
             { variable: DF.variable('o'), canBeUndef: false, distinctValues: 1 },
           ],
           requestTime: 0,
@@ -621,7 +621,7 @@ describe('QuerySourceRdfJs', () => {
           cardinality: { type: 'exact', value: 123 },
           state: expect.any(MetadataValidationState),
           variables: [
-            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('s'), canBeUndef: false, distinctValues: 2 },
             { variable: DF.variable('o'), canBeUndef: false, distinctValues: 2 },
           ],
           requestTime: 0,
@@ -742,7 +742,7 @@ describe('QuerySourceRdfJs', () => {
               cardinality: { type: 'exact', value: 3 },
               state: expect.any(MetadataValidationState),
               variables: [
-                { variable: DF.variable('s'), canBeUndef: false },
+                { variable: DF.variable('s'), canBeUndef: false, distinctValues: 3 },
                 { variable: DF.variable('o'), canBeUndef: false, distinctValues: 3 },
               ],
               requestTime: 0,
@@ -785,7 +785,7 @@ describe('QuerySourceRdfJs', () => {
               cardinality: { type: 'exact', value: 1 },
               state: expect.any(MetadataValidationState),
               variables: [
-                { variable: DF.variable('s'), canBeUndef: false },
+                { variable: DF.variable('s'), canBeUndef: false, distinctValues: 1 },
                 { variable: DF.variable('s1'), canBeUndef: false },
                 { variable: DF.variable('p1'), canBeUndef: false },
                 { variable: DF.variable('o1'), canBeUndef: false },
@@ -1288,6 +1288,18 @@ describe('QuerySourceRdfJs', () => {
       await expect(cardinalityOf(source.queryBindings(pattern, ctx))).resolves.toBe(2);
 
       expect(countQuads).toHaveBeenCalledTimes(2);
+    });
+
+    it('should not count the distinct subjects of the same predicate twice within one query execution', async() => {
+      const countDistinctTerms = jest.spyOn(<any> store, 'countDistinctTerms');
+      const scoped = new ActionContext({ [KeysInitQuery.queryExecutionScope.name]: {}});
+
+      await expect(cardinalityOf(source.queryBindings(pattern, scoped))).resolves.toBe(2);
+      await expect(cardinalityOf(source.queryBindings(pattern, scoped))).resolves.toBe(2);
+
+      // Once for the subjects, and twice for the objects, which are not cached
+      expect(countDistinctTerms).toHaveBeenCalledTimes(3);
+      expect(countDistinctTerms.mock.calls.filter(call => (<any> call[0])[2] === 'subject')).toHaveLength(1);
     });
 
     it('should not cache patterns that are cheap to count', async() => {

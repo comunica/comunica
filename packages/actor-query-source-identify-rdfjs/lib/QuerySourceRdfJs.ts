@@ -414,12 +414,14 @@ export class QuerySourceRdfJs implements IQuerySource {
    * @param variable A variable of that pattern.
    * @param cardinality The cardinality of that pattern.
    * @param quotedTripleFiltering If the source supports quoted triple filtering.
+   * @param context The action context.
    */
   protected getDistinctValues(
     operation: Algebra.Pattern,
     variable: RDF.Variable,
     cardinality: number,
     quotedTripleFiltering: boolean,
+    context: IActionContext,
   ): number | undefined {
     // Values of a variable that occurs multiple times are constrained by all of its positions at once
     let position: string | undefined;
@@ -438,8 +440,8 @@ export class QuerySourceRdfJs implements IQuerySource {
       return cardinality;
     }
 
-    // Only objects are indexed after the graph and predicate, so counting subjects would walk the map
-    if (position !== 'object' || !('countDistinctTerms' in this.source) || !this.source.countDistinctTerms) {
+    if ((position !== 'subject' && position !== 'object') ||
+      !('countDistinctTerms' in this.source) || !this.source.countDistinctTerms) {
       return undefined;
     }
     const predicate = QuerySourceRdfJs.nullifyVariables(operation.predicate, quotedTripleFiltering);
@@ -448,10 +450,21 @@ export class QuerySourceRdfJs implements IQuerySource {
       return undefined;
     }
 
-    return this.source.countDistinctTerms(
-      [ 'graph', 'predicate', 'object' ],
-      [ undefined, predicate, undefined, graph ],
-    );
+    // Subjects are not indexed after the graph and predicate, so counting them walks the index, which is cached
+    const cache = position === 'subject' ? this.getCardinalityCache(context) : undefined;
+    const cacheKey = cache && QuerySourceRdfJs.getCardinalityCacheKey(undefined, predicate, undefined, graph);
+    let distinctValues = cacheKey === undefined ? undefined : cache!.get(`subjects:${cacheKey}`);
+    if (distinctValues === undefined) {
+      distinctValues = this.source.countDistinctTerms(
+        [ 'graph', 'predicate', position ],
+        [ undefined, predicate, undefined, graph ],
+      );
+      if (cacheKey !== undefined) {
+        cache!.set(`subjects:${cacheKey}`, distinctValues);
+      }
+    }
+    // Values are counted over all quads with the predicate, which may be more than the pattern matches
+    return Math.min(distinctValues, cardinality);
   }
 
   /**
@@ -565,7 +578,7 @@ export class QuerySourceRdfJs implements IQuerySource {
         ...extraMetadata,
         variables: variables.map((variable) => {
           const distinctValues = this
-            .getDistinctValues(operation, variable.variable, cardinality, quotedTripleFiltering);
+            .getDistinctValues(operation, variable.variable, cardinality, quotedTripleFiltering, context);
           return distinctValues === undefined ? variable : { ...variable, distinctValues };
         }),
       };
