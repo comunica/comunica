@@ -136,6 +136,11 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     operation: O,
     context: IActionContext,
   ): Promise<[ O, Algebra.Operation[] ]> {
+    // Prototype: operations without expressions cannot contain (NOT) EXISTS expressions
+    if ((<any> globalThis).__proto?.groupFast &&
+      !('expression' in operation) && !('expressions' in operation) && !('aggregates' in operation)) {
+      return [ operation, []];
+    }
     const existenceInputs: Algebra.Operation[] = [];
     // The input is grouped separately, so it is left out of the transformation
     const operationGrouped = await algebraTransformer()
