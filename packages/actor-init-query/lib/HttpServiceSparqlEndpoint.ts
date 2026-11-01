@@ -655,13 +655,9 @@ export class HttpServiceSparqlEndpoint {
    */
   public static async serializeSparqlJson(result: QueryBindings): Promise<string> {
     const variables = (await result.metadata()).variables.map(variable => variable.value);
-    const stream = await result.execute();
-    const bindings: RDF.Bindings[] = [];
-    await new Promise<void>((resolve, reject) => {
-      stream.on('data', (binding: RDF.Bindings) => bindings.push(binding));
-      stream.on('error', reject);
-      stream.on('end', resolve);
-    });
+    // Comunica's bindings streams are AsyncIterators, which also handle streams that already ended
+    const stream: any = await result.execute();
+    const bindings: RDF.Bindings[] = await stream.toArray();
     const rows: string[] = [];
     for (const binding of bindings) {
       const row: Record<string, any> = {};
