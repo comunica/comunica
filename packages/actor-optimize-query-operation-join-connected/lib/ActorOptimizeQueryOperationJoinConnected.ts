@@ -30,6 +30,22 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
   }
 
   /**
+   * Determine the variables of a pattern without traversing it.
+   * @param pattern A pattern.
+   */
+  public static getPatternVariables(pattern: Algebra.Pattern): Record<string, boolean> {
+    const variables: Record<string, boolean> = {};
+    for (const term of [ pattern.subject, pattern.predicate, pattern.object, pattern.graph ]) {
+      if (term.termType === 'Variable') {
+        variables[term.value] = true;
+      } else if (term.termType === 'Quad') {
+        return Object.fromEntries(algebraUtils.inScopeVariables(pattern).map(variable => [ variable.value, true ]));
+      }
+    }
+    return variables;
+  }
+
+  /**
    * Iteratively cluster join entries based on their overlapping variables.
    * @param op A join operation.
    * @param factory An algebra factory.
@@ -39,8 +55,11 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
     const initialClusters: IJoinCluster[] = op.input
       .flatMap(subOp => algebraUtils.isKnownOperation(subOp, Algebra.Types.JOIN) ? subOp.input : [ subOp ])
       .map(subOp => ({
-        inScopeVariables: Object.fromEntries(algebraUtils.inScopeVariables(subOp)
-          .map(variable => [ variable.value, true ])),
+        inScopeVariables: (<any> globalThis).__proto?.joinConnectedFast &&
+          algebraUtils.isKnownOperation(subOp, Algebra.Types.PATTERN) ?
+          ActorOptimizeQueryOperationJoinConnected.getPatternVariables(subOp) :
+          Object.fromEntries(algebraUtils.inScopeVariables(subOp)
+            .map(variable => [ variable.value, true ])),
         entries: [ subOp ],
       }));
 
@@ -51,6 +70,14 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
       oldClusters = newClusters;
       newClusters = ActorOptimizeQueryOperationJoinConnected.clusterIteration(oldClusters);
     } while (oldClusters.length !== newClusters.length);
+
+    // Keep the join as-is if it forms a single cluster in the original order, without nested joins
+    if ((<any> globalThis).__proto?.joinConnectedFast && newClusters.length === 1 &&
+      newClusters[0].entries.length === op.input.length &&
+      newClusters[0].entries.every((entry, i) => entry === op.input[i]) &&
+      (!op.metadata || Object.keys(op.metadata).length === 0)) {
+      return op;
+    }
 
     // Create new join operation of latest clusters
     const subJoins = newClusters

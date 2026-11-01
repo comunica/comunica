@@ -6,6 +6,7 @@ import { algebraUtils, Types } from '@traqula/algebra-transformations-1-2';
 import type { Patch, PreOrderMappingReturn, Safeness, TransformContext, VisitContext } from '@traqula/core';
 import { TransformerSubTyped } from '@traqula/core';
 import type { KnownOperation, Operation } from './Algebra';
+import { createCopyOnWriteMapper } from './CopyOnWriteMapper';
 import { TypesComunica } from './TypesComunica';
 
 export const resolveIRI = algebraUtils.resolveIRI;
@@ -217,7 +218,11 @@ export function algebraTransformer<Safe extends Safeness = 'unsafe', T = Operati
  * @return the result of transforming the requested descendant operations (based on the preVisitor)
  * using a transformer that works its way back up from the descendant to the startObject.
  */
-export const mapOperation: (typeof mapOperationStrict<'unsafe', Operation>) = <any> mapOperationStrict;
+export const mapOperation: (typeof mapOperationStrict<'unsafe', Operation>) = <any> createCopyOnWriteMapper({
+  defaultObjectContext,
+  defaultNodePreVisitor: <any> defaultNodePreVisitor,
+  fallback: mapOperationStrict,
+});
 
 /**
  * Transform a single operation, similar to {@link mapOperationSub}, but using stricter typings.
