@@ -13,7 +13,9 @@ const samples = [];
 
 const handleRequest = HttpServiceSparqlEndpoint.prototype.handleRequest;
 HttpServiceSparqlEndpoint.prototype.handleRequest = function(engine, variants, stdout, stderr, request, response) {
-  const marks = { start: performance.now() };
+  const marks = { start: performance.now(), variant: request.headers['x-proto'] ?? '{}' };
+  // Prototype flags per request, for interleaved A/B measurements
+  globalThis.__proto = JSON.parse(marks.variant);
   current = marks;
   response.on('finish', () => {
     marks.finish = performance.now();
@@ -22,7 +24,9 @@ HttpServiceSparqlEndpoint.prototype.handleRequest = function(engine, variants, s
     }
     samples.push(marks);
     if (samples.length % REPORT_EVERY === 0) {
-      report();
+      for (const variant of new Set(samples.slice(-REPORT_EVERY).map(m => m.variant))) {
+        report(variant);
+      }
     }
   });
   return handleRequest.call(this, engine, variants, stdout, stderr, request, response);
@@ -61,10 +65,10 @@ function median(values) {
   return sorted[Math.floor(sorted.length / 2)];
 }
 
-function report() {
-  const recent = samples.slice(-REPORT_EVERY);
+function report(variant) {
+  const recent = samples.slice(-REPORT_EVERY).filter(m => m.variant === variant);
   const stage = (from, to) => median(recent.map(m => m[to] - m[from])).toFixed(3);
-  process.stderr.write(`ENDPOINT-STAGES n=${recent.length} ` +
+  process.stderr.write(`ENDPOINT-STAGES ${variant} n=${recent.length} ` +
     `negotiate+route ${stage('start', 'writeQueryResult')} ` +
     `pre-query ${stage('writeQueryResult', 'queryStart')} ` +
     `engine.query ${stage('queryStart', 'queryEnd')} ` +
