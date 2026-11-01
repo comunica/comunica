@@ -7,6 +7,7 @@ const { performance } = require('node:perf_hooks');
 
 const [ engineDir, dataset, repsArg, ...queryFiles ] = process.argv.slice(2);
 const reps = Number(repsArg);
+globalThis.__proto = JSON.parse(process.env.FLAGS ?? '{}');
 const { QueryEngine } = require(path.resolve(engineDir));
 const engine = new QueryEngine();
 const context = { sources: [ path.resolve(dataset) ] };

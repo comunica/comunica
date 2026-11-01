@@ -60,6 +60,15 @@ const median = (a) => {
       await serialized(query);
     }
   }
+  let session;
+  if (process.env.PROFILE) {
+    const inspector = require('node:inspector/promises');
+    session = new inspector.Session();
+    session.connect();
+    await session.post('Profiler.enable');
+    await session.post('Profiler.setSamplingInterval', { interval: 50 });
+    await session.post('Profiler.start');
+  }
   console.log('query\tresults\tparse\toptimize\tevaluate\tconsume\ttotal\ttotal_with_json');
   for (const { name, query } of queries) {
     const samples = [];
@@ -72,6 +81,10 @@ const median = (a) => {
     }
     const m = phase => median(samples.map(s => s[phase])).toFixed(3);
     console.log(`${name}\t${n}\t${m('parse')}\t${m('optimize')}\t${m('evaluate')}\t${m('consume')}\t${m('total')}\t${median(json).toFixed(3)}`);
+  }
+  if (session) {
+    const { profile } = await session.post('Profiler.stop');
+    fs.writeFileSync(process.env.PROFILE, JSON.stringify(profile));
   }
   process.exit(0);
 })();
