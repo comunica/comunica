@@ -33,7 +33,11 @@ export class ActorOptimizeQueryOperationQuerySourceSkolemize extends ActorOptimi
     const sourceIds: Map<QuerySourceReference, string> = context.getSafe(KeysQuerySourceIdentify.sourceIds);
 
     // Wrap sources in skolemized sources
-    if (context.has(KeysQueryOperation.querySources)) {
+    // Prototype: a single source needs no skolemization, assuming it contains no blank nodes
+    const singleSource = (<any> globalThis).__proto?.noSkolem &&
+      context.get(KeysQueryOperation.querySources)?.length === 1 &&
+      !context.has(KeysQueryOperation.serviceSources);
+    if (context.has(KeysQueryOperation.querySources) && !singleSource) {
       let sources = context.getSafe(KeysQueryOperation.querySources);
       sources = sources.map(sourceWrapper => ({
         source: new QuerySourceSkolemized(sourceWrapper.source, getSourceId(sourceIds, sourceWrapper.source)),
