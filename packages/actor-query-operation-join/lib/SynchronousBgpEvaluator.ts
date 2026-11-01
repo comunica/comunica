@@ -87,7 +87,7 @@ export class SynchronousBgpEvaluator {
     const variables: MetadataVariable[] = [];
     const seen = new Set<string>();
     for (const pattern of patterns) {
-      for (const variable of algebraUtils.inScopeVariables(pattern)) {
+      for (const variable of SynchronousBgpEvaluator.getPatternVariables(pattern)) {
         if (!seen.has(variable.value)) {
           seen.add(variable.value);
           variables.push({ variable, canBeUndef: false });
@@ -103,6 +103,20 @@ export class SynchronousBgpEvaluator {
         variables,
       }),
     };
+  }
+
+  /**
+   * Get the variables of a pattern, which contains no quoted triples.
+   * @param pattern A pattern.
+   */
+  public static getPatternVariables(pattern: Algebra.Pattern): RDF.Variable[] {
+    const variables: RDF.Variable[] = [];
+    for (const term of [ pattern.subject, pattern.predicate, pattern.object, pattern.graph ]) {
+      if (term.termType === 'Variable') {
+        variables.push(term);
+      }
+    }
+    return variables;
   }
 
   /**
@@ -164,7 +178,7 @@ export class SynchronousBgpEvaluator {
       return isBound(pattern.object) ? 1 : 2;
     };
     while (remaining.length > 0) {
-      const connected = remaining.filter(pattern => algebraUtils.inScopeVariables(pattern)
+      const connected = remaining.filter(pattern => SynchronousBgpEvaluator.getPatternVariables(pattern)
         .some(variable => bound.has(variable.value)));
       const candidates = connected.length > 0 ? connected : remaining;
       let best = candidates[0];
@@ -178,7 +192,7 @@ export class SynchronousBgpEvaluator {
       }
       remaining.splice(remaining.indexOf(best), 1);
       ordered.push(best);
-      for (const variable of algebraUtils.inScopeVariables(best)) {
+      for (const variable of SynchronousBgpEvaluator.getPatternVariables(best)) {
         bound.add(variable.value);
       }
     }

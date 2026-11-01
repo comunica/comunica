@@ -4,6 +4,11 @@ import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { extractTimeZone } from './DateTimeHelpers';
 
+const defaultSuperTypeProvider = {
+  cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
+  discoverer: (): 'term' => 'term',
+};
+
 export function prepareEvaluatorActionContext(orgContext: IActionContext): IActionContext {
   let context = orgContext;
 
@@ -34,10 +39,13 @@ export function prepareEvaluatorActionContext(orgContext: IActionContext): IActi
     extractTimeZone(context.getSafe(KeysInitQuery.queryTimestamp)),
   );
 
-  context = context.setDefault(KeysExpressionEvaluator.superTypeProvider, {
-    cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
-    discoverer: () => 'term',
-  });
+  // Prototype: the default super types are fixed, so their cache can be shared across evaluators
+  context = context.setDefault(KeysExpressionEvaluator.superTypeProvider, (<any> globalThis).__proto?.sharedTypeCache ?
+    defaultSuperTypeProvider :
+      {
+        cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
+        discoverer: () => 'term',
+      });
 
   return context;
 }
