@@ -27,10 +27,13 @@ export class SynchronousBgpEvaluator {
   /**
    * @param maxResults The maximum number of results, after which the regular join is used instead.
    * @param maxLookups The maximum number of lookups, after which the regular join is used instead.
+   * @param maxStartCardinality The maximum cardinality of the first pattern, so that only selective joins are
+   *                            evaluated eagerly. Larger joins, such as unbound inputs of bind joins, stay lazy.
    */
   public constructor(
     private readonly maxResults = 10_000,
-    private readonly maxLookups = 50_000,
+    private readonly maxLookups = 10_000,
+    private readonly maxStartCardinality = 1_000,
   ) {}
 
   /**
@@ -60,11 +63,19 @@ export class SynchronousBgpEvaluator {
 
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const sourceContext = sourceWrapper.context ? context.merge(sourceWrapper.context) : context;
+    const counts = new Map<Algebra.Pattern, number | undefined>();
+    const count = (pattern: Algebra.Pattern): number | undefined => {
+      if (!counts.has(pattern)) {
+        counts.set(pattern, sourceWrapper.source.cardinalitySynchronous?.(pattern, sourceContext));
+      }
+      return counts.get(pattern);
+    };
+    const ordered = SynchronousBgpEvaluator.orderPatterns(patterns, count);
+    if ((count(ordered[0]) ?? Number.POSITIVE_INFINITY) > this.maxStartCardinality) {
+      return;
+    }
     const results = this.evaluatePatterns(
-      SynchronousBgpEvaluator.orderPatterns(
-        patterns,
-        pattern => sourceWrapper.source.cardinalitySynchronous?.(pattern, sourceContext),
-      ),
+      ordered,
       sourceWrapper,
       sourceContext,
       new AlgebraFactory(dataFactory),
