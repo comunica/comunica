@@ -122,6 +122,13 @@ export class QuerySourceHypermedia implements IQuerySource {
     return it;
   }
 
+  public readQuadsSynchronous(operation: Algebra.Operation, context: IActionContext): Iterable<RDF.Quad> | undefined {
+    if (!this.directSourceState) {
+      return undefined;
+    }
+    return this.directSourceState.source.readQuadsSynchronous?.(operation, this.getDirectContext(context));
+  }
+
   public cardinalitySynchronous(operation: Algebra.Operation, context: IActionContext): number | undefined {
     if (!this.directSourceState) {
       return undefined;

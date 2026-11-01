@@ -30,6 +30,7 @@ import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { LeanBgpEvaluator } from './LeanBgpEvaluator';
 
 /**
  * A comunica Sequential Query Process Actor.
@@ -58,6 +59,10 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   public readonly mediatorOptimizeQueryOperation: MediatorOptimizeQueryOperation;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  private readonly leanEvaluator = new LeanBgpEvaluator();
+  private leanSourceIdentifier: { run: (action: IActionOptimizeQueryOperation, sideData: undefined) => Promise<any> } |
+    undefined;
+
   private leanOptimizers: { run: (action: IActionOptimizeQueryOperation, sideData: undefined) => Promise<any> }[] |
     undefined;
 
@@ -80,6 +85,22 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   public async run(action: IActionQueryProcess): Promise<IActorQueryProcessOutput> {
     // Run all query processing steps in sequence
     let { operation, context } = await this.parse(action.query, action.context);
+
+    // Prototype: evaluate simple queries over basic graph patterns without the regular pipeline
+    const proto = (<any> globalThis).__proto;
+    if (proto?.leanBgp && proto.noSkolem && (<any> operation)[Symbol.for('comunica.prototype.fastParsed')] &&
+      LeanBgpEvaluator.getPlan(operation)) {
+      this.leanSourceIdentifier ??= (<any> this.mediatorOptimizeQueryOperation).bus.actors
+        .find((actor: any) => actor.name.endsWith('#query-source-identify'));
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      const identified = await this.leanSourceIdentifier!.run({ operation, context }, undefined);
+      const result = this.leanEvaluator.evaluate(operation, identified.context);
+      if (result) {
+        result.context = identified.context;
+        return { result };
+      }
+    }
+
     ({ operation, context } = await this.optimize(operation, context));
     const output = await this.evaluate(operation, context);
 

@@ -124,6 +124,18 @@ export interface IQuerySource {
   ) => Bindings[] | undefined;
 
   /**
+   * Prototype: synchronously read the quads that match the given pattern, with variables as wildcards.
+   * Repeated variables are not checked.
+   * @param {Algebra.Operation} operation The pattern to match.
+   * @param {IActionContext} context      The query context.
+   * @return The matching quads, or undefined if they can not be read synchronously.
+   */
+  readQuadsSynchronous?: (
+    operation: Algebra.Operation,
+    context: IActionContext,
+  ) => Iterable<RDF.Quad> | undefined;
+
+  /**
    * Prototype: synchronously count the results of the given pattern, ignoring repeated variables.
    * @param {Algebra.Operation} operation The operation to count.
    * @param {IActionContext} context      The query context.

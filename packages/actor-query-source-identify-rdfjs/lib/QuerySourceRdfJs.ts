@@ -326,6 +326,22 @@ export class QuerySourceRdfJs implements IQuerySource {
     );
   }
 
+  public readQuadsSynchronous(operation: Algebra.Operation, context: IActionContext): Iterable<RDF.Quad> | undefined {
+    if (!isKnownOperation(operation, Algebra.Types.PATTERN) || !('readQuads' in this.source) ||
+      typeof this.source.readQuads !== 'function' || QuerySourceRdfJs.hasQuotedVariables(operation) ||
+      operation.graph.termType !== 'DefaultGraph') {
+      return undefined;
+    }
+    // Same graph semantics as queryBindings, for default graph patterns
+    const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
+    return (<any> this.source).readQuads(
+      QuerySourceRdfJs.nullifyVariables(operation.subject, false),
+      QuerySourceRdfJs.nullifyVariables(operation.predicate, false),
+      QuerySourceRdfJs.nullifyVariables(operation.object, false),
+      unionDefaultGraph ? undefined : operation.graph,
+    );
+  }
+
   public cardinalitySynchronous(operation: Algebra.Operation, context: IActionContext): number | undefined {
     if (!isKnownOperation(operation, Algebra.Types.PATTERN) || !('countQuads' in this.source) ||
       !this.source.countQuads || QuerySourceRdfJs.hasQuotedVariables(operation)) {

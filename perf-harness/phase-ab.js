@@ -38,6 +38,9 @@ const median = (a) => {
         const start = performance.now();
         await (await engine.queryBindings(q, context)).toArray();
         current.total = performance.now() - start;
+        for (const phase of [ 'parse', 'optimize', 'evaluate' ]) {
+          current[phase] ??= 0;
+        }
         current.consume = current.total - current.parse - current.optimize - current.evaluate;
         if (r >= 5) {
           samples[name].push(current);

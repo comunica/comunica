@@ -670,6 +670,23 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Serialize rows of terms into a SPARQL JSON string.
+   * @param raw The variable names and rows.
+   * @param raw.variables The variable names.
+   * @param raw.rows The rows, mapping variable names to terms.
+   */
+  public static serializeRawRows(raw: { variables: string[]; rows: Record<string, RDF.Term>[] }): string {
+    const rows = raw.rows.map((row) => {
+      const json: Record<string, any> = {};
+      for (const key in row) {
+        json[key] = HttpServiceSparqlEndpoint.termToSparqlJson(row[key]);
+      }
+      return JSON.stringify(json);
+    });
+    return `{"head": ${JSON.stringify({ vars: raw.variables })},\n"results": { "bindings": [\n${rows.join(',\n')}\n]}}\n`;
+  }
+
+  /**
    * Convert a term into its SPARQL JSON representation.
    * @param term An RDF term.
    */
@@ -806,8 +823,10 @@ export class HttpServiceSparqlEndpoint {
     // Prototype: serialize SPARQL JSON results directly into a single response body
     if (proto.fastJson && !headOnly && result.resultType === 'bindings' &&
       mediaType === 'application/sparql-results+json') {
-      // eslint-disable-next-line unicorn/no-useless-undefined
-      const body = await HttpServiceSparqlEndpoint.serializeSparqlJson(result).catch(() => undefined);
+      const rawRows = (<any> result)[Symbol.for('comunica.prototype.rawRows')];
+      const body = rawRows ?
+        HttpServiceSparqlEndpoint.serializeRawRows(rawRows) :
+        await HttpServiceSparqlEndpoint.serializeSparqlJson(result).catch(() => {});
       if (body !== undefined) {
         response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
         response.end(body);

@@ -296,6 +296,8 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     switch (internalResult.type) {
       case 'bindings':
         return {
+          // Prototype: expose raw rows of lean results to consumers that can serialize them directly
+          [Symbol.for('comunica.prototype.rawRows')]: (<any> internalResult)[Symbol.for('comunica.prototype.rawRows')],
           resultType: 'bindings',
           execute: async() => {
             if (logger) {
