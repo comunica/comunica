@@ -19,12 +19,14 @@ import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { SynchronousBgpEvaluator } from './SynchronousBgpEvaluator';
 
 /**
  * A comunica Join Query Operation Actor.
  */
 export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Algebra.Join> {
   public readonly mediatorJoin: MediatorRdfJoin;
+  private readonly synchronousBgpEvaluator = new SynchronousBgpEvaluator();
 
   public constructor(args: IActorQueryOperationJoinArgs) {
     super(args, Algebra.Types.JOIN);
@@ -39,6 +41,14 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
     operationOriginal: Algebra.Join,
     context: IActionContext,
   ): Promise<IQueryOperationResult> {
+    // Prototype: evaluate joins of patterns over a single synchronous source in one nested loop
+    if ((<any> globalThis).__proto?.bgpFast && !context.has(KeysInitQuery.physicalQueryPlanLogger)) {
+      const result = await this.synchronousBgpEvaluator.evaluate(operationOriginal, context);
+      if (result) {
+        return result;
+      }
+    }
+
     const entries: IJoinEntry[] = (await Promise.all(operationOriginal.input
       .map(async subOperation => ({
         output: await this.mediatorQueryOperation.mediate({ operation: subOperation, context }),
