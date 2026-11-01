@@ -121,7 +121,10 @@ export class FastSparqlParser {
     this.prefixes = { ...defaultPrefixes };
     this.variables = new Set(this.tokens.filter(token => token.type === 'var').map(token => token.value));
     this.varCount = 0;
-    return this.parseQuery();
+    const operation = this.parseQuery();
+    // Mark the operation, so that the query processor can use a lean optimization pipeline
+    Object.defineProperty(operation, Symbol.for('comunica.prototype.fastParsed'), { value: true });
+    return operation;
   }
 
   // ---------- Lexer ----------

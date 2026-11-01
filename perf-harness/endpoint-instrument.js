@@ -13,7 +13,7 @@ const samples = [];
 
 const handleRequest = HttpServiceSparqlEndpoint.prototype.handleRequest;
 HttpServiceSparqlEndpoint.prototype.handleRequest = function(engine, variants, stdout, stderr, request, response) {
-  const marks = { start: performance.now(), variant: request.headers['x-proto'] ?? '{}' };
+  const marks = { start: performance.now(), variant: request.headers['x-proto'] ?? process.env.DEFAULT_PROTO ?? '{}' };
   // Prototype flags per request, for interleaved A/B measurements
   globalThis.__proto = JSON.parse(marks.variant);
   current = marks;

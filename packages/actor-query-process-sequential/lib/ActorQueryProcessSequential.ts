@@ -1,6 +1,9 @@
 import type { MediatorContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
-import type { MediatorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import type {
+  IActionOptimizeQueryOperation,
+  MediatorOptimizeQueryOperation,
+} from '@comunica/bus-optimize-query-operation';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorQueryParse } from '@comunica/bus-query-parse';
 import type {
@@ -31,12 +34,32 @@ import type * as RDF from '@rdfjs/types';
 /**
  * A comunica Sequential Query Process Actor.
  */
+/**
+ * Prototype: the optimizers that can apply to queries from the fast parser,
+ * which are single SELECT queries without FROM, SERVICE, VALUES, subqueries, or updates.
+ */
+const LEAN_OPTIMIZERS = new Set([
+  'query-source-identify',
+  'query-source-skolemize',
+  'assign-sources-exhaustive',
+  'path-to-patterns',
+  'join-bgp',
+  'bgp-to-join',
+  'prune-empty-source-operations',
+  'filter-pushdown',
+  'leftjoin-expression-pushdown',
+  'sort-limit-pushdown',
+  'annotate-union-order',
+]);
+
 export class ActorQueryProcessSequential extends ActorQueryProcess implements IQueryProcessSequential {
   public readonly mediatorContextPreprocess: MediatorContextPreprocess;
   public readonly mediatorQueryParse: MediatorQueryParse;
   public readonly mediatorOptimizeQueryOperation: MediatorOptimizeQueryOperation;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  private leanOptimizers: { run: (action: IActionOptimizeQueryOperation, sideData: undefined) => Promise<any> }[] |
+    undefined;
 
   public constructor(args: IActorQueryProcessSequentialArgs) {
     super(args);
@@ -114,7 +137,18 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     // Save initial query in context
     context = context.set(KeysInitQuery.query, operation);
 
-    ({ operation, context } = await this.mediatorOptimizeQueryOperation.mediate({ context, operation }));
+    // Prototype: queries from the fast parser only run the optimizers that can apply to them, without mediation
+    if ((<any> globalThis).__proto?.leanOptimize && (<any> operation)[Symbol.for('comunica.prototype.fastParsed')]) {
+      this.leanOptimizers ??= (<any> this.mediatorOptimizeQueryOperation).bus.actors
+        .filter((actor: any) => LEAN_OPTIMIZERS.has(actor.name.slice(actor.name.indexOf('#') + 1)));
+      let handle: IActionOptimizeQueryOperation = { context, operation };
+      for (const actor of this.leanOptimizers!) {
+        handle = { ...handle, ...await actor.run(handle) };
+      }
+      ({ operation, context } = handle);
+    } else {
+      ({ operation, context } = await this.mediatorOptimizeQueryOperation.mediate({ context, operation }));
+    }
 
     // Save original query in context
     context = context.set(KeysInitQuery.query, operation);
