@@ -7,6 +7,7 @@ import type { ComunicaDataFactory } from '@comunica/types';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import { AstFactory } from '@traqula/rules-sparql-1-2';
+import { FastParserFallbackError, FastSparqlParser } from './FastSparqlParser';
 
 /**
  * A comunica Algebra SPARQL Parse Actor.
@@ -34,6 +35,16 @@ export class ActorQueryParseSparql extends ActorQueryParse {
 
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    // Prototype: parse common queries with a fast parser, and fall back to the regular parser otherwise
+    if ((<any> globalThis).__proto?.fastParse) {
+      try {
+        return { baseIRI: undefined, operation: new FastSparqlParser(dataFactory).parse(action.query, this.prefixes) };
+      } catch (error: unknown) {
+        if (!(error instanceof FastParserFallbackError)) {
+          throw error;
+        }
+      }
+    }
     const astFactory = new AstFactory();
     const parsedSyntax = this.parser.parse(action.query, {
       prefixes: this.prefixes,
