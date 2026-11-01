@@ -215,6 +215,8 @@ module.exports = config([
       'engines/*/engine-browser.js',
       'engines/*/comunica-browser.js',
       'engines/*/comunica-browser-vite.js',
+      // Prototype harness scripts, not for merging
+      'perf-harness/**',
       // The performance combination files are auto-generated
       'performance/*/combinations/**',
       // The agentic workflow lock files are compiled from their .md sources by 'gh aw compile'
