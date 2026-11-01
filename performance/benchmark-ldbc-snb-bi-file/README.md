@@ -8,6 +8,6 @@ This will output a file called `plot_queries_data.svg` that visualizes the perfo
 If you only want to check the performance of your current version of Comunica,
 you can run `npm run performance:ci` instead,
 which is what the CI will run as well for continuous performance measurements.
-As the BI queries take much longer than the Interactive ones, `npm run performance:ci` runs a single instance of each query, without warmup or replication, with a timeout of 60 seconds, and skips BI5, BI9 and BI19, which time out.
+As the BI queries take much longer than the Interactive ones, `npm run performance:ci` runs a single instance of each query, without warmup or replication, with a timeout of 120 seconds, and skips BI5, BI9 and BI19, which time out.
 
 Continuous performance results are tracked on https://github.com/comunica/comunica-performance-results.
