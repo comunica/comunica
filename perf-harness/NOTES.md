@@ -33,3 +33,24 @@ HTTP floor in Node (trivial server, same fetch client): 0.5-0.8 ms median. Oxigr
 
 JS floor (`perf-harness/js-floor.js`, hand-coded lookups on rdf-stores + JSON): IS1 0.015-0.019 ms, IS4 0.008-0.009 ms, IS5 0.007-0.009 ms.
 So plain JS is as fast as Oxigraph for the data access; the gap is engine architecture, not the language.
+
+## Prototypes on branch claude/lucid-meitner-jg4dy5-perf-all (one commit each, toggled with globalThis.__proto flags)
+
+Interleaved HTTP measurements (client medians, sum over LDBC SNB 0.1 IS1/IS4/IS5/IS7, 2 instances each, server on 1 core, Oxigraph 0.5.13 interleaved at the same time):
+
+| Step | Effect |
+|---|---|
+| Endpoint: noLog, noIpc, negCache, fastJson | -14% |
+| Engine: cow, joinConnectedFast, joinPlan, lazyLog, noSkolem | -6.5% (in-process -20%) |
+| skipNoop, groupFast, traqulaFast | -2 to -3% |
+| bgpFast (+ cardinalitySynchronous ordering, selective start) | -10% (in-process evaluate -71%) |
+| fastParse (hand-written parser, falls back to traqula) | -14% (in-process parse -79%) |
+| lazyRight, sharedTypeCache | -15% (mostly IS7) |
+| pruneFast | no measurable effect over HTTP |
+
+Final run: base 53.8 ms, all prototypes 19.1 ms, Oxigraph 14.2 ms (all 1.34x Oxigraph; base 3.8x).
+Per query: IS4/IS5 1.1-1.15x, IS1 1.3x, IS7 1.7x.
+No regressions on IS2, IS3, IS6, IC2, IC6, IC11, IC12 (all 0.86x of base in total).
+
+Caveats: noIpc disables the master's timeouts (needs another timeout design); noSkolem assumes no blank nodes;
+fastJson omits the httpRequests metadata; bgpFast and lazyRight are eager-evaluation heuristics with budgets.

@@ -4,11 +4,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { performance } = require('node:perf_hooks');
 const [ engineDir, dataset, repsArg, flagsJson, ...files ] = process.argv.slice(2);
+require(path.resolve(__dirname, 'patches/traqula-runtime.js'));
 const { QueryEngine } = require(path.resolve(engineDir));
 const engine = new QueryEngine();
 const context = { sources: [ path.resolve(dataset) ] };
 const queries = files.flatMap(f => fs.readFileSync(f, 'utf8').split(/\n\s*\n/u).map(q => q.trim()).filter(Boolean));
-const variants = [ [ 'base', {} ], [ 'flags', JSON.parse(flagsJson) ] ];
+const variants = [ [ 'base', JSON.parse(process.env.BASE_FLAGS ?? '{}') ], [ 'flags', JSON.parse(flagsJson) ] ];
 let current = {};
 const sequential = engine.actorInitQuery.mediatorQueryProcess.bus.actors.find(a => a.parse && a.optimize);
 for (const phase of [ 'parse', 'optimize', 'evaluate' ]) {

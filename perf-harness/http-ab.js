@@ -9,9 +9,11 @@ const variants = Object.entries(JSON.parse(variantsJson));
 const queries = files.flatMap(f => fs.readFileSync(f, 'utf8').split(/\n\s*\n/u).map(q => q.trim()).filter(Boolean)
   .map((query, i) => ({ name: `${path.basename(f, '.sparql')}#${i}`, query })));
 
+// A variant can target another endpoint with an __endpoint key, e.g. to interleave requests to Oxigraph
 async function runOnce(query, flags) {
   const start = performance.now();
-  const response = await fetch(`${endpoint}?query=${encodeURIComponent(query)}`, {
+  const target = flags.__endpoint ?? endpoint;
+  const response = await fetch(`${target}?query=${encodeURIComponent(query)}`, {
     headers: { accept: 'application/sparql-results+json', 'x-proto': JSON.stringify(flags) },
   });
   const body = await response.text();
