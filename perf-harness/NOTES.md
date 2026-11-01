@@ -17,3 +17,19 @@ Rejected by the user: parse cache (unrealistic repetition), not killing the work
 - Idea 3 (skip skolemize wrapper for single source without blank nodes): total -0.19 ms (-5%). Hypermedia unwrap did not take effect (directSourceState not used), untested.
 - Idea 2 (join actors filtered by logical type, no debug-log object with LoggerVoid): total -0.13 ms (-3%). Join tests per query 40 -> 23.
 - Process-level A/B could not resolve these (noise about +-12%); per-phase interleaving in one process could.
+
+## Phase comparison with Oxigraph (LDBC SNB 0.1, warm, one core)
+
+Oxigraph 0.5.13, in-memory store (`perf-harness/oxbench`), medians of 200 reps, ms:
+
+| Query | Parse | Optimize | Execute (parse + optimize + evaluate) | + JSON serialization |
+|---|---|---|---|---|
+| IS1 | 0.04 | 0.13 | 0.29-0.31 | 0.30-0.33 |
+| IS4 | 0.009 | 0.011 | 0.035-0.040 | 0.035 |
+| IS5 | 0.017 | 0.04 | 0.10-0.15 | 0.11-0.16 |
+| IS7 | 0.07-0.11 | 0.19-0.28 | 0.39-0.53 | 0.38-0.54 |
+
+HTTP floor in Node (trivial server, same fetch client): 0.5-0.8 ms median. Oxigraph server round trip: 1.1-1.5 ms.
+
+JS floor (`perf-harness/js-floor.js`, hand-coded lookups on rdf-stores + JSON): IS1 0.015-0.019 ms, IS4 0.008-0.009 ms, IS5 0.007-0.009 ms.
+So plain JS is as fast as Oxigraph for the data access; the gap is engine architecture, not the language.

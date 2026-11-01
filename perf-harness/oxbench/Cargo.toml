@@ -1,0 +1,14 @@
+[package]
+name = "oxbench"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+oxigraph = { version = "0.5", default-features = false }
+spargebra = "0.4"
+sparopt = "0.3"
+spareval = "0.2"
+sparesults = "0.3"
+
+[profile.release]
+debug = 1
