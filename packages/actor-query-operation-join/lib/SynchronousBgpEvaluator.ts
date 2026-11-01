@@ -59,10 +59,14 @@ export class SynchronousBgpEvaluator {
     }
 
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const sourceContext = sourceWrapper.context ? context.merge(sourceWrapper.context) : context;
     const results = this.evaluatePatterns(
-      SynchronousBgpEvaluator.orderPatterns(patterns),
+      SynchronousBgpEvaluator.orderPatterns(
+        patterns,
+        pattern => sourceWrapper.source.cardinalitySynchronous?.(pattern, sourceContext),
+      ),
       sourceWrapper,
-      sourceWrapper.context ? context.merge(sourceWrapper.context) : context,
+      sourceContext,
       new AlgebraFactory(dataFactory),
     );
     if (!results) {
@@ -113,33 +117,57 @@ export class SynchronousBgpEvaluator {
   }
 
   /**
-   * Order patterns greedily: start from the most selective pattern,
-   * and then continue with patterns that share the most bound variables.
+   * Order patterns greedily, based on cardinalities that can be counted cheaply.
+   * The first pattern is the one with the lowest cardinality.
+   * Next, patterns that share a bound variable are preferred, with a bound subject first,
+   * as their lookups are bound to the values of the previous patterns.
    * @param patterns Patterns.
+   * @param count A function to count the matches of a pattern, if possible.
    */
-  public static orderPatterns(patterns: Algebra.Pattern[]): Algebra.Pattern[] {
+  public static orderPatterns(
+    patterns: Algebra.Pattern[],
+    count: (pattern: Algebra.Pattern) => number | undefined,
+  ): Algebra.Pattern[] {
     const remaining = [ ...patterns ];
     const ordered: Algebra.Pattern[] = [];
     const bound = new Set<string>();
-    const score = (pattern: Algebra.Pattern): number => {
-      const weight = (term: RDF.Term, constant: number): number => {
-        if (term.termType === 'Variable') {
-          return bound.has(term.value) ? constant - 1 : 0;
-        }
-        return constant;
-      };
-      return weight(pattern.subject, 8) + weight(pattern.object, 4) + weight(pattern.predicate, 2);
+    const isBound = (term: RDF.Term): boolean => term.termType !== 'Variable' || bound.has(term.value);
+    // Only patterns with at least two constants can be counted without iterating over the store
+    const estimates = new Map<Algebra.Pattern, number>();
+    const estimate = (pattern: Algebra.Pattern): number => {
+      let value = estimates.get(pattern);
+      if (value === undefined) {
+        const constants = [ pattern.subject, pattern.predicate, pattern.object ]
+          .filter(term => term.termType !== 'Variable').length;
+        value = (constants >= 2 ? count(pattern) : undefined) ?? Number.POSITIVE_INFINITY;
+        estimates.set(pattern, value);
+      }
+      return value;
+    };
+    const constantScore = (pattern: Algebra.Pattern): number => (pattern.subject.termType === 'Variable' ? 0 : 4) +
+      (pattern.object.termType === 'Variable' ? 0 : 2) + (pattern.predicate.termType === 'Variable' ? 0 : 1);
+    const boundRank = (pattern: Algebra.Pattern): number => {
+      if (isBound(pattern.subject)) {
+        return 0;
+      }
+      return isBound(pattern.object) ? 1 : 2;
     };
     while (remaining.length > 0) {
-      let best = 0;
-      for (let i = 1; i < remaining.length; i++) {
-        if (score(remaining[i]) > score(remaining[best])) {
-          best = i;
+      const connected = remaining.filter(pattern => algebraUtils.inScopeVariables(pattern)
+        .some(variable => bound.has(variable.value)));
+      const candidates = connected.length > 0 ? connected : remaining;
+      let best = candidates[0];
+      for (const candidate of candidates.slice(1)) {
+        const order = connected.length > 0 ?
+          boundRank(candidate) - boundRank(best) || estimate(candidate) - estimate(best) :
+          estimate(candidate) - estimate(best);
+        if (order < 0 || (order === 0 && constantScore(candidate) > constantScore(best))) {
+          best = candidate;
         }
       }
-      const [ next ] = remaining.splice(best, 1);
-      ordered.push(next);
-      for (const variable of algebraUtils.inScopeVariables(next)) {
+      remaining.splice(remaining.indexOf(best), 1);
+      ordered.push(best);
+      for (const variable of algebraUtils.inScopeVariables(best)) {
         bound.add(variable.value);
       }
     }

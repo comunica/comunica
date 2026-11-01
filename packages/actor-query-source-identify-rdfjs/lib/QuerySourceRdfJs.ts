@@ -326,6 +326,24 @@ export class QuerySourceRdfJs implements IQuerySource {
     );
   }
 
+  public cardinalitySynchronous(operation: Algebra.Operation, context: IActionContext): number | undefined {
+    if (!isKnownOperation(operation, Algebra.Types.PATTERN) || !('countQuads' in this.source) ||
+      !this.source.countQuads || QuerySourceRdfJs.hasQuotedVariables(operation)) {
+      return undefined;
+    }
+    const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
+    const graph = operation.graph.termType === 'DefaultGraph' && unionDefaultGraph ?
+      this.dummyDefaultGraph :
+      operation.graph;
+    const count = this.source.countQuads(
+      QuerySourceRdfJs.nullifyVariables(operation.subject, false),
+      QuerySourceRdfJs.nullifyVariables(operation.predicate, false),
+      QuerySourceRdfJs.nullifyVariables(operation.object, false),
+      QuerySourceRdfJs.nullifyVariables(graph, false),
+    );
+    return typeof count === 'number' ? count : undefined;
+  }
+
   public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
     if (!isKnownOperation(operation, Algebra.Types.PATTERN) || !('getBindings' in this.source) ||
       !this.source.getBindings || QuerySourceRdfJs.hasQuotedVariables(operation)) {

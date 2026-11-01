@@ -122,6 +122,13 @@ export class QuerySourceHypermedia implements IQuerySource {
     return it;
   }
 
+  public cardinalitySynchronous(operation: Algebra.Operation, context: IActionContext): number | undefined {
+    if (!this.directSourceState) {
+      return undefined;
+    }
+    return this.directSourceState.source.cardinalitySynchronous?.(operation, this.getDirectContext(context));
+  }
+
   public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
     if (!this.directSourceState) {
       this.probeDirectSource(context);

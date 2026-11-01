@@ -124,6 +124,17 @@ export interface IQuerySource {
   ) => Bindings[] | undefined;
 
   /**
+   * Prototype: synchronously count the results of the given pattern, ignoring repeated variables.
+   * @param {Algebra.Operation} operation The operation to count.
+   * @param {IActionContext} context      The query context.
+   * @return The number of matching quads, or undefined if it can not be counted synchronously.
+   */
+  cardinalitySynchronous?: (
+    operation: Algebra.Operation,
+    context: IActionContext,
+  ) => number | undefined;
+
+  /**
    * Returns a (possibly lazy) stream that returns all quads matching the operation.
    *
    * This method should only be supported if the selector type returned from `getSelectorShape`

@@ -71,6 +71,14 @@ export class QuerySourceSkolemized implements IQuerySource {
     );
   }
 
+  public cardinalitySynchronous(operation: Algebra.Operation, context: IActionContext): number | undefined {
+    if (!this.innerSource.cardinalitySynchronous || !isKnownOperation(operation, Algebra.Types.PATTERN)) {
+      return undefined;
+    }
+    const operationMapped = deskolemizePattern(context.getSafe(KeysInitQuery.dataFactory), operation, this.sourceId);
+    return operationMapped ? this.innerSource.cardinalitySynchronous(operationMapped, context) : 0;
+  }
+
   public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
     if (!this.innerSource.queryBindingsSynchronous) {
       return undefined;
