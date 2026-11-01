@@ -143,7 +143,8 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
         .filter((actor: any) => LEAN_OPTIMIZERS.has(actor.name.slice(actor.name.indexOf('#') + 1)));
       let handle: IActionOptimizeQueryOperation = { context, operation };
       for (const actor of this.leanOptimizers!) {
-        handle = { ...handle, ...await actor.run(handle) };
+        // eslint-disable-next-line unicorn/no-useless-undefined
+        handle = { ...handle, ...await actor.run(handle, undefined) };
       }
       ({ operation, context } = handle);
     } else {

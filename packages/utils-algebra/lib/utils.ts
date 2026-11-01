@@ -521,6 +521,34 @@ export function withMetadata<T extends Operation>(op: T): T & { metadata: Record
 const operationTypesCache = new WeakMap<Operation, Set<string>>();
 
 /**
+ * Collect the types of the operations and expressions in the given value, without descending into terms or metadata.
+ * @param value An operation, expression, or array of them.
+ * @param found The set to add types to.
+ */
+function collectOperationTypes(value: any, found: Set<string>): void {
+  if (Array.isArray(value)) {
+    for (const element of value) {
+      if (element !== null && typeof element === 'object') {
+        collectOperationTypes(element, found);
+      }
+    }
+    return;
+  }
+  if (typeof value.type !== 'string') {
+    return;
+  }
+  found.add(value.type);
+  for (const key in value) {
+    if (key !== 'metadata') {
+      const child = value[key];
+      if (child !== null && typeof child === 'object' && (Array.isArray(child) || typeof child.type === 'string')) {
+        collectOperationTypes(child, found);
+      }
+    }
+  }
+}
+
+/**
  * Check if any of the given operation types occur in the given operation tree.
  * The types of each operation tree are cached.
  * @param operation An operation tree.
@@ -529,23 +557,9 @@ const operationTypesCache = new WeakMap<Operation, Set<string>>();
 export function hasOperationType(operation: Operation, types: string[]): boolean {
   let present = operationTypesCache.get(operation);
   if (!present) {
-    const found = new Set<string>();
-    const visitors: Record<string, any> = {};
-    for (const type of Object.values(Types)) {
-      visitors[type] = { preVisitor: () => {
-        found.add(type);
-        return {};
-      } };
-    }
-    for (const type of Object.values(TypesComunica)) {
-      visitors[type] = { preVisitor: () => {
-        found.add(type);
-        return {};
-      } };
-    }
-    visitOperation(operation, <any> visitors);
-    operationTypesCache.set(operation, found);
-    present = found;
+    present = new Set<string>();
+    collectOperationTypes(operation, present);
+    operationTypesCache.set(operation, present);
   }
   return types.some(type => present.has(type));
 }
