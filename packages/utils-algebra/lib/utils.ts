@@ -517,3 +517,35 @@ export function withMetadata<T extends Operation>(op: T): T & { metadata: Record
   op.metadata ??= {};
   return <T & { metadata: Record<string, unknown> }> op;
 }
+
+const operationTypesCache = new WeakMap<Operation, Set<string>>();
+
+/**
+ * Check if any of the given operation types occur in the given operation tree.
+ * The types of each operation tree are cached.
+ * @param operation An operation tree.
+ * @param types Operation types.
+ */
+export function hasOperationType(operation: Operation, types: string[]): boolean {
+  let present = operationTypesCache.get(operation);
+  if (!present) {
+    const found = new Set<string>();
+    const visitors: Record<string, any> = {};
+    for (const type of Object.values(Types)) {
+      visitors[type] = { preVisitor: () => {
+        found.add(type);
+        return {};
+      } };
+    }
+    for (const type of Object.values(TypesComunica)) {
+      visitors[type] = { preVisitor: () => {
+        found.add(type);
+        return {};
+      } };
+    }
+    visitOperation(operation, <any> visitors);
+    operationTypesCache.set(operation, found);
+    present = found;
+  }
+  return types.some(type => present.has(type));
+}

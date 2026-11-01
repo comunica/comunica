@@ -25,6 +25,11 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    // Prototype: skip when the operation types this actor acts on are absent
+    if ((<any> globalThis).__proto?.skipNoop &&
+      !algebraUtils.hasOperationType(action.operation, [ Algebra.Types.DISTINCT ])) {
+      return { operation: action.operation, context: action.context };
+    }
     const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 

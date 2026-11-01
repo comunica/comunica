@@ -20,6 +20,11 @@ export class ActorOptimizeQueryOperationSortLimitPushdown extends ActorOptimizeQ
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    // Prototype: skip when the operation types this actor acts on are absent
+    if ((<any> globalThis).__proto?.skipNoop &&
+      !algebraUtils.hasOperationType(action.operation, [ Algebra.Types.ORDER_BY ])) {
+      return { operation: action.operation, context: action.context };
+    }
     const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.SLICE]: {
         transform: (slice: Algebra.Slice) => {

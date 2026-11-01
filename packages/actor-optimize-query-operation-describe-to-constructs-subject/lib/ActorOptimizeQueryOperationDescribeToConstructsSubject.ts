@@ -38,6 +38,11 @@ export class ActorOptimizeQueryOperationDescribeToConstructsSubject extends Acto
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    // Prototype: skip when the operation types this actor acts on are absent
+    if ((<any> globalThis).__proto?.skipNoop &&
+      !algebraUtils.hasOperationType(action.operation, [ Algebra.Types.DESCRIBE ])) {
+      return { operation: action.operation, context: action.context };
+    }
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
 
