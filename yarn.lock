@@ -1520,6 +1520,20 @@
     sparql-benchmark-runner "^5.1.0"
     sparql-query-parameter-instantiator "^2.8.0"
 
+"@jbr-experiment/ldbc-snb@^6.3.0":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@jbr-experiment/ldbc-snb/-/ldbc-snb-6.3.0.tgz#bc43985eee209dce921531342458288ca134c831"
+  integrity sha512-0Usp6Xd2hAwzXKRTDNURhaA0Q+fXGfrWH91G5a8NFShF9ByGmdynqQFXZweIZ24tiTkDM8Hz9xMUR+7sx/J9qA==
+  dependencies:
+    "@rdfjs/types" "*"
+    "@types/fs-extra" "^11.0.0"
+    "@types/n3" "^1.26.1"
+    "@types/yargs" "^17.0.0"
+    fs-extra "^11.0.0"
+    n3 "^1.26.0"
+    sparql-benchmark-runner "^5.1.0"
+    sparql-query-parameter-instantiator "^2.8.0"
+
 "@jbr-experiment/sparql-custom@^6.0.0":
   version "6.0.0"
   resolved "https://registry.yarnpkg.com/@jbr-experiment/sparql-custom/-/sparql-custom-6.0.0.tgz#814cd5c86a9ee2fcf2b059ce5d1e6c6a795b183c"
