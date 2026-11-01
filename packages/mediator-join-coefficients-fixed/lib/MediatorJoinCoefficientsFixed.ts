@@ -29,6 +29,26 @@ IActorRdfJoinTestSideData
     this.ioWeight = args.ioWeight;
   }
 
+  public override publish(action: IActionRdfJoin): IActorReply<
+    ActorRdfJoin,
+IActionRdfJoin,
+IMediatorTypeJoinCoefficients,
+IQueryOperationResult,
+IActorRdfJoinTestSideData
+>[] {
+    // Prototype: only test join actors of the matching logical type
+    if ((<any> globalThis).__proto?.joinPlan) {
+      const actors: ActorRdfJoin[] = (<any> this.bus).actors;
+      const replies = actors
+        .filter(actor => actor.logicalType === action.type)
+        .map(actor => ({ actor, reply: actor.test(action) }));
+      if (replies.length > 0) {
+        return replies;
+      }
+    }
+    return super.publish(action);
+  }
+
   protected async mediateWith(
     action: IActionRdfJoin,
     testResults: IActorReply<
@@ -101,7 +121,8 @@ IActorRdfJoinTestSideData
     const bestActor = testResults[minIndex].actor;
 
     // Emit calculations in logger
-    if (bestActor.includeInLogs) {
+    const logger = Actor.getContextLogger(action.context);
+    if (bestActor.includeInLogs && logger && Actor.isLogLevelEnabled(logger, 'debug')) {
       Actor.getContextLogger(action.context)?.debug(`Determined physical join operator '${bestActor.logicalType}-${bestActor.physicalName}'`, {
         entries: action.entries.length,
         variables: await Promise.all(action.entries

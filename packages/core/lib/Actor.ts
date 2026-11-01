@@ -104,16 +104,33 @@ implements IActorArgs<I, T, O, TS> {
     return dataActual;
   }
 
+  /**
+   * Check if the given logger would emit messages of the given level.
+   * Prototype: only takes effect with the lazyLog prototype flag.
+   * @param logger A logger.
+   * @param level A logging level.
+   */
+  public static isLogLevelEnabled(logger: Logger, level: string): boolean {
+    if (!(<any> globalThis).__proto?.lazyLog) {
+      return true;
+    }
+    if (logger.constructor.name === 'LoggerVoid') {
+      return false;
+    }
+    const minimum: number | undefined = (<any> logger).levelOrdinal;
+    return minimum === undefined || (<typeof Logger> logger.constructor).getLevelOrdinal(level) >= minimum;
+  }
+
   protected logTrace(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
-    if (logger) {
+    if (logger && Actor.isLogLevelEnabled(logger, 'trace')) {
       logger.trace(message, this.getDefaultLogData(context, data));
     }
   }
 
   protected logDebug(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
-    if (logger) {
+    if (logger && Actor.isLogLevelEnabled(logger, 'debug')) {
       logger.debug(message, this.getDefaultLogData(context, data));
     }
   }
