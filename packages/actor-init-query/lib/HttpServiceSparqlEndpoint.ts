@@ -11,7 +11,7 @@ import type { TLSSocket } from 'node:tls';
 import * as url from 'node:url';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
+import type { ICliArgsHandler, QueryBindings, QueryQuads, QueryType } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraTransformer } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -70,6 +70,7 @@ export class HttpServiceSparqlEndpoint {
   public readonly timeout: number;
   public readonly port: number;
   public readonly workers: number;
+  private readonly negotiationCache = new Map<string, string>();
 
   public readonly freshWorkerPerQuery: boolean;
   public readonly contextOverride: boolean;
@@ -374,12 +375,23 @@ export class HttpServiceSparqlEndpoint {
     request: http.IncomingMessage,
     response: http.ServerResponse,
   ): Promise<void> {
-    const negotiated = require('negotiate').choose(variants, request)
-      .sort((first: any, second: any) => second.qts - first.qts);
-    const variant: any = request.headers.accept ? negotiated[0] : null;
-    // Require qts strictly larger than 2, as 1 and 2 respectively allow * and */* matching.
-    // For qts 0, 1, and 2, we fallback to our built-in media type defaults, for which we pass null.
-    const mediaType: string = variant && variant.qts > 2 ? variant.type : null;
+    // Prototype: cache the negotiated media type per accept header
+    const negotiationKey = request.headers.accept;
+    let mediaType: string;
+    if ((<any> globalThis).__proto?.negCache && negotiationKey !== undefined &&
+      this.negotiationCache.has(negotiationKey)) {
+      mediaType = this.negotiationCache.get(negotiationKey)!;
+    } else {
+      const negotiated = require('negotiate').choose(variants, request)
+        .sort((first: any, second: any) => second.qts - first.qts);
+      const variant: any = request.headers.accept ? negotiated[0] : null;
+      // Require qts strictly larger than 2, as 1 and 2 respectively allow * and */* matching.
+      // For qts 0, 1, and 2, we fallback to our built-in media type defaults, for which we pass null.
+      mediaType = variant && variant.qts > 2 ? variant.type : null;
+      if (negotiationKey !== undefined && this.negotiationCache.size < 100) {
+        this.negotiationCache.set(negotiationKey, mediaType);
+      }
+    }
 
     // Verify the path
     // eslint-disable-next-line node/no-deprecated-api
@@ -637,6 +649,54 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Serialize a bindings result into a SPARQL JSON string.
+   * Prototype: rejects for terms it does not support, so the regular serializer can be used instead.
+   * @param result A bindings result.
+   */
+  public static async serializeSparqlJson(result: QueryBindings): Promise<string> {
+    const variables = (await result.metadata()).variables.map(variable => variable.value);
+    const stream = await result.execute();
+    const bindings: RDF.Bindings[] = [];
+    await new Promise<void>((resolve, reject) => {
+      stream.on('data', (binding: RDF.Bindings) => bindings.push(binding));
+      stream.on('error', reject);
+      stream.on('end', resolve);
+    });
+    const rows: string[] = [];
+    for (const binding of bindings) {
+      const row: Record<string, any> = {};
+      for (const [ key, term ] of binding) {
+        row[key.value] = HttpServiceSparqlEndpoint.termToSparqlJson(term);
+      }
+      rows.push(JSON.stringify(row));
+    }
+    return `{"head": ${JSON.stringify({ vars: variables })},\n"results": { "bindings": [\n${rows.join(',\n')}\n]}}\n`;
+  }
+
+  /**
+   * Convert a term into its SPARQL JSON representation.
+   * @param term An RDF term.
+   */
+  public static termToSparqlJson(term: RDF.Term): Record<string, string> {
+    switch (term.termType) {
+      case 'NamedNode':
+        return { value: term.value, type: 'uri' };
+      case 'BlankNode':
+        return { value: term.value, type: 'bnode' };
+      case 'Literal':
+        if (term.language) {
+          return { value: term.value, type: 'literal', 'xml:lang': term.language };
+        }
+        if (term.datatype.value === 'http://www.w3.org/2001/XMLSchema#string') {
+          return { value: term.value, type: 'literal' };
+        }
+        return { value: term.value, type: 'literal', datatype: term.datatype.value };
+      default:
+        throw new Error(`Unsupported term type ${term.termType}`);
+    }
+  }
+
+  /**
    * Writes the result of the given SPARQL query.
    * @param {QueryEngineBase} engine A SPARQL engine.
    * @param {module:stream.internal.Writable} stdout Output stream.
@@ -670,18 +730,25 @@ export class HttpServiceSparqlEndpoint {
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
     }
 
+    const proto = (<any> globalThis).__proto ?? {};
+
     // Log the start of the query execution
-    stdout.write(`[200] ${request.method} to ${request.url}\n`);
-    stdout.write(`      Requested media type: ${mediaType}\n`);
-    stdout.write(`      Received ${queryBody.type} query: ${queryBody.value}\n`);
+    if (!proto.noLog) {
+      stdout.write(`[200] ${request.method} to ${request.url}\n`);
+      stdout.write(`      Requested media type: ${mediaType}\n`);
+      stdout.write(`      Received ${queryBody.type} query: ${queryBody.value}\n`);
+    }
 
-    // Send message to master process to indicate the start of an execution
-    process.send?.({ type: 'start', queryId });
+    // Prototype: noIpc disables the master's query timeouts, for measuring the cost of the messages
+    if (!proto.noIpc) {
+      // Send message to master process to indicate the start of an execution
+      process.send?.({ type: 'start', queryId });
 
-    // Send message to master process to indicate the end of an execution.
-    response.on('close', () => {
-      process.send?.({ type: 'end', queryId });
-    });
+      // Send message to master process to indicate the end of an execution.
+      response.on('close', () => {
+        process.send?.({ type: 'end', queryId });
+      });
+    }
 
     // Determine context
     let context = {
@@ -740,9 +807,23 @@ export class HttpServiceSparqlEndpoint {
       }
     }
 
+    // Prototype: serialize SPARQL JSON results directly into a single response body
+    if (proto.fastJson && !headOnly && result.resultType === 'bindings' &&
+      mediaType === 'application/sparql-results+json') {
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      const body = await HttpServiceSparqlEndpoint.serializeSparqlJson(result).catch(() => undefined);
+      if (body !== undefined) {
+        response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+        response.end(body);
+        return;
+      }
+    }
+
     // Write header of response
     response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-    stdout.write(`      Resolved to result media type: ${mediaType}\n`);
+    if (!proto.noLog) {
+      stdout.write(`      Resolved to result media type: ${mediaType}\n`);
+    }
 
     // Stop further processing for HEAD requests
     if (headOnly) {
