@@ -165,6 +165,17 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
         .toFailTest(`Actor actor requires a right entry that is an operation over a source that supports synchronous lookups`);
     });
 
+    it('should fail on a right entry that is an arbitrary length path', async() => {
+      const joinEntries = entries();
+      const link = assignOperationSource(AF.createLink(DF.namedNode('ex:rating')), source);
+      joinEntries[1] = entry(
+        AF.createPath(term('?review'), AF.createZeroOrMorePath(link), term('?rating')),
+        metadata(1, [ 'review', 'rating' ]),
+      );
+      await expect(actor.test({ type: 'optional', entries: joinEntries, context })).resolves
+        .toFailTest(`Actor actor can not look up arbitrary length paths`);
+    });
+
     it('should fail on join expressions', async() => {
       await expect(actor.test({
         type: 'optional',
