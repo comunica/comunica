@@ -245,6 +245,14 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
       return true;
     }
 
+    // Prototype: count synchronously if the source supports it, which avoids setting up a bindings stream
+    if ((<any> globalThis).__proto?.pruneFast && source.source.cardinalitySynchronous) {
+      const count = source.source.cardinalitySynchronous(input, mergedContext);
+      if (count !== undefined) {
+        return count > 0;
+      }
+    }
+
     // Prefer ASK over COUNT when instructed to, and the source allows it
     if (this.useAskIfSupported) {
       const askOperation = algebraFactory.createAsk(input);
