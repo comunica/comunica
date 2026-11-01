@@ -1,6 +1,6 @@
 # Benchmark LDBC SNB BI File
 
-This internal package benchmarks Comunica File using the [LDBC Social Network Benchmark (Business Intelligence)](https://ldbcouncil.org/benchmarks/snb/), on the same scale 0.1 dataset as `benchmark-ldbc-snb-file`.
+This internal package benchmarks Comunica File using the [LDBC Social Network Benchmark (Business Intelligence)](https://ldbcouncil.org/benchmarks/snb/).
 
 Compare your current version of Comunica locally with the latest published release by running `npm run performance` from within this package.
 This will output a file called `plot_queries_data.svg` that visualizes the performance differences.
