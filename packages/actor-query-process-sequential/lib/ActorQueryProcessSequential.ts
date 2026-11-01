@@ -16,13 +16,15 @@ import type {
 import {
   ActorQueryProcess,
 } from '@comunica/bus-query-process';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type {
   ComunicaDataFactory,
   IActionContext,
+  IActionContextKey,
   IQueryOperationResult,
+  ITermComparator,
   QueryFormatType,
 } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
@@ -31,6 +33,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { LeanBgpEvaluator } from './LeanBgpEvaluator';
+import { LeanEvaluator } from './LeanEvaluator';
 
 /**
  * A comunica Sequential Query Process Actor.
@@ -60,6 +63,11 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
   private readonly leanEvaluator = new LeanBgpEvaluator();
+  private readonly leanAlgebraEvaluator = new LeanEvaluator();
+  private readonly leanComparators = new WeakMap<object, Map<number, ITermComparator>>();
+  private leanTermComparatorFactory: { mediate: (action: { context: IActionContext }) => Promise<ITermComparator> } |
+    undefined;
+
   private leanSourceIdentifier: { run: (action: IActionOptimizeQueryOperation, sideData: undefined) => Promise<any> } |
     undefined;
 
@@ -86,8 +94,24 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     // Run all query processing steps in sequence
     let { operation, context } = await this.parse(action.query, action.context);
 
-    // Prototype: evaluate simple queries over basic graph patterns without the regular pipeline
+    // Prototype: evaluate selective queries without the regular pipeline
     const proto = (<any> globalThis).__proto;
+    if (proto?.leanAlgebra && proto.noSkolem && (<any> operation)[Symbol.for('comunica.prototype.fastParsed')] &&
+      LeanEvaluator.isSupported(operation)) {
+      this.leanSourceIdentifier ??= (<any> this.mediatorOptimizeQueryOperation).bus.actors
+        .find((actor: any) => actor.name.endsWith('#query-source-identify'));
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      const identified = await this.leanSourceIdentifier!.run({ operation, context }, undefined);
+      let comparator: ITermComparator | undefined;
+      if (LeanEvaluator.needsComparator(operation)) {
+        comparator = await this.getLeanComparator(identified.context);
+      }
+      const result = this.leanAlgebraEvaluator.evaluate(operation, identified.context, comparator);
+      if (result) {
+        result.context = identified.context;
+        return { result };
+      }
+    }
     if (proto?.leanBgp && proto.noSkolem && (<any> operation)[Symbol.for('comunica.prototype.fastParsed')] &&
       LeanBgpEvaluator.getPlan(operation)) {
       this.leanSourceIdentifier ??= (<any> this.mediatorOptimizeQueryOperation).bus.actors
@@ -105,6 +129,44 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     const output = await this.evaluate(operation, context);
 
     return { result: output };
+  }
+
+  /**
+   * Prototype: get a term comparator for sorting, reused across queries when the context does not configure it.
+   */
+  public async getLeanComparator(context: IActionContext): Promise<ITermComparator | undefined> {
+    this.leanTermComparatorFactory ??= (<any> this.mediatorQueryOperation).bus.actors
+      .find((actor: any) => actor.mediatorTermComparatorFactory)?.mediatorTermComparatorFactory;
+    // Comparisons only depend on these entries, and the implicit time zone of the query timestamp
+    const configured = (<IActionContextKey<unknown>[]> [
+      KeysInitQuery.extensionFunctions,
+      KeysInitQuery.extensionFunctionCreator,
+      KeysExpressionEvaluator.extensionFunctionCreator,
+      KeysExpressionEvaluator.superTypeProvider,
+      KeysExpressionEvaluator.defaultTimeZone,
+      KeysExpressionEvaluator.nonLexicalComparison,
+      KeysExpressionEvaluator.fullTermComparison,
+    ]).some(key => context.has(key));
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const timestamp: Date | undefined = context.get(KeysInitQuery.queryTimestamp);
+    if (configured || !timestamp) {
+      return this.leanTermComparatorFactory?.mediate({ context });
+    }
+    // A new data factory is created per query by default, so comparators are cached per data factory class
+    let comparators = this.leanComparators.get(dataFactory.constructor);
+    if (!comparators) {
+      comparators = new Map();
+      this.leanComparators.set(dataFactory.constructor, comparators);
+    }
+    const key = timestamp.getTimezoneOffset();
+    let comparator = comparators.get(key);
+    if (!comparator) {
+      comparator = await this.leanTermComparatorFactory?.mediate({ context });
+      if (comparator) {
+        comparators.set(key, comparator);
+      }
+    }
+    return comparator;
   }
 
   public async parse(query: QueryFormatType, context: IActionContext): Promise<IQueryProcessSequentialOutput> {

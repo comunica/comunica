@@ -36,6 +36,10 @@ async function consume(query) {
   const start = performance.now();
   const bindings = await (await engine.queryBindings(query, context)).toArray();
   current.total = performance.now() - start;
+  // Phases skipped by a lean path count as 0
+  for (const phase of [ 'parse', 'optimize', 'evaluate' ]) {
+    current[phase] ??= 0;
+  }
   current.consume = current.total - current.parse - current.optimize - current.evaluate;
   return bindings.length;
 }
