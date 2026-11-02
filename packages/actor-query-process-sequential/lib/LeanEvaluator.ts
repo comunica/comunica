@@ -280,7 +280,7 @@ export class LeanEvaluator {
       case TYPE_PATH:
         return LeanEvaluator.compileGroup(operation);
       default:
-        return;
+        return undefined;
     }
   }
 
