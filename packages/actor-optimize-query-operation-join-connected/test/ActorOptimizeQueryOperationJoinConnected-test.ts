@@ -1,6 +1,7 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationJoinConnected } from '../lib/ActorOptimizeQueryOperationJoinConnected';
@@ -119,7 +120,7 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
       });
 
       it('should keep a connected join in its original order with empty metadata', () => {
-        const op = factory.createJoin([
+        const op: Algebra.Join = factory.createJoin([
           factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
           factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
         ]);
@@ -128,7 +129,7 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
       });
 
       it('should create a new join for a connected join with metadata', () => {
-        const op = factory.createJoin([
+        const op: Algebra.Join = factory.createJoin([
           factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
           factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
         ]);
