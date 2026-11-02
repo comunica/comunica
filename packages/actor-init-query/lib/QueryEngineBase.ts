@@ -1,3 +1,4 @@
+import type { IActorQueryProcessOutput } from '@comunica/bus-query-process';
 import type { IActionSparqlSerialize, IActorQueryResultSerializeOutput } from '@comunica/bus-query-result-serialize';
 import { KeysCore, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, ActionContextKey } from '@comunica/core';
@@ -40,6 +41,7 @@ export class QueryEngineBase<
 >
 implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
   private readonly actorInitQuery: ActorInitQueryBase;
+  private leanQueryProcess: any;
 
   public constructor(actorInitQuery: ActorInitQueryBase) {
     this.actorInitQuery = actorInitQuery;
@@ -148,7 +150,20 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     }
 
     // Invoke query process
-    const { result } = await this.actorInitQuery.mediatorQueryProcess.mediate({ query, context: actionContext });
+    // Prototype: without explain mode, the sequential query process is the only one the race mediator can select
+    let result: IActorQueryProcessOutput['result'] | undefined;
+    if ((<any> globalThis).__proto?.leanMediators && !actionContext.has(KeysInitQuery.explain)) {
+      const bus = (<any> this.actorInitQuery.mediatorQueryProcess).bus;
+      this.leanQueryProcess ??= bus.actors.find((actor: any) => actor.parse && actor.optimize);
+      if (this.leanQueryProcess && bus.observers?.length === 0) {
+        const action = { query, context: actionContext };
+        const test = await this.leanQueryProcess.test(action);
+        if (test.isPassed()) {
+          result = (await this.leanQueryProcess.run(action, test.getSideData())).result;
+        }
+      }
+    }
+    result ??= (await this.actorInitQuery.mediatorQueryProcess.mediate({ query, context: actionContext })).result;
     if ('explain' in result) {
       return result;
     }

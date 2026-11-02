@@ -40,6 +40,22 @@ const count = Number(process.env.PROFILE_COUNT ?? 0);
 const handleRequest = endpoint.handleRequest;
 endpoint.handleRequest = async function(...args) {
   const index = requests++;
+  // HEAP_PROFILE=<file> samples allocations that are still live at the end of the window
+  if (process.env.HEAP_PROFILE && index === from) {
+    const inspector = require('node:inspector/promises');
+    session = new inspector.Session();
+    session.connect();
+    await session.post('HeapProfiler.enable');
+    await session.post('HeapProfiler.startSampling', { samplingInterval: 1024 });
+  }
+  if (process.env.HEAP_PROFILE && session && index === from + count) {
+    const { profile } = await session.post('HeapProfiler.getSamplingProfile');
+    require('node:fs').writeFileSync(process.env.HEAP_PROFILE, JSON.stringify(profile));
+    await session.post('HeapProfiler.stopSampling');
+    process.stderr.write('HEAP_PROFILE written\n');
+    session.disconnect();
+    session = undefined;
+  }
   if (process.env.PROFILE && index === from) {
     const inspector = require('node:inspector/promises');
     session = new inspector.Session();
@@ -55,6 +71,11 @@ endpoint.handleRequest = async function(...args) {
     process.stderr.write(`PROFILE written: ${count} requests in ${(performance.now() - globalThis.__profileStart).toFixed(0)} ms\n`);
     session.disconnect();
     session = undefined;
+  }
+  // MEM_EVERY=n prints the heap after full GCs every n requests (needs --expose-gc)
+  if (process.env.MEM_EVERY && index % Number(process.env.MEM_EVERY) === 0) {
+    globalThis.gc();
+    process.stderr.write(`MEM requests ${index} heapUsed ${(process.memoryUsage().heapUsed / 1e6).toFixed(1)} MB\n`);
   }
   return handleRequest.apply(this, args);
 };

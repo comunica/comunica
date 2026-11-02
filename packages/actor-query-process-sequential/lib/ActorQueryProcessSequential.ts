@@ -5,7 +5,7 @@ import type {
   MediatorOptimizeQueryOperation,
 } from '@comunica/bus-optimize-query-operation';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
-import type { MediatorQueryParse } from '@comunica/bus-query-parse';
+import type { IActionQueryParse, IActorQueryParseOutput, MediatorQueryParse } from '@comunica/bus-query-parse';
 import type {
   IActionQueryProcess,
   IActorQueryProcessOutput,
@@ -67,6 +67,7 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   private readonly leanEvaluator = new LeanBgpEvaluator();
   private readonly leanAlgebraEvaluator = new LeanEvaluator();
   private readonly leanComparators = new WeakMap<object, Map<number, ITermComparator>>();
+  private leanSparqlParser: any;
   private leanTermComparatorFactory: { mediate: (action: { context: IActionContext }) => Promise<ITermComparator> } |
     undefined;
 
@@ -131,6 +132,50 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
   }
 
   /**
+   * Prototype: preprocess the context like the pipeline mediator, by calling its actors directly.
+   * Only applies when the mediator neither orders nor filters actors, and none of the actors has observers.
+   */
+  public async leanPreprocess(context: IActionContext): Promise<IActionContext> {
+    const mediator = <any> this.mediatorContextPreprocess;
+    const action = { context, initialize: true };
+    if (mediator.order || mediator.filterFailures || mediator.bus.observers?.length > 0) {
+      return (await this.mediatorContextPreprocess.mediate(action)).context;
+    }
+    // Like the mediator, all actors are tested on the original action, and then run in sequence
+    const actors: any[] = mediator.bus.actors;
+    const sideData: unknown[] = [];
+    for (const actor of actors) {
+      const test = await actor.test(action);
+      if (test.isFailed()) {
+        return (await this.mediatorContextPreprocess.mediate(action)).context;
+      }
+      sideData.push(test.getSideData());
+    }
+    let handle: { context: IActionContext; initialize?: boolean } = action;
+    for (const [ index, actor ] of actors.entries()) {
+      handle = { ...handle, ...await actor.run(handle, sideData[index]) };
+    }
+    return handle.context;
+  }
+
+  /**
+   * Prototype: parse with the SPARQL parse actor directly, which is the only one the race mediator can select
+   * for SPARQL queries.
+   */
+  public async leanParse(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
+    this.leanSparqlParser ??= (<any> this.mediatorQueryParse).bus.actors
+      .find((actor: any) => actor.name.endsWith('#sparql'));
+    if (this.leanSparqlParser && (!action.queryFormat || action.queryFormat.language === 'sparql') &&
+      (<any> this.mediatorQueryParse).bus.observers?.length === 0) {
+      const test = await this.leanSparqlParser.test(action);
+      if (test.isPassed()) {
+        return this.leanSparqlParser.run(action, test.getSideData());
+      }
+    }
+    return this.mediatorQueryParse.mediate(action);
+  }
+
+  /**
    * Prototype: identify the query sources like the source identification actor,
    * without its handling of SERVICE clauses, which queries from the fast parser do not have.
    */
@@ -191,7 +236,9 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
 
   public async parse(query: QueryFormatType, context: IActionContext): Promise<IQueryProcessSequentialOutput> {
     // Pre-processing the context
-    context = (await this.mediatorContextPreprocess.mediate({ context, initialize: true })).context;
+    context = (<any> globalThis).__proto?.leanMediators ?
+      await this.leanPreprocess(context) :
+        (await this.mediatorContextPreprocess.mediate({ context, initialize: true })).context;
 
     // Parse query
     let operation: Algebra.Operation;
@@ -201,7 +248,9 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
 
       const baseIRI: string | undefined = context.get(KeysInitQuery.baseIRI);
       const queryFormat: RDF.QueryFormat = context.get(KeysInitQuery.queryFormat)!;
-      const queryParseOutput = await this.mediatorQueryParse.mediate({ context, query, queryFormat, baseIRI });
+      const queryParseOutput = (<any> globalThis).__proto?.leanMediators ?
+        await this.leanParse({ context, query, queryFormat, baseIRI }) :
+        await this.mediatorQueryParse.mediate({ context, query, queryFormat, baseIRI });
       operation = queryParseOutput.operation;
       // Update the baseIRI in the context if the query modified it.
       if (queryParseOutput.baseIRI) {
