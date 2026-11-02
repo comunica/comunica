@@ -274,8 +274,13 @@ export class LeanEvaluator {
           .filter(variable => inputs.every(input => input.certain.has(variable))));
         return { kind: 'union', inputs, variables, certain };
       }
-      default:
+      case TYPE_BGP:
+      case TYPE_JOIN:
+      case TYPE_PATTERN:
+      case TYPE_PATH:
         return LeanEvaluator.compileGroup(operation);
+      default:
+        return;
     }
   }
 

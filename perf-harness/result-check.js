@@ -9,7 +9,14 @@ const queries = files.flatMap(f => fs.readFileSync(f, 'utf8').split(/\n\s*\n/u).
   .map((q, i) => [ `${path.basename(f, '.sparql')}#${i}`, q ]));
 // ORDERED=1 also compares the order of results of queries with ORDER BY
 const run = async(q) => {
-  const rows = (await (await engine.queryBindings(q, context)).toArray())
+  let bindings;
+  try {
+    bindings = await (await engine.queryBindings(q, context)).toArray();
+  } catch (error) {
+    // Errors count as results, so variants must fail alike
+    return `ERROR ${error.message}`;
+  }
+  const rows = bindings
     .map(b => JSON.stringify([ ...b ].map(([ k, v ]) => [ k.value, v.termType, v.value, v.datatype?.value, v.language ])
       .sort((x, y) => x[0].localeCompare(y[0]))));
   return JSON.stringify(process.env.ORDERED && /ORDER BY/iu.test(q) ? rows : rows.sort());
