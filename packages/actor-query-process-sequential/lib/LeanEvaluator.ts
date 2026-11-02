@@ -108,7 +108,7 @@ interface IGroupNode extends IPlanNodeBase {
   /**
    * Evaluation orders of the items by the variables that are bound before.
    */
-  orders: Map<string, IItem[]>;
+  orders: Map<string, IOrder>;
 }
 
 interface ILeftJoinNode extends IPlanNodeBase {
@@ -131,6 +131,17 @@ interface IUnionNode extends IPlanNodeBase {
 }
 
 type IPlanNode = IGroupNode | ILeftJoinNode | IExtendNode | IUnionNode;
+
+/**
+ * An evaluation order of the items of a group.
+ */
+interface IOrder {
+  items: IItem[];
+  /**
+   * Per position, if all quads of the subject should be read at once, as several lookups on it follow.
+   */
+  stars: boolean[];
+}
 
 /**
  * A query that can be evaluated by the lean evaluator.
@@ -168,6 +179,10 @@ export class LeanEvaluator {
    * The maximum number of quads of a subject to read at once for star patterns.
    */
   public static readonly MAX_SUBJECT_QUADS = 256;
+  /**
+   * The assumed number of matches of a pattern that is only joined on its object.
+   */
+  public static readonly FANOUT_ESTIMATE = 64;
 
   public constructor(
     private readonly maxWork = 200_000,
@@ -638,7 +653,8 @@ export class LeanEvaluator {
    * Rows are extended in place and restored after each nested loop, and only copied for results.
    */
   public evaluateGroup(node: IGroupNode, row: Row, state: IState): Row[] {
-    const ordered = this.orderItems(node, row, state);
+    const order = this.orderItems(node, row, state);
+    const ordered = order.items;
     const rows: Row[] = [];
     const step = (index: number, current: Row): void => {
       if (index === ordered.length) {
@@ -673,7 +689,7 @@ export class LeanEvaluator {
         const resolvedPredicate = LeanEvaluator.resolve(predicate, current);
         const quads = reads && resolvedPredicate === predicate ?
           reads[predicateIndex] :
-          this.lookup(item, subject, resolvedPredicate, object, state);
+          this.lookup(order.stars[index], subject, resolvedPredicate, object, state);
         for (const quad of quads) {
           if (LeanEvaluator.assign(current, subject, quad.subject, assigned) &&
             LeanEvaluator.assign(current, resolvedPredicate, quad.predicate, assigned) &&
@@ -791,15 +807,44 @@ export class LeanEvaluator {
    * Order items greedily: start from the item with the lowest cardinality,
    * then prefer items that share a bound variable, with a bound subject first.
    */
-  public orderItems(node: IGroupNode, row: Row, state: IState): IItem[] {
+  public orderItems(node: IGroupNode, row: Row, state: IState): IOrder {
     // The order only depends on which variables are bound
     const boundKey = Object.keys(row).join(' ');
-    let ordered = node.orders.get(boundKey);
-    if (!ordered) {
-      ordered = this.computeOrder(node.items, row, state);
-      node.orders.set(boundKey, ordered);
+    let order = node.orders.get(boundKey);
+    if (!order) {
+      const items = this.computeOrder(node.items, row, state);
+      order = { items, stars: LeanEvaluator.computeStars(items, row) };
+      node.orders.set(boundKey, order);
     }
-    return ordered;
+    return order;
+  }
+
+  /**
+   * Determine for each position in an order if all quads of the subject should be read at once,
+   * which is when the subject is bound there, and at least three lookups on it follow, including this one.
+   * Reading a subject costs one index seek and iterating over all its quads, while each lookup costs a seek.
+   */
+  public static computeStars(items: IItem[], row: Row): boolean[] {
+    const bound = new Set(Object.keys(row));
+    const stars: boolean[] = [];
+    for (const [ index, item ] of items.entries()) {
+      let star = false;
+      if (item.kind === 'pattern' && item.star &&
+        (item.subject.termType !== 'Variable' || bound.has(item.subject.value))) {
+        let lookups = 0;
+        for (const other of items.slice(index)) {
+          if (other.kind === 'pattern' && other.star && other.subject.equals(item.subject)) {
+            lookups += other.predicates.length;
+          }
+        }
+        star = lookups >= 3;
+      }
+      stars.push(star);
+      for (const variable of item.kind === 'node' ? item.node.certain : item.variables) {
+        bound.add(variable);
+      }
+    }
+    return stars;
   }
 
   private computeOrder(items: IItem[], row: Row, state: IState): IItem[] {
@@ -822,8 +867,15 @@ export class LeanEvaluator {
       }
       let best: IItem | undefined;
       let bestRank: [number, number] = [ 0, 0 ];
+      let bestUnconnected: IItem | undefined;
+      let bestUnconnectedCount = Number.POSITIVE_INFINITY;
       for (const candidate of remaining) {
         if (connectedCount > 0 && !candidate.variables.some(variable => bound.has(variable))) {
+          const count = this.rank(candidate, bound, state)[1];
+          if (count < bestUnconnectedCount) {
+            bestUnconnected = candidate;
+            bestUnconnectedCount = count;
+          }
           continue;
         }
         const rank = this.rank(candidate, bound, state);
@@ -834,6 +886,12 @@ export class LeanEvaluator {
           best = candidate;
           bestRank = rank;
         }
+      }
+      // A connected item that is only joined on a variable object can fan out widely,
+      // so a small unconnected pattern goes first, which makes the connected item a check
+      if (bestUnconnected && bestRank[0] > 0 && bestRank[1] > LeanEvaluator.FANOUT_ESTIMATE &&
+        bestUnconnectedCount <= LeanEvaluator.FANOUT_ESTIMATE) {
+        best = bestUnconnected;
       }
       if (connectedCount === 0 && bestRank[1] > this.maxStartCardinality) {
         throw new FallbackError('Expensive start');
@@ -933,7 +991,7 @@ export class LeanEvaluator {
     let total = 0;
     for (const predicate of item.predicates) {
       const quads: RDF.Quad[] = [];
-      for (const quad of this.lookup(item, item.subject, predicate, item.object, state)) {
+      for (const quad of this.lookup(item.star, item.subject, predicate, item.object, state)) {
         if (++total > this.maxStartCardinality) {
           return;
         }
@@ -951,13 +1009,17 @@ export class LeanEvaluator {
    * Look up the quads of a pattern, reading all quads of the subject at once for star patterns,
    * as one index seek is much more expensive than iterating over a few quads.
    */
-  private lookup(item: IPatternItem, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, state: IState):
+  private lookup(star: boolean, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, state: IState):
   Iterable<RDF.Quad> {
-    if (!item.star || subject.termType === 'Variable' || predicate.termType === 'Variable') {
+    if (subject.termType === 'Variable' || predicate.termType === 'Variable') {
       return this.readQuads(subject, predicate, object, state);
     }
     const key = LeanEvaluator.termKey(subject);
     let byPredicate = state.subjects.get(key);
+    // Subjects that were read already are reused, others are only read at once for stars
+    if (byPredicate === undefined && !star) {
+      return this.readQuads(subject, predicate, object, state);
+    }
     if (byPredicate === undefined) {
       byPredicate = new Map();
       let count = 0;
