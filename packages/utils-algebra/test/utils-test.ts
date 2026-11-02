@@ -93,23 +93,15 @@ describe('algebraTransformer', () => {
     expect(countNops(algebraTransformer(), operation)).toBe(2);
   });
 
-  it('should not traverse the terms of the operation types defined by Comunica.', () => {
-    const nodes = AF.createNodes(DF.namedNode('ex:g'), DF.variable('v'));
-    const nodesCopy = <any> algebraTransformer().transformNode(nodes, {});
-    expect(nodesCopy).not.toBe(nodes);
-    expect(nodesCopy.graph).toBe(nodes.graph);
-    expect(nodesCopy.variable).toBe(nodes.variable);
-
-    const distinctTerms = AF.createDistinctTerms(
-      [ DF.variable('v') ],
-      { v: 'subject' },
-      { graph: DF.namedNode('ex:g') },
-    );
-    const distinctTermsCopy = <any> algebraTransformer().transformNode(distinctTerms, {});
-    expect(distinctTermsCopy).not.toBe(distinctTerms);
-    expect(distinctTermsCopy.variables).toBe(distinctTerms.variables);
-    expect(distinctTermsCopy.terms).toBe(distinctTerms.terms);
-    expect(distinctTermsCopy.filters).toBe(distinctTerms.filters);
+  it.each([
+    AF.createNodes(DF.namedNode('ex:g'), DF.variable('v')),
+    AF.createDistinctTerms([ DF.variable('v') ], { v: 'subject' }, { graph: DF.namedNode('ex:g') }),
+  ])('should not traverse the terms of the operation type $type defined by Comunica.', (operation: any) => {
+    const copy = <any> algebraTransformer().transformNode(operation, {});
+    expect(copy).not.toBe(operation);
+    for (const key of Object.keys(operation)) {
+      expect(copy[key]).toBe(operation[key]);
+    }
   });
 
   it('should drop the default node pre-visitors when they are not requested.', () => {
@@ -122,81 +114,73 @@ describe('algebraTransformer', () => {
 });
 
 describe('visitOperationMembers', () => {
+  /**
+   * The members of the given operation, in the order they are visited.
+   */
+  function getMembers(operation: Operation, membersTransformer?: typeof transformer): Operation[] {
+    const members: Operation[] = [];
+    visitOperationMembers(operation, member => members.push(member), membersTransformer);
+    return members;
+  }
+
   it('visits the operations held by the operation itself', () => {
     const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
     const expression = AF.createTermExpression(DF.literal('true'));
-    const visited: Operation[] = [];
-
-    visitOperationMembers(AF.createFilter(pattern, expression), member => visited.push(member));
+    const members = getMembers(AF.createFilter(pattern, expression));
 
     // The order of the keys is up to the transformer
-    expect(visited).toHaveLength(2);
-    expect(visited).toEqual(expect.arrayContaining([ pattern, expression ]));
+    expect(members).toHaveLength(2);
+    expect(members).toEqual(expect.arrayContaining([ pattern, expression ]));
   });
 
   it('visits the elements of an array rather than the array, in their order', () => {
     const pattern1 = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.variable('o'));
     const pattern2 = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o'));
-    const visited: Operation[] = [];
 
-    visitOperationMembers(AF.createBgp([ pattern1, pattern2, pattern1 ]), member => visited.push(member));
-
-    expect(visited).toEqual([ pattern1, pattern2, pattern1 ]);
+    expect(getMembers(AF.createBgp([ pattern1, pattern2, pattern1 ]))).toEqual([ pattern1, pattern2, pattern1 ]);
   });
 
   it('skips the keys that a traversal skips', () => {
     const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
     const operation: any = AF.createProject(pattern, [ DF.variable('s') ]);
     operation.metadata = { hidden: AF.createNop() };
-    const visited: Operation[] = [];
-
-    visitOperationMembers(operation, member => visited.push(member));
 
     // The variables of a project and the metadata of any operation are never traversed
-    expect(visited).toEqual([ pattern ]);
+    expect(getMembers(operation)).toEqual([ pattern ]);
   });
 
-  it('skips the given keys as well', () => {
+  it('visits the operations the given transformer steps into', () => {
     const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-    const visited: Operation[] = [];
+    const filter = AF.createFilter(pattern, AF.createTermExpression(DF.literal('true')));
+    const membersTransformer = transformer.clone({}, {
+      [Types.FILTER]: { ignoreKeys: new Set([ 'expression', 'metadata' ]) },
+    });
 
-    visitOperationMembers(
-      AF.createFilter(pattern, AF.createTermExpression(DF.literal('true'))),
-      member => visited.push(member),
-      new Set([ 'expression' ]),
-    );
-
-    expect(visited).toEqual([ pattern ]);
+    expect(getMembers(filter, membersTransformer)).toEqual([ pattern ]);
   });
 
   it('skips the keys Comunica does not know of an operation type it knows', () => {
     const input = AF.createNop();
     const operation = Object.assign(AF.createDistinct(input), { extension: AF.createNop() });
-    const visited: Operation[] = [];
 
-    visitOperationMembers(operation, member => visited.push(member));
-
-    expect(visited).toEqual([ input ]);
+    expect(getMembers(operation)).toEqual([ input ]);
   });
 
   it('visits the operations of every key but the metadata of an operation type Comunica does not know', () => {
     const input = AF.createNop();
     const wrapped = AF.createNop();
-    const operation = {
+    const members = getMembers(<Operation> {
       type: 'unknown',
       input,
       name: 'unknown',
       term: DF.variable('v'),
       wrapper: { wrapped },
       metadata: { hidden: AF.createNop() },
-    };
-    const visited: Operation[] = [];
-
-    visitOperationMembers(operation, member => visited.push(member));
+    });
 
     // Operations within other objects are visited too, as the transformer steps into these objects
-    expect(visited).toHaveLength(2);
-    expect(visited).toEqual(expect.arrayContaining([ input, wrapped ]));
+    expect(members).toHaveLength(2);
+    expect(members).toEqual(expect.arrayContaining([ input, wrapped ]));
   });
 });
 

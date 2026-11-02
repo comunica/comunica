@@ -12,7 +12,7 @@ import type {
   VisitContext,
 } from '@traqula/core';
 import { forEveryNodeType, TransformerSubTyped, visitOnlyKnownKeys } from '@traqula/core';
-import type { DistinctTerms, KnownOperation, Nodes, Operation } from './Algebra';
+import type { Construct, DeleteInsert, DistinctTerms, KnownOperation, Nodes, Operation, Path } from './Algebra';
 import { TypesComunica } from './TypesComunica';
 
 export const resolveIRI = algebraUtils.resolveIRI;
@@ -85,15 +85,6 @@ export const defaultNodePreVisitor: DefaultNodePreVisitor<KnownOperation> = {
 };
 
 export const transformer = new TransformerSubTyped<KnownOperation>(defaultObjectContext, defaultNodePreVisitor);
-
-/**
- * The keys of the default object context to ignore, together with the given ones.
- * A context with its own keys to ignore replaces those of the default, which would otherwise be traversed.
- * @param ignoreKeys The keys to ignore on top of the default ones.
- */
-function withDefaultIgnoreKeys(ignoreKeys: Set<string>): Set<string> {
-  return new Set([ ...defaultObjectContext.ignoreKeys!, ...ignoreKeys ]);
-}
 
 /**
  * Transform a single operation, similar to {@link mapOperation}, but using stricter typings.
@@ -411,46 +402,42 @@ export const visitOperation = transformer.visitNode.bind(transformer);
 export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);
 
 /**
- * Visit the operations the transformer reaches first when stepping into the given operation,
+ * Visit the operations the given transformer reaches first when stepping into the given operation,
  * without descending into them.
- * Of an operation type Comunica knows, these are the operations under its keys that can hold operations.
- * Of other operation types, these are the operations under any key but the metadata.
+ * With the default transformer, these are the operations under the keys that can hold operations
+ * of an operation type Comunica knows, and the operations under any key but the metadata of other operation types.
  *
  * @param operation The operation to take apart.
  * @param visitor Called with each operation, in the order the transformer visits them,
  *   which keeps the order of the elements of an array.
- * @param ignoreKeys Keys to skip on top of the ones that are skipped anyway.
+ * @param membersTransformer The transformer deciding which keys to step into.
  */
 export function visitOperationMembers(
   operation: Operation,
   visitor: (member: Operation) => void,
-  ignoreKeys?: Set<string>,
+  membersTransformer: Pick<typeof transformer, 'visitNode'> = transformer,
 ): void {
-  // TODO(major): take the transformer to visit with as third argument, instead of the keys to ignore.
-  const membersTransformer = ignoreKeys ?
-    transformer.clone({ ignoreKeys: withDefaultIgnoreKeys(ignoreKeys) }) :
-    transformer;
   membersTransformer.visitNode(operation, forEveryNodeType({
-    // Only step into the given operation, not into its members
-    preVisitor: (node: Operation): VisitContext => node === operation ? {} : { continue: false },
-    visitor: (node: Operation): void => {
-      if (node !== operation) {
-        visitor(node);
+    // Step into the given operation only, visiting the operations right below it
+    preVisitor(node: Operation): VisitContext {
+      if (node === operation) {
+        return {};
       }
+      visitor(node);
+      return { continue: false };
     },
   }));
 }
 
 /**
- * The keys that hold something other than the operations an operation is composed of.
- *
- * These come on top of the keys that {@link defaultNodePreVisitor} already leaves alone.
+ * The transformer stepping into the keys that hold the operations an operation is composed of.
+ * Of the keys that can hold operations, these leave out those holding templates or the predicate of a path.
  */
-const nonOperationKeys: Partial<Record<string, Set<string>>> = {
-  [Types.PATH]: new Set([ 'predicate' ]),
-  [Types.CONSTRUCT]: new Set([ 'template' ]),
-  [Types.DELETE_INSERT]: new Set([ 'delete', 'insert' ]),
-};
+const subOperationsTransformer = transformer.clone({}, visitOnlyKnownKeys<Path | Construct | DeleteInsert>({
+  [Types.PATH]: { subject: false, predicate: false, object: false, graph: false, metadata: false },
+  [Types.CONSTRUCT]: { input: true, template: false, metadata: false },
+  [Types.DELETE_INSERT]: { where: true, delete: false, insert: false, metadata: false },
+}));
 
 /**
  * Obtain the operations that the given operation is directly composed of, in the order of an array holding them.
@@ -466,7 +453,7 @@ export function getSubOperations(operation: Operation): Operation[] {
     if (member.type !== Types.EXPRESSION) {
       subOperations.push(member);
     }
-  }, nonOperationKeys[operation.type]);
+  }, subOperationsTransformer);
   return subOperations;
 }
 
@@ -498,7 +485,9 @@ function ignoreDefaultKeys(nodeCallBacks: VisitCallBacks): VisitCallBacks {
       const preVisitor = <((op: Operation) => VisitContext) | undefined> callBacks.preVisitor;
       return [ type, { ...callBacks, preVisitor: preVisitor && ((op: Operation) => {
         const context = preVisitor(op);
-        return context.ignoreKeys ? { ...context, ignoreKeys: withDefaultIgnoreKeys(context.ignoreKeys) } : context;
+        return context.ignoreKeys ?
+            { ...context, ignoreKeys: new Set([ ...defaultObjectContext.ignoreKeys!, ...context.ignoreKeys ]) } :
+          context;
       }) }];
     }));
 }

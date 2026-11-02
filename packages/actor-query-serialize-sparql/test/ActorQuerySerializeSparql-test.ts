@@ -107,6 +107,14 @@ describe('ActorQuerySerializeSparql', () => {
 
     describe('with a projection of the aggregate variables of a group', () => {
       const bgp = AF.createBgp([ AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')) ]);
+      // Extends a group counting the values of ?o per ?s, as ?var0, with ?c bound to that count
+      const extend = AF.createExtend(
+        AF.createGroup(bgp, [ DF.variable('s') ], [
+          AF.createBoundAggregate(DF.variable('var0'), 'count', AF.createTermExpression(DF.variable('o')), false),
+        ]),
+        DF.variable('c'),
+        AF.createTermExpression(DF.variable('var0')),
+      );
 
       it('should write each kind of aggregate as the expression of its variable', async() => {
         const o = AF.createTermExpression(DF.variable('o'));
@@ -133,16 +141,7 @@ describe('ActorQuerySerializeSparql', () => {
 
       it('should write an aggregate as the expression of its variable next to an extension of it', async() => {
         await expect(actor.run({
-          operation: AF.createProject(
-            AF.createExtend(
-              AF.createGroup(bgp, [ DF.variable('s') ], [
-                AF.createBoundAggregate(DF.variable('var0'), 'count', AF.createTermExpression(DF.variable('o')), false),
-              ]),
-              DF.variable('c'),
-              AF.createTermExpression(DF.variable('var0')),
-            ),
-            [ DF.variable('var0'), DF.variable('s'), DF.variable('c') ],
-          ),
+          operation: AF.createProject(extend, [ DF.variable('var0'), DF.variable('s'), DF.variable('c') ]),
           queryFormat: { language: 'sparql', version: '1.2' },
           context,
           newlines: false,
@@ -157,20 +156,11 @@ describe('ActorQuerySerializeSparql', () => {
         const metadata = { scopedSource: { get actors(): never {
           throw new Error('Traversed the metadata');
         } }};
-        const extend = {
-          ...AF.createExtend(
-            AF.createGroup(bgp, [ DF.variable('s') ], [
-              AF.createBoundAggregate(DF.variable('var0'), 'count', AF.createTermExpression(DF.variable('o')), false),
-            ]),
-            DF.variable('c'),
-            AF.createTermExpression(DF.variable('var0')),
-          ),
-          metadata,
-        };
+        const extendWithMetadata = { ...extend, metadata };
         await expect(actor.run({
           operation: AF.createProject(
             AF.createExtend(
-              AF.createGroup(extend, [], [
+              AF.createGroup(extendWithMetadata, [], [
                 AF.createBoundAggregate(DF.variable('var0'), 'count', AF.createWildcardExpression(), false),
               ]),
               DF.variable('count'),
@@ -184,7 +174,7 @@ describe('ActorQuerySerializeSparql', () => {
           indentWidth: 0,
         })).resolves.toEqual({ query: 'SELECT ( COUNT( * ) AS ?count ) WHERE { ' +
           'SELECT ( COUNT( ?o ) AS ?var0 ) ?s ( COUNT( ?o ) AS ?c ) WHERE { ?s ?p ?o . } GROUP BY ?s }' });
-        expect(extend.metadata).toBe(metadata);
+        expect(extendWithMetadata.metadata).toBe(metadata);
       });
     });
   });
