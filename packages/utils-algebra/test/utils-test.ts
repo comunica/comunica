@@ -122,77 +122,81 @@ describe('algebraTransformer', () => {
 });
 
 describe('visitOperationMembers', () => {
-  it('visits the values of the operation itself', () => {
+  it('visits the operations held by the operation itself', () => {
     const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
     const expression = AF.createTermExpression(DF.literal('true'));
-    const visited: [string, unknown][] = [];
+    const visited: Operation[] = [];
 
-    visitOperationMembers(AF.createFilter(pattern, expression), (value, key) => visited.push([ key, value ]));
+    visitOperationMembers(AF.createFilter(pattern, expression), member => visited.push(member));
 
-    expect(visited).toEqual([[ 'input', pattern ], [ 'expression', expression ]]);
+    // The order of the keys is up to the transformer
+    expect(visited).toHaveLength(2);
+    expect(visited).toEqual(expect.arrayContaining([ pattern, expression ]));
   });
 
-  it('visits the elements of an array rather than the array', () => {
+  it('visits the elements of an array rather than the array, in their order', () => {
     const pattern1 = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p1'), DF.variable('o'));
     const pattern2 = AF.createPattern(DF.variable('s'), DF.namedNode('ex:p2'), DF.variable('o'));
-    const visited: unknown[] = [];
+    const visited: Operation[] = [];
 
-    visitOperationMembers(AF.createBgp([ pattern1, pattern2 ]), value => visited.push(value));
+    visitOperationMembers(AF.createBgp([ pattern1, pattern2, pattern1 ]), member => visited.push(member));
 
-    expect(visited).toEqual([ pattern1, pattern2 ]);
+    expect(visited).toEqual([ pattern1, pattern2, pattern1 ]);
   });
 
   it('skips the keys that a traversal skips', () => {
     const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
     const operation: any = AF.createProject(pattern, [ DF.variable('s') ]);
     operation.metadata = { hidden: AF.createNop() };
-    const visited: string[] = [];
+    const visited: Operation[] = [];
 
-    visitOperationMembers(operation, (_value, key) => visited.push(key));
+    visitOperationMembers(operation, member => visited.push(member));
 
     // The variables of a project and the metadata of any operation are never traversed
-    expect(visited).toEqual([ 'input' ]);
+    expect(visited).toEqual([ pattern ]);
   });
 
   it('skips the given keys as well', () => {
     const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
-    const visited: string[] = [];
+    const visited: Operation[] = [];
 
     visitOperationMembers(
       AF.createFilter(pattern, AF.createTermExpression(DF.literal('true'))),
-      (_value, key) => visited.push(key),
+      member => visited.push(member),
       new Set([ 'expression' ]),
     );
 
-    expect(visited).toEqual([ 'input' ]);
+    expect(visited).toEqual([ pattern ]);
   });
 
   it('skips the keys Comunica does not know of an operation type it knows', () => {
-    const operation = Object.assign(AF.createDistinct(AF.createNop()), { extension: AF.createNop() });
-    const visited: string[] = [];
+    const input = AF.createNop();
+    const operation = Object.assign(AF.createDistinct(input), { extension: AF.createNop() });
+    const visited: Operation[] = [];
 
-    visitOperationMembers(operation, (_value, key) => visited.push(key));
+    visitOperationMembers(operation, member => visited.push(member));
 
-    expect(visited).toEqual([ 'input' ]);
+    expect(visited).toEqual([ input ]);
   });
 
   it('visits the operations of every key but the metadata of an operation type Comunica does not know', () => {
     const input = AF.createNop();
-    const operation = { type: 'unknown', input, name: 'unknown', metadata: { hidden: AF.createNop() }};
-    const visited: [string, unknown][] = [];
+    const wrapped = AF.createNop();
+    const operation = {
+      type: 'unknown',
+      input,
+      name: 'unknown',
+      term: DF.variable('v'),
+      wrapper: { wrapped },
+      metadata: { hidden: AF.createNop() },
+    };
+    const visited: Operation[] = [];
 
-    visitOperationMembers(operation, (value, key) => visited.push([ key, value ]));
+    visitOperationMembers(operation, member => visited.push(member));
 
-    expect(visited).toEqual([[ 'input', input ]]);
-  });
-
-  it('does not visit the operations within other objects held by an operation', () => {
-    const operation = { type: 'unknown', wrapper: { input: AF.createNop() }, term: DF.variable('v') };
-    const visited: unknown[] = [];
-
-    visitOperationMembers(operation, value => visited.push(value));
-
-    expect(visited).toEqual([]);
+    // Operations within other objects are visited too, as the transformer steps into these objects
+    expect(visited).toHaveLength(2);
+    expect(visited).toEqual(expect.arrayContaining([ input, wrapped ]));
   });
 });
 

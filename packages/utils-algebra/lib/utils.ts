@@ -401,43 +401,34 @@ export const visitOperation = transformer.visitNode.bind(transformer);
 export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);
 
 /**
- * Visit the operations held directly by the given operation that the transformer steps into,
+ * Visit the operations the transformer reaches first when stepping into the given operation,
  * without descending into them.
  * Of an operation type Comunica knows, these are the operations under its keys that can hold operations.
  * Of other operation types, these are the operations under any key but the metadata.
  *
  * @param operation The operation to take apart.
- * @param visitor Called with each operation and the key holding it, the elements of an array one by one.
+ * @param visitor Called with each operation, in the order the transformer visits them,
+ *   which keeps the order of the elements of an array.
  * @param ignoreKeys Keys to skip on top of the ones that are skipped anyway.
  */
 export function visitOperationMembers(
   operation: Operation,
-  visitor: (value: Operation, key: string) => void,
+  visitor: (member: Operation) => void,
   ignoreKeys?: Set<string>,
 ): void {
   // TODO(major): take the transformer to visit with as third argument, instead of the keys to ignore.
   const membersTransformer = ignoreKeys ?
     transformer.clone({ ignoreKeys: new Set([ ...defaultObjectContext.ignoreKeys!, ...ignoreKeys ]) }) :
     transformer;
-
-  // Collect the operations the transformer steps into from the given operation, without going any deeper
-  const members = new Set<object>();
   membersTransformer.visitNode(operation, forEveryNodeType({
-    preVisitor: (node: object): VisitContext => node === operation ? {} : { continue: false },
-    visitor: (node: object): void => {
-      members.add(node);
+    // Only step into the given operation, not into its members
+    preVisitor: (node: Operation): VisitContext => node === operation ? {} : { continue: false },
+    visitor: (node: Operation): void => {
+      if (node !== operation) {
+        visitor(node);
+      }
     },
   }));
-  members.delete(operation);
-
-  // Visitors are not told the key they visit, so we find the keys of the members in the operation, in their order
-  for (const [ key, value ] of Object.entries(operation)) {
-    for (const entry of Array.isArray(value) ? value : [ value ]) {
-      if (members.has(entry)) {
-        visitor(entry, key);
-      }
-    }
-  }
 }
 
 /**
@@ -452,7 +443,7 @@ const nonOperationKeys: Partial<Record<string, Set<string>>> = {
 };
 
 /**
- * Obtain the operations that the given operation is directly composed of, in the order they occur.
+ * Obtain the operations that the given operation is directly composed of, in the order of an array holding them.
  *
  * Expressions are not included.
  *
@@ -461,20 +452,12 @@ const nonOperationKeys: Partial<Record<string, Set<string>>> = {
  */
 export function getSubOperations(operation: Operation): Operation[] {
   const subOperations: Operation[] = [];
-  visitOperationMembers(operation, (value) => {
-    if (isOperationObject(value) && value.type !== Types.EXPRESSION) {
-      subOperations.push(value);
+  visitOperationMembers(operation, (member) => {
+    if (member.type !== Types.EXPRESSION) {
+      subOperations.push(member);
     }
   }, nonOperationKeys[operation.type]);
   return subOperations;
-}
-
-/**
- * If the given value is an algebra operation.
- * @param value Any value occurring within an operation.
- */
-export function isOperationObject(value: any): value is Operation {
-  return typeof value === 'object' && value !== null && typeof value.type === 'string';
 }
 
 /**
