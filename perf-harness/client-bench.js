@@ -11,7 +11,16 @@ const query = fs.readFileSync(queryFile, 'utf8').split(/\n\s*\n/u)[0].trim();
 const accept = 'application/sparql-results+json';
 const agent = new http.Agent({ keepAlive: true, maxSockets: 1 });
 
+// The runner before the Node http client change (sparql-benchmark-runner 5.1.0, global fetch)
+const { SparqlBenchmarkRunner: SparqlBenchmarkRunnerOld } = require('/home/user/jbr.js/node_modules/sparql-benchmark-runner');
 const clients = {
+  async runnerOld(endpoint, state) {
+    state.runnerOld ??= new SparqlBenchmarkRunnerOld({ endpoint, querySets: {}, replication: 1, warmup: 0, timeout: 300_000 });
+    const result = await state.runnerOld.executeQuery('q', '0', query);
+    if (result.error) {
+      throw result.error;
+    }
+  },
   async runner(endpoint, state) {
     state.runner ??= new SparqlBenchmarkRunner({ endpoint, querySets: {}, replication: 1, warmup: 0, timeout: 300_000 });
     const result = await state.runner.executeQuery('q', '0', query);

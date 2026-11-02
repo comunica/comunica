@@ -141,6 +141,11 @@ interface IOrder {
    * Per position, if all quads of the subject should be read at once, as several lookups on it follow.
    */
   stars: boolean[];
+  /**
+   * Per position, if all matches of the pattern for any subject should be read at once into a map by subject,
+   * as the pattern is looked up for many subjects.
+   */
+  materialize: boolean[];
 }
 
 /**
@@ -164,6 +169,10 @@ interface IState {
    * Quads of subjects of star patterns by predicate, or null for subjects with too many quads.
    */
   subjects: Map<string, Map<string, RDF.Quad[]> | null>;
+  /**
+   * All matches of patterns by subject, for patterns that are looked up for many subjects.
+   */
+  materialized: Map<IPatternItem, Map<string, RDF.Quad[]>>;
 }
 
 /**
@@ -183,6 +192,14 @@ export class LeanEvaluator {
    * The assumed number of matches of a pattern that is only joined on its object.
    */
   public static readonly FANOUT_ESTIMATE = 64;
+  /**
+   * The maximum number of matches of a pattern to read at once into a map by subject.
+   */
+  public static readonly MAX_MATERIALIZED = 50_000;
+  /**
+   * How many quads can be iterated over in the time of one index seek.
+   */
+  public static readonly SEEK_COST = 1;
 
   public constructor(
     private readonly maxWork = 200_000,
@@ -513,6 +530,7 @@ export class LeanEvaluator {
       dataFactory,
       work: 0,
       subjects: new Map(),
+      materialized: new Map(),
     };
 
     let rows: Row[];
@@ -687,9 +705,14 @@ export class LeanEvaluator {
       for (let predicateIndex = 0; predicateIndex < item.predicates.length; predicateIndex++) {
         const predicate = item.predicates[predicateIndex];
         const resolvedPredicate = LeanEvaluator.resolve(predicate, current);
-        const quads = reads && resolvedPredicate === predicate ?
-          reads[predicateIndex] :
-          this.lookup(order.stars[index], subject, resolvedPredicate, object, state);
+        let quads: Iterable<RDF.Quad>;
+        if (reads && resolvedPredicate === predicate) {
+          quads = reads[predicateIndex];
+        } else if (order.materialize[index]) {
+          quads = this.lookupMaterialized(item, subject, object, state);
+        } else {
+          quads = this.lookup(order.stars[index], subject, resolvedPredicate, object, state);
+        }
         for (const quad of quads) {
           if (LeanEvaluator.assign(current, subject, quad.subject, assigned) &&
             LeanEvaluator.assign(current, resolvedPredicate, quad.predicate, assigned) &&
@@ -813,7 +836,11 @@ export class LeanEvaluator {
     let order = node.orders.get(boundKey);
     if (!order) {
       const items = this.computeOrder(node.items, row, state);
-      order = { items, stars: LeanEvaluator.computeStars(items, row) };
+      order = {
+        items,
+        stars: LeanEvaluator.computeStars(items, row),
+        materialize: this.computeMaterialize(items, row, state),
+      };
       node.orders.set(boundKey, order);
     }
     return order;
@@ -853,6 +880,75 @@ export class LeanEvaluator {
       }
       return lookups >= 3;
     });
+  }
+
+  /**
+   * Determine for each position in an order if all matches of its pattern should be read at once into a map by subject,
+   * instead of looking it up per subject. This applies to patterns with a single constant predicate on a subject
+   * variable bound before, when reading all matches costs less than the index seeks of the expected lookups,
+   * which are estimated as the cardinality of the first pattern.
+   */
+  public computeMaterialize(items: IItem[], row: Row, state: IState): boolean[] {
+    const flag = (<any> globalThis).__proto?.leanMaterialize;
+    if (!flag) {
+      return items.map(() => false);
+    }
+    const seekCost = typeof flag === 'number' ? flag : LeanEvaluator.SEEK_COST;
+    const first = items[0];
+    const expected = first.kind === 'pattern' ? first.count : undefined;
+    const bound = new Set(Object.keys(row));
+    return items.map((item, index) => {
+      let materialize = false;
+      if (index > 0 && expected !== undefined && Number.isFinite(expected) && item.kind === 'pattern' &&
+        item.predicates.length === 1 && item.predicates[0].termType === 'NamedNode' &&
+        item.subject.termType === 'Variable' && bound.has(item.subject.value)) {
+        const count = state.source.cardinalitySynchronous?.(state.algebraFactory.createPattern(
+          state.dataFactory.variable('__lean_subject'),
+          item.predicates[0],
+          item.object.termType === 'Variable' ? state.dataFactory.variable('__lean_object') : item.object,
+          state.dataFactory.defaultGraph(),
+        ), state.context);
+        materialize = count !== undefined && count <= LeanEvaluator.MAX_MATERIALIZED &&
+          count <= expected * seekCost;
+      }
+      for (const variable of item.kind === 'node' ? item.node.certain : item.variables) {
+        bound.add(variable);
+      }
+      return materialize;
+    });
+  }
+
+  /**
+   * Look up the matches of a pattern for a subject in a map of all matches by subject, which is read once.
+   */
+  private lookupMaterialized(item: IPatternItem, subject: RDF.Term, object: RDF.Term, state: IState): RDF.Quad[] {
+    let bySubject = state.materialized.get(item);
+    if (!bySubject) {
+      bySubject = new Map();
+      let count = 0;
+      for (const quad of this.readQuads(
+        state.dataFactory.variable('__lean_subject'),
+        item.predicates[0],
+        item.object.termType === 'Variable' ? state.dataFactory.variable('__lean_object') : item.object,
+        state,
+      )) {
+        count++;
+        const key = LeanEvaluator.termKey(quad.subject);
+        const quads = bySubject.get(key);
+        if (quads) {
+          quads.push(quad);
+        } else {
+          bySubject.set(key, [ quad ]);
+        }
+      }
+      this.addWork(count, state);
+      state.materialized.set(item, bySubject);
+    }
+    const quads = bySubject.get(LeanEvaluator.termKey(subject)) ?? [];
+    // Patterns with a variable object are read for all objects, so bound objects are filtered here
+    return item.object.termType === 'Variable' && object.termType !== 'Variable' ?
+      quads.filter(quad => quad.object.equals(object)) :
+      quads;
   }
 
   private computeOrder(items: IItem[], row: Row, state: IState): IItem[] {
