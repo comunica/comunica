@@ -3,6 +3,7 @@ import type { Algebra as TraqulaAlgebra } from '@traqula/algebra-transformations
 import { algebraUtils, Types } from '@traqula/algebra-transformations-1-2';
 
 import type {
+  DefaultNodePreVisitor,
   Patch,
   // eslint-disable-next-line unused-imports/no-unused-imports,unused-imports/no-unused-imports-ts
   PreOrderMappingReturn,
@@ -75,8 +76,8 @@ export const defaultObjectContext: TransformContext = {
  * Keys Comunica does not know, like the metadata of an operation or the keys of an extension, are never traversed.
  * Operation types Comunica does not know get the {@link defaultObjectContext}.
  */
-export const defaultNodePreVisitor: ConstructorParameters<typeof TransformerSubTyped<KnownOperation>>[1] = {
-  ...<ConstructorParameters<typeof TransformerSubTyped<KnownOperation>>[1]> algebraUtils.knownKeysAllowlist,
+export const defaultNodePreVisitor: DefaultNodePreVisitor<KnownOperation> = {
+  ...<DefaultNodePreVisitor<KnownOperation>> algebraUtils.knownKeysAllowlist,
   ...visitOnlyKnownKeys<Nodes | DistinctTerms>({
     [TypesComunica.NODES]: { graph: false, variable: false, metadata: false },
     [TypesComunica.DISTINCT_TERMS]: { variables: false, terms: false, filters: false, metadata: false },
@@ -84,6 +85,15 @@ export const defaultNodePreVisitor: ConstructorParameters<typeof TransformerSubT
 };
 
 export const transformer = new TransformerSubTyped<KnownOperation>(defaultObjectContext, defaultNodePreVisitor);
+
+/**
+ * The keys of the default object context to ignore, together with the given ones.
+ * A context with its own keys to ignore replaces those of the default, which would otherwise be traversed.
+ * @param ignoreKeys The keys to ignore on top of the default ones.
+ */
+function withDefaultIgnoreKeys(ignoreKeys: Set<string>): Set<string> {
+  return new Set([ ...defaultObjectContext.ignoreKeys!, ...ignoreKeys ]);
+}
 
 /**
  * Transform a single operation, similar to {@link mapOperation}, but using stricter typings.
@@ -418,7 +428,7 @@ export function visitOperationMembers(
 ): void {
   // TODO(major): take the transformer to visit with as third argument, instead of the keys to ignore.
   const membersTransformer = ignoreKeys ?
-    transformer.clone({ ignoreKeys: new Set([ ...defaultObjectContext.ignoreKeys!, ...ignoreKeys ]) }) :
+    transformer.clone({ ignoreKeys: withDefaultIgnoreKeys(ignoreKeys) }) :
     transformer;
   membersTransformer.visitNode(operation, forEveryNodeType({
     // Only step into the given operation, not into its members
@@ -488,9 +498,7 @@ function ignoreDefaultKeys(nodeCallBacks: VisitCallBacks): VisitCallBacks {
       const preVisitor = <((op: Operation) => VisitContext) | undefined> callBacks.preVisitor;
       return [ type, { ...callBacks, preVisitor: preVisitor && ((op: Operation) => {
         const context = preVisitor(op);
-        return context.ignoreKeys ?
-            { ...context, ignoreKeys: new Set([ ...defaultObjectContext.ignoreKeys!, ...context.ignoreKeys ]) } :
-          context;
+        return context.ignoreKeys ? { ...context, ignoreKeys: withDefaultIgnoreKeys(context.ignoreKeys) } : context;
       }) }];
     }));
 }
