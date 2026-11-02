@@ -821,30 +821,38 @@ export class LeanEvaluator {
 
   /**
    * Determine for each position in an order if all quads of the subject should be read at once,
-   * which is when the subject is bound there, and at least three lookups on it follow, including this one.
-   * Reading a subject costs one index seek and iterating over all its quads, while each lookup costs a seek.
+   * which is when the subject is bound there, its object is not, and at least three such open lookups on the subject
+   * follow, including this one. Reading a subject costs one index seek and iterating over all its quads,
+   * while each lookup costs a seek. Checks, with a bound object, stay point lookups, as they are cheaper and
+   * often eliminate the subject.
    */
   public static computeStars(items: IItem[], row: Row): boolean[] {
+    // The variables bound before each position
+    const boundBefore: Set<string>[] = [];
     const bound = new Set(Object.keys(row));
-    const stars: boolean[] = [];
-    for (const [ index, item ] of items.entries()) {
-      let star = false;
-      if (item.kind === 'pattern' && item.star &&
-        (item.subject.termType !== 'Variable' || bound.has(item.subject.value))) {
-        let lookups = 0;
-        for (const other of items.slice(index)) {
-          if (other.kind === 'pattern' && other.star && other.subject.equals(item.subject)) {
-            lookups += other.predicates.length;
-          }
-        }
-        star = lookups >= 3;
-      }
-      stars.push(star);
+    for (const item of items) {
+      boundBefore.push(new Set(bound));
       for (const variable of item.kind === 'node' ? item.node.certain : item.variables) {
         bound.add(variable);
       }
     }
-    return stars;
+    const isBound = (term: RDF.Term, index: number): boolean =>
+      term.termType !== 'Variable' || boundBefore[index].has(term.value);
+    const isOpenLookup = (item: IItem, index: number): item is IPatternItem => item.kind === 'pattern' && item.star &&
+      isBound(item.subject, index) && !isBound(item.object, index);
+    return items.map((item, index) => {
+      if (!isOpenLookup(item, index)) {
+        return false;
+      }
+      let lookups = 0;
+      for (let other = index; other < items.length; other++) {
+        const candidate = items[other];
+        if (isOpenLookup(candidate, other) && candidate.subject.equals(item.subject)) {
+          lookups += candidate.predicates.length;
+        }
+      }
+      return lookups >= 3;
+    });
   }
 
   private computeOrder(items: IItem[], row: Row, state: IState): IItem[] {
