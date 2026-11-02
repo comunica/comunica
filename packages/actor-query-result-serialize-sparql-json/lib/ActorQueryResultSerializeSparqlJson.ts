@@ -12,6 +12,7 @@ import type {
   IQueryOperationResultBoolean,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
 import type { ActionObserverHttp } from './ActionObserverHttp';
@@ -20,6 +21,12 @@ import type { ActionObserverHttp } from './ActionObserverHttp';
  * A comunica sparql-results+xml Serialize Actor.
  */
 export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSerializeFixedMediaTypes {
+  /**
+   * The length after which a chunk of serialized bindings is pushed,
+   * so that large results that are available at once are still streamed.
+   */
+  public static readonly MAX_CHUNK_LENGTH = 65_536;
+
   private readonly emitMetadata: boolean;
   public readonly httpObserver: ActionObserverHttp;
 
@@ -90,7 +97,6 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string | undefined, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
-    const data = new Readable();
     // Write head
     const head: any = {};
     if (action.type === 'bindings') {
@@ -99,33 +105,73 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
         head.vars = metadata.variables.map(variable => variable.variable.value);
       }
     }
-    data.push(`{"head": ${JSON.stringify(head)},\n`);
+    const start = `{"head": ${JSON.stringify(head)},\n`;
 
     if (action.type === 'bindings') {
-      const resultStream = (<IQueryOperationResultBindings> action).bindingsStream;
-      data.push('"results": { "bindings": [\n');
-
-      let first = true;
-
-      function* end(cb: () => string): Generator<string> {
-        yield cb();
-      }
-
-      // Write bindings
-      data.wrap(
-        // JSON SPARQL results spec does not allow unbound variables and blank node bindings
-        <any> wrap(resultStream).map((bindings) => {
-          const res = `${first ? '' : ',\n'}${JSON.stringify(Object.fromEntries([ ...bindings ]
-          .map(([ key, value ]) => [ key.value, ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value) ])))}`;
-          first = false;
-          return res;
-        }).append(wrap(end(() => `\n]}${this.emitMetadata ? `,\n"metadata": { "httpRequests": ${this.httpObserver.requests} }` : ''}}\n`))),
-      );
-    } else {
-      data.wrap(<any> wrap((<IQueryOperationResultBoolean> action).execute().then(value => [ `"boolean":${value}\n}\n` ])));
+      const data = this.serializeBindings(wrap((<IQueryOperationResultBindings> action).bindingsStream));
+      data.push(`${start}"results": { "bindings": [\n`);
+      return { data };
     }
-
+    const data = new Readable();
+    data.push(start);
+    data.wrap(<any> wrap((<IQueryOperationResultBoolean> action).execute().then(value => [ `"boolean":${value}\n}\n` ])));
     return { data };
+  }
+
+  /**
+   * Create a stream of the serialized bindings, followed by the end of the document.
+   * All bindings that are available when the stream is read are serialized into a single chunk,
+   * which is cheaper than handling every binding as a separate chunk.
+   * @param bindingsStream A bindings stream.
+   */
+  public serializeBindings(bindingsStream: AsyncIterator<RDF.Bindings>): Readable {
+    let first = true;
+    let pending = false;
+    const pull = (): void => {
+      pending = false;
+      let chunk = '';
+      while (chunk.length < ActorQueryResultSerializeSparqlJson.MAX_CHUNK_LENGTH) {
+        const bindings = bindingsStream.read();
+        if (bindings === null) {
+          break;
+        }
+        chunk += first ? '' : ',\n';
+        chunk += ActorQueryResultSerializeSparqlJson.bindingsToJson(bindings);
+        first = false;
+      }
+      if (chunk.length < ActorQueryResultSerializeSparqlJson.MAX_CHUNK_LENGTH && bindingsStream.done) {
+        data.push(`${chunk}\n]}${this.emitMetadata ? `,\n"metadata": { "httpRequests": ${this.httpObserver.requests} }` : ''}}\n`);
+        data.push(null);
+      } else if (chunk.length > 0) {
+        data.push(chunk);
+      } else {
+        // Continue once more bindings are available, or the stream has ended
+        pending = true;
+      }
+    };
+    const data = new Readable({ read: pull });
+    const pullIfPending = (): void => {
+      if (pending) {
+        pull();
+      }
+    };
+    bindingsStream.on('readable', pullIfPending);
+    bindingsStream.on('end', pullIfPending);
+    bindingsStream.on('error', (error: Error) => data.destroy(error));
+    return data;
+  }
+
+  /**
+   * Serialize bindings into a SPARQL JSON results object.
+   * The JSON SPARQL results spec does not allow unbound variables, which bindings do not contain.
+   * @param bindings Bindings.
+   */
+  public static bindingsToJson(bindings: RDF.Bindings): string {
+    const json: Record<string, any> = {};
+    for (const [ key, value ] of bindings) {
+      json[key.value] = ActorQueryResultSerializeSparqlJson.bindingToJsonBindings(value);
+    }
+    return JSON.stringify(json);
   }
 }
 

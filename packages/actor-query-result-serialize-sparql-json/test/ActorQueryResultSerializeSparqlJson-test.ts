@@ -6,7 +6,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { ArrayIterator } from 'asynciterator';
+import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActionObserverHttp, ActorQueryResultSerializeSparqlJson } from '..';
 import '@comunica/utils-jest';
@@ -246,6 +246,57 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
 "results": { "bindings": [
 {"k1":{"value":"v1","type":"uri"}},
 {"k2":{"value":"v2","type":"uri"}}
+]},
+"metadata": { "httpRequests": 0 }}
+`,
+        );
+      });
+
+      it('should run on a bindings stream that is split into several chunks', async() => {
+        const maxChunkLength = ActorQueryResultSerializeSparqlJson.MAX_CHUNK_LENGTH;
+        (<any> ActorQueryResultSerializeSparqlJson).MAX_CHUNK_LENGTH = 1;
+        const data = (<any> (await actor.run(
+          {
+            context,
+            handle: <any> { bindingsStream: bindingsStream(), type: 'bindings', metadata: async() => metadata },
+            handleMediaType: 'json',
+          },
+        ))).handle.data;
+        const chunks: string[] = [];
+        for await (const chunk of data) {
+          chunks.push(chunk.toString());
+        }
+        (<any> ActorQueryResultSerializeSparqlJson).MAX_CHUNK_LENGTH = maxChunkLength;
+        expect(chunks.length).toBeGreaterThan(2);
+        expect(chunks.join('')).toBe(
+          `{"head": {"vars":["k1","k2"]},
+"results": { "bindings": [
+{"k1":{"value":"v1","type":"uri"}},
+{"k2":{"value":"v2","type":"uri"}}
+]},
+"metadata": { "httpRequests": 0 }}
+`,
+        );
+      });
+
+      it('should run on a bindings stream whose bindings become available later', async() => {
+        const stream = new BufferedIterator<RDF.Bindings>({ autoStart: false });
+        const data = (<any> (await actor.run(
+          {
+            context,
+            handle: <any> { bindingsStream: stream, type: 'bindings', metadata: async() => metadata },
+            handleMediaType: 'json',
+          },
+        ))).handle.data;
+        const result = stringifyStream(data);
+        await new Promise(resolve => setImmediate(resolve));
+        stream._push(BF.bindings([[ DF.variable('k1'), DF.namedNode('v1') ]]));
+        await new Promise(resolve => setImmediate(resolve));
+        stream.close();
+        await expect(result).resolves.toBe(
+          `{"head": {"vars":["k1","k2"]},
+"results": { "bindings": [
+{"k1":{"value":"v1","type":"uri"}}
 ]},
 "metadata": { "httpRequests": 0 }}
 `,
