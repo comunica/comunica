@@ -1,3 +1,4 @@
+import type { VisitChildrenHelpers } from '@traqula/core';
 import { DataFactory } from 'rdf-data-factory';
 import type { Operation } from '../lib/Algebra';
 import { Types } from '../lib/Algebra';
@@ -5,6 +6,7 @@ import { AlgebraFactory } from '../lib/AlgebraFactory';
 import type { AlgebraTransformer } from '../lib/utils';
 import {
   algebraTransformer,
+  defaultNodePreVisitor,
   getSubOperations,
   inScopeVariables,
   transformer,
@@ -17,14 +19,21 @@ const AF = new AlgebraFactory(DF);
 describe('algebraTransformer', () => {
   /**
    * A distinct over a project, with an operation hidden in the metadata of the distinct.
-   * Whether that metadata is traversed is decided by the object context,
-   * while whether the variables of the project are traversed is decided by its node pre-visitor.
+   * Whether the keys of the distinct and the project are traversed is decided by their node pre-visitors.
    */
   function createOperation(): any {
     return Object.assign(
       AF.createDistinct(AF.createProject(AF.createNop(), [ DF.variable('v') ])),
       { metadata: { nested: AF.createNop() }},
     );
+  }
+
+  /**
+   * An operation of a type Comunica does not know, with an operation as input and one hidden in its metadata.
+   * Without a node pre-visitor, whether that metadata is traversed is decided by the object context.
+   */
+  function createUnknownOperation(): any {
+    return { type: 'unknown', input: AF.createNop(), metadata: { nested: AF.createNop() }};
   }
 
   /**
@@ -65,10 +74,44 @@ describe('algebraTransformer', () => {
   });
 
   it('should drop the default object context when it is not requested.', () => {
-    const operation = createOperation();
+    const operation = createUnknownOperation();
+    expect(countNops(algebraTransformer(), operation)).toBe(1);
     const custom = algebraTransformer({ useDefaults: false });
     // Without the default object context, the operation inside the metadata is traversed as well
     expect(countNops(custom, operation)).toBe(2);
+  });
+
+  it('should only traverse the known keys of the operation types Comunica knows.', () => {
+    const operation = Object.assign(AF.createDistinct(AF.createNop()), { extension: AF.createNop() });
+    // The operation under the unknown key of the distinct is not traversed
+    expect(countNops(algebraTransformer(), operation)).toBe(1);
+    const copy = <any> algebraTransformer().transformNode(operation, {});
+    expect(copy.input).not.toBe(operation.input);
+    expect(copy.extension).toBe(operation.extension);
+  });
+
+  it('should traverse every key but the metadata of operation types Comunica does not know.', () => {
+    const operation = { ...createUnknownOperation(), extension: AF.createNop() };
+    expect(countNops(algebraTransformer(), operation)).toBe(2);
+  });
+
+  it('should not traverse the terms of the operation types defined by Comunica.', () => {
+    const nodes = AF.createNodes(DF.namedNode('ex:g'), DF.variable('v'));
+    const nodesCopy = <any> algebraTransformer().transformNode(nodes, {});
+    expect(nodesCopy).not.toBe(nodes);
+    expect(nodesCopy.graph).toBe(nodes.graph);
+    expect(nodesCopy.variable).toBe(nodes.variable);
+
+    const distinctTerms = AF.createDistinctTerms(
+      [ DF.variable('v') ],
+      { v: 'subject' },
+      { graph: DF.namedNode('ex:g') },
+    );
+    const distinctTermsCopy = <any> algebraTransformer().transformNode(distinctTerms, {});
+    expect(distinctTermsCopy).not.toBe(distinctTerms);
+    expect(distinctTermsCopy.variables).toBe(distinctTerms.variables);
+    expect(distinctTermsCopy.terms).toBe(distinctTerms.terms);
+    expect(distinctTermsCopy.filters).toBe(distinctTerms.filters);
   });
 
   it('should drop the default node pre-visitors when they are not requested.', () => {
@@ -88,7 +131,7 @@ describe('visitOperationMembers', () => {
 
     visitOperationMembers(AF.createFilter(pattern, expression), (value, key) => visited.push([ key, value ]));
 
-    expect(visited).toEqual([[ 'type', 'filter' ], [ 'input', pattern ], [ 'expression', expression ]]);
+    expect(visited).toEqual([[ 'input', pattern ], [ 'expression', expression ]]);
   });
 
   it('visits the elements of an array rather than the array', () => {
@@ -98,7 +141,7 @@ describe('visitOperationMembers', () => {
 
     visitOperationMembers(AF.createBgp([ pattern1, pattern2 ]), value => visited.push(value));
 
-    expect(visited).toEqual([ 'bgp', pattern1, pattern2 ]);
+    expect(visited).toEqual([ pattern1, pattern2 ]);
   });
 
   it('skips the keys that a traversal skips', () => {
@@ -110,7 +153,7 @@ describe('visitOperationMembers', () => {
     visitOperationMembers(operation, (_value, key) => visited.push(key));
 
     // The variables of a project and the metadata of any operation are never traversed
-    expect(visited).toEqual([ 'type', 'input' ]);
+    expect(visited).toEqual([ 'input' ]);
   });
 
   it('skips the given keys as well', () => {
@@ -123,7 +166,44 @@ describe('visitOperationMembers', () => {
       new Set([ 'expression' ]),
     );
 
-    expect(visited).toEqual([ 'type', 'input' ]);
+    expect(visited).toEqual([ 'input' ]);
+  });
+
+  it('skips the keys Comunica does not know of an operation type it knows', () => {
+    const operation = Object.assign(AF.createDistinct(AF.createNop()), { extension: AF.createNop() });
+    const visited: string[] = [];
+
+    visitOperationMembers(operation, (_value, key) => visited.push(key));
+
+    expect(visited).toEqual([ 'input' ]);
+  });
+
+  it('visits the objects of every key but the metadata of an operation type Comunica does not know', () => {
+    const input = AF.createNop();
+    const operation = { type: 'unknown', input, name: 'unknown', metadata: { hidden: AF.createNop() }};
+    const visited: [string, unknown][] = [];
+
+    visitOperationMembers(operation, (value, key) => visited.push([ key, value ]));
+
+    expect(visited).toEqual([[ 'input', input ]]);
+  });
+
+  it('visits the values within the values a node pre-visitor steps into', () => {
+    const input = AF.createNop();
+    const operation = { type: 'stepping', wrapper: { input }};
+    const visited: [string, unknown][] = [];
+    (<any> defaultNodePreVisitor).stepping = {
+      visitChildren: (op: any, { visitKey, stepIntoKey }: VisitChildrenHelpers) =>
+        visitKey(stepIntoKey(op, 'wrapper'), 'input'),
+    };
+
+    try {
+      visitOperationMembers(operation, (value, key) => visited.push([ key, value ]));
+    } finally {
+      delete (<any> defaultNodePreVisitor).stepping;
+    }
+
+    expect(visited).toEqual([[ 'input', input ]]);
   });
 });
 
