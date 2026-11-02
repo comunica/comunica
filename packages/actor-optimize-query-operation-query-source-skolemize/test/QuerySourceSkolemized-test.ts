@@ -222,6 +222,81 @@ describe('QuerySourceSkolemized', () => {
     });
   });
 
+  describe('canContainBlankNodes', () => {
+    it('should be true for inner sources that do not tell', () => {
+      expect(source.canContainBlankNodes()).toBe(true);
+    });
+
+    it('should delegate to the inner source', () => {
+      Object.assign(sourceInner, { canContainBlankNodes: () => true });
+      expect(source.canContainBlankNodes()).toBe(true);
+      Object.assign(sourceInner, { canContainBlankNodes: () => false });
+      expect(source.canContainBlankNodes()).toBe(false);
+    });
+  });
+
+  describe('for an inner source without blank nodes', () => {
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
+    const pattern = Object.assign(
+      AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+      { metadata: { key: 'value' }},
+    );
+    let results: any;
+
+    beforeEach(() => {
+      results = [ BF.fromRecord({ p: DF.namedNode('p0') }) ];
+      Object.assign(sourceInner, {
+        canContainBlankNodes: () => false,
+        queryBindingsSynchronous: jest.fn(() => results),
+      });
+    });
+
+    it('should pass a copy of a pattern to queryBindings, and return its stream as-is', () => {
+      const stream = source.queryBindings(pattern, context, undefined);
+      expect(stream).toBe((<any> sourceInner.queryBindings).mock.results[0].value);
+      const passed = (<any> sourceInner.queryBindings).mock.calls[0][0];
+      expect(passed).not.toBe(pattern);
+      expect(passed).toEqual(pattern);
+    });
+
+    it('should pass a copy of a pattern to queryBindingsSynchronous, and return its bindings as-is', () => {
+      expect(source.queryBindingsSynchronous(pattern, context)).toBe(results);
+      const passed = (<any> sourceInner.queryBindingsSynchronous).mock.calls[0][0];
+      expect(passed).not.toBe(pattern);
+      expect(passed).toEqual(pattern);
+    });
+
+    it.each([
+      [ 'a blank node', DF.blankNode('o') ],
+      [ 'a skolemized named node', DF.namedNode('urn:comunica_skolem:source_0:o') ],
+      [ 'a blank node in a quoted triple', DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.blankNode('c')) ],
+    ])('should not pass through patterns with %s', (_, object) => {
+      const operation = AF.createPattern(DF.namedNode('s'), DF.variable('p'), object);
+      const bindings = source.queryBindingsSynchronous(operation, context);
+      expect(bindings).not.toBe(results);
+      expect(bindings).toEqualBindingsArray(results);
+    });
+
+    it('should still skolemize the results of operations that are not patterns', async() => {
+      await expect(source.queryBindings(AF.createJoin([ pattern ]), context, undefined)).toEqualBindingsStream([
+        BF.fromRecord({ a: DF.namedNode('a0') }),
+        BF.fromRecord({ a: new BlankNodeScoped('bc_0_a1', DF.namedNode('urn:comunica_skolem:source_0:a1')) }),
+        BF.fromRecord({ a: DF.quad(
+          DF.namedNode('s'),
+          DF.namedNode('p'),
+          new BlankNodeScoped('bc_0_a2', DF.namedNode('urn:comunica_skolem:source_0:a2')),
+        ) }),
+      ]);
+    });
+
+    it('should still skolemize the results of sources that may contain blank nodes', async() => {
+      Object.assign(sourceInner, { canContainBlankNodes: () => true });
+      const stream = source.queryBindings(pattern, context, undefined);
+      expect(stream).not.toBe((<any> sourceInner.queryBindings).mock.results[0].value);
+      await expect(stream.toArray()).resolves.toHaveLength(3);
+    });
+  });
+
   it('should delegate queryBoolean', async() => {
     const op: any = {};
     const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });

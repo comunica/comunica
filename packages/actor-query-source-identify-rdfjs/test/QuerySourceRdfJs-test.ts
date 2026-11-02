@@ -1176,6 +1176,22 @@ describe('QuerySourceRdfJs', () => {
     });
   });
 
+  describe('canContainBlankNodes', () => {
+    it('should be true for sources that do not track blank nodes', () => {
+      expect(source.canContainBlankNodes()).toBe(true);
+    });
+
+    it('should be true for sources that have blank nodes', () => {
+      Object.defineProperty(store, 'hasBlankNodes', { value: true });
+      expect(source.canContainBlankNodes()).toBe(true);
+    });
+
+    it('should be false for sources that have no blank nodes', () => {
+      Object.defineProperty(store, 'hasBlankNodes', { value: false });
+      expect(source.canContainBlankNodes()).toBe(false);
+    });
+  });
+
   describe('queryBindingsSynchronous', () => {
     beforeEach(() => {
       store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));

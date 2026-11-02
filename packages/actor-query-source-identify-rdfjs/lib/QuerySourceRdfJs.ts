@@ -326,6 +326,11 @@ export class QuerySourceRdfJs implements IQuerySource {
     );
   }
 
+  public canContainBlankNodes(): boolean {
+    // Only stores that track blank nodes, such as rdf-stores, can tell that they have none.
+    return (<{ hasBlankNodes?: boolean }> this.source).hasBlankNodes !== false;
+  }
+
   public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
     if (!isKnownOperation(operation, Algebra.Types.PATTERN) || !('getBindings' in this.source) ||
       !this.source.getBindings || QuerySourceRdfJs.hasQuotedVariables(operation)) {
