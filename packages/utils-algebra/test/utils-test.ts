@@ -244,7 +244,7 @@ describe('hasOperationType', () => {
   });
 
   it('should not look into metadata', () => {
-    const operation = AF.createJoin([ pattern ]);
+    const operation: Operation = AF.createJoin([ pattern ]);
     operation.metadata = { union: AF.createUnion([ pattern ]) };
     expect(hasOperationType(operation, [ Types.UNION ])).toBe(false);
   });
