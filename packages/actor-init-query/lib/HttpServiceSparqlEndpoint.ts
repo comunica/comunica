@@ -740,12 +740,10 @@ export class HttpServiceSparqlEndpoint {
       }
     }
 
-    // Write header of response
-    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-    stdout.write(`      Resolved to result media type: ${mediaType}\n`);
-
     // Stop further processing for HEAD requests
     if (headOnly) {
+      response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+      stdout.write(`      Resolved to result media type: ${mediaType}\n`);
       response.end();
       return;
     }
@@ -753,6 +751,10 @@ export class HttpServiceSparqlEndpoint {
     let eventEmitter: EventEmitter | undefined;
     try {
       const { data } = await engine.resultToString(result, mediaType);
+
+      // Only write the header once serialization has started, so that a failure can still be reported as such
+      response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+      stdout.write(`      Resolved to result media type: ${mediaType}\n`);
       data.on('error', (error: Error) => {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         if (!response.writableEnded) {

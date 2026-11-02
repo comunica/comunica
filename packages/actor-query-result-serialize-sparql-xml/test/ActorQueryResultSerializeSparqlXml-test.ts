@@ -419,7 +419,6 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           handle: <any> {
             type: 'boolean',
             execute: () => Promise.resolve(true),
-            metadata: async() => ({ variables: []}),
           },
           handleMediaType: 'simple',
         }))).handle.data)).resolves.toBe(
@@ -439,7 +438,6 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           handle: <any> {
             type: 'boolean',
             execute: () => Promise.resolve(false),
-            metadata: async() => ({ variables: []}),
           },
           handleMediaType: 'simple',
         }))).handle.data)).resolves.toBe(
@@ -459,7 +457,6 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           handle: <any> {
             type: 'boolean',
             execute: () => Promise.reject(new Error('e')),
-            metadata: async() => ({ variables: []}),
           },
           handleMediaType: 'simple',
         }))).handle.data)).rejects.toBeTruthy();

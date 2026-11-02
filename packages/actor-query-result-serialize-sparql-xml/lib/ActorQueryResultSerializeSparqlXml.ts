@@ -89,7 +89,10 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
     };
 
     const serializer = new XmlSerializer();
-    const metadata = await (<IQueryOperationResultBindings> action).metadata();
+    // Boolean results have no metadata, and no variables in their head
+    const variables = action.type === 'bindings' ?
+        (await (<IQueryOperationResultBindings> action).metadata()).variables :
+        [];
 
     data.push(XmlSerializer.header);
     data.push(serializer.open('sparql', {
@@ -100,7 +103,7 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
     data.push(
       serializer.serializeNode({
         name: 'head',
-        children: metadata.variables
+        children: variables
           .map(variable => ({ name: 'variable', attributes: { name: variable.variable.value }})),
       }),
     );
