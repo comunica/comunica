@@ -53,7 +53,8 @@ export class Bindings implements RDF.Bindings {
   }
 
   public values(): Iterable<RDF.Term> {
-    return this.iteratorToIterable(this.entries.values());
+    // Immutable's iterators are iterable themselves, and are much faster without a wrapper
+    return this.entries.values();
   }
 
   public forEach(fn: (value: RDF.Term, key: RDF.Variable) => any): void {
