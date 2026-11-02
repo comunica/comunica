@@ -64,6 +64,11 @@ export class HttpServiceSparqlEndpoint {
    */
   public static readonly ALLOWED_METHODS = 'GET, HEAD, OPTIONS, POST, QUERY';
 
+  /**
+   * The maximum number of serialized service descriptions that are cached, by media type and request URL.
+   */
+  public static readonly SERVICE_DESCRIPTION_CACHE_SIZE = 100;
+
   public readonly engine: Promise<QueryEngineBase>;
 
   public readonly context: any;
@@ -79,6 +84,11 @@ export class HttpServiceSparqlEndpoint {
   public readonly graphStore: HttpServiceGraphStore | undefined;
 
   public lastQueryId = 0;
+
+  /**
+   * Serialized service descriptions, by media type and request URL.
+   */
+  private readonly serviceDescriptions = new Map<string, Buffer>();
 
   public constructor(args: IHttpServiceSparqlEndpointArgs) {
     this.context = args.context || {};
@@ -723,6 +733,7 @@ export class HttpServiceSparqlEndpoint {
         // Fallback to query string
         /(INSERT|DELETE)/iu.test(queryBody.value))) {
       this.voidMetadataEmitter.invalidateCache();
+      this.serviceDescriptions.clear();
     }
 
     // Default to SPARQL JSON for bindings and boolean
@@ -859,6 +870,16 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
+    // The service description only changes after updates, when it contains VoID statistics,
+    // so its serialization can be reused until then.
+    const cacheKey = `${mediaType}\n${request.url}`;
+    const cached = this.serviceDescriptions.get(cacheKey);
+    if (cached) {
+      response.end(cached);
+      this.stopResponse(response, 0, process.stderr);
+      return;
+    }
+
     const s = request.url;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const sparql = 'http://www.w3.org/ns/sparql#';
@@ -907,9 +928,22 @@ export class HttpServiceSparqlEndpoint {
         execute: async() => new ArrayIterator(quads, { autoStart: false }),
         metadata: <any>undefined,
       }, mediaType);
+      let failed = false;
       data.on('error', (error: Error) => {
+        failed = true;
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         response.end('An internal server error occurred.\n');
+      });
+      // Only cache complete service descriptions, which includes the VoID statistics if they are emitted
+      const chunks: Buffer[] = [];
+      data.on('data', (chunk: Buffer | string) => chunks.push(Buffer.from(chunk)));
+      data.on('end', () => {
+        if (!failed && (!this.emitVoid || this.voidMetadataEmitter.cachedStatistics.length > 0)) {
+          if (this.serviceDescriptions.size >= HttpServiceSparqlEndpoint.SERVICE_DESCRIPTION_CACHE_SIZE) {
+            this.serviceDescriptions.clear();
+          }
+          this.serviceDescriptions.set(cacheKey, Buffer.concat(chunks));
+        }
       });
       data.pipe(response);
       eventEmitter = data;
