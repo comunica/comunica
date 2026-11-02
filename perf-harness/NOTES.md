@@ -91,3 +91,19 @@ Findings about the comparison itself:
 
 Block-interleaved HTTP medians, runner client, against Oxigraph without --timeout-s: IS1 1.28x, IS4 1.37x, IS5 1.24x,
 IS7 1.11x slower (base was 3.8x before any prototype). Means are worse due to GC pauses.
+
+## WatDiv and BSBM with all prototypes (fourth round)
+
+Setup like the experiments: Comunica cluster endpoint on one core, Oxigraph 0.5.13 with --timeout-s 300 on one core
+(host network), client on a third core. Comunica base is the same build with all flags off.
+
+WatDiv (scale 10, 5 queries per template, runner with replication 3 and warmup 1, 2 rounds, mean ms per template):
+prototypes are faster than base on 19 of 20 templates (not C2: 33 vs 23 ms), and faster than Oxigraph on 16
+(not L1, S2, S5, S7, by 0.3-2 ms). Sum of query means: base 2.9 s, prototypes 2.1 s, Oxigraph 36.3 s (C3: 7 s per query).
+Result counts are equal for all engines; 100 WatDiv instances give the same results with and without the prototypes.
+
+The lean evaluator was 3-5x slower than base on L2 and L5 until the fan-out and star heuristics (commit 648773f).
+
+BSBM (1000 products, test driver with 5 warmup and 10 runs, 2 rounds): QMpH base 10.0-12.1k, prototypes 15.5-17.5k,
+Oxigraph 37.7-37.9k. Oxigraph is 1.4-4x faster per query type. BSBM queries use FILTER, DESCRIBE, and CONSTRUCT,
+which the lean evaluator does not support, so they only gain from the other prototypes.
