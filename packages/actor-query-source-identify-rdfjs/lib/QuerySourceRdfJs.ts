@@ -342,6 +342,11 @@ export class QuerySourceRdfJs implements IQuerySource {
     );
   }
 
+  public getSynchronousStore(context: IActionContext): unknown {
+    // Only the default graph is scanned, which is not the union of all graphs
+    return context.get(KeysQueryOperation.unionDefaultGraph) ? undefined : this.source;
+  }
+
   public cardinalitySynchronous(operation: Algebra.Operation, context: IActionContext): number | undefined {
     if (!isKnownOperation(operation, Algebra.Types.PATTERN) || !('countQuads' in this.source) ||
       !this.source.countQuads || QuerySourceRdfJs.hasQuotedVariables(operation)) {

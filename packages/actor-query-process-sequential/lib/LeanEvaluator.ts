@@ -16,6 +16,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { RAW_ROWS } from './LeanBgpEvaluator';
 import type { IRawRows } from './LeanBgpEvaluator';
+import { LeanStoreScan } from './LeanStoreScan';
 
 type Row = Record<string, RDF.Term>;
 
@@ -173,6 +174,10 @@ interface IState {
    * All matches of patterns by subject, for patterns that are looked up for many subjects.
    */
   materialized: Map<IPatternItem, Map<string, RDF.Quad[]>>;
+  /**
+   * Direct lookups in the store of the source, if supported.
+   */
+  scan?: LeanStoreScan;
 }
 
 /**
@@ -532,6 +537,9 @@ export class LeanEvaluator {
       subjects: new Map(),
       materialized: new Map(),
     };
+    if ((<any> globalThis).__proto?.leanScan) {
+      state.scan = LeanStoreScan.forStore(state.source.getSynchronousStore?.(state.context));
+    }
 
     let rows: Row[];
     try {
@@ -1156,6 +1164,17 @@ export class LeanEvaluator {
   private readQuads(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, state: IState): Iterable<RDF.Quad> {
     if (++state.work > this.maxWork) {
       throw new FallbackError('Too many lookups');
+    }
+    if (state.scan) {
+      const out: RDF.Quad[] = [];
+      if (state.scan.scan(
+        subject.termType === 'Variable' ? undefined : subject,
+        predicate.termType === 'Variable' ? undefined : predicate,
+        object.termType === 'Variable' ? undefined : object,
+        out,
+      )) {
+        return out;
+      }
     }
     const quads = state.source.readQuadsSynchronous!(state.algebraFactory.createPattern(
       subject,

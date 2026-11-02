@@ -129,6 +129,10 @@ export class QuerySourceHypermedia implements IQuerySource {
     return this.directSourceState.source.readQuadsSynchronous?.(operation, this.getDirectContext(context));
   }
 
+  public getSynchronousStore(context: IActionContext): unknown {
+    return this.directSourceState?.source.getSynchronousStore?.(this.getDirectContext(context));
+  }
+
   public cardinalitySynchronous(operation: Algebra.Operation, context: IActionContext): number | undefined {
     if (!this.directSourceState) {
       return undefined;

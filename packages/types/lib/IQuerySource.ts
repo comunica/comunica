@@ -136,6 +136,13 @@ export interface IQuerySource {
   ) => Iterable<RDF.Quad> | undefined;
 
   /**
+   * Prototype: the underlying store for direct synchronous scans of the default graph, if it supports them.
+   * @param {IActionContext} context The query context.
+   * @return The store, or undefined.
+   */
+  getSynchronousStore?: (context: IActionContext) => unknown;
+
+  /**
    * Prototype: synchronously count the results of the given pattern, ignoring repeated variables.
    * @param {Algebra.Operation} operation The operation to count.
    * @param {IActionContext} context      The query context.
