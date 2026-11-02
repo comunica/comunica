@@ -18,6 +18,10 @@ export class ActorOptimizeQueryOperationAnnotateUnionOrder extends ActorOptimize
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    // This actor only changes UNION operations
+    if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.UNION ])) {
+      return { operation: action.operation, context: action.context };
+    }
     const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.JOIN]: {
         transform: (join: Algebra.Join) => ActorOptimizeQueryOperationAnnotateUnionOrder.annotate(join),

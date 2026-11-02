@@ -6,6 +6,7 @@ import type { AlgebraTransformer } from '../lib/utils';
 import {
   algebraTransformer,
   getSubOperations,
+  hasOperationType,
   inScopeVariables,
   transformer,
   visitOperationMembers,
@@ -215,5 +216,45 @@ describe('inScopeVariables', () => {
 
     // The templates of the delete-insert are still not traversed
     expect(inScopeVariables(deleteInsert)).toEqual([ DF.variable('s'), DF.variable('p'), DF.variable('o') ]);
+  });
+});
+
+describe('hasOperationType', () => {
+  const pattern = AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'));
+
+  it('should find the type of the operation itself', () => {
+    expect(hasOperationType(pattern, [ Types.PATTERN ])).toBe(true);
+  });
+
+  it('should find the types of nested operations', () => {
+    const operation = AF.createProject(AF.createJoin([ pattern, AF.createFilter(
+      pattern,
+      AF.createTermExpression(DF.variable('s')),
+    ) ]), [ DF.variable('s') ]);
+    expect(hasOperationType(operation, [ Types.FILTER ])).toBe(true);
+    expect(hasOperationType(operation, [ Types.UNION, Types.JOIN ])).toBe(true);
+    expect(hasOperationType(operation, [ Types.UNION ])).toBe(false);
+  });
+
+  it('should find operations within expressions', () => {
+    const union = AF.createUnion([ pattern, pattern ]);
+    const operation = AF.createFilter(pattern, AF.createExistenceExpression(false, union));
+    expect(hasOperationType(operation, [ Types.UNION ])).toBe(true);
+    expect(hasOperationType(operation, [ Types.EXPRESSION ])).toBe(true);
+  });
+
+  it('should not look into metadata', () => {
+    const operation = AF.createJoin([ pattern ]);
+    operation.metadata = { union: AF.createUnion([ pattern ]) };
+    expect(hasOperationType(operation, [ Types.UNION ])).toBe(false);
+  });
+
+  it('should not look into terms', () => {
+    const operation = AF.createPattern(
+      <any> { ...DF.quad(DF.variable('s'), DF.namedNode('p'), DF.variable('o')), type: Types.UNION },
+      DF.namedNode('p'),
+      DF.variable('o'),
+    );
+    expect(hasOperationType(operation, [ Types.UNION ])).toBe(false);
   });
 });

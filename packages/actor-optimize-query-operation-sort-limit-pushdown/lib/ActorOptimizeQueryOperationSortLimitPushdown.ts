@@ -20,6 +20,10 @@ export class ActorOptimizeQueryOperationSortLimitPushdown extends ActorOptimizeQ
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    // This actor only changes ORDER BY operations
+    if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.ORDER_BY ])) {
+      return { operation: action.operation, context: action.context };
+    }
     const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.SLICE]: {
         transform: (slice: Algebra.Slice) => {

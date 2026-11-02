@@ -25,6 +25,10 @@ export class ActorOptimizeQueryOperationConstructDistinct extends ActorOptimizeQ
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    // This actor only changes CONSTRUCT operations
+    if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.CONSTRUCT ])) {
+      return { operation: action.operation, context: action.context };
+    }
     const factory = new AlgebraFactory();
     const operation = algebraUtils.mapOperation(action.operation, {
       [Algebra.Types.CONSTRUCT]: {

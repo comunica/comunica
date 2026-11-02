@@ -25,6 +25,10 @@ export class ActorOptimizeQueryOperationLeftjoinExpressionPushdown extends Actor
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    // This actor only changes left join operations
+    if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.LEFT_JOIN ])) {
+      return { operation: action.operation, context: action.context };
+    }
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
     let operation: Algebra.Operation = action.operation;

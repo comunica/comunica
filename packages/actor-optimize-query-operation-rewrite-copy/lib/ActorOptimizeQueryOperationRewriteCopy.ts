@@ -23,6 +23,10 @@ export class ActorOptimizeQueryOperationRewriteCopy extends ActorOptimizeQueryOp
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    // This actor only changes COPY operations
+    if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.COPY ])) {
+      return { operation: action.operation, context: action.context };
+    }
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const factory = new AlgebraFactory(dataFactory);
 
