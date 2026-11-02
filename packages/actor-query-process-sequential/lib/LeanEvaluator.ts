@@ -961,9 +961,11 @@ export class LeanEvaluator {
 
   private computeOrder(items: IItem[], row: Row, state: IState): IItem[] {
     const bound = new Set(Object.keys(row));
+    // Prototype: a number for leanStartLimit overrides the maximum start cardinality
+    const startLimit: number = (<any> globalThis).__proto?.leanStartLimit ?? this.maxStartCardinality;
     if (items.length === 1) {
       if (!items[0].variables.some(variable => bound.has(variable)) &&
-        this.rank(items[0], bound, state)[1] > this.maxStartCardinality) {
+        this.rank(items[0], bound, state)[1] > startLimit) {
         throw new FallbackError('Expensive start');
       }
       return items;
@@ -1005,7 +1007,7 @@ export class LeanEvaluator {
         bestUnconnectedCount <= LeanEvaluator.FANOUT_ESTIMATE) {
         best = bestUnconnected;
       }
-      if (connectedCount === 0 && bestRank[1] > this.maxStartCardinality) {
+      if (connectedCount === 0 && bestRank[1] > startLimit) {
         throw new FallbackError('Expensive start');
       }
       remaining.splice(remaining.indexOf(best!), 1);
@@ -1072,10 +1074,14 @@ export class LeanEvaluator {
         }
       }
       let value = constants >= 2 ? this.readSmallItem(item, state) : undefined;
+      // Prototype: patterns with only a constant predicate are counted too, so queries without other constants
+      // can start from a small predicate
+      const countable = constants >= 2 || ((<any> globalThis).__proto?.leanPredicateCounts &&
+        item.predicates.every(predicate => predicate.termType !== 'Variable'));
       if (value === undefined) {
         value = 0;
         for (const predicate of item.predicates) {
-          value += constants >= 2 ?
+          value += countable ?
             state.source.cardinalitySynchronous?.(state.algebraFactory.createPattern(
               item.subject,
               predicate,
