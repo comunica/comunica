@@ -107,3 +107,113 @@ The lean evaluator was 3-5x slower than base on L2 and L5 until the fan-out and 
 BSBM (1000 products, test driver with 5 warmup and 10 runs, 2 rounds): QMpH base 10.0-12.1k, prototypes 15.5-17.5k,
 Oxigraph 37.7-37.9k. Oxigraph is 1.4-4x faster per query type. BSBM queries use FILTER, DESCRIBE, and CONSTRUCT,
 which the lean evaluator does not support, so they only gain from the other prototypes.
+
+## WatDiv parity (fifth round)
+
+New prototype flags:
+
+- sdCache: reuse the serialized service description. The runner checks availability with a GET before every query,
+  which made Comunica build its service description each time (0.85 ms CPU right before each measured query, 0.17 ms
+  with the cache). Small WatDiv queries: server time mean 2.00 -> 1.80 ms.
+- leanScan: direct lookups in the sorted blocks indexes (binary search of the key range, then a plain loop), instead of
+  readQuads with generators, pattern arrays, and iterators. rdf-stores allocated 147 of 216 KB per WatDiv L1 query.
+  In-process 0.66x (geometric mean, 95 WatDiv instances); over HTTP the small-query server median went 1.53 -> 1.10 ms.
+- leanPredicateCounts: count patterns whose only constant is the predicate, so C1-C3 (no other constants) can start
+  from their least frequent predicate. leanStartLimit (a number, 10000) raises the maximum start cardinality.
+  All 100 WatDiv instances now run on the lean path (was 90).
+- leanNoStars: no whole-subject reads. With direct scans a point lookup is a binary search, and reading whole subjects
+  read 358,850 quads for C3 where 9,176 point lookups suffice.
+- leanFastRows: unassign variables by setting undefined instead of deleting them, which turned rows into dictionary
+  objects that were slow to copy (C3 lean: 109 -> 25 ms in-process).
+
+Diagnosis tools: inproc-server.js REQ_LOG (per-request stages and GC pauses), TOGGLE_FLAG (A/B rounds on one server),
+and a client-side trace preload (send, headers, end, client GCs) joined on absolute time.
+Findings: with all flags only 2-3 server GCs happen per runner round and none overlap slow executions; slow executions
+are mostly in client-side time ("pre"/"post"), at the same positions every round (the runner is deterministic),
+and Oxigraph shows them at a similar rate (39 vs 42 of 612 executions more than 2 ms above the instance median).
+
+Experiment-like rounds (cluster endpoint on one core, fresh Oxigraph 0.5.13 with --timeout-s 300 per round, runner with
+replication 3 and warmup 1), 61 WatDiv instances with results:
+
+| Build | Rounds | Instances where Comunica's mean is slower | Per-round comparisons Comunica at least as fast | Sum of means Comunica / Oxigraph |
+|---|---|---|---|---|
+| Fourth round flags | 4 | 10 | 199 / 244 | 2083 / 37600 ms |
+| + sdCache, leanScan | 4 | 8 | 216 / 244 | 1932 / 35166 ms |
+| + predicate counts, start limit, no stars, fast rows | 4 | 5 | 222 / 244 | 1161 / 34841 ms |
+
+With all flags (4 rounds): Comunica's median is at most Oxigraph's on 61 of 61 instances, Comunica is significantly
+faster on 44 (one-sided permutation test, p < 0.05), and none of the 5 instances with a higher mean differs
+significantly (p = 0.20-0.50). For scale, Oxigraph against itself (rounds 1-2 vs 3-4) is slower by mean on 54 of 61.
+Over 10 rounds, only L1#0 and L1#1 remain slower by mean (4.03 vs 3.13 and 3.57 vs 2.93 ms; 567 of 610 per-round wins).
+
+Those L1 stalls came from the runner, not the endpoint: the response headers arrived on time, but the end of the
+response came 5-7 ms later, with no GC pause on either side. The runner was pinned to one core, so its concurrent GC
+threads (90 GCs per round, mostly from hashing C3's 33k rows) competed with its main thread. Oxigraph takes ~7 s per C3,
+which gives the runner idle time to finish that work; Comunica answers C3 in ~25 ms, so the work spills into the next
+measured queries. The experiments do not pin the runner (endpoints get a 1-CPU quota), so this was an artifact of the
+setup here. With the runner on two cores (endpoints still pinned to one core each), 4 rounds: Comunica slower by mean on
+1 of 61 (L1#1, 2.33 vs 2.25 ms, one 1-ms tick over 12 executions, 3 of 4 rounds won), at least as fast in 237 of 244
+per-round comparisons, sum of means 1128 vs 35606 ms.
+With 8 such rounds: Comunica's mean and median are at most Oxigraph's on all 61 instances, it is significantly faster on
+58 (one-sided permutation test, p < 0.05) and significantly slower on none; 463 of 488 per-round comparisons.
+A single round (what one experiment run reports) still shows 0-7 instances slower, mostly L1/L3 where both take ~2 ms.
+Mean ms per template (Comunica / Oxigraph): C1 4.8 / 11.5, C3 199 / 6941, F1 2.0 / 5.5, F2 1.9 / 3.3, F4 1.5 / 2.6,
+F5 2.5 / 6.2, L1 1.8 / 2.3, L2 3.2 / 6.4, L3 1.8 / 2.6, L4 1.4 / 2.2, L5 2.4 / 6.9, S1 2.5 / 8.8, S2 2.3 / 4.4, S6 1.2 / 2.1.
+--single-threaded-gc or --single-threaded on the endpoint did not reduce its slow executions (p90 got slightly worse).
+
+## Ablation with all flags
+
+In-process (ablation.js, interleaved variants in rotating order, medians per query; LDBC SNB 0.1 short reads 2 per
+template and 9 reps, WatDiv 5 per template and 5 reps, BSBM 5 per query and 5 reps). Geometric mean speedup over no
+prototypes, cumulative in the order built:
+
+| Step | LDBC | WatDiv | BSBM |
+|---|---|---|---|
+| none | 1.00x | 1.00x | 1.00x |
+| + cow, joinConnectedFast, joinPlan, lazyLog | 1.15x | 1.17x | 0.95x |
+| + noSkolem | 1.35x | 1.41x | 1.04x |
+| + skipNoop, groupFast, traqulaFast | 1.49x | 1.61x | 1.14x |
+| + bgpFast | 1.79x | 1.83x | 1.55x |
+| + fastParse | 2.53x | 2.41x | 1.93x |
+| + sharedTypeCache, lazyRight, pruneFast, leanOptimize | 2.67x | 2.86x | 2.22x |
+| + leanAlgebra | 8.24x | 3.21x | 2.38x |
+| + leanIdentify, leanMediators, leanMaterialize | 13.77x | 4.23x | 2.57x |
+| + leanScan | 16.24x | 6.06x | 2.53x |
+| + leanPredicateCounts, leanStartLimit | 17.05x | 8.29x | 2.58x |
+| + leanNoStars, leanFastRows | 23.60x | 11.12x | 2.67x |
+
+Leave-one-out (geometric mean slowdown per query when only that flag is off; noise is a few percent;
+noSkolem and fastParse are prerequisites of the lean path, so their numbers include losing it):
+
+| Flag | LDBC | WatDiv | BSBM |
+|---|---|---|---|
+| fastParse | +1234% | +540% | +76% |
+| noSkolem | +860% | +426% | +25% |
+| leanAlgebra | +745% | +303% | +20% |
+| cow | +101% | +44% | +16% |
+| leanIdentify | +86% | +35% | +5% |
+| sharedTypeCache | +71% | +29% | +10% |
+| skipNoop | +66% | +28% | +8% |
+| leanScan | +50% | +79% | +2% |
+| leanMediators | +49% | +22% | +5% |
+| joinConnectedFast | +35% | +11% | +10% |
+| leanNoStars | +33% | +16% | +1% |
+| lazyRight | +29% | +4% | +4% |
+| groupFast | +22% | +5% | +1% |
+| joinPlan | +20% | 0% | +6% |
+| leanFastRows | +20% | +15% | +3% |
+| traqulaFast | +17% | -2% | +5% |
+| pruneFast | +16% | -4% | +2% |
+| bgpFast | +13% | -5% | +69% |
+| leanMaterialize | +13% | -6% | +2% |
+| lazyLog | +11% | -4% | +4% |
+| leanOptimize | +10% | -6% | +9% |
+| leanStartLimit | +9% | +9% | +1% |
+| leanPredicateCounts | +6% | +50% | 0% |
+
+Endpoint flags over HTTP (http-ab.sh, per-request interleaved, LDBC IS1/4/5/7, sum of client medians, 150 reps),
+slowdown when only that flag is off: fastJson +41%, noIpc +13%, negCache +5%, noLog none measurable; all four off +70%.
+sdCache is measured above with the runner, as only the runner's availability checks hit it.
+
+Runner client (client-bench.js, block-interleaved, 1000 reps, medians): the Node http client instead of fetch saves
+0.35-0.42 ms per request on Comunica and 0.44-0.70 ms on Oxigraph, so it helps both engines.
