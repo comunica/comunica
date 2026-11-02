@@ -71,6 +71,8 @@ export class HttpServiceSparqlEndpoint {
   public readonly port: number;
   public readonly workers: number;
   private readonly negotiationCache = new Map<string, string>();
+  // Prototype: serialized service descriptions by media type and URL
+  private readonly serviceDescriptionCache = new Map<string, Buffer>();
 
   public readonly freshWorkerPerQuery: boolean;
   public readonly contextOverride: boolean;
@@ -803,6 +805,7 @@ export class HttpServiceSparqlEndpoint {
         // Fallback to query string
         /(INSERT|DELETE)/iu.test(queryBody.value))) {
       this.voidMetadataEmitter.invalidateCache();
+      this.serviceDescriptionCache.clear();
     }
 
     // Default to SPARQL JSON for bindings and boolean
@@ -940,9 +943,12 @@ export class HttpServiceSparqlEndpoint {
     mediaType: string,
     headOnly: boolean,
   ): Promise<void> {
-    stdout.write(`[200] ${request.method} to ${request.url}\n`);
-    stdout.write(`      Requested media type: ${mediaType}\n`);
-    stdout.write('      Received query for service description.\n');
+    const proto = (<any> globalThis).__proto ?? {};
+    if (!proto.noLog) {
+      stdout.write(`[200] ${request.method} to ${request.url}\n`);
+      stdout.write(`      Requested media type: ${mediaType}\n`);
+      stdout.write('      Received query for service description.\n');
+    }
     response.writeHead(200, HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({
       'content-type': mediaType,
       'Access-Control-Allow-Origin': '*',
@@ -952,6 +958,14 @@ export class HttpServiceSparqlEndpoint {
 
     if (headOnly) {
       response.end();
+      return;
+    }
+
+    // Prototype: the service description only changes with updates, so reuse its serialization
+    const cacheKey = `${mediaType} ${request.url}`;
+    const cached = proto.sdCache ? this.serviceDescriptionCache.get(cacheKey) : undefined;
+    if (cached) {
+      response.end(cached);
       return;
     }
 
@@ -1007,6 +1021,11 @@ export class HttpServiceSparqlEndpoint {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         response.end('An internal server error occurred.\n');
       });
+      if (proto.sdCache) {
+        const chunks: Buffer[] = [];
+        data.on('data', (chunk: Buffer | string) => chunks.push(Buffer.from(chunk)));
+        data.on('end', () => this.serviceDescriptionCache.set(cacheKey, Buffer.concat(chunks)));
+      }
       data.pipe(response);
       eventEmitter = data;
     } catch {
