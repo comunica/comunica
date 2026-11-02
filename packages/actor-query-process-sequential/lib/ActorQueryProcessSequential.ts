@@ -16,7 +16,7 @@ import type {
 import {
   ActorQueryProcess,
 } from '@comunica/bus-query-process';
-import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
+import { KeysExpressionEvaluator, KeysInitQuery, KeysQueryOperation, KeysStatistics } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type {
@@ -24,7 +24,9 @@ import type {
   IActionContext,
   IActionContextKey,
   IQueryOperationResult,
+  IQuerySourceWrapper,
   ITermComparator,
+  QuerySourceUnidentified,
   QueryFormatType,
 } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
@@ -98,17 +100,14 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     const proto = (<any> globalThis).__proto;
     if (proto?.leanAlgebra && proto.noSkolem && (<any> operation)[Symbol.for('comunica.prototype.fastParsed')] &&
       LeanEvaluator.isSupported(operation)) {
-      this.leanSourceIdentifier ??= (<any> this.mediatorOptimizeQueryOperation).bus.actors
-        .find((actor: any) => actor.name.endsWith('#query-source-identify'));
-      // eslint-disable-next-line unicorn/no-useless-undefined
-      const identified = await this.leanSourceIdentifier!.run({ operation, context }, undefined);
+      const identifiedContext = await this.leanIdentifySources(operation, context);
       let comparator: ITermComparator | undefined;
       if (LeanEvaluator.needsComparator(operation)) {
-        comparator = await this.getLeanComparator(identified.context);
+        comparator = await this.getLeanComparator(identifiedContext);
       }
-      const result = this.leanAlgebraEvaluator.evaluate(operation, identified.context, comparator);
+      const result = this.leanAlgebraEvaluator.evaluate(operation, identifiedContext, comparator);
       if (result) {
-        result.context = identified.context;
+        result.context = identifiedContext;
         return { result };
       }
     }
@@ -129,6 +128,27 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
     const output = await this.evaluate(operation, context);
 
     return { result: output };
+  }
+
+  /**
+   * Prototype: identify the query sources like the source identification actor,
+   * without its handling of SERVICE clauses, which queries from the fast parser do not have.
+   */
+  public async leanIdentifySources(operation: Algebra.Operation, context: IActionContext): Promise<IActionContext> {
+    this.leanSourceIdentifier ??= (<any> this.mediatorOptimizeQueryOperation).bus.actors
+      .find((actor: any) => actor.name.endsWith('#query-source-identify'));
+    const identifier = <any> this.leanSourceIdentifier!;
+    const unidentified: QuerySourceUnidentified[] | undefined = context.get(KeysInitQuery.querySourcesUnidentified);
+    if (!(<any> globalThis).__proto?.leanIdentify || !unidentified || context.has(KeysStatistics.dereferencedLinks) ||
+      !identifier.identifySource) {
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      return (await identifier.run({ operation, context }, undefined)).context;
+    }
+    const sources: IQuerySourceWrapper[] = await Promise.all(unidentified
+      .map(async source => identifier.identifySource(await identifier.expandSource(source), context)));
+    return context
+      .delete(KeysInitQuery.querySourcesUnidentified)
+      .set(KeysQueryOperation.querySources, sources);
   }
 
   /**

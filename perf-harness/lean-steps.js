@@ -71,6 +71,10 @@ const median = (a) => {
     for (let i = -200; i < Number(repsArg); i++) {
       const state = {};
       for (const [ step, run ] of Object.entries(steps)) {
+        // GAP_MS=x idles before each step, like an endpoint between requests
+        if (process.env.GAP_MS) {
+          await new Promise(resolve => setTimeout(resolve, Number(process.env.GAP_MS)));
+        }
         const start = performance.now();
         await run(query, state);
         if (i >= 0) {

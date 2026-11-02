@@ -1,0 +1,66 @@
+SELECT ?s WHERE { ?s rdf:type ?o }
+
+PREFIX rdf: <http://example.org/override#>
+SELECT ?s WHERE { ?s rdf:type ?o }
+
+PREFIX : <http://example.org/>
+select ?s where { ?s :p :o . }
+
+Select Distinct ?s Where { ?s <http://example.org/p> ?o } Order By Desc(?s) Limit 5 Offset 2
+
+SELECT ?s WHERE { ?s <http://example.org/p> 1, 1.5, 1e3, -1, +2, 3. }
+
+SELECT ?s WHERE { ?s <http://example.org/p> "a\tb\"c", 'single', "en"@en, "nl"@nl-be, "x"^^xsd:string }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s WHERE { ?s ex:a.b ?o }
+
+SELECT ?s WHERE { ?s <relative> ?o }
+
+SELECT ?s WHERE { ?s unknown:p ?o }
+
+SELECT ?s WHERE { ?s constructor:p ?o }
+
+SELECT ?s WHERE { ?s toString:p ?o }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s ?o WHERE { ?s ^ex:p/ex:q|ex:r* ?o . ?o ex:s+ ?x . ?x ex:t? ?y }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s ?b WHERE { ?s ex:p ?o . BIND(COALESCE(?o, "x") AS ?b) }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s WHERE { ?s ex:p ?o . FILTER(?o > 3 && ?o != 5 || !BOUND(?o)) }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s WHERE { { ?s ex:p ?o } UNION { ?s ex:q ?o } }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s ?o WHERE { ?s ex:p ?x OPTIONAL { ?s ex:q ?o FILTER(?o = ?x) } }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s WHERE { ?s ex:p [ ex:q ?o ] }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s WHERE { ?s ex:p ?o ; ex:q ?o2 , ?o3 . }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s WHERE { ?s a ex:C . ?s ex:p ?o FILTER(regex(?o, "^a", "i")) }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s WHERE { ?s ex:p $o }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s WHERE { ?s ex:p ?o } ORDER BY ?o DESC(?s)
+
+PREFIX ex: <http://example.org/>
+SELECT ?s WHERE { ?s ex:p "é" }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s WHERE { ?s ex:p ?o . FILTER(?o IN (1, 2)) FILTER(?o NOT IN (3)) }
+
+PREFIX ex: <http://example.org/>
+SELECT * WHERE { ?s ex:p ?o }
+
+PREFIX ex: <http://example.org/>
+SELECT ?s WHERE { ?s ex:p ?o . FILTER(-?o < 2 * 3 + 1) }

@@ -74,17 +74,53 @@ const ESCAPES: Record<string, string> = {
   '\'': '\'',
   '\\': '\\',
 };
-const NUMBER = /^(?:\d+\.\d*(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?|\d+[eE][+-]?\d+|\d+)/u;
+// Sticky expressions, which match at their lastIndex in the query without copying it
+const NUMBER = /\d+\.\d*(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?|\d+[eE][+-]?\d+|\d+/uy;
 // eslint-disable-next-line no-control-regex
-const IRIREF = /^<([^\u0000- <>"{}|^`\\]*)>/u;
-const PNAME = /^([A-Za-z](?:[\w.-]*[\w-])?)?:((?:[\w:-]|\.(?=[\w:.-]*[\w:-]))*)/u;
-const VARNAME = /^[?$](\w+)/u;
-const KEYWORD = /^[A-Za-z_]+/u;
+const IRIREF = /<([^\u0000- <>"{}|^`\\]*)>/uy;
+const PNAME = /([A-Za-z](?:[\w.-]*[\w-])?)?:((?:[\w:-]|\.(?=[\w:.-]*[\w:-]))*)/uy;
+const VARNAME = /[?$](\w+)/uy;
+const KEYWORD = /[A-Za-z_]+/uy;
+const LANGTAG = /@([A-Za-z]+(?:-[A-Za-z0-9]+)*)/uy;
+
+function matchAt(expression: RegExp, query: string, index: number): RegExpExecArray | null {
+  expression.lastIndex = index;
+  return expression.exec(query);
+}
+
+function isLetter(code: number): boolean {
+  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+}
+
+/**
+ * Check if an IRI is absolute, i.e., starts with a scheme.
+ */
+function isAbsoluteIri(iri: string): boolean {
+  if (iri.length === 0 || !isLetter(iri.codePointAt(0)!)) {
+    return false;
+  }
+  for (let i = 1; i < iri.length; i++) {
+    const code = iri.codePointAt(i)!;
+    if (code === 58) {
+      return true;
+    }
+    // Letters, digits, underscore, +, ., -
+    if (!isLetter(code) && !(code >= 48 && code <= 57) && code !== 95 && code !== 43 && code !== 46 && code !== 45) {
+      return false;
+    }
+  }
+  return false;
+}
+
+// Default prefix maps of which all namespaces were verified to be absolute
+const verifiedDefaultPrefixes = new WeakSet<object>();
 
 type TokenType = 'iri' | 'pname' | 'var' | 'string' | 'number' | 'langtag' | 'keyword' | 'punct' | 'eof';
 interface IToken {
   type: TokenType;
   value: string;
+  // For keywords: the upper case value
+  upper?: string;
   // For pnames: the prefix
   prefix?: string;
   // For numbers: the datatype local name
@@ -101,7 +137,8 @@ export class FastSparqlParser {
   private readonly factory: AlgebraFactory;
   private tokens: IToken[] = [];
   private index = 0;
-  private prefixes: Record<string, string> = {};
+  private prefixes: Record<string, string> = Object.create(null);
+  private defaultPrefixes: Record<string, string> = {};
   private variables = new Set<string>();
   private varCount = 0;
 
@@ -118,12 +155,19 @@ export class FastSparqlParser {
   public parse(query: string, defaultPrefixes: Record<string, string> | undefined): Algebra.Operation {
     this.tokens = FastSparqlParser.tokenize(query);
     this.index = 0;
-    this.prefixes = { ...defaultPrefixes };
+    this.prefixes = Object.create(null);
+    this.defaultPrefixes = defaultPrefixes ?? {};
+    if (!verifiedDefaultPrefixes.has(this.defaultPrefixes)) {
+      if (!Object.values(this.defaultPrefixes).every(isAbsoluteIri)) {
+        throw new FastParserFallbackError('Relative default prefixes');
+      }
+      verifiedDefaultPrefixes.add(this.defaultPrefixes);
+    }
     this.variables = new Set(this.tokens.filter(token => token.type === 'var').map(token => token.value));
     this.varCount = 0;
     const operation = this.parseQuery();
     // Mark the operation, so that the query processor can use a lean optimization pipeline
-    Object.defineProperty(operation, Symbol.for('comunica.prototype.fastParsed'), { value: true });
+    (<any> operation)[Symbol.for('comunica.prototype.fastParsed')] = true;
     return operation;
   }
 
@@ -145,10 +189,9 @@ export class FastSparqlParser {
         }
         continue;
       }
-      const rest = query.slice(i, i + 4096);
       let match: RegExpExecArray | null;
       if (char === '<') {
-        match = IRIREF.exec(rest);
+        match = matchAt(IRIREF, query, i);
         if (match) {
           tokens.push({ type: 'iri', value: match[1] });
           i += match[0].length;
@@ -162,7 +205,7 @@ export class FastSparqlParser {
         continue;
       }
       if (char === '?' || char === '$') {
-        match = VARNAME.exec(rest);
+        match = matchAt(VARNAME, query, i);
         if (match) {
           tokens.push({ type: 'var', value: match[1] });
           i += match[0].length;
@@ -207,7 +250,7 @@ export class FastSparqlParser {
         continue;
       }
       if (char === '@') {
-        match = /^@([A-Za-z]+(?:-[A-Za-z0-9]+)*)/u.exec(rest);
+        match = matchAt(LANGTAG, query, i);
         if (!match || match[1] !== match[1].toLowerCase()) {
           throw new FastParserFallbackError('Unsupported language tag');
         }
@@ -219,9 +262,11 @@ export class FastSparqlParser {
         throw new FastParserFallbackError('Numbers starting with a dot');
       }
       if (char >= '0' && char <= '9') {
-        match = NUMBER.exec(rest)!;
+        match = matchAt(NUMBER, query, i)!;
         const lexical = match[0];
-        const datatype = /[eE]/u.test(lexical) ? 'double' : (lexical.includes('.') ? 'decimal' : 'integer');
+        const datatype = lexical.includes('e') || lexical.includes('E') ?
+          'double' :
+            (lexical.includes('.') ? 'decimal' : 'integer');
         if (lexical.endsWith('.') && datatype === 'decimal') {
           // A trailing dot ends a triple, as in `?s ?p 5.`
           tokens.push({ type: 'number', value: lexical.slice(0, -1), datatype: 'integer' });
@@ -232,18 +277,19 @@ export class FastSparqlParser {
         i += lexical.length;
         continue;
       }
-      if (/[A-Za-z:]/u.test(char)) {
-        match = PNAME.exec(rest);
+      if (char === ':' || isLetter(char.codePointAt(0)!)) {
+        match = matchAt(PNAME, query, i);
         if (match) {
-          if (/[\\%]/u.test(query[i + match[0].length] ?? '')) {
+          const next = query[i + match[0].length];
+          if (next === '\\' || next === '%') {
             throw new FastParserFallbackError('Escaped local names');
           }
           tokens.push({ type: 'pname', prefix: match[1] ?? '', value: match[2] });
           i += match[0].length;
           continue;
         }
-        match = KEYWORD.exec(rest)!;
-        tokens.push({ type: 'keyword', value: match[0] });
+        match = matchAt(KEYWORD, query, i)!;
+        tokens.push({ type: 'keyword', value: match[0], upper: match[0].toUpperCase() });
         i += match[0].length;
         continue;
       }
@@ -274,7 +320,7 @@ export class FastSparqlParser {
 
   private isKeyword(name: string, offset = 0): boolean {
     const token = this.peek(offset);
-    return token.type === 'keyword' && token.value.toUpperCase() === name;
+    return token.type === 'keyword' && token.upper === name;
   }
 
   private isPunct(value: string, offset = 0): boolean {
@@ -463,7 +509,7 @@ export class FastSparqlParser {
         if (depth === 0) {
           return false;
         }
-      } else if (depth === 1 && token.type === 'keyword' && token.value.toUpperCase() === 'FILTER') {
+      } else if (depth === 1 && token.type === 'keyword' && token.upper === 'FILTER') {
         return true;
       }
     }
@@ -658,17 +704,21 @@ export class FastSparqlParser {
       return this.dataFactory.namedNode(this.resolveIri(token.value));
     }
     if (token.type === 'pname') {
-      const namespace = this.prefixes[token.prefix!];
+      // Namespaces are absolute, so prefixed names are as well
+      const namespace = this.prefixes[token.prefix!] ??
+        (Object.prototype.hasOwnProperty.call(this.defaultPrefixes, token.prefix!) ?
+          this.defaultPrefixes[token.prefix!] :
+          undefined);
       if (namespace === undefined) {
         throw new FastParserFallbackError('Unknown prefix');
       }
-      return this.dataFactory.namedNode(this.resolveIri(namespace + token.value));
+      return this.dataFactory.namedNode(namespace + token.value);
     }
     throw new FastParserFallbackError('Expected IRI');
   }
 
   private resolveIri(iri: string): string {
-    if (!/^[A-Za-z][\w+.-]*:/u.test(iri)) {
+    if (!isAbsoluteIri(iri)) {
       throw new FastParserFallbackError('Relative IRIs');
     }
     return iri;

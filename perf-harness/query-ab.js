@@ -37,6 +37,10 @@ const median = (a) => {
     for (let i = -Math.min(50, reps); i < reps; i++) {
       for (const [ variant, flags ] of variants) {
         globalThis.__proto = flags;
+        // GAP_MS=x idles before each execution, like an endpoint between requests
+        if (process.env.GAP_MS) {
+          await new Promise(resolve => setTimeout(resolve, Number(process.env.GAP_MS)));
+        }
         const start = performance.now();
         await execute(query);
         if (i >= 0) {

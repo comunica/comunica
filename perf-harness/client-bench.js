@@ -46,6 +46,9 @@ const clients = {
 };
 
 const median = (a) => {
+  if (process.env.MEAN) {
+    return a.reduce((x, y) => x + y, 0) / a.length;
+  }
   const s = [ ...a ].sort((x, y) => x - y);
   return s[Math.floor(s.length / 2)];
 };
@@ -54,22 +57,41 @@ const median = (a) => {
   const endpoints = targets.map(t => t.split('='));
   const states = new Map(endpoints.map(([ name ]) => [ name, {} ]));
   const times = new Map();
-  for (let r = -20; r < Number(repsArg); r++) {
-    for (const [ client, run ] of Object.entries(clients)) {
-      for (const [ name, endpoint ] of endpoints) {
-        const start = performance.now();
-        await run(endpoint, states.get(name));
-        if (r >= 0) {
-          const key = `${client}\t${name}`;
-          const list = times.get(key) ?? [];
-          list.push(performance.now() - start);
-          times.set(key, list);
+  const record = async(client, run, name, endpoint, r) => {
+    const start = performance.now();
+    await run(endpoint, states.get(name));
+    if (r >= 0) {
+      const key = `${client}\t${name}`;
+      const list = times.get(key) ?? [];
+      list.push(performance.now() - start);
+      times.set(key, list);
+    }
+  };
+  if (process.env.SEQUENTIAL) {
+    // Back-to-back requests to one endpoint with one client at a time, like a benchmark runner
+    for (const [ name, endpoint ] of endpoints) {
+      for (const [ client, run ] of Object.entries(clients)
+        .filter(([ client ]) => !process.env.CLIENTS || process.env.CLIENTS.split(',').includes(client))) {
+        for (let r = -20; r < Number(repsArg); r++) {
+          await record(client, run, name, endpoint, r);
+        }
+      }
+    }
+  } else {
+    for (let r = -20; r < Number(repsArg); r++) {
+      for (const [ client, run ] of Object.entries(clients)) {
+        for (const [ name, endpoint ] of endpoints) {
+          await record(client, run, name, endpoint, r);
         }
       }
     }
   }
-  console.log(`client\t${endpoints.map(([ name ]) => name).join('\t')}`);
-  for (const client of Object.keys(clients)) {
-    console.log(`${client}\t${endpoints.map(([ name ]) => median(times.get(`${client}\t${name}`)).toFixed(3)).join('\t')}`);
+  const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
+  console.log(`client\t${endpoints.map(([ name ]) => `${name}(median/mean)`).join('\t')}`);
+  for (const client of (process.env.CLIENTS?.split(',') ?? Object.keys(clients))) {
+    console.log(`${client}\t${endpoints.map(([ name ]) => {
+      const list = times.get(`${client}\t${name}`);
+      return `${median(list).toFixed(3)}/${mean(list).toFixed(3)}`;
+    }).join('\t')}`);
   }
 })();

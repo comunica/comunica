@@ -34,6 +34,10 @@ interface IItem {
   path?: Algebra.Operation;
   operation?: Algebra.Operation;
   variables: string[];
+  /**
+   * If other patterns in the group have the same subject, so that its quads can be read at once.
+   */
+  star?: boolean;
 }
 
 interface IState {
@@ -46,6 +50,10 @@ interface IState {
    * Quads of items with a constant subject, read while estimating their cardinality, per predicate.
    */
   reads: Map<IItem, RDF.Quad[][]>;
+  /**
+   * Quads of subjects of star patterns by predicate, or null for subjects with too many quads.
+   */
+  subjects: Map<string, Map<string, RDF.Quad[]> | null>;
 }
 
 /**
@@ -56,6 +64,11 @@ interface IState {
  * Returns undefined for other queries, or when evaluation exceeds its budget.
  */
 export class LeanEvaluator {
+  /**
+   * The maximum number of quads of a subject to read at once for star patterns.
+   */
+  public static readonly MAX_SUBJECT_QUADS = 256;
+
   private readonly certainCache = new WeakMap<Algebra.Operation, Set<string>>();
   private readonly variablesCache = new WeakMap<Algebra.Operation, Set<string>>();
   private readonly itemsCache = new WeakMap<Algebra.Operation, IItem[]>();
@@ -197,6 +210,7 @@ export class LeanEvaluator {
       dataFactory,
       work: 0,
       reads: new Map(),
+      subjects: new Map(),
     };
 
     // Unwrap the solution modifiers
@@ -384,7 +398,7 @@ export class LeanEvaluator {
         const resolvedPredicate = LeanEvaluator.resolve(predicate, current);
         const quads = reads && resolvedPredicate === predicate ?
           reads[predicateIndex] :
-          this.readQuads(subject, resolvedPredicate, object, state);
+          this.lookup(item, subject, resolvedPredicate, object, state);
         for (const quad of quads) {
           if (LeanEvaluator.assign(current, subject, quad.subject, assigned) &&
             LeanEvaluator.assign(current, resolvedPredicate, quad.predicate, assigned) &&
@@ -641,7 +655,7 @@ export class LeanEvaluator {
     let total = 0;
     for (const predicate of item.predicates!) {
       const quads: RDF.Quad[] = [];
-      for (const quad of this.readQuads(item.subject!, predicate, item.object!, state)) {
+      for (const quad of this.lookup(item, item.subject!, predicate, item.object!, state)) {
         if (++total > this.maxStartCardinality) {
           return;
         }
@@ -691,6 +705,22 @@ export class LeanEvaluator {
         }
       };
       collect(operation);
+      // Mark patterns that share their subject with another pattern with constant predicates
+      const subjectCounts = new Map<string, number>();
+      const starKey = (item: IItem): string | undefined => item.predicates &&
+        item.predicates.every(predicate => predicate.termType === 'NamedNode') ?
+        LeanEvaluator.termKey(item.subject) :
+        undefined;
+      for (const item of items) {
+        const key = starKey(item);
+        if (key !== undefined) {
+          subjectCounts.set(key, (subjectCounts.get(key) ?? 0) + 1);
+        }
+      }
+      for (const item of items) {
+        const key = starKey(item);
+        item.star = key !== undefined && subjectCounts.get(key)! > 1;
+      }
       this.itemsCache.set(operation, items);
     }
     return items;
@@ -779,6 +809,46 @@ export class LeanEvaluator {
         throw new FallbackError(`Variable ${variable} can not be substituted`);
       }
     }
+  }
+
+  /**
+   * Look up the quads of a pattern, reading all quads of the subject at once for star patterns,
+   * as one index seek is much more expensive than iterating over a few quads.
+   */
+  private lookup(item: IItem, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, state: IState):
+  Iterable<RDF.Quad> {
+    if (!item.star || subject.termType === 'Variable' || predicate.termType === 'Variable') {
+      return this.readQuads(subject, predicate, object, state);
+    }
+    const key = LeanEvaluator.termKey(subject);
+    let byPredicate = state.subjects.get(key);
+    if (byPredicate === undefined) {
+      byPredicate = new Map();
+      let count = 0;
+      for (const quad of this.readQuads(
+        subject,
+        state.dataFactory.variable('__lean_predicate'),
+        state.dataFactory.variable('__lean_object'),
+        state,
+      )) {
+        if (++count > LeanEvaluator.MAX_SUBJECT_QUADS) {
+          byPredicate = null;
+          break;
+        }
+        const quads = byPredicate.get(quad.predicate.value);
+        if (quads) {
+          quads.push(quad);
+        } else {
+          byPredicate.set(quad.predicate.value, [ quad ]);
+        }
+      }
+      state.subjects.set(key, byPredicate);
+    }
+    if (!byPredicate) {
+      return this.readQuads(subject, predicate, object, state);
+    }
+    const quads = byPredicate.get(predicate.value) ?? [];
+    return object.termType === 'Variable' ? quads : quads.filter(quad => quad.object.equals(object));
   }
 
   private readQuads(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, state: IState): Iterable<RDF.Quad> {
