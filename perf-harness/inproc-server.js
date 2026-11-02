@@ -77,8 +77,57 @@ endpoint.handleRequest = async function(...args) {
     globalThis.gc();
     process.stderr.write(`MEM requests ${index} heapUsed ${(process.memoryUsage().heapUsed / 1e6).toFixed(1)} MB\n`);
   }
+  // REQ_LOG=<file> records per request its URL, start and end, and all GC pauses, written on SIGUSR2
+  if (process.env.REQ_LOG) {
+    const response = args[5];
+    const entry = { url: args[4].url, start: performance.now() };
+    reqLog.push(entry);
+    currentEntry = entry;
+    response.on('finish', () => {
+      entry.end = performance.now();
+    });
+  }
   return handleRequest.apply(this, args);
 };
+
+let currentEntry;
+const reqLog = [];
+if (process.env.REQ_LOG) {
+  const { QueryEngineBase } = require(path.resolve(__dirname, '../packages/actor-init-query/lib/QueryEngineBase.js'));
+  const query = QueryEngineBase.prototype.query;
+  QueryEngineBase.prototype.query = async function(...args) {
+    const entry = currentEntry;
+    entry.queryStart = performance.now();
+    try {
+      return await query.apply(this, args);
+    } finally {
+      entry.queryEnd = performance.now();
+    }
+  };
+}
+const gcLog = [];
+if (process.env.REQ_LOG) {
+  const { PerformanceObserver } = require('node:perf_hooks');
+  new PerformanceObserver(list => {
+    for (const entry of list.getEntries()) {
+      gcLog.push({ start: entry.startTime, duration: entry.duration, kind: entry.detail?.kind });
+    }
+  }).observe({ entryTypes: [ 'gc' ] });
+  process.on('SIGUSR2', () => {
+    require('node:fs').writeFileSync(process.env.REQ_LOG, JSON.stringify({ origin: performance.timeOrigin, requests: reqLog, gcs: gcLog }));
+    process.stderr.write(`REQ_LOG written: ${reqLog.length} requests, ${gcLog.length} GCs\n`);
+    reqLog.length = 0;
+    gcLog.length = 0;
+  });
+}
+
+// TOGGLE_FLAG=<name> toggles that prototype flag on SIGHUP, for A/B rounds on one server
+if (process.env.TOGGLE_FLAG) {
+  process.on('SIGHUP', () => {
+    globalThis.__proto[process.env.TOGGLE_FLAG] = !globalThis.__proto[process.env.TOGGLE_FLAG];
+    process.stderr.write(`${process.env.TOGGLE_FLAG}: ${globalThis.__proto[process.env.TOGGLE_FLAG]}\n`);
+  });
+}
 
 const devNull = new (require('node:stream').Writable)({ write(chunk, encoding, callback) {
   callback();
