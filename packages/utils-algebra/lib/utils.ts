@@ -8,11 +8,9 @@ import type {
   PreOrderMappingReturn,
   Safeness,
   TransformContext,
-  VisitChildren,
-  VisitChildrenHelpers,
   VisitContext,
 } from '@traqula/core';
-import { TransformerSubTyped, visitOnlyKnownKeys } from '@traqula/core';
+import { forEveryNodeType, TransformerSubTyped, visitOnlyKnownKeys } from '@traqula/core';
 import type { DistinctTerms, KnownOperation, Nodes, Operation } from './Algebra';
 import { TypesComunica } from './TypesComunica';
 
@@ -403,40 +401,41 @@ export const visitOperation = transformer.visitNode.bind(transformer);
 export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);
 
 /**
- * Visit the values held directly by the given operation that a traversal steps into, without descending into them.
- * Of an operation type Comunica knows, these are the values of its keys that can hold operations.
- * Of other operation types, these are the objects held by any key but the metadata.
+ * Visit the operations held directly by the given operation that the transformer steps into,
+ * without descending into them.
+ * Of an operation type Comunica knows, these are the operations under its keys that can hold operations.
+ * Of other operation types, these are the operations under any key but the metadata.
  *
  * @param operation The operation to take apart.
- * @param visitor Called with each value, the elements of an array one by one.
+ * @param visitor Called with each operation and the key holding it, the elements of an array one by one.
  * @param ignoreKeys Keys to skip on top of the ones that are skipped anyway.
  */
 export function visitOperationMembers(
   operation: Operation,
-  visitor: (value: unknown, key: string) => void,
+  visitor: (value: Operation, key: string) => void,
   ignoreKeys?: Set<string>,
 ): void {
-  const visitKey = (holder: object, key: string | number): void => {
-    const value: unknown = (<Record<string, unknown>> holder)[key];
-    if (value === null || typeof value !== 'object' || ignoreKeys?.has(String(key))) {
-      return;
-    }
+  // TODO(major): take the transformer to visit with as third argument, instead of the keys to ignore.
+  const membersTransformer = ignoreKeys ?
+    transformer.clone({ ignoreKeys: new Set([ ...defaultObjectContext.ignoreKeys!, ...ignoreKeys ]) }) :
+    transformer;
+
+  // Collect the operations the transformer steps into from the given operation, without going any deeper
+  const members = new Set<object>();
+  membersTransformer.visitNode(operation, forEveryNodeType({
+    preVisitor: (node: object): VisitContext => node === operation ? {} : { continue: false },
+    visitor: (node: object): void => {
+      members.add(node);
+    },
+  }));
+  members.delete(operation);
+
+  // Visitors are not told the key they visit, so we find the keys of the members in the operation, in their order
+  for (const [ key, value ] of Object.entries(operation)) {
     for (const entry of Array.isArray(value) ? value : [ value ]) {
-      visitor(entry, String(key));
-    }
-  };
-  const visitChildren = <VisitChildren | undefined> defaultNodePreVisitor
-    ?.[<KnownOperation['type']> operation.type]?.visitChildren;
-  if (visitChildren) {
-    visitChildren(operation, <VisitChildrenHelpers> {
-      visitKey,
-      stepIntoKey: (holder: Record<string, unknown>, key: string) => holder[key],
-    });
-    return;
-  }
-  for (const key of Object.keys(operation)) {
-    if (!defaultObjectContext.ignoreKeys!.has(key)) {
-      visitKey(operation, key);
+      if (members.has(entry)) {
+        visitor(entry, key);
+      }
     }
   }
 }

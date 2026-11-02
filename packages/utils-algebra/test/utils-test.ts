@@ -1,4 +1,3 @@
-import type { VisitChildrenHelpers } from '@traqula/core';
 import { DataFactory } from 'rdf-data-factory';
 import type { Operation } from '../lib/Algebra';
 import { Types } from '../lib/Algebra';
@@ -6,7 +5,6 @@ import { AlgebraFactory } from '../lib/AlgebraFactory';
 import type { AlgebraTransformer } from '../lib/utils';
 import {
   algebraTransformer,
-  defaultNodePreVisitor,
   getSubOperations,
   inScopeVariables,
   transformer,
@@ -178,7 +176,7 @@ describe('visitOperationMembers', () => {
     expect(visited).toEqual([ 'input' ]);
   });
 
-  it('visits the objects of every key but the metadata of an operation type Comunica does not know', () => {
+  it('visits the operations of every key but the metadata of an operation type Comunica does not know', () => {
     const input = AF.createNop();
     const operation = { type: 'unknown', input, name: 'unknown', metadata: { hidden: AF.createNop() }};
     const visited: [string, unknown][] = [];
@@ -188,22 +186,13 @@ describe('visitOperationMembers', () => {
     expect(visited).toEqual([[ 'input', input ]]);
   });
 
-  it('visits the values within the values a node pre-visitor steps into', () => {
-    const input = AF.createNop();
-    const operation = { type: 'stepping', wrapper: { input }};
-    const visited: [string, unknown][] = [];
-    (<any> defaultNodePreVisitor).stepping = {
-      visitChildren: (op: any, { visitKey, stepIntoKey }: VisitChildrenHelpers) =>
-        visitKey(stepIntoKey(op, 'wrapper'), 'input'),
-    };
+  it('does not visit the operations within other objects held by an operation', () => {
+    const operation = { type: 'unknown', wrapper: { input: AF.createNop() }, term: DF.variable('v') };
+    const visited: unknown[] = [];
 
-    try {
-      visitOperationMembers(operation, (value, key) => visited.push([ key, value ]));
-    } finally {
-      delete (<any> defaultNodePreVisitor).stepping;
-    }
+    visitOperationMembers(operation, value => visited.push(value));
 
-    expect(visited).toEqual([[ 'input', input ]]);
+    expect(visited).toEqual([]);
   });
 });
 
