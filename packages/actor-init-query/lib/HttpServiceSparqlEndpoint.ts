@@ -11,7 +11,7 @@ import type { TLSSocket } from 'node:tls';
 import * as url from 'node:url';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
+import type { ICliArgsHandler, QueryQuads, QueryStringContext, QueryType } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraTransformer } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -25,6 +25,7 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
+import { EndpointWarmup } from './EndpointWarmup';
 import type { IGraphStoreResult } from './HttpServiceGraphStore';
 import { HttpServiceGraphStore } from './HttpServiceGraphStore';
 import { VoidMetadataEmitter } from './VoidMetadataEmitter';
@@ -74,6 +75,7 @@ export class HttpServiceSparqlEndpoint {
   public readonly freshWorkerPerQuery: boolean;
   public readonly contextOverride: boolean;
   public readonly emitVoid: boolean;
+  public readonly warmup: number;
 
   public readonly voidMetadataEmitter: VoidMetadataEmitter;
   public readonly graphStore: HttpServiceGraphStore | undefined;
@@ -88,6 +90,7 @@ export class HttpServiceSparqlEndpoint {
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
     this.contextOverride = Boolean(args.contextOverride);
     this.emitVoid = Boolean(args.emitVoid);
+    this.warmup = args.warmup ?? 0;
     this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
     this.graphStore = args.graphStore ? new HttpServiceGraphStore(this.context) : undefined;
 
@@ -189,6 +192,7 @@ export class HttpServiceSparqlEndpoint {
     const freshWorkerPerQuery: boolean = args.freshWorker;
     const contextOverride: boolean = args.contextOverride;
     const emitVoid: boolean = args.emitVoid;
+    const warmup: number = args.warmup;
     const graphStore: boolean = args.graphStore;
     const port = args.port;
     const timeout = args.timeout * 1_000;
@@ -209,6 +213,7 @@ export class HttpServiceSparqlEndpoint {
       mainModulePath: moduleRootPath,
       port,
       timeout,
+      warmup,
       workers,
     };
   }
@@ -290,6 +295,26 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Execute generic queries over the sources of this endpoint, so that the just-in-time compiler has optimized the
+   * engine before it handles requests.
+   * Failures are logged, but do not prevent the worker from starting.
+   * @param engine A SPARQL engine.
+   * @param stderr Error stream to write to.
+   */
+  public async warmUp(engine: QueryEngineBase, stderr: Writable): Promise<void> {
+    const start = Date.now();
+    try {
+      const { queries, executions } = await new EndpointWarmup(engine, <QueryStringContext> {
+        ...this.context,
+        [KeysQueryOperation.readOnly.name]: true,
+      }).run(this.warmup, this.timeout);
+      stderr.write(`Worker ${process.pid} warmed up with ${executions} executions of ${queries} queries in ${Date.now() - start} ms.\n`);
+    } catch (error: unknown) {
+      stderr.write(`Worker ${process.pid} could not warm up: ${(<Error> error).message}\n`);
+    }
+  }
+
+  /**
    * Start the HTTP service as worker.
    * @param {module:stream.internal.Writable} stdout The output stream to log to.
    * @param {module:stream.internal.Writable} stderr The error stream to log errors to.
@@ -302,6 +327,11 @@ export class HttpServiceSparqlEndpoint {
     const variants: { type: string; quality: number }[] = [];
     for (const type of Object.keys(mediaTypes)) {
       variants.push({ type, quality: mediaTypes[type] });
+    }
+
+    // Warm up before accepting requests, so that they are not slowed down by just-in-time compilation
+    if (this.warmup > 0) {
+      await this.warmUp(engine, stderr);
     }
 
     // Start the server
@@ -1087,6 +1117,10 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   freshWorkerPerQuery?: boolean;
   contextOverride?: boolean;
   emitVoid?: boolean;
+  /**
+   * The number of generic query executions with which each worker warms up before it accepts requests.
+   */
+  warmup?: number;
   graphStore?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;

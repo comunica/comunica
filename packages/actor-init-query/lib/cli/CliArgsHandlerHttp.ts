@@ -58,6 +58,12 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
           type: 'boolean',
           describe: 'Generate VoID descriptions and include them in the service description',
         },
+        warmup: {
+          type: 'number',
+          describe: 'Number of generic query executions with which each worker warms up before it accepts requests, ' +
+            'so that requests are not slowed down by just-in-time compilation',
+          default: 0,
+        },
         graphStore: {
           type: 'boolean',
           describe: 'Expose the SPARQL Graph Store HTTP Protocol, which reads and writes whole RDF graphs',
