@@ -119,6 +119,11 @@ export interface IBindingsAggregator {
 
 export interface IInternalEvaluator {
   evaluatorExpressionEvaluation: (expr: Expression, mapping: RDF.Bindings) => Promise<TermExpression>;
+  /**
+   * Evaluate the given expression without creating a promise, if it is a term or a variable.
+   * @return The evaluated term, or undefined if the expression must be evaluated asynchronously.
+   */
+  evaluateDirectly?: (expr: Expression, mapping: RDF.Bindings) => TermExpression | undefined;
 
   context: IActionContext;
 }
