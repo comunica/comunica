@@ -59,7 +59,9 @@ let equal = 0;
 let fallback = 0;
 let different = 0;
 for (const file of process.argv.slice(2)) {
-  const queries = fs.readFileSync(file, 'utf8').split(/\n\s*\n/u).map(q => q.trim()).filter(Boolean);
+  const content = fs.readFileSync(file, 'utf8');
+  // WHOLE=1 treats each file as a single query
+  const queries = process.env.WHOLE ? [ content ] : content.split(/\n\s*\n/u).map(q => q.trim()).filter(Boolean);
   for (const [ i, query ] of queries.entries()) {
     const name = `${path.basename(file, '.sparql')}#${i}`;
     let expected;
