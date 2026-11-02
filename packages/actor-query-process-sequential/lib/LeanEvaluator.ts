@@ -840,7 +840,7 @@ export class LeanEvaluator {
    */
   public orderItems(node: IGroupNode, row: Row, state: IState): IOrder {
     // The order only depends on which variables are bound
-    const boundKey = Object.keys(row).join(' ');
+    const boundKey = LeanEvaluator.boundVariables(row).join(' ');
     let order = node.orders.get(boundKey);
     if (!order) {
       const items = this.computeOrder(node.items, row, state);
@@ -868,7 +868,7 @@ export class LeanEvaluator {
     }
     // The variables bound before each position
     const boundBefore: Set<string>[] = [];
-    const bound = new Set(Object.keys(row));
+    const bound = new Set(LeanEvaluator.boundVariables(row));
     for (const item of items) {
       boundBefore.push(new Set(bound));
       for (const variable of item.kind === 'node' ? item.node.certain : item.variables) {
@@ -908,7 +908,7 @@ export class LeanEvaluator {
     const seekCost = typeof flag === 'number' ? flag : LeanEvaluator.SEEK_COST;
     const first = items[0];
     const expected = first.kind === 'pattern' ? first.count : undefined;
-    const bound = new Set(Object.keys(row));
+    const bound = new Set(LeanEvaluator.boundVariables(row));
     return items.map((item, index) => {
       let materialize = false;
       if (index > 0 && expected !== undefined && Number.isFinite(expected) && item.kind === 'pattern' &&
@@ -964,7 +964,7 @@ export class LeanEvaluator {
   }
 
   private computeOrder(items: IItem[], row: Row, state: IState): IItem[] {
-    const bound = new Set(Object.keys(row));
+    const bound = new Set(LeanEvaluator.boundVariables(row));
     // Prototype: a number for leanStartLimit overrides the maximum start cardinality
     const startLimit: number = (<any> globalThis).__proto?.leanStartLimit ?? this.maxStartCardinality;
     if (items.length === 1) {
@@ -1285,10 +1285,24 @@ export class LeanEvaluator {
   }
 
   public static unassign(row: Row, assigned: string[]): void {
-    for (const variable of assigned) {
-      delete row[variable];
+    // Prototype: deleting properties makes rows slow dictionary objects, which are slow to copy
+    if ((<any> globalThis).__proto?.leanFastRows) {
+      for (const variable of assigned) {
+        (<Record<string, RDF.Term | undefined>> row)[variable] = undefined;
+      }
+    } else {
+      for (const variable of assigned) {
+        delete row[variable];
+      }
     }
     assigned.length = 0;
+  }
+
+  /**
+   * The variables that are bound in a row, as unbound variables may have an undefined value.
+   */
+  public static boundVariables(row: Row): string[] {
+    return Object.keys(row).filter(variable => row[variable] !== undefined);
   }
 
   /**
