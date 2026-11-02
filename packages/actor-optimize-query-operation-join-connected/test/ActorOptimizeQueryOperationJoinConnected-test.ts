@@ -110,6 +110,47 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
           ]));
       });
 
+      it('should keep a connected join in its original order', () => {
+        const op = factory.createJoin([
+          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+          factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
+        ]);
+        expect(ActorOptimizeQueryOperationJoinConnected.cluster(op, factory)).toBe(op);
+      });
+
+      it('should keep a connected join in its original order with empty metadata', () => {
+        const op = factory.createJoin([
+          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+          factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
+        ]);
+        op.metadata = {};
+        expect(ActorOptimizeQueryOperationJoinConnected.cluster(op, factory)).toBe(op);
+      });
+
+      it('should create a new join for a connected join with metadata', () => {
+        const op = factory.createJoin([
+          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+          factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
+        ]);
+        op.metadata = { key: 'value' };
+        const result = ActorOptimizeQueryOperationJoinConnected.cluster(op, factory);
+        expect(result).not.toBe(op);
+        expect(result).toEqual(factory.createJoin(op.input));
+      });
+
+      it('should create a new join for a connected join that is reordered', () => {
+        const op = factory.createJoin([
+          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+          factory.createPattern(DF.variable('c'), DF.namedNode('p2'), DF.variable('d')),
+          factory.createPattern(DF.variable('b'), DF.namedNode('p3'), DF.variable('c')),
+        ]);
+        expect(ActorOptimizeQueryOperationJoinConnected.cluster(op, factory)).toEqual(factory.createJoin([
+          op.input[0],
+          op.input[2],
+          op.input[1],
+        ]));
+      });
+
       it('should handle empty join entries', () => {
         expect(ActorOptimizeQueryOperationJoinConnected.cluster(factory.createJoin([]), factory))
           .toEqual(factory.createJoin([]));
@@ -240,6 +281,32 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
               factory.createPattern(DF.variable('s2x'), DF.namedNode('p2'), DF.variable('s3x')),
             ]),
           ], false));
+      });
+    });
+
+    describe('getInScopeVariables', () => {
+      it('should read the variables of a pattern', () => {
+        expect(ActorOptimizeQueryOperationJoinConnected.getInScopeVariables(factory.createPattern(
+          DF.variable('s'),
+          DF.namedNode('p'),
+          DF.variable('o'),
+          DF.variable('g'),
+        ))).toEqual({ s: true, o: true, g: true });
+      });
+
+      it('should find the variables of a pattern with a quoted triple', () => {
+        expect(ActorOptimizeQueryOperationJoinConnected.getInScopeVariables(factory.createPattern(
+          DF.quad(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+          DF.namedNode('p'),
+          DF.variable('x'),
+        ))).toEqual({ s: true, o: true, x: true });
+      });
+
+      it('should find the variables of other operations', () => {
+        expect(ActorOptimizeQueryOperationJoinConnected.getInScopeVariables(factory.createJoin([
+          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+          factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
+        ]))).toEqual({ a: true, b: true, c: true });
       });
     });
 

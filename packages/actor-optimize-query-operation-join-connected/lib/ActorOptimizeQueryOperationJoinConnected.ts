@@ -39,8 +39,7 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
     const initialClusters: IJoinCluster[] = op.input
       .flatMap(subOp => algebraUtils.isKnownOperation(subOp, Algebra.Types.JOIN) ? subOp.input : [ subOp ])
       .map(subOp => ({
-        inScopeVariables: Object.fromEntries(algebraUtils.inScopeVariables(subOp)
-          .map(variable => [ variable.value, true ])),
+        inScopeVariables: ActorOptimizeQueryOperationJoinConnected.getInScopeVariables(subOp),
         entries: [ subOp ],
       }));
 
@@ -52,10 +51,40 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
       newClusters = ActorOptimizeQueryOperationJoinConnected.clusterIteration(oldClusters);
     } while (oldClusters.length !== newClusters.length);
 
+    // A join that forms a single cluster in its original order, without nested joins, stays the same
+    if (newClusters.length === 1 && op.input.length > 1 && newClusters[0].entries.length === op.input.length &&
+      newClusters[0].entries.every((entry, index) => entry === op.input[index]) &&
+      (!op.metadata || Object.keys(op.metadata).length === 0)) {
+      return op;
+    }
+
     // Create new join operation of latest clusters
     const subJoins = newClusters
       .map(cluster => cluster.entries.length === 1 ? cluster.entries[0] : factory.createJoin(cluster.entries));
     return subJoins.length === 1 ? subJoins[0] : factory.createJoin(subJoins, false);
+  }
+
+  /**
+   * Determine the variables in scope of a join entry.
+   * The variables of patterns without quoted triples are read from their terms, without traversing them.
+   * @param op A join entry.
+   */
+  public static getInScopeVariables(op: Algebra.Operation): Record<string, boolean> {
+    if (algebraUtils.isKnownOperation(op, Algebra.Types.PATTERN)) {
+      const variables: Record<string, boolean> = {};
+      let quoted = false;
+      for (const term of [ op.subject, op.predicate, op.object, op.graph ]) {
+        if (term.termType === 'Variable') {
+          variables[term.value] = true;
+        } else if (term.termType === 'Quad') {
+          quoted = true;
+        }
+      }
+      if (!quoted) {
+        return variables;
+      }
+    }
+    return Object.fromEntries(algebraUtils.inScopeVariables(op).map(variable => [ variable.value, true ]));
   }
 
   /**
