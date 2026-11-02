@@ -290,7 +290,7 @@ describe('ActorQueryResultSerializeSparqlJson', () => {
         ))).handle.data;
         const result = stringifyStream(data);
         await new Promise(resolve => setImmediate(resolve));
-        stream._push(BF.bindings([[ DF.variable('k1'), DF.namedNode('v1') ]]));
+        (<any> stream)._push(BF.bindings([[ DF.variable('k1'), DF.namedNode('v1') ]]));
         await new Promise(resolve => setImmediate(resolve));
         stream.close();
         await expect(result).resolves.toBe(
