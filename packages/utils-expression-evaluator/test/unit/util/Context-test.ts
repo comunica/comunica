@@ -2,6 +2,7 @@ import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entrie
 import { ActionContext } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { prepareEvaluatorActionContext } from '../../../lib';
+import { defaultSuperTypeProvider } from '../../../lib/util/Context';
 
 const DF = new DataFactory();
 
@@ -41,5 +42,24 @@ describe('prepareEvaluatorActionContext', () => {
       [KeysInitQuery.extensionFunctionCreator.name]: async() => async() => undefined,
       [KeysInitQuery.extensionFunctions.name]: {},
     })))).toThrow('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
+  });
+
+  it('shares the default super type provider across contexts', () => {
+    const first = prepareEvaluatorActionContext(baseContext);
+    const second = prepareEvaluatorActionContext(baseContext);
+    expect(first.getSafe(KeysExpressionEvaluator.superTypeProvider)).toBe(defaultSuperTypeProvider);
+    expect(second.getSafe(KeysExpressionEvaluator.superTypeProvider)).toBe(defaultSuperTypeProvider);
+  });
+
+  it('only discovers built-in types with the default super type provider', () => {
+    expect(defaultSuperTypeProvider.discoverer('https://example.org/type')).toBe('term');
+  });
+
+  it('keeps a given super type provider', () => {
+    const superTypeProvider = { cache: defaultSuperTypeProvider.cache, discoverer: () => 'term' };
+    const prepared = prepareEvaluatorActionContext(baseContext.merge(new ActionContext({
+      [KeysExpressionEvaluator.superTypeProvider.name]: superTypeProvider,
+    })));
+    expect(prepared.getSafe(KeysExpressionEvaluator.superTypeProvider)).toBe(superTypeProvider);
   });
 });

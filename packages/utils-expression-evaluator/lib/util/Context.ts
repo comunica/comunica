@@ -1,8 +1,23 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import type { AsyncExtensionFunction, GeneralSuperTypeDict, IActionContext } from '@comunica/types';
+import type {
+  AsyncExtensionFunction,
+  GeneralSuperTypeDict,
+  IActionContext,
+  ISuperTypeProvider,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { extractTimeZone } from './DateTimeHelpers';
+
+/**
+ * The default super type provider, which only knows the built-in types.
+ * As its results only depend on the datatype, it is shared across all evaluators,
+ * which avoids creating a new cache for every evaluator and keeps that cache warm.
+ */
+export const defaultSuperTypeProvider: ISuperTypeProvider = {
+  cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
+  discoverer: () => 'term',
+};
 
 export function prepareEvaluatorActionContext(orgContext: IActionContext): IActionContext {
   let context = orgContext;
@@ -34,10 +49,7 @@ export function prepareEvaluatorActionContext(orgContext: IActionContext): IActi
     extractTimeZone(context.getSafe(KeysInitQuery.queryTimestamp)),
   );
 
-  context = context.setDefault(KeysExpressionEvaluator.superTypeProvider, {
-    cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
-    discoverer: () => 'term',
-  });
+  context = context.setDefault(KeysExpressionEvaluator.superTypeProvider, defaultSuperTypeProvider);
 
   return context;
 }
