@@ -28,6 +28,8 @@ const sequential = init.mediatorQueryProcess.bus.actors.find(a => a.parse && a.o
 const identifier = sequential.mediatorOptimizeQueryOperation.bus.actors
   .find(actor => actor.name.endsWith('#query-source-identify'));
 const evaluator = new LeanEvaluator();
+const { FastSparqlParser } = require(path.resolve(__dirname, '../packages/actor-query-parse-sparql/lib/FastSparqlParser.js'));
+const parsePrefixes = sequential.mediatorQueryParse.bus.actors.find(actor => actor.prefixes)?.prefixes;
 
 const steps = {
   async full(query) {
@@ -37,6 +39,12 @@ const steps = {
   async mediateProcess(query) {
     return init.mediatorQueryProcess.mediate({ query, context: ActionContext.ensureActionContext({ ...baseContext }) });
   },
+  async sequentialRun(query) {
+    return sequential.run({ query, context: ActionContext.ensureActionContext({ ...baseContext }) });
+  },
+  ensureContext() {
+    return ActionContext.ensureActionContext({ ...baseContext });
+  },
   async preprocess() {
     return sequential.mediatorContextPreprocess
       .mediate({ context: ActionContext.ensureActionContext({ ...baseContext }), initialize: true });
@@ -44,14 +52,20 @@ const steps = {
   async parse(query, state) {
     state.parsed = await sequential.parse(query, ActionContext.ensureActionContext({ ...baseContext }));
   },
+  fastParse(query, state) {
+    state.fastParsed = new FastSparqlParser(state.parsed.context.get(KeysInitQuery.dataFactory)).parse(query, parsePrefixes);
+  },
   async identify(query, state) {
-    state.identified = await identifier.run({ operation: state.parsed.operation, context: state.parsed.context });
+    state.identified = {
+      context: await sequential.leanIdentifySources(state.parsed.operation, state.parsed.context),
+    };
   },
   async comparator(query, state) {
     state.comparator = await sequential.getLeanComparator(state.identified.context);
   },
   evaluate(query, state) {
-    state.result = evaluator.evaluate(state.parsed.operation, state.identified.context, state.comparator);
+    state.result = evaluator.evaluate(LeanEvaluator.compile(state.parsed.operation), state.identified.context,
+      state.comparator);
   },
   serialize(query, state) {
     return HttpServiceSparqlEndpoint.serializeRawRows(state.result[Symbol.for('comunica.prototype.rawRows')]);

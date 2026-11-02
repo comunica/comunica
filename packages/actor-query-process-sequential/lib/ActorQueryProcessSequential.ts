@@ -98,14 +98,14 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
 
     // Prototype: evaluate selective queries without the regular pipeline
     const proto = (<any> globalThis).__proto;
-    if (proto?.leanAlgebra && proto.noSkolem && (<any> operation)[Symbol.for('comunica.prototype.fastParsed')] &&
-      LeanEvaluator.isSupported(operation)) {
+    const plan = proto?.leanAlgebra && proto.noSkolem &&
+      (<any> operation)[Symbol.for('comunica.prototype.fastParsed')] ?
+      LeanEvaluator.compile(operation) :
+      undefined;
+    if (plan) {
       const identifiedContext = await this.leanIdentifySources(operation, context);
-      let comparator: ITermComparator | undefined;
-      if (LeanEvaluator.needsComparator(operation)) {
-        comparator = await this.getLeanComparator(identifiedContext);
-      }
-      const result = this.leanAlgebraEvaluator.evaluate(operation, identifiedContext, comparator);
+      const comparator = plan.sortKeys ? await this.getLeanComparator(identifiedContext) : undefined;
+      const result = this.leanAlgebraEvaluator.evaluate(plan, identifiedContext, comparator);
       if (result) {
         result.context = identifiedContext;
         return { result };

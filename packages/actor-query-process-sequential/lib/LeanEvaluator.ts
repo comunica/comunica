@@ -19,25 +19,128 @@ import type { IRawRows } from './LeanBgpEvaluator';
 
 type Row = Record<string, RDF.Term>;
 
+// Algebra types, read once instead of through re-exports on every access
+const TYPE_BGP = Algebra.Types.BGP;
+const TYPE_JOIN = Algebra.Types.JOIN;
+const TYPE_PATTERN = Algebra.Types.PATTERN;
+const TYPE_PATH = Algebra.Types.PATH;
+const TYPE_LEFT_JOIN = Algebra.Types.LEFT_JOIN;
+const TYPE_EXTEND = Algebra.Types.EXTEND;
+const TYPE_UNION = Algebra.Types.UNION;
+const TYPE_SLICE = Algebra.Types.SLICE;
+const TYPE_DISTINCT = Algebra.Types.DISTINCT;
+const TYPE_PROJECT = Algebra.Types.PROJECT;
+const TYPE_ORDER_BY = Algebra.Types.ORDER_BY;
+const TYPE_LINK = Algebra.Types.LINK;
+const TYPE_INV = Algebra.Types.INV;
+const TYPE_SEQ = Algebra.Types.SEQ;
+const TYPE_ALT = Algebra.Types.ALT;
+const TYPE_ZERO_OR_MORE_PATH = Algebra.Types.ZERO_OR_MORE_PATH;
+const TYPE_ONE_OR_MORE_PATH = Algebra.Types.ONE_OR_MORE_PATH;
+const TYPE_ZERO_OR_ONE_PATH = Algebra.Types.ZERO_OR_ONE_PATH;
+const EXPRESSION_TERM = Algebra.ExpressionTypes.TERM;
+const EXPRESSION_OPERATOR = Algebra.ExpressionTypes.OPERATOR;
+
 /**
  * Thrown when lean evaluation does not apply, after which the regular query process is used.
  */
 class FallbackError extends Error {}
 
 /**
- * A triple pattern or property path in a group of joined operations, or another operation in such a group.
+ * A triple pattern, or a path of a link or alternative links, in a group of joined operations.
  */
-interface IItem {
-  subject?: RDF.Term;
-  predicates?: RDF.Term[];
-  object?: RDF.Term;
-  path?: Algebra.Operation;
-  operation?: Algebra.Operation;
+interface IPatternItem {
+  kind: 'pattern';
+  subject: RDF.Term;
+  predicates: RDF.Term[];
+  object: RDF.Term;
   variables: string[];
   /**
    * If other patterns in the group have the same subject, so that its quads can be read at once.
    */
-  star?: boolean;
+  star: boolean;
+  /**
+   * The estimated cardinality, once determined.
+   */
+  count?: number;
+  /**
+   * The quads per predicate, if they were read to determine the cardinality.
+   */
+  reads?: RDF.Quad[][];
+}
+
+/**
+ * Another property path in a group of joined operations.
+ */
+interface IPathItem {
+  kind: 'path';
+  subject: RDF.Term;
+  path: Algebra.Operation;
+  object: RDF.Term;
+  variables: string[];
+}
+
+/**
+ * Another operation in a group of joined operations.
+ */
+interface INodeItem {
+  kind: 'node';
+  node: IPlanNode;
+  variables: string[];
+}
+
+type IItem = IPatternItem | IPathItem | INodeItem;
+
+interface IPlanNodeBase {
+  /**
+   * The variables the operation may bind.
+   */
+  variables: Set<string>;
+  /**
+   * The variables the operation binds in all its results.
+   */
+  certain: Set<string>;
+}
+
+interface IGroupNode extends IPlanNodeBase {
+  kind: 'group';
+  items: IItem[];
+  /**
+   * Evaluation orders of the items by the variables that are bound before.
+   */
+  orders: Map<string, IItem[]>;
+}
+
+interface ILeftJoinNode extends IPlanNodeBase {
+  kind: 'leftjoin';
+  left: IPlanNode;
+  right: IPlanNode;
+}
+
+interface IExtendNode extends IPlanNodeBase {
+  kind: 'extend';
+  input: IPlanNode;
+  variable: string;
+  expression: Algebra.Expression;
+  expressionVariables: string[];
+}
+
+interface IUnionNode extends IPlanNodeBase {
+  kind: 'union';
+  inputs: IPlanNode[];
+}
+
+type IPlanNode = IGroupNode | ILeftJoinNode | IExtendNode | IUnionNode;
+
+/**
+ * A query that can be evaluated by the lean evaluator.
+ */
+export interface ILeanPlan {
+  root: IPlanNode;
+  projection: RDF.Variable[];
+  sortKeys?: { variable: string; ascending: boolean }[];
+  distinct: boolean;
+  slice?: { start: number; length?: number };
 }
 
 interface IState {
@@ -46,10 +149,6 @@ interface IState {
   algebraFactory: AlgebraFactory;
   dataFactory: ComunicaDataFactory;
   work: number;
-  /**
-   * Quads of items with a constant subject, read while estimating their cardinality, per predicate.
-   */
-  reads: Map<IItem, RDF.Quad[][]>;
   /**
    * Quads of subjects of star patterns by predicate, or null for subjects with too many quads.
    */
@@ -61,7 +160,8 @@ interface IState {
  * as nested loops over plain row objects, without operation mediation, iterators, or bindings.
  * Supports basic graph patterns, property paths, OPTIONAL, UNION, BIND with terms and COALESCE,
  * ORDER BY on variables, DISTINCT, and LIMIT/OFFSET.
- * Returns undefined for other queries, or when evaluation exceeds its budget.
+ * Queries are first compiled into a plan in a single pass, and evaluation returns undefined
+ * when it exceeds its budget.
  */
 export class LeanEvaluator {
   /**
@@ -69,67 +169,243 @@ export class LeanEvaluator {
    */
   public static readonly MAX_SUBJECT_QUADS = 256;
 
-  private readonly certainCache = new WeakMap<Algebra.Operation, Set<string>>();
-  private readonly variablesCache = new WeakMap<Algebra.Operation, Set<string>>();
-  private readonly itemsCache = new WeakMap<Algebra.Operation, IItem[]>();
-  private readonly countCache = new WeakMap<IItem, number>();
-  private readonly orderCache = new WeakMap<IItem[], Map<string, IItem[]>>();
-
   public constructor(
     private readonly maxWork = 200_000,
     private readonly maxStartCardinality = 1_000,
   ) {}
 
+  // ---------- Compilation ----------
+
   /**
-   * Check if the operation has a supported shape.
+   * Compile a query into a plan, or return undefined if it has an unsupported shape.
    * @param operation A parsed operation.
    */
-  public static isSupported(operation: Algebra.Operation): boolean {
+  public static compile(operation: Algebra.Operation): ILeanPlan | undefined {
     let current = operation;
-    if (algebraUtils.isKnownOperation(current, Algebra.Types.SLICE)) {
+    let slice: ILeanPlan['slice'];
+    if (algebraUtils.isKnownOperation(current, TYPE_SLICE)) {
+      slice = { start: current.start, length: current.length };
       current = current.input;
     }
-    if (algebraUtils.isKnownOperation(current, Algebra.Types.DISTINCT)) {
+    let distinct = false;
+    if (algebraUtils.isKnownOperation(current, TYPE_DISTINCT)) {
+      distinct = true;
       current = current.input;
     }
-    if (!algebraUtils.isKnownOperation(current, Algebra.Types.PROJECT)) {
-      return false;
+    if (!algebraUtils.isKnownOperation(current, TYPE_PROJECT)) {
+      return;
     }
+    const projection = current.variables;
     current = current.input;
-    if (algebraUtils.isKnownOperation(current, Algebra.Types.ORDER_BY)) {
-      if (!current.expressions.every(expression => LeanEvaluator.getSortVariable(expression))) {
-        return false;
+    let sortKeys: ILeanPlan['sortKeys'];
+    if (algebraUtils.isKnownOperation(current, TYPE_ORDER_BY)) {
+      sortKeys = [];
+      for (const expression of current.expressions) {
+        const key = LeanEvaluator.getSortVariable(expression);
+        if (!key) {
+          return;
+        }
+        sortKeys.push(key);
       }
       current = current.input;
     }
-    return LeanEvaluator.isSupportedPattern(current);
+    const root = LeanEvaluator.compileNode(current);
+    return root ? { root, projection, sortKeys, distinct, slice } : undefined;
   }
 
-  public static isSupportedPattern(operation: Algebra.Operation): boolean {
-    if (algebraUtils.isKnownOperation(operation, Algebra.Types.BGP)) {
-      return operation.patterns.every(pattern => LeanEvaluator.isSupportedPattern(pattern));
+  public static compileNode(operation: Algebra.Operation): IPlanNode | undefined {
+    switch (operation.type) {
+      case TYPE_LEFT_JOIN: {
+        const leftJoin = <Algebra.LeftJoin> operation;
+        if (leftJoin.expression) {
+          return;
+        }
+        const left = LeanEvaluator.compileNode(leftJoin.input[0]);
+        const right = left && LeanEvaluator.compileNode(leftJoin.input[1]);
+        if (!right) {
+          return;
+        }
+        return {
+          kind: 'leftjoin',
+          left,
+          right,
+          variables: new Set([ ...left.variables, ...right.variables ]),
+          certain: left.certain,
+        };
+      }
+      case TYPE_EXTEND: {
+        const extend = <Algebra.Extend> operation;
+        if (!LeanEvaluator.isSupportedExpression(extend.expression)) {
+          return;
+        }
+        const input = LeanEvaluator.compileNode(extend.input);
+        if (!input) {
+          return;
+        }
+        const variable = extend.variable.value;
+        return {
+          kind: 'extend',
+          input,
+          variable,
+          expression: extend.expression,
+          expressionVariables: LeanEvaluator.getExpressionVariables(extend.expression),
+          variables: new Set([ ...input.variables, variable ]),
+          certain: LeanEvaluator.isTotalExpression(extend.expression, input.certain) ?
+            new Set([ ...input.certain, variable ]) :
+            input.certain,
+        };
+      }
+      case TYPE_UNION: {
+        const inputs: IPlanNode[] = [];
+        for (const input of (<Algebra.Union> operation).input) {
+          const node = LeanEvaluator.compileNode(input);
+          if (!node) {
+            return;
+          }
+          inputs.push(node);
+        }
+        const variables = new Set<string>();
+        for (const input of inputs) {
+          for (const variable of input.variables) {
+            variables.add(variable);
+          }
+        }
+        const certain = new Set([ ...inputs[0].certain ]
+          .filter(variable => inputs.every(input => input.certain.has(variable))));
+        return { kind: 'union', inputs, variables, certain };
+      }
+      default:
+        return LeanEvaluator.compileGroup(operation);
     }
-    if (algebraUtils.isKnownOperation(operation, Algebra.Types.JOIN) ||
-      algebraUtils.isKnownOperation(operation, Algebra.Types.UNION)) {
-      return !('expression' in operation) &&
-        operation.input.every(input => LeanEvaluator.isSupportedPattern(input));
+  }
+
+  /**
+   * Compile joins, basic graph patterns, patterns, and paths into a group of items.
+   */
+  public static compileGroup(operation: Algebra.Operation): IGroupNode | undefined {
+    const node: IGroupNode = {
+      kind: 'group',
+      items: [],
+      variables: new Set(),
+      certain: new Set(),
+      orders: new Map(),
+    };
+    if (!LeanEvaluator.collectItems(operation, node) || node.items.length === 0) {
+      return;
     }
-    if (algebraUtils.isKnownOperation(operation, Algebra.Types.PATTERN)) {
-      return operation.graph.termType === 'DefaultGraph' &&
-        [ operation.subject, operation.predicate, operation.object ].every(term => LeanEvaluator.isSupportedTerm(term));
+    LeanEvaluator.markStars(node.items);
+    return node;
+  }
+
+  /**
+   * Add the items of an operation to a group, or return false if it is not supported.
+   */
+  public static collectItems(input: Algebra.Operation, node: IGroupNode): boolean {
+    switch (input.type) {
+      case TYPE_BGP:
+        for (const pattern of (<Algebra.Bgp> input).patterns) {
+          if (!LeanEvaluator.collectItems(pattern, node)) {
+            return false;
+          }
+        }
+        return true;
+      case TYPE_JOIN:
+        if ('expression' in input) {
+          return false;
+        }
+        for (const child of (<Algebra.Join> input).input) {
+          if (!LeanEvaluator.collectItems(child, node)) {
+            return false;
+          }
+        }
+        return true;
+      case TYPE_PATTERN: {
+        const pattern = <Algebra.Pattern> input;
+        if (pattern.graph.termType !== 'DefaultGraph' || !LeanEvaluator.isSupportedTerm(pattern.subject) ||
+          !LeanEvaluator.isSupportedTerm(pattern.predicate) || !LeanEvaluator.isSupportedTerm(pattern.object)) {
+          return false;
+        }
+        const variables = LeanEvaluator.termVariables(pattern.subject, pattern.predicate, pattern.object);
+        node.items.push({
+          kind: 'pattern',
+          subject: pattern.subject,
+          predicates: [ pattern.predicate ],
+          object: pattern.object,
+          variables,
+          star: false,
+        });
+        LeanEvaluator.addVariables(node, variables, variables);
+        return true;
+      }
+      case TYPE_PATH: {
+        const path = <Algebra.Path> input;
+        if (path.graph.termType !== 'DefaultGraph' || !LeanEvaluator.isSupportedTerm(path.subject) ||
+          !LeanEvaluator.isSupportedTerm(path.object) || !LeanEvaluator.isSupportedPath(path.predicate)) {
+          return false;
+        }
+        const variables = LeanEvaluator.termVariables(path.subject, path.object);
+        // Links and alternatives of links are looked up like patterns
+        const predicates = LeanEvaluator.getLinks(path.predicate);
+        node.items.push(predicates ?
+            { kind: 'pattern', subject: path.subject, predicates, object: path.object, variables, star: false } :
+            { kind: 'path', subject: path.subject, path: path.predicate, object: path.object, variables });
+        LeanEvaluator.addVariables(node, variables, variables);
+        return true;
+      }
+      default: {
+        const child = LeanEvaluator.compileNode(input);
+        if (!child) {
+          return false;
+        }
+        node.items.push({ kind: 'node', node: child, variables: [ ...child.variables ]});
+        LeanEvaluator.addVariables(node, child.variables, child.certain);
+        return true;
+      }
     }
-    if (algebraUtils.isKnownOperation(operation, Algebra.Types.PATH)) {
-      return operation.graph.termType === 'DefaultGraph' && LeanEvaluator.isSupportedTerm(operation.subject) &&
-        LeanEvaluator.isSupportedTerm(operation.object) && LeanEvaluator.isSupportedPath(operation.predicate);
+  }
+
+  private static addVariables(node: IPlanNodeBase, variables: Iterable<string>, certain: Iterable<string>): void {
+    for (const variable of variables) {
+      node.variables.add(variable);
     }
-    if (algebraUtils.isKnownOperation(operation, Algebra.Types.LEFT_JOIN)) {
-      return !operation.expression && operation.input.every(input => LeanEvaluator.isSupportedPattern(input));
+    for (const variable of certain) {
+      node.certain.add(variable);
     }
-    if (algebraUtils.isKnownOperation(operation, Algebra.Types.EXTEND)) {
-      return LeanEvaluator.isSupportedExpression(operation.expression) &&
-        LeanEvaluator.isSupportedPattern(operation.input);
+  }
+
+  /**
+   * Mark patterns that share their subject with another pattern with constant predicates.
+   */
+  public static markStars(items: IItem[]): void {
+    // Subjects are variables or IRIs
+    const variableCounts = new Map<string, number>();
+    const iriCounts = new Map<string, number>();
+    let candidates = 0;
+    for (const item of items) {
+      if (item.kind === 'pattern' && LeanEvaluator.hasConstantPredicates(item)) {
+        const counts = item.subject.termType === 'Variable' ? variableCounts : iriCounts;
+        counts.set(item.subject.value, (counts.get(item.subject.value) ?? 0) + 1);
+        candidates++;
+      }
     }
-    return false;
+    if (variableCounts.size + iriCounts.size === candidates) {
+      return;
+    }
+    for (const item of items) {
+      if (item.kind === 'pattern' && LeanEvaluator.hasConstantPredicates(item)) {
+        const counts = item.subject.termType === 'Variable' ? variableCounts : iriCounts;
+        item.star = counts.get(item.subject.value)! > 1;
+      }
+    }
+  }
+
+  private static hasConstantPredicates(item: IPatternItem): boolean {
+    for (const predicate of item.predicates) {
+      if (predicate.termType !== 'NamedNode') {
+        return false;
+      }
+    }
+    return true;
   }
 
   public static isSupportedTerm(term: RDF.Term): boolean {
@@ -138,15 +414,15 @@ export class LeanEvaluator {
 
   public static isSupportedPath(path: Algebra.Operation): boolean {
     switch (path.type) {
-      case Algebra.Types.LINK:
+      case TYPE_LINK:
         return true;
-      case Algebra.Types.INV:
-      case Algebra.Types.ZERO_OR_MORE_PATH:
-      case Algebra.Types.ONE_OR_MORE_PATH:
-      case Algebra.Types.ZERO_OR_ONE_PATH:
+      case TYPE_INV:
+      case TYPE_ZERO_OR_MORE_PATH:
+      case TYPE_ONE_OR_MORE_PATH:
+      case TYPE_ZERO_OR_ONE_PATH:
         return LeanEvaluator.isSupportedPath((<any> path).path);
-      case Algebra.Types.SEQ:
-      case Algebra.Types.ALT:
+      case TYPE_SEQ:
+      case TYPE_ALT:
         return (<Algebra.Operation[]> (<any> path).input).every(input => LeanEvaluator.isSupportedPath(input));
       default:
         return false;
@@ -154,10 +430,10 @@ export class LeanEvaluator {
   }
 
   public static isSupportedExpression(expression: Algebra.Expression): boolean {
-    if (algebraUtils.isKnownSubType(expression, Algebra.ExpressionTypes.TERM)) {
+    if (algebraUtils.isKnownSubType(expression, EXPRESSION_TERM)) {
       return LeanEvaluator.isSupportedTerm(expression.term);
     }
-    if (algebraUtils.isKnownSubType(expression, Algebra.ExpressionTypes.OPERATOR)) {
+    if (algebraUtils.isKnownSubType(expression, EXPRESSION_OPERATOR)) {
       return expression.operator === 'coalesce' &&
         expression.args.every(arg => LeanEvaluator.isSupportedExpression(arg));
     }
@@ -169,37 +445,44 @@ export class LeanEvaluator {
    */
   public static getSortVariable(expression: Algebra.Expression): { variable: string; ascending: boolean } | undefined {
     let ascending = true;
-    if (algebraUtils.isKnownSubType(expression, Algebra.ExpressionTypes.OPERATOR) && expression.operator === 'desc') {
+    if (algebraUtils.isKnownSubType(expression, EXPRESSION_OPERATOR) && expression.operator === 'desc') {
       ascending = false;
       expression = expression.args[0];
     }
-    if (algebraUtils.isKnownSubType(expression, Algebra.ExpressionTypes.TERM) &&
+    if (algebraUtils.isKnownSubType(expression, EXPRESSION_TERM) &&
       expression.term.termType === 'Variable') {
       return { variable: expression.term.value, ascending };
     }
   }
 
   /**
-   * Check if the query sorts its results.
-   * @param operation A supported operation.
+   * The IRIs of a link or an alternative of links, or undefined for other paths.
    */
-  public static needsComparator(operation: Algebra.Operation): boolean {
-    return algebraUtils.hasOperationType(operation, [ Algebra.Types.ORDER_BY ]);
+  public static getLinks(path: Algebra.Operation): RDF.Term[] | undefined {
+    if (algebraUtils.isKnownOperation(path, TYPE_LINK)) {
+      return [ path.iri ];
+    }
+    if (algebraUtils.isKnownOperation(path, TYPE_ALT) &&
+      path.input.every(input => algebraUtils.isKnownOperation(input, TYPE_LINK))) {
+      return path.input.map(input => (input).iri);
+    }
   }
 
+  // ---------- Evaluation ----------
+
   /**
-   * Evaluate the given query, or return undefined if it can not be evaluated cheaply.
-   * @param operation A supported operation.
+   * Evaluate a compiled query, or return undefined if it can not be evaluated cheaply.
+   * @param plan A compiled query.
    * @param context A context with identified query sources.
    * @param comparator A term comparator, required for queries with ORDER BY.
    */
   public evaluate(
-    operation: Algebra.Operation,
+    plan: ILeanPlan,
     context: IActionContext,
     comparator?: ITermComparator,
   ): IQueryOperationResultBindings | undefined {
     const sources: IQuerySourceWrapper[] | undefined = context.get(KeysQueryOperation.querySources);
-    if (sources?.length !== 1 || !sources[0].source.readQuadsSynchronous) {
+    if (sources?.length !== 1 || !sources[0].source.readQuadsSynchronous || (plan.sortKeys && !comparator)) {
       return;
     }
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
@@ -209,37 +492,12 @@ export class LeanEvaluator {
       algebraFactory: new AlgebraFactory(dataFactory),
       dataFactory,
       work: 0,
-      reads: new Map(),
       subjects: new Map(),
     };
 
-    // Unwrap the solution modifiers
-    let slice: Algebra.Slice | undefined;
-    let distinct = false;
-    let current = operation;
-    if (algebraUtils.isKnownOperation(current, Algebra.Types.SLICE)) {
-      slice = current;
-      current = current.input;
-    }
-    if (algebraUtils.isKnownOperation(current, Algebra.Types.DISTINCT)) {
-      distinct = true;
-      current = current.input;
-    }
-    const project = <Algebra.Project> current;
-    current = project.input;
-    let sortKeys: { variable: string; ascending: boolean }[] | undefined;
-    if (algebraUtils.isKnownOperation(current, Algebra.Types.ORDER_BY)) {
-      if (!comparator) {
-        return;
-      }
-      sortKeys = current.expressions.map(expression => LeanEvaluator.getSortVariable(expression)!);
-      current = current.input;
-    }
-
-    const pattern = current;
     let rows: Row[];
     try {
-      rows = this.evaluatePattern(pattern, {}, state);
+      rows = this.evaluateNode(plan.root, {}, state);
     } catch (error: unknown) {
       if (error instanceof FallbackError) {
         return;
@@ -247,8 +505,8 @@ export class LeanEvaluator {
       throw error;
     }
 
-    if (sortKeys) {
-      const keys = sortKeys;
+    if (plan.sortKeys) {
+      const keys = plan.sortKeys;
       rows = rows
         .map((row, index) => ({ row, index }))
         .sort((left, right) => {
@@ -262,7 +520,7 @@ export class LeanEvaluator {
         })
         .map(({ row }) => row);
     }
-    const variables = project.variables.map(variable => variable.value);
+    const variables = plan.projection.map(variable => variable.value);
     rows = rows.map((row) => {
       const result: Row = {};
       for (const variable of variables) {
@@ -273,7 +531,7 @@ export class LeanEvaluator {
       }
       return result;
     });
-    if (distinct) {
+    if (plan.distinct) {
       const seen = new Set<string>();
       rows = rows.filter((row) => {
         const key = variables.map(variable => LeanEvaluator.termKey(row[variable])).join('\u0000');
@@ -284,78 +542,89 @@ export class LeanEvaluator {
         return true;
       });
     }
-    if (slice) {
-      rows = rows.slice(slice.start, slice.length === undefined ? undefined : slice.start + slice.length);
+    if (plan.slice) {
+      const { start, length } = plan.slice;
+      rows = rows.slice(start, length === undefined ? undefined : start + length);
     }
 
-    const certain = this.getCertainVariables(pattern);
-    const bindingsFactory = new BindingsFactory(dataFactory);
-    const metadataVariables: MetadataVariable[] = project.variables
-      .map(variable => ({ variable, canBeUndef: !certain.has(variable.value) }));
+    const certain = plan.root.certain;
+    const finalRows = rows;
+    let bindingsStream: BindingsStream | undefined;
     const result: IQueryOperationResultBindings = {
       type: 'bindings',
-      bindingsStream: <BindingsStream> <unknown> new ArrayIterator(rows, { autoStart: false })
-        .map(values => bindingsFactory.bindings(Object.entries(values)
-          .map(([ key, value ]): [RDF.Variable, RDF.Term] => [ dataFactory.variable(key), value ]))),
+      // Only created when consumed, as consumers of the raw rows do not need it
+      get bindingsStream(): BindingsStream {
+        if (!bindingsStream) {
+          const bindingsFactory = new BindingsFactory(dataFactory);
+          bindingsStream = <BindingsStream> <unknown> new ArrayIterator(finalRows, { autoStart: false })
+            .map(values => bindingsFactory.bindings(Object.entries(values)
+              .map(([ key, value ]): [RDF.Variable, RDF.Term] => [ dataFactory.variable(key), value ])));
+        }
+        return bindingsStream;
+      },
       metadata: async() => ({
         state: new MetadataValidationState(),
-        cardinality: { type: 'exact', value: rows.length },
-        variables: metadataVariables,
+        cardinality: { type: 'exact', value: finalRows.length },
+        variables: plan.projection
+          .map((variable): MetadataVariable => ({ variable, canBeUndef: !certain.has(variable.value) })),
       }),
     };
-    (<any> result)[RAW_ROWS] = <IRawRows> { variables, rows };
+    (<any> result)[RAW_ROWS] = <IRawRows> { variables, rows: finalRows };
     return result;
   }
 
   /**
-   * Evaluate a graph pattern, extending the given row.
-   * Operations are evaluated with the bindings of the row substituted (bind join),
+   * Evaluate a plan node, extending the given row.
+   * Nodes are evaluated with the bindings of the row substituted (bind join),
    * which is only done when that gives the same results as joining afterwards.
    */
-  public evaluatePattern(operation: Algebra.Operation, row: Row, state: IState): Row[] {
-    switch (operation.type) {
-      case Algebra.Types.LEFT_JOIN: {
-        const [ left, right ] = (<Algebra.LeftJoin> operation).input;
+  public evaluateNode(node: IPlanNode, row: Row, state: IState): Row[] {
+    switch (node.kind) {
+      case 'leftjoin': {
         // Variables of the right side that are bound outside, but possibly not by the left side,
         // would make a bind join differ from a left join.
-        this.assertSubstitutable(this.getVariables(right), row, this.getCertainVariables(left));
+        LeanEvaluator.assertSubstitutable(node.right.variables, row, node.left.certain);
         const rows: Row[] = [];
-        for (const leftRow of this.evaluatePattern(left, row, state)) {
-          const rightRows = this.evaluatePattern(right, leftRow, state);
+        for (const leftRow of this.evaluateNode(node.left, row, state)) {
+          const rightRows = this.evaluateNode(node.right, leftRow, state);
           if (rightRows.length > 0) {
-            rows.push(...rightRows);
+            for (const rightRow of rightRows) {
+              rows.push(rightRow);
+            }
           } else {
             rows.push(leftRow);
           }
         }
         return this.count(rows, state);
       }
-      case Algebra.Types.EXTEND: {
-        const extend = <Algebra.Extend> operation;
-        this.assertSubstitutable(
-          LeanEvaluator.getExpressionVariables(extend.expression),
-          row,
-          this.getCertainVariables(extend.input),
-        );
-        const variable = extend.variable.value;
+      case 'extend': {
+        LeanEvaluator.assertSubstitutable(node.expressionVariables, row, node.input.certain);
+        const variable = node.variable;
         const rows: Row[] = [];
-        for (const inputRow of this.evaluatePattern(extend.input, row, state)) {
-          const value = LeanEvaluator.evaluateExpression(extend.expression, inputRow);
+        for (const inputRow of this.evaluateNode(node.input, row, state)) {
+          const value = LeanEvaluator.evaluateExpression(node.expression, inputRow);
           if (!value) {
             rows.push(inputRow);
           } else if (!inputRow[variable]) {
-            rows.push({ ...inputRow, [variable]: value });
+            inputRow[variable] = value;
+            rows.push(inputRow);
           } else if (inputRow[variable].equals(value)) {
             rows.push(inputRow);
           }
         }
         return rows;
       }
-      case Algebra.Types.UNION:
-        return this.count((<Algebra.Union> operation).input
-          .flatMap(input => this.evaluatePattern(input, row, state)), state);
-      default:
-        return this.evaluateGroup(this.getItems(operation), row, state);
+      case 'union': {
+        const rows: Row[] = [];
+        for (const input of node.inputs) {
+          for (const inputRow of this.evaluateNode(input, row, state)) {
+            rows.push(inputRow);
+          }
+        }
+        return this.count(rows, state);
+      }
+      case 'group':
+        return this.evaluateGroup(node, row, state);
     }
   }
 
@@ -363,8 +632,8 @@ export class LeanEvaluator {
    * Evaluate a group of joined items as nested loops, in a greedy order.
    * Rows are extended in place and restored after each nested loop, and only copied for results.
    */
-  public evaluateGroup(items: IItem[], row: Row, state: IState): Row[] {
-    const ordered = this.orderItems(items, row, state);
+  public evaluateGroup(node: IGroupNode, row: Row, state: IState): Row[] {
+    const ordered = this.orderItems(node, row, state);
     const rows: Row[] = [];
     const step = (index: number, current: Row): void => {
       if (index === ordered.length) {
@@ -373,17 +642,17 @@ export class LeanEvaluator {
         return;
       }
       const item = ordered[index];
-      if (item.operation) {
-        // Nested operations return new rows
-        for (const next of this.evaluatePattern(item.operation, current, state)) {
+      if (item.kind === 'node') {
+        // Nested nodes return new rows
+        for (const next of this.evaluateNode(item.node, current, state)) {
           step(index + 1, next);
         }
         return;
       }
-      const subject = LeanEvaluator.resolve(item.subject!, current);
-      const object = LeanEvaluator.resolve(item.object!, current);
+      const subject = LeanEvaluator.resolve(item.subject, current);
+      const object = LeanEvaluator.resolve(item.object, current);
       const assigned: string[] = [];
-      if (item.path) {
+      if (item.kind === 'path') {
         for (const [ pathSubject, pathObject ] of this.evaluatePath(item.path, subject, object, state)) {
           if (LeanEvaluator.assign(current, subject, pathSubject, assigned) &&
             LeanEvaluator.assign(current, object, pathObject, assigned)) {
@@ -393,8 +662,9 @@ export class LeanEvaluator {
         }
         return;
       }
-      const reads = subject === item.subject && object === item.object ? state.reads.get(item) : undefined;
-      for (const [ predicateIndex, predicate ] of item.predicates!.entries()) {
+      const reads = subject === item.subject && object === item.object ? item.reads : undefined;
+      for (let predicateIndex = 0; predicateIndex < item.predicates.length; predicateIndex++) {
+        const predicate = item.predicates[predicateIndex];
         const resolvedPredicate = LeanEvaluator.resolve(predicate, current);
         const quads = reads && resolvedPredicate === predicate ?
           reads[predicateIndex] :
@@ -424,17 +694,17 @@ export class LeanEvaluator {
   public evaluatePath(path: Algebra.Operation, subject: RDF.Term, object: RDF.Term, state: IState):
   [RDF.Term, RDF.Term][] {
     switch (path.type) {
-      case Algebra.Types.LINK:
+      case TYPE_LINK:
         return [ ...this.readQuads(subject, (<Algebra.Link> path).iri, object, state) ]
           .filter(quad => subject.termType !== 'Variable' || object.termType !== 'Variable' ||
             subject.value !== object.value || quad.subject.equals(quad.object))
           .map(quad => [ quad.subject, quad.object ]);
-      case Algebra.Types.INV:
+      case TYPE_INV:
         return this.evaluatePath((<Algebra.Inv> path).path, object, subject, state)
           .map(([ left, right ]) => [ right, left ]);
-      case Algebra.Types.ALT:
+      case TYPE_ALT:
         return (<Algebra.Alt> path).input.flatMap(input => this.evaluatePath(input, subject, object, state));
-      case Algebra.Types.SEQ: {
+      case TYPE_SEQ: {
         const inputs = (<Algebra.Seq> path).input;
         if (subject.termType === 'Variable' && object.termType !== 'Variable') {
           // Evaluate backwards from the bound object
@@ -460,9 +730,9 @@ export class LeanEvaluator {
         }
         return pairs;
       }
-      case Algebra.Types.ZERO_OR_MORE_PATH:
-      case Algebra.Types.ONE_OR_MORE_PATH:
-      case Algebra.Types.ZERO_OR_ONE_PATH: {
+      case TYPE_ZERO_OR_MORE_PATH:
+      case TYPE_ONE_OR_MORE_PATH:
+      case TYPE_ZERO_OR_ONE_PATH: {
         const inner = (<Algebra.ZeroOrMorePath> path).path;
         if (subject.termType === 'Variable' && object.termType !== 'Variable') {
           return this.evaluatePath(
@@ -478,10 +748,10 @@ export class LeanEvaluator {
         const variable = state.dataFactory.variable('__lean_closure');
         const reached = new Map<string, RDF.Term>();
         let frontier: RDF.Term[] = [ subject ];
-        if (path.type !== Algebra.Types.ONE_OR_MORE_PATH) {
+        if (path.type !== TYPE_ONE_OR_MORE_PATH) {
           reached.set(LeanEvaluator.termKey(subject), subject);
         }
-        const maxDepth = path.type === Algebra.Types.ZERO_OR_ONE_PATH ? 1 : Number.POSITIVE_INFINITY;
+        const maxDepth = path.type === TYPE_ZERO_OR_ONE_PATH ? 1 : Number.POSITIVE_INFINITY;
         for (let depth = 0; depth < maxDepth && frontier.length > 0; depth++) {
           const next: RDF.Term[] = [];
           for (const node of frontier) {
@@ -490,8 +760,6 @@ export class LeanEvaluator {
               if (!reached.has(key)) {
                 reached.set(key, end);
                 next.push(end);
-              } else if (path.type === Algebra.Types.ONE_OR_MORE_PATH && end.equals(subject)) {
-                reached.set(key, end);
               }
             }
           }
@@ -512,52 +780,62 @@ export class LeanEvaluator {
     }
   }
 
+  // ---------- Join ordering ----------
+
   /**
    * Order items greedily: start from the item with the lowest cardinality,
    * then prefer items that share a bound variable, with a bound subject first.
    */
-  public orderItems(items: IItem[], row: Row, state: IState): IItem[] {
+  public orderItems(node: IGroupNode, row: Row, state: IState): IItem[] {
     // The order only depends on which variables are bound
     const boundKey = Object.keys(row).join(' ');
-    let orders = this.orderCache.get(items);
-    if (!orders) {
-      orders = new Map();
-      this.orderCache.set(items, orders);
-    }
-    let ordered = orders.get(boundKey);
+    let ordered = node.orders.get(boundKey);
     if (!ordered) {
-      ordered = this.computeOrder(items, row, state);
-      orders.set(boundKey, ordered);
+      ordered = this.computeOrder(node.items, row, state);
+      node.orders.set(boundKey, ordered);
     }
     return ordered;
   }
 
   private computeOrder(items: IItem[], row: Row, state: IState): IItem[] {
     const bound = new Set(Object.keys(row));
+    if (items.length === 1) {
+      if (!items[0].variables.some(variable => bound.has(variable)) &&
+        this.rank(items[0], bound, state)[1] > this.maxStartCardinality) {
+        throw new FallbackError('Expensive start');
+      }
+      return items;
+    }
     const remaining = [ ...items ];
     const ordered: IItem[] = [];
     while (remaining.length > 0) {
-      const connected = remaining.filter(item => item.variables.some(variable => bound.has(variable)));
-      const candidates = connected.length > 0 ? connected : remaining;
-      let best = candidates[0];
-      let bestRank = this.rank(best, bound, state);
-      for (const candidate of candidates.slice(1)) {
+      let connectedCount = 0;
+      for (const item of remaining) {
+        if (item.variables.some(variable => bound.has(variable))) {
+          connectedCount++;
+        }
+      }
+      let best: IItem | undefined;
+      let bestRank: [number, number] = [ 0, 0 ];
+      for (const candidate of remaining) {
+        if (connectedCount > 0 && !candidate.variables.some(variable => bound.has(variable))) {
+          continue;
+        }
         const rank = this.rank(candidate, bound, state);
-        const better = connected.length > 0 ?
+        const better = !best || (connectedCount > 0 ?
           rank[0] < bestRank[0] || (rank[0] === bestRank[0] && rank[1] < bestRank[1]) :
-          rank[1] < bestRank[1];
+          rank[1] < bestRank[1]);
         if (better) {
           best = candidate;
           bestRank = rank;
         }
       }
-      if (connected.length === 0 && bestRank[1] > this.maxStartCardinality) {
+      if (connectedCount === 0 && bestRank[1] > this.maxStartCardinality) {
         throw new FallbackError('Expensive start');
       }
-      remaining.splice(remaining.indexOf(best), 1);
-      ordered.push(best);
-      const certain = best.operation ? this.getCertainVariables(best.operation) : best.variables;
-      for (const variable of certain) {
+      remaining.splice(remaining.indexOf(best!), 1);
+      ordered.push(best!);
+      for (const variable of best!.kind === 'node' ? best!.node.certain : best!.variables) {
         bound.add(variable);
       }
     }
@@ -568,49 +846,41 @@ export class LeanEvaluator {
    * Rank an item by whether its subject or object is bound, and its estimated cardinality.
    */
   public rank(item: IItem, bound: Set<string>, state: IState): [number, number] {
-    if (item.operation) {
-      const first = this.orderItemsSafe(this.getFirstItems(item.operation), bound, state);
-      return first ? this.rank(first, bound, state) : [ 2, Number.POSITIVE_INFINITY ];
+    if (item.kind === 'node') {
+      let best: [number, number] = [ 2, Number.POSITIVE_INFINITY ];
+      for (const first of LeanEvaluator.getFirstItems(item.node)) {
+        const rank = this.rank(first, bound, state);
+        if (rank[1] < best[1]) {
+          best = rank;
+        }
+      }
+      return best;
     }
-    const isBound = (term: RDF.Term): boolean => term.termType !== 'Variable' || bound.has(term.value);
     let boundRank = 2;
-    if (isBound(item.subject!)) {
+    if (item.subject.termType !== 'Variable' || bound.has(item.subject.value)) {
       boundRank = 0;
-    } else if (isBound(item.object!)) {
+    } else if (item.object.termType !== 'Variable' || bound.has(item.object.value)) {
       boundRank = 1;
     }
-    if (item.path) {
+    if (item.kind === 'path') {
       return [ boundRank, boundRank < 2 ? 1 : Number.POSITIVE_INFINITY ];
     }
     return [ boundRank, this.countItem(item, state) ];
   }
 
-  private orderItemsSafe(items: IItem[], bound: Set<string>, state: IState): IItem | undefined {
-    let best: IItem | undefined;
-    let bestCount = Number.POSITIVE_INFINITY;
-    for (const item of items) {
-      const [ , count ] = this.rank(item, bound, state);
-      if (!best || count < bestCount) {
-        best = item;
-        bestCount = count;
-      }
-    }
-    return best;
-  }
-
   /**
-   * The items an operation can start with when it is nested in a group.
+   * The items a node can start with when it is nested in a group.
    */
-  private getFirstItems(operation: Algebra.Operation): IItem[] {
-    switch (operation.type) {
-      case Algebra.Types.LEFT_JOIN:
-        return this.getFirstItems((<Algebra.LeftJoin> operation).input[0]);
-      case Algebra.Types.EXTEND:
-        return this.getFirstItems((<Algebra.Extend> operation).input);
-      case Algebra.Types.UNION:
-        return (<Algebra.Union> operation).input.flatMap(input => this.getFirstItems(input));
-      default:
-        return this.getItems(operation);
+  public static getFirstItems(node: IPlanNode): IItem[] {
+    switch (node.kind) {
+      case 'leftjoin':
+        return LeanEvaluator.getFirstItems(node.left);
+      case 'extend':
+        return LeanEvaluator.getFirstItems(node.input);
+      case 'union':
+        return node.inputs.flatMap(input => LeanEvaluator.getFirstItems(input));
+      case 'group':
+        return node.items;
     }
   }
 
@@ -618,44 +888,47 @@ export class LeanEvaluator {
    * The cardinality of a pattern with at least two constants, or infinity.
    * Patterns with a constant subject are read instead of counted, as they tend to be small and are needed anyway.
    */
-  private countItem(item: IItem, state: IState): number {
-    let value = this.countCache.get(item);
-    if (value === undefined) {
-      const constants = [ item.subject!, item.predicates![0], item.object! ]
-        .filter(term => term.termType !== 'Variable').length;
-      value = constants >= 2 ? this.readSmallItem(item, state) : undefined;
+  private countItem(item: IPatternItem, state: IState): number {
+    if (item.count === undefined) {
+      let constants = 0;
+      for (const term of [ item.subject, item.predicates[0], item.object ]) {
+        if (term.termType !== 'Variable') {
+          constants++;
+        }
+      }
+      let value = constants >= 2 ? this.readSmallItem(item, state) : undefined;
       if (value === undefined) {
         value = 0;
-        for (const predicate of item.predicates!) {
+        for (const predicate of item.predicates) {
           value += constants >= 2 ?
             state.source.cardinalitySynchronous?.(state.algebraFactory.createPattern(
-              item.subject!,
+              item.subject,
               predicate,
-              item.object!,
+              item.object,
               state.dataFactory.defaultGraph(),
             ), state.context) ?? Number.POSITIVE_INFINITY :
             Number.POSITIVE_INFINITY;
         }
       }
-      this.countCache.set(item, value);
+      item.count = value;
     }
-    return value;
+    return item.count;
   }
 
   /**
-   * Read the quads of an item with a constant subject into the state, and return their number,
+   * Read the quads of an item with a constant subject, and return their number,
    * or undefined if the subject is not constant or there are too many quads.
    */
-  private readSmallItem(item: IItem, state: IState): number | undefined {
-    if (item.subject!.termType === 'Variable' ||
-      item.predicates!.some(predicate => predicate.termType === 'Variable')) {
+  private readSmallItem(item: IPatternItem, state: IState): number | undefined {
+    if (item.subject.termType === 'Variable' ||
+      item.predicates.some(predicate => predicate.termType === 'Variable')) {
       return;
     }
     const reads: RDF.Quad[][] = [];
     let total = 0;
-    for (const predicate of item.predicates!) {
+    for (const predicate of item.predicates) {
       const quads: RDF.Quad[] = [];
-      for (const quad of this.lookup(item, item.subject!, predicate, item.object!, state)) {
+      for (const quad of this.lookup(item, item.subject, predicate, item.object, state)) {
         if (++total > this.maxStartCardinality) {
           return;
         }
@@ -663,159 +936,17 @@ export class LeanEvaluator {
       }
       reads.push(quads);
     }
-    state.reads.set(item, reads);
+    item.reads = reads;
     return total;
   }
 
-  /**
-   * Flatten joins, basic graph patterns, patterns, and paths into items.
-   */
-  private getItems(operation: Algebra.Operation): IItem[] {
-    let items = this.itemsCache.get(operation);
-    if (!items) {
-      items = [];
-      const collect = (input: Algebra.Operation): void => {
-        if (algebraUtils.isKnownOperation(input, Algebra.Types.BGP)) {
-          for (const pattern of input.patterns) {
-            collect(pattern);
-          }
-        } else if (algebraUtils.isKnownOperation(input, Algebra.Types.JOIN)) {
-          for (const child of input.input) {
-            collect(child);
-          }
-        } else if (algebraUtils.isKnownOperation(input, Algebra.Types.PATTERN)) {
-          items!.push({
-            subject: input.subject,
-            predicates: [ input.predicate ],
-            object: input.object,
-            variables: LeanEvaluator.termVariables([ input.subject, input.predicate, input.object ]),
-          });
-        } else if (algebraUtils.isKnownOperation(input, Algebra.Types.PATH)) {
-          // Links and alternatives of links are looked up like patterns
-          const predicates = LeanEvaluator.getLinks(input.predicate);
-          items!.push({
-            subject: input.subject,
-            predicates,
-            object: input.object,
-            path: predicates ? undefined : input.predicate,
-            variables: LeanEvaluator.termVariables([ input.subject, input.object ]),
-          });
-        } else {
-          items!.push({ operation: input, variables: [ ...this.getVariables(input) ]});
-        }
-      };
-      collect(operation);
-      // Mark patterns that share their subject with another pattern with constant predicates
-      const subjectCounts = new Map<string, number>();
-      const starKey = (item: IItem): string | undefined => item.predicates &&
-        item.predicates.every(predicate => predicate.termType === 'NamedNode') ?
-        LeanEvaluator.termKey(item.subject) :
-        undefined;
-      for (const item of items) {
-        const key = starKey(item);
-        if (key !== undefined) {
-          subjectCounts.set(key, (subjectCounts.get(key) ?? 0) + 1);
-        }
-      }
-      for (const item of items) {
-        const key = starKey(item);
-        item.star = key !== undefined && subjectCounts.get(key)! > 1;
-      }
-      this.itemsCache.set(operation, items);
-    }
-    return items;
-  }
-
-  /**
-   * The IRIs of a link or an alternative of links, or undefined for other paths.
-   */
-  public static getLinks(path: Algebra.Operation): RDF.Term[] | undefined {
-    if (algebraUtils.isKnownOperation(path, Algebra.Types.LINK)) {
-      return [ path.iri ];
-    }
-    if (algebraUtils.isKnownOperation(path, Algebra.Types.ALT) &&
-      path.input.every(input => algebraUtils.isKnownOperation(input, Algebra.Types.LINK))) {
-      return path.input.map(input => (input).iri);
-    }
-  }
-
-  /**
-   * The variables that an operation binds in all its results.
-   */
-  public getCertainVariables(operation: Algebra.Operation): Set<string> {
-    let variables = this.certainCache.get(operation);
-    if (!variables) {
-      switch (operation.type) {
-        case Algebra.Types.LEFT_JOIN:
-          variables = this.getCertainVariables((<Algebra.LeftJoin> operation).input[0]);
-          break;
-        case Algebra.Types.EXTEND: {
-          const extend = <Algebra.Extend> operation;
-          variables = this.getCertainVariables(extend.input);
-          if (LeanEvaluator.isTotalExpression(extend.expression, variables)) {
-            variables = new Set([ ...variables, extend.variable.value ]);
-          }
-          break;
-        }
-        case Algebra.Types.UNION: {
-          const [ first, ...rest ] = (<Algebra.Union> operation).input.map(input => this.getCertainVariables(input));
-          variables = new Set([ ...first ].filter(variable => rest.every(other => other.has(variable))));
-          break;
-        }
-        default:
-          variables = new Set(this.getItems(operation).flatMap(item => item.operation ?
-              [ ...this.getCertainVariables(item.operation) ] :
-            item.variables));
-      }
-      this.certainCache.set(operation, variables);
-    }
-    return variables;
-  }
-
-  /**
-   * The variables that an operation may bind.
-   */
-  public getVariables(operation: Algebra.Operation): Set<string> {
-    let variables = this.variablesCache.get(operation);
-    if (!variables) {
-      switch (operation.type) {
-        case Algebra.Types.LEFT_JOIN:
-        case Algebra.Types.UNION:
-          variables = new Set((<Algebra.Multi> operation).input.flatMap(input => [ ...this.getVariables(input) ]));
-          break;
-        case Algebra.Types.EXTEND:
-          variables = new Set([
-            ...this.getVariables((<Algebra.Extend> operation).input),
-            (<Algebra.Extend> operation).variable.value,
-          ]);
-          break;
-        default:
-          variables = new Set(this.getItems(operation).flatMap(item => item.operation ?
-              [ ...this.getVariables(item.operation) ] :
-            item.variables));
-      }
-      this.variablesCache.set(operation, variables);
-    }
-    return variables;
-  }
-
-  /**
-   * Fall back if variables of a nested operation are bound in the row but not certainly bound by the operation itself,
-   * as substituting them would then give other results than joining afterwards.
-   */
-  private assertSubstitutable(variables: Iterable<string>, row: Row, certain: Set<string>): void {
-    for (const variable of variables) {
-      if (row[variable] && !certain.has(variable)) {
-        throw new FallbackError(`Variable ${variable} can not be substituted`);
-      }
-    }
-  }
+  // ---------- Lookups ----------
 
   /**
    * Look up the quads of a pattern, reading all quads of the subject at once for star patterns,
    * as one index seek is much more expensive than iterating over a few quads.
    */
-  private lookup(item: IItem, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, state: IState):
+  private lookup(item: IPatternItem, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, state: IState):
   Iterable<RDF.Quad> {
     if (!item.star || subject.termType === 'Variable' || predicate.termType === 'Variable') {
       return this.readQuads(subject, predicate, object, state);
@@ -879,8 +1010,22 @@ export class LeanEvaluator {
     }
   }
 
+  // ---------- Helpers ----------
+
+  /**
+   * Fall back if variables of a nested node are bound in the row but not certainly bound by the node itself,
+   * as substituting them would then give other results than joining afterwards.
+   */
+  public static assertSubstitutable(variables: Iterable<string>, row: Row, certain: Set<string>): void {
+    for (const variable of variables) {
+      if (row[variable] && !certain.has(variable)) {
+        throw new FallbackError(`Variable ${variable} can not be substituted`);
+      }
+    }
+  }
+
   public static evaluateExpression(expression: Algebra.Expression, row: Row): RDF.Term | undefined {
-    if (algebraUtils.isKnownSubType(expression, Algebra.ExpressionTypes.TERM)) {
+    if (algebraUtils.isKnownSubType(expression, EXPRESSION_TERM)) {
       return expression.term.termType === 'Variable' ? row[expression.term.value] : expression.term;
     }
     // COALESCE is the only supported operator
@@ -896,21 +1041,27 @@ export class LeanEvaluator {
    * Check if an expression always has a value, given the variables that are certainly bound.
    */
   public static isTotalExpression(expression: Algebra.Expression, certain: Set<string>): boolean {
-    if (algebraUtils.isKnownSubType(expression, Algebra.ExpressionTypes.TERM)) {
+    if (algebraUtils.isKnownSubType(expression, EXPRESSION_TERM)) {
       return expression.term.termType !== 'Variable' || certain.has(expression.term.value);
     }
     return (<Algebra.OperatorExpression> expression).args.some(arg => LeanEvaluator.isTotalExpression(arg, certain));
   }
 
   public static getExpressionVariables(expression: Algebra.Expression): string[] {
-    if (algebraUtils.isKnownSubType(expression, Algebra.ExpressionTypes.TERM)) {
+    if (algebraUtils.isKnownSubType(expression, EXPRESSION_TERM)) {
       return expression.term.termType === 'Variable' ? [ expression.term.value ] : [];
     }
     return (<Algebra.OperatorExpression> expression).args.flatMap(arg => LeanEvaluator.getExpressionVariables(arg));
   }
 
-  public static termVariables(terms: RDF.Term[]): string[] {
-    return terms.filter(term => term.termType === 'Variable').map(term => term.value);
+  public static termVariables(...terms: RDF.Term[]): string[] {
+    const variables: string[] = [];
+    for (const term of terms) {
+      if (term.termType === 'Variable' && !variables.includes(term.value)) {
+        variables.push(term.value);
+      }
+    }
+    return variables;
   }
 
   public static resolve(term: RDF.Term, row: Row): RDF.Term {
@@ -940,13 +1091,23 @@ export class LeanEvaluator {
     assigned.length = 0;
   }
 
+  /**
+   * A unique string for a term.
+   * IRIs are their own key, as IRIs can not start with the `_:` or `"` prefixes of the other keys.
+   */
   public static termKey(term: RDF.Term | undefined): string {
     if (!term) {
       return '';
     }
-    if (term.termType === 'Literal') {
-      return `"${term.value}"@${term.language}^^${term.datatype.value}`;
+    switch (term.termType) {
+      case 'NamedNode':
+        return term.value;
+      case 'Literal':
+        return `"${term.value}"@${term.language}^^${term.datatype.value}`;
+      case 'BlankNode':
+        return `_:${term.value}`;
+      default:
+        return `${term.termType}:${term.value}`;
     }
-    return `${term.termType}:${term.value}`;
   }
 }

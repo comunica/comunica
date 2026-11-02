@@ -26,11 +26,11 @@ for (const file of [ 'LeanEvaluator', 'LeanBgpEvaluator' ]) {
     return result;
   };
   // LEAN_DEBUG=1 prints why the lean evaluator falls back
-  const evaluatePattern = evaluator.prototype.evaluatePattern;
-  if (evaluatePattern && process.env.LEAN_DEBUG) {
-    evaluator.prototype.evaluatePattern = function(...args) {
+  const evaluateNode = evaluator.prototype.evaluateNode ?? evaluator.prototype.evaluatePattern;
+  if (evaluateNode && process.env.LEAN_DEBUG) {
+    evaluator.prototype[evaluator.prototype.evaluateNode ? 'evaluateNode' : 'evaluatePattern'] = function(...args) {
       try {
-        return evaluatePattern.apply(this, args);
+        return evaluateNode.apply(this, args);
       } catch (error) {
         if (!error.logged) {
           error.logged = true;

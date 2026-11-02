@@ -39,7 +39,18 @@ const median = (a) => {
         globalThis.__proto = flags;
         // GAP_MS=x idles before each execution, like an endpoint between requests
         if (process.env.GAP_MS) {
-          await new Promise(resolve => setTimeout(resolve, Number(process.env.GAP_MS)));
+          if (process.env.GAP_MODE === 'spin') {
+            // Busy-wait instead of idling, to separate CPU idle effects from cache effects
+            const until = performance.now() + Number(process.env.GAP_MS);
+            while (performance.now() < until) {
+              // Spin
+            }
+            await new Promise(resolve => setImmediate(resolve));
+          } else if (process.env.GAP_MODE === 'immediate') {
+            await new Promise(resolve => setImmediate(resolve));
+          } else {
+            await new Promise(resolve => setTimeout(resolve, Number(process.env.GAP_MS)));
+          }
         }
         const start = performance.now();
         await execute(query);

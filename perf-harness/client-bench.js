@@ -67,7 +67,29 @@ const median = (a) => {
       times.set(key, list);
     }
   };
-  if (process.env.SEQUENTIAL) {
+  const selectedClients = Object.entries(clients)
+    .filter(([ client ]) => !process.env.CLIENTS || process.env.CLIENTS.split(',').includes(client));
+  if (process.env.BLOCK) {
+    // Alternate blocks of back-to-back requests per endpoint and client,
+    // so that all endpoints are measured over the same time windows
+    const block = Number(process.env.BLOCK);
+    for (const [ name, endpoint ] of endpoints) {
+      for (const [ client, run ] of selectedClients) {
+        for (let r = 0; r < 20; r++) {
+          await record(client, run, name, endpoint, -1);
+        }
+      }
+    }
+    for (let round = 0; round < Math.ceil(Number(repsArg) / block); round++) {
+      for (const [ name, endpoint ] of endpoints) {
+        for (const [ client, run ] of selectedClients) {
+          for (let r = 0; r < block; r++) {
+            await record(client, run, name, endpoint, r);
+          }
+        }
+      }
+    }
+  } else if (process.env.SEQUENTIAL) {
     // Back-to-back requests to one endpoint with one client at a time, like a benchmark runner
     for (const [ name, endpoint ] of endpoints) {
       for (const [ client, run ] of Object.entries(clients)
