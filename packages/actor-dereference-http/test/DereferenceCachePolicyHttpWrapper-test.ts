@@ -49,7 +49,48 @@ describe('DereferenceCachePolicyHttpWrapper', () => {
   });
 
   describe('satisfiesWithoutRevalidation', () => {
-    it('is delegated to the cachePolicy', async() => {
+    it('is delegated to the cachePolicy without an accept header', async() => {
+      jest.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
+      const mediaTypes = jest.fn(async() => ({ 'text/turtle': 0.9 }));
+      await expect(wrapper.satisfiesWithoutRevalidation({
+        url: 'http://localhost:8080',
+        context,
+        headers: new Headers({ 'cache-control': 'no-cache' }),
+        mediaTypes,
+      })).resolves.toBeTruthy();
+      expect(cachePolicy.satisfiesWithoutRevalidation).toHaveBeenCalledTimes(1);
+      expect(cachePolicy.satisfiesWithoutRevalidation).toHaveBeenCalledWith({
+        input: 'http://localhost:8080',
+        init: {
+          headers: new Headers({ 'cache-control': 'no-cache' }),
+        },
+        context,
+      });
+      expect(mediaTypes).not.toHaveBeenCalled();
+    });
+
+    it('is delegated to the cachePolicy without an accept header if the response varies on other headers', async() => {
+      jest.spyOn(cachePolicy, 'responseHeaders').mockReturnValue(new Headers({ vary: 'Accept-Encoding, Origin' }));
+      jest.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
+      await expect(wrapper.satisfiesWithoutRevalidation({ url: 'http://localhost:8080', context })).resolves.toBeTruthy();
+      expect(cachePolicy.satisfiesWithoutRevalidation).toHaveBeenCalledWith({
+        input: 'http://localhost:8080',
+        init: {
+          headers: new Headers(),
+        },
+        context,
+      });
+    });
+
+    it('checks only once if the response varies on the accept header', async() => {
+      jest.spyOn(cachePolicy, 'responseHeaders');
+      await wrapper.satisfiesWithoutRevalidation({ url: 'http://localhost:8080', context });
+      await wrapper.satisfiesWithoutRevalidation({ url: 'http://localhost:8080', context });
+      expect(cachePolicy.responseHeaders).toHaveBeenCalledTimes(1);
+    });
+
+    it('is delegated to the cachePolicy with an accept header if the response varies on it', async() => {
+      jest.spyOn(cachePolicy, 'responseHeaders').mockReturnValue(new Headers({ vary: 'Origin, accept' }));
       jest.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
       await expect(wrapper.satisfiesWithoutRevalidation({ url: 'http://localhost:8080', context })).resolves.toBeTruthy();
       expect(cachePolicy.satisfiesWithoutRevalidation).toHaveBeenCalledTimes(1);
@@ -62,7 +103,8 @@ describe('DereferenceCachePolicyHttpWrapper', () => {
       });
     });
 
-    it('is delegated to the cachePolicy when media types are passed', async() => {
+    it('is delegated to the cachePolicy with an accept header when media types are passed', async() => {
+      jest.spyOn(cachePolicy, 'responseHeaders').mockReturnValue(new Headers({ vary: 'Accept' }));
       jest.spyOn(cachePolicy, 'satisfiesWithoutRevalidation');
       await expect(wrapper.satisfiesWithoutRevalidation({
         url: 'http://localhost:8080',

@@ -20,7 +20,11 @@ import type { AlgebraFactory } from '@comunica/utils-algebra';
 import { Algebra, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import { estimateCardinality } from '@comunica/utils-query-operation';
+import {
+  estimateCardinality,
+  getOperationEquivalentQueryString,
+  getOriginalSparqlQueryString,
+} from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
@@ -268,10 +272,9 @@ export class QuerySourceSparql implements IQuerySource {
       // Prepare queries
       const operation = await operationPromise;
       const variables: RDF.Variable[] = algebraUtils.inScopeVariables(operation);
-      const queryString = context.get<string>(KeysInitQuery.queryString);
-      const queryFormat: RDF.QueryFormat = context.getSafe(KeysInitQuery.queryFormat);
-      const selectQuery: string = !options?.joinBindings && queryString && queryFormat.language === 'sparql' ?
-        queryString :
+      // Join bindings modify the operation, so it is no longer equivalent to the original query string.
+      const queryString = options?.joinBindings ? undefined : QuerySourceSparql.getQueryStringAsIs(operation, context);
+      const selectQuery: string = queryString ??
         await this.operationToSelectQuery(this.algebraFactory, operation, variables);
       const undefVariables = QuerySourceSparql.getOperationUndefs(operation);
 
@@ -285,7 +288,8 @@ export class QuerySourceSparql implements IQuerySource {
 
   public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
     const quads = wrap<any>((async() => {
-      const query: string = context.get(KeysInitQuery.queryString) ?? await this.operationToQuery(operation);
+      const query: string = QuerySourceSparql.getQueryStringAsIs(operation, context) ??
+        await this.operationToQuery(operation);
       this.reportSourceQuery(context, query);
       const rawStream = await this.endpointFetcher.fetchTriples(this.url, query, this.getRequestOptions(context));
       return rawStream;
@@ -300,14 +304,16 @@ export class QuerySourceSparql implements IQuerySource {
       return true;
     }
     // Without propertyFeature overlap, perform the actual ASK query.
-    const query: string = context.get(KeysInitQuery.queryString) ?? await this.operationToQuery(operation);
+    const query: string = QuerySourceSparql.getQueryStringAsIs(operation, context) ??
+      await this.operationToQuery(operation);
     this.reportSourceQuery(context, query);
     const promise = this.endpointFetcher.fetchAsk(this.url, query, this.getRequestOptions(context));
     return promise;
   }
 
   public async queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
-    const query: string = context.get(KeysInitQuery.queryString) ?? await this.operationToQuery(operation);
+    const query: string = QuerySourceSparql.getQueryStringAsIs(operation, context) ??
+      await this.operationToQuery(operation);
     this.reportSourceQuery(context, query);
     const promise = this.endpointFetcher.fetchUpdate(this.url, query, this.getRequestOptions(context));
     return promise;
@@ -607,6 +613,17 @@ export class QuerySourceSparql implements IQuerySource {
       indentWidth: 0,
       context: this.context,
     })).query;
+  }
+
+  /**
+   * Obtain the SPARQL query string that may be sent as-is for the given operation.
+   * @param operation A query operation.
+   * @param context The action context.
+   * @return The query string to send as-is, or undefined if the operation must be serialized.
+   */
+  public static getQueryStringAsIs(operation: Algebra.Operation, context: IActionContext): string | undefined {
+    // TODO: next/major - remove the fallback to the original query string, see KeysInitQuery.queryString.
+    return getOperationEquivalentQueryString(operation) ?? getOriginalSparqlQueryString(context);
   }
 
   /**

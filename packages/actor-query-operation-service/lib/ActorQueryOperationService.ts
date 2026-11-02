@@ -17,7 +17,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import {
   assignOperationSource,
-  doesShapeAcceptOperation,
+  doesShapeAcceptOperationInContext,
   getSafeBindings,
   getServiceTargetCredentials,
 } from '@comunica/utils-query-operation';
@@ -125,7 +125,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     context: IActionContext,
   ): Promise<Algebra.Operation> {
     const shape = await querySource.source.getSelectorShape(context);
-    if (doesShapeAcceptOperation(shape, operation)) {
+    if (doesShapeAcceptOperationInContext(shape, operation, context)) {
       return assignOperationSource(operation, querySource);
     }
     const leafHandler = {

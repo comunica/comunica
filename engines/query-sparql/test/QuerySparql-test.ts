@@ -805,6 +805,83 @@ SELECT ?s (COUNT(?o) AS ?c) WHERE { ?s ?p ?o } GROUP BY ?s ORDER BY (func:f(?s))
             ]);
           });
         });
+
+        it('sends a query with an undeclared extension function as-is to a single endpoint', async() => {
+          const queries: (string | null)[] = [];
+          const query = `PREFIX func: <http://example.org/functions#>
+SELECT ?s ?label WHERE {
+  ?s a <http://example.org/C> ;
+    <http://example.org/label> ?label .
+  FILTER(func:contains(?label, "'term'"))
+}`;
+          const bindingsStream = await engine.queryBindings(query, {
+            sources: [{ type: 'sparql', value: 'http://example.org/verbatim/sparql' }],
+            fetch: async(input: RequestInfo | URL, init?: RequestInit) => {
+              queries.push(init?.body ?
+                new URLSearchParams(String(init.body)).get('query') :
+                new URL(<string> input).searchParams.get('query'));
+              return new Response(JSON.stringify({
+                head: { vars: [ 's', 'label' ]},
+                results: { bindings: [
+                  { s: { type: 'uri', value: 'http://example.org/s1' }, label: { type: 'literal', value: 'term' }},
+                ]},
+              }), { status: 200, headers: { 'Content-Type': 'application/sparql-results+json' }});
+            },
+          });
+
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('http://example.org/s1') ],
+              [ DF.variable('label'), DF.literal('term') ],
+            ]),
+          ]);
+          // Without local extension functions, the endpoint is trusted to evaluate the function
+          expect(queries).toEqual([ query ]);
+        });
+
+        it('pushes down an undeclared extension function only into the patterns binding its arguments', async() => {
+          const queries: string[] = [];
+          const query = `PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?person ?label WHERE {
+  ?person a <http://example.org/Painter> ;
+    rdfs:label ?label .
+  FILTER(<bif:contains>(?label, "'rembrandt'"))
+}`;
+          const bindingsStream = await engine.queryBindings(query, {
+            // Multiple endpoints prevent sending the query as-is, so the filter is pushed down
+            sources: [
+              { type: 'sparql', value: 'http://example.org/pushdown1/sparql' },
+              { type: 'sparql', value: 'http://example.org/pushdown2/sparql' },
+            ],
+            fetch: async(input: RequestInfo | URL, init?: RequestInit) => {
+              const sparqlQuery = init?.body ?
+                new URLSearchParams(String(init.body)).get('query') :
+                new URL(<string> input).searchParams.get('query');
+              if (!sparqlQuery) {
+                // Service description
+                return new Response('', { status: 200, headers: { 'Content-Type': 'text/turtle' }});
+              }
+              queries.push(sparqlQuery);
+              if (sparqlQuery.startsWith('ASK')) {
+                return new Response(JSON.stringify({ head: {}, boolean: true }), {
+                  status: 200,
+                  headers: { 'Content-Type': 'application/sparql-results+json' },
+                });
+              }
+              return new Response(JSON.stringify({ head: { vars: []}, results: { bindings: []}}), {
+                status: 200,
+                headers: { 'Content-Type': 'application/sparql-results+json' },
+              });
+            },
+          });
+          await expect(bindingsStream.toArray()).resolves.toEqual([]);
+
+          // The filter must never be sent along with a pattern that does not bind ?label
+          expect(queries.filter(sparqlQuery => sparqlQuery.includes('bif:contains') &&
+            !sparqlQuery.includes('<http://www.w3.org/2000/01/rdf-schema#label> ?label'))).toEqual([]);
+          expect(queries.filter(sparqlQuery => sparqlQuery === 'SELECT ?person ?label WHERE { ?person <http://www.w3.org/2000/01/rdf-schema#label> ?label . FILTER ( <bif:contains> ( ?label , "\'rembrandt\'"^^<http://www.w3.org/2001/XMLSchema#string> ) ) }'))
+            .toHaveLength(2);
+        });
       });
 
       describe('functionArgumentsCache', () => {
@@ -981,6 +1058,30 @@ SELECT ?s (COUNT(?o) AS ?c) WHERE { ?s ?p ?o } GROUP BY ?s ORDER BY (func:f(?s))
             <http://dbpedia.org/property/cityServed> <http://dbpedia.org/resource/UNKNOWN>.
     }`, { sources: [ 'https://fragments.dbpedia.org/2016-04/en' ]});
         await expect((arrayifyStream(await result.execute()))).resolves.toEqual([]);
+      });
+    });
+
+    describe('join with an aggregate subquery', () => {
+      it('should keep the single result of an aggregate without GROUP BY over an empty pattern', async() => {
+        const store = new Store([
+          DF.quad(DF.namedNode('http://ex.org/s'), DF.namedNode('http://ex.org/p'), DF.namedNode('http://ex.org/o')),
+        ]);
+        const xsdInteger = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
+
+        const result = <QueryBindings> await engine.query(`
+          PREFIX ex: <http://ex.org/>
+          SELECT * WHERE {
+            ?s ex:p ?o .
+            { SELECT (COUNT(*) AS ?c) WHERE { ?x ex:none ?y } }
+          }`, { sources: [ store ]});
+
+        await expect(result.execute()).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://ex.org/s') ],
+            [ DF.variable('o'), DF.namedNode('http://ex.org/o') ],
+            [ DF.variable('c'), DF.literal('0', xsdInteger) ],
+          ]),
+        ]);
       });
     });
 
@@ -1562,6 +1663,77 @@ SELECT ?person ?name ?book ?title {
           sources: [],
         });
         await expect(bindingsStream.toArray()).resolves.toHaveLength(10);
+      });
+
+      describe('with a FILTER (NOT) EXISTS next to a SERVICE clause', () => {
+        const endpoint = 'http://example.org/service-exists/sparql';
+        let context: QueryStringContext;
+        beforeEach(() => {
+          const store = RdfStore.createDefault();
+          store.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:q'), DF.namedNode('ex:o')));
+          // Only ex:s2 has ex:q in the endpoint, so evaluating the EXISTS there swaps the results
+          const endpointStore = RdfStore.createDefault();
+          endpointStore.addQuad(DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+          endpointStore.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+          endpointStore.addQuad(DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:q'), DF.namedNode('ex:o')));
+          context = {
+            sources: [ store ],
+            fetch: createSparqlEndpointsFetch({ [endpoint]: endpointStore }),
+          };
+        });
+
+        it('should evaluate EXISTS over the sources in the context', async() => {
+          const bindingsStream = await engine.queryBindings(`
+            SELECT ?s WHERE {
+              SERVICE <${endpoint}> { ?s <ex:p> ?o }
+              FILTER EXISTS { ?s <ex:q> ?x }
+            }`, context);
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:s1') ]]),
+          ]);
+        });
+
+        it('should evaluate NOT EXISTS over the sources in the context', async() => {
+          const bindingsStream = await engine.queryBindings(`
+            SELECT ?s WHERE {
+              SERVICE <${endpoint}> { ?s <ex:p> ?o }
+              FILTER NOT EXISTS { ?s <ex:q> ?x }
+            }`, context);
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:s2') ]]),
+          ]);
+        });
+      });
+
+      describe('with a FILTER NOT EXISTS over multiple SPARQL endpoints', () => {
+        const endpoint1 = 'http://example.org/not-exists1/sparql';
+        const endpoint2 = 'http://example.org/not-exists2/sparql';
+        let context: QueryStringContext;
+        beforeEach(() => {
+          const store1 = RdfStore.createDefault();
+          store1.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')));
+          // No endpoint has ex:q, so the pattern within the NOT EXISTS is pruned for all of them
+          context = {
+            sources: [ endpoint1, endpoint2 ],
+            fetch: createSparqlEndpointsFetch({ [endpoint1]: store1, [endpoint2]: RdfStore.createDefault() }),
+          };
+        });
+
+        it('should evaluate NOT EXISTS in an ASK query', async() => {
+          await expect(engine.queryBoolean(`
+            ASK { ?s <ex:p> ?o FILTER NOT EXISTS { ?s <ex:q> ?x } }`, context)).resolves.toBe(true);
+        });
+
+        it('should evaluate NOT EXISTS in an OPTIONAL', async() => {
+          const bindingsStream = await engine.queryBindings(`
+            SELECT ?s {
+              ?s <ex:p> ?o
+              OPTIONAL { ?s <ex:p> ?y FILTER NOT EXISTS { ?s <ex:q> ?x } }
+            }`, context);
+          await expect(bindingsStream).toEqualBindingsStream([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('ex:s') ]]),
+          ]);
+        });
       });
     });
 
@@ -2166,6 +2338,33 @@ SELECT ?option WHERE {
             [ DF.variable('o'), DF.namedNode('ex:e') ],
           ]),
         ], true);
+      });
+
+      // https://github.com/comunica/comunica/issues/1896
+      it('should settle for many zero-or-more paths with a bound subject over a Readable source', async() => {
+        const store = new Store();
+        store.addQuads(await arrayifyStream(rdfParse.parse(stringToStream(`
+@prefix bot: <https://w3id.org/bot#> .
+@prefix ex: <http://ex/> .
+ex:b bot:hasStorey ex:s1, ex:s2, ex:s3, ex:s4 .
+ex:s1 bot:containsZone ex:z1, ex:z2 ; bot:hasSpace ex:r1, ex:r2 .
+ex:s3 bot:containsZone ex:z3, ex:z4 ; bot:hasSpace ex:r3, ex:r4 .
+ex:s4 bot:containsZone ex:z5 ; bot:hasSpace ex:r5 .
+`), { contentType: 'text/turtle' })));
+        const source = {
+          match: (s: RDF.Term, p: RDF.Term, o: RDF.Term, g: RDF.Term) =>
+            Readable.from(store.getQuads(s, p, o, g)),
+        };
+        // The hang depended on the interleaving of many concurrent path evaluations
+        const branches = Array.from({ length: 500 }, (_, i) =>
+          `{ ?b (bot:hasStorey|bot:containsZone)*/bot:hasSpace ?x${i} }`);
+
+        await expect(engine.queryBindings(`
+PREFIX bot: <https://w3id.org/bot#>
+SELECT ?b WHERE { ${branches.join(' UNION ')} }`, {
+          sources: [ <any> source ],
+          initialBindings: BF.bindings([[ DF.variable('b'), DF.namedNode('http://ex/b') ]]),
+        }).then(result => result.toArray())).resolves.toHaveLength(2_500);
       });
     });
 
@@ -2902,7 +3101,7 @@ WHERE { }
             [ DF.variable('p'), DF.namedNode('http://example.org/p2') ],
             [ DF.variable('o'), DF.namedNode('http://example.org/o2') ],
           ]),
-        ]);
+        ], true);
       });
     });
 

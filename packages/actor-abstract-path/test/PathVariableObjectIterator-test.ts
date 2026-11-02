@@ -201,4 +201,33 @@ describe('PathVariableObjectIterator', () => {
     );
     await expect(iterator.toArray()).resolves.toEqual([ DF.namedNode('ex:s') ]);
   });
+
+  it('ends when a running operation ends while reading', async() => {
+    iterator = new PathVariableObjectIterator(
+      AF,
+      DF.namedNode('ex:s'),
+      AF.createLink(DF.namedNode('ex:p')),
+      DF.namedNode('ex:g'),
+      new ActionContext(),
+      mediatorQueryOperation,
+      true,
+    );
+
+    // End the running operation after _read has checked it, but before _read completes
+    const read = (<any> iterator)._read.bind(iterator);
+    (<any> iterator)._read = (count: number, done: () => void) => read(count, () => {
+      for (const runningOperation of (<any> iterator).runningOperations) {
+        runningOperation._end();
+      }
+      done();
+    });
+
+    // Read explicitly, without a consumer that reacts to readable events
+    await new Promise(setImmediate);
+    expect(iterator.read()).toEqual(DF.namedNode('ex:s'));
+    await new Promise(setImmediate);
+    await new Promise(setImmediate);
+
+    expect(iterator.done).toBe(true);
+  });
 });

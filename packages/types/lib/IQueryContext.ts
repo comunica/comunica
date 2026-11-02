@@ -37,6 +37,16 @@ export type DereferenceFromNamedConflictMode = 'error' | 'preferNamed' | 'keepSo
 export type DereferenceFromNamedConflictModeResolver = (quad: RDF.Quad) => DereferenceFromNamedConflictMode;
 
 /**
+ * The RDF variant that determines which term types are allowed in which triple positions.
+ * See KeysInitQuery.rdfVariant .
+ * https://www.w3.org/TR/rdf12-concepts/#section-generalizations-of-rdf
+ * - undefined/ rdf: subjects are IRIs or blank nodes, predicates are IRIs, objects can be any term.
+ * - symmetricRdf: subjects and objects can be any term, predicates are IRIs.
+ * - generalizedRdf: any term is allowed in any position.
+ */
+export type RdfVariant = 'rdf' | 'symmetricRdf' | 'generalizedRdf';
+
+/**
  * Common query context interface
  */
 export interface IQueryContextCommon {
@@ -94,6 +104,7 @@ export interface IQueryContextCommon {
   rdfSerializationPrefixes?: Record<string, string>;
   dereferenceFromNamed?: boolean;
   dereferenceFromNamedConflictMode?: DereferenceFromNamedConflictModeResolver;
+  rdfVariant?: RdfVariant;
 
   sources: SourceType[];
 }

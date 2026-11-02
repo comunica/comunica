@@ -100,6 +100,7 @@ export class ActorQueryProcessSequential extends ActorQueryProcess implements IQ
       );
 
       // Delete the query string from the context, since our initial query might have changed
+      // TODO: next/major - stop deleting the queryString, see KeysInitQuery.queryString.
       context = context.delete(KeysInitQuery.queryString);
     }
 

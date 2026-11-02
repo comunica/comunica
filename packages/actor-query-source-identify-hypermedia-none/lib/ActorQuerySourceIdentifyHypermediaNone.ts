@@ -16,6 +16,7 @@ import type {
   DereferenceFromNamedConflictModeResolver,
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { compareTerms } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import { RdfStore } from 'rdf-stores';
 
@@ -24,10 +25,12 @@ import { RdfStore } from 'rdf-stores';
  */
 export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIdentifyHypermedia {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  public readonly nonOrderedStore: boolean;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaNoneArgs) {
     super(args, 'file');
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
+    this.nonOrderedStore = args.nonOrderedStore ?? false;
   }
 
   public async testMetadata(
@@ -42,10 +45,12 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     const namedGraph = action.context.get(KeysQueryOperation.sourceAsNamedGraph);
     const resolveConflictMode = action.context.get(KeysInitQuery.dereferenceFromNamedConflictMode) ??
       ((): DereferenceFromNamedConflictMode => 'error');
+
     const source = new QuerySourceRdfJs(
       await ActorQuerySourceIdentifyHypermediaNone.storeStream(
         action.quads,
         namedGraph ? { dataFactory, graph: namedGraph, url: action.url, resolveConflictMode } : undefined,
+        !this.nonOrderedStore,
       ),
       dataFactory,
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
@@ -53,6 +58,21 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     source.toString = () => `QuerySourceRdfJs(${action.url})`;
     source.referenceValue = action.url;
     return { source };
+  }
+
+  /**
+   * Create the store that a file is loaded into.
+   * @param ordered If an ordered store must be created instead of a default store.
+   *                Its quads are kept in the term order, which its scans report as `termOrder`.
+   */
+  public static createStore<Q extends RDF.BaseQuad = RDF.Quad>(ordered: boolean): RdfStore<any, Q> {
+    if (ordered) {
+      return <RdfStore<any, Q>><unknown> RdfStore.createOrdered({
+        termComparator: compareTerms,
+        nodes: true,
+      });
+    }
+    return <RdfStore<any, Q>><unknown> RdfStore.createDefault(true);
   }
 
   public static storeStream<Q extends RDF.BaseQuad = RDF.Quad>(
@@ -63,14 +83,25 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
       url: string;
       resolveConflictMode: DereferenceFromNamedConflictModeResolver;
     },
+    ordered = false,
   ): Promise<RDF.Store<Q>> {
-    const store: RdfStore<any, Q> = <RdfStore<any, Q>><unknown> RdfStore.createDefault(true);
+    const store = ActorQuerySourceIdentifyHypermediaNone.createStore<Q>(ordered);
 
     if (!rewrite) {
       return new Promise((resolve, reject) => store.import(stream)
         .on('error', reject)
         .once('end', () => resolve(store)));
     }
+
+    // An ordered store inserts a batch much faster than quads one by one, so those are collected first.
+    const batch: Q[] | undefined = ordered ? [] : undefined;
+    const addQuad = (quad: Q): void => {
+      if (batch) {
+        batch.push(quad);
+      } else {
+        store.addQuad(quad);
+      }
+    };
 
     return new Promise((resolve, reject) => {
       stream
@@ -91,19 +122,24 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
               return;
             }
             if (conflictMode === 'keepSource') {
-              store.addQuad(rawQuad);
+              addQuad(rawQuad);
               return;
             }
           }
 
-          store.addQuad(<Q><unknown> rewrite.dataFactory.quad(
+          addQuad(<Q><unknown> rewrite.dataFactory.quad(
             quad.subject,
             quad.predicate,
             quad.object,
             rewrite.graph,
           ));
         })
-        .on('end', () => resolve(store));
+        .on('end', () => {
+          if (batch) {
+            store.addQuads(batch);
+          }
+          resolve(store);
+        });
     });
   }
 }
@@ -113,4 +149,11 @@ export interface IActorQuerySourceIdentifyHypermediaNoneArgs extends IActorQuery
    * A mediator for creating binding context merge handlers
    */
   mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  /**
+   * If files must be loaded into a non-ordered store.
+   * This defaults to false, to enable efficient merge joining to happen.
+   * TODO: in the next major version, replace this by an `orderedStore` parameter that defaults to true.
+   * @default {false}
+   */
+  nonOrderedStore?: boolean;
 }

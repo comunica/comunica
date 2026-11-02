@@ -1,7 +1,7 @@
 import type { Algebra, TypesComunica } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import type { BindingsStream } from './Bindings';
+import type { Bindings, BindingsStream } from './Bindings';
 import type { IActionContext } from './IActionContext';
 import type { ILink } from './ILink';
 import type { MetadataBindings } from './IMetadata';
@@ -106,6 +106,22 @@ export interface IQuerySource {
     context: IActionContext,
     options?: IQueryBindingsOptions,
   ) => BindingsStream;
+
+  /**
+   * Synchronously returns all bindings of the given operation.
+   *
+   * This is optional, and only meant for sources that can answer lookups without I/O.
+   * When present, `synchronous` should be `true` in the selector shape, for the operations that can be passed here.
+   *
+   * @param {Algebra.Operation} operation The operation to evaluate.
+   * @param {IActionContext} context      The query context.
+   * @return The resulting bindings, or undefined if the operation can not be evaluated synchronously,
+   *         in which case `queryBindings` must be used instead.
+   */
+  queryBindingsSynchronous?: (
+    operation: Algebra.Operation,
+    context: IActionContext,
+  ) => Bindings[] | undefined;
 
   /**
    * Returns a (possibly lazy) stream that returns all quads matching the operation.
@@ -234,6 +250,10 @@ export type FragmentSelectorShape = {
    * If bindings can be passed into the source as a filter.
    */
   filterBindings?: true;
+  /**
+   * If operations of this shape can be passed to `queryBindingsSynchronous`.
+   */
+  synchronous?: true;
 } | {
   type: 'conjunction';
   children: FragmentSelectorShape[];

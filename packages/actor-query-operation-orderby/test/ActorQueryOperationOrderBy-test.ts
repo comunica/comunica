@@ -3,6 +3,7 @@ import { createTermCompMediator } from '@comunica/actor-term-comparator-factory-
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
@@ -268,6 +269,25 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       ]);
     });
 
+    it('should not keep the term order of its input', async() => {
+      const mediate = mediatorQueryOperation.mediate;
+      mediatorQueryOperation.mediate = async(arg: any) => ({
+        ...await mediate(arg),
+        metadata: async() => ({
+          cardinality: 3,
+          termOrder: [{ term: DF.variable('a'), direction: 'asc' }],
+          canSeek: true,
+        }),
+      });
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context,
+      };
+      const output = await actor.run(op, undefined);
+      await expect(getSafeBindings(output).metadata()).resolves
+        .toEqual({ cardinality: 3, termOrder: undefined, canSeek: undefined });
+    });
+
     it('should only emit the first results when a sort limit was pushed down', async() => {
       const op: any = {
         operation: { type: 'orderby', input: {}, expressions: [ orderA ], metadata: { sortLimit: 2 }},
@@ -279,6 +299,16 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         BF.bindings([[ DF.variable('a'), DF.literal('1') ]]),
         BF.bindings([[ DF.variable('a'), DF.literal('22') ]]),
       ]);
+    });
+
+    it('should not pass a limit indicator to its input', async() => {
+      const spy = jest.spyOn(mediatorQueryOperation, 'mediate');
+      const op: any = {
+        operation: { type: 'orderby', input: {}, expressions: [ orderA ]},
+        context: context.set(KeysQueryOperation.limitIndicator, 1),
+      };
+      await actor.run(op, undefined);
+      expect((<any> spy.mock.calls[0][0]).context.has(KeysQueryOperation.limitIndicator)).toBe(false);
     });
 
     it('should run with a window', async() => {

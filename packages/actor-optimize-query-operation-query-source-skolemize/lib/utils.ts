@@ -8,6 +8,7 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
+import { SeekableMappingIterator, seekBindingsStream } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { mapTermsNested } from 'rdf-terms';
@@ -75,6 +76,17 @@ export function skolemizeBindings(
   bindings: RDF.Bindings,
   sourceId: string,
 ): RDF.Bindings {
+  // Only blank nodes are skolemized, so bindings without them can be returned as-is.
+  let hasBlankNodes = false;
+  for (const term of bindings.values()) {
+    if (term.termType === 'BlankNode' || term.termType === 'Quad') {
+      hasBlankNodes = true;
+      break;
+    }
+  }
+  if (!hasBlankNodes) {
+    return bindings;
+  }
   return bindings.map((term) => {
     if (term.termType === 'Quad') {
       return skolemizeQuad(dataFactory, term, sourceId);
@@ -118,7 +130,25 @@ export function skolemizeBindingsStream(
   iterator: BindingsStream,
   sourceId: string,
 ): BindingsStream {
-  const ret = iterator.map(bindings => skolemizeBindings(dataFactory, bindings, sourceId));
+  const ret = new SeekableMappingIterator(
+    iterator,
+    bindings => skolemizeBindings(dataFactory, bindings, sourceId),
+    (target) => {
+      let deskolemized = target;
+      for (const [ key, value ] of target) {
+        const term = deskolemizeTerm(dataFactory, value, sourceId);
+        // A term skolemized by another source has no counterpart here, so there is nothing to skip to.
+        if (term === null) {
+          return;
+        }
+        if (term !== value) {
+          deskolemized = deskolemized.set(key, term);
+        }
+      }
+      seekBindingsStream(iterator, deskolemized);
+    },
+  );
+
   function inheritMetadata(): void {
     iterator.getProperty('metadata', (metadata: MetadataBindings) => {
       ret.setProperty('metadata', metadata);
@@ -199,6 +229,33 @@ export function deskolemizeQuad<Q extends RDF.BaseQuad = RDF.Quad>(
     // If the term was skolemized in a different source then don't deskolemize it
     return newTerm ?? term;
   });
+}
+
+/**
+ * Deskolemize all terms in the given pattern, without traversing it as a generic operation.
+ * Will return undefined if there is at least one blank node not in scope for this sourceId.
+ * @param dataFactory The data factory.
+ * @param pattern A quad pattern.
+ * @param sourceId A source identifier.
+ */
+export function deskolemizePattern(
+  dataFactory: ComunicaDataFactory,
+  pattern: Algebra.Pattern,
+  sourceId: string,
+): Algebra.Pattern | undefined {
+  try {
+    const subject = deskolemizeTermNestedThrowing(dataFactory, pattern.subject, sourceId);
+    const predicate = deskolemizeTermNestedThrowing(dataFactory, pattern.predicate, sourceId);
+    const object = deskolemizeTermNestedThrowing(dataFactory, pattern.object, sourceId);
+    const graph = deskolemizeTermNestedThrowing(dataFactory, pattern.graph, sourceId);
+    // Always a new pattern, as sources may modify the pattern they receive.
+    return Object.assign(
+      new AlgebraFactory().createPattern(subject, predicate, object, graph),
+      { metadata: pattern.metadata },
+    );
+  } catch {
+    // Return undefined for skolemized terms not in scope for this source
+  }
 }
 
 /**

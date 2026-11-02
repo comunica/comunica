@@ -442,5 +442,23 @@ describe('BusIndexed', () => {
         await expect(bus.publish({ a: '1' })[1].reply).resolves.toEqual({ type: 'test', sent: { a: '1' }});
       });
     });
+
+    describe('with dependencies between actors', () => {
+      it('should publish to actors of the same type in the order of their dependencies', () => {
+        bus.subscribe(actor1);
+        bus.subscribe(actor3);
+        bus.addDependencies(actor3, [ actor1 ]);
+        expect(bus.publish({ a: '1' }).map((reply: any) => reply.actor)).toEqual([ actor3, actor1 ]);
+      });
+
+      it('should keep that order when more actors are subscribed', () => {
+        bus.subscribe(actor1);
+        bus.subscribe(actor3);
+        bus.addDependencies(actor3, [ actor1 ]);
+        bus.subscribe(actor2);
+        bus.subscribe(actor4);
+        expect(bus.publish({ a: '1' }).map((reply: any) => reply.actor)).toEqual([ actor3, actor1, actor4 ]);
+      });
+    });
   });
 });

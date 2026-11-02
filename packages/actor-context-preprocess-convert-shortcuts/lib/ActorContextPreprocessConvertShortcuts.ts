@@ -93,7 +93,8 @@ export interface IActorContextPreprocessConvertShortcutsArgs extends IActorConte
    *   "existenceResolver": "@comunica/utils-expression-evaluator:existenceResolver",
    *   "rdfSerializationPrefixes": "@comunica/bus-rdf-serialize:rdfSerializationPrefixes",
    *   "dereferenceFromNamed": "@comunica/actor-init-query:dereferenceFromNamed",
-   *   "dereferenceFromNamedConflictMode": "@comunica/actor-init-query:dereferenceFromNamedConflictMode"
+   *   "dereferenceFromNamedConflictMode": "@comunica/actor-init-query:dereferenceFromNamedConflictMode",
+   *   "rdfVariant": "@comunica/actor-init-query:rdfVariant"
    * }}
    */
   contextKeyShortcuts: Record<string, string>;
