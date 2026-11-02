@@ -862,6 +862,10 @@ export class LeanEvaluator {
    * often eliminate the subject.
    */
   public static computeStars(items: IItem[], row: Row): boolean[] {
+    // Prototype: without whole-subject reads, for when point lookups are cheap
+    if ((<any> globalThis).__proto?.leanNoStars) {
+      return items.map(() => false);
+    }
     // The variables bound before each position
     const boundBefore: Set<string>[] = [];
     const bound = new Set(Object.keys(row));
