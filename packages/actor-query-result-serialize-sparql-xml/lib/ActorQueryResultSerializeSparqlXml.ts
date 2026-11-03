@@ -12,6 +12,7 @@ import type {
   IQueryOperationResultBoolean,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import { wrap } from 'asynciterator';
 import { Readable } from 'readable-stream';
 import { XmlSerializer, type IXmlNode } from './XmlSerializer';
@@ -20,6 +21,11 @@ import { XmlSerializer, type IXmlNode } from './XmlSerializer';
  * A comunica sparql-results+xml Serialize Actor.
  */
 export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializeFixedMediaTypes {
+  /**
+   * The length after which a chunk of serialized bindings is pushed.
+   */
+  public static readonly MAX_CHUNK_LENGTH = 65_536;
+
   /**
    * @param args -
    *   \ @defaultNested {{
@@ -83,57 +89,86 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
 
   public async runHandle(action: IActionSparqlSerialize, _mediaType: string, _context: IActionContext):
   Promise<IActorQueryResultSerializeOutput> {
+    const serializer = new XmlSerializer();
+    let start = XmlSerializer.header + serializer.open('sparql', {
+      xmlns: 'http://www.w3.org/2005/sparql-results#',
+      'xmlns:its': 'http://www.w3.org/2005/11/its',
+      'its:version': '2.0',
+    });
+
+    if (action.type === 'bindings') {
+      const metadata = await (<IQueryOperationResultBindings> action).metadata();
+      start += serializer.serializeNode({
+        name: 'head',
+        children: metadata.variables
+          .map(variable => ({ name: 'variable', attributes: { name: variable.variable.value }})),
+      });
+      start += serializer.open('results');
+      const data = ActorQueryResultSerializeSparqlXml
+        .serializeBindings(wrap((<IQueryOperationResultBindings> action).bindingsStream), serializer);
+      data.push(start);
+      return { data };
+    }
+
     const data = new Readable();
     data._read = () => {
       // Do nothing
     };
+    data.push(start + serializer.serializeNode({ name: 'head', children: []}));
+    try {
+      const result = await (<IQueryOperationResultBoolean> action).execute();
+      data.push(serializer.serializeNode({ name: 'boolean', children: result.toString() }));
+      data.push(serializer.close());
+      setTimeout(() => data.push(null));
+    } catch (error: unknown) {
+      setTimeout(() => data.emit('error', error));
+    }
+    return { data };
+  }
 
-    const serializer = new XmlSerializer();
-    // Boolean results have no metadata, and no variables in their head
-    const variables = action.type === 'bindings' ?
-        (await (<IQueryOperationResultBindings> action).metadata()).variables :
-        [];
-
-    data.push(XmlSerializer.header);
-    data.push(serializer.open('sparql', {
-      xmlns: 'http://www.w3.org/2005/sparql-results#',
-      'xmlns:its': 'http://www.w3.org/2005/11/its',
-      'its:version': '2.0',
-    }));
-    data.push(
-      serializer.serializeNode({
-        name: 'head',
-        children: variables
-          .map(variable => ({ name: 'variable', attributes: { name: variable.variable.value }})),
-      }),
-    );
-
-    if (action.type === 'bindings') {
-      function* end(): Generator<string, void> {
-        yield serializer.close();
-        yield serializer.close();
-      }
-      data.push(serializer.open('results'));
-      const stream = wrap((<IQueryOperationResultBindings> action).bindingsStream).map(
-        (bindings: RDF.Bindings) => serializer.serializeNode({
+  /**
+   * Create a stream of the serialized bindings.
+   * All bindings that are available when the stream is read are serialized into a single chunk,
+   * which is cheaper than handling every binding as a separate chunk, also for clients.
+   * @param bindingsStream A bindings stream.
+   * @param serializer The serializer, within the results element.
+   */
+  public static serializeBindings(bindingsStream: AsyncIterator<RDF.Bindings>, serializer: XmlSerializer): Readable {
+    let pending = false;
+    const pull = (): void => {
+      pending = false;
+      let chunk = '';
+      while (chunk.length < ActorQueryResultSerializeSparqlXml.MAX_CHUNK_LENGTH) {
+        const bindings = bindingsStream.read();
+        if (bindings === null) {
+          break;
+        }
+        chunk += serializer.serializeNode({
           name: 'result',
           children: [ ...bindings ].map(
             ([ key, value ]) => ActorQueryResultSerializeSparqlXml.bindingToXmlBindings(value, key),
           ),
-        }),
-      ).append(wrap(end()));
-      data.wrap(<any> stream);
-    } else {
-      try {
-        const result = await (<IQueryOperationResultBoolean> action).execute();
-        data.push(serializer.serializeNode({ name: 'boolean', children: result.toString() }));
-        data.push(serializer.close());
-        setTimeout(() => data.push(null));
-      } catch (error: unknown) {
-        setTimeout(() => data.emit('error', error));
+        });
       }
-    }
-
-    return { data };
+      if (chunk.length < ActorQueryResultSerializeSparqlXml.MAX_CHUNK_LENGTH && bindingsStream.done) {
+        data.push(chunk + serializer.close() + serializer.close());
+        data.push(null);
+      } else if (chunk.length > 0) {
+        data.push(chunk);
+      } else {
+        // Continue once more bindings are available, or the stream has ended
+        pending = true;
+      }
+    };
+    const data = new Readable({ read: pull });
+    const pullIfPending = (): void => {
+      if (pending) {
+        pull();
+      }
+    };
+    bindingsStream.on('readable', pullIfPending);
+    bindingsStream.on('end', pullIfPending);
+    bindingsStream.on('error', (error: Error) => data.destroy(error));
+    return data;
   }
 }
