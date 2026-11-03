@@ -22,8 +22,7 @@ import { XmlSerializer, type IXmlNode } from './XmlSerializer';
  */
 export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializeFixedMediaTypes {
   /**
-   * The length after which a chunk of serialized bindings is pushed,
-   * so that large results that are available at once are still streamed.
+   * The length after which a chunk of serialized bindings is pushed.
    */
   public static readonly MAX_CHUNK_LENGTH = 65_536;
 
@@ -128,7 +127,7 @@ export class ActorQueryResultSerializeSparqlXml extends ActorQueryResultSerializ
   }
 
   /**
-   * Create a stream of the serialized bindings, followed by the end of the document.
+   * Create a stream of the serialized bindings.
    * All bindings that are available when the stream is read are serialized into a single chunk,
    * which is cheaper than handling every binding as a separate chunk, also for clients.
    * @param bindingsStream A bindings stream.
