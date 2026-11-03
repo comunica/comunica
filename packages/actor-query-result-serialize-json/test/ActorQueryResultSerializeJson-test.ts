@@ -5,7 +5,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { ArrayIterator } from 'asynciterator';
+import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeJson } from '..';
 import '@comunica/utils-jest';
@@ -170,6 +170,49 @@ describe('ActorQueryResultSerializeJson', () => {
           );
       });
 
+      it('should run on a bindings stream that is split into several chunks', async() => {
+        const maxChunkLength = ActorQueryResultSerializeJson.MAX_CHUNK_LENGTH;
+        (<any> ActorQueryResultSerializeJson).MAX_CHUNK_LENGTH = 1;
+        const data = (<any> (await actor.run(
+          {
+            handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), context },
+            handleMediaType: 'application/json',
+            context,
+          },
+        ))).handle.data;
+        const chunks: string[] = [];
+        for await (const chunk of data) {
+          chunks.push(chunk.toString());
+        }
+        (<any> ActorQueryResultSerializeJson).MAX_CHUNK_LENGTH = maxChunkLength;
+        expect(chunks.length).toBeGreaterThan(2);
+        expect(chunks.join('')).toBe(`[
+{"k1":"v1"},
+{"k2":"_:v2"}
+]
+`);
+      });
+
+      it('should run on a bindings stream whose bindings become available later', async() => {
+        const stream = new BufferedIterator<RDF.Bindings>({ autoStart: false });
+        const data = (<any> (await actor.run(
+          {
+            handle: <any> { type: 'bindings', bindingsStream: stream, context },
+            handleMediaType: 'application/json',
+            context,
+          },
+        ))).handle.data;
+        const result = stringifyStream(data);
+        await new Promise(resolve => setImmediate(resolve));
+        (<any> stream)._push(BF.bindings([[ DF.variable('k1'), DF.namedNode('v1') ]]));
+        await new Promise(resolve => setImmediate(resolve));
+        stream.close();
+        await expect(result).resolves.toBe(`[
+{"k1":"v1"}
+]
+`);
+      });
+
       it('should run on a bindings stream with quoted triples', async() => {
         await expect(stringifyStream((<any> (await actor.run(
           {
@@ -195,6 +238,31 @@ describe('ActorQueryResultSerializeJson', () => {
             context,
           },
         ))).handle.data)).resolves.toBe(
+          `[
+{"subject":"http://example.org/a","predicate":"http://example.org/b","object":"http://example.org/c","graph":""},
+{"subject":"http://example.org/a","predicate":"http://example.org/d","object":"http://example.org/e","graph":""}
+]
+`,
+        );
+      });
+
+      it('should run on a quad stream that is split into several chunks', async() => {
+        const maxChunkLength = ActorQueryResultSerializeJson.MAX_CHUNK_LENGTH;
+        (<any> ActorQueryResultSerializeJson).MAX_CHUNK_LENGTH = 1;
+        const data = (<any> (await actor.run(
+          {
+            handle: <any> { type: 'quads', quadStream: quadStream(), context },
+            handleMediaType: 'application/json',
+            context,
+          },
+        ))).handle.data;
+        const chunks: string[] = [];
+        for await (const chunk of data) {
+          chunks.push(chunk.toString());
+        }
+        (<any> ActorQueryResultSerializeJson).MAX_CHUNK_LENGTH = maxChunkLength;
+        expect(chunks.length).toBeGreaterThan(2);
+        expect(chunks.join('')).toBe(
           `[
 {"subject":"http://example.org/a","predicate":"http://example.org/b","object":"http://example.org/c","graph":""},
 {"subject":"http://example.org/a","predicate":"http://example.org/d","object":"http://example.org/e","graph":""}
