@@ -322,32 +322,6 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
       });
     });
 
-    describe('getInScopeVariables', () => {
-      it('should read the variables of a pattern', () => {
-        expect(ActorOptimizeQueryOperationJoinConnected.getInScopeVariables(factory.createPattern(
-          DF.variable('s'),
-          DF.namedNode('p'),
-          DF.variable('o'),
-          DF.variable('g'),
-        ))).toEqual({ s: true, o: true, g: true });
-      });
-
-      it('should find the variables of a pattern with a quoted triple', () => {
-        expect(ActorOptimizeQueryOperationJoinConnected.getInScopeVariables(factory.createPattern(
-          DF.quad(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
-          DF.namedNode('p'),
-          DF.variable('x'),
-        ))).toEqual({ s: true, o: true, x: true });
-      });
-
-      it('should find the variables of other operations', () => {
-        expect(ActorOptimizeQueryOperationJoinConnected.getInScopeVariables(factory.createJoin([
-          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
-          factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
-        ]))).toEqual({ a: true, b: true, c: true });
-      });
-    });
-
     describe('haveOverlappingVariables', () => {
       it('should be false for empty objects', () => {
         expect(ActorOptimizeQueryOperationJoinConnected.haveOverlappingVariables({}, {}))

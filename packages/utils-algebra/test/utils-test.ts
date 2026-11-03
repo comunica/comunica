@@ -190,6 +190,23 @@ describe('inScopeVariables', () => {
     return { ...operation, metadata: { hidden }};
   }
 
+  it('reads the variables of a pattern once each, in order', () => {
+    expect(inScopeVariables(AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('s'), DF.variable('g'))))
+      .toEqual([ DF.variable('s'), DF.variable('p'), DF.variable('g') ]);
+  });
+
+  it('reads no variables of a pattern without variables', () => {
+    expect(inScopeVariables(AF.createPattern(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'))))
+      .toEqual([]);
+  });
+
+  it('reads the variables of quoted triples in a pattern', () => {
+    const inner = DF.quad(DF.variable('b'), DF.variable('a'), DF.variable('c'));
+    const quoted = DF.quad(DF.variable('a'), DF.namedNode('ex:p'), inner);
+    expect(inScopeVariables(AF.createPattern(quoted, DF.namedNode('ex:q'), DF.variable('d'))))
+      .toEqual([ DF.variable('a'), DF.variable('b'), DF.variable('c'), DF.variable('d') ]);
+  });
+
   it('does not traverse the metadata of a group', () => {
     const count = AF.createBoundAggregate(
       DF.variable('count'),

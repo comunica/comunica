@@ -38,7 +38,8 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
     // Flatten nested joins, and determine the variables of each entry
     const entries = op.input
       .flatMap(subOp => algebraUtils.isKnownOperation(subOp, Algebra.Types.JOIN) ? subOp.input : [ subOp ]);
-    const variables = entries.map(entry => ActorOptimizeQueryOperationJoinConnected.getInScopeVariables(entry));
+    const variables = entries.map(entry => Object.fromEntries(algebraUtils.inScopeVariables(entry)
+      .map(variable => [ variable.value, true ])));
 
     // A join whose entries are connected in their original order stays the same,
     // unless it has nested joins, which are flattened, or metadata, which createJoin drops
@@ -80,29 +81,6 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
       Object.assign(previous, variables[i]);
     }
     return true;
-  }
-
-  /**
-   * Determine the variables in scope of a join entry.
-   * The variables of patterns without quoted triples are read from their terms, without traversing them.
-   * @param op A join entry.
-   */
-  public static getInScopeVariables(op: Algebra.Operation): Record<string, boolean> {
-    if (algebraUtils.isKnownOperation(op, Algebra.Types.PATTERN)) {
-      const variables: Record<string, boolean> = {};
-      let quoted = false;
-      for (const term of [ op.subject, op.predicate, op.object, op.graph ]) {
-        if (term.termType === 'Variable') {
-          variables[term.value] = true;
-        } else if (term.termType === 'Quad') {
-          quoted = true;
-        }
-      }
-      if (!quoted) {
-        return variables;
-      }
-    }
-    return Object.fromEntries(algebraUtils.inScopeVariables(op).map(variable => [ variable.value, true ]));
   }
 
   /**
