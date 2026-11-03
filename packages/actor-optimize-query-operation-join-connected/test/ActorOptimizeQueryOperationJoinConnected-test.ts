@@ -111,6 +111,19 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
           ]));
       });
 
+      it('should flatten a nested join with a single entry', () => {
+        expect(ActorOptimizeQueryOperationJoinConnected.cluster(factory.createJoin([
+          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+          factory.createJoin([
+            factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
+          ], false),
+        ], false), factory))
+          .toEqual(factory.createJoin([
+            factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
+            factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
+          ]));
+      });
+
       it('should keep a connected join in its original order', () => {
         const op = factory.createJoin([
           factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
@@ -282,6 +295,30 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
               factory.createPattern(DF.variable('s2x'), DF.namedNode('p2'), DF.variable('s3x')),
             ]),
           ], false));
+      });
+    });
+
+    describe('isConnectedInOrder', () => {
+      it('should be true for no entries', () => {
+        expect(ActorOptimizeQueryOperationJoinConnected.isConnectedInOrder([])).toBe(true);
+      });
+
+      it('should be true for a single entry', () => {
+        expect(ActorOptimizeQueryOperationJoinConnected.isConnectedInOrder([{ a: true }])).toBe(true);
+      });
+
+      it('should be true if each entry overlaps with the ones before it', () => {
+        expect(ActorOptimizeQueryOperationJoinConnected
+          .isConnectedInOrder([{ a: true }, { a: true, b: true }, { b: true, c: true }, { a: true }])).toBe(true);
+      });
+
+      it('should be false if an entry only overlaps with the ones after it', () => {
+        expect(ActorOptimizeQueryOperationJoinConnected
+          .isConnectedInOrder([{ a: true }, { c: true }, { a: true, c: true }])).toBe(false);
+      });
+
+      it('should be false if an entry has no variables', () => {
+        expect(ActorOptimizeQueryOperationJoinConnected.isConnectedInOrder([{ a: true }, {}])).toBe(false);
       });
     });
 

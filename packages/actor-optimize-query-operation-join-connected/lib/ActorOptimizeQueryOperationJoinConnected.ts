@@ -35,13 +35,22 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
    * @param factory An algebra factory.
    */
   public static cluster(op: Algebra.Join, factory: AlgebraFactory): Algebra.Operation {
-    // Initialize each entry to be in a separate cluster, after flattening nested joins
-    const initialClusters: IJoinCluster[] = op.input
-      .flatMap(subOp => algebraUtils.isKnownOperation(subOp, Algebra.Types.JOIN) ? subOp.input : [ subOp ])
-      .map(subOp => ({
-        inScopeVariables: ActorOptimizeQueryOperationJoinConnected.getInScopeVariables(subOp),
-        entries: [ subOp ],
-      }));
+    // Flatten nested joins, and determine the variables of each entry
+    const entries = op.input
+      .flatMap(subOp => algebraUtils.isKnownOperation(subOp, Algebra.Types.JOIN) ? subOp.input : [ subOp ]);
+    const variables = entries.map(entry => ActorOptimizeQueryOperationJoinConnected.getInScopeVariables(entry));
+
+    // A join whose entries are connected in their original order stays the same,
+    // unless it has nested joins, which are flattened, or metadata, which createJoin drops
+    if (op.input.length > 1 && (!op.metadata || Object.keys(op.metadata).length === 0) &&
+      !op.input.some(subOp => algebraUtils.isKnownOperation(subOp, Algebra.Types.JOIN)) &&
+      ActorOptimizeQueryOperationJoinConnected.isConnectedInOrder(variables)) {
+      return op;
+    }
+
+    // Initialize each entry to be in a separate cluster
+    const initialClusters: IJoinCluster[] = entries
+      .map((entry, index) => ({ inScopeVariables: variables[index], entries: [ entry ]}));
 
     // Iteratively merge clusters until they don't change anymore
     let oldClusters: IJoinCluster[];
@@ -51,17 +60,26 @@ export class ActorOptimizeQueryOperationJoinConnected extends ActorOptimizeQuery
       newClusters = ActorOptimizeQueryOperationJoinConnected.clusterIteration(oldClusters);
     } while (oldClusters.length !== newClusters.length);
 
-    // A join that forms a single cluster in its original order, without nested joins, stays the same
-    if (newClusters.length === 1 && op.input.length > 1 && newClusters[0].entries.length === op.input.length &&
-      newClusters[0].entries.every((entry, index) => entry === op.input[index]) &&
-      (!op.metadata || Object.keys(op.metadata).length === 0)) {
-      return op;
-    }
-
     // Create new join operation of latest clusters
     const subJoins = newClusters
       .map(cluster => cluster.entries.length === 1 ? cluster.entries[0] : factory.createJoin(cluster.entries));
     return subJoins.length === 1 ? subJoins[0] : factory.createJoin(subJoins, false);
+  }
+
+  /**
+   * Check if the variables of each join entry overlap with those of the entries before it.
+   * Clustering such entries results in a single cluster in their original order.
+   * @param variables The variables in scope of each join entry.
+   */
+  public static isConnectedInOrder(variables: Record<string, boolean>[]): boolean {
+    const previous: Record<string, boolean> = { ...variables[0] };
+    for (let i = 1; i < variables.length; i++) {
+      if (!ActorOptimizeQueryOperationJoinConnected.haveOverlappingVariables(variables[i], previous)) {
+        return false;
+      }
+      Object.assign(previous, variables[i]);
+    }
+    return true;
   }
 
   /**
