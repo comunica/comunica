@@ -26,7 +26,6 @@ import { http, ServerResponseMock } from '../__mocks__/http';
 // @ts-expect-error
 import { parse } from '../__mocks__/url';
 import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
-import { EndpointWarmup } from '../lib/EndpointWarmup';
 import type { IQueryBody } from '../lib/HttpServiceSparqlEndpoint';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
 
@@ -615,27 +614,27 @@ describe('HttpServiceSparqlEndpoint', () => {
           .toBeLessThan(http.createServer.mock.invocationCallOrder[0]);
       });
 
-      it('should log the warm-up', async() => {
+      it('should warm up the engine over its sources, and log it', async() => {
         (<any> instance).warmup = 5;
-        const run = jest.spyOn(EndpointWarmup.prototype, 'run').mockResolvedValue({ queries: 3, executions: 5 });
+        const engine: any = await instance.engine;
+        engine.warmup = jest.fn().mockResolvedValue({ executions: 5 });
         const errors = new PassThrough();
-        await instance.warmUp(await instance.engine, errors);
+        await instance.warmUp(engine, errors);
         errors.end();
 
-        expect(run).toHaveBeenCalledWith(5, instance.timeout);
+        expect(engine.warmup).toHaveBeenCalledWith(instance.context, { executions: 5, budget: instance.timeout });
         await expect(stringifyStream(errors)).resolves
-          .toMatch(/^Worker \d+ warmed up with 5 executions of 3 queries in \d+ ms\.\n$/u);
-        run.mockRestore();
+          .toMatch(/^Worker \d+ warmed up with 5 query executions in \d+ ms\.\n$/u);
       });
 
       it('should log warm-up failures without failing', async() => {
-        const run = jest.spyOn(EndpointWarmup.prototype, 'run').mockRejectedValue(new Error('no data'));
+        const engine: any = await instance.engine;
+        engine.warmup = jest.fn().mockRejectedValue(new Error('no data'));
         const errors = new PassThrough();
-        await instance.warmUp(await instance.engine, errors);
+        await instance.warmUp(engine, errors);
         errors.end();
 
         await expect(stringifyStream(errors)).resolves.toBe(`Worker ${process.pid} could not warm up: no data\n`);
-        run.mockRestore();
       });
 
       it('should call createServer with the correct arguments', async() => {

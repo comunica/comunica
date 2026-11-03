@@ -82,6 +82,32 @@ export interface IRdfParseOptions {
 }
 
 /**
+ * Options for warming up a query engine.
+ */
+export interface IWarmupOptions {
+  /**
+   * The maximum number of query executions.
+   * Defaults to a number chosen by the warm-up actor.
+   */
+  executions?: number;
+  /**
+   * The maximum duration in milliseconds, after which no new query executions start.
+   * Defaults to no limit.
+   */
+  budget?: number;
+}
+
+/**
+ * The outcome of warming up a query engine.
+ */
+export interface IWarmupResult {
+  /**
+   * The number of query executions.
+   */
+  executions: number;
+}
+
+/**
  * Base interface for a Comunica query engine.
  */
 export interface IQueryEngine<
@@ -188,6 +214,16 @@ export interface IQueryEngine<
     stream: NodeJS.ReadableStream,
     options: IRdfParseOptions & Partial<QueryAlgebraContextInner>,
   ) => Promise<RDF.Stream>;
+  // TODO: make mandatory in next/major
+  /**
+   * Warm up this engine by executing queries over the sources in the given context,
+   * so that the just-in-time compiler has optimized the engine before it handles actual queries.
+   * The warm-up does not modify the sources.
+   * @param context A context, which determines the sources in the same way as for queries.
+   * @param options The maximum number of query executions and duration.
+   * @return A promise resolving to the number of query executions.
+   */
+  warmup?: (context: QueryStringContextInner, options?: IWarmupOptions) => Promise<IWarmupResult>;
   /**
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.

@@ -18,6 +18,8 @@ import type {
   IQueryQuadsEnhanced,
   QueryEnhanced,
   IQueryContextCommon,
+  IWarmupOptions,
+  IWarmupResult,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -225,6 +227,28 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     })).handle;
     data.on('end', () => context.get(KeysCore.log)?.flush());
     return data;
+  }
+
+  /**
+   * Warm up this engine by executing queries over the sources in the given context,
+   * so that the just-in-time compiler has optimized the engine before it handles actual queries.
+   * The warm-up does not modify the sources.
+   * @param context A context, which determines the sources in the same way as for queries.
+   * @param options The maximum number of query executions and duration.
+   * @return A promise resolving to the number of query executions.
+   */
+  public async warmup(context: QueryStringContextInner, options: IWarmupOptions = {}): Promise<IWarmupResult> {
+    const { mediatorWarmup } = this.actorInitQuery;
+    if (!mediatorWarmup) {
+      throw new Error('Warming up requires the query init actor to have a mediatorWarmup');
+    }
+    const { executions } = await mediatorWarmup.mediate({
+      engine: this,
+      context: ActionContext.ensureActionContext(context).set(KeysQueryOperation.readOnly, true),
+      executions: options.executions,
+      budget: options.budget,
+    });
+    return { executions };
   }
 
   /**

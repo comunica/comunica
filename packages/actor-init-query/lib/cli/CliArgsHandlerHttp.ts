@@ -60,7 +60,7 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
         },
         warmup: {
           type: 'number',
-          describe: 'Number of generic query executions with which each worker warms up before it accepts requests, ' +
+          describe: 'Number of query executions with which each worker warms up before it accepts requests, ' +
             'so that requests are not slowed down by just-in-time compilation',
           default: 0,
         },

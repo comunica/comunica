@@ -457,6 +457,65 @@ describe('QueryEngineBase', () => {
     });
   });
 
+  describe('An QueryEngineBase instance for warming up', () => {
+    let mediatorWarmup: any;
+    let queryEngine: QueryEngineBase;
+
+    beforeEach(() => {
+      mediatorWarmup = {
+        mediate: jest.fn(async() => ({ executions: 7 })),
+      };
+      queryEngine = new QueryEngineBase(new ActorInitQuery({
+        bus,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorWarmup,
+        name: 'actor',
+      }));
+    });
+
+    it('should warm up in read-only mode with the given options', async() => {
+      await expect(queryEngine.warmup(<any> { sources: [ 'SOURCE' ]}, { executions: 10, budget: 1000 }))
+        .resolves.toEqual({ executions: 7 });
+
+      expect(mediatorWarmup.mediate).toHaveBeenCalledWith({
+        engine: queryEngine,
+        context: new ActionContext({ sources: [ 'SOURCE' ]}).set(KeysQueryOperation.readOnly, true),
+        executions: 10,
+        budget: 1000,
+      });
+    });
+
+    it('should warm up in read-only mode if the context allows updates', async() => {
+      await queryEngine.warmup(<any> { sources: [ 'SOURCE' ], [KeysQueryOperation.readOnly.name]: false });
+
+      expect(mediatorWarmup.mediate).toHaveBeenCalledWith({
+        engine: queryEngine,
+        context: new ActionContext({ sources: [ 'SOURCE' ]}).set(KeysQueryOperation.readOnly, true),
+        executions: undefined,
+        budget: undefined,
+      });
+    });
+
+    it('should reject if the init actor has no mediator for warming up', async() => {
+      queryEngine = new QueryEngineBase(new ActorInitQuery({
+        bus,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+      }));
+
+      await expect(queryEngine.warmup(<any> { sources: [ 'SOURCE' ]})).rejects
+        .toThrow('Warming up requires the query init actor to have a mediatorWarmup');
+    });
+  });
+
   describe('An QueryEngineBase instance for parsing RDF', () => {
     const quad1 = DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
     let mediatorContextPreprocess: any;

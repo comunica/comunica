@@ -11,7 +11,7 @@ import type { TLSSocket } from 'node:tls';
 import * as url from 'node:url';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { ICliArgsHandler, QueryQuads, QueryStringContext, QueryType } from '@comunica/types';
+import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraTransformer } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
@@ -25,7 +25,6 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
-import { EndpointWarmup } from './EndpointWarmup';
 import type { IGraphStoreResult } from './HttpServiceGraphStore';
 import { HttpServiceGraphStore } from './HttpServiceGraphStore';
 import { VoidMetadataEmitter } from './VoidMetadataEmitter';
@@ -295,7 +294,7 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
-   * Execute generic queries over the sources of this endpoint, so that the just-in-time compiler has optimized the
+   * Warm up the engine over the sources of this endpoint, so that the just-in-time compiler has optimized the
    * engine before it handles requests.
    * Failures are logged, but do not prevent the worker from starting.
    * @param engine A SPARQL engine.
@@ -304,11 +303,11 @@ export class HttpServiceSparqlEndpoint {
   public async warmUp(engine: QueryEngineBase, stderr: Writable): Promise<void> {
     const start = Date.now();
     try {
-      const { queries, executions } = await new EndpointWarmup(engine, <QueryStringContext> {
-        ...this.context,
-        [KeysQueryOperation.readOnly.name]: true,
-      }).run(this.warmup, this.timeout);
-      stderr.write(`Worker ${process.pid} warmed up with ${executions} executions of ${queries} queries in ${Date.now() - start} ms.\n`);
+      const { executions } = await engine.warmup(this.context, {
+        executions: this.warmup,
+        budget: this.timeout,
+      });
+      stderr.write(`Worker ${process.pid} warmed up with ${executions} query executions in ${Date.now() - start} ms.\n`);
     } catch (error: unknown) {
       stderr.write(`Worker ${process.pid} could not warm up: ${(<Error> error).message}\n`);
     }
@@ -1118,7 +1117,7 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   contextOverride?: boolean;
   emitVoid?: boolean;
   /**
-   * The number of generic query executions with which each worker warms up before it accepts requests.
+   * The number of query executions with which each worker warms up before it accepts requests.
    */
   warmup?: number;
   graphStore?: boolean;

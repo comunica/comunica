@@ -1,8 +1,11 @@
 import { Readable } from 'node:stream';
+import type { IActionWarmup } from '@comunica/bus-warmup';
+import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { EndpointWarmup } from '../lib/EndpointWarmup';
+import { ActorWarmupDataDerived } from '../lib/ActorWarmupDataDerived';
+import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
@@ -15,8 +18,10 @@ function engineFor(responses: Record<string, RDF.Bindings[]>, data = (): Readabl
   };
 }
 
-describe('EndpointWarmup', () => {
-  const context: any = { sources: [ 'SOURCE' ]};
+describe('ActorWarmupDataDerived', () => {
+  let bus: any;
+  let actor: ActorWarmupDataDerived;
+  const context = new ActionContext({ sources: [ 'SOURCE' ]});
   const responses: Record<string, RDF.Bindings[]> = {
     'SELECT DISTINCT ?p WHERE { ?s ?p ?o } LIMIT 64': [
       BF.fromRecord({ p: DF.namedNode('ex:p1') }),
@@ -36,9 +41,24 @@ describe('EndpointWarmup', () => {
     ],
   };
 
+  function action(engine: any, options: Partial<IActionWarmup> = {}): IActionWarmup {
+    return { engine, context, ...options };
+  }
+
+  beforeEach(() => {
+    bus = new Bus({ name: 'bus' });
+    actor = new ActorWarmupDataDerived({ name: 'actor', bus, executions: 10 });
+  });
+
+  describe('test', () => {
+    it('should pass', async() => {
+      await expect(actor.test(action(engineFor(responses)))).resolves.toPassTestVoid();
+    });
+  });
+
   describe('generateQueries', () => {
     it('should derive patterns, stars, and paths from the data', async() => {
-      await expect(new EndpointWarmup(engineFor(responses), context).generateQueries()).resolves.toEqual([
+      await expect(ActorWarmupDataDerived.generateQueries(engineFor(responses), context)).resolves.toEqual([
         'SELECT ?s WHERE { ?s <ex:p1> <ex:o1> } LIMIT 20',
         'SELECT ?s WHERE { ?s <ex:p1> ?o } LIMIT 20',
         'SELECT * WHERE { ?s <ex:p1> ?a . ?s <ex:p2> ?b } LIMIT 20',
@@ -51,7 +71,7 @@ describe('EndpointWarmup', () => {
 
     it('should query the sources in the given context', async() => {
       const engine = engineFor(responses);
-      await new EndpointWarmup(engine, context).generateQueries();
+      await ActorWarmupDataDerived.generateQueries(engine, context);
       expect(engine.queryBindings).toHaveBeenCalledWith('SELECT DISTINCT ?p WHERE { ?s ?p ?o } LIMIT 64', context);
     });
 
@@ -63,31 +83,36 @@ describe('EndpointWarmup', () => {
         ],
         'SELECT ?p WHERE { <ex:o1> ?p ?x } LIMIT 1': [],
       });
-      await expect(new EndpointWarmup(engine, context).generateQueries()).resolves.toEqual([
+      await expect(ActorWarmupDataDerived.generateQueries(engine, context)).resolves.toEqual([
         'SELECT ?s WHERE { ?s <ex:p1> <ex:o1> } LIMIT 20',
         'SELECT ?s WHERE { ?s <ex:p1> ?o } LIMIT 20',
       ]);
     });
 
     it('should generate no queries without data', async() => {
-      await expect(new EndpointWarmup(engineFor({}), context).generateQueries()).resolves.toEqual([]);
+      await expect(ActorWarmupDataDerived.generateQueries(engineFor({}), context)).resolves.toEqual([]);
     });
   });
 
   describe('run', () => {
     it('should execute the queries in turn, and serialize their results', async() => {
       const engine = engineFor(responses);
-      await expect(new EndpointWarmup(engine, context).run(10, 60_000))
-        .resolves.toEqual({ queries: 7, executions: 10 });
+      await expect(actor.run(action(engine))).resolves.toEqual({ executions: 10 });
       expect(engine.query).toHaveBeenCalledTimes(10);
       expect(engine.query).toHaveBeenNthCalledWith(1, 'SELECT ?s WHERE { ?s <ex:p1> <ex:o1> } LIMIT 20', context);
       expect(engine.query).toHaveBeenNthCalledWith(8, 'SELECT ?s WHERE { ?s <ex:p1> <ex:o1> } LIMIT 20', context);
       expect(engine.resultToString).toHaveBeenCalledWith('RESULT', 'application/sparql-results+json');
     });
 
+    it('should take the number of executions from the action', async() => {
+      const engine = engineFor(responses);
+      await expect(actor.run(action(engine, { executions: 3 }))).resolves.toEqual({ executions: 3 });
+      expect(engine.query).toHaveBeenCalledTimes(3);
+    });
+
     it('should not start executions after the time budget', async() => {
       const engine = engineFor(responses);
-      await expect(new EndpointWarmup(engine, context).run(10, 0)).resolves.toEqual({ queries: 7, executions: 0 });
+      await expect(actor.run(action(engine, { budget: 0 }))).resolves.toEqual({ executions: 0 });
       expect(engine.query).not.toHaveBeenCalled();
     });
 
@@ -98,12 +123,12 @@ describe('EndpointWarmup', () => {
         await new Promise(resolve => setTimeout(resolve, 30));
         return queryBindings(query);
       });
-      await expect(new EndpointWarmup(engine, context).run(10, 100)).resolves.toEqual({ queries: 7, executions: 10 });
+      await expect(actor.run(action(engine, { budget: 100 }))).resolves.toEqual({ executions: 10 });
     });
 
     it('should not execute anything without data', async() => {
       const engine = engineFor({});
-      await expect(new EndpointWarmup(engine, context).run(10, 60_000)).resolves.toEqual({ queries: 0, executions: 0 });
+      await expect(actor.run(action(engine))).resolves.toEqual({ executions: 0 });
       expect(engine.query).not.toHaveBeenCalled();
     });
 
@@ -113,7 +138,7 @@ describe('EndpointWarmup', () => {
           this.destroy(new Error('serialization error'));
         },
       }));
-      await expect(new EndpointWarmup(engine, context).run(10, 60_000)).rejects.toThrow('serialization error');
+      await expect(actor.run(action(engine))).rejects.toThrow('serialization error');
     });
   });
 });
