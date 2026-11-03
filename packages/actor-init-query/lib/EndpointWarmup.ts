@@ -70,13 +70,14 @@ export class EndpointWarmup {
   /**
    * Generate warm-up queries, and execute them the given number of times in total,
    * serializing their results like the endpoint does, as long as the given time budget allows.
+   * The budget starts once the queries are generated, so loading the sources does not count towards it.
    * @param executions The number of query executions.
-   * @param budget The maximum duration in milliseconds, after which no new executions start.
+   * @param budget The maximum duration of the executions in milliseconds, after which no new executions start.
    * @return The number of distinct queries and the number of executions.
    */
   public async run(executions: number, budget: number): Promise<{ queries: number; executions: number }> {
-    const start = Date.now();
     const queries = await this.generateQueries();
+    const start = Date.now();
     let executed = 0;
     while (queries.length > 0 && executed < executions && Date.now() - start < budget) {
       const result = await this.engine.query(queries[executed % queries.length], this.context);

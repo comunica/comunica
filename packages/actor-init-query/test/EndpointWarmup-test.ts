@@ -91,6 +91,16 @@ describe('EndpointWarmup', () => {
       expect(engine.query).not.toHaveBeenCalled();
     });
 
+    it('should not count generating the queries towards the time budget', async() => {
+      const engine = engineFor(responses);
+      const queryBindings = engine.queryBindings.getMockImplementation();
+      engine.queryBindings.mockImplementation(async(query: string) => {
+        await new Promise(resolve => setTimeout(resolve, 30));
+        return queryBindings(query);
+      });
+      await expect(new EndpointWarmup(engine, context).run(10, 100)).resolves.toEqual({ queries: 7, executions: 10 });
+    });
+
     it('should not execute anything without data', async() => {
       const engine = engineFor({});
       await expect(new EndpointWarmup(engine, context).run(10, 60_000)).resolves.toEqual({ queries: 0, executions: 0 });
