@@ -22,8 +22,7 @@ import type { ActionObserverHttp } from './ActionObserverHttp';
  */
 export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSerializeFixedMediaTypes {
   /**
-   * The length after which a chunk of serialized bindings is pushed,
-   * so that large results that are available at once are still streamed.
+   * The length after which a chunk of serialized bindings is pushed.
    */
   public static readonly MAX_CHUNK_LENGTH = 65_536;
 
@@ -119,7 +118,7 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
   }
 
   /**
-   * Create a stream of the serialized bindings, followed by the end of the document.
+   * Create a stream of the serialized bindings.
    * All bindings that are available when the stream is read are serialized into a single chunk,
    * which is cheaper than handling every binding as a separate chunk.
    * @param bindingsStream A bindings stream.
@@ -163,7 +162,6 @@ export class ActorQueryResultSerializeSparqlJson extends ActorQueryResultSeriali
 
   /**
    * Serialize bindings into a SPARQL JSON results object.
-   * The JSON SPARQL results spec does not allow unbound variables, which bindings do not contain.
    * @param bindings Bindings.
    */
   public static bindingsToJson(bindings: RDF.Bindings): string {
