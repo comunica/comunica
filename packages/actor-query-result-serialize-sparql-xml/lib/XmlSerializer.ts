@@ -5,6 +5,7 @@ export class XmlSerializer {
   private readonly stack: string[] = [];
 
   public static header = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  private static readonly ESCAPED_CHARACTERS = /["&'<>]/u;
 
   public constructor() {}
 
@@ -46,7 +47,7 @@ export class XmlSerializer {
   }
 
   private identation(): string {
-    return this.stack.map(_ => '  ').join('');
+    return '  '.repeat(this.stack.length);
   }
 
   private formatTag(
@@ -54,10 +55,19 @@ export class XmlSerializer {
     attributes: Record<string, string> | undefined,
     state: 'open' | 'close' | 'self-closing',
   ): string {
-    return `<${state === 'close' ? '/' : ''}${name}${Object.entries(attributes ?? {}).map(attr => ` ${attr[0]}="${this.escape(attr[1])}"`).join('')}${state === 'self-closing' ? '/' : ''}>`;
+    let attributesString = '';
+    if (attributes) {
+      for (const key in attributes) {
+        attributesString += ` ${key}="${this.escape(attributes[key])}"`;
+      }
+    }
+    return `<${state === 'close' ? '/' : ''}${name}${attributesString}${state === 'self-closing' ? '/' : ''}>`;
   }
 
   private escape(text: string): string {
+    if (!XmlSerializer.ESCAPED_CHARACTERS.test(text)) {
+      return text;
+    }
     return text.replaceAll(/["&'<>]/gu, <(substring: string) => string> ((char: '"' | '&' | '\'' | '<' | '>') => {
       switch (char) {
         case '<': return '&lt;';
