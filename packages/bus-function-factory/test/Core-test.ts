@@ -15,7 +15,6 @@ describe('TermFunctionBase', () => {
       [KeysExpressionEvaluator.superTypeProvider.name]: 'SUPER',
       [KeysInitQuery.functionArgumentsCache.name]: 'CACHE',
     });
-    jest.spyOn(context, 'getSafe');
     concreteFunction = jest.fn(() => (args: any[]) => ({ result: args }));
     func = new TermFunctionBase({
       arity: 2,
@@ -76,12 +75,10 @@ describe('TermFunctionBase', () => {
   });
 
   describe('applyOnTerms', () => {
-    it('should only look up the context entries once per context', () => {
+    it('should search an overload with the entries of the context', () => {
       const exprEval: any = { context };
       expect(func.applyOnTerms([ term1 ], exprEval)).toEqual({ result: [ term1 ]});
-      expect(func.applyOnTerms([ term2 ], exprEval)).toEqual({ result: [ term2 ]});
-      expect(context.getSafe).toHaveBeenCalledTimes(2);
-      expect((<any> func).overloads.search).toHaveBeenCalledWith([ term2 ], 'SUPER', 'CACHE');
+      expect((<any> func).overloads.search).toHaveBeenCalledWith([ term1 ], 'SUPER', 'CACHE');
     });
   });
 });

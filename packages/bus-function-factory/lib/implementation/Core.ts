@@ -1,13 +1,5 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import type {
-  Expression,
-  FunctionArgumentsCache,
-  IActionContext,
-  IEvalContext,
-  IInternalEvaluator,
-  ISuperTypeProvider,
-  TermExpression,
-} from '@comunica/types';
+import type { Expression, IEvalContext, IInternalEvaluator, TermExpression } from '@comunica/types';
 import type {
   GeneralOperator,
   OverloadTree,
@@ -75,11 +67,6 @@ interface TermSparqlFunctionArgs {
  * and https://www.w3.org/TR/sparql11-query/#OperatorMapping
  */
 export class TermFunctionBase extends ExpressionFunctionBase implements ITermFunction {
-  private static readonly contextEntries = new WeakMap<IActionContext, {
-    superTypeProvider: ISuperTypeProvider;
-    functionArgumentsCache: FunctionArgumentsCache;
-  }>();
-
   public readonly supportsTermExpressions = true;
   protected readonly overloads: OverloadTree;
 
@@ -124,18 +111,12 @@ export class TermFunctionBase extends ExpressionFunctionBase implements ITermFun
   }
 
   public applyOnTerms(args: TermExpression[], exprEval: IInternalEvaluator): TermExpression {
-    // The context of an evaluator does not change, so its entries are only looked up once
-    let contextEntries = TermFunctionBase.contextEntries.get(exprEval.context);
-    if (!contextEntries) {
-      contextEntries = {
-        superTypeProvider: exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
-        functionArgumentsCache: exprEval.context.getSafe(KeysInitQuery.functionArgumentsCache),
-      };
-      TermFunctionBase.contextEntries.set(exprEval.context, contextEntries);
-    }
     const concreteFunction =
-      this.overloads.search(args, contextEntries.superTypeProvider, contextEntries.functionArgumentsCache) ??
-      this.handleInvalidTypes(args);
+      this.overloads.search(
+        args,
+        exprEval.context.getSafe(KeysExpressionEvaluator.superTypeProvider),
+        exprEval.context.getSafe(KeysInitQuery.functionArgumentsCache),
+      ) ?? this.handleInvalidTypes(args);
     return concreteFunction(exprEval)(args);
   }
 

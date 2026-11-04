@@ -57,7 +57,6 @@ export class InternalEvaluator {
   }
 
   private variable(expr: Eval.Variable, mapping: RDF.Bindings): Eval.Term {
-    // Bindings can be looked up by variable name, which avoids creating a variable for every evaluation
     const term = mapping.get(expr.name.slice(1));
     if (!term) {
       throw new Eval.UnboundVariableError(expr.name, mapping);
