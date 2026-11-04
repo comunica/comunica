@@ -7,8 +7,7 @@ import type * as RDF from '@rdfjs/types';
 
 /**
  * A comunica warmup actor that executes queries derived from the data in the sources,
- * and not from any particular workload: single patterns, stars, and paths, all with a limit.
- * Their results are serialized, like a SPARQL endpoint does.
+ * such as single patterns, stars, and paths, all with a limit.
  */
 export class ActorWarmupDataDerived extends ActorWarmup {
   public static readonly MAX_PREDICATES = 24;

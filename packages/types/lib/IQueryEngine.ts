@@ -91,14 +91,12 @@ export interface IWarmupOptions {
    */
   executions?: number;
   /**
-   * The maximum duration in milliseconds, after which no new query executions start.
+   * The maximum warmup duration in milliseconds.
    * Defaults to no limit.
    */
   budget?: number;
   /**
    * A signal to stop early, after which no new query executions start.
-   * Aborting it ends the warm-up like reaching the maximum number of executions or duration does,
-   * so the warm-up resolves with the number of query executions so far.
    */
   signal?: AbortSignal;
 }

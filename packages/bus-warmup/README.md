@@ -4,10 +4,6 @@
 
 A bus for warming up a query engine before it handles actual queries,
 so that the just-in-time compiler has optimized the engine by then.
-Actors on this bus receive the engine, the maximum number of query executions and duration,
-and a signal to stop early, and may for example execute queries over the sources in the context.
-Once the signal is aborted, they should not start new query executions.
-They must not modify the sources.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
