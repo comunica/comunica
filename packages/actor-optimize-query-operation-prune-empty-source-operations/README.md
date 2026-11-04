@@ -41,3 +41,4 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `useAskIfSupported`: If true, ASK queries will be sent to the source instead of COUNT queries to check emptiness for patterns. This will only be done for sources that accept ASK queries. _(defaults to `false`)_
+* `askTimeout`: Timeout in milliseconds for ASK queries, after which the request is aborted. On timeout or failure, the source is assumed to have results. A value of 0 or less disables the timeout. _(defaults to `3000`)_

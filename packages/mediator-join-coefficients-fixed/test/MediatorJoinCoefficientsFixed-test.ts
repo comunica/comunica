@@ -167,6 +167,27 @@ describe('MediatorJoinCoefficientsFixed', () => {
       );
     });
 
+    it('should not prefer actors with NaN costs over actors with known costs', async() => {
+      new DummyActor(1, {
+        iterations: Number.POSITIVE_INFINITY,
+        persistedItems: 20,
+        blockingItems: 30,
+        requestTime: Number.NaN,
+      }, bus);
+      new DummyActor(2, {
+        iterations: 10,
+        persistedItems: 20,
+        blockingItems: 30,
+        requestTime: 20,
+      }, bus);
+
+      await expect(mediator.mediate(action)).resolves.toEqual({ id: 2 });
+      expect(debugLog.mock.calls[0][1].costs).toEqual({
+        'LOGICAL-PHYSICAL1': Number.POSITIVE_INFINITY,
+        'LOGICAL-PHYSICAL2': 80,
+      });
+    });
+
     it('should handle multiple single actors with one failing', async() => {
       new DummyActor(1, {
         iterations: 10,

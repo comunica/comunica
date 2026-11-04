@@ -10,7 +10,6 @@ import {
   KeysQueryOperation,
   KeysRdfUpdateQuads,
 } from '@comunica/context-entries';
-import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { DereferenceFromNamedConflictMode, IActionContext, ICliArgsHandler } from '@comunica/types';
 import type { Argv } from 'yargs';
@@ -43,7 +42,7 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
   }
 
   /**
-   * Converts an URL like 'sparql@http://user:passwd@example.com to an IDataSource
+   * Converts an URL like 'sparql@http://user:passwd@example.com to an IDataSource.
    * @param {string} sourceString An url with possibly a type and authorization.
    * @return {[id: string]: any} An IDataSource which represents the sourceString.
    */
@@ -54,16 +53,6 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
     if (mediaTypeMatches) {
       source.type = mediaTypeMatches[1];
       sourceString = sourceString.slice((<number> source.type.length) + 1);
-    }
-    const authRegex = /\/\/(.*:.*)@/u;
-    const authMatches = authRegex.exec(sourceString);
-    if (authMatches) {
-      const credentials = authMatches[1];
-      source.context = new ActionContext({
-        [KeysHttp.auth.name]: decodeURIComponent(credentials),
-      });
-      sourceString = sourceString.slice(0, authMatches.index + 2) +
-        sourceString.slice(authMatches.index + credentials.length + 3);
     }
     source.value = sourceString;
     return source;

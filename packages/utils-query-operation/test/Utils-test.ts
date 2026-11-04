@@ -1,16 +1,29 @@
+import { KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
+import type { IQuerySourceWrapper, IServiceExecutor } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
+import type * as RDF from '@rdfjs/types';
+import { DataFactory } from 'rdf-data-factory';
 import {
+  assignOperationEquivalentQueryString,
   assignOperationSource,
+  getOperationEquivalentQueryString,
   getOperationSource,
+  getOriginalSparqlQueryString,
   getSafeBindings,
   getSafeBoolean,
   getSafeQuads,
+  getServiceExecutor,
+  getServiceExecutorLookup,
   removeOperationSource,
   validateQueryOutput,
 } from '../lib/Utils';
 
 const AF = new AlgebraFactory();
+const DF = new DataFactory();
+const serviceExecutor: IServiceExecutor = { execute: async() => []};
+const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
 
 describe('utils', () => {
   describe('#getSafeBindings', () => {
@@ -96,6 +109,46 @@ describe('utils', () => {
     });
   });
 
+  describe('#getOperationEquivalentQueryString', () => {
+    it('should be undefined without an equivalent query string', () => {
+      expect(getOperationEquivalentQueryString(AF.createNop())).toBeUndefined();
+    });
+
+    it('should return the attached equivalent query string', () => {
+      const operation = assignOperationEquivalentQueryString(AF.createNop(), 'abc');
+      expect(getOperationEquivalentQueryString(operation)).toBe('abc');
+    });
+  });
+
+  describe('#assignOperationEquivalentQueryString', () => {
+    it('should copy the operation and keep its metadata', () => {
+      const source = <IQuerySourceWrapper> { source: { referenceValue: 'source' }};
+      const operationIn = assignOperationSource(AF.createNop(), source);
+      const operationOut = assignOperationEquivalentQueryString(operationIn, 'abc');
+      expect(getOperationEquivalentQueryString(operationIn)).toBeUndefined();
+      expect(getOperationEquivalentQueryString(operationOut)).toBe('abc');
+      expect(getOperationSource(operationOut)).toBe(source);
+    });
+  });
+
+  describe('#getOriginalSparqlQueryString', () => {
+    const context = new ActionContext().set(KeysInitQuery.queryString, 'abc');
+
+    it('should return the query string without a query format', () => {
+      expect(getOriginalSparqlQueryString(context)).toBe('abc');
+    });
+
+    it('should return the query string for a SPARQL query format', () => {
+      expect(getOriginalSparqlQueryString(context
+        .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }))).toBe('abc');
+    });
+
+    it('should be undefined for a non-SPARQL query format', () => {
+      expect(getOriginalSparqlQueryString(context
+        .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }))).toBeUndefined();
+    });
+  });
+
   describe('#removeOperationSource', () => {
     it('should not modify an operation without source', () => {
       const opIn = AF.createNop();
@@ -118,6 +171,48 @@ describe('utils', () => {
       const opOut: Algebra.Nop = AF.createNop();
       opOut.metadata = { other: true };
       expect(opIn).toEqual(opOut);
+    });
+  });
+
+  describe('#getServiceExecutorLookup', () => {
+    it('should be undefined without custom SERVICE executors', () => {
+      expect(getServiceExecutorLookup(context)).toBeUndefined();
+    });
+
+    it('should return a lookup function when custom SERVICE executors are configured', () => {
+      const contextExecutors = context.set(KeysInitQuery.serviceExecutors, { 'urn:service': serviceExecutor });
+      const lookup = getServiceExecutorLookup(contextExecutors)!;
+      expect(lookup('urn:service')).toBe(serviceExecutor);
+      expect(lookup('urn:other')).toBeUndefined();
+    });
+  });
+
+  describe('#getServiceExecutor', () => {
+    it('should be undefined without custom SERVICE executors', () => {
+      expect(getServiceExecutor('urn:service', context)).toBeUndefined();
+    });
+
+    it('should obtain executors from the executors dictionary', () => {
+      const contextExecutors = context.set(KeysInitQuery.serviceExecutors, { 'urn:service': serviceExecutor });
+      expect(getServiceExecutor('urn:service', contextExecutors)).toBe(serviceExecutor);
+      expect(getServiceExecutor('urn:other', contextExecutors)).toBeUndefined();
+    });
+
+    it('should obtain executors from the executor creator', () => {
+      const serviceExecutorCreator = jest.fn((serviceNamedNode: RDF.NamedNode) =>
+        serviceNamedNode.value === 'urn:service' ? serviceExecutor : undefined);
+      const contextCreator = context.set(KeysInitQuery.serviceExecutorCreator, serviceExecutorCreator);
+      expect(getServiceExecutor('urn:service', contextCreator)).toBe(serviceExecutor);
+      expect(getServiceExecutor('urn:other', contextCreator)).toBeUndefined();
+      expect(serviceExecutorCreator).toHaveBeenCalledWith(DF.namedNode('urn:service'));
+    });
+
+    it('should throw when both custom SERVICE executors and an executor creator are configured', () => {
+      const contextBoth = context
+        .set(KeysInitQuery.serviceExecutors, { 'urn:service': serviceExecutor })
+        .set(KeysInitQuery.serviceExecutorCreator, () => serviceExecutor);
+      expect(() => getServiceExecutor('urn:service', contextBoth))
+        .toThrow('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
     });
   });
 });

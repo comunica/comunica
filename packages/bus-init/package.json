@@ -41,6 +41,6 @@
   },
   "dependencies": {
     "@comunica/core": "^5.4.0",
-    "readable-stream": "^4.7.0"
+    "readable-stream": "^4.8.0"
   }
 }

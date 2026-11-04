@@ -88,6 +88,42 @@ describe('ActorOptimizeQueryOperationLeftjoinExpressionPushdown', () => {
         ));
       });
 
+      it('for an operation with leftjoin with a named expression that overlaps only right', async() => {
+        const expression = AF.createNamedExpression(DF.namedNode('ex:f'), [
+          AF.createTermExpression(DF.variable('s2')),
+        ]);
+        const operationIn = AF.createLeftJoin(
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s1'), DF.variable('p1') ],
+          ),
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s2'), DF.variable('p2') ],
+          ),
+          expression,
+        );
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
+        const filter = algebraUtils.withMetadata(AF.createFilter(
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s2'), DF.variable('p2') ],
+          ),
+          expression,
+        ));
+        filter.metadata.isHoistedLeftJoinFilter = true;
+        expect(operationOut).toEqual(AF.createLeftJoin(
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s1'), DF.variable('p1') ],
+          ),
+          filter,
+        ));
+      });
+
       it('for an operation with leftjoin that overlaps left and right', async() => {
         const operationIn = AF.createLeftJoin(
           AF.createProject(

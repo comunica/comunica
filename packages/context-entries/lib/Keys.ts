@@ -20,9 +20,12 @@ import type {
   ComunicaDataFactory,
   IStatisticBase,
   IDiscoverEventData,
+  IServiceExecutor,
+  ServiceExecutorCreator,
   PartialResult,
   ILink,
   DereferenceFromNamedConflictModeResolver,
+  RdfVariant,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -185,6 +188,16 @@ export const KeysInitQuery = {
   /**
    * The original query string.
    */
+  // TODO: next/major - stop sending this queryString as-is to sources, and only rely on the equivalent query string
+  //  that is attached to operations (getOperationEquivalentQueryString in @comunica/utils-query-operation):
+  //  - QuerySourceSparql#getQueryStringAsIs: remove the fallback to this queryString.
+  //  - ActorOptimizeQueryOperationAssignSourcesExhaustive#run: stop deleting this queryString.
+  //  - ActorQueryProcessSequential#parse: stop deleting this queryString after applying initial bindings.
+  //  - ActorOptimizeQueryOperationAssignSourcesExhaustive#run: do not attach this queryString to the operation
+  //    if initial bindings are set, as these change the operation.
+  //  - Actors that change the meaning of an operation with an equivalent query string must drop it,
+  //    as mapOperation copies the operation metadata.
+  //  - Document in the changelog that sources must use getOperationEquivalentQueryString instead of this queryString.
   queryString: new ActionContextKey<string>('@comunica/actor-init-query:queryString'),
   /**
    * The original parsed query.
@@ -247,6 +260,25 @@ export const KeysInitQuery = {
     '@comunica/actor-init-query:extensionFunctionsAlwaysPushdown',
   ),
   /**
+   * Dictionary of custom SERVICE executors.
+   * Key is the IRI of the SERVICE target, and value is the executor implementation.
+   * SERVICE clauses with such a target are evaluated by the executor, instead of by querying the target.
+   *
+   * The callback-based serviceExecutorCreator context entry may be used instead, but not simultaneously.
+   */
+  serviceExecutors: new ActionContextKey<Record<string, IServiceExecutor>>(
+    '@comunica/actor-init-query:serviceExecutors',
+  ),
+  /**
+   * Creator of custom SERVICE executors for a given SERVICE target IRI.
+   * Undefined must be returned for targets that must be queried as regular sources.
+   *
+   * The dictionary-based serviceExecutors context entry may be used instead, but not simultaneously.
+   */
+  serviceExecutorCreator: new ActionContextKey<ServiceExecutorCreator>(
+    '@comunica/actor-init-query:serviceExecutorCreator',
+  ),
+  /**
    * Enables manipulation of the CLI arguments and their processing.
    */
   cliArgsHandlers: new ActionContextKey<ICliArgsHandler[]>('@comunica/actor-init-query:cliArgsHandlers'),
@@ -303,6 +335,12 @@ export const KeysInitQuery = {
   dereferenceFromNamedConflictMode: new ActionContextKey<DereferenceFromNamedConflictModeResolver>(
     '@comunica/actor-init-query:dereferenceFromNamedConflictMode',
   ),
+  /**
+   * The RDF variant the engine operates in https://www.w3.org/TR/rdf12-concepts/#section-generalizations-of-rdf.
+   * Can be undefined or 'rdf' (default), 'symmetricRdf' (also literals and triple terms as subject),
+   * or 'generalizedRdf' (any term in any position).
+   */
+  rdfVariant: new ActionContextKey<RdfVariant>('@comunica/actor-init-query:rdfVariant'),
 };
 
 export const KeysExpressionEvaluator = {

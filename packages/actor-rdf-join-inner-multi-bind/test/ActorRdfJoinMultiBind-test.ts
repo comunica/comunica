@@ -10,6 +10,7 @@ import type { IActionContext, IQueryOperationResultBindings } from '@comunica/ty
 import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -206,6 +207,64 @@ IQueryOperationResultBindings
             const boundVariables = [ DF.variable('a') ];
 
             expect(ActorRdfJoinMultiBind.canBindWithOperation(minusOp, boundVariables)).toBe(false);
+          });
+
+          it('should allow binding on a source FILTER that only uses bound variables in scope of its input', () => {
+            const filter = assignOperationSource(FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createOperatorExpression('&&', [
+                FACTORY.createTermExpression(DF.variable('a')),
+                FACTORY.createTermExpression(DF.variable('b')),
+              ]),
+            ), <any> {});
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('a') ])).toBe(true);
+          });
+
+          it('should reject binding on a local FILTER that only uses bound variables in scope of its input', () => {
+            const filter = FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createTermExpression(DF.variable('a')),
+            );
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('a') ])).toBe(false);
+          });
+
+          it('should allow binding on a source FILTER that uses unbound variables out of scope of its input', () => {
+            const filter = assignOperationSource(FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createTermExpression(DF.variable('c')),
+            ), <any> {});
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('a') ])).toBe(true);
+          });
+
+          it('should reject binding on a source FILTER that uses bound variables out of scope of its input', () => {
+            const filter = assignOperationSource(FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createTermExpression(DF.variable('c')),
+            ), <any> {});
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('c') ])).toBe(false);
+          });
+
+          it('should allow binding on a hoisted left join FILTER that uses bound variables out of scope', () => {
+            const filter = algebraUtils.withMetadata(FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createTermExpression(DF.variable('c')),
+            ));
+            filter.metadata.isHoistedLeftJoinFilter = true;
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('c') ])).toBe(true);
+          });
+
+          it('should reject binding on a source FILTER with an unsupported expression', () => {
+            const filter = assignOperationSource(FACTORY.createFilter(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              FACTORY.createWildcardExpression(),
+            ), <any> {});
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('a') ])).toBe(false);
           });
         });
       });
@@ -540,7 +599,8 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
+        )).resolves
+          .toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations');
       });
 
       it('should reject on a right stream of type group', async() => {
@@ -583,7 +643,8 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
+        )).resolves
+          .toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations');
       });
 
       it('should reject on a right stream containing group', async() => {
@@ -626,7 +687,8 @@ IQueryOperationResultBindings
               },
             ],
           },
-        )).resolves.toFailTest('Actor actor can not bind on Extend and Group operations');
+        )).resolves
+          .toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations');
       });
 
       it('should not reject on a left stream of type group', async() => {

@@ -1,5 +1,5 @@
 import { Readable, Transform } from 'node:stream';
-import { KeysCore, KeysInitQuery } from '@comunica/context-entries';
+import { KeysCore, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
 import type {
   IActionContext,
@@ -354,6 +354,253 @@ describe('QueryEngineBase', () => {
       // Make it reject instead of reading input
       mediatorQueryProcess.mediate = () => Promise.reject(new Error('a'));
       await expect(queryEngine.query('INVALID QUERY', { sources: [ 'abc' ]})).rejects.toBeTruthy();
+    });
+  });
+
+  describe('An QueryEngineBase instance for updating quads', () => {
+    const quad1 = DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+    const quad2 = DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+    let mediatorContextPreprocess: any;
+    let mediatorUpdateQuads: any;
+    let execute: jest.Mock;
+    let queryEngine: QueryEngineBase;
+
+    beforeEach(() => {
+      mediatorContextPreprocess = {
+        mediate: jest.fn(async({ context }: any) => ({ context: context.setRaw('preprocessed', true) })),
+      };
+      execute = jest.fn(async() => {});
+      mediatorUpdateQuads = {
+        mediate: jest.fn(async() => ({ execute })),
+      };
+      queryEngine = new QueryEngineBase(new ActorInitQuery({
+        bus,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorContextPreprocess,
+        mediatorUpdateQuads,
+        name: 'actor',
+      }));
+    });
+
+    it('should pass the update to the update quads mediator with the preprocessed context', async() => {
+      const update = {
+        quadStreamInsert: new ArrayIterator([ quad1 ], { autoStart: false }),
+        quadStreamDelete: new ArrayIterator([ quad2 ], { autoStart: false }),
+        deleteGraphs: { graphs: [ DF.namedNode('ex:g1') ], requireExistence: true, dropGraphs: true },
+        createGraphs: { graphs: [ DF.namedNode('ex:g2') ], requireNonExistence: true },
+      };
+
+      await queryEngine.updateQuads(update, { destination: 'abc' });
+
+      expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
+        context: new ActionContext({ destination: 'abc' }),
+        initialize: true,
+      });
+      expect(mediatorUpdateQuads.mediate).toHaveBeenCalledWith({
+        ...update,
+        context: new ActionContext({ destination: 'abc', preprocessed: true }),
+      });
+      expect(execute).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reject if the init actor has no mediators for updating quads', async() => {
+      queryEngine = new QueryEngineBase(new ActorInitQuery({
+        bus,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+      }));
+
+      await expect(queryEngine.updateQuads({})).rejects.toThrow(
+        'Updating quads requires the query init actor to have a mediatorContextPreprocess and a mediatorUpdateQuads',
+      );
+    });
+
+    it('should reject in read-only mode', async() => {
+      mediatorContextPreprocess.mediate = async({ context }: any) => ({
+        context: context.set(KeysQueryOperation.readOnly, true),
+      });
+
+      await expect(queryEngine.updateQuads({ quadStreamInsert: new ArrayIterator([ quad1 ], { autoStart: false }) }))
+        .rejects.toThrow('Attempted a write operation in read-only mode');
+      expect(mediatorUpdateQuads.mediate).not.toHaveBeenCalled();
+    });
+
+    it('should invalidate the HTTP cache if requested', async() => {
+      jest.spyOn(mediatorHttpInvalidate, 'mediate');
+
+      await queryEngine.updateQuads({}, { [KeysInitQuery.invalidateCache.name]: true });
+
+      expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledTimes(1);
+      expect(execute).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reject if the update fails', async() => {
+      execute.mockRejectedValue(new Error('Update failed'));
+
+      await expect(queryEngine.updateQuads({})).rejects.toThrow('Update failed');
+    });
+
+    it('should flush the logger after the update', async() => {
+      const logger = <Logger><unknown>{ flush: jest.fn() };
+
+      await queryEngine.updateQuads({}, { [KeysCore.log.name]: logger });
+
+      expect(logger.flush).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('An QueryEngineBase instance for parsing RDF', () => {
+    const quad1 = DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+    let mediatorContextPreprocess: any;
+    let mediatorRdfParse: any;
+    let parsed: Readable;
+    let stream: Readable;
+    let queryEngine: QueryEngineBase;
+
+    beforeEach(() => {
+      mediatorContextPreprocess = {
+        mediate: jest.fn(async({ context }: any) => ({ context: context.setRaw('preprocessed', true) })),
+      };
+      parsed = Readable.from([ quad1 ]);
+      mediatorRdfParse = {
+        mediate: jest.fn(async() => ({ handle: { data: parsed }})),
+      };
+      stream = Readable.from([ '<ex:s1> <ex:p> <ex:o> .' ]);
+      queryEngine = new QueryEngineBase(new ActorInitQuery({
+        bus,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        mediatorContextPreprocess,
+        mediatorRdfParse,
+        name: 'actor',
+      }));
+    });
+
+    it('should parse the stream with the preprocessed options as context', async() => {
+      const options = { contentType: 'text/turtle', baseIRI: 'http://example.org/', version: '1.2' };
+
+      await expect(arrayifyStream(await queryEngine.parseRdf(stream, options))).resolves.toEqualRdfQuadArray([ quad1 ]);
+
+      expect(mediatorContextPreprocess.mediate).toHaveBeenCalledWith({
+        context: new ActionContext(options),
+        initialize: true,
+      });
+      const context = new ActionContext({ ...options, preprocessed: true });
+      expect(mediatorRdfParse.mediate).toHaveBeenCalledWith({
+        context,
+        handle: {
+          data: stream,
+          metadata: { baseIRI: 'http://example.org/', version: '1.2' },
+          url: 'http://example.org/',
+          context,
+        },
+        handleMediaType: 'text/turtle',
+      });
+    });
+
+    it('should identify a stream without base IRI in error messages', async() => {
+      await arrayifyStream(await queryEngine.parseRdf(stream, { contentType: 'text/turtle' }));
+
+      expect(mediatorRdfParse.mediate).toHaveBeenCalledWith(expect.objectContaining({
+        handle: expect.objectContaining({ url: 'a stream' }),
+      }));
+    });
+
+    it('should reject without content type', async() => {
+      await expect(queryEngine.parseRdf(stream, <any> { baseIRI: 'http://example.org/' }))
+        .rejects.toThrow(`Missing 'contentType' option while parsing.`);
+    });
+
+    it('should reject if the init actor has no mediators for parsing RDF', async() => {
+      queryEngine = new QueryEngineBase(new ActorInitQuery({
+        bus,
+        mediatorHttpInvalidate,
+        mediatorQueryProcess,
+        mediatorQueryResultSerialize: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+        mediatorQueryResultSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+        name: 'actor',
+      }));
+
+      await expect(queryEngine.parseRdf(stream, { contentType: 'text/turtle' })).rejects.toThrow(
+        'Parsing RDF requires the query init actor to have a mediatorContextPreprocess and a mediatorRdfParse',
+      );
+    });
+
+    it('should reject if no parser can handle the stream', async() => {
+      mediatorRdfParse.mediate = async() => {
+        throw new Error('Unsupported media type');
+      };
+
+      await expect(queryEngine.parseRdf(stream, { contentType: 'text/turtle' })).rejects
+        .toThrow('Unsupported media type');
+    });
+
+    it('should emit an error if the parsed stream emits an error', async() => {
+      parsed = new Readable({
+        objectMode: true,
+        read() {
+          this.destroy(new Error('Invalid syntax'));
+        },
+      });
+
+      await expect(arrayifyStream(await queryEngine.parseRdf(stream, { contentType: 'text/turtle' }))).rejects
+        .toThrow('Invalid syntax');
+    });
+
+    it('should expose prefix and context events of the parsed stream', async() => {
+      parsed = new Readable({
+        objectMode: true,
+        read() {
+          this.emit('prefix', 'ex', DF.namedNode('http://example.org/'));
+          this.emit('context', { ex: 'http://example.org/' });
+          this.push(quad1);
+          this.push(null);
+        },
+      });
+      const quads = await queryEngine.parseRdf(stream, { contentType: 'text/turtle' });
+      const onPrefix = jest.fn();
+      const onContext = jest.fn();
+      quads.on('prefix', onPrefix);
+      quads.on('context', onContext);
+
+      await arrayifyStream(quads);
+
+      expect(onPrefix).toHaveBeenCalledWith('ex', DF.namedNode('http://example.org/'));
+      expect(onContext).toHaveBeenCalledWith({ ex: 'http://example.org/' });
+    });
+
+    it('should invalidate the HTTP cache if requested', async() => {
+      jest.spyOn(mediatorHttpInvalidate, 'mediate');
+
+      await arrayifyStream(await queryEngine.parseRdf(stream, {
+        contentType: 'text/turtle',
+        [KeysInitQuery.invalidateCache.name]: true,
+      }));
+
+      expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should flush the logger when the parsed stream ends', async() => {
+      const logger = <Logger><unknown>{ flush: jest.fn() };
+
+      await arrayifyStream(await queryEngine.parseRdf(stream, {
+        contentType: 'text/turtle',
+        [KeysCore.log.name]: logger,
+      }));
+
+      expect(logger.flush).toHaveBeenCalledTimes(1);
     });
   });
 

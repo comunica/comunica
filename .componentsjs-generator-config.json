@@ -72,6 +72,7 @@
     "MetadataValidationState",
     "FragmentSelectorShape",
     "ChunkedIterator",
+    "IndexNestedLoopIterator",
     "IQuerySource",
     "LogicalJoinType",
     "ICachePolicy",

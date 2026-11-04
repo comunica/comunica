@@ -347,6 +347,192 @@ describe('QuerySourceHypermedia', () => {
       });
     });
 
+    describe('when no links can be followed from the first source', () => {
+      let inner: any;
+      let sourceMetadata: Record<string, any>;
+      let cachePolicy: any;
+      let links: any[] | undefined;
+      let linkContext: IActionContext | undefined;
+      let directSource: QuerySourceHypermedia;
+
+      beforeEach(() => {
+        inner = {
+          getSelectorShape: async() => ({
+            type: 'operation',
+            operation: { operationType: 'wildcard' },
+            synchronous: true,
+          }),
+          queryBindings: jest.fn(() => new ArrayIterator([], { autoStart: false })),
+          queryBindingsSynchronous: jest.fn(() => [ BF.fromRecord({ s: DF.namedNode('s') }) ]),
+        };
+        sourceMetadata = { first: [], next: []};
+        cachePolicy = undefined;
+        links = [];
+        linkContext = undefined;
+        directSource = new QuerySourceHypermedia(
+          10,
+          { url: 'firstUrl', context: linkContext },
+          64,
+          {
+            ...mediators,
+            mediatorQuerySourceDereferenceLink: {
+              mediate: async({ link }: any) => ({ link, source: inner, metadata: sourceMetadata, cachePolicy }),
+            },
+            mediatorRdfResolveHypermediaLinks: {
+              mediate: jest.fn(async() => {
+                if (!links) {
+                  throw new Error('no links');
+                }
+                return { links };
+              }),
+            },
+          },
+          DF,
+          BF,
+        );
+      });
+
+      async function probe(source = directSource): Promise<void> {
+        source.queryBindings(operation, context).destroy();
+        await (<any> source).directSourceProbe;
+      }
+
+      it('should keep synchronous lookups in the selector shape', async() => {
+        await expect(directSource.getSelectorShape(context)).resolves
+          .toEqual({ type: 'operation', operation: { operationType: 'wildcard' }, synchronous: true });
+      });
+
+      it('should remove synchronous lookups from the selector shape if links can be followed', async() => {
+        links = [{ url: 'next' }];
+        await expect(directSource.getSelectorShape(context)).resolves
+          .toEqual({ type: 'operation', operation: { operationType: 'wildcard' }});
+      });
+
+      it('should delegate queryBindings to the first source', async() => {
+        await probe();
+        const it = directSource.queryBindings(operation, context);
+        expect(it).toBe(inner.queryBindings.mock.results.at(-1).value);
+        expect(inner.queryBindings).toHaveBeenLastCalledWith(operation, context, undefined);
+      });
+
+      it('should probe the first source only once', async() => {
+        await probe();
+        directSource.queryBindingsSynchronous(<Algebra.Pattern> operation, context);
+        directSource.queryBindings(operation, context);
+        expect((<any> directSource).mediators.mediatorRdfResolveHypermediaLinks.mediate).toHaveBeenCalledTimes(1);
+      });
+
+      it('should delegate queryBindings if link resolution fails', async() => {
+        links = undefined;
+        await probe();
+        expect(directSource.queryBindings(operation, context)).toBe(inner.queryBindings.mock.results.at(-1).value);
+      });
+
+      it('should not delegate queryBindings if links can be followed', async() => {
+        links = [{ url: 'next' }];
+        await probe();
+        expect(directSource.queryBindings(operation, context)).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
+      });
+
+      it('should delegate queryBindings if the source has a cache policy and a request time', async() => {
+        cachePolicy = { satisfiesWithoutRevalidation: async() => true };
+        sourceMetadata = { ...sourceMetadata, requestTime: 10 };
+        await probe();
+        expect(directSource.queryBindings(operation, context)).toBe(inner.queryBindings.mock.results.at(-1).value);
+      });
+
+      it('should probe the first source again once it was fetched again', async() => {
+        let valid = true;
+        cachePolicy = { satisfiesWithoutRevalidation: async() => valid };
+        await directSource.getSelectorShape(context);
+        const firstState = (<any> directSource).directSourceState;
+        expect(firstState).toBeDefined();
+
+        valid = false;
+        await expect(directSource.getSelectorShape(context)).resolves
+          .toEqual({ type: 'operation', operation: { operationType: 'wildcard' }, synchronous: true });
+        expect((<any> directSource).directSourceState).toBeDefined();
+        expect((<any> directSource).directSourceState).not.toBe(firstState);
+      });
+
+      it('should share the link check with the state of the first source', async() => {
+        await probe();
+        const sourceState = (<any> directSource).directSourceState;
+        await expect(sourceState.hasSourceLinks).resolves.toBe(false);
+      });
+
+      it('should reuse a link check of the state of the first source', async() => {
+        const sourceState = await directSource.getSourceCached({ url: 'firstUrl' }, {}, context);
+        sourceState.hasSourceLinks = Promise.resolve(true);
+        await probe();
+        expect((<any> directSource).directSourceState).toBeUndefined();
+        expect((<any> directSource).mediators.mediatorRdfResolveHypermediaLinks.mediate).not.toHaveBeenCalled();
+      });
+
+      it.each([
+        { cardinality: { type: 'exact', value: 1 }},
+        { pageSize: 10 },
+      ])('should not delegate queryBindings if the source metadata must be accumulated: %o', async(extra) => {
+        sourceMetadata = { ...sourceMetadata, ...extra };
+        await probe();
+        expect(directSource.queryBindings(operation, context)).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
+      });
+
+      it('should not delegate queryBindings if the first source fails', async() => {
+        const failing = new QuerySourceHypermedia(
+          10,
+          { url: 'firstUrl' },
+          64,
+          { ...mediators, mediatorQuerySourceDereferenceLink: { mediate: async() => {
+            throw new Error('dereference failure');
+          } }},
+          DF,
+          BF,
+        );
+        const it = failing.queryBindings(operation, context);
+        const error = new Promise(resolve => it.on('error', resolve));
+        await (<any> failing).directSourceProbe;
+        await expect(error).resolves.toThrow('dereference failure');
+        expect((<any> failing).directSourceState).toBeUndefined();
+      });
+
+      it('should look up synchronously in the first source', async() => {
+        expect(directSource.queryBindingsSynchronous(<Algebra.Pattern> operation, context)).toBeUndefined();
+        await (<any> directSource).directSourceProbe;
+        expect(directSource.queryBindingsSynchronous(<Algebra.Pattern> operation, context))
+          .toEqualBindingsArray([ BF.fromRecord({ s: DF.namedNode('s') }) ]);
+        expect(inner.queryBindingsSynchronous).toHaveBeenCalledWith(operation, context);
+      });
+
+      it('should not look up synchronously in a first source without synchronous lookups', async() => {
+        delete inner.queryBindingsSynchronous;
+        await probe();
+        expect(directSource.queryBindingsSynchronous(<Algebra.Pattern> operation, context)).toBeUndefined();
+      });
+
+      it('should query the first source within the context of its link', async() => {
+        const withContext = new QuerySourceHypermedia(
+          10,
+          { url: 'firstUrl', context: new ActionContext({ x: 'y' }) },
+          64,
+          (<any> directSource).mediators,
+          DF,
+          BF,
+        );
+        await probe(withContext);
+        withContext.queryBindingsSynchronous(<Algebra.Pattern> operation, context);
+        withContext.queryBindingsSynchronous(<Algebra.Pattern> operation, context);
+        const merged = context.merge(new ActionContext({ x: 'y' }));
+        expect(inner.queryBindingsSynchronous).toHaveBeenNthCalledWith(1, operation, merged);
+        // The merged context is reused for the same context
+        expect(inner.queryBindingsSynchronous.mock.calls[0][1]).toBe(inner.queryBindingsSynchronous.mock.calls[1][1]);
+        const otherContext = context.set(KeysQueryOperation.unionDefaultGraph, true);
+        withContext.queryBindingsSynchronous(<Algebra.Pattern> operation, otherContext);
+        expect(inner.queryBindingsSynchronous)
+          .toHaveBeenLastCalledWith(operation, otherContext.merge(new ActionContext({ x: 'y' })));
+      });
+    });
+
     describe('queryQuads', () => {
       it('should throw', async() => {
         await expect(source.queryQuads(<any> undefined, context).toArray()).resolves

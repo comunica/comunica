@@ -21,7 +21,9 @@ export class ActorHashQuadsMurmur extends ActorHashQuads {
         hash.hash(quad.predicate.value);
         hash.hash(quad.object.value);
         hash.hash(quad.graph.value);
-        return hash.result();
+        // Convert the uint32 to an int32, so it remains a small integer
+        // eslint-disable-next-line unicorn/prefer-math-trunc
+        return hash.result() | 0;
       },
     };
   }

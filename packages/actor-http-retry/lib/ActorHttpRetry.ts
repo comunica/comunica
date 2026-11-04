@@ -48,6 +48,8 @@ export class ActorHttpRetry extends ActorHttp {
     const retryDelayFallback = action.context.get(KeysHttp.httpRetryDelayFallback) ?? 0;
     const retryDelayLimit = action.context.get(KeysHttp.httpRetryDelayLimit);
     const retryStatusCodes = action.context.get(KeysHttp.httpRetryStatusCodes);
+    const retryOnError = ActorHttpRetry.isRetryableOnError(action);
+    let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= attemptLimit; attempt++) {
       const retryDelay = url.host in this.activeDelays ?
@@ -72,10 +74,26 @@ export class ActorHttpRetry extends ActorHttp {
         await ActorHttpRetry.sleep(retryDelay);
       }
 
-      const response = await this.mediatorHttp.mediate({
-        ...action,
-        context: action.context.set(ActorHttpRetry.keyWrapped, true),
-      });
+      let response: IActorHttpOutput;
+      try {
+        response = await this.mediatorHttp.mediate({
+          ...action,
+          context: action.context.set(ActorHttpRetry.keyWrapped, true),
+        });
+        lastError = undefined;
+      } catch (error: unknown) {
+        // Timed out, aborted and non-retryable requests are not retried.
+        if (!retryOnError || ActorHttpRetry.isTimeoutError(error) || ActorHttpRetry.isAbortedByCaller(action)) {
+          throw error;
+        }
+        this.logDebug(action.context, 'Request failed without response', () => ({
+          url: url.href,
+          error: (<Error> error).message,
+          currentAttempt: `${attempt} / ${attemptLimit}`,
+        }));
+        lastError = <Error> error;
+        continue;
+      }
 
       if (response.ok) {
         return response;
@@ -179,7 +197,59 @@ export class ActorHttpRetry extends ActorHttp {
       }));
     }
 
-    throw new Error(`Request failed: ${url.href}`);
+    throw lastError ?? new Error(`Request failed: ${url.href}`);
+  }
+
+  /**
+   * Check if the given request may be retried after it failed without a response.
+   * The server may have processed such a request already,
+   * so this only holds for idempotent methods and POST requests of SPARQL queries,
+   * with a request body that can be sent again.
+   * @param {IActionHttp} action The HTTP action.
+   */
+  public static isRetryableOnError(action: IActionHttp): boolean {
+    if (!ActorHttp.isReplayableRequestBody(action)) {
+      return false;
+    }
+    const method = ActorHttp.getRequestMethod(action);
+    return ActorHttp.isIdempotentMethod(method) ||
+      (method.toUpperCase() === 'POST' && ActorHttpRetry.isSparqlQueryBody(action.init));
+  }
+
+  /**
+   * Check if the given request init contains a SPARQL query, as opposed to, e.g., a SPARQL update.
+   * @param {RequestInit} init The request init.
+   */
+  public static isSparqlQueryBody(init: RequestInit | undefined): boolean {
+    const body = init?.body;
+    const contentType = new Headers(init?.headers).get('content-type')?.split(';')[0].trim().toLowerCase();
+    if (contentType === 'application/sparql-query') {
+      return true;
+    }
+    if (body instanceof URLSearchParams || (typeof body === 'string' &&
+      contentType === 'application/x-www-form-urlencoded')) {
+      const params = new URLSearchParams(body);
+      return params.has('query') && !params.has('update');
+    }
+    return false;
+  }
+
+  /**
+   * Check if the given error is caused by a timeout, such as from `KeysHttp.httpTimeout`.
+   * These are not retried, as the request would likely time out again,
+   * while the timeout would no longer bound the request duration.
+   * @param {unknown} error An error.
+   */
+  public static isTimeoutError(error: unknown): boolean {
+    return error instanceof Error && error.name === 'TimeoutError';
+  }
+
+  /**
+   * Check if the caller aborted the given request.
+   * @param {IActionHttp} action The HTTP action.
+   */
+  public static isAbortedByCaller(action: IActionHttp): boolean {
+    return action.context.get(KeysHttp.httpAbortSignal)?.aborted === true || action.init?.signal?.aborted === true;
   }
 
   /**

@@ -1,4 +1,5 @@
-import { KeysDereference, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import type { IActionQueryOperation } from '@comunica/bus-query-operation';
+import { KeysDereference, KeysHttp, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
@@ -18,6 +19,10 @@ const endpoint = DF.namedNode('http://ex.org/sparql');
 
 function pattern(): Algebra.Operation {
   return AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('x'));
+}
+
+function extensionFunctionFilter(): Algebra.Filter {
+  return AF.createFilter(pattern(), AF.createNamedExpression(DF.namedNode('ex:f'), []));
 }
 
 describe('ActorQueryOperationService', () => {
@@ -191,6 +196,38 @@ describe('ActorQueryOperationService', () => {
       expect(sourceContext.get(KeysDereference.blockFileAccess)).toBeUndefined();
     });
 
+    it('should not set credentials by default', async() => {
+      const op: any = { operation: AF.createService(pattern(), endpoint), context: context() };
+      await createActor().run(op, undefined);
+      const sourceContext = mediatorQuerySourceIdentify.mediate.mock.calls[0][0].querySourceUnidentified.context;
+      expect(sourceContext.get(KeysHttp.auth)).toBeUndefined();
+    });
+
+    it('should move credentials in the target into the source context', async() => {
+      const op: any = {
+        operation: AF.createService(pattern(), DF.namedNode('http://user:secret@ex.org/sparql')),
+        context: context(),
+      };
+      await createActor().run(op, undefined);
+      const { querySourceUnidentified } = mediatorQuerySourceIdentify.mediate.mock.calls[0][0];
+      expect(querySourceUnidentified.value).toBe('http://ex.org/sparql');
+      expect(querySourceUnidentified.context.get(KeysHttp.auth)).toBe('user:secret');
+      expect(querySourceUnidentified.context.get(KeysDereference.blockFileAccess)).toBe(true);
+    });
+
+    it('should inherit credentials from a source with the same url', async() => {
+      const op: any = {
+        operation: AF.createService(pattern(), endpoint),
+        context: context().set(KeysQueryOperation.querySources, [ <any> {
+          source: { referenceValue: 'http://ex.org/sparql' },
+          context: new ActionContext().set(KeysHttp.auth, 'user:secret'),
+        } ]),
+      };
+      await createActor().run(op, undefined);
+      const sourceContext = mediatorQuerySourceIdentify.mediate.mock.calls[0][0].querySourceUnidentified.context;
+      expect(sourceContext.get(KeysHttp.auth)).toBe('user:secret');
+    });
+
     it('should mark the source of a silent clause as silent', async() => {
       const op: any = {
         operation: AF.createService(pattern(), endpoint, true),
@@ -218,6 +255,27 @@ describe('ActorQueryOperationService', () => {
       expect(getOperationSource(operated)).toBeUndefined();
       expect(getOperationSource(operated.input[0])).toBe(querySource);
       expect(getOperationSource(operated.input[1])).toBe(querySource);
+    });
+
+    it('should only annotate leaves if the whole operation has an extension function', async() => {
+      const op: IActionQueryOperation = {
+        operation: AF.createService(extensionFunctionFilter(), endpoint),
+        context: context(),
+      };
+      await createActor().run(op, undefined);
+      const operated: Algebra.Filter = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+      expect(getOperationSource(operated)).toBeUndefined();
+      expect(getOperationSource(operated.input)).toBe(querySource);
+    });
+
+    it('should annotate the whole operation with an extension function if it is pushed down', async() => {
+      const op: IActionQueryOperation = {
+        operation: AF.createService(extensionFunctionFilter(), endpoint),
+        context: context().set(KeysInitQuery.extensionFunctionsAlwaysPushdown, true),
+      };
+      await createActor().run(op, undefined);
+      const operated: Algebra.Filter = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+      expect(getOperationSource(operated)).toBe(querySource);
     });
 
     it('should propagate errors for non-silent clauses', async() => {
