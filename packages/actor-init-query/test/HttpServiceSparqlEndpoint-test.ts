@@ -1372,6 +1372,75 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
     });
 
+    describe('negotiateMediaType', () => {
+      const negotiate = require('negotiate');
+      let variants: { type: string; quality: number }[];
+      let request: any;
+
+      beforeEach(() => {
+        variants = [{ type: 'a/a', quality: 1 }, { type: 'b/b', quality: 0.9 }];
+        request = { method: 'POST', headers: { accept: 'b/b' }};
+        jest.spyOn(negotiate, 'choose');
+      });
+
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
+
+      it('should not negotiate without accept header', () => {
+        request.headers = {};
+        expect(instance.negotiateMediaType(variants, request)).toBeNull();
+        expect(negotiate.choose).not.toHaveBeenCalled();
+      });
+
+      it('should negotiate once for the same headers', () => {
+        expect(instance.negotiateMediaType(variants, request)).toBe('b/b');
+        expect(instance.negotiateMediaType(variants, request)).toBe('b/b');
+        expect(negotiate.choose).toHaveBeenCalledTimes(1);
+      });
+
+      it('should cache a null media type', () => {
+        request.headers.accept = '*/*';
+        expect(instance.negotiateMediaType(variants, request)).toBeNull();
+        expect(instance.negotiateMediaType(variants, request)).toBeNull();
+        expect(negotiate.choose).toHaveBeenCalledTimes(1);
+      });
+
+      it('should negotiate again for other accept headers', () => {
+        expect(instance.negotiateMediaType(variants, request)).toBe('b/b');
+        request.headers = { accept: 'a/a' };
+        expect(instance.negotiateMediaType(variants, request)).toBe('a/a');
+        expect(negotiate.choose).toHaveBeenCalledTimes(2);
+      });
+
+      it('should negotiate again for other charset, encoding, or language headers', () => {
+        instance.negotiateMediaType(variants, request);
+        request.headers['accept-charset'] = 'utf-8';
+        instance.negotiateMediaType(variants, request);
+        request.headers['accept-encoding'] = 'gzip';
+        instance.negotiateMediaType(variants, request);
+        request.headers['accept-language'] = 'en';
+        instance.negotiateMediaType(variants, request);
+        expect(negotiate.choose).toHaveBeenCalledTimes(4);
+      });
+
+      it('should negotiate again for other variants', () => {
+        expect(instance.negotiateMediaType(variants, request)).toBe('b/b');
+        expect(instance.negotiateMediaType([{ type: 'a/a', quality: 1 }], request)).toBeNull();
+        expect(negotiate.choose).toHaveBeenCalledTimes(2);
+      });
+
+      it('should clear the cache when it is full', () => {
+        const size = HttpServiceSparqlEndpoint.NEGOTIATION_CACHE_SIZE;
+        (<any> HttpServiceSparqlEndpoint).NEGOTIATION_CACHE_SIZE = 1;
+        instance.negotiateMediaType(variants, request);
+        instance.negotiateMediaType(variants, { ...request, headers: { accept: 'a/a' }});
+        instance.negotiateMediaType(variants, request);
+        expect(negotiate.choose).toHaveBeenCalledTimes(3);
+        (<any> HttpServiceSparqlEndpoint).NEGOTIATION_CACHE_SIZE = size;
+      });
+    });
+
     describe('writeQueryResult', () => {
       let response: any;
       let request: any;
@@ -1456,6 +1525,8 @@ describe('HttpServiceSparqlEndpoint', () => {
         await expect(endCalledPromise).resolves.toBe(
           'The response for the given query could not be serialized for the requested media type\n',
         );
+        // Writing the header again would throw for an actual response
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
           400,
           { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },

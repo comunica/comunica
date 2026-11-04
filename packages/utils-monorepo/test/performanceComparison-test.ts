@@ -1,5 +1,5 @@
 import type { IGhbenchEntry } from '../lib/performanceComparison';
-import { formatRatio, getFailures, getRows, renderComparisonComment } from '../lib/performanceComparison';
+import { formatRatio, formatTime, getFailures, getRows, renderComparisonComment } from '../lib/performanceComparison';
 
 const OPTIONS = { headSha: 'head', baseSha: 'base', runUrl: 'https://ci/1' };
 
@@ -21,6 +21,15 @@ describe('formatRatio', () => {
   it('handles a zero previous value', () => {
     expect(formatRatio(0, 0)).toBe('1.00');
     expect(formatRatio(1, 0)).toBe('∞');
+  });
+});
+
+describe('formatTime', () => {
+  it('formats times with at most two decimals', () => {
+    expect(formatTime(300)).toBe('300');
+    expect(formatTime(2.5)).toBe('2.5');
+    expect(formatTime(14.666_666_666_666_666)).toBe('14.67');
+    expect(formatTime(0.1 + 0.2)).toBe('0.3');
   });
 });
 
@@ -105,6 +114,14 @@ describe('getRows', () => {
 });
 
 describe('renderComparisonComment', () => {
+  it('renders fractional times', () => {
+    expect(renderComparisonComment(
+      [ time('A - q1', 1.5), time('A - q2', 2.333_333) ],
+      [ time('A - q1', 1.25), time('A - q2', 2) ],
+      OPTIONS,
+    )).toContain(`| \`A\` | \`3.83\` ms | \`3.25\` ms | \`1.18\` |`);
+  });
+
   it('renders a comparison without failures', () => {
     expect(renderComparisonComment(
       [ time('A - q1', 100), time('A - q2', 200), time('B - q1', 5) ],

@@ -64,6 +64,11 @@ export class HttpServiceSparqlEndpoint {
    */
   public static readonly ALLOWED_METHODS = 'GET, HEAD, OPTIONS, POST, QUERY';
 
+  /**
+   * The maximum number of distinct request headers for which negotiated media types are cached.
+   */
+  public static readonly NEGOTIATION_CACHE_SIZE = 1_000;
+
   public readonly engine: Promise<QueryEngineBase>;
 
   public readonly context: any;
@@ -84,6 +89,11 @@ export class HttpServiceSparqlEndpoint {
    * Ends all open connections and stops this worker, once it runs as a worker.
    */
   public shutdownWorker: (() => Promise<void>) | undefined;
+
+  /**
+   * Negotiated media types by request headers, for each set of allowed variants.
+   */
+  private readonly negotiatedMediaTypes = new WeakMap<object, Map<string, string | null>>();
 
   public constructor(args: IHttpServiceSparqlEndpointArgs) {
     this.context = args.context || {};
@@ -352,6 +362,47 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Determine the media type of the response, or null to fall back to the default media type of the result.
+   * @param {{type: string; quality: number}[]} variants Allowed variants.
+   * @param {module:http.IncomingMessage} request Request object.
+   */
+  public negotiateMediaType(
+    variants: { type: string; quality: number }[],
+    request: http.IncomingMessage,
+  ): string | null {
+    const accept = request.headers.accept;
+    if (!accept) {
+      return null;
+    }
+    // Besides the accept header, negotiation looks at the charset, encoding, and language headers
+    const key = [
+      accept,
+      request.headers['accept-charset'],
+      request.headers['accept-encoding'],
+      request.headers['accept-language'],
+    ].join('\n');
+    let cache = this.negotiatedMediaTypes.get(variants);
+    if (!cache) {
+      cache = new Map();
+      this.negotiatedMediaTypes.set(variants, cache);
+    }
+    let mediaType = cache.get(key);
+    if (mediaType === undefined) {
+      const negotiated = require('negotiate').choose(variants, request)
+        .sort((first: any, second: any) => second.qts - first.qts);
+      const variant: any = negotiated[0];
+      // Require qts strictly larger than 2, as 1 and 2 respectively allow * and */* matching.
+      // For qts 0, 1, and 2, we fallback to our built-in media type defaults, for which we pass null.
+      mediaType = variant && variant.qts > 2 ? <string> variant.type : null;
+      if (cache.size >= HttpServiceSparqlEndpoint.NEGOTIATION_CACHE_SIZE) {
+        cache.clear();
+      }
+      cache.set(key, mediaType);
+    }
+    return mediaType;
+  }
+
+  /**
    * Handles an HTTP request.
    * @param {QueryEngineBase} engine A SPARQL engine.
    * @param {{type: string; quality: number}[]} variants Allowed variants.
@@ -368,12 +419,7 @@ export class HttpServiceSparqlEndpoint {
     request: http.IncomingMessage,
     response: http.ServerResponse,
   ): Promise<void> {
-    const negotiated = require('negotiate').choose(variants, request)
-      .sort((first: any, second: any) => second.qts - first.qts);
-    const variant: any = request.headers.accept ? negotiated[0] : null;
-    // Require qts strictly larger than 2, as 1 and 2 respectively allow * and */* matching.
-    // For qts 0, 1, and 2, we fallback to our built-in media type defaults, for which we pass null.
-    const mediaType: string = variant && variant.qts > 2 ? variant.type : null;
+    const mediaType: string = <string> this.negotiateMediaType(variants, request);
 
     // Verify the path
     // eslint-disable-next-line node/no-deprecated-api
@@ -740,12 +786,10 @@ export class HttpServiceSparqlEndpoint {
       }
     }
 
-    // Write header of response
-    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-    stdout.write(`      Resolved to result media type: ${mediaType}\n`);
-
     // Stop further processing for HEAD requests
     if (headOnly) {
+      response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+      stdout.write(`      Resolved to result media type: ${mediaType}\n`);
       response.end();
       return;
     }
@@ -753,6 +797,10 @@ export class HttpServiceSparqlEndpoint {
     let eventEmitter: EventEmitter | undefined;
     try {
       const { data } = await engine.resultToString(result, mediaType);
+
+      // Only write the header once serialization has started, so that a failure can still be reported as such
+      response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+      stdout.write(`      Resolved to result media type: ${mediaType}\n`);
       data.on('error', (error: Error) => {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         if (!response.writableEnded) {
