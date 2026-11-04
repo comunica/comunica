@@ -74,7 +74,12 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
     // first `limit` results of an unbounded one.
     // When a LIMIT was pushed down onto this operation by the sort-limit-pushdown optimizer,
     // only that many results have to be buffered.
-    const options = { window: this.window, limit: <number | undefined> operation.metadata?.sortLimit };
+    // Only start sorting once the results are read, as they could otherwise end before anything listens to them
+    const options = {
+      window: this.window,
+      limit: <number | undefined> operation.metadata?.sortLimit,
+      autoStart: false,
+    };
     let sortedStream: AsyncIterator<Bindings>;
     if (length === 1) {
       // Sorting on a single expression is by far the most common case, and is worth not paying for
@@ -82,6 +87,7 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
       const [ evaluator ] = evaluators;
       const [ isAscending ] = ascending;
       const transformed = bindingsStream.transform<IAnnotatedBindings<Term | undefined>>({
+        autoStart: false,
         // eslint-disable-next-line ts/no-misused-promises
         transform: async(bindings, next, push) => {
           push({ bindings, index: index++, results: await evaluate(evaluator, bindings) });
@@ -97,6 +103,7 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
       }, options).map(({ bindings }) => bindings);
     } else {
       const transformed = bindingsStream.transform<IAnnotatedBindings<(Term | undefined)[]>>({
+        autoStart: false,
         // eslint-disable-next-line ts/no-misused-promises
         transform: async(bindings, next, push) => {
           const results: (Term | undefined)[] = Array.from({ length });
