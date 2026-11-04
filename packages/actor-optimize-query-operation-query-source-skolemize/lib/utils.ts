@@ -250,7 +250,6 @@ export function deskolemizePattern(
     const predicate = deskolemizeTermNestedThrowing(dataFactory, pattern.predicate, sourceId);
     const object = deskolemizeTermNestedThrowing(dataFactory, pattern.object, sourceId);
     const graph = deskolemizeTermNestedThrowing(dataFactory, pattern.graph, sourceId);
-    // Always a new pattern, as sources may modify the pattern they receive.
     return Object.assign(AF.createPattern(subject, predicate, object, graph), { metadata: pattern.metadata });
   } catch {
     // Return undefined for skolemized terms not in scope for this source
@@ -304,15 +303,4 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
 export function hasSkolemizedTerms(pattern: Algebra.Pattern): boolean {
   return someTermsNested(<RDF.BaseQuad> <unknown> pattern, term => term.termType === 'BlankNode' ||
     (term.termType === 'NamedNode' && term.value.startsWith(SKOLEM_PREFIX)));
-}
-
-/**
- * Copy the given pattern, including its metadata.
- * @param pattern A quad pattern.
- */
-export function copyPattern(pattern: Algebra.Pattern): Algebra.Pattern {
-  return Object.assign(
-    AF.createPattern(pattern.subject, pattern.predicate, pattern.object, pattern.graph),
-    { metadata: pattern.metadata },
-  );
 }

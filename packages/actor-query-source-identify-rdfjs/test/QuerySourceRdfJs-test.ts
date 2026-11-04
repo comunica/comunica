@@ -521,6 +521,23 @@ describe('QuerySourceRdfJs', () => {
         });
     });
 
+    it.each([
+      [ 'with', false ],
+      [ 'without', true ],
+    ])('should not modify the pattern with union default graph %s matchBindings', async(_, noMatchBindings) => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+      if (noMatchBindings) {
+        (<any> store).matchBindings = undefined;
+      }
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.namedNode('g1')));
+
+      const pattern = AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'));
+      const data = source.queryBindings(pattern, ctx);
+      await expect(data.toArray()).resolves.toHaveLength(1);
+      await new Promise(resolve => data.getProperty('metadata', resolve));
+      expect(pattern.graph).toEqual(DF.defaultGraph());
+    });
+
     it('should return quads in named graphs and the default graph with union default graph', async() => {
       ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
 

@@ -251,19 +251,15 @@ describe('QuerySourceSkolemized', () => {
       });
     });
 
-    it('should pass a copy of a pattern to queryBindings, and return its stream as-is', () => {
+    it('should pass a pattern to queryBindings, and return its stream as-is', () => {
       const stream = source.queryBindings(pattern, context, undefined);
       expect(stream).toBe((<any> sourceInner.queryBindings).mock.results[0].value);
-      const passed = (<any> sourceInner.queryBindings).mock.calls[0][0];
-      expect(passed).not.toBe(pattern);
-      expect(passed).toEqual(pattern);
+      expect((<any> sourceInner.queryBindings).mock.calls[0][0]).toBe(pattern);
     });
 
-    it('should pass a copy of a pattern to queryBindingsSynchronous, and return its bindings as-is', () => {
+    it('should pass a pattern to queryBindingsSynchronous, and return its bindings as-is', () => {
       expect(source.queryBindingsSynchronous(pattern, context)).toBe(results);
-      const passed = (<any> sourceInner.queryBindingsSynchronous).mock.calls[0][0];
-      expect(passed).not.toBe(pattern);
-      expect(passed).toEqual(pattern);
+      expect((<any> sourceInner.queryBindingsSynchronous).mock.calls[0][0]).toBe(pattern);
     });
 
     it.each([

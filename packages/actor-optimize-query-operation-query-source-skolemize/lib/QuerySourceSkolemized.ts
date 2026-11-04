@@ -15,7 +15,6 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
 import {
-  copyPattern,
   deskolemizeOperation,
   deskolemizePattern,
   hasSkolemizedTerms,
@@ -51,16 +50,13 @@ export class QuerySourceSkolemized implements IQuerySource {
   }
 
   /**
-   * If skolemization would not change the given operation and its results, a copy of it to pass to the inner source.
+   * Check if skolemization would not change the given operation and its results, so it can be passed through as-is.
    * That is the case for patterns without blank nodes or skolemized terms, over sources that return no blank nodes.
    * @param operation An operation.
    */
-  protected getPassThroughPattern(operation: Algebra.Operation): Algebra.Pattern | undefined {
-    if (isKnownOperation(operation, Algebra.Types.PATTERN) && this.innerSource.canContainBlankNodes?.() === false &&
-      !hasSkolemizedTerms(operation)) {
-      // Always a new pattern, as sources may modify the pattern they receive.
-      return copyPattern(operation);
-    }
+  protected canPassThrough(operation: Algebra.Operation): boolean {
+    return isKnownOperation(operation, Algebra.Types.PATTERN) && this.innerSource.canContainBlankNodes?.() === false &&
+      !hasSkolemizedTerms(operation);
   }
 
   public canContainBlankNodes(): boolean {
@@ -72,9 +68,8 @@ export class QuerySourceSkolemized implements IQuerySource {
     context: IActionContext,
     options: IQueryBindingsOptions | undefined,
   ): BindingsStream {
-    const passThrough = this.getPassThroughPattern(operation);
-    if (passThrough) {
-      return this.innerSource.queryBindings(passThrough, context, options);
+    if (this.canPassThrough(operation)) {
+      return this.innerSource.queryBindings(operation, context, options);
     }
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const operationMapped = isKnownOperation(operation, Algebra.Types.PATTERN) ?
@@ -100,9 +95,8 @@ export class QuerySourceSkolemized implements IQuerySource {
     if (!this.innerSource.queryBindingsSynchronous) {
       return undefined;
     }
-    const passThrough = this.getPassThroughPattern(operation);
-    if (passThrough) {
-      return this.innerSource.queryBindingsSynchronous(passThrough, context);
+    if (this.canPassThrough(operation)) {
+      return this.innerSource.queryBindingsSynchronous(operation, context);
     }
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const operationMapped = isKnownOperation(operation, Algebra.Types.PATTERN) ?
