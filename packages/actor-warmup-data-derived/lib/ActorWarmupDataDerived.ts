@@ -40,38 +40,33 @@ export class ActorWarmupDataDerived extends ActorWarmup {
       return failTest(`${this.name} requires sources to warm up over`);
     }
     // Over remote sources, every query would wait on the network, and burden their servers
-    const remote = sources.find(source => !ActorWarmupDataDerived.isLocal(source));
-    if (remote) {
-      return failTest(`${this.name} only warms up over sources in memory or in files, so not over ${ActorWarmupDataDerived.describeSource(remote)}`);
+    for (const source of sources) {
+      const description = ActorWarmupDataDerived.describeNonLocalSource(source);
+      if (description) {
+        return failTest(`${this.name} only warms up over sources in memory or in files, so not over ${description}`);
+      }
     }
     return passTestVoid();
   }
 
-  protected static describeSource(source: QuerySourceUnidentified): string {
-    if (typeof source === 'string') {
-      return source;
-    }
-    const { type, value } = <{ type?: string; value: unknown }> source;
-    return type === undefined ? String(value) : `a source of type ${type}`;
-  }
-
   /**
-   * Check if a source is in memory or in a file, so that it is loaded once, and queries over it do not access the
-   * network. Sources given only as a URL are not, as they may also be SPARQL endpoints or other interfaces.
+   * Describe a source unless it is in memory or in a file, which is loaded once, so that queries over it do not
+   * access the network. Sources given only as a URL are not, as they may also be SPARQL endpoints or other interfaces.
    * @param source A source.
+   * @return A description of the source, or undefined if it is in memory or in a file.
    */
-  public static isLocal(source: QuerySourceUnidentified): boolean {
+  public static describeNonLocalSource(source: QuerySourceUnidentified): string | undefined {
     if (typeof source === 'string') {
       // Paths and file URLs, and Windows paths, whose drive letter looks like a one-letter URL scheme
-      return source.startsWith('file:') || !/^[a-z][\d+.a-z-]+:/iu.test(source);
+      return source.startsWith('file:') || !/^[a-z][\d+.a-z-]+:/iu.test(source) ? undefined : source;
     }
     if ('match' in source) {
-      return true;
+      return undefined;
     }
     if (source.type !== undefined) {
-      return LOCAL_SOURCE_TYPES.has(source.type);
+      return LOCAL_SOURCE_TYPES.has(source.type) ? undefined : `a source of type ${source.type}`;
     }
-    return typeof source.value !== 'string' || ActorWarmupDataDerived.isLocal(source.value);
+    return typeof source.value === 'string' ? ActorWarmupDataDerived.describeNonLocalSource(source.value) : undefined;
   }
 
   public async run(action: IActionWarmup): Promise<IActorWarmupOutput> {

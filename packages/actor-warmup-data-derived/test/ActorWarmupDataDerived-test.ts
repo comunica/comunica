@@ -81,12 +81,13 @@ describe('ActorWarmupDataDerived', () => {
 
     it('should fail for sources that may be remote', async() => {
       const message = 'actor only warms up over sources in memory or in files, so not over';
-      for (const [ source, label ] of <[any, string][]> [
+      const cases: [any, string][] = [
         [ 'http://example.org/sparql', 'http://example.org/sparql' ],
         [{ value: 'https://example.org/data' }, 'https://example.org/data' ],
         [{ type: 'sparql', value: 'http://example.org/sparql' }, 'a source of type sparql' ],
         [{ type: 'traverse', value: []}, 'a source of type traverse' ],
-      ]) {
+      ];
+      for (const [ source, label ] of cases) {
         const sourcesContext = new ActionContext({ sources: [ 'data.ttl', source ]});
         await expect(actor.test(action(engineFor(responses), { context: sourcesContext }))).resolves
           .toFailTest(`${message} ${label}`);
