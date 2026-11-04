@@ -321,7 +321,6 @@ export class QuerySourceRdfJs implements IQuerySource {
   /**
    * In union default graph mode, the pattern to match for a pattern over the default graph,
    * with a variable graph so that it also matches named graphs.
-   * Patterns are not modified, as callers may reuse them.
    * @param operation A quad pattern.
    * @param unionDefaultGraph If union default graph mode is enabled.
    * @return The given pattern, or a new one with a variable graph and the same metadata.
