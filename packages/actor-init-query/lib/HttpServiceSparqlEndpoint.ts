@@ -369,8 +369,6 @@ export class HttpServiceSparqlEndpoint {
 
   /**
    * Determine the media type of the response, or null to fall back to the default media type of the result.
-   * As negotiation only depends on the allowed variants and on a few request headers,
-   * its outcome is cached per set of variants.
    * @param {{type: string; quality: number}[]} variants Allowed variants.
    * @param {module:http.IncomingMessage} request Request object.
    */
