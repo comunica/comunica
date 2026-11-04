@@ -50,8 +50,7 @@ export class QuerySourceSkolemized implements IQuerySource {
   }
 
   /**
-   * Check if skolemization would not change the given operation and its results, so it can be passed through as-is.
-   * That is the case for patterns without blank nodes or skolemized terms, over sources that return no blank nodes.
+   * Check if skolemization would not change the given operation and its results.
    * @param operation An operation.
    */
   protected canPassThrough(operation: Algebra.Operation): boolean {

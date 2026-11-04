@@ -324,12 +324,15 @@ export class QuerySourceRdfJs implements IQuerySource {
    * Patterns are not modified, as callers may reuse them.
    * @param operation A quad pattern.
    * @param unionDefaultGraph If union default graph mode is enabled.
-   * @return The given pattern, or a new one with a variable graph.
+   * @return The given pattern, or a new one with a variable graph and the same metadata.
    */
   protected toUnionDefaultGraph(operation: Algebra.Pattern, unionDefaultGraph: boolean): Algebra.Pattern {
     if (unionDefaultGraph && operation.graph.termType === 'DefaultGraph') {
       const { subject, predicate, object } = operation;
-      return this.algebraFactory.createPattern(subject, predicate, object, this.dummyDefaultGraph);
+      return Object.assign(
+        this.algebraFactory.createPattern(subject, predicate, object, this.dummyDefaultGraph),
+        { metadata: operation.metadata },
+      );
     }
     return operation;
   }

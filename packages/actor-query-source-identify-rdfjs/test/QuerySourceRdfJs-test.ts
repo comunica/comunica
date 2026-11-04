@@ -538,6 +538,20 @@ describe('QuerySourceRdfJs', () => {
       expect(pattern.graph).toEqual(DF.defaultGraph());
     });
 
+    it('should keep the metadata of the pattern with union default graph', async() => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+      const setMetadata = jest.spyOn(<any> source, 'setMetadata');
+      const pattern = Object.assign(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        { metadata: { key: 'value' }},
+      );
+      await source.queryBindings(pattern, ctx).toArray();
+      const matched: any = setMetadata.mock.calls[0][1];
+      expect(matched).not.toBe(pattern);
+      expect(matched.graph).toEqual(DF.variable('__comunica:defaultGraph'));
+      expect(matched.metadata).toEqual({ key: 'value' });
+    });
+
     it('should return quads in named graphs and the default graph with union default graph', async() => {
       ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
 
