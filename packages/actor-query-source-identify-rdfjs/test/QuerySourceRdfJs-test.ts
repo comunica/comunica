@@ -1178,16 +1178,16 @@ describe('QuerySourceRdfJs', () => {
 
   describe('canContainBlankNodes', () => {
     it('should be true for sources that do not track blank nodes', () => {
-      expect(source.canContainBlankNodes()).toBe(true);
+      expect(new QuerySourceRdfJs(new Store(), DF, BF).canContainBlankNodes()).toBe(true);
     });
 
     it('should be true for sources that have blank nodes', () => {
-      Object.defineProperty(store, 'hasBlankNodes', { value: true });
+      store.addQuad(DF.quad(DF.blankNode('b'), DF.namedNode('p'), DF.namedNode('o')));
       expect(source.canContainBlankNodes()).toBe(true);
     });
 
     it('should be false for sources that have no blank nodes', () => {
-      Object.defineProperty(store, 'hasBlankNodes', { value: false });
+      store.addQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')));
       expect(source.canContainBlankNodes()).toBe(false);
     });
   });
