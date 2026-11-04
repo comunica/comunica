@@ -9,11 +9,6 @@ import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { extractTimeZone } from './DateTimeHelpers';
 
-/**
- * The default super type provider, which only knows the built-in types.
- * As its results only depend on the datatype, it is shared across all evaluators,
- * which avoids creating a new cache for every evaluator and keeps that cache warm.
- */
 export const defaultSuperTypeProvider: ISuperTypeProvider = {
   cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
   discoverer: () => 'term',
