@@ -75,12 +75,39 @@ export class TermFunctionBase extends ExpressionFunctionBase implements ITermFun
       arity,
       operator,
       apply: async({ args, exprEval, mapping }: IEvalContext): Promise<TermExpression> => this.applyOnTerms(
-        await Promise.all(args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping))),
+        TermFunctionBase.evaluateArgumentsDirectly(args, exprEval, mapping) ??
+          await Promise.all(args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping))),
         exprEval,
       ),
     });
 
     this.overloads = overloads;
+  }
+
+  /**
+   * Evaluate the given arguments without creating promises, if they are all terms or variables.
+   * @param args The argument expressions.
+   * @param exprEval The evaluator.
+   * @param mapping The bindings to evaluate against.
+   * @return The evaluated arguments, or undefined if they must be evaluated asynchronously.
+   */
+  public static evaluateArgumentsDirectly(
+    args: Expression[],
+    exprEval: IInternalEvaluator,
+    mapping: IEvalContext['mapping'],
+  ): TermExpression[] | undefined {
+    if (!exprEval.evaluateDirectly) {
+      return undefined;
+    }
+    const terms: TermExpression[] = [];
+    for (const arg of args) {
+      const term = exprEval.evaluateDirectly(arg, mapping);
+      if (!term) {
+        return undefined;
+      }
+      terms.push(term);
+    }
+    return terms;
   }
 
   public applyOnTerms(args: TermExpression[], exprEval: IInternalEvaluator): TermExpression {
