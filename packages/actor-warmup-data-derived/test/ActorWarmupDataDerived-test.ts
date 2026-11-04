@@ -93,16 +93,23 @@ describe('ActorWarmupDataDerived', () => {
       await expect(ActorWarmupDataDerived.generateQueries(engineFor({}), context)).resolves.toEqual([]);
     });
 
-    it('should stop sampling the data once the signal is aborted', async() => {
+    it('should stop sampling the data once stopped', async() => {
       const engine = engineFor(responses);
-      const controller = new AbortController();
+      let stopped = false;
       const queryBindings = engine.queryBindings.getMockImplementation();
       engine.queryBindings.mockImplementation(async(query: string) => {
-        controller.abort();
+        stopped = true;
         return queryBindings(query);
       });
-      await expect(ActorWarmupDataDerived.generateQueries(engine, context, controller.signal)).resolves.toEqual([]);
+      await expect(ActorWarmupDataDerived.generateQueries(engine, context, () => stopped)).resolves.toEqual([]);
       expect(engine.queryBindings).toHaveBeenCalledTimes(1);
+    });
+
+    it('should report when the first query has loaded the sources', async() => {
+      const engine = engineFor(responses);
+      const loaded = jest.fn(() => expect(engine.queryBindings).toHaveBeenCalledTimes(1));
+      await ActorWarmupDataDerived.generateQueries(engine, context, undefined, loaded);
+      expect(loaded).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -128,14 +135,30 @@ describe('ActorWarmupDataDerived', () => {
       expect(engine.query).not.toHaveBeenCalled();
     });
 
-    it('should not count generating the queries towards the time budget', async() => {
+    it('should not count loading the sources towards the time budget', async() => {
       const engine = engineFor(responses);
       const queryBindings = engine.queryBindings.getMockImplementation();
-      engine.queryBindings.mockImplementation(async(query: string) => {
-        await new Promise(resolve => setTimeout(resolve, 30));
+      engine.queryBindings.mockImplementationOnce(async(query: string) => {
+        await new Promise(resolve => setTimeout(resolve, 150));
         return queryBindings(query);
       });
       await expect(actor.run(action(engine, { budget: 100 }))).resolves.toEqual({ executions: 10 });
+    });
+
+    it('should stop sampling the data once the time budget has passed', async() => {
+      const engine = engineFor(responses);
+      let now = 0;
+      const dateNow = jest.spyOn(Date, 'now').mockImplementation(() => now);
+      const queryBindings = engine.queryBindings.getMockImplementation();
+      engine.queryBindings.mockImplementation(async(query: string) => {
+        if (engine.queryBindings.mock.calls.length === 2) {
+          now = 1000;
+        }
+        return queryBindings(query);
+      });
+      await expect(actor.run(action(engine, { budget: 100 }))).resolves.toEqual({ executions: 0 });
+      expect(engine.queryBindings).toHaveBeenCalledTimes(2);
+      dateNow.mockRestore();
     });
 
     it('should not sample or execute anything if the signal is aborted beforehand', async() => {

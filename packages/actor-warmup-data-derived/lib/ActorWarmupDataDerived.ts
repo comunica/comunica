@@ -27,13 +27,16 @@ export class ActorWarmupDataDerived extends ActorWarmup {
   }
 
   public async run(action: IActionWarmup): Promise<IActorWarmupOutput> {
-    const queries = await ActorWarmupDataDerived.generateQueries(action.engine, action.context, action.signal);
     const executions = action.executions ?? this.executions;
     const budget = action.budget ?? Number.POSITIVE_INFINITY;
-    // The budget starts once the queries are generated, so loading the sources does not count towards it
-    const start = Date.now();
+    // The budget starts once the first query has loaded the sources, so loading them does not count towards it
+    let start = Number.POSITIVE_INFINITY;
+    const stopped = (): boolean => Boolean(action.signal?.aborted) || Date.now() - start >= budget;
+    const queries = await ActorWarmupDataDerived.generateQueries(action.engine, action.context, stopped, () => {
+      start = Date.now();
+    });
     let executed = 0;
-    while (queries.length > 0 && executed < executions && Date.now() - start < budget && !action.signal?.aborted) {
+    while (queries.length > 0 && executed < executions && !stopped()) {
       const result = await action.engine.query(queries[executed % queries.length], action.context);
       const { data } = await action.engine.resultToString(result, ActorWarmupDataDerived.MEDIA_TYPE);
       await ActorWarmupDataDerived.consume(data);
@@ -46,21 +49,24 @@ export class ActorWarmupDataDerived extends ActorWarmup {
    * Generate warm-up queries from the data in the sources.
    * @param engine A query engine.
    * @param context A context with the sources.
-   * @param signal An optional signal, after which no more data is sampled.
+   * @param stopped A check after which no more data is sampled.
+   * @param loaded A callback for when the first query, which loads the sources, has completed.
    */
   public static async generateQueries(
     engine: IActionWarmup['engine'],
     context: IActionContext,
-    signal?: AbortSignal,
+    stopped: () => boolean = () => false,
+    loaded: () => void = () => {},
   ): Promise<string[]> {
     const select = async(query: string): Promise<RDF.Bindings[]> =>
-      signal?.aborted ? [] : (await engine.queryBindings(query, context)).toArray();
+      stopped() ? [] : (await engine.queryBindings(query, context)).toArray();
     const queries: string[] = [];
     const subjects: RDF.NamedNode[] = [];
     const predicates = (await select('SELECT DISTINCT ?p WHERE { ?s ?p ?o } LIMIT 64'))
       .map(bindings => bindings.get('p')!)
       .filter(term => term.termType === 'NamedNode')
       .slice(0, ActorWarmupDataDerived.MAX_PREDICATES);
+    loaded();
     const limit = ActorWarmupDataDerived.LIMIT;
 
     // Single patterns, with a bound object if it is an IRI
