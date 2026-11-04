@@ -4130,6 +4130,11 @@ CONSTRUCT {
       await expect(engine.warmup({ sources: [ store ]}, { budget: 0 })).resolves.toEqual({ executions: 0 });
     });
 
+    it('does not warm up over sources that may be remote', async() => {
+      await expect(engine.warmup({ sources: [ 'http://example.org/sparql' ]})).rejects
+        .toThrow('only warms up over sources in memory or in files, so not over http://example.org/sparql');
+    });
+
     it('stops once the signal is aborted', async() => {
       const store = new Store([ DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')) ]);
       const controller = new AbortController();

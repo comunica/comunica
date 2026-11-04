@@ -1,5 +1,6 @@
 import { Readable } from 'node:stream';
 import type { IActionWarmup } from '@comunica/bus-warmup';
+import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
@@ -53,6 +54,48 @@ describe('ActorWarmupDataDerived', () => {
   describe('test', () => {
     it('should pass', async() => {
       await expect(actor.test(action(engineFor(responses)))).resolves.toPassTestVoid();
+    });
+
+    it('should pass for sources in memory or in files', async() => {
+      const sources = [
+        'data.ttl',
+        '/data/data.ttl',
+        'file:///data/data.ttl',
+        'C:\\data\\data.ttl',
+        { match: () => null },
+        { type: 'rdfjs', value: { match: () => null }},
+        { type: 'file', value: 'http://example.org/data.ttl' },
+        { type: 'serialized', value: '<ex:s> <ex:p> <ex:o>.' },
+        { type: 'compositefile', value: [ 'a.ttl', 'b.ttl' ]},
+        { value: 'data.ttl' },
+        { value: { match: () => null }},
+      ];
+      await expect(actor.test(action(engineFor(responses), { context: new ActionContext({ sources }) }))).resolves
+        .toPassTestVoid();
+    });
+
+    it('should read sources from their full context key', async() => {
+      const fullContext = new ActionContext({ [KeysInitQuery.querySourcesUnidentified.name]: [ 'data.ttl' ]});
+      await expect(actor.test(action(engineFor(responses), { context: fullContext }))).resolves.toPassTestVoid();
+    });
+
+    it('should fail for sources that may be remote', async() => {
+      const message = 'actor only warms up over sources in memory or in files, so not over';
+      for (const [ source, label ] of <[any, string][]> [
+        [ 'http://example.org/sparql', 'http://example.org/sparql' ],
+        [{ value: 'https://example.org/data' }, 'https://example.org/data' ],
+        [{ type: 'sparql', value: 'http://example.org/sparql' }, 'a source of type sparql' ],
+        [{ type: 'traverse', value: []}, 'a source of type traverse' ],
+      ]) {
+        const sourcesContext = new ActionContext({ sources: [ 'data.ttl', source ]});
+        await expect(actor.test(action(engineFor(responses), { context: sourcesContext }))).resolves
+          .toFailTest(`${message} ${label}`);
+      }
+    });
+
+    it('should fail without sources', async() => {
+      await expect(actor.test(action(engineFor(responses), { context: new ActionContext() }))).resolves
+        .toFailTest('actor requires sources to warm up over');
     });
   });
 
