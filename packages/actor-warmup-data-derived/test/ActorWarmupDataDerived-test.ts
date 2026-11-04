@@ -92,6 +92,18 @@ describe('ActorWarmupDataDerived', () => {
     it('should generate no queries without data', async() => {
       await expect(ActorWarmupDataDerived.generateQueries(engineFor({}), context)).resolves.toEqual([]);
     });
+
+    it('should stop sampling the data once the signal is aborted', async() => {
+      const engine = engineFor(responses);
+      const controller = new AbortController();
+      const queryBindings = engine.queryBindings.getMockImplementation();
+      engine.queryBindings.mockImplementation(async(query: string) => {
+        controller.abort();
+        return queryBindings(query);
+      });
+      await expect(ActorWarmupDataDerived.generateQueries(engine, context, controller.signal)).resolves.toEqual([]);
+      expect(engine.queryBindings).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('run', () => {
@@ -124,6 +136,26 @@ describe('ActorWarmupDataDerived', () => {
         return queryBindings(query);
       });
       await expect(actor.run(action(engine, { budget: 100 }))).resolves.toEqual({ executions: 10 });
+    });
+
+    it('should not sample or execute anything if the signal is aborted beforehand', async() => {
+      const engine = engineFor(responses);
+      await expect(actor.run(action(engine, { signal: AbortSignal.abort() }))).resolves.toEqual({ executions: 0 });
+      expect(engine.queryBindings).not.toHaveBeenCalled();
+      expect(engine.query).not.toHaveBeenCalled();
+    });
+
+    it('should not start executions once the signal is aborted', async() => {
+      const engine = engineFor(responses);
+      const controller = new AbortController();
+      engine.query.mockImplementation(async() => {
+        if (engine.query.mock.calls.length === 3) {
+          controller.abort();
+        }
+        return 'RESULT';
+      });
+      await expect(actor.run(action(engine, { signal: controller.signal }))).resolves.toEqual({ executions: 3 });
+      expect(engine.query).toHaveBeenCalledTimes(3);
     });
 
     it('should not execute anything without data', async() => {

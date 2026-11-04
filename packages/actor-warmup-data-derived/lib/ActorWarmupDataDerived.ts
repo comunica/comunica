@@ -28,13 +28,13 @@ export class ActorWarmupDataDerived extends ActorWarmup {
   }
 
   public async run(action: IActionWarmup): Promise<IActorWarmupOutput> {
-    const queries = await ActorWarmupDataDerived.generateQueries(action.engine, action.context);
+    const queries = await ActorWarmupDataDerived.generateQueries(action.engine, action.context, action.signal);
     const executions = action.executions ?? this.executions;
     const budget = action.budget ?? Number.POSITIVE_INFINITY;
     // The budget starts once the queries are generated, so loading the sources does not count towards it
     const start = Date.now();
     let executed = 0;
-    while (queries.length > 0 && executed < executions && Date.now() - start < budget) {
+    while (queries.length > 0 && executed < executions && Date.now() - start < budget && !action.signal?.aborted) {
       const result = await action.engine.query(queries[executed % queries.length], action.context);
       const { data } = await action.engine.resultToString(result, ActorWarmupDataDerived.MEDIA_TYPE);
       await ActorWarmupDataDerived.consume(data);
@@ -47,10 +47,15 @@ export class ActorWarmupDataDerived extends ActorWarmup {
    * Generate warm-up queries from the data in the sources.
    * @param engine A query engine.
    * @param context A context with the sources.
+   * @param signal An optional signal, after which no more data is sampled.
    */
-  public static async generateQueries(engine: IActionWarmup['engine'], context: IActionContext): Promise<string[]> {
+  public static async generateQueries(
+    engine: IActionWarmup['engine'],
+    context: IActionContext,
+    signal?: AbortSignal,
+  ): Promise<string[]> {
     const select = async(query: string): Promise<RDF.Bindings[]> =>
-      (await engine.queryBindings(query, context)).toArray();
+      signal?.aborted ? [] : (await engine.queryBindings(query, context)).toArray();
     const queries: string[] = [];
     const subjects: RDF.NamedNode[] = [];
     const predicates = (await select('SELECT DISTINCT ?p WHERE { ?s ?p ?o } LIMIT 64'))

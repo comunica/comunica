@@ -234,7 +234,7 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
    * so that the just-in-time compiler has optimized the engine before it handles actual queries.
    * The warm-up does not modify the sources.
    * @param context A context, which determines the sources in the same way as for queries.
-   * @param options The maximum number of query executions and duration.
+   * @param options The maximum number of query executions and duration, and a signal to stop early.
    * @return A promise resolving to the number of query executions.
    */
   public async warmup(context: QueryStringContextInner, options: IWarmupOptions = {}): Promise<IWarmupResult> {
@@ -247,6 +247,7 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
       context: ActionContext.ensureActionContext(context).set(KeysQueryOperation.readOnly, true),
       executions: options.executions,
       budget: options.budget,
+      signal: options.signal,
     });
     return { executions };
   }

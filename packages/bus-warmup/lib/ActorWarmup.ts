@@ -7,7 +7,8 @@ import type { IQueryEngine, IWarmupOptions } from '@comunica/types';
  * which warm up a query engine before it handles actual queries.
  *
  * Actor types:
- * * Input:  IActionWarmup:      The engine to warm up, and the maximum number of query executions and duration.
+ * * Input:  IActionWarmup:      The engine to warm up, the maximum number of query executions and duration,
+ *                               and a signal to stop early.
  * * Test:   <none>
  * * Output: IActorWarmupOutput: The number of query executions.
  *

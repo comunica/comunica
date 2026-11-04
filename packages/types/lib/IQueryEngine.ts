@@ -95,6 +95,12 @@ export interface IWarmupOptions {
    * Defaults to no limit.
    */
   budget?: number;
+  /**
+   * A signal to stop early, after which no new query executions start.
+   * Aborting it ends the warm-up like reaching the maximum number of executions or duration does,
+   * so the warm-up resolves with the number of query executions so far.
+   */
+  signal?: AbortSignal;
 }
 
 /**
@@ -220,7 +226,7 @@ export interface IQueryEngine<
    * so that the just-in-time compiler has optimized the engine before it handles actual queries.
    * The warm-up does not modify the sources.
    * @param context A context, which determines the sources in the same way as for queries.
-   * @param options The maximum number of query executions and duration.
+   * @param options The maximum number of query executions and duration, and a signal to stop early.
    * @return A promise resolving to the number of query executions.
    */
   warmup?: (context: QueryStringContextInner, options?: IWarmupOptions) => Promise<IWarmupResult>;

@@ -478,7 +478,8 @@ describe('QueryEngineBase', () => {
     });
 
     it('should warm up in read-only mode with the given options', async() => {
-      await expect(queryEngine.warmup(<any> { sources: [ 'SOURCE' ]}, { executions: 10, budget: 1000 }))
+      const signal = new AbortController().signal;
+      await expect(queryEngine.warmup(<any> { sources: [ 'SOURCE' ]}, { executions: 10, budget: 1000, signal }))
         .resolves.toEqual({ executions: 7 });
 
       expect(mediatorWarmup.mediate).toHaveBeenCalledWith({
@@ -486,6 +487,7 @@ describe('QueryEngineBase', () => {
         context: new ActionContext({ sources: [ 'SOURCE' ]}).set(KeysQueryOperation.readOnly, true),
         executions: 10,
         budget: 1000,
+        signal,
       });
     });
 
@@ -497,6 +499,7 @@ describe('QueryEngineBase', () => {
         context: new ActionContext({ sources: [ 'SOURCE' ]}).set(KeysQueryOperation.readOnly, true),
         executions: undefined,
         budget: undefined,
+        signal: undefined,
       });
     });
 
