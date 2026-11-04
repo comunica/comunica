@@ -64,11 +64,6 @@ export class HttpServiceSparqlEndpoint {
    */
   public static readonly ALLOWED_METHODS = 'GET, HEAD, OPTIONS, POST, QUERY';
 
-  /**
-   * The maximum number of serialized service descriptions that are cached, by media type and request URL.
-   */
-  public static readonly SERVICE_DESCRIPTION_CACHE_SIZE = 100;
-
   public readonly engine: Promise<QueryEngineBase>;
 
   public readonly context: any;
@@ -86,7 +81,7 @@ export class HttpServiceSparqlEndpoint {
   public lastQueryId = 0;
 
   /**
-   * Serialized service descriptions, by media type and request URL.
+   * Serialized service descriptions of the endpoint URL, by media type.
    */
   private readonly serviceDescriptions = new Map<string, Buffer>();
 
@@ -872,8 +867,9 @@ export class HttpServiceSparqlEndpoint {
 
     // The service description only changes after updates, when it contains VoID statistics,
     // so its serialization can be reused until then.
-    const cacheKey = `${mediaType}\n${request.url}`;
-    const cached = this.serviceDescriptions.get(cacheKey);
+    // Only the endpoint URL itself is cached, as clients can add any query string to it.
+    const cacheable = request.url === '/sparql';
+    const cached = cacheable ? this.serviceDescriptions.get(mediaType) : undefined;
     if (cached) {
       response.end(cached);
       this.stopResponse(response, 0, process.stderr);
@@ -916,8 +912,12 @@ export class HttpServiceSparqlEndpoint {
         quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
+      let complete = true;
       if (this.emitVoid) {
-        for (const quad of await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response)) {
+        const voidQuads = await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response);
+        // Without VoID quads, computing the statistics failed, and an error was sent instead
+        complete = voidQuads.length > 0;
+        for (const quad of voidQuads) {
           quads.push(quad);
         }
       }
@@ -934,17 +934,15 @@ export class HttpServiceSparqlEndpoint {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         response.end('An internal server error occurred.\n');
       });
-      // Only cache complete service descriptions, which includes the VoID statistics if they are emitted
-      const chunks: Buffer[] = [];
-      data.on('data', (chunk: Buffer | string) => chunks.push(Buffer.from(chunk)));
-      data.on('end', () => {
-        if (!failed && (!this.emitVoid || this.voidMetadataEmitter.cachedStatistics.length > 0)) {
-          if (this.serviceDescriptions.size >= HttpServiceSparqlEndpoint.SERVICE_DESCRIPTION_CACHE_SIZE) {
-            this.serviceDescriptions.clear();
+      if (cacheable && complete) {
+        const chunks: Buffer[] = [];
+        data.on('data', (chunk: Buffer | string) => chunks.push(Buffer.from(chunk)));
+        data.on('end', () => {
+          if (!failed) {
+            this.serviceDescriptions.set(mediaType, Buffer.concat(chunks));
           }
-          this.serviceDescriptions.set(cacheKey, Buffer.concat(chunks));
-        }
-      });
+        });
+      }
       data.pipe(response);
       eventEmitter = data;
     } catch {

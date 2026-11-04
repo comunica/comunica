@@ -1918,13 +1918,20 @@ describe('HttpServiceSparqlEndpoint', () => {
           expect(spyResultToString).toHaveBeenCalledTimes(1);
         });
 
-        it('should serialize again for other media types and URLs', async() => {
+        it('should serialize again for other media types', async() => {
           const engine = await new QueryEngineFactoryBase().create();
           const spyResultToString = jest.spyOn(engine, 'resultToString');
           await writeServiceDescription(instance, engine);
-          await writeServiceDescription(instance, engine, '/sparql?other');
           await writeServiceDescription(instance, engine, '/sparql', 'other_mediatype');
-          expect(spyResultToString).toHaveBeenCalledTimes(3);
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not cache service descriptions of URLs with a query string', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await writeServiceDescription(instance, engine, '/sparql?other');
+          await expect(writeServiceDescription(instance, engine, '/sparql?other')).resolves.toBeUndefined();
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
         });
 
         it('should not cache failed serializations', async() => {
@@ -1938,19 +1945,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           expect(spyResultToString).toHaveBeenCalledTimes(2);
         });
 
-        it('should clear the cache when it is full', async() => {
-          const size = HttpServiceSparqlEndpoint.SERVICE_DESCRIPTION_CACHE_SIZE;
-          (<any> HttpServiceSparqlEndpoint).SERVICE_DESCRIPTION_CACHE_SIZE = 1;
-          const engine = await new QueryEngineFactoryBase().create();
-          const spyResultToString = jest.spyOn(engine, 'resultToString');
-          await writeServiceDescription(instance, engine);
-          await writeServiceDescription(instance, engine, '/sparql?other');
-          await writeServiceDescription(instance, engine);
-          expect(spyResultToString).toHaveBeenCalledTimes(3);
-          (<any> HttpServiceSparqlEndpoint).SERVICE_DESCRIPTION_CACHE_SIZE = size;
-        });
-
-        it('should not cache service descriptions without VoID statistics', async() => {
+        it('should not cache service descriptions if computing the VoID statistics fails', async() => {
           const localInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, emitVoid: true });
           const engine = await new QueryEngineFactoryBase().create();
           engine.queryBindings = () => {
