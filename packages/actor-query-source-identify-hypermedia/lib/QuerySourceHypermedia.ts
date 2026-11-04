@@ -123,7 +123,6 @@ export class QuerySourceHypermedia implements IQuerySource {
   }
 
   public canContainBlankNodes(): boolean {
-    // Only a source that operations are delegated to directly is known; other links may still be followed.
     return this.directSourceState?.source.canContainBlankNodes?.() !== false;
   }
 

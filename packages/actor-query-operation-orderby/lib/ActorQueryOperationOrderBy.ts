@@ -74,7 +74,6 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
     // first `limit` results of an unbounded one.
     // When a LIMIT was pushed down onto this operation by the sort-limit-pushdown optimizer,
     // only that many results have to be buffered.
-    // Only start sorting once the results are read, as they could otherwise end before anything listens to them
     const options = {
       window: this.window,
       limit: <number | undefined> operation.metadata?.sortLimit,
