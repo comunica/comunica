@@ -86,6 +86,11 @@ export class HttpServiceSparqlEndpoint {
   public lastQueryId = 0;
 
   /**
+   * Ends all open connections and stops this worker, once it runs as a worker.
+   */
+  public shutdownWorker: (() => Promise<void>) | undefined;
+
+  /**
    * Negotiated media types by request headers, for each set of allowed variants.
    */
   private readonly negotiatedMediaTypes = new WeakMap<object, Map<string, string | null>>();
@@ -250,16 +255,8 @@ export class HttpServiceSparqlEndpoint {
 
     // Attach listeners to each new worker
     cluster.on('listening', (worker) => {
-      // Handle worker timeouts
-      const workerTimeouts: Record<number, NodeJS.Timeout> = {};
-
       // Respawn crashed workers
       worker.once('exit', (code, signal) => {
-        // Drop the timeouts of the queries this worker was running, as they can only fire on a dead worker
-        for (const workerTimeout of Object.values(workerTimeouts)) {
-          clearTimeout(workerTimeout);
-        }
-
         if (!worker.exitedAfterDisconnect) {
           if (code === 9 || signal === 'SIGKILL') {
             stderr.write(`Worker ${worker.process.pid} forcefully killed with ${code || signal}. Killing main process as well.\n`);
@@ -270,33 +267,24 @@ export class HttpServiceSparqlEndpoint {
           }
         }
       });
-
-      worker.on('message', ({ type, queryId }) => {
-        if (type === 'start') {
-          stderr.write(`Worker ${worker.process.pid} got assigned a new query (${queryId}).\n`);
-          workerTimeouts[queryId] = setTimeout(() => {
-            try {
-              if (worker.isConnected()) {
-                stderr.write(`Worker ${worker.process.pid} timed out for query ${queryId}.\n`);
-                worker.send('shutdown');
-              }
-            } catch (error: unknown) {
-              stderr.write(`Unable to timeout worker ${worker.process.pid}: ${(<Error> error).message}.\n`);
-            }
-            delete workerTimeouts[queryId];
-          }, this.timeout);
-        } else if (type === 'end' && workerTimeouts[queryId]) {
-          stderr.write(`Worker ${worker.process.pid} has completed query ${queryId}.\n`);
-          clearTimeout(workerTimeouts[queryId]);
-          delete workerTimeouts[queryId];
-        }
-      });
     });
 
     // Disconnect from cluster on SIGINT, so that the process can cleanly terminate
     process.once('SIGINT', () => {
       cluster.disconnect();
     });
+  }
+
+  /**
+   * Stop this worker because a query took longer than the timeout.
+   * The main process then starts a new worker.
+   * @param queryId The id of the query that timed out.
+   * @param stderr Error stream to write to.
+   */
+  public timeOutQuery(queryId: number, stderr: Writable): void {
+    stderr.write(`Worker ${process.pid} timed out for query ${queryId}.\n`);
+    // eslint-disable-next-line ts/no-floating-promises
+    this.shutdownWorker?.();
   }
 
   /**
@@ -329,22 +317,28 @@ export class HttpServiceSparqlEndpoint {
       });
     });
 
+    // Shut down on query timeouts and shutdown messages, after ending all open connections
+    this.shutdownWorker = async(): Promise<void> => {
+      stderr.write(`Shutting down worker ${process.pid} with ${openConnections.size} open connections.\n`);
+
+      // Stop new connections from being accepted
+      server.close();
+
+      // Close all open connections
+      for (const connection of openConnections) {
+        await new Promise<void>(resolve => connection.end('!TIMEDOUT!', resolve));
+      }
+
+      // Kill the worker once the connections have been closed
+      // eslint-disable-next-line unicorn/no-process-exit
+      process.exit(15);
+    };
+
     // Subscribe to shutdown messages
     // eslint-disable-next-line ts/no-misused-promises
     process.on('message', async(message: string): Promise<void> => {
       if (message === 'shutdown') {
-        stderr.write(`Shutting down worker ${process.pid} with ${openConnections.size} open connections.\n`);
-
-        // Stop new connections from being accepted
-        server.close();
-
-        // Close all open connections
-        for (const connection of openConnections) {
-          await new Promise<void>(resolve => connection.end('!TIMEDOUT!', resolve));
-        }
-
-        // Kill the worker once the connections have been closed
-        process.exit(15);
+        await this.shutdownWorker!();
       }
     });
 
@@ -721,12 +715,18 @@ export class HttpServiceSparqlEndpoint {
     stdout.write(`      Requested media type: ${mediaType}\n`);
     stdout.write(`      Received ${queryBody.type} query: ${queryBody.value}\n`);
 
-    // Send message to master process to indicate the start of an execution
-    process.send?.({ type: 'start', queryId });
-
-    // Send message to master process to indicate the end of an execution.
+    // The worker times out its own queries, as messaging the main process for every query is costly
+    stderr.write(`Worker ${process.pid} got assigned a new query (${queryId}).\n`);
+    let timedOut = false;
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      this.timeOutQuery(queryId, stderr);
+    }, this.timeout);
     response.on('close', () => {
-      process.send?.({ type: 'end', queryId });
+      clearTimeout(timeout);
+      if (!timedOut) {
+        stderr.write(`Worker ${process.pid} has completed query ${queryId}.\n`);
+      }
     });
 
     // Determine context

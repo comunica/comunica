@@ -604,6 +604,23 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(process.exit).toHaveBeenCalledTimes(1);
       });
 
+      it('should end an open connection when a query times out', async() => {
+        // Start server
+        await instance.run(stdout, stderr);
+        const server = http.createServer.mock.results[0].value;
+
+        // Open new connection
+        const response1 = new EventEmitter();
+        (response1).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response1);
+
+        instance.timeOutQuery(0, stderr);
+
+        expect((response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+        await new Promise(setImmediate);
+        expect(process.exit).toHaveBeenCalledTimes(1);
+      });
+
       it('should end multiple open connections on shutdown messages', async() => {
         let shutdownListener: any;
         (<any> process).on = (event: any, listener: any): void => {
@@ -800,120 +817,19 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(cluster.disconnect).toHaveBeenCalledTimes(1);
       });
 
-      it('should handle worker start messages', async() => {
+      it('should not track the queries of workers', async() => {
         await instance.run(stdout, stderr);
 
         // Simulate listening event
         const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
         dummyWorker.process = {
           pid: 123,
         };
         (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
-      });
-
-      it('should drop pending query timeouts when a worker exits', async() => {
-        await instance.run(stdout, stderr);
-
-        // Simulate listening event
-        const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
-        dummyWorker.process = {
-          pid: 123,
-        };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
-
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(clearTimeout).not.toHaveBeenCalled();
-
-        // Simulate exit event, which should drop the timeout of the running query
-        dummyWorker.emit('exit', 15, undefined);
-
-        expect(clearTimeout).toHaveBeenCalledTimes(1);
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-      });
-
-      it('should handle worker end messages before timeout is reached', async() => {
-        await instance.run(stdout, stderr);
-
-        // Simulate listening event
-        const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
-        dummyWorker.process = {
-          pid: 123,
-        };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
-
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate end event
-        dummyWorker.emit('message', { type: 'end', queryId: 0 });
-
-        expect(clearTimeout).toHaveBeenCalledTimes(1);
-
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-      });
-
-      it('should handle worker end messages after timeout is reached', async() => {
-        await instance.run(stdout, stderr);
-
-        // Simulate listening event
-        const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
-        dummyWorker.process = {
-          pid: 123,
-        };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
-
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
-
-        // Simulate end event
-        dummyWorker.emit('message', 'end');
-
-        expect(clearTimeout).not.toHaveBeenCalled();
+        // Workers time out their own queries
+        expect(dummyWorker.listenerCount('message')).toBe(0);
+        expect(setTimeout).not.toHaveBeenCalled();
       });
 
       it('should handle SIGINTs', async() => {
@@ -923,58 +839,6 @@ describe('HttpServiceSparqlEndpoint', () => {
         (<any> jest.mocked(process.once).mock.calls[0][1])();
 
         expect(cluster.disconnect).toHaveBeenCalledTimes(1);
-      });
-
-      it('should catch worker shutdown errors', async() => {
-        await instance.run(stdout, stderr);
-
-        // Simulate listening event
-        const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn(() => {
-          throw new Error('shutdown exception');
-        });
-        dummyWorker.isConnected = jest.fn(() => true);
-        dummyWorker.process = {
-          pid: 123,
-        };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
-
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
-      });
-
-      it('should not send message to disconnected worker', async() => {
-        await instance.run(stdout, stderr);
-
-        // Simulate listening event
-        const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => false);
-        dummyWorker.process = {
-          pid: 123,
-        };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
-
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).not.toHaveBeenCalled();
       });
     });
 
@@ -2237,15 +2101,24 @@ INSERT DATA {
         expect(responseString).toBe('test_query_result');
       });
 
-      it('should emit process start and end events', async() => {
-        jest.spyOn(process, 'send').mockImplementation();
+      it('should only log a query timeout outside of a worker', async() => {
+        const stderr = new PassThrough();
+        instance.timeOutQuery(3, stderr);
+        stderr.end();
+        await expect(stringifyStream(stderr)).resolves.toBe(`Worker ${process.pid} timed out for query 3.\n`);
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should time out the query in the worker', async() => {
+        jest.spyOn(instance, 'timeOutQuery').mockImplementation();
+        const stderr = new PassThrough();
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => ({ resultType: 'bindings' });
 
         await instance.writeQueryResult(
           engine,
           new PassThrough(),
-          new PassThrough(),
+          stderr,
           request,
           response,
           query,
@@ -2255,16 +2128,50 @@ INSERT DATA {
           0,
         );
 
-        expect(process.send).toHaveBeenCalledTimes(1);
-        expect(process.send).toHaveBeenCalledWith({ type: 'start', queryId: 0 });
+        expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60_000);
+        expect(instance.timeOutQuery).not.toHaveBeenCalled();
+        jest.runAllTimers();
+        expect(instance.timeOutQuery).toHaveBeenCalledWith(0, stderr);
 
+        // A query that timed out is not reported as completed
         response.emit('close');
-        expect(process.send).toHaveBeenCalledTimes(2);
-        expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
+        stderr.end();
+        await expect(stringifyStream(stderr)).resolves.toBe(
+          `Worker ${process.pid} got assigned a new query (0).\n`,
+        );
       });
 
-      it('should emit the process end event when the client disconnects during the query', async() => {
-        jest.spyOn(process, 'send').mockImplementation();
+      it('should clear the timeout when the response closes', async() => {
+        jest.spyOn(instance, 'timeOutQuery').mockImplementation();
+        const stderr = new PassThrough();
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = () => ({ resultType: 'bindings' });
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          stderr,
+          request,
+          response,
+          query,
+          '',
+          false,
+          true,
+          0,
+        );
+
+        response.emit('close');
+        expect(clearTimeout).toHaveBeenCalledTimes(1);
+        jest.runAllTimers();
+        expect(instance.timeOutQuery).not.toHaveBeenCalled();
+        stderr.end();
+        await expect(stringifyStream(stderr)).resolves.toBe(
+          `Worker ${process.pid} got assigned a new query (0).\nWorker ${process.pid} has completed query 0.\n`,
+        );
+      });
+
+      it('should clear the timeout when the client disconnects during the query', async() => {
+        jest.spyOn(instance, 'timeOutQuery').mockImplementation();
         const engine = await new QueryEngineFactoryBase().create();
         // A query that never settles, so that the response closes while the execution is still running
         engine.query = () => new Promise(() => {
@@ -2285,15 +2192,14 @@ INSERT DATA {
         );
         await new Promise(setImmediate);
 
-        expect(process.send).toHaveBeenCalledWith({ type: 'start', queryId: 0 });
-
         response.emit('close');
-        expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
+        jest.runAllTimers();
+        expect(instance.timeOutQuery).not.toHaveBeenCalled();
         expect(written).toBeInstanceOf(Promise);
       });
 
-      it('should emit the process end event for a query that fails', async() => {
-        jest.spyOn(process, 'send').mockImplementation();
+      it('should clear the timeout for a query that fails', async() => {
+        jest.spyOn(instance, 'timeOutQuery').mockImplementation();
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => Promise.reject(new Error('Query failure'));
 
@@ -2310,36 +2216,9 @@ INSERT DATA {
           0,
         );
 
-        expect(process.send).toHaveBeenCalledWith({ type: 'start', queryId: 0 });
-
         response.emit('close');
-        expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
-      });
-
-      it('should not emit process events when the service does not run as a worker', async() => {
-        const send = process.send;
-        delete (<any> process).send;
-        try {
-          const engine = await new QueryEngineFactoryBase().create();
-          engine.query = () => ({ resultType: 'bindings' });
-
-          await expect(instance.writeQueryResult(
-            engine,
-            new PassThrough(),
-            new PassThrough(),
-            request,
-            response,
-            query,
-            '',
-            false,
-            true,
-            0,
-          )).resolves.toBeUndefined();
-
-          response.emit('close');
-        } finally {
-          (<any> process).send = send;
-        }
+        jest.runAllTimers();
+        expect(instance.timeOutQuery).not.toHaveBeenCalled();
       });
 
       it('should not execute an update again while serializing the result', async() => {
