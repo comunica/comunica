@@ -53,7 +53,7 @@ export class Bindings implements RDF.Bindings {
   }
 
   public values(): Iterable<RDF.Term> {
-    return this.iteratorToIterable(this.entries.values());
+    return this.entries.values();
   }
 
   public forEach(fn: (value: RDF.Term, key: RDF.Variable) => any): void {

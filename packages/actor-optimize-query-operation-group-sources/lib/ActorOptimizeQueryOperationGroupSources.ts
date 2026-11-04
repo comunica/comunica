@@ -13,6 +13,7 @@ import {
   assignOperationSource,
   doesShapeAcceptOperationInContext,
   getOperationSource,
+  getSourceSelectorShape,
   removeOperationSource,
 } from '@comunica/utils-query-operation';
 
@@ -224,7 +225,7 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
     if (source && inputs.every(input => getOperationSource(input) === source) &&
       this.isPossibleToMoveSourceAnnotationUpwards(
         operation,
-        await source.source.getSelectorShape(context),
+        await getSourceSelectorShape(source, context),
         context,
       )) {
       this.logDebug(context, `Hoist ${inputs.length} source-specific operations into a single ${operation.type} operation for ${source.source.toString()}`);

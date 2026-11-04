@@ -281,6 +281,20 @@ export type FragmentSelectorShapeTestFlags = {
   wildcardAcceptAllExtensionFunctions?: boolean;
 };
 
+/**
+ * Get the selector shape of a query source, in the context of that source.
+ * The source's own context must be included, as it may change how the source is accessed,
+ * for example to be lenient towards errors for the target of a SERVICE SILENT clause.
+ * @param sourceWrapper A query source with its context.
+ * @param context The action context, which is extended with the source's context.
+ */
+export async function getSourceSelectorShape(
+  sourceWrapper: IQuerySourceWrapper,
+  context: IActionContext,
+): Promise<FragmentSelectorShape> {
+  return sourceWrapper.source.getSelectorShape(sourceWrapper.context ? context.merge(sourceWrapper.context) : context);
+}
+
 export async function passFullOperationToSource(
   operation: Algebra.Operation,
   sources: IQuerySourceWrapper[],
@@ -292,7 +306,7 @@ export async function passFullOperationToSource(
     const destination: IDataDestination | undefined = context.get(KeysRdfUpdateQuads.destination);
     if (!destination || sourceWrapper.source.referenceValue === getDataDestinationValue(destination)) {
       try {
-        const shape = await sourceWrapper.source.getSelectorShape(context);
+        const shape = await getSourceSelectorShape(sourceWrapper, context);
         if (doesShapeAcceptOperationInContext(shape, operation, context)) {
           return true;
         }

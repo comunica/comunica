@@ -69,6 +69,14 @@ export function formatRatio(current: number, previous: number): string {
 }
 
 /**
+ * Format a time with at most two decimals.
+ * @param value The time.
+ */
+export function formatTime(value: number): string {
+  return String(Number(value.toFixed(2)));
+}
+
+/**
  * Determine the failed and total instantiations per query of one side.
  * psbr omits queries that failed for all instantiations, and lists them in its failed queries entries.
  * Otherwise, the error flags per instantiation are listed in the extra field of each query.
@@ -157,9 +165,9 @@ function formatCell(side: IQuerySide | undefined, hasSuite: boolean): string {
     return 'failed';
   }
   if (side.failed > 0) {
-    return `\`${side.value}\` ${side.unit} (${side.failed} failed)`;
+    return `\`${formatTime(side.value)}\` ${side.unit} (${side.failed} failed)`;
   }
-  return `\`${side.value}\` ${side.unit}`;
+  return `\`${formatTime(side.value)}\` ${side.unit}`;
 }
 
 function formatRow(cells: string[]): string {
@@ -198,14 +206,14 @@ export function renderComparisonComment(
     const headTotal = included.reduce((sum, entry) => sum + entry.head, 0);
     const baseTotal = included.reduce((sum, entry) => sum + entry.base, 0);
     if (!hasBase) {
-      totalRows.push(formatRow([ `\`${suite}\``, `\`${headTotal}\` ms`, '', '' ]));
+      totalRows.push(formatRow([ `\`${suite}\``, `\`${formatTime(headTotal)}\` ms`, '', '' ]));
     } else if (included.length === 0) {
       totalRows.push(formatRow([ `\`${suite}\``, '', '', 'n/a' ]));
     } else {
       totalRows.push(formatRow([
         `\`${suite}\``,
-        `\`${headTotal}\` ms`,
-        `\`${baseTotal}\` ms`,
+        `\`${formatTime(headTotal)}\` ms`,
+        `\`${formatTime(baseTotal)}\` ms`,
         `\`${formatRatio(headTotal, baseTotal)}\``,
       ]));
     }
