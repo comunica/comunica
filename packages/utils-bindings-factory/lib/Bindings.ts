@@ -53,7 +53,6 @@ export class Bindings implements RDF.Bindings {
   }
 
   public values(): Iterable<RDF.Term> {
-    // Immutable's iterators are iterable themselves, and are much faster without a wrapper
     return this.entries.values();
   }
 
