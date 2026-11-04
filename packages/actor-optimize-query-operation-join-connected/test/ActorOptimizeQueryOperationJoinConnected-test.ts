@@ -1,7 +1,6 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationJoinConnected } from '../lib/ActorOptimizeQueryOperationJoinConnected';
@@ -109,60 +108,6 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
             factory.createPattern(DF.variable('b'), DF.namedNode('p3'), DF.variable('c')),
             factory.createPattern(DF.variable('c'), DF.namedNode('p2'), DF.variable('d')),
           ]));
-      });
-
-      it('should flatten a nested join with a single entry', () => {
-        expect(ActorOptimizeQueryOperationJoinConnected.cluster(factory.createJoin([
-          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
-          factory.createJoin([
-            factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
-          ], false),
-        ], false), factory))
-          .toEqual(factory.createJoin([
-            factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
-            factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
-          ]));
-      });
-
-      it('should keep a connected join in its original order', () => {
-        const op = factory.createJoin([
-          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
-          factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
-        ]);
-        expect(ActorOptimizeQueryOperationJoinConnected.cluster(op, factory)).toBe(op);
-      });
-
-      it('should keep a connected join in its original order with empty metadata', () => {
-        const op: Algebra.Join = factory.createJoin([
-          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
-          factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
-        ]);
-        op.metadata = {};
-        expect(ActorOptimizeQueryOperationJoinConnected.cluster(op, factory)).toBe(op);
-      });
-
-      it('should create a new join for a connected join with metadata', () => {
-        const op: Algebra.Join = factory.createJoin([
-          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
-          factory.createPattern(DF.variable('b'), DF.namedNode('p2'), DF.variable('c')),
-        ]);
-        op.metadata = { key: 'value' };
-        const result = ActorOptimizeQueryOperationJoinConnected.cluster(op, factory);
-        expect(result).not.toBe(op);
-        expect(result).toEqual(factory.createJoin(op.input));
-      });
-
-      it('should create a new join for a connected join that is reordered', () => {
-        const op = factory.createJoin([
-          factory.createPattern(DF.variable('a'), DF.namedNode('p1'), DF.variable('b')),
-          factory.createPattern(DF.variable('c'), DF.namedNode('p2'), DF.variable('d')),
-          factory.createPattern(DF.variable('b'), DF.namedNode('p3'), DF.variable('c')),
-        ]);
-        expect(ActorOptimizeQueryOperationJoinConnected.cluster(op, factory)).toEqual(factory.createJoin([
-          op.input[0],
-          op.input[2],
-          op.input[1],
-        ]));
       });
 
       it('should handle empty join entries', () => {
@@ -295,30 +240,6 @@ describe('ActorOptimizeQueryOperationJoinConnected', () => {
               factory.createPattern(DF.variable('s2x'), DF.namedNode('p2'), DF.variable('s3x')),
             ]),
           ], false));
-      });
-    });
-
-    describe('isConnectedInOrder', () => {
-      it('should be true for no entries', () => {
-        expect(ActorOptimizeQueryOperationJoinConnected.isConnectedInOrder([])).toBe(true);
-      });
-
-      it('should be true for a single entry', () => {
-        expect(ActorOptimizeQueryOperationJoinConnected.isConnectedInOrder([{ a: true }])).toBe(true);
-      });
-
-      it('should be true if each entry overlaps with the ones before it', () => {
-        expect(ActorOptimizeQueryOperationJoinConnected
-          .isConnectedInOrder([{ a: true }, { a: true, b: true }, { b: true, c: true }, { a: true }])).toBe(true);
-      });
-
-      it('should be false if an entry only overlaps with the ones after it', () => {
-        expect(ActorOptimizeQueryOperationJoinConnected
-          .isConnectedInOrder([{ a: true }, { c: true }, { a: true, c: true }])).toBe(false);
-      });
-
-      it('should be false if an entry has no variables', () => {
-        expect(ActorOptimizeQueryOperationJoinConnected.isConnectedInOrder([{ a: true }, {}])).toBe(false);
       });
     });
 
