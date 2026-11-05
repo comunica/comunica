@@ -11,9 +11,11 @@ import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import { SeekableMappingIterator, seekBindingsStream } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { mapTermsNested } from 'rdf-terms';
+import { mapTermsNested, someTermsNested } from 'rdf-terms';
 
 export const SKOLEM_PREFIX = 'urn:comunica_skolem:source_';
+
+const AF = new AlgebraFactory();
 
 /**
  * Get the unique, deterministic id for the given source.
@@ -248,11 +250,7 @@ export function deskolemizePattern(
     const predicate = deskolemizeTermNestedThrowing(dataFactory, pattern.predicate, sourceId);
     const object = deskolemizeTermNestedThrowing(dataFactory, pattern.object, sourceId);
     const graph = deskolemizeTermNestedThrowing(dataFactory, pattern.graph, sourceId);
-    // Always a new pattern, as sources may modify the pattern they receive.
-    return Object.assign(
-      new AlgebraFactory().createPattern(subject, predicate, object, graph),
-      { metadata: pattern.metadata },
-    );
+    return Object.assign(AF.createPattern(subject, predicate, object, graph), { metadata: pattern.metadata });
   } catch {
     // Return undefined for skolemized terms not in scope for this source
   }
@@ -270,7 +268,7 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
   operation: O,
   sourceId: string,
 ): O | undefined {
-  const factory = new AlgebraFactory();
+  const factory = AF;
   try {
     return <O> algebraUtils.mapOperation(operation, {
       [Algebra.Types.PATTERN]: {
@@ -295,4 +293,14 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
   } catch {
     // Return undefined for skolemized terms not in scope for this source
   }
+}
+
+/**
+ * Check if the given pattern contains blank nodes or skolemized named nodes, also within quoted triples.
+ * Only such terms are changed by deskolemization.
+ * @param pattern A quad pattern.
+ */
+export function hasSkolemizedTerms(pattern: Algebra.Pattern): boolean {
+  return someTermsNested(<RDF.BaseQuad> <unknown> pattern, term => term.termType === 'BlankNode' ||
+    (term.termType === 'NamedNode' && term.value.startsWith(SKOLEM_PREFIX)));
 }

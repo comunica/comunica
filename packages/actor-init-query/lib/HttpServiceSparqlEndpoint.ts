@@ -64,6 +64,11 @@ export class HttpServiceSparqlEndpoint {
    */
   public static readonly ALLOWED_METHODS = 'GET, HEAD, OPTIONS, POST, QUERY';
 
+  /**
+   * The maximum number of distinct request headers for which negotiated media types are cached.
+   */
+  public static readonly NEGOTIATION_CACHE_SIZE = 1_000;
+
   public readonly engine: Promise<QueryEngineBase>;
 
   public readonly context: any;
@@ -80,6 +85,16 @@ export class HttpServiceSparqlEndpoint {
   public readonly graphStore: HttpServiceGraphStore | undefined;
 
   public lastQueryId = 0;
+
+  /**
+   * Ends all open connections and stops this worker, once it runs as a worker.
+   */
+  public shutdownWorker: (() => Promise<void>) | undefined;
+
+  /**
+   * Negotiated media types by request headers, for each set of allowed variants.
+   */
+  private readonly negotiatedMediaTypes = new WeakMap<object, Map<string, string | null>>();
 
   public constructor(args: IHttpServiceSparqlEndpointArgs) {
     this.context = args.context || {};
@@ -244,16 +259,8 @@ export class HttpServiceSparqlEndpoint {
 
     // Attach listeners to each new worker
     cluster.on('listening', (worker) => {
-      // Handle worker timeouts
-      const workerTimeouts: Record<number, NodeJS.Timeout> = {};
-
       // Respawn crashed workers
       worker.once('exit', (code, signal) => {
-        // Drop the timeouts of the queries this worker was running, as they can only fire on a dead worker
-        for (const workerTimeout of Object.values(workerTimeouts)) {
-          clearTimeout(workerTimeout);
-        }
-
         if (!worker.exitedAfterDisconnect) {
           if (code === 9 || signal === 'SIGKILL') {
             stderr.write(`Worker ${worker.process.pid} forcefully killed with ${code || signal}. Killing main process as well.\n`);
@@ -262,27 +269,6 @@ export class HttpServiceSparqlEndpoint {
             stderr.write(`Worker ${worker.process.pid} died with ${code || signal}. Starting new worker.\n`);
             cluster.fork();
           }
-        }
-      });
-
-      worker.on('message', ({ type, queryId }) => {
-        if (type === 'start') {
-          stderr.write(`Worker ${worker.process.pid} got assigned a new query (${queryId}).\n`);
-          workerTimeouts[queryId] = setTimeout(() => {
-            try {
-              if (worker.isConnected()) {
-                stderr.write(`Worker ${worker.process.pid} timed out for query ${queryId}.\n`);
-                worker.send('shutdown');
-              }
-            } catch (error: unknown) {
-              stderr.write(`Unable to timeout worker ${worker.process.pid}: ${(<Error> error).message}.\n`);
-            }
-            delete workerTimeouts[queryId];
-          }, this.timeout);
-        } else if (type === 'end' && workerTimeouts[queryId]) {
-          stderr.write(`Worker ${worker.process.pid} has completed query ${queryId}.\n`);
-          clearTimeout(workerTimeouts[queryId]);
-          delete workerTimeouts[queryId];
         }
       });
     });
@@ -311,6 +297,18 @@ export class HttpServiceSparqlEndpoint {
     } catch (error: unknown) {
       stderr.write(`Worker ${process.pid} could not warm up: ${(<Error> error).message}\n`);
     }
+  }
+
+  /**
+   * Stop this worker because a query took longer than the timeout.
+   * The main process then starts a new worker.
+   * @param queryId The id of the query that timed out.
+   * @param stderr Error stream to write to.
+   */
+  public timeOutQuery(queryId: number, stderr: Writable): void {
+    stderr.write(`Worker ${process.pid} timed out for query ${queryId}.\n`);
+    // eslint-disable-next-line ts/no-floating-promises
+    this.shutdownWorker?.();
   }
 
   /**
@@ -348,22 +346,28 @@ export class HttpServiceSparqlEndpoint {
       });
     });
 
+    // Shut down on query timeouts and shutdown messages, after ending all open connections
+    this.shutdownWorker = async(): Promise<void> => {
+      stderr.write(`Shutting down worker ${process.pid} with ${openConnections.size} open connections.\n`);
+
+      // Stop new connections from being accepted
+      server.close();
+
+      // Close all open connections
+      for (const connection of openConnections) {
+        await new Promise<void>(resolve => connection.end('!TIMEDOUT!', resolve));
+      }
+
+      // Kill the worker once the connections have been closed
+      // eslint-disable-next-line unicorn/no-process-exit
+      process.exit(15);
+    };
+
     // Subscribe to shutdown messages
     // eslint-disable-next-line ts/no-misused-promises
     process.on('message', async(message: string): Promise<void> => {
       if (message === 'shutdown') {
-        stderr.write(`Shutting down worker ${process.pid} with ${openConnections.size} open connections.\n`);
-
-        // Stop new connections from being accepted
-        server.close();
-
-        // Close all open connections
-        for (const connection of openConnections) {
-          await new Promise<void>(resolve => connection.end('!TIMEDOUT!', resolve));
-        }
-
-        // Kill the worker once the connections have been closed
-        process.exit(15);
+        await this.shutdownWorker!();
       }
     });
 
@@ -387,6 +391,47 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Determine the media type of the response, or null to fall back to the default media type of the result.
+   * @param {{type: string; quality: number}[]} variants Allowed variants.
+   * @param {module:http.IncomingMessage} request Request object.
+   */
+  public negotiateMediaType(
+    variants: { type: string; quality: number }[],
+    request: http.IncomingMessage,
+  ): string | null {
+    const accept = request.headers.accept;
+    if (!accept) {
+      return null;
+    }
+    // Besides the accept header, negotiation looks at the charset, encoding, and language headers
+    const key = [
+      accept,
+      request.headers['accept-charset'],
+      request.headers['accept-encoding'],
+      request.headers['accept-language'],
+    ].join('\n');
+    let cache = this.negotiatedMediaTypes.get(variants);
+    if (!cache) {
+      cache = new Map();
+      this.negotiatedMediaTypes.set(variants, cache);
+    }
+    let mediaType = cache.get(key);
+    if (mediaType === undefined) {
+      const negotiated = require('negotiate').choose(variants, request)
+        .sort((first: any, second: any) => second.qts - first.qts);
+      const variant: any = negotiated[0];
+      // Require qts strictly larger than 2, as 1 and 2 respectively allow * and */* matching.
+      // For qts 0, 1, and 2, we fallback to our built-in media type defaults, for which we pass null.
+      mediaType = variant && variant.qts > 2 ? <string> variant.type : null;
+      if (cache.size >= HttpServiceSparqlEndpoint.NEGOTIATION_CACHE_SIZE) {
+        cache.clear();
+      }
+      cache.set(key, mediaType);
+    }
+    return mediaType;
+  }
+
+  /**
    * Handles an HTTP request.
    * @param {QueryEngineBase} engine A SPARQL engine.
    * @param {{type: string; quality: number}[]} variants Allowed variants.
@@ -403,12 +448,7 @@ export class HttpServiceSparqlEndpoint {
     request: http.IncomingMessage,
     response: http.ServerResponse,
   ): Promise<void> {
-    const negotiated = require('negotiate').choose(variants, request)
-      .sort((first: any, second: any) => second.qts - first.qts);
-    const variant: any = request.headers.accept ? negotiated[0] : null;
-    // Require qts strictly larger than 2, as 1 and 2 respectively allow * and */* matching.
-    // For qts 0, 1, and 2, we fallback to our built-in media type defaults, for which we pass null.
-    const mediaType: string = variant && variant.qts > 2 ? variant.type : null;
+    const mediaType: string = <string> this.negotiateMediaType(variants, request);
 
     // Verify the path
     // eslint-disable-next-line node/no-deprecated-api
@@ -704,12 +744,18 @@ export class HttpServiceSparqlEndpoint {
     stdout.write(`      Requested media type: ${mediaType}\n`);
     stdout.write(`      Received ${queryBody.type} query: ${queryBody.value}\n`);
 
-    // Send message to master process to indicate the start of an execution
-    process.send?.({ type: 'start', queryId });
-
-    // Send message to master process to indicate the end of an execution.
+    // The worker times out its own queries, as messaging the main process for every query is costly
+    stderr.write(`Worker ${process.pid} got assigned a new query (${queryId}).\n`);
+    let timedOut = false;
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      this.timeOutQuery(queryId, stderr);
+    }, this.timeout);
     response.on('close', () => {
-      process.send?.({ type: 'end', queryId });
+      clearTimeout(timeout);
+      if (!timedOut) {
+        stderr.write(`Worker ${process.pid} has completed query ${queryId}.\n`);
+      }
     });
 
     // Determine context
@@ -769,12 +815,10 @@ export class HttpServiceSparqlEndpoint {
       }
     }
 
-    // Write header of response
-    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-    stdout.write(`      Resolved to result media type: ${mediaType}\n`);
-
     // Stop further processing for HEAD requests
     if (headOnly) {
+      response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+      stdout.write(`      Resolved to result media type: ${mediaType}\n`);
       response.end();
       return;
     }
@@ -782,6 +826,10 @@ export class HttpServiceSparqlEndpoint {
     let eventEmitter: EventEmitter | undefined;
     try {
       const { data } = await engine.resultToString(result, mediaType);
+
+      // Only write the header once serialization has started, so that a failure can still be reported as such
+      response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+      stdout.write(`      Resolved to result media type: ${mediaType}\n`);
       data.on('error', (error: Error) => {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         if (!response.writableEnded) {

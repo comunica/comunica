@@ -20,7 +20,11 @@ import type {
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Algebra } from '@comunica/utils-algebra';
 import { ChunkedIterator } from '@comunica/utils-iterator';
-import { doesShapeAcceptOperationInContext, getOperationSource } from '@comunica/utils-query-operation';
+import {
+  doesShapeAcceptOperationInContext,
+  getOperationSource,
+  getSourceSelectorShape,
+} from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator } from 'asynciterator';
@@ -174,7 +178,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     // Reject if the source can not handle bindings
     const sourceWrapper: IQuerySourceWrapper = <IQuerySourceWrapper> sources[0];
     const testingOperation = this.createOperationFromEntries(algebraFactory, remainingEntries);
-    const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
+    const selectorShape = await getSourceSelectorShape(sourceWrapper, action.context);
     if (!doesShapeAcceptOperationInContext(selectorShape, testingOperation, action.context, { joinBindings: true })) {
       return failTest(`Actor ${this.name} detected a source that can not handle passing down join bindings`);
     }
