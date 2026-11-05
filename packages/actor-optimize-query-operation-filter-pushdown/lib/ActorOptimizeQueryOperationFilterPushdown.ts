@@ -45,7 +45,6 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    // This actor only changes FILTER operations
     if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.FILTER ])) {
       return { operation: action.operation, context: action.context };
     }

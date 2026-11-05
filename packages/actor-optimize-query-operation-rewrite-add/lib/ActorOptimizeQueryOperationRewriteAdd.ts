@@ -27,7 +27,6 @@ export class ActorOptimizeQueryOperationRewriteAdd extends ActorOptimizeQueryOpe
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    // This actor only changes ADD operations
     if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.ADD ])) {
       return { operation: action.operation, context: action.context };
     }

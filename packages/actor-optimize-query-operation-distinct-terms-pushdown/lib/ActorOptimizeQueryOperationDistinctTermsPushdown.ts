@@ -25,7 +25,6 @@ export class ActorOptimizeQueryOperationDistinctTermsPushdown extends ActorOptim
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    // This actor only changes DISTINCT operations
     if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.DISTINCT ])) {
       return { operation: action.operation, context: action.context };
     }

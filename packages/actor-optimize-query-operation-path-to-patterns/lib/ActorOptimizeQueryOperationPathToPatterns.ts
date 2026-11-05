@@ -23,7 +23,6 @@ export class ActorOptimizeQueryOperationPathToPatterns extends ActorOptimizeQuer
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    // This actor only changes property path operations
     if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.PATH ])) {
       return { operation: action.operation, context: action.context };
     }

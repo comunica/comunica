@@ -23,7 +23,6 @@ export class ActorOptimizeQueryOperationRewriteMove extends ActorOptimizeQueryOp
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
-    // This actor only changes MOVE operations
     if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.MOVE ])) {
       return { operation: action.operation, context: action.context };
     }

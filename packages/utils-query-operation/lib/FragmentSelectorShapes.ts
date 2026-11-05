@@ -283,8 +283,7 @@ export type FragmentSelectorShapeTestFlags = {
 
 /**
  * Get the selector shape of a query source, in the context of that source.
- * The source's own context must be included, as it may change how the source is accessed,
- * for example to be lenient towards errors for the target of a SERVICE SILENT clause.
+ * The source's own context must be included, as it may change how the source is accessed.
  * @param sourceWrapper A query source with its context.
  * @param context The action context, which is extended with the source's context.
  */
