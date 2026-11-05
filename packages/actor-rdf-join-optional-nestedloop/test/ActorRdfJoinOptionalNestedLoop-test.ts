@@ -306,6 +306,29 @@ IActorRdfJoinSelectivityOutput
         }));
       });
 
+      it('should only evaluate a left-right variable equality for right bindings with an equal value', async() => {
+        const equality = FACTORY.createOperatorExpression('=', [
+          FACTORY.createTermExpression(DF.variable('id')),
+          FACTORY.createTermExpression(DF.variable('id2')),
+        ]);
+        const result = await actor.run(makeAction({ left, right, expression: equality }), undefined!);
+
+        await expect(result.bindingsStream).toEqualBindingsStream([
+          left[0].merge(right[0])!,
+          left[1].merge(right[1])!,
+          left[1].merge(right[2])!,
+          left[2],
+        ]);
+        expect(evaluateAsEBV).toHaveBeenCalledTimes(3);
+      });
+
+      it('should evaluate all pairs without such an equality', async() => {
+        const result = await actor.run(makeAction({ left, right }), undefined!);
+
+        await expect(result.bindingsStream.toArray()).resolves.toHaveLength(4);
+        expect(evaluateAsEBV).toHaveBeenCalledTimes(9);
+      });
+
       it('should treat expression errors as false and log them', async() => {
         const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
         evaluateAsEBV.mockImplementation(async() => {
