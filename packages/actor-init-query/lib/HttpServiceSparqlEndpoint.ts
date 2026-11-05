@@ -913,9 +913,6 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
-    // The service description only changes after updates, when it contains VoID statistics,
-    // so its serialization can be reused until then.
-    // Only the endpoint URL itself is cached, as clients can add any query string to it.
     const cacheable = request.url === '/sparql';
     const cached = cacheable ? this.serviceDescriptions.get(mediaType) : undefined;
     if (cached) {
