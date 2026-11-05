@@ -8,6 +8,7 @@ import {
   doesShapeAcceptOperation,
   doesShapeAcceptOperationInContext,
   getSourceSelectorShape,
+  mayShapeAcceptFlag,
   passFullOperationToSource,
   removeShapeFlag,
 } from '../lib/FragmentSelectorShapes';
@@ -1202,6 +1203,40 @@ describe('FragmentSelectorShapes', () => {
 
         expect(doesShapeAcceptOperation(SHAPE_RDFJS, construct)).toBeFalsy();
       });
+    });
+  });
+
+  describe('#mayShapeAcceptFlag', () => {
+    const plain: FragmentSelectorShape = { type: 'operation', operation: { operationType: 'wildcard' }};
+    const flagged: FragmentSelectorShape = { ...plain, joinBindings: true };
+
+    it('is true for an operation shape with the flag', () => {
+      expect(mayShapeAcceptFlag(flagged, 'joinBindings')).toBe(true);
+    });
+
+    it('is false for an operation shape without the flag', () => {
+      expect(mayShapeAcceptFlag(plain, 'joinBindings')).toBe(false);
+      expect(mayShapeAcceptFlag(flagged, 'filterBindings')).toBe(false);
+    });
+
+    it('is true for an operation shape with a child with the flag', () => {
+      expect(mayShapeAcceptFlag({ ...plain, children: [ plain, flagged ]}, 'joinBindings')).toBe(true);
+      expect(mayShapeAcceptFlag({ ...plain, children: [ plain ]}, 'joinBindings')).toBe(false);
+    });
+
+    it('looks into conjunctions, disjunctions and arities', () => {
+      expect(mayShapeAcceptFlag({ type: 'conjunction', children: [ plain, flagged ]}, 'joinBindings')).toBe(true);
+      expect(mayShapeAcceptFlag({ type: 'disjunction', children: [ plain, plain ]}, 'joinBindings')).toBe(false);
+      expect(mayShapeAcceptFlag({ type: 'arity', min: 1, child: flagged }, 'joinBindings')).toBe(true);
+      expect(mayShapeAcceptFlag({ type: 'arity', min: 1, child: plain }, 'joinBindings')).toBe(false);
+    });
+
+    it('is true for negations, which accept operations regardless of flags', () => {
+      expect(mayShapeAcceptFlag({ type: 'negation', child: plain }, 'joinBindings')).toBe(true);
+    });
+
+    it('is true for the SPARQL endpoint shape', () => {
+      expect(mayShapeAcceptFlag(SHAPE_SPARQL_1_1, 'joinBindings')).toBe(true);
     });
   });
 

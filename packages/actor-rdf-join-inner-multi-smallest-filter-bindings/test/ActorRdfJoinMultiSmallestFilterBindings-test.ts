@@ -4,7 +4,7 @@ import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@com
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery, KeysRdfJoin } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext, IQuerySourceWrapper, IJoinEntryWithMetadata } from '@comunica/types';
+import type { IActionContext, IQuerySourceWrapper, IJoinEntryWithMetadata, MetadataBindings } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -779,6 +779,52 @@ describe('ActorRdfJoinMultiSmallestFilterBindings', () => {
             ],
           },
         )).resolves.toFailTest(`Actor actor can only process if entries[1] has a source`);
+      });
+
+      it('rejects before sorting if no entry source can handle filterBindings', async() => {
+        const spy = jest.spyOn(mediatorJoinEntriesSort, 'mediate');
+        const metadata: MetadataBindings = {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 3 },
+          pageSize: 100,
+          requestTime: 10,
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        };
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              { output: <any>{}, operation: assignOperationSource(AF.createNop(), source4) },
+              { output: <any>{}, operation: assignOperationSource(AF.createNop(), source4) },
+            ],
+            context: new ActionContext(),
+          },
+          { metadatas: [ metadata, metadata ]},
+        )).resolves.toFailTest(`Actor actor can only process if entries[1] accept filterBindings`);
+        expect(spy).not.toHaveBeenCalled();
+      });
+
+      it('sorts if all entries have sources and one of them can handle filterBindings', async() => {
+        const spy = jest.spyOn(mediatorJoinEntriesSort, 'mediate');
+        const metadata = (cardinality: number): MetadataBindings => ({
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: cardinality },
+          pageSize: 100,
+          requestTime: 10,
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        });
+        await actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              { output: <any>{}, operation: assignOperationSource(AF.createNop(), source4) },
+              { output: <any>{}, operation: assignOperationSource(AF.createNop(), source1) },
+            ],
+            context: new ActionContext(),
+          },
+          { metadatas: [ metadata(3), metadata(2) ]},
+        );
+        expect(spy).toHaveBeenCalledTimes(1);
       });
 
       it('throws if the entries[1] source accepts no filterBindings', async() => {

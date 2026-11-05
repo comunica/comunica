@@ -3,7 +3,7 @@ import type { IActionRdfJoinEntriesSort, MediatorRdfJoinEntriesSort } from '@com
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQuerySourceWrapper, IActionContext } from '@comunica/types';
+import type { IQuerySourceWrapper, IActionContext, MetadataBindings } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -605,6 +605,36 @@ describe('ActorRdfJoinMultiBindSource', () => {
             ],
           },
         )).resolves.toFailTest('Actor actor can not bind on remaining operations with non-equal source annotation');
+      });
+
+      it('should reject before sorting when all entries share a source that can not handle join bindings', async() => {
+        const sourceNoJoinBindings = <IQuerySourceWrapper> <any> {
+          source: {
+            getSelectorShape() {
+              return { type: 'operation', operation: { operationType: 'wildcard' }};
+            },
+          },
+        };
+        const spy = jest.spyOn(mediatorJoinEntriesSort, 'mediate');
+        const metadata: MetadataBindings = {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 3 },
+          pageSize: 100,
+          requestTime: 10,
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        };
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              { output: <any>{}, operation: assignOperationSource(AF.createNop(), sourceNoJoinBindings) },
+              { output: <any>{}, operation: assignOperationSource(AF.createNop(), sourceNoJoinBindings) },
+            ],
+            context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          },
+          { metadatas: [ metadata, metadata ]},
+        )).resolves.toFailTest('Actor actor detected a source that can not handle passing down join bindings');
+        expect(spy).not.toHaveBeenCalled();
       });
 
       it('should reject when remaining entries do not accept the operation', async() => {

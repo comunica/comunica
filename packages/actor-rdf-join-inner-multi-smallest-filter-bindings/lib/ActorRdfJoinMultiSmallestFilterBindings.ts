@@ -27,6 +27,7 @@ import {
   getOperationSource,
   getSafeBindings,
   getSourceSelectorShape,
+  mayShapeAcceptFlag,
 } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -205,6 +206,16 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
     // Avoid infinite recursion
     if (action.context.get(KeysRdfJoin.lastPhysicalJoin) === this.physicalName) {
       return failTest(`Actor ${this.name} can not be called recursively`);
+    }
+
+    // Reject before sorting the entries if none of their sources can handle filter bindings at all
+    const entrySources = action.entries.map(entry => getOperationSource(entry.operation));
+    if (entrySources.every(Boolean)) {
+      const shapes = await Promise.all([ ...new Set(entrySources) ]
+        .map(source => getSourceSelectorShape(source!, action.context)));
+      if (!shapes.some(shape => mayShapeAcceptFlag(shape, 'filterBindings'))) {
+        return failTest(`Actor ${this.name} can only process if entries[1] accept filterBindings`);
+      }
     }
 
     metadatas = [ ...metadatas ];

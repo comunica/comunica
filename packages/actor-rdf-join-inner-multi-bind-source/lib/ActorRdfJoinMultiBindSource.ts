@@ -24,6 +24,7 @@ import {
   doesShapeAcceptOperationInContext,
   getOperationSource,
   getSourceSelectorShape,
+  mayShapeAcceptFlag,
 } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -140,6 +141,13 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     sideData: IActorRdfJoinTestSideData,
   ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinMultiBindSourceTestSideData>> {
     let { metadatas } = sideData;
+
+    // Reject before sorting the entries if they share a source that can not handle join bindings at all
+    const entrySources = action.entries.map(entry => getOperationSource(entry.operation));
+    if (entrySources[0] && entrySources.every(source => source === entrySources[0]) &&
+      !mayShapeAcceptFlag(await getSourceSelectorShape(entrySources[0], action.context), 'joinBindings')) {
+      return failTest(`Actor ${this.name} detected a source that can not handle passing down join bindings`);
+    }
 
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);

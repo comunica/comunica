@@ -45,6 +45,30 @@ export function doesShapeAcceptOperationInContext(
 }
 
 /**
+ * Check if the given shape may accept operations with the given flag.
+ * This is the case if the shape or one of its nested shapes has the flag,
+ * or contains a negation, which accepts operations its child does not accept, regardless of flags.
+ * @param shape A selector shape.
+ * @param flag The flag to look for.
+ */
+export function mayShapeAcceptFlag(
+  shape: FragmentSelectorShape,
+  flag: 'joinBindings' | 'filterBindings' | 'synchronous',
+): boolean {
+  switch (shape.type) {
+    case 'operation':
+      return Boolean(shape[flag]) || Boolean(shape.children?.some(child => mayShapeAcceptFlag(child, flag)));
+    case 'conjunction':
+    case 'disjunction':
+      return shape.children.some(child => mayShapeAcceptFlag(child, flag));
+    case 'negation':
+      return true;
+    case 'arity':
+      return mayShapeAcceptFlag(shape.child, flag);
+  }
+}
+
+/**
  * Remove a flag from the given shape and all of its nested shapes.
  * @param shape A selector shape.
  * @param flag The flag to remove.
