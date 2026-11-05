@@ -65,6 +65,21 @@ TS,
   }
 
   protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O, TS>[]): Promise<TestResult<A, TS>> {
+    // With a single actor, the outcome is that actor's test result, without picking among values
+    if (testResults.length === 1) {
+      const result = await testResults[0].reply;
+      if (result.isFailed()) {
+        if (!this.ignoreFailures) {
+          result.getOrThrow();
+        }
+        return failTest(this.constructFailureMessage(action, [ result.getFailMessage() ]));
+      }
+      if ((<any> result.get())[this.field] === null) {
+        return failTest(this.constructFailureMessage(action, []));
+      }
+      return passTestWithSideData(testResults[0].actor, result.getSideData()!);
+    }
+
     let wrappedResults = await Promise.all(testResults.map(({ reply }) => reply));
 
     // Collect failures if we want to ignore them

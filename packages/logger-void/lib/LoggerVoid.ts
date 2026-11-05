@@ -4,6 +4,10 @@ import { Logger } from '@comunica/types';
  * A logger that voids everything.
  */
 export class LoggerVoid extends Logger {
+  public override isLevelEnabled(): boolean {
+    return false;
+  }
+
   public debug(): void {
     // Void
   }

@@ -106,43 +106,43 @@ implements IActorArgs<I, T, O, TS> {
 
   protected logTrace(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
-    if (logger) {
-      logger.trace(message, this.getDefaultLogData(context, data));
+    if (logger?.isLevelEnabled?.('trace') ?? logger) {
+      logger!.trace(message, this.getDefaultLogData(context, data));
     }
   }
 
   protected logDebug(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
-    if (logger) {
-      logger.debug(message, this.getDefaultLogData(context, data));
+    if (logger?.isLevelEnabled?.('debug') ?? logger) {
+      logger!.debug(message, this.getDefaultLogData(context, data));
     }
   }
 
   protected logInfo(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
-    if (logger) {
-      logger.info(message, this.getDefaultLogData(context, data));
+    if (logger?.isLevelEnabled?.('info') ?? logger) {
+      logger!.info(message, this.getDefaultLogData(context, data));
     }
   }
 
   protected logWarn(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
-    if (logger) {
-      logger.warn(message, this.getDefaultLogData(context, data));
+    if (logger?.isLevelEnabled?.('warn') ?? logger) {
+      logger!.warn(message, this.getDefaultLogData(context, data));
     }
   }
 
   protected logError(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
-    if (logger) {
-      logger.error(message, this.getDefaultLogData(context, data));
+    if (logger?.isLevelEnabled?.('error') ?? logger) {
+      logger!.error(message, this.getDefaultLogData(context, data));
     }
   }
 
   protected logFatal(context: IActionContext, message: string, data?: (() => any)): void {
     const logger: Logger | undefined = Actor.getContextLogger(context);
-    if (logger) {
-      logger.fatal(message, this.getDefaultLogData(context, data));
+    if (logger?.isLevelEnabled?.('fatal') ?? logger) {
+      logger!.fatal(message, this.getDefaultLogData(context, data));
     }
   }
 }

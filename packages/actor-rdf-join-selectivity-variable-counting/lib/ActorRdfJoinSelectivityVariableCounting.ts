@@ -283,6 +283,11 @@ export class ActorRdfJoinSelectivityVariableCounting extends ActorRdfJoinSelecti
     // Determine all operations that select values (patterns and paths)
     const patterns: (Algebra.Pattern | Algebra.Path)[] = [];
     for (const operation of operations) {
+      // Patterns and paths contain no further ones to select values
+      if (operation.type === Algebra.Types.PATTERN || operation.type === Algebra.Types.PATH) {
+        patterns.push(<Algebra.Pattern | Algebra.Path> operation);
+        continue;
+      }
       algebraUtils.visitOperation(operation, {
         [Algebra.Types.PATTERN]: { preVisitor: (pattern) => {
           patterns.push(pattern);

@@ -36,6 +36,15 @@ export abstract class Logger {
 
   protected readonly groupedLogLimit = 5;
 
+  /**
+   * Check if messages of the given level may be logged, so that callers can skip preparing them otherwise.
+   * @param _level A string-based logging level.
+   * @return False only if messages of this level are certainly discarded.
+   */
+  public isLevelEnabled(_level: string): boolean {
+    return true;
+  }
+
   public abstract trace(message: string, data?: any): void;
   public abstract debug(message: string, data?: any): void;
   public abstract info(message: string, data?: any): void;

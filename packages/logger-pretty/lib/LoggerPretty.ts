@@ -56,6 +56,10 @@ export class LoggerPretty extends Logger {
     });
   }
 
+  public override isLevelEnabled(level: string): boolean {
+    return Logger.getLevelOrdinal(level) >= this.levelOrdinal;
+  }
+
   protected log(level: string, color: string, message: string, data?: any): void {
     if (Logger.getLevelOrdinal(level) >= this.levelOrdinal &&
       (!data || !('actor' in data) || !this.actors || this.actors[data.actor])) {
