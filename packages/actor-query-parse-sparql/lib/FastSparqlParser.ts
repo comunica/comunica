@@ -131,7 +131,7 @@ interface IToken {
 }
 
 /**
- * A parser for a common subset of SPARQL SELECT queries, which directly produces the same algebra
+ * A parser for a common subset of SPARQL queries, which directly produces the same algebra
  * as the traqula parser followed by toAlgebra, but several times faster.
  * It throws a {@link FastParserFallbackError} for anything outside of that subset,
  * including invalid queries, so that the traqula parser can handle those.
@@ -359,7 +359,26 @@ export class FastSparqlParser {
       this.prefixes[prefix.prefix!] = this.resolveIri(iri.value);
       this.index += 2;
     }
-    this.expectKeyword('SELECT');
+    if (this.isKeyword('SELECT')) {
+      this.index++;
+      return this.parseSelect();
+    }
+    if (this.isKeyword('ASK')) {
+      this.index++;
+      return this.parseSolutionModifiers(this.parseWhere(), input => this.factory.createAsk(input));
+    }
+    if (this.isKeyword('CONSTRUCT')) {
+      this.index++;
+      return this.parseConstruct();
+    }
+    if (this.isKeyword('DESCRIBE')) {
+      this.index++;
+      return this.parseDescribe();
+    }
+    throw new FastParserFallbackError('Unsupported query form');
+  }
+
+  private parseSelect(): Algebra.Operation {
     let distinct = false;
     if (this.isKeyword('DISTINCT')) {
       distinct = true;
@@ -376,11 +395,83 @@ export class FastSparqlParser {
     if (projected.length === 0) {
       throw new FastParserFallbackError('Unsupported projection');
     }
+    return this.parseSolutionModifiers(this.parseWhere(), (input) => {
+      const projection = this.factory.createProject(input, projected);
+      return distinct ? this.factory.createDistinct(projection) : projection;
+    });
+  }
+
+  private parseConstruct(): Algebra.Operation {
+    // In the short form, the template is also the basic graph pattern of the WHERE clause
+    if (this.isKeyword('WHERE')) {
+      this.index++;
+      const template = this.parseTriplesTemplate();
+      if (template.length === 0) {
+        throw new FastParserFallbackError('Empty short CONSTRUCT');
+      }
+      return this.parseSolutionModifiers(
+        this.factory.createBgp(template),
+        input => this.factory.createConstruct(input, template),
+      );
+    }
+    const template = this.parseTriplesTemplate();
+    return this.parseSolutionModifiers(this.parseWhere(), input => this.factory.createConstruct(input, template));
+  }
+
+  /**
+   * Parse a braced block of triples without property paths, as in CONSTRUCT templates.
+   */
+  private parseTriplesTemplate(): Algebra.Pattern[] {
+    this.expectPunct('{');
+    let patterns: Algebra.Pattern[] = [];
+    if (!this.isPunct('}')) {
+      // Without paths, this is always a single BGP
+      patterns = (<Algebra.Bgp> this.parseTriplesBlock(true)).patterns;
+      if (this.isPunct('.')) {
+        this.index++;
+      }
+    }
+    this.expectPunct('}');
+    return patterns;
+  }
+
+  private parseDescribe(): Algebra.Operation {
+    const terms: (RDF.Variable | RDF.NamedNode)[] = [];
+    for (;;) {
+      const token = this.peek();
+      if (token.type === 'var') {
+        terms.push(this.dataFactory.variable(token.value));
+        this.index++;
+      } else if (token.type === 'iri' || token.type === 'pname') {
+        terms.push(this.parseIri());
+      } else {
+        break;
+      }
+    }
+    if (terms.length === 0) {
+      throw new FastParserFallbackError('Unsupported DESCRIBE');
+    }
+    const where = this.isKeyword('WHERE') || this.isPunct('{') ? this.parseWhere() : this.factory.createBgp([]);
+    return this.parseSolutionModifiers(where, input => this.factory.createDescribe(input, terms));
+  }
+
+  private parseWhere(): Algebra.Operation {
     if (this.isKeyword('WHERE')) {
       this.index++;
     }
-    let result = this.parseGroup();
+    return this.parseGroup();
+  }
 
+  /**
+   * Parse the solution modifiers after the WHERE clause, which must end the query.
+   * @param where The operation of the WHERE clause.
+   * @param form Applies the query form to the ordered operation, before LIMIT and OFFSET.
+   */
+  private parseSolutionModifiers(
+    where: Algebra.Operation,
+    form: (input: Algebra.Operation) => Algebra.Operation,
+  ): Algebra.Operation {
+    let result = where;
     if (this.isKeyword('ORDER')) {
       this.index++;
       this.expectKeyword('BY');
@@ -394,7 +485,7 @@ export class FastSparqlParser {
         } else if (this.peek().type === 'var') {
           expressions.push(this.factory.createTermExpression(this.dataFactory.variable(this.peek().value)));
           this.index++;
-        } else if (this.isPunct('(') || this.isBuiltinCall()) {
+        } else if (this.isPunct('(') || this.isBuiltinCall() || this.isFunctionCall()) {
           expressions.push(this.parseConstraint());
         } else {
           break;
@@ -420,10 +511,7 @@ export class FastSparqlParser {
       throw new FastParserFallbackError('Unsupported trailing input');
     }
 
-    result = this.factory.createProject(result, projected);
-    if (distinct) {
-      result = this.factory.createDistinct(result);
-    }
+    result = form(result);
     if (limit !== undefined || offset) {
       result = this.factory.createSlice(result, offset ?? 0, limit);
     }
@@ -542,8 +630,9 @@ export class FastSparqlParser {
 
   /**
    * Parse consecutive triples into a BGP, with property paths as separate path operations.
+   * @param template If only variables and IRIs are allowed as predicates, as in CONSTRUCT templates.
    */
-  private parseTriplesBlock(): Algebra.Operation {
+  private parseTriplesBlock(template = false): Algebra.Operation {
     const joins: Algebra.Operation[] = [];
     let patterns: Algebra.Pattern[] = [];
     const add = (subject: RDF.Term, path: Algebra.Operation | RDF.NamedNode | RDF.Variable, object: RDF.Term): void => {
@@ -566,7 +655,7 @@ export class FastSparqlParser {
     for (;;) {
       const subject = this.parseTerm(false);
       for (;;) {
-        const verb = this.parseVerb();
+        const verb = this.parseVerb(template);
         for (;;) {
           add(subject, verb, this.parseTerm(true));
           if (!this.isPunct(',')) {
@@ -603,11 +692,18 @@ export class FastSparqlParser {
       token.type === 'string' || token.type === 'number';
   }
 
-  private parseVerb(): Algebra.Operation | RDF.NamedNode | RDF.Variable {
+  private parseVerb(template: boolean): Algebra.Operation | RDF.NamedNode | RDF.Variable {
     if (this.peek().type === 'var') {
       const variable = this.dataFactory.variable(this.peek().value);
       this.index++;
       return variable;
+    }
+    if (template) {
+      if (this.isKeyword('A') && this.peek().value === 'a') {
+        this.index++;
+        return this.dataFactory.namedNode(RDF_TYPE);
+      }
+      return this.parseIri();
     }
     const path = this.parsePathAlternative();
     // Plain IRIs are not paths
@@ -790,14 +886,15 @@ export class FastSparqlParser {
     return this.peek().type === 'keyword' && BUILTINS.has(this.peek().value.toLowerCase()) && this.isPunct('(', 1);
   }
 
+  private isFunctionCall(): boolean {
+    return (this.peek().type === 'iri' || this.peek().type === 'pname') && this.isPunct('(', 1);
+  }
+
   private parseConstraint(): Algebra.Expression {
     if (this.isPunct('(')) {
       return this.parseBracketted();
     }
-    if (this.isBuiltinCall()) {
-      return this.parsePrimary();
-    }
-    if ((this.peek().type === 'iri' || this.peek().type === 'pname') && this.isPunct('(', 1)) {
+    if (this.isBuiltinCall() || this.isFunctionCall()) {
       return this.parsePrimary();
     }
     throw new FastParserFallbackError('Unsupported constraint');

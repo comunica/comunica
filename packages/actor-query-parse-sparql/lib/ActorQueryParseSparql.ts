@@ -102,7 +102,7 @@ export interface IActorQueryParseSparqlArgs extends IActorQueryParseArgs {
    */
   minimalErrorMessages?: boolean;
   /**
-   * If common SELECT queries should first be parsed with a faster parser that produces the same algebra,
+   * If common queries should first be parsed with a faster parser that produces the same algebra,
    * falling back to the regular parser for all other queries.
    * @default {true}
    */
