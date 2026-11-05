@@ -101,13 +101,16 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
 
     // Check if the operation is a CONSTRUCT query
     // We recurse because it may be wrapped in other operations such as SLICE and FROM
+    // Patterns can not contain one, so they are not visited
     let construct = false;
-    algebraUtils.visitOperation(action.operation, {
-      [Algebra.Types.CONSTRUCT]: { preVisitor: () => {
-        construct = true;
-        return { shortcut: true };
-      } },
-    });
+    if (action.operation.type !== Algebra.Types.PATTERN) {
+      algebraUtils.visitOperation(action.operation, {
+        [Algebra.Types.CONSTRUCT]: { preVisitor: () => {
+          construct = true;
+          return { shortcut: true };
+        } },
+      });
+    }
     // If so, delegate to queryQuads
     if (construct) {
       const quadStream = sourceWrapper.source.queryQuads(action.operation, mergedContext);
