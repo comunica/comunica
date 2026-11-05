@@ -1,14 +1,15 @@
 import type { IActionContext, IActionContextKey } from '@comunica/types';
-import { Map } from 'immutable';
 
 /**
- * Implementation of {@link IActionContext} using Immutable.js.
+ * Implementation of {@link IActionContext} backed by a native Map, which is never modified after construction.
+ * Modifications copy the map.
  */
 export class ActionContext implements IActionContext {
-  private readonly map: Map<string, any>;
+  private readonly map: ReadonlyMap<string, any>;
 
   public constructor(data: Record<string, any> = {}) {
-    this.map = Map<string, any>(data);
+    // Maps are only passed internally, by contexts that do not modify them anymore
+    this.map = data instanceof Map ? data : new Map(Object.entries(data));
   }
 
   /**
@@ -23,11 +24,18 @@ export class ActionContext implements IActionContext {
   }
 
   public setRaw(key: string, value: any): IActionContext {
-    return new ActionContext(this.map.set(key, value));
+    const map = new Map(this.map);
+    map.set(key, value);
+    return new ActionContext(<any> map);
   }
 
   public delete<V>(key: IActionContextKey<V>): IActionContext {
-    return new ActionContext(this.map.delete(key.name));
+    if (!this.map.has(key.name)) {
+      return new ActionContext(<any> this.map);
+    }
+    const map = new Map(this.map);
+    map.delete(key.name);
+    return new ActionContext(<any> map);
   }
 
   public get<V>(key: IActionContextKey<V>): V | undefined {
@@ -54,31 +62,46 @@ export class ActionContext implements IActionContext {
   }
 
   public merge(...contexts: IActionContext[]): IActionContext {
-    // eslint-disable-next-line ts/no-this-alias
-    let context: IActionContext = this;
+    // The entries are only copied once, when the first entry is merged
+    let map: Map<string, any> | undefined;
     for (const source of contexts) {
       for (const key of source.keys()) {
-        context = context.set(key, source.get(key));
+        map ??= new Map(this.map);
+        map.set(key.name, source.get(key));
       }
     }
-    return context;
+    return map ? new ActionContext(<any> map) : this;
   }
 
   public keys(): IActionContextKey<any>[] {
-    return [ ...<any> this.map.keys() ]
-      .map(keyName => new ActionContextKey(keyName));
+    return [ ...this.map.keys() ].map(keyName => new ActionContextKey(keyName));
   }
 
   public toJS(): any {
-    return this.map.toJS();
+    return ActionContext.toJS(Object.fromEntries(this.map));
   }
 
   public toString(): string {
-    return `ActionContext(${JSON.stringify(this.map.toJS())})`;
+    return `ActionContext(${JSON.stringify(this.toJS())})`;
   }
 
   public [Symbol.for('nodejs.util.inspect.custom')](): string {
-    return `ActionContext(${JSON.stringify(this.map.toJS(), null, '  ')})`;
+    return `ActionContext(${JSON.stringify(this.toJS(), null, '  ')})`;
+  }
+
+  /**
+   * Deeply copy plain objects and arrays, keeping other values as-is.
+   * @param value A value.
+   */
+  protected static toJS(value: any): any {
+    if (Array.isArray(value)) {
+      return value.map(element => ActionContext.toJS(element));
+    }
+    if (value !== null && typeof value === 'object' &&
+      [ Object.prototype, null ].includes(Object.getPrototypeOf(value))) {
+      return Object.fromEntries(Object.entries(value).map(([ key, entry ]) => [ key, ActionContext.toJS(entry) ]));
+    }
+    return value;
   }
 
   /**
@@ -92,7 +115,7 @@ export class ActionContext implements IActionContext {
     // with multiple ActionContexts existing in parallel.
     return maybeActionContext instanceof ActionContext || (maybeActionContext && 'map' in maybeActionContext) ?
       <IActionContext> maybeActionContext :
-      new ActionContext(Map(maybeActionContext ?? {}));
+      new ActionContext(maybeActionContext);
   }
 }
 
