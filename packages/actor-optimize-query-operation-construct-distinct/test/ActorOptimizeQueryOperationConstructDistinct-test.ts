@@ -25,6 +25,18 @@ describe('ActorOptimizeQueryOperationConstructDistinct', () => {
       context = new ActionContext().set(KeysInitQuery.distinctConstruct, true);
     });
 
+    it('should not change operations without CONSTRUCT operations', async() => {
+      const algebraFactory = new AlgebraFactory();
+      const operation = algebraFactory.createProject(
+        algebraFactory.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        [ DF.variable('s') ],
+      );
+      const action = { operation, context: new ActionContext() };
+      const result = await actor.run(action);
+      expect(result.operation).toBe(operation);
+      expect(result.context).toBe(action.context);
+    });
+
     it('should throw when distinctConstruct key is not present', async() => {
       context = context.delete(KeysInitQuery.distinctConstruct);
       await expect(actor.test({ operation: <any> undefined, context }))
