@@ -6,7 +6,7 @@ import { bindingsToString } from './bindingsToString';
 
 /**
  * A Bindings object backed by a native Map, which is never modified after construction.
- * Modifications copy the map, which is cheaper than a persistent map for the typical number of variables.
+ * Modifications copy the map.
  */
 export class Bindings implements RDF.Bindings {
   public readonly type = 'bindings';
