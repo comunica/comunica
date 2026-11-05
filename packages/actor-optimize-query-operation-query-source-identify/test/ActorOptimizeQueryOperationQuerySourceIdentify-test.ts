@@ -374,6 +374,35 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
           .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
       });
 
+      it('should cache identical object sources in separate calls', async() => {
+        const source1 = { match: jest.fn() };
+        contextIn = contextIn
+          .set(KeysInitQuery.querySourcesUnidentified, [
+            source1,
+          ]);
+        const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
+        const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
+        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+          .toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(1);
+      });
+
+      it('should not reuse cache entries of distinct object sources', async() => {
+        const source1 = { match: jest.fn() };
+        const source2 = { match: jest.fn() };
+        const { context: contextOut1 } = await actor.run({
+          context: contextIn.set(KeysInitQuery.querySourcesUnidentified, [ source1 ]),
+          operation,
+        });
+        const { context: contextOut2 } = await actor.run({
+          context: contextIn.set(KeysInitQuery.querySourcesUnidentified, [ source2 ]),
+          operation,
+        });
+        expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+          .not.toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
+        expect(mediatorQuerySourceIdentify.mediate).toHaveBeenCalledTimes(2);
+      });
+
       it('should allow cache invalidation for a specific url', async() => {
         const source1 = 'source1';
         const source2 = 'source2';
@@ -874,6 +903,18 @@ describe('ActorOptimizeQueryOperationQuerySourceIdentify', () => {
       ]);
       expect(contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
         .not.toBe(contextOut.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![1]);
+    });
+
+    it('should not cache identical object sources in separate calls', async() => {
+      const source1 = { match: jest.fn() };
+      const contextIn = new ActionContext()
+        .set(KeysInitQuery.querySourcesUnidentified, [
+          source1,
+        ]);
+      const { context: contextOut1 } = await actor.run({ context: contextIn, operation });
+      const { context: contextOut2 } = await actor.run({ context: contextIn, operation });
+      expect(contextOut1.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0])
+        .not.toBe(contextOut2.get<IQuerySourceWrapper[]>(KeysQueryOperation.querySources)![0]);
     });
 
     it('should not cache identical sources in separate calls', async() => {
