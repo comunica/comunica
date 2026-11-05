@@ -4444,6 +4444,42 @@ CONSTRUCT {
   });
 
   describe('explain', () => {
+    describe('unions created by optimizers', () => {
+      // Order-useful unions are annotated after the optimizers that create or rebuild unions
+      function unionMetadata(operation: any): any[] {
+        const own = operation.type === 'union' ? [ operation.metadata ] : [];
+        const inputs = Array.isArray(operation.input) ? operation.input : operation.input ? [ operation.input ] : [];
+        return [ ...own, ...inputs.flatMap(unionMetadata) ];
+      }
+
+      function createStore(): RdfStore {
+        const store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:a'), DF.namedNode('ex:o')));
+        store.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:b'), DF.namedNode('ex:o')));
+        store.addQuad(DF.quad(DF.namedNode('ex:o'), DF.namedNode('ex:c'), DF.namedNode('ex:x')));
+        return store;
+      }
+
+      it('annotates unions of alternative paths', async() => {
+        const result = await engine.explain(`SELECT * WHERE {
+      ?s <ex:a>|<ex:b> ?o.
+      ?o <ex:c> ?x.
+    }`, { sources: [ createStore() ]}, 'logical');
+        expect(unionMetadata(result.data)).toEqual([ expect.objectContaining({ orderUseful: [ 'o' ]}) ]);
+      });
+
+      it('annotates unions over multiple sources', async() => {
+        const result = await engine.explain(`SELECT * WHERE {
+      ?s <ex:a> ?o.
+      ?o <ex:c> ?x.
+    }`, { sources: [ createStore(), createStore() ]}, 'logical');
+        expect(unionMetadata(result.data)).toEqual([
+          expect.objectContaining({ orderUseful: [ 'o' ]}),
+          expect.objectContaining({ orderUseful: [ 'o' ]}),
+        ]);
+      });
+    });
+
     describe('a simple SPO on a raw RDF document', () => {
       it('explaining parsing', async() => {
         const result = await engine.explain(`SELECT * WHERE {

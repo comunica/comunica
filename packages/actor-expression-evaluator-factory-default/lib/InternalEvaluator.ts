@@ -39,8 +39,17 @@ export class InternalEvaluator {
   }
 
   public async evaluatorExpressionEvaluation(expr: Expression, mapping: RDF.Bindings): Promise<TermExpression> {
-    const evaluator = this.subEvaluators[expr.expressionType];
-    return evaluator.bind(this)(expr, mapping);
+    return this.subEvaluators[expr.expressionType](expr, mapping);
+  }
+
+  public evaluateDirectly(expr: Expression, mapping: RDF.Bindings): TermExpression | undefined {
+    if (expr.expressionType === ExpressionType.Term) {
+      return expr;
+    }
+    if (expr.expressionType === ExpressionType.Variable) {
+      return this.variable(<Eval.Variable> expr, mapping);
+    }
+    return undefined;
   }
 
   private term(expr: Eval.Term): Eval.Term {
@@ -48,7 +57,7 @@ export class InternalEvaluator {
   }
 
   private variable(expr: Eval.Variable, mapping: RDF.Bindings): Eval.Term {
-    const term = mapping.get(Eval.expressionToVar(this.context.getSafe(KeysInitQuery.dataFactory), expr));
+    const term = mapping.get(expr.name.slice(1));
     if (!term) {
       throw new Eval.UnboundVariableError(expr.name, mapping);
     }
