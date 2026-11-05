@@ -59,7 +59,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
    * A cache of identified sources that are objects (such as RDF/JS stores), indexed by that object,
    * and then by qualifier. Entries are dropped once the object is garbage-collected.
    */
-  public readonly objectCache?: WeakMap<object, Map<string, Promise<IQuerySourceWrapper>>>;
+  private readonly objectCache = new WeakMap<object, Map<string, Promise<IQuerySourceWrapper>>>();
   // Identifiers of the objects in source contexts, as objects can only be represented in qualifiers by their identity.
   private readonly cacheQualifierObjectIds = new WeakMap<object, number>();
   private cacheQualifierObjectIdCounter = 0;
@@ -72,7 +72,6 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
     this.mediatorQuerySourceIdentify = args.mediatorQuerySourceIdentify;
     this.mediatorContextPreprocess = args.mediatorContextPreprocess;
     this.cache = this.cacheSize ? new LRUCache<string, any>({ max: this.cacheSize }) : undefined;
-    this.objectCache = this.cacheSize ? new WeakMap() : undefined;
     const cache = this.cache;
     if (cache) {
       this.httpInvalidator.addInvalidateListener(
@@ -215,11 +214,11 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
       undefined;
     // Sources that are objects, such as RDF/JS stores, are cached by identity.
     const object = typeof querySourceUnidentified.value === 'object' ? querySourceUnidentified.value : undefined;
-    const cacheable = url === undefined ? Boolean(object && this.objectCache) : Boolean(this.cache);
+    const cacheable = Boolean(this.cache) && (url !== undefined || object !== undefined);
     let qualifier: string | undefined;
     if (cacheable) {
       qualifier = cacheQualifierPrefix + this.getCacheQualifier(querySourceUnidentified);
-      sourcePromise = (url === undefined ? this.objectCache!.get(object!) : this.cache!.get(url))?.get(qualifier);
+      sourcePromise = (url === undefined ? this.objectCache.get(object!) : this.cache!.get(url))?.get(qualifier);
     }
 
     // If not in cache, identify the source
@@ -235,7 +234,7 @@ export class ActorOptimizeQueryOperationQuerySourceIdentify extends ActorOptimiz
           this.cache.set(url, sourcesForUrl);
         }
         sourcesForUrl.set(qualifier!, sourcePromise);
-      } else if (object && this.objectCache) {
+      } else if (object && this.cache) {
         let sourcesForObject = this.objectCache.get(object);
         if (!sourcesForObject) {
           sourcesForObject = new Map();
