@@ -1,6 +1,7 @@
 import type { IIndexNestedLoopLookup } from '@comunica/actor-rdf-join-inner-multi-index-nested-loop';
 import {
   ActorRdfJoinMultiIndexNestedLoop,
+  getArbitraryLengthPathLookup,
   IndexNestedLoopIterator,
 } from '@comunica/actor-rdf-join-inner-multi-index-nested-loop';
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
@@ -84,6 +85,10 @@ export class ActorRdfJoinOptionalIndexNestedLoop extends ActorRdfJoin {
     const { metadatas } = sideData;
     if (!await ActorRdfJoinMultiIndexNestedLoop.canLookUp(action.entries[1], action.context)) {
       return failTest(`Actor ${this.name} requires a right entry that is an operation over a source that supports synchronous lookups`);
+    }
+    // Paths can only be looked up from a bound term, which is not guaranteed for the optional left bindings.
+    if (getArbitraryLengthPathLookup(action.entries[1].operation)) {
+      return failTest(`Actor ${this.name} can not look up arbitrary length paths`);
     }
 
     const selectivity = (await this.mediatorJoinSelectivity.mediate({

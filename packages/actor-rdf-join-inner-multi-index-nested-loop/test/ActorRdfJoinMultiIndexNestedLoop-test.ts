@@ -389,4 +389,95 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       await expect(result.metadata()).resolves.toMatchObject({ cardinality: { type: 'estimate', value: 2 }});
     });
   });
+
+  describe('with arbitrary length paths', () => {
+    function pathOperation(
+      subject: string,
+      object: string,
+      wrapper: IQuerySourceWrapper | null = source,
+    ): Algebra.Path {
+      let link: Algebra.Operation = AF.createLink(DF.namedNode('ex:reviewer'));
+      if (wrapper) {
+        link = assignOperationSource(link, wrapper);
+      }
+      return AF.createPath(term(subject), AF.createOneOrMorePath(AF.createInv(link)), term(object));
+    }
+
+    function pathEntry(operation: Algebra.Path, meta: MetadataBindings): IJoinEntry {
+      return {
+        operation,
+        output: {
+          type: 'bindings',
+          bindingsStream: new ArrayIterator<any>([], { autoStart: false }),
+          metadata: async() => meta,
+        },
+      };
+    }
+
+    function reviewerEntries(): IJoinEntry[] {
+      return [
+        entry(pattern('?person', 'ex:name', '?name'), metadata(1, [ 'person', 'name' ])),
+        pathEntry(pathOperation('?person', '?review'), metadata(2, [ 'person', 'review' ])),
+      ];
+    }
+
+    it('should look up paths of which the predicate can be looked up', async() => {
+      const [ , joinEntry ] = reviewerEntries();
+      await expect(ActorRdfJoinMultiIndexNestedLoop.canLookUp(joinEntry, context)).resolves.toBe(true);
+      expect(ActorRdfJoinMultiIndexNestedLoop.getLookupSource(joinEntry.operation)).toBe(source);
+    });
+
+    it('should not look up paths of which the predicate has no source', async() => {
+      const joinEntry = pathEntry(pathOperation('?person', '?review', null), metadata(2, [ 'person', 'review' ]));
+      await expect(ActorRdfJoinMultiIndexNestedLoop.canLookUp(joinEntry, context)).resolves.toBe(false);
+    });
+
+    it('should not look up paths of which the predicate can not be looked up synchronously', async() => {
+      const other: IQuerySourceWrapper = <any> {
+        source: { getSelectorShape: async() => ({ type: 'operation', operation: { operationType: 'wildcard' }}) },
+      };
+      const joinEntry = pathEntry(pathOperation('?person', '?review', other), metadata(2, [ 'person', 'review' ]));
+      await expect(ActorRdfJoinMultiIndexNestedLoop.canLookUp(joinEntry, context)).resolves.toBe(false);
+    });
+
+    it('should only estimate a finite fanout for paths with a bound subject or object', async() => {
+      const joinEntry = withMetadata(
+        pathEntry(pathOperation('?person', '?review'), metadata(2, [])),
+        metadata(2, [ 'person', 'review' ]),
+      );
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set())).toBe(Number.POSITIVE_INFINITY);
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 'review' ]))).toBe(1);
+      const constantEntry = withMetadata(
+        pathEntry(pathOperation('ex:person1', '?review'), metadata(1, [])),
+        metadata(1, [ 'review' ]),
+      );
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(constantEntry, new Set())).toBe(1);
+    });
+
+    it('should fail if a path can not be looked up from a bound term', async() => {
+      const entries = [
+        entry(AF.createJoin([ pattern('?a', 'ex:name', '?b') ]), metadata(1, [ 'a', 'b' ])),
+        pathEntry(pathOperation('?person', '?review'), metadata(2, [ 'person', 'review' ])),
+      ];
+      await expect(actor.test({ type: 'inner', entries, context })).resolves
+        .toFailTest(`Actor actor requires an order in which every path is looked up from a bound term`);
+    });
+
+    it('should join the first entry with lookups of a path', async() => {
+      const entries = reviewerEntries();
+      const action: IActionRdfJoin = { type: 'inner', entries, context };
+      const sideData = (await actor.test(action)).getSideData();
+      expect(sideData.first).toBe(0);
+      expect(sideData.order).toEqual([ 1 ]);
+      const result = await actor.run(action, sideData);
+      await expect(result.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('person'), DF.namedNode('ex:person1') ],
+          [ DF.variable('name'), DF.namedNode('ex:name1') ],
+          [ DF.variable('review'), DF.namedNode('ex:review1') ],
+        ]),
+      ]);
+      expect(mediatorMergeBindingsContext.mediate).toHaveBeenCalledTimes(1);
+    });
+  });
 });

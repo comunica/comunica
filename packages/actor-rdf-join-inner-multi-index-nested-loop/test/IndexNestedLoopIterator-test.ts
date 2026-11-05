@@ -1,11 +1,15 @@
+import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
+import { ActionContext } from '@comunica/core';
 import type { Bindings, IQuerySource } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
+import { RdfStore } from 'rdf-stores';
 import type { IIndexNestedLoopLookup } from '../lib/IndexNestedLoopIterator';
-import { IndexNestedLoopIterator } from '../lib/IndexNestedLoopIterator';
+import { getArbitraryLengthPathLookup, IndexNestedLoopIterator } from '../lib/IndexNestedLoopIterator';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -215,5 +219,101 @@ describe('IndexNestedLoopIterator', () => {
     const it = new IndexNestedLoopIterator(stream, [ lookup('?x', 'ex:p', '?y', syncSource) ], AF, BF);
     it.destroy();
     expect(stream.done).toBeTruthy();
+  });
+
+  describe('looking up arbitrary length paths', () => {
+    // A -> B -> C -> B, and D -> A
+    let pathSource: IQuerySource;
+    beforeEach(() => {
+      const store = RdfStore.createDefault();
+      const edges = [[ 'ex:a', 'ex:b' ], [ 'ex:b', 'ex:c' ], [ 'ex:c', 'ex:b' ], [ 'ex:d', 'ex:a' ]];
+      for (const [ subject, object ] of edges) {
+        store.addQuad(DF.quad(DF.namedNode(subject), DF.namedNode('ex:p'), DF.namedNode(object)));
+      }
+      pathSource = new QuerySourceRdfJs(store, DF, BF);
+    });
+
+    function path(subject: string, predicate: Algebra.Operation, object: string): Algebra.Path {
+      const term = (value: string): any => value.startsWith('?') ? DF.variable(value.slice(1)) : DF.namedNode(value);
+      return AF.createPath(term(subject), predicate, term(object));
+    }
+
+    function pathLookup(operation: Algebra.Path, source = pathSource): IIndexNestedLoopLookup {
+      return { operation, source, context: new ActionContext(), path: getArbitraryLengthPathLookup(operation) };
+    }
+
+    async function lookUp(operation: Algebra.Path, inputTerm = 'ex:a', source = pathSource): Promise<string[]> {
+      const it = new IndexNestedLoopIterator(new ArrayIterator<Bindings>([
+        BF.bindings([[ DF.variable('x'), DF.namedNode(inputTerm) ]]),
+      ], { autoStart: false }), [ pathLookup(operation, source) ], AF, BF);
+      return (await it.toArray()).map(bindings => bindings.get('y')?.value ?? 'match');
+    }
+
+    const link = AF.createLink(DF.namedNode('ex:p'));
+
+    it('recognizes arbitrary length paths over a single predicate', () => {
+      expect(getArbitraryLengthPathLookup(path('?x', AF.createZeroOrMorePath(link), '?y'))).toEqual({
+        link,
+        predicate: DF.namedNode('ex:p'),
+        inverse: false,
+        includeStart: true,
+      });
+      expect(getArbitraryLengthPathLookup(path('?x', AF.createOneOrMorePath(AF.createInv(link)), '?y'))).toEqual({
+        link,
+        predicate: DF.namedNode('ex:p'),
+        inverse: true,
+        includeStart: false,
+      });
+    });
+
+    it('does not recognize other operations', () => {
+      expect(getArbitraryLengthPathLookup(AF.createPattern(DF.variable('x'), DF.namedNode('ex:p'), DF.variable('y'))))
+        .toBeUndefined();
+      expect(getArbitraryLengthPathLookup(path('?x', AF.createZeroOrOnePath(link), '?y'))).toBeUndefined();
+      expect(getArbitraryLengthPathLookup(path('?x', AF.createZeroOrMorePath(AF.createSeq([ link, link ])), '?y')))
+        .toBeUndefined();
+      expect(getArbitraryLengthPathLookup(path('?x', AF.createZeroOrMorePath(AF.createInv(AF.createSeq([
+        link,
+        link,
+      ]))), '?y'))).toBeUndefined();
+      expect(getArbitraryLengthPathLookup(AF.createPath(
+        DF.variable('x'),
+        AF.createZeroOrMorePath(link),
+        DF.variable('y'),
+        DF.variable('g'),
+      ))).toBeUndefined();
+    });
+
+    it('includes the start term for ZeroOrMore paths', async() => {
+      await expect(lookUp(path('?x', AF.createZeroOrMorePath(link), '?y'))).resolves
+        .toEqual([ 'ex:a', 'ex:b', 'ex:c' ]);
+    });
+
+    it('only includes the start term for OneOrMore paths if it is reached', async() => {
+      await expect(lookUp(path('?x', AF.createOneOrMorePath(link), '?y'))).resolves.toEqual([ 'ex:b', 'ex:c' ]);
+      await expect(lookUp(path('?x', AF.createOneOrMorePath(link), '?y'), 'ex:b')).resolves.toEqual([ 'ex:c', 'ex:b' ]);
+    });
+
+    it('walks backwards from a bound object', async() => {
+      await expect(lookUp(path('?y', AF.createOneOrMorePath(link), '?x'))).resolves.toEqual([ 'ex:d' ]);
+    });
+
+    it('walks inverse paths', async() => {
+      await expect(lookUp(path('?x', AF.createOneOrMorePath(AF.createInv(link)), '?y'))).resolves.toEqual([ 'ex:d' ]);
+      await expect(lookUp(path('?y', AF.createZeroOrMorePath(AF.createInv(link)), '?x'))).resolves
+        .toEqual([ 'ex:a', 'ex:b', 'ex:c' ]);
+    });
+
+    it('checks if a bound subject reaches a bound object', async() => {
+      await expect(lookUp(path('ex:d', AF.createOneOrMorePath(link), '?x'), 'ex:c')).resolves.toEqual([ 'match' ]);
+      await expect(lookUp(path('ex:b', AF.createOneOrMorePath(link), '?x'), 'ex:d')).resolves.toEqual([]);
+    });
+
+    it('destroys itself if the predicate can not be looked up synchronously', async() => {
+      const stream = new IndexNestedLoopIterator(input(), [
+        pathLookup(path('?x', AF.createZeroOrMorePath(link), '?y'), asyncSource),
+      ], AF, BF);
+      await expect(stream.toArray()).rejects.toThrow('Could not synchronously look up the path ex:p');
+    });
   });
 });
