@@ -86,7 +86,7 @@ TS
   /* eslint-disable max-len */
   /**
    * @param args -
-   *   \ @defaultNested {<default_bus> a <cc:components/Bus.jsonld#Bus>} bus
+   *   \ @defaultNested {<default_bus> a <cbrj:components/BusRdfJoin.jsonld#BusRdfJoin>} bus
    *   \ @defaultNested {RDF joining failed: none of the configured actors were able to handle the join type ${action.type}} busFailMessage
    * @param options - Actor-specific join options.
    */
