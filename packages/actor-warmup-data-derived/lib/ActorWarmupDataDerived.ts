@@ -2,19 +2,10 @@ import type { IActionWarmup, IActorWarmupArgs, IActorWarmupOutput } from '@comun
 import { ActorWarmup } from '@comunica/bus-warmup';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
-import { ActionContextKey, failTest, passTestVoid } from '@comunica/core';
-import type { IActionContext, QuerySourceUnidentified } from '@comunica/types';
+import { failTest, passTestVoid } from '@comunica/core';
+import type { IActionContext } from '@comunica/types';
+import { isQuerySourceLocal } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-
-/**
- * The types of sources that are in memory or in files.
- */
-const LOCAL_SOURCE_TYPES = new Set([ 'rdfjs', 'file', 'serialized', 'compositefile' ]);
-
-/**
- * The shortcut with which query contexts usually contain their sources.
- */
-const SOURCES_SHORTCUT = new ActionContextKey<QuerySourceUnidentified[]>('sources');
 
 /**
  * A comunica warmup actor that executes queries derived from the data in the sources,
@@ -34,39 +25,14 @@ export class ActorWarmupDataDerived extends ActorWarmup {
   }
 
   public async test(action: IActionWarmup): Promise<TestResult<IActorTest>> {
-    const sources = action.context.get(KeysInitQuery.querySourcesUnidentified) ??
-      action.context.get(SOURCES_SHORTCUT) ?? [];
+    const sources = action.context.get(KeysInitQuery.querySourcesUnidentified) ?? [];
     if (sources.length === 0) {
       return failTest(`${this.name} requires sources to warm up over`);
     }
-    // Over remote sources, every query would wait on the network, and burden their servers
-    for (const source of sources) {
-      const description = ActorWarmupDataDerived.describeNonLocalSource(source);
-      if (description) {
-        return failTest(`${this.name} only warms up over sources in memory or in files, so not over ${description}`);
-      }
+    if (!sources.every(isQuerySourceLocal)) {
+      return failTest(`${this.name} only warms up over sources in memory or in files`);
     }
     return passTestVoid();
-  }
-
-  /**
-   * Describe a source unless it is in memory or in a file, which is loaded once, so that queries over it do not
-   * access the network. Sources given only as a URL are not, as they may also be SPARQL endpoints or other interfaces.
-   * @param source A source.
-   * @return A description of the source, or undefined if it is in memory or in a file.
-   */
-  public static describeNonLocalSource(source: QuerySourceUnidentified): string | undefined {
-    if (typeof source === 'string') {
-      // Paths and file URLs, and Windows paths, whose drive letter looks like a one-letter URL scheme
-      return source.startsWith('file:') || !/^[a-z][\d+.a-z-]+:/iu.test(source) ? undefined : source;
-    }
-    if ('match' in source) {
-      return undefined;
-    }
-    if (source.type !== undefined) {
-      return LOCAL_SOURCE_TYPES.has(source.type) ? undefined : `a source of type ${source.type}`;
-    }
-    return typeof source.value === 'string' ? ActorWarmupDataDerived.describeNonLocalSource(source.value) : undefined;
   }
 
   public async run(action: IActionWarmup): Promise<IActorWarmupOutput> {

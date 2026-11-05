@@ -20,6 +20,7 @@ import type {
   IQueryContextCommon,
   IWarmupOptions,
   IWarmupResult,
+  QuerySourceUnidentified,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -30,6 +31,12 @@ import type { ActorInitQueryBase } from './ActorInitQueryBase';
  * @see KeysInitQuery.explain
  */
 const KEY_CONTEXT_EXPLAIN_SHORTCUT = new ActionContextKey<QueryExplainMode>('explain');
+
+/**
+ * The shortcut under which the sources may be passed in a raw query context.
+ * @see KeysInitQuery.querySourcesUnidentified
+ */
+const KEY_CONTEXT_SOURCES_SHORTCUT = new ActionContextKey<QuerySourceUnidentified[]>('sources');
 
 /**
  * Base implementation of a Comunica query engine.
@@ -242,9 +249,16 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     if (!mediatorWarmup) {
       throw new Error('Warming up requires the query init actor to have a mediatorWarmup');
     }
+    let actionContext = ActionContext.ensureActionContext(context).set(KeysQueryOperation.readOnly, true);
+    // Like the explain mode, warm-up actors need the sources before the context preprocessing of query processing
+    if (actionContext.has(KEY_CONTEXT_SOURCES_SHORTCUT)) {
+      actionContext = actionContext
+        .set(KeysInitQuery.querySourcesUnidentified, actionContext.getSafe(KEY_CONTEXT_SOURCES_SHORTCUT))
+        .delete(KEY_CONTEXT_SOURCES_SHORTCUT);
+    }
     const { executions } = await mediatorWarmup.mediate({
       engine: this,
-      context: ActionContext.ensureActionContext(context).set(KeysQueryOperation.readOnly, true),
+      context: actionContext,
       executions: options.executions,
       budget: options.budget,
       signal: options.signal,

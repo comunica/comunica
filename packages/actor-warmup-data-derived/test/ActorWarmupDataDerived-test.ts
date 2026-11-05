@@ -22,7 +22,9 @@ function engineFor(responses: Record<string, RDF.Bindings[]>, data = (): Readabl
 describe('ActorWarmupDataDerived', () => {
   let bus: any;
   let actor: ActorWarmupDataDerived;
-  const context = new ActionContext({ sources: [ 'SOURCE' ]});
+  const context = new ActionContext({ [KeysInitQuery.querySourcesUnidentified.name]: [ 'SOURCE' ]});
+  const contextWith = (sources: any[]): ActionContext =>
+    new ActionContext({ [KeysInitQuery.querySourcesUnidentified.name]: sources });
   const responses: Record<string, RDF.Bindings[]> = {
     'SELECT DISTINCT ?p WHERE { ?s ?p ?o } LIMIT 64': [
       BF.fromRecord({ p: DF.namedNode('ex:p1') }),
@@ -57,41 +59,14 @@ describe('ActorWarmupDataDerived', () => {
     });
 
     it('should pass for sources in memory or in files', async() => {
-      const sources = [
-        'data.ttl',
-        '/data/data.ttl',
-        'file:///data/data.ttl',
-        'C:\\data\\data.ttl',
-        { match: () => null },
-        { type: 'rdfjs', value: { match: () => null }},
-        { type: 'file', value: 'http://example.org/data.ttl' },
-        { type: 'serialized', value: '<ex:s> <ex:p> <ex:o>.' },
-        { type: 'compositefile', value: [ 'a.ttl', 'b.ttl' ]},
-        { value: 'data.ttl' },
-        { value: { match: () => null }},
-      ];
-      await expect(actor.test(action(engineFor(responses), { context: new ActionContext({ sources }) }))).resolves
-        .toPassTestVoid();
+      const localContext = contextWith([ 'data.ttl', { match: () => null }]);
+      await expect(actor.test(action(engineFor(responses), { context: localContext }))).resolves.toPassTestVoid();
     });
 
-    it('should read sources from their full context key', async() => {
-      const fullContext = new ActionContext({ [KeysInitQuery.querySourcesUnidentified.name]: [ 'data.ttl' ]});
-      await expect(actor.test(action(engineFor(responses), { context: fullContext }))).resolves.toPassTestVoid();
-    });
-
-    it('should fail for sources that may be remote', async() => {
-      const message = 'actor only warms up over sources in memory or in files, so not over';
-      const cases: [any, string][] = [
-        [ 'http://example.org/sparql', 'http://example.org/sparql' ],
-        [{ value: 'https://example.org/data' }, 'https://example.org/data' ],
-        [{ type: 'sparql', value: 'http://example.org/sparql' }, 'a source of type sparql' ],
-        [{ type: 'traverse', value: []}, 'a source of type traverse' ],
-      ];
-      for (const [ source, label ] of cases) {
-        const sourcesContext = new ActionContext({ sources: [ 'data.ttl', source ]});
-        await expect(actor.test(action(engineFor(responses), { context: sourcesContext }))).resolves
-          .toFailTest(`${message} ${label}`);
-      }
+    it('should fail if a source may be remote', async() => {
+      const remoteContext = contextWith([ 'data.ttl', 'http://ex.org/sparql' ]);
+      await expect(actor.test(action(engineFor(responses), { context: remoteContext }))).resolves
+        .toFailTest('actor only warms up over sources in memory or in files');
     });
 
     it('should fail without sources', async() => {

@@ -4,7 +4,7 @@
 
 A [Warmup](https://github.com/comunica/comunica/tree/master/packages/bus-warmup) actor
 that warms up the engine with queries derived from the data in the sources.
-It only applies if all sources are in memory or in files, as queries over other sources would access the network.
+It only applies if all sources are in memory or in files.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

@@ -4132,7 +4132,7 @@ CONSTRUCT {
 
     it('does not warm up over sources that may be remote', async() => {
       await expect(engine.warmup({ sources: [ 'http://example.org/sparql' ]})).rejects
-        .toThrow('only warms up over sources in memory or in files, so not over http://example.org/sparql');
+        .toThrow('only warms up over sources in memory or in files');
     });
 
     it('stops once the signal is aborted', async() => {

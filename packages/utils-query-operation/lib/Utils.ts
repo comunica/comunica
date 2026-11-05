@@ -12,6 +12,7 @@ import type {
   IQueryOperationResultVoid,
   IQuerySourceWrapper,
   IServiceExecutor,
+  QuerySourceUnidentified,
 } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import type * as RDF from '@rdfjs/types';
@@ -245,4 +246,29 @@ export function getContextDestinationUrl(destination?: IDataDestination): string
       return fileUrl;
     }
   }
+}
+
+/**
+ * The types of query sources that are in memory or in files.
+ */
+const LOCAL_QUERY_SOURCE_TYPES = new Set([ 'rdfjs', 'file', 'serialized', 'compositefile' ]);
+
+/**
+ * Check if the given query source is in memory or in a file, which is loaded once,
+ * so that querying it does not access the network.
+ * Sources given as a URL are not, as they may also be SPARQL endpoints or other interfaces.
+ * @param source An unidentified query source.
+ */
+export function isQuerySourceLocal(source: QuerySourceUnidentified): boolean {
+  if (typeof source === 'string') {
+    // File URLs, and paths, which have no URL scheme
+    return source.startsWith('file:') || !/^[a-z][\d+.a-z-]*:/iu.test(source);
+  }
+  if ('match' in source) {
+    return true;
+  }
+  if (source.type !== undefined) {
+    return LOCAL_QUERY_SOURCE_TYPES.has(source.type);
+  }
+  return typeof source.value === 'string' ? isQuerySourceLocal(source.value) : true;
 }

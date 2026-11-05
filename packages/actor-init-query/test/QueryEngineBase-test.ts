@@ -484,7 +484,8 @@ describe('QueryEngineBase', () => {
 
       expect(mediatorWarmup.mediate).toHaveBeenCalledWith({
         engine: queryEngine,
-        context: new ActionContext({ sources: [ 'SOURCE' ]}).set(KeysQueryOperation.readOnly, true),
+        context: new ActionContext({ [KeysInitQuery.querySourcesUnidentified.name]: [ 'SOURCE' ]})
+          .set(KeysQueryOperation.readOnly, true),
         executions: 10,
         budget: 1000,
         signal,
@@ -496,11 +497,21 @@ describe('QueryEngineBase', () => {
 
       expect(mediatorWarmup.mediate).toHaveBeenCalledWith({
         engine: queryEngine,
-        context: new ActionContext({ sources: [ 'SOURCE' ]}).set(KeysQueryOperation.readOnly, true),
+        context: new ActionContext({ [KeysInitQuery.querySourcesUnidentified.name]: [ 'SOURCE' ]})
+          .set(KeysQueryOperation.readOnly, true),
         executions: undefined,
         budget: undefined,
         signal: undefined,
       });
+    });
+
+    it('should warm up with sources under their full context key', async() => {
+      await queryEngine.warmup(<any> { [KeysInitQuery.querySourcesUnidentified.name]: [ 'SOURCE' ]});
+
+      expect(mediatorWarmup.mediate).toHaveBeenCalledWith(expect.objectContaining({
+        context: new ActionContext({ [KeysInitQuery.querySourcesUnidentified.name]: [ 'SOURCE' ]})
+          .set(KeysQueryOperation.readOnly, true),
+      }));
     });
 
     it('should reject if the init actor has no mediator for warming up', async() => {
