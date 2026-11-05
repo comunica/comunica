@@ -6,7 +6,7 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
+import type { IActionContext, IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
 import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -392,6 +392,40 @@ IQueryOperationResultBindings
           blockingItems: 0,
           requestTime: 33.2,
         });
+      });
+
+      it('should only determine selectivities for entries that share no variable with the first', async() => {
+        const spy = jest.spyOn(mediatorJoinSelectivity, 'mediate');
+        const metadata = (cardinality: number, variable: string): MetadataBindings => ({
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: cardinality },
+          pageSize: 100,
+          requestTime: 10,
+          variables: [{ variable: DF.variable(variable), canBeUndef: false }],
+        });
+        const result = await actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              { output: <any>{}, operation: FACTORY.createNop() },
+              { output: <any>{}, operation: FACTORY.createNop() },
+              { output: <any>{}, operation: FACTORY.createNop() },
+            ],
+            context: new ActionContext(),
+          },
+          { metadatas: [ metadata(3, 'a'), metadata(2, 'a'), metadata(500, 'b') ]},
+        );
+        expect(result.isPassed()).toBe(true);
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(spy.mock.calls[0][0].entries[1].metadata.cardinality.value).toBe(500);
+      });
+
+      it('should accept patterns as operations to bind', () => {
+        expect(ActorRdfJoinMultiBind.canBindWithOperation(FACTORY.createPattern(
+          DF.variable('s'),
+          DF.namedNode('p'),
+          DF.variable('o'),
+        ), [ DF.variable('s') ])).toBe(true);
       });
 
       it('should handle three entries with a lower variable overlap', async() => {

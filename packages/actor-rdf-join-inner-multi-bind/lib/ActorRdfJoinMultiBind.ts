@@ -189,6 +189,10 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
   }
 
   public static canBindWithOperation(operation: Algebra.Operation, boundVariables?: RDF.Variable[]): boolean {
+    // Patterns contain none of the operations that are checked below
+    if (operation.type === Algebra.Types.PATTERN) {
+      return true;
+    }
     let valid = true;
     const boundVarNames = boundVariables ? boundVariables.map(v => v.value) : [];
 
@@ -351,21 +355,23 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       return failTest(`Actor ${this.name} can only run if the smallest stream is much smaller than largest stream`);
     }
 
-    // Determine selectivities of smallest entry with all other entries
-    const selectivities = await Promise.all(remainingEntries
-      .map(async entry => (await this.mediatorJoinSelectivity.mediate({
-        entries: [ entriesSorted[0], entry ],
-        context: action.context,
-      })).selectivity * this.selectivityModifier));
-
     // Bindings each remaining entry adds per binding of the first: their pairwise join capped by the
     // variables they share, spread over the first entry's cardinality, so at most one. Entries sharing no
-    // variable have no such cap and keep using the join selectivity.
+    // variable have no such cap and use the join selectivity, which is only determined for them.
+    const joinedCardinalities = remainingEntries
+      .map(entry => ActorRdfJoin.getSharedVariableJoinCardinality([ metadatas[0], entry.metadata ]));
+    const selectivities = await Promise.all(remainingEntries
+      .map(async(entry, i) => joinedCardinalities[i] === undefined ?
+          (await this.mediatorJoinSelectivity.mediate({
+            entries: [ entriesSorted[0], entry ],
+            context: action.context,
+          })).selectivity * this.selectivityModifier :
+        0));
     const cardinalityFirst = metadatas[0].cardinality.value;
     let entriesWithoutSharedVariable = 0;
     const cardinalityRemaining = remainingEntries
       .map((entry, i) => {
-        const joined = ActorRdfJoin.getSharedVariableJoinCardinality([ metadatas[0], entry.metadata ]);
+        const joined = joinedCardinalities[i];
         if (joined === undefined) {
           entriesWithoutSharedVariable++;
           return entry.metadata.cardinality.value * selectivities[i];
