@@ -87,12 +87,10 @@ export interface IRdfParseOptions {
 export interface IWarmupOptions {
   /**
    * The maximum number of query executions.
-   * Defaults to a number chosen by the warm-up actor.
    */
   executions?: number;
   /**
    * The maximum warmup duration in milliseconds.
-   * Defaults to no limit.
    */
   budget?: number;
   /**
@@ -100,6 +98,15 @@ export interface IWarmupOptions {
    */
   signal?: AbortSignal;
 }
+
+/**
+ * Options for warming up a query engine, with at least one of the options that stop the warm-up.
+ * About 2000 executions suit sources in memory or in files.
+ * Over remote sources, every execution accesses the network,
+ * so fewer executions or a budget suit them, depending on the type of source.
+ */
+export type IWarmupOptionsBounded = IWarmupOptions &
+  ({ executions: number } | { budget: number } | { signal: AbortSignal });
 
 /**
  * The outcome of warming up a query engine.
@@ -225,9 +232,10 @@ export interface IQueryEngine<
    * The warm-up does not modify the sources.
    * @param context A context, which determines the sources in the same way as for queries.
    * @param options The maximum number of query executions and duration, and a signal to stop early.
+   *                At least one of them is required.
    * @return A promise resolving to the number of query executions.
    */
-  warmup?: (context: QueryStringContextInner, options?: IWarmupOptions) => Promise<IWarmupResult>;
+  warmup?: (context: QueryStringContextInner, options: IWarmupOptionsBounded) => Promise<IWarmupResult>;
   /**
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.

@@ -16,7 +16,6 @@ import {
   getSafeQuads,
   getServiceExecutor,
   getServiceExecutorLookup,
-  isQuerySourceLocal,
   removeOperationSource,
   validateQueryOutput,
 } from '../lib/Utils';
@@ -214,32 +213,6 @@ describe('utils', () => {
         .set(KeysInitQuery.serviceExecutorCreator, () => serviceExecutor);
       expect(() => getServiceExecutor('urn:service', contextBoth))
         .toThrow('Illegal simultaneous usage of serviceExecutorCreator and serviceExecutors in context');
-    });
-  });
-
-  describe('#isQuerySourceLocal', () => {
-    it.each([
-      'data.ttl',
-      '/data/data.ttl',
-      'file:///data/data.ttl',
-      { match: () => null },
-      { type: 'rdfjs', value: { match: () => null }},
-      { type: 'file', value: 'http://example.org/data.ttl' },
-      { type: 'serialized', value: '<ex:s> <ex:p> <ex:o>.' },
-      { type: 'compositefile', value: [ 'a.ttl', 'b.ttl' ]},
-      { value: 'data.ttl' },
-      { value: { match: () => null }},
-    ])('should be true for %j', (source: any) => {
-      expect(isQuerySourceLocal(source)).toBe(true);
-    });
-
-    it.each([
-      'http://example.org/sparql',
-      { value: 'https://example.org/data' },
-      { type: 'sparql', value: 'http://example.org/sparql' },
-      { type: 'traverse', value: []},
-    ])('should be false for %j', (source: any) => {
-      expect(isQuerySourceLocal(source)).toBe(false);
     });
   });
 });

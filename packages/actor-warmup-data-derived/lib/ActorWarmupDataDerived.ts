@@ -4,7 +4,6 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { failTest, passTestVoid } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { isQuerySourceLocal } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 
 /**
@@ -17,11 +16,8 @@ export class ActorWarmupDataDerived extends ActorWarmup {
   public static readonly LIMIT = 20;
   public static readonly MEDIA_TYPE = 'application/sparql-results+json';
 
-  public readonly executions: number;
-
-  public constructor(args: IActorWarmupDataDerivedArgs) {
+  public constructor(args: IActorWarmupArgs) {
     super(args);
-    this.executions = args.executions;
   }
 
   public async test(action: IActionWarmup): Promise<TestResult<IActorTest>> {
@@ -29,14 +25,11 @@ export class ActorWarmupDataDerived extends ActorWarmup {
     if (sources.length === 0) {
       return failTest(`${this.name} requires sources to warm up over`);
     }
-    if (!sources.every(isQuerySourceLocal)) {
-      return failTest(`${this.name} only warms up over sources in memory or in files`);
-    }
     return passTestVoid();
   }
 
   public async run(action: IActionWarmup): Promise<IActorWarmupOutput> {
-    const executions = action.executions ?? this.executions;
+    const executions = action.executions ?? Number.POSITIVE_INFINITY;
     const budget = action.budget ?? Number.POSITIVE_INFINITY;
     // The budget starts once the first query has loaded the sources, so loading them does not count towards it
     let start = Number.POSITIVE_INFINITY;
@@ -123,13 +116,4 @@ export class ActorWarmupDataDerived extends ActorWarmup {
       data.on('end', resolve);
     });
   }
-}
-
-export interface IActorWarmupDataDerivedArgs extends IActorWarmupArgs {
-  /**
-   * The number of query executions if the action does not determine it.
-   * @range {integer}
-   * @default {2000}
-   */
-  executions: number;
 }

@@ -60,7 +60,8 @@ export class CliArgsHandlerHttp implements ICliArgsHandler {
         },
         warmup: {
           type: 'number',
-          describe: 'Number of warmup queries a worker warms up with before it accepts requests',
+          describe: 'Number of warmup queries a worker warms up with before it accepts requests ' +
+            '(about 2000 suit sources in memory or in files, fewer suit remote sources)',
           default: 0,
         },
         graphStore: {

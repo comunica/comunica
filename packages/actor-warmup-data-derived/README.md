@@ -4,7 +4,11 @@
 
 A [Warmup](https://github.com/comunica/comunica/tree/master/packages/bus-warmup) actor
 that warms up the engine with queries derived from the data in the sources.
-It only applies if all sources are in memory or in files.
+
+It executes these queries until the maximum number of executions, the budget, or the signal of the warm-up stops it.
+About 2000 executions suit sources in memory or in files.
+Over remote sources, every execution accesses the network,
+so fewer executions or a budget suit them, depending on the type of source.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
@@ -35,7 +39,3 @@ After installing, this package can be added to your engine's configuration as fo
   ]
 }
 ```
-
-### Config Parameters
-
-* `executions`: The number of query executions if the action does not determine it, defaults to `2000`.

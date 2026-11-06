@@ -18,7 +18,7 @@ import type {
   IQueryQuadsEnhanced,
   QueryEnhanced,
   IQueryContextCommon,
-  IWarmupOptions,
+  IWarmupOptionsBounded,
   IWarmupResult,
   QuerySourceUnidentified,
 } from '@comunica/types';
@@ -242,12 +242,16 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
    * The warm-up does not modify the sources.
    * @param context A context, which determines the sources in the same way as for queries.
    * @param options The maximum number of query executions and duration, and a signal to stop early.
+   *                At least one of them is required.
    * @return A promise resolving to the number of query executions.
    */
-  public async warmup(context: QueryStringContextInner, options: IWarmupOptions = {}): Promise<IWarmupResult> {
+  public async warmup(context: QueryStringContextInner, options: IWarmupOptionsBounded): Promise<IWarmupResult> {
     const { mediatorWarmup } = this.actorInitQuery;
     if (!mediatorWarmup) {
       throw new Error('Warming up requires the query init actor to have a mediatorWarmup');
+    }
+    if (options?.executions === undefined && options?.budget === undefined && options?.signal === undefined) {
+      throw new Error('Warming up requires a maximum number of executions, a budget, or a signal');
     }
     let actionContext = ActionContext.ensureActionContext(context).set(KeysQueryOperation.readOnly, true);
     // Like the explain mode, warm-up actors need the sources before the context preprocessing of query processing

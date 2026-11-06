@@ -493,20 +493,43 @@ describe('QueryEngineBase', () => {
     });
 
     it('should warm up in read-only mode if the context allows updates', async() => {
-      await queryEngine.warmup(<any> { sources: [ 'SOURCE' ], [KeysQueryOperation.readOnly.name]: false });
+      await queryEngine.warmup(
+        <any> { sources: [ 'SOURCE' ], [KeysQueryOperation.readOnly.name]: false },
+        { executions: 10 },
+      );
 
       expect(mediatorWarmup.mediate).toHaveBeenCalledWith({
         engine: queryEngine,
         context: new ActionContext({ [KeysInitQuery.querySourcesUnidentified.name]: [ 'SOURCE' ]})
           .set(KeysQueryOperation.readOnly, true),
-        executions: undefined,
+        executions: 10,
         budget: undefined,
         signal: undefined,
       });
     });
 
+    it('should warm up with only a budget or only a signal', async() => {
+      const signal = new AbortController().signal;
+      await queryEngine.warmup(<any> { sources: [ 'SOURCE' ]}, { budget: 1000 });
+      await queryEngine.warmup(<any> { sources: [ 'SOURCE' ]}, { signal });
+
+      expect(mediatorWarmup.mediate).toHaveBeenNthCalledWith(1, expect.objectContaining({ budget: 1000 }));
+      expect(mediatorWarmup.mediate).toHaveBeenNthCalledWith(2, expect.objectContaining({ signal }));
+    });
+
+    it('should reject without a maximum number of executions, a budget, or a signal', async() => {
+      await expect(queryEngine.warmup(<any> { sources: [ 'SOURCE' ]}, <any> {})).rejects
+        .toThrow('Warming up requires a maximum number of executions, a budget, or a signal');
+      await expect(queryEngine.warmup(<any> { sources: [ 'SOURCE' ]}, <any> undefined)).rejects
+        .toThrow('Warming up requires a maximum number of executions, a budget, or a signal');
+      expect(mediatorWarmup.mediate).not.toHaveBeenCalled();
+    });
+
     it('should warm up with sources under their full context key', async() => {
-      await queryEngine.warmup(<any> { [KeysInitQuery.querySourcesUnidentified.name]: [ 'SOURCE' ]});
+      await queryEngine.warmup(
+        <any> { [KeysInitQuery.querySourcesUnidentified.name]: [ 'SOURCE' ]},
+        { executions: 10 },
+      );
 
       expect(mediatorWarmup.mediate).toHaveBeenCalledWith(expect.objectContaining({
         context: new ActionContext({ [KeysInitQuery.querySourcesUnidentified.name]: [ 'SOURCE' ]})
@@ -525,7 +548,7 @@ describe('QueryEngineBase', () => {
         name: 'actor',
       }));
 
-      await expect(queryEngine.warmup(<any> { sources: [ 'SOURCE' ]})).rejects
+      await expect(queryEngine.warmup(<any> { sources: [ 'SOURCE' ]}, { executions: 10 })).rejects
         .toThrow('Warming up requires the query init actor to have a mediatorWarmup');
     });
   });

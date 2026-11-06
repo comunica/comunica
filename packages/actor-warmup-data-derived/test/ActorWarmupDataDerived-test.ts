@@ -50,7 +50,7 @@ describe('ActorWarmupDataDerived', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    actor = new ActorWarmupDataDerived({ name: 'actor', bus, executions: 10 });
+    actor = new ActorWarmupDataDerived({ name: 'actor', bus });
   });
 
   describe('test', () => {
@@ -58,15 +58,9 @@ describe('ActorWarmupDataDerived', () => {
       await expect(actor.test(action(engineFor(responses)))).resolves.toPassTestVoid();
     });
 
-    it('should pass for sources in memory or in files', async() => {
-      const localContext = contextWith([ 'data.ttl', { match: () => null }]);
-      await expect(actor.test(action(engineFor(responses), { context: localContext }))).resolves.toPassTestVoid();
-    });
-
-    it('should fail if a source may be remote', async() => {
+    it('should pass for remote sources', async() => {
       const remoteContext = contextWith([ 'data.ttl', 'http://ex.org/sparql' ]);
-      await expect(actor.test(action(engineFor(responses), { context: remoteContext }))).resolves
-        .toFailTest('actor only warms up over sources in memory or in files');
+      await expect(actor.test(action(engineFor(responses), { context: remoteContext }))).resolves.toPassTestVoid();
     });
 
     it('should fail without sources', async() => {
@@ -135,17 +129,11 @@ describe('ActorWarmupDataDerived', () => {
   describe('run', () => {
     it('should execute the queries in turn, and serialize their results', async() => {
       const engine = engineFor(responses);
-      await expect(actor.run(action(engine))).resolves.toEqual({ executions: 10 });
+      await expect(actor.run(action(engine, { executions: 10 }))).resolves.toEqual({ executions: 10 });
       expect(engine.query).toHaveBeenCalledTimes(10);
       expect(engine.query).toHaveBeenNthCalledWith(1, 'SELECT ?s WHERE { ?s <ex:p1> <ex:o1> } LIMIT 20', context);
       expect(engine.query).toHaveBeenNthCalledWith(8, 'SELECT ?s WHERE { ?s <ex:p1> <ex:o1> } LIMIT 20', context);
       expect(engine.resultToString).toHaveBeenCalledWith('RESULT', 'application/sparql-results+json');
-    });
-
-    it('should take the number of executions from the action', async() => {
-      const engine = engineFor(responses);
-      await expect(actor.run(action(engine, { executions: 3 }))).resolves.toEqual({ executions: 3 });
-      expect(engine.query).toHaveBeenCalledTimes(3);
     });
 
     it('should not start executions after the time budget', async() => {
@@ -161,7 +149,7 @@ describe('ActorWarmupDataDerived', () => {
         await new Promise(resolve => setTimeout(resolve, 150));
         return queryBindings(query);
       });
-      await expect(actor.run(action(engine, { budget: 100 }))).resolves.toEqual({ executions: 10 });
+      await expect(actor.run(action(engine, { executions: 10, budget: 100 }))).resolves.toEqual({ executions: 10 });
     });
 
     it('should stop sampling the data once the time budget has passed', async() => {
@@ -187,7 +175,7 @@ describe('ActorWarmupDataDerived', () => {
       expect(engine.query).not.toHaveBeenCalled();
     });
 
-    it('should not start executions once the signal is aborted', async() => {
+    it('should execute until the signal is aborted', async() => {
       const engine = engineFor(responses);
       const controller = new AbortController();
       engine.query.mockImplementation(async() => {

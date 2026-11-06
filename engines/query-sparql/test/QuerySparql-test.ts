@@ -4130,9 +4130,9 @@ CONSTRUCT {
       await expect(engine.warmup({ sources: [ store ]}, { budget: 0 })).resolves.toEqual({ executions: 0 });
     });
 
-    it('does not warm up over sources that may be remote', async() => {
-      await expect(engine.warmup({ sources: [ 'http://example.org/sparql' ]})).rejects
-        .toThrow('only warms up over sources in memory or in files');
+    it('requires a maximum number of executions, a budget, or a signal', async() => {
+      await expect(engine.warmup({ sources: [ new Store() ]}, <any> {})).rejects
+        .toThrow('Warming up requires a maximum number of executions, a budget, or a signal');
     });
 
     it('stops once the signal is aborted', async() => {

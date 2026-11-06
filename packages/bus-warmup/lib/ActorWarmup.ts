@@ -27,6 +27,9 @@ export abstract class ActorWarmup<TS = undefined>
   }
 }
 
+/**
+ * At least one of the warm-up options is set, as they stop the warm-up.
+ */
 export interface IActionWarmup extends IAction, IWarmupOptions {
   /**
    * The engine to warm up.
