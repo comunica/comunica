@@ -58,22 +58,23 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
         variablesOutputIndexed[variable.variable.value].canBeUndef,
     }));
 
-    // Make sure the project variables are the only variables that are present in the bindings.
-    let bindingsStream: BindingsStream = deleteVariables.length === 0 ?
-      output.bindingsStream :
-      output.bindingsStream.map((bindings: Bindings) => {
-        for (const deleteVariable of deleteVariables) {
-          bindings = bindings.delete(deleteVariable.variable);
-        }
-        return bindings;
-      });
-
-    // Make sure that blank nodes with same labels are not reused over different bindings, as required by SPARQL 1.1.
-    // Required for the BNODE() function: https://www.w3.org/TR/sparql11-query/#func-bnode
-    // When we have a scoped blank node, make sure the skolemized value is maintained.
+    const deleteVariableNames = new Set(deleteVariables.map(variable => variable.variable.value));
     let blankNodeCounter = 0;
-    bindingsStream = bindingsStream.map((bindings: Bindings) => {
+    const bindingsStream: BindingsStream = output.bindingsStream.map((bindings: Bindings) => {
       blankNodeCounter++;
+
+      // Make sure the project variables are the only variables that are present in the bindings.
+      // A single filter copies the bindings once, while deleting variables one by one copies them per variable.
+      if (deleteVariableNames.size > 0) {
+        bindings = bindings.filter((_value, variable) => !deleteVariableNames.has(variable.value));
+      }
+
+      // Make sure that blank nodes with same labels are not reused over different bindings, as required by SPARQL 1.1.
+      // Required for the BNODE() function: https://www.w3.org/TR/sparql11-query/#func-bnode
+      // When we have a scoped blank node, make sure the skolemized value is maintained.
+      if (!ActorQueryOperationProject.hasScopedBlankNodes(bindings)) {
+        return bindings;
+      }
       const scopedBlankNodesCache = new Map<string, RDF.BlankNode>();
       return bindings.map((term) => {
         if (term instanceof BlankNodeBindingsScoped) {
@@ -97,6 +98,19 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
         termOrder: ActorQueryOperationProject.projectTermOrder(outputMetadata.termOrder, variablesOperationIndexed),
       }),
     };
+  }
+
+  /**
+   * Check if the given bindings contain a binding-scoped blank node.
+   * @param bindings Bindings.
+   */
+  public static hasScopedBlankNodes(bindings: Bindings): boolean {
+    for (const term of bindings.values()) {
+      if (term instanceof BlankNodeBindingsScoped) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
