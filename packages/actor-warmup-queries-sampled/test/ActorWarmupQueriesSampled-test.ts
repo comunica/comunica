@@ -5,7 +5,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
-import { ActorWarmupDataDerived } from '../lib/ActorWarmupDataDerived';
+import { ActorWarmupQueriesSampled } from '../lib/ActorWarmupQueriesSampled';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -19,9 +19,9 @@ function engineFor(responses: Record<string, RDF.Bindings[]>, data = (): Readabl
   };
 }
 
-describe('ActorWarmupDataDerived', () => {
+describe('ActorWarmupQueriesSampled', () => {
   let bus: any;
-  let actor: ActorWarmupDataDerived;
+  let actor: ActorWarmupQueriesSampled;
   const context = new ActionContext({ [KeysInitQuery.querySourcesUnidentified.name]: [ 'SOURCE' ]});
   const contextWith = (sources: any[]): ActionContext =>
     new ActionContext({ [KeysInitQuery.querySourcesUnidentified.name]: sources });
@@ -50,7 +50,7 @@ describe('ActorWarmupDataDerived', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    actor = new ActorWarmupDataDerived({ name: 'actor', bus });
+    actor = new ActorWarmupQueriesSampled({ name: 'actor', bus });
   });
 
   describe('test', () => {
@@ -71,7 +71,7 @@ describe('ActorWarmupDataDerived', () => {
 
   describe('generateQueries', () => {
     it('should derive patterns, stars, and paths from the data', async() => {
-      await expect(ActorWarmupDataDerived.generateQueries(engineFor(responses), context)).resolves.toEqual([
+      await expect(ActorWarmupQueriesSampled.generateQueries(engineFor(responses), context)).resolves.toEqual([
         'SELECT ?s WHERE { ?s <ex:p1> <ex:o1> } LIMIT 20',
         'SELECT ?s WHERE { ?s <ex:p1> ?o } LIMIT 20',
         'SELECT * WHERE { ?s <ex:p1> ?a . ?s <ex:p2> ?b } LIMIT 20',
@@ -84,7 +84,7 @@ describe('ActorWarmupDataDerived', () => {
 
     it('should query the sources in the given context', async() => {
       const engine = engineFor(responses);
-      await ActorWarmupDataDerived.generateQueries(engine, context);
+      await ActorWarmupQueriesSampled.generateQueries(engine, context);
       expect(engine.queryBindings).toHaveBeenCalledWith('SELECT DISTINCT ?p WHERE { ?s ?p ?o } LIMIT 64', context);
     });
 
@@ -96,14 +96,14 @@ describe('ActorWarmupDataDerived', () => {
         ],
         'SELECT ?p WHERE { <ex:o1> ?p ?x } LIMIT 1': [],
       });
-      await expect(ActorWarmupDataDerived.generateQueries(engine, context)).resolves.toEqual([
+      await expect(ActorWarmupQueriesSampled.generateQueries(engine, context)).resolves.toEqual([
         'SELECT ?s WHERE { ?s <ex:p1> <ex:o1> } LIMIT 20',
         'SELECT ?s WHERE { ?s <ex:p1> ?o } LIMIT 20',
       ]);
     });
 
     it('should generate no queries without data', async() => {
-      await expect(ActorWarmupDataDerived.generateQueries(engineFor({}), context)).resolves.toEqual([]);
+      await expect(ActorWarmupQueriesSampled.generateQueries(engineFor({}), context)).resolves.toEqual([]);
     });
 
     it('should stop sampling the data once stopped', async() => {
@@ -114,14 +114,14 @@ describe('ActorWarmupDataDerived', () => {
         stopped = true;
         return queryBindings(query);
       });
-      await expect(ActorWarmupDataDerived.generateQueries(engine, context, () => stopped)).resolves.toEqual([]);
+      await expect(ActorWarmupQueriesSampled.generateQueries(engine, context, () => stopped)).resolves.toEqual([]);
       expect(engine.queryBindings).toHaveBeenCalledTimes(1);
     });
 
     it('should report when the first query has loaded the sources', async() => {
       const engine = engineFor(responses);
       const loaded = jest.fn(() => expect(engine.queryBindings).toHaveBeenCalledTimes(1));
-      await ActorWarmupDataDerived.generateQueries(engine, context, undefined, loaded);
+      await ActorWarmupQueriesSampled.generateQueries(engine, context, undefined, loaded);
       expect(loaded).toHaveBeenCalledTimes(1);
     });
   });

@@ -10,7 +10,7 @@ import type * as RDF from '@rdfjs/types';
  * A comunica warmup actor that executes queries derived from the data in the sources,
  * such as single patterns, stars, and paths, all with a limit.
  */
-export class ActorWarmupDataDerived extends ActorWarmup {
+export class ActorWarmupQueriesSampled extends ActorWarmup {
   public static readonly MAX_PREDICATES = 24;
   public static readonly MAX_SUBJECTS = 24;
   public static readonly LIMIT = 20;
@@ -34,14 +34,14 @@ export class ActorWarmupDataDerived extends ActorWarmup {
     // The budget starts once the first query has loaded the sources, so loading them does not count towards it
     let start = Number.POSITIVE_INFINITY;
     const stopped = (): boolean => Boolean(action.signal?.aborted) || Date.now() - start >= budget;
-    const queries = await ActorWarmupDataDerived.generateQueries(action.engine, action.context, stopped, () => {
+    const queries = await ActorWarmupQueriesSampled.generateQueries(action.engine, action.context, stopped, () => {
       start = Date.now();
     });
     let executed = 0;
     while (queries.length > 0 && executed < executions && !stopped()) {
       const result = await action.engine.query(queries[executed % queries.length], action.context);
-      const { data } = await action.engine.resultToString(result, ActorWarmupDataDerived.MEDIA_TYPE);
-      await ActorWarmupDataDerived.consume(data);
+      const { data } = await action.engine.resultToString(result, ActorWarmupQueriesSampled.MEDIA_TYPE);
+      await ActorWarmupQueriesSampled.consume(data);
       executed++;
     }
     return { executions: executed };
@@ -67,9 +67,9 @@ export class ActorWarmupDataDerived extends ActorWarmup {
     const predicates = (await select('SELECT DISTINCT ?p WHERE { ?s ?p ?o } LIMIT 64'))
       .map(bindings => bindings.get('p')!)
       .filter(term => term.termType === 'NamedNode')
-      .slice(0, ActorWarmupDataDerived.MAX_PREDICATES);
+      .slice(0, ActorWarmupQueriesSampled.MAX_PREDICATES);
     loaded();
-    const limit = ActorWarmupDataDerived.LIMIT;
+    const limit = ActorWarmupQueriesSampled.LIMIT;
 
     // Single patterns, with a bound object if it is an IRI
     for (const predicate of predicates) {
@@ -84,7 +84,7 @@ export class ActorWarmupDataDerived extends ActorWarmup {
     }
 
     // Stars and paths around sampled subjects
-    for (const subject of subjects.slice(0, ActorWarmupDataDerived.MAX_SUBJECTS)) {
+    for (const subject of subjects.slice(0, ActorWarmupQueriesSampled.MAX_SUBJECTS)) {
       const properties = await select(`SELECT ?p ?o WHERE { <${subject.value}> ?p ?o } LIMIT 16`);
       const subjectPredicates = [ ...new Set(properties.map(bindings => bindings.get('p')!.value)) ];
       if (subjectPredicates.length >= 2) {

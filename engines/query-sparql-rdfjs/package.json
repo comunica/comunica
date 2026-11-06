@@ -264,7 +264,7 @@
     "@comunica/actor-rdf-serialize-shaclc": "^5.4.0",
     "@comunica/actor-rdf-update-quads-rdfjs-store": "^5.4.0",
     "@comunica/actor-term-comparator-factory-expression-evaluator": "^5.4.0",
-    "@comunica/actor-warmup-data-derived": "^5.4.0",
+    "@comunica/actor-warmup-queries-sampled": "^5.4.0",
     "@comunica/bus-function-factory": "^5.4.0",
     "@comunica/bus-http-invalidate": "^5.4.0",
     "@comunica/bus-query-operation": "^5.4.0",
