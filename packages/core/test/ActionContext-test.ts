@@ -206,6 +206,64 @@ describe('ActionContext', () => {
     });
   });
 
+  describe('immutability', () => {
+    it('should not modify a context on any operation', () => {
+      const context = new ActionContext({ key1: 'abc' });
+      context.set(key2, 123);
+      context.setRaw('key3', [ true ]);
+      context.delete(key1);
+      context.merge(new ActionContext({ key1: 'def' }));
+      expect(context.toJS()).toEqual({ key1: 'abc' });
+    });
+
+    it('should not be modified by later changes to the record it was created from', () => {
+      const record: Record<string, any> = { key1: 'abc' };
+      const context = new ActionContext(record);
+      record.key1 = 'def';
+      expect(context.get(key1)).toBe('abc');
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete an existing entry', () => {
+      const context = new ActionContext({ key1: 'abc', key2: 123 }).delete(key1);
+      expect(context.toJS()).toEqual({ key2: 123 });
+    });
+
+    it('should return an equal context for a missing entry', () => {
+      const context = new ActionContext({ key2: 123 });
+      expect(context.delete(key1).toJS()).toEqual({ key2: 123 });
+    });
+  });
+
+  describe('merge', () => {
+    it('should return the same context if nothing is merged', () => {
+      const context = new ActionContext({ key1: 'abc' });
+      expect(context.merge()).toBe(context);
+      expect(context.merge(new ActionContext())).toBe(context);
+    });
+  });
+
+  describe('setDefault', () => {
+    it('should only set missing entries', () => {
+      const context = new ActionContext({ key1: 'abc' });
+      expect(context.setDefault(key1, 'def')).toBe(context);
+      expect(context.setDefault(key2, 123).toJS()).toEqual({ key1: 'abc', key2: 123 });
+    });
+  });
+
+  describe('toJS', () => {
+    it('should return a new record that keeps the values as-is', () => {
+      const nested = { a: [{ b: 1 }]};
+      const context = new ActionContext({ nested });
+      const js = context.toJS();
+      expect(js).toEqual({ nested });
+      expect(js.nested).toBe(nested);
+      js.key1 = 'abc';
+      expect(context.get(key1)).toBeUndefined();
+    });
+  });
+
   describe('complex cases', () => {
     it('should bind return type to key', () => {
       const context: IActionContext = new ActionContext()

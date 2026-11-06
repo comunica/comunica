@@ -1882,6 +1882,82 @@ describe('HttpServiceSparqlEndpoint', () => {
           .toHaveBeenLastCalledWith(400, { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
       });
 
+      describe('service description cache', () => {
+        async function writeServiceDescription(
+          localInstance: HttpServiceSparqlEndpoint,
+          engine: any,
+          url = '/sparql',
+          localMediaType = mediaType,
+        ): Promise<any> {
+          const localResponse: any = new ServerResponseMock();
+          const ended = new Promise(resolve => localResponse.onEnd = resolve);
+          const localRequest: any = Readable.from([ 'default_request_content' ]);
+          localRequest.url = url;
+          localRequest.headers = { host: 'localhost:3000' };
+          localRequest.socket = {};
+          await localInstance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            localRequest,
+            localResponse,
+            { type: 'query', value: '', context: undefined },
+            localMediaType,
+            false,
+            true,
+            0,
+          );
+          return ended;
+        }
+
+        it('should reuse the serialized service description', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await expect(writeServiceDescription(instance, engine)).resolves.toBeUndefined();
+          await expect(writeServiceDescription(instance, engine)).resolves.toEqual(Buffer.from('test_query_result'));
+          expect(spyResultToString).toHaveBeenCalledTimes(1);
+        });
+
+        it('should serialize again for other media types', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await writeServiceDescription(instance, engine);
+          await writeServiceDescription(instance, engine, '/sparql', 'other_mediatype');
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not cache service descriptions of URLs with a query string', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await writeServiceDescription(instance, engine, '/sparql?other');
+          await expect(writeServiceDescription(instance, engine, '/sparql?other')).resolves.toBeUndefined();
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not cache failed serializations', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          const error = 'An internal server error occurred.\n';
+          await expect(writeServiceDescription(instance, engine, '/sparql', 'mediatype_queryresultstreamerror'))
+            .resolves.toBe(error);
+          await expect(writeServiceDescription(instance, engine, '/sparql', 'mediatype_queryresultstreamerror'))
+            .resolves.toBe(error);
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not cache service descriptions if computing the VoID statistics fails', async() => {
+          const localInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, emitVoid: true });
+          const engine = await new QueryEngineFactoryBase().create();
+          engine.queryBindings = () => {
+            throw new Error('statistics error');
+          };
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await writeServiceDescription(localInstance, engine);
+          await writeServiceDescription(localInstance, engine);
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+      });
+
       describe('VoID description', () => {
         const xsd = 'http://www.w3.org/2001/XMLSchema#';
 
@@ -1932,6 +2008,38 @@ describe('HttpServiceSparqlEndpoint', () => {
             }
             return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray, { autoStart: false }));
           };
+        });
+
+        it('should serialize the service description again after an update', async() => {
+          const localInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, emitVoid: true });
+          const engine = await new QueryEngineFactoryBase().create();
+          engine.queryBindings = queryBindings;
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          const write = async(value: string): Promise<void> => {
+            const localResponse: any = new ServerResponseMock();
+            const ended = new Promise(resolve => localResponse.onEnd = resolve);
+            await localInstance.writeQueryResult(
+              engine,
+              new PassThrough(),
+              new PassThrough(),
+              request,
+              localResponse,
+              { type: 'query', value, context: undefined },
+              mediaType,
+              false,
+              true,
+              0,
+            );
+            await ended;
+          };
+
+          await write('');
+          await write('');
+          expect(spyResultToString).toHaveBeenCalledTimes(1);
+          await write('INSERT DATA { <http://example.org/s> <http://example.org/p> "o" . }');
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+          await write('');
+          expect(spyResultToString).toHaveBeenCalledTimes(3);
         });
 
         it('should append the VoID description in the service description when emitVoid is not true', async() => {
