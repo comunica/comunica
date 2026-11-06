@@ -253,15 +253,14 @@ describe('ActionContext', () => {
   });
 
   describe('toJS', () => {
-    it('should deeply copy plain objects and arrays, and keep other values', () => {
-      const date = new Date();
-      const nested = { a: [{ b: 1 }], c: Object.assign(Object.create(null), { d: 2 }) };
-      const js = new ActionContext({ nested, date }).toJS();
-      expect(js).toEqual({ nested: { a: [{ b: 1 }], c: { d: 2 }}, date });
-      expect(js.nested).not.toBe(nested);
-      expect(js.nested.a).not.toBe(nested.a);
-      expect(js.nested.a[0]).not.toBe(nested.a[0]);
-      expect(js.date).toBe(date);
+    it('should return a new record that keeps the values as-is', () => {
+      const nested = { a: [{ b: 1 }]};
+      const context = new ActionContext({ nested });
+      const js = context.toJS();
+      expect(js).toEqual({ nested });
+      expect(js.nested).toBe(nested);
+      js.key1 = 'abc';
+      expect(context.get(key1)).toBeUndefined();
     });
   });
 

@@ -78,7 +78,7 @@ export class ActionContext implements IActionContext {
   }
 
   public toJS(): any {
-    return ActionContext.toJS(Object.fromEntries(this.map));
+    return Object.fromEntries(this.map);
   }
 
   public toString(): string {
@@ -87,21 +87,6 @@ export class ActionContext implements IActionContext {
 
   public [Symbol.for('nodejs.util.inspect.custom')](): string {
     return `ActionContext(${JSON.stringify(this.toJS(), null, '  ')})`;
-  }
-
-  /**
-   * Deeply copy plain objects and arrays, keeping other values as-is.
-   * @param value A value.
-   */
-  protected static toJS(value: any): any {
-    if (Array.isArray(value)) {
-      return value.map(element => ActionContext.toJS(element));
-    }
-    if (value !== null && typeof value === 'object' &&
-      [ Object.prototype, null ].includes(Object.getPrototypeOf(value))) {
-      return Object.fromEntries(Object.entries(value).map(([ key, entry ]) => [ key, ActionContext.toJS(entry) ]));
-    }
-    return value;
   }
 
   /**
