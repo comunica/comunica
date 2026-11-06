@@ -537,7 +537,6 @@ function containsType(value: any, types: string[]): boolean {
   if (typeof value.type === 'string' && types.includes(value.type)) {
     return true;
   }
-  // RDF terms can not contain operations, and neither can patterns, which are quads
   if (typeof value.termType === 'string') {
     return false;
   }
