@@ -18,6 +18,9 @@ import type {
   IQueryQuadsEnhanced,
   QueryEnhanced,
   IQueryContextCommon,
+  IWarmupOptionsBounded,
+  IWarmupResult,
+  QuerySourceUnidentified,
 } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -28,6 +31,12 @@ import type { ActorInitQueryBase } from './ActorInitQueryBase';
  * @see KeysInitQuery.explain
  */
 const KEY_CONTEXT_EXPLAIN_SHORTCUT = new ActionContextKey<QueryExplainMode>('explain');
+
+/**
+ * The shortcut under which the sources may be passed in a raw query context.
+ * @see KeysInitQuery.querySourcesUnidentified
+ */
+const KEY_CONTEXT_SOURCES_SHORTCUT = new ActionContextKey<QuerySourceUnidentified[]>('sources');
 
 /**
  * Base implementation of a Comunica query engine.
@@ -225,6 +234,40 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
     })).handle;
     data.on('end', () => context.get(KeysCore.log)?.flush());
     return data;
+  }
+
+  /**
+   * Warm up this engine by executing queries over the sources in the given context,
+   * so that the just-in-time compiler has optimized the engine before it handles actual queries.
+   * The warm-up does not modify the sources.
+   * @param context A context, which determines the sources in the same way as for queries.
+   * @param options The maximum number of query executions and duration, and a signal to stop early.
+   *                At least one of them is required.
+   * @return A promise resolving to the number of query executions.
+   */
+  public async warmup(context: QueryStringContextInner, options: IWarmupOptionsBounded): Promise<IWarmupResult> {
+    const { mediatorWarmup } = this.actorInitQuery;
+    if (!mediatorWarmup) {
+      throw new Error('Warming up requires the query init actor to have a mediatorWarmup');
+    }
+    if (options?.executions === undefined && options?.budget === undefined && options?.signal === undefined) {
+      throw new Error('Warming up requires a maximum number of executions, a budget, or a signal');
+    }
+    let actionContext = ActionContext.ensureActionContext(context).set(KeysQueryOperation.readOnly, true);
+    // Like the explain mode, warm-up actors need the sources before the context preprocessing of query processing
+    if (actionContext.has(KEY_CONTEXT_SOURCES_SHORTCUT)) {
+      actionContext = actionContext
+        .set(KeysInitQuery.querySourcesUnidentified, actionContext.getSafe(KEY_CONTEXT_SOURCES_SHORTCUT))
+        .delete(KEY_CONTEXT_SOURCES_SHORTCUT);
+    }
+    const { executions } = await mediatorWarmup.mediate({
+      engine: this,
+      context: actionContext,
+      executions: options.executions,
+      budget: options.budget,
+      signal: options.signal,
+    });
+    return { executions };
   }
 
   /**

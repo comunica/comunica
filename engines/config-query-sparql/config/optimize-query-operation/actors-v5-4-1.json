@@ -70,7 +70,8 @@
       "@id": "urn:comunica:default:optimize-query-operation/actors#path-to-patterns",
       "@type": "ActorOptimizeQueryOperationPathToPatterns",
       "beforeActors": [
-        { "@id": "urn:comunica:default:optimize-query-operation/actors#assign-sources-exhaustive" }
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#assign-sources-exhaustive" },
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#annotate-union-order" }
       ]
     },
     {
@@ -78,7 +79,8 @@
       "@type": "ActorOptimizeQueryOperationAssignSourcesExhaustive",
       "beforeActors": [
         { "@id": "urn:comunica:default:optimize-query-operation/actors#join-bgp" },
-        { "@id": "urn:comunica:default:optimize-query-operation/actors#distinct-terms-pushdown" }
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#distinct-terms-pushdown" },
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#annotate-union-order" }
       ]
     },
     {
@@ -107,7 +109,8 @@
       "@type": "ActorOptimizeQueryOperationPruneEmptySourceOperations",
       "useAskIfSupported": false,
       "beforeActors": [
-        { "@id": "urn:comunica:default:optimize-query-operation/actors#filter-pushdown" }
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#filter-pushdown" },
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#annotate-union-order" }
       ]
     },
     {
@@ -121,7 +124,8 @@
       "@id": "urn:comunica:default:optimize-query-operation/actors#filter-pushdown",
       "@type": "ActorOptimizeQueryOperationFilterPushdown",
       "beforeActors": [
-        { "@id": "urn:comunica:default:optimize-query-operation/actors#group-sources" }
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#group-sources" },
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#annotate-union-order" }
       ]
     },
     {
@@ -133,7 +137,10 @@
     },
     {
       "@id": "urn:comunica:default:optimize-query-operation/actors#group-sources",
-      "@type": "ActorOptimizeQueryOperationGroupSources"
+      "@type": "ActorOptimizeQueryOperationGroupSources",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#annotate-union-order" }
+      ]
     },
     {
       "@id": "urn:comunica:default:optimize-query-operation/actors#construct-distinct",

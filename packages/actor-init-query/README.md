@@ -36,7 +36,8 @@ After installing, this package can be added to your engine's configuration as fo
       "mediatorHttpInvalidate": { "@id": "urn:comunica:default:http-invalidate/mediators#main" },
       "mediatorContextPreprocess": { "@id": "urn:comunica:default:context-preprocess/mediators#main" },
       "mediatorUpdateQuads": { "@id": "urn:comunica:default:rdf-update-quads/mediators#main" },
-      "mediatorRdfParse": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" }
+      "mediatorRdfParse": { "@id": "urn:comunica:default:rdf-parse/mediators#parse" },
+      "mediatorWarmup": { "@id": "urn:comunica:default:warmup/mediators#main" }
     }
   ]
 }
@@ -51,3 +52,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `mediatorContextPreprocess`: A mediator over the [context preprocess bus](https://github.com/comunica/comunica/tree/master/packages/bus-context-preprocess). _(optional, needed for `updateQuads` and `parseRdf`)_
 * `mediatorUpdateQuads`: A mediator over the [RDF update quads bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-quads). _(optional, needed for `updateQuads`)_
 * `mediatorRdfParse`: A mediator over the [RDF parse bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse). _(optional, needed for `parseRdf`)_
+* `mediatorWarmup`: A mediator over the [warmup bus](https://github.com/comunica/comunica/tree/master/packages/bus-warmup). _(optional, needed for `warmup`)_

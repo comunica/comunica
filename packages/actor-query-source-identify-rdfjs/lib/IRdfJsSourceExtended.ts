@@ -5,6 +5,11 @@ import type { QuadTermName } from 'rdf-terms';
 
 export interface IRdfJsSourceExtended extends RDF.Source {
   /**
+   * If false, this source certainly contains no blank nodes.
+   * If true or `undefined`, it may contain blank nodes.
+   */
+  hasBlankNodes?: boolean;
+  /**
    * A record indicating supported features of this source.
    */
   features?: {

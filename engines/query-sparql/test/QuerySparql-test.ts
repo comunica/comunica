@@ -4112,6 +4112,39 @@ CONSTRUCT {
     });
   });
 
+  describe('warmup', () => {
+    it('executes queries derived from the data, without modifying it', async() => {
+      const store = new Store([
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:s2')),
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.literal('a')),
+        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p1'), DF.namedNode('ex:s3')),
+      ]);
+
+      await expect(engine.warmup({ sources: [ store ]}, { executions: 20 })).resolves.toEqual({ executions: 20 });
+      expect(store.size).toBe(3);
+    });
+
+    it('stops at the time budget', async() => {
+      const store = new Store([ DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')) ]);
+
+      await expect(engine.warmup({ sources: [ store ]}, { budget: 0 })).resolves.toEqual({ executions: 0 });
+    });
+
+    it('requires a maximum number of executions, a budget, or a signal', async() => {
+      await expect(engine.warmup({ sources: [ new Store() ]}, <any> {})).rejects
+        .toThrow('Warming up requires a maximum number of executions, a budget, or a signal');
+    });
+
+    it('stops once the signal is aborted', async() => {
+      const store = new Store([ DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')) ]);
+      const controller = new AbortController();
+      const warmup = engine.warmup({ sources: [ store ]}, { signal: controller.signal });
+      controller.abort();
+
+      await expect(warmup).resolves.toEqual({ executions: 0 });
+    });
+  });
+
   describe('parseRdf', () => {
     it('parses a stream against a base IRI', async() => {
       const quads = await engine.parseRdf(stringToStream('<s> <p> <o> .'), {
@@ -4444,6 +4477,42 @@ CONSTRUCT {
   });
 
   describe('explain', () => {
+    describe('unions created by optimizers', () => {
+      // Order-useful unions are annotated after the optimizers that create or rebuild unions
+      function unionMetadata(operation: any): any[] {
+        const own = operation.type === 'union' ? [ operation.metadata ] : [];
+        const inputs = Array.isArray(operation.input) ? operation.input : operation.input ? [ operation.input ] : [];
+        return [ ...own, ...inputs.flatMap(unionMetadata) ];
+      }
+
+      function createStore(): RdfStore {
+        const store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:a'), DF.namedNode('ex:o')));
+        store.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:b'), DF.namedNode('ex:o')));
+        store.addQuad(DF.quad(DF.namedNode('ex:o'), DF.namedNode('ex:c'), DF.namedNode('ex:x')));
+        return store;
+      }
+
+      it('annotates unions of alternative paths', async() => {
+        const result = await engine.explain(`SELECT * WHERE {
+      ?s <ex:a>|<ex:b> ?o.
+      ?o <ex:c> ?x.
+    }`, { sources: [ createStore() ]}, 'logical');
+        expect(unionMetadata(result.data)).toEqual([ expect.objectContaining({ orderUseful: [ 'o' ]}) ]);
+      });
+
+      it('annotates unions over multiple sources', async() => {
+        const result = await engine.explain(`SELECT * WHERE {
+      ?s <ex:a> ?o.
+      ?o <ex:c> ?x.
+    }`, { sources: [ createStore(), createStore() ]}, 'logical');
+        expect(unionMetadata(result.data)).toEqual([
+          expect.objectContaining({ orderUseful: [ 'o' ]}),
+          expect.objectContaining({ orderUseful: [ 'o' ]}),
+        ]);
+      });
+    });
+
     describe('a simple SPO on a raw RDF document', () => {
       it('explaining parsing', async() => {
         const result = await engine.explain(`SELECT * WHERE {
