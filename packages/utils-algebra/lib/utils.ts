@@ -524,6 +524,7 @@ export function hasOperationType(operation: Operation, types: string[]): boolean
   return containsType(operation, types);
 }
 
+// Since this is part of the hot-path, visitOperation is not used, as it causes too much overhead.
 function containsType(value: any, types: string[]): boolean {
   if (Array.isArray(value)) {
     for (const element of value) {
