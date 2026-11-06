@@ -512,3 +512,39 @@ export function withMetadata<T extends Operation>(op: T): T & { metadata: Record
   op.metadata ??= {};
   return <T & { metadata: Record<string, unknown> }> op;
 }
+
+/**
+ * Check if an operation contains an operation or expression of one of the given types, including itself.
+ * This is cheaper than visiting the operation, as it stops at the first match,
+ * and does not descend into terms or metadata.
+ * @param operation An operation.
+ * @param types Operation or expression types.
+ */
+export function hasOperationType(operation: Operation, types: string[]): boolean {
+  return containsType(operation, types);
+}
+
+// Since this is part of the hot-path, visitOperation is not used, as it causes too much overhead.
+function containsType(value: any, types: string[]): boolean {
+  if (Array.isArray(value)) {
+    for (const element of value) {
+      if (element !== null && typeof element === 'object' && containsType(element, types)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  if (typeof value.type === 'string' && types.includes(value.type)) {
+    return true;
+  }
+  if (typeof value.termType === 'string') {
+    return false;
+  }
+  for (const key of Object.keys(value)) {
+    const child = value[key];
+    if (key !== 'metadata' && child !== null && typeof child === 'object' && containsType(child, types)) {
+      return true;
+    }
+  }
+  return false;
+}

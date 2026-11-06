@@ -23,6 +23,9 @@ export class ActorOptimizeQueryOperationPathToPatterns extends ActorOptimizeQuer
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.PATH ])) {
+      return { operation: action.operation, context: action.context };
+    }
     const dataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
     let variableCounter = 0;
