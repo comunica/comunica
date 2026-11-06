@@ -367,6 +367,31 @@ describe('HttpServiceSparqlEndpoint', () => {
         .toMatchObject({ configPath: defaultConfigPath, mainModulePath: moduleRootPath });
     });
 
+    it('should not warm up by default', async() => {
+      await expect(HttpServiceSparqlEndpoint.generateConstructorArguments(
+        testCommandlineArguments,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        stderr,
+        exit,
+        [],
+      )).resolves.toMatchObject({ warmup: 0 });
+    });
+
+    it('should take the number of warm-up executions from the commandline arguments', async() => {
+      testCommandlineArguments.push('--warmup', '100');
+      await expect(HttpServiceSparqlEndpoint.generateConstructorArguments(
+        testCommandlineArguments,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        stderr,
+        exit,
+        [],
+      )).resolves.toMatchObject({ warmup: 100 });
+    });
+
     it('should use logger from given context if available', async() => {
       fs.existsSync.mockReturnValue(false);
       const context = { ...testArgumentDict, log: new LoggerPretty({ level: 'test_loglevel' }) };
@@ -570,6 +595,46 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(instance.handleRequest.bind).toHaveBeenCalledTimes(1);
         expect(instance.handleRequest.bind)
           .toHaveBeenCalledWith(instance, await instance.engine, variants, stdout, stderr);
+      });
+
+      it('should not warm up by default', async() => {
+        jest.spyOn(instance, 'warmUp');
+        await instance.run(stdout, stderr);
+
+        expect(instance.warmUp).not.toHaveBeenCalled();
+      });
+
+      it('should warm up before creating the server', async() => {
+        (<any> instance).warmup = 5;
+        jest.spyOn(instance, 'warmUp').mockResolvedValue();
+        await instance.run(stdout, stderr);
+
+        expect(instance.warmUp).toHaveBeenCalledWith(await instance.engine, stderr);
+        expect(jest.mocked(instance.warmUp).mock.invocationCallOrder[0])
+          .toBeLessThan(http.createServer.mock.invocationCallOrder[0]);
+      });
+
+      it('should warm up the engine over its sources, and log it', async() => {
+        (<any> instance).warmup = 5;
+        const engine: any = await instance.engine;
+        engine.warmup = jest.fn().mockResolvedValue({ executions: 5 });
+        const errors = new PassThrough();
+        await instance.warmUp(engine, errors);
+        errors.end();
+
+        expect(engine.warmup).toHaveBeenCalledWith(instance.context, { executions: 5, budget: instance.timeout });
+        await expect(stringifyStream(errors)).resolves
+          .toMatch(/^Worker \d+ warmed up with 5 query executions in \d+ ms\.\n$/u);
+      });
+
+      it('should log warm-up failures without failing', async() => {
+        const engine: any = await instance.engine;
+        engine.warmup = jest.fn().mockRejectedValue(new Error('no data'));
+        const errors = new PassThrough();
+        await instance.warmUp(engine, errors);
+        errors.end();
+
+        await expect(stringifyStream(errors)).resolves.toBe(`Worker ${process.pid} could not warm up: no data\n`);
       });
 
       it('should call createServer with the correct arguments', async() => {

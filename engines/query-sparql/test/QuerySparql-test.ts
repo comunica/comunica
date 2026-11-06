@@ -4112,6 +4112,39 @@ CONSTRUCT {
     });
   });
 
+  describe('warmup', () => {
+    it('executes queries derived from the data, without modifying it', async() => {
+      const store = new Store([
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:s2')),
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.literal('a')),
+        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p1'), DF.namedNode('ex:s3')),
+      ]);
+
+      await expect(engine.warmup({ sources: [ store ]}, { executions: 20 })).resolves.toEqual({ executions: 20 });
+      expect(store.size).toBe(3);
+    });
+
+    it('stops at the time budget', async() => {
+      const store = new Store([ DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')) ]);
+
+      await expect(engine.warmup({ sources: [ store ]}, { budget: 0 })).resolves.toEqual({ executions: 0 });
+    });
+
+    it('requires a maximum number of executions, a budget, or a signal', async() => {
+      await expect(engine.warmup({ sources: [ new Store() ]}, <any> {})).rejects
+        .toThrow('Warming up requires a maximum number of executions, a budget, or a signal');
+    });
+
+    it('stops once the signal is aborted', async() => {
+      const store = new Store([ DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')) ]);
+      const controller = new AbortController();
+      const warmup = engine.warmup({ sources: [ store ]}, { signal: controller.signal });
+      controller.abort();
+
+      await expect(warmup).resolves.toEqual({ executions: 0 });
+    });
+  });
+
   describe('parseRdf', () => {
     it('parses a stream against a base IRI', async() => {
       const quads = await engine.parseRdf(stringToStream('<s> <p> <o> .'), {

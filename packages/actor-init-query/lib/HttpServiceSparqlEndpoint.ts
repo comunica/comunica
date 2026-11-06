@@ -79,6 +79,7 @@ export class HttpServiceSparqlEndpoint {
   public readonly freshWorkerPerQuery: boolean;
   public readonly contextOverride: boolean;
   public readonly emitVoid: boolean;
+  public readonly warmup: number;
 
   public readonly voidMetadataEmitter: VoidMetadataEmitter;
   public readonly graphStore: HttpServiceGraphStore | undefined;
@@ -108,6 +109,7 @@ export class HttpServiceSparqlEndpoint {
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
     this.contextOverride = Boolean(args.contextOverride);
     this.emitVoid = Boolean(args.emitVoid);
+    this.warmup = args.warmup ?? 0;
     this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
     this.graphStore = args.graphStore ? new HttpServiceGraphStore(this.context) : undefined;
 
@@ -209,6 +211,7 @@ export class HttpServiceSparqlEndpoint {
     const freshWorkerPerQuery: boolean = args.freshWorker;
     const contextOverride: boolean = args.contextOverride;
     const emitVoid: boolean = args.emitVoid;
+    const warmup: number = args.warmup;
     const graphStore: boolean = args.graphStore;
     const port = args.port;
     const timeout = args.timeout * 1_000;
@@ -229,6 +232,7 @@ export class HttpServiceSparqlEndpoint {
       mainModulePath: moduleRootPath,
       port,
       timeout,
+      warmup,
       workers,
     };
   }
@@ -281,6 +285,26 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Warm up the engine over the sources of this endpoint, so that the just-in-time compiler has optimized the
+   * engine before it handles requests.
+   * Failures are logged, but do not prevent the worker from starting.
+   * @param engine A SPARQL engine.
+   * @param stderr Error stream to write to.
+   */
+  public async warmUp(engine: QueryEngineBase, stderr: Writable): Promise<void> {
+    const start = Date.now();
+    try {
+      const { executions } = await engine.warmup(this.context, {
+        executions: this.warmup,
+        budget: this.timeout,
+      });
+      stderr.write(`Worker ${process.pid} warmed up with ${executions} query executions in ${Date.now() - start} ms.\n`);
+    } catch (error: unknown) {
+      stderr.write(`Worker ${process.pid} could not warm up: ${(<Error> error).message}\n`);
+    }
+  }
+
+  /**
    * Stop this worker because a query took longer than the timeout.
    * The main process then starts a new worker.
    * @param queryId The id of the query that timed out.
@@ -305,6 +329,11 @@ export class HttpServiceSparqlEndpoint {
     const variants: { type: string; quality: number }[] = [];
     for (const type of Object.keys(mediaTypes)) {
       variants.push({ type, quality: mediaTypes[type] });
+    }
+
+    // Warm up before accepting requests, so that they are not slowed down by just-in-time compilation
+    if (this.warmup > 0) {
+      await this.warmUp(engine, stderr);
     }
 
     // Start the server
@@ -1164,6 +1193,10 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   freshWorkerPerQuery?: boolean;
   contextOverride?: boolean;
   emitVoid?: boolean;
+  /**
+   * The number of query executions with which each worker warms up before it accepts requests.
+   */
+  warmup?: number;
   graphStore?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
