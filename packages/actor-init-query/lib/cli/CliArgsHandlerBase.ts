@@ -246,7 +246,8 @@ export class CliArgsHandlerBase implements ICliArgsHandler {
 
     // Add sources to context
     if (args.sources.length > 0) {
-      context.sources = context.sources || [];
+      // Copy, as the sources may be those of the initial context.
+      context.sources = context.sources ? [ ...context.sources ] : [];
       // eslint-disable-next-line unicorn/no-array-for-each
       args.sources.forEach((sourceValue: string) => {
         const source = CliArgsHandlerBase.getSourceObjectFromString(sourceValue);
