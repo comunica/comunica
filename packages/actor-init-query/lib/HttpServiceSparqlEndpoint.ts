@@ -91,6 +91,11 @@ export class HttpServiceSparqlEndpoint {
   public shutdownWorker: (() => Promise<void>) | undefined;
 
   /**
+   * Serialized service descriptions of the endpoint URL, by media type.
+   */
+  private readonly serviceDescriptions = new Map<string, Buffer>();
+
+  /**
    * Negotiated media types by request headers, for each set of allowed variants.
    */
   private readonly negotiatedMediaTypes = new WeakMap<object, Map<string, string | null>>();
@@ -769,6 +774,7 @@ export class HttpServiceSparqlEndpoint {
         // Fallback to query string
         /(INSERT|DELETE)/iu.test(queryBody.value))) {
       this.voidMetadataEmitter.invalidateCache();
+      this.serviceDescriptions.clear();
     }
 
     // Default to SPARQL JSON for bindings and boolean
@@ -907,6 +913,14 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
+    const cacheable = request.url === '/sparql';
+    const cached = cacheable ? this.serviceDescriptions.get(mediaType) : undefined;
+    if (cached) {
+      response.end(cached);
+      this.stopResponse(response, 0, process.stderr);
+      return;
+    }
+
     const s = request.url;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const sparql = 'http://www.w3.org/ns/sparql#';
@@ -943,8 +957,12 @@ export class HttpServiceSparqlEndpoint {
         quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
+      let complete = true;
       if (this.emitVoid) {
-        for (const quad of await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response)) {
+        const voidQuads = await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response);
+        // Without VoID quads, computing the statistics failed, and an error was sent instead
+        complete = voidQuads.length > 0;
+        for (const quad of voidQuads) {
           quads.push(quad);
         }
       }
@@ -955,10 +973,21 @@ export class HttpServiceSparqlEndpoint {
         execute: async() => new ArrayIterator(quads, { autoStart: false }),
         metadata: <any>undefined,
       }, mediaType);
+      let failed = false;
       data.on('error', (error: Error) => {
+        failed = true;
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         response.end('An internal server error occurred.\n');
       });
+      if (cacheable && complete) {
+        const chunks: Buffer[] = [];
+        data.on('data', (chunk: Buffer | string) => chunks.push(Buffer.from(chunk)));
+        data.on('end', () => {
+          if (!failed) {
+            this.serviceDescriptions.set(mediaType, Buffer.concat(chunks));
+          }
+        });
+      }
       data.pipe(response);
       eventEmitter = data;
     } catch {
