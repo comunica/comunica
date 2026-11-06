@@ -64,7 +64,6 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
       blankNodeCounter++;
 
       // Make sure the project variables are the only variables that are present in the bindings.
-      // A single filter copies the bindings once, while deleting variables one by one copies them per variable.
       if (deleteVariableNames.size > 0) {
         bindings = bindings.filter((_value, variable) => !deleteVariableNames.has(variable.value));
       }
