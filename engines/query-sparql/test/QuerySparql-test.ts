@@ -14,9 +14,8 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator, wrap } from 'asynciterator';
 import 'jest-rdf';
 import '@comunica/utils-jest';
-import { Store } from 'n3';
+import { Store, StreamParser } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
-import rdfParse from 'rdf-parse';
 import { RdfStore } from 'rdf-stores';
 import { QueryEngine } from '../lib/QueryEngine';
 import { fetch as cachedFetch } from './util';
@@ -2087,14 +2086,14 @@ SELECT ?option WHERE {
 
         it('for an rdf-stores store', async() => {
           const store = RdfStore.createDefault();
-          await new Promise(resolve => store.import(rdfParse.parse(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
+          await new Promise(resolve => store.import(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ex: <https://example.org/> .
 ex:devShape a sh:NodeShape ;
     sh:targetClass ex:Main ;
     sh:property [
         sh:path ex:foo ;
         sh:in ( ex:bar1 ex:bar2 ex:bar3 ex:bar4 ex:bar5 ex:bar6 ex:bar7 ex:bar8 ex:bar9 ex:bar10 ) ;
-    ] .`), { contentType: 'text/turtle' })).on('end', resolve));
+    ] .`).pipe(new StreamParser())).on('end', resolve));
 
           await expect((arrayifyStream(await engine.queryBindings(`
 PREFIX sh: <http://www.w3.org/ns/shacl#>
@@ -2108,14 +2107,14 @@ SELECT ?option WHERE {
 
         it('for an n3.js store', async() => {
           const store = new Store();
-          await new Promise(resolve => store.import(rdfParse.parse(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
+          await new Promise(resolve => store.import(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ex: <https://example.org/> .
 ex:devShape a sh:NodeShape ;
     sh:targetClass ex:Main ;
     sh:property [
         sh:path ex:foo ;
         sh:in ( ex:bar1 ex:bar2 ex:bar3 ex:bar4 ex:bar5 ex:bar6 ex:bar7 ex:bar8 ex:bar9 ex:bar10 ) ;
-    ] .`), { contentType: 'text/turtle' })).on('end', resolve));
+    ] .`).pipe(new StreamParser())).on('end', resolve));
 
           await expect((arrayifyStream(await engine.queryBindings(`
 PREFIX sh: <http://www.w3.org/ns/shacl#>
@@ -2284,14 +2283,14 @@ SELECT ?option WHERE {
       // https://github.com/comunica/comunica/issues/1896
       it('should settle for many zero-or-more paths with a bound subject over a Readable source', async() => {
         const store = new Store();
-        store.addQuads(await arrayifyStream(rdfParse.parse(stringToStream(`
+        store.addQuads(await arrayifyStream(stringToStream(`
 @prefix bot: <https://w3id.org/bot#> .
 @prefix ex: <http://ex/> .
 ex:b bot:hasStorey ex:s1, ex:s2, ex:s3, ex:s4 .
 ex:s1 bot:containsZone ex:z1, ex:z2 ; bot:hasSpace ex:r1, ex:r2 .
 ex:s3 bot:containsZone ex:z3, ex:z4 ; bot:hasSpace ex:r3, ex:r4 .
 ex:s4 bot:containsZone ex:z5 ; bot:hasSpace ex:r5 .
-`), { contentType: 'text/turtle' })));
+`).pipe(new StreamParser())));
         const source = {
           match: (s: RDF.Term, p: RDF.Term, o: RDF.Term, g: RDF.Term) =>
             Readable.from(store.getQuads(s, p, o, g)),
@@ -4008,7 +4007,7 @@ CONSTRUCT {
       it('inserts a parsed stream of quads', async() => {
         const store = new Store();
         const turtle = stringToStream('<ex:s> <ex:p> <ex:o1>, <ex:o2> .');
-        const quads = rdfParse.parse(turtle, { contentType: 'text/turtle' });
+        const quads = turtle.pipe(new StreamParser());
 
         await engine.updateQuads({ quadStreamInsert: wrap<RDF.Quad>(quads) }, { destination: store });
 
