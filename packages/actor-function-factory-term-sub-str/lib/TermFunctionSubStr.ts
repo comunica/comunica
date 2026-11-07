@@ -10,6 +10,19 @@ import {
 } from '@comunica/utils-expression-evaluator';
 
 /**
+ * Characters at 1-based position p with start <= p < start + length, as in fn:substring.
+ * Positions before the string start are ignored, so no negative slice indices are produced.
+ */
+function substring(source: string, start: number, length?: number): string {
+  const chars = [ ...source ];
+  const begin = Math.max(start - 1, 0);
+  if (length === undefined) {
+    return chars.slice(begin).join('');
+  }
+  return chars.slice(begin, Math.max(start - 1 + length, 0)).join('');
+}
+
+/**
  * https://www.w3.org/TR/sparql11-query/#func-substr
  */
 export class TermFunctionSubStr extends TermFunctionBase {
@@ -20,42 +33,38 @@ export class TermFunctionSubStr extends TermFunctionBase {
       overloads: declare(SparqlOperator.SUBSTR)
         .onBinaryTyped(
           [ TypeURL.XSD_STRING, TypeURL.XSD_INTEGER ],
-          () => (source: string, startingLoc: number) => string([ ...source ].slice(startingLoc - 1).join('')),
+          () => (source: string, startingLoc: number) => string(substring(source, startingLoc)),
         )
         .onBinary(
           [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_INTEGER ],
           () => (source: LangStringLiteral, startingLoc: NumericLiteral) => {
-            const sub = [ ...source.typedValue ].slice(startingLoc.typedValue - 1).join('');
+            const sub = substring(source.typedValue, startingLoc.typedValue);
             return langString(sub, source.language);
           },
         )
         .onBinary(
           [ TypeURL.RDF_DIR_LANG_STRING, TypeURL.XSD_INTEGER ],
           () => (source: DirLangStringLiteral, startingLoc: NumericLiteral) => {
-            const sub = [ ...source.typedValue ].slice(startingLoc.typedValue - 1).join('');
+            const sub = substring(source.typedValue, startingLoc.typedValue);
             return dirLangString(sub, source.language, source.direction);
           },
         )
         .onTernaryTyped(
           [ TypeURL.XSD_STRING, TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ],
           () => (source: string, startingLoc: number, length: number) =>
-            string([ ...source ].slice(startingLoc - 1, length + startingLoc - 1).join('')),
+            string(substring(source, startingLoc, length)),
         )
         .onTernary(
           [ TypeURL.RDF_LANG_STRING, TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ],
           () => (source: LangStringLiteral, startingLoc: NumericLiteral, length: NumericLiteral) => {
-            const sub = [ ...source.typedValue ]
-              .slice(startingLoc.typedValue - 1, length.typedValue + startingLoc.typedValue - 1)
-              .join('');
+            const sub = substring(source.typedValue, startingLoc.typedValue, length.typedValue);
             return langString(sub, source.language);
           },
         )
         .onTernary(
           [ TypeURL.RDF_DIR_LANG_STRING, TypeURL.XSD_INTEGER, TypeURL.XSD_INTEGER ],
           () => (source: DirLangStringLiteral, startingLoc: NumericLiteral, length: NumericLiteral) => {
-            const sub = [ ...source.typedValue ]
-              .slice(startingLoc.typedValue - 1, length.typedValue + startingLoc.typedValue - 1)
-              .join('');
+            const sub = substring(source.typedValue, startingLoc.typedValue, length.typedValue);
             return dirLangString(sub, source.language, source.direction);
           },
         )
