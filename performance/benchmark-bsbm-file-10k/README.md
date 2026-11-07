@@ -16,7 +16,7 @@ Once `npm run performance:ci` has generated the dataset, you can measure this fr
 
 ```bash
 node --max-old-space-size=8192 packages/utils-monorepo/bin/performance-ingestion.js \
-  engines/query-sparql-file performance/benchmark-bsbm-file-10k/generated/dataset.nt BSBM-File-10k \
+  engines/query-sparql-file performance/benchmark-bsbm-file-10k/generated/dataset.nt bsbm-file-10k \
   performance/benchmark-bsbm-file-10k/output/ingestion.json
 ```
 

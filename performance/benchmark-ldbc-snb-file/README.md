@@ -15,7 +15,7 @@ Once `npm run performance:ci` has generated the dataset, you can measure this fr
 
 ```bash
 node --max-old-space-size=8192 packages/utils-monorepo/bin/performance-ingestion.js \
-  engines/query-sparql-file performance/benchmark-ldbc-snb-file/generated/dataset.nt LDBC-SNB-File \
+  engines/query-sparql-file performance/benchmark-ldbc-snb-file/generated/dataset.nt ldbc-snb-file \
   performance/benchmark-ldbc-snb-file/output/ingestion.json
 ```
 

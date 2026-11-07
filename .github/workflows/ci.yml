@@ -8,9 +8,9 @@ concurrency:
 env:
   NODE_VERSION_LOWEST: 22.x
   NODE_VERSION_HIGHEST: 26.x
-  # The labels of the performance benchmarks whose dataset is measured for ingestion, in the order of their results.
-  # LDBC-SNB-BI-File is omitted, as it shares its dataset with LDBC-SNB-File.
-  INGESTION_LABELS: '{"watdiv-file": "WatDiv-File", "bsbm-file": "BSBM-File", "bsbm-file-10k": "BSBM-File-10k", "ldbc-snb-file": "LDBC-SNB-File"}'
+  # The performance benchmarks whose dataset is measured for ingestion.
+  # ldbc-snb-bi-file is omitted, as it shares its dataset with ldbc-snb-file.
+  INGESTION_BENCHMARKS: '["watdiv-file", "bsbm-file", "bsbm-file-10k", "ldbc-snb-file"]'
 
 jobs:
 
@@ -449,23 +449,22 @@ jobs:
       - name: Run benchmarks
         run: cd head/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
       - name: Measure ingestion of the base commit
-        # The script and dataset of the pull request are used, so that only the engine differs.
-        if: env.BENCHMARK_BASE == 'true' && fromJSON(env.INGESTION_LABELS)[matrix.benchmark] && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
+        if: env.BENCHMARK_BASE == 'true' && contains(fromJSON(env.INGESTION_BENCHMARKS), matrix.benchmark) && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
         working-directory: head
         run: >-
           node --max-old-space-size=8192 packages/utils-monorepo/bin/performance-ingestion.js
           ../base/engines/query-sparql-file
           performance/benchmark-${{ matrix.benchmark }}/generated/dataset.nt
-          "${{ fromJSON(env.INGESTION_LABELS)[matrix.benchmark] }}"
+          ${{ matrix.benchmark }}
           ../base/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/ingestion.json
       - name: Measure ingestion
-        if: fromJSON(env.INGESTION_LABELS)[matrix.benchmark]
+        if: contains(fromJSON(env.INGESTION_BENCHMARKS), matrix.benchmark)
         working-directory: head
         run: >-
           node --max-old-space-size=8192 packages/utils-monorepo/bin/performance-ingestion.js
           engines/query-sparql-file
           performance/benchmark-${{ matrix.benchmark }}/generated/dataset.nt
-          "${{ fromJSON(env.INGESTION_LABELS)[matrix.benchmark] }}"
+          ${{ matrix.benchmark }}
           performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/ingestion.json
       - uses: actions/upload-artifact@v7
         with:
@@ -543,7 +542,7 @@ jobs:
       - name: Process benchmark ingestion results
         run: |
           files=()
-          for benchmark in $(jq -r 'keys_unsorted[]' <<< "$INGESTION_LABELS"); do
+          for benchmark in $(jq -r '.[]' <<< "$INGESTION_BENCHMARKS"); do
             files+=("performance/benchmark-$benchmark/combinations/combination_0/output/ingestion.json")
           done
           jq -s 'add' "${files[@]}" > ghbench-ingestion.json
@@ -593,7 +592,6 @@ jobs:
           output-file-path: ghbench-ingestion.json
           github-token: ${{ secrets.PAT }}
           auto-push: true
-          # Ingestion varies less than query times, so smaller regressions are alerted
           alert-threshold: '130%'
           comment-always: true
           comment-on-alert: true
@@ -721,7 +719,7 @@ jobs:
         run: |
           collect() {
             local files=()
-            for benchmark in $(jq -r 'keys_unsorted[]' <<< "$INGESTION_LABELS"); do
+            for benchmark in $(jq -r '.[]' <<< "$INGESTION_BENCHMARKS"); do
               local file="$1/benchmark-$benchmark/combinations/combination_0/output/ingestion.json"
               if [ -f "$file" ]; then
                 files+=("$file")
