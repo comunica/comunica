@@ -299,6 +299,103 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
+  bundlesize:
+    name: Bundle sizes
+    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      # Pull requests are compared against their base commit, while other runs are stored.
+      BUNDLE_SIZE_BASE: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - name: Ensure line endings are consistent
+        run: git config --global core.autocrlf input
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          path: head
+      - name: Check out the base commit of the pull request
+        if: env.BUNDLE_SIZE_BASE == 'true'
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base
+      - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION_LOWEST }}
+          cache: yarn
+          cache-dependency-path: head/yarn.lock
+      - name: Install dependencies and build monorepo
+        run: yarn install --frozen-lockfile
+        working-directory: head
+      - name: Build browser bundles
+        run: yarn run build:browser:webpack && yarn run build:browser:vite
+        working-directory: head
+      - name: Measure bundle sizes
+        run: node head/packages/utils-monorepo/bin/bundle-sizes.js measure head > bundle-sizes.json
+      - name: Install dependencies and build monorepo of the base commit
+        if: env.BUNDLE_SIZE_BASE == 'true'
+        run: yarn install --frozen-lockfile
+        working-directory: base
+      - name: Build browser bundles of the base commit
+        if: env.BUNDLE_SIZE_BASE == 'true'
+        run: yarn run build:browser:webpack && yarn run build:browser:vite
+        working-directory: base
+      - name: Measure bundle sizes of the base commit
+        # The script of the pull request is used, as the base commit may not have it yet.
+        if: env.BUNDLE_SIZE_BASE == 'true'
+        run: node head/packages/utils-monorepo/bin/bundle-sizes.js measure base > bundle-sizes-base.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: bundle-sizes
+          path: bundle-sizes*.json
+      - name: Assemble the comparison comment
+        # Posted by the performance-comment workflow, as this job
+        # receives a read-only GITHUB_TOKEN on pull requests from forks.
+        if: env.BUNDLE_SIZE_BASE == 'true'
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -eu
+          node head/packages/utils-monorepo/bin/bundle-sizes.js compare \
+            bundle-sizes.json bundle-sizes-base.json "$HEAD_SHA" "$BASE_SHA" \
+            "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            "https://comunica.github.io/comunica-performance-results/comunica/$BASE_REF/bundle-sizes/" > comparison-comment.md
+          echo "$PULL_REQUEST_NUMBER" > comparison-pull-request.txt
+          cat comparison-comment.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7
+        if: env.BUNDLE_SIZE_BASE == 'true'
+        with:
+          name: bundle-size-comparison
+          path: |
+            comparison-comment.md
+            comparison-pull-request.txt
+      - name: Determine bundle sizes target directory name
+        if: env.BUNDLE_SIZE_BASE != 'true'
+        run: echo "BUNDLE_SIZE_DATA_DIR_PATH=comunica/${GITHUB_REF#refs/heads/}/bundle-sizes" >> $GITHUB_ENV
+      - name: Store bundle sizes
+        if: env.BUNDLE_SIZE_BASE != 'true'
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Bundle sizes
+          tool: customSmallerIsBetter
+          output-file-path: bundle-sizes.json
+          github-token: ${{ secrets.PAT }}
+          auto-push: true
+          # Bundle sizes are deterministic, so any increase above this threshold is real.
+          alert-threshold: '102%'
+          comment-on-alert: true
+          alert-comment-cc-users: '@rubensworks'
+          summary-always: true
+          gh-repository: github.com/comunica/comunica-performance-results
+          gh-pages-branch: master
+          benchmark-data-dir-path: ${{ env.BUNDLE_SIZE_DATA_DIR_PATH }}
+
   performance:
     name: Performance benchmarks
     if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')

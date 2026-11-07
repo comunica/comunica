@@ -1,7 +1,7 @@
 name: Performance comment
 
 # CI runs of pull requests from forks receive a read-only GITHUB_TOKEN, so they upload their
-# performance comparison as an artifact, which this workflow posts from the base repository.
+# performance and bundle size comparisons as artifacts, which this workflow posts from the base repository.
 on:
   workflow_run:
     workflows:
@@ -16,35 +16,43 @@ concurrency:
 jobs:
 
   performance-comment:
-    name: Comment performance comparison
+    name: Comment ${{ matrix.artifact }}
     if: github.event.workflow_run.event == 'pull_request'
+    strategy:
+      fail-fast: false
+      matrix:
+        # Each artifact is posted as its own comment, which is identified by the artifact name.
+        artifact:
+          - performance-comparison
+          - bundle-size-comparison
     runs-on: ubuntu-latest
     permissions:
       actions: read
       pull-requests: write
     steps:
-      - name: Check for a performance comparison
+      - name: Check for a ${{ matrix.artifact }}
         id: check
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_ID: ${{ github.event.workflow_run.id }}
+          ARTIFACT: ${{ matrix.artifact }}
         run: |
           set -eu
-          count=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts?name=performance-comparison" \
-            --jq '[ .artifacts[] | select(.name == "performance-comparison") ] | length')
+          count=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/artifacts?name=${ARTIFACT}" \
+            --jq "[ .artifacts[] | select(.name == \"${ARTIFACT}\") ] | length")
           if [ "$count" -gt 0 ]; then
             echo "found=true" >> "$GITHUB_OUTPUT"
           else
             echo "found=false" >> "$GITHUB_OUTPUT"
           fi
-      - name: Download the performance comparison
+      - name: Download the ${{ matrix.artifact }}
         if: steps.check.outputs.found == 'true'
         uses: actions/download-artifact@v8
         with:
-          name: performance-comparison
+          name: ${{ matrix.artifact }}
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      # Forks control the artifact contents, so only accept a pull request at the benchmarked commit.
+      # Forks control the artifact contents, so only accept a pull request at the measured commit.
       - name: Determine the pull request to comment on
         id: pull-request
         if: steps.check.outputs.found == 'true'
@@ -62,17 +70,17 @@ jobs:
           if [ "$head" = "$HEAD_SHA" ]; then
             echo "number=$number" >> "$GITHUB_OUTPUT"
           else
-            echo "No pull request found at the benchmarked commit ${HEAD_SHA}, skipping the comment."
+            echo "No pull request found at the measured commit ${HEAD_SHA}, skipping the comment."
           fi
-      - name: Find the previous performance comment
+      - name: Find the previous ${{ matrix.artifact }} comment
         id: previous-comment
         if: steps.pull-request.outputs.number != ''
         uses: peter-evans/find-comment@v4
         with:
           issue-number: ${{ steps.pull-request.outputs.number }}
           comment-author: github-actions[bot]
-          body-includes: <!-- performance-comparison -->
-      - name: Comment the performance comparison on the pull request
+          body-includes: <!-- ${{ matrix.artifact }} -->
+      - name: Comment the ${{ matrix.artifact }} on the pull request
         if: steps.pull-request.outputs.number != ''
         uses: peter-evans/create-or-update-comment@v5
         with:
