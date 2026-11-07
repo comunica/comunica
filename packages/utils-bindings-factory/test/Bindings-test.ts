@@ -368,10 +368,8 @@ describe('Bindings', () => {
             [ 'g', DF.namedNode('ex:g') ],
             [ 'h', DF.namedNode('ex:h') ],
           ]), { contextMergeHandlers });
-          const spy = jest.spyOn(<any> bindingsOther, 'merge');
-
           const bindingsNew: Bindings = bindings.merge(bindingsOther)!;
-          expect(spy).toHaveBeenCalledWith(bindings);
+          expect([ ...bindingsNew.keys() ].map(key => key.value)).toEqual([ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ]);
           expect(bindingsNew).toBeDefined();
           expect(bindingsNew).not.toBe(bindings);
           expect(bindingsNew.size).toBe(8);
@@ -529,11 +527,9 @@ describe('Bindings', () => {
             [ 'g', DF.namedNode('ex:g') ],
             [ 'h', DF.namedNode('ex:h') ],
           ]), { contextMergeHandlers });
-          const spy = jest.spyOn(<any> bindingsOther, 'mergeWith');
-
           const cb = jest.fn();
           const bindingsNew: Bindings = bindings.mergeWith(cb, bindingsOther);
-          expect(spy).toHaveBeenCalledWith(cb, bindings);
+          expect([ ...bindingsNew.keys() ].map(key => key.value)).toEqual([ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' ]);
           expect(bindingsNew).toBeDefined();
           expect(bindingsNew).not.toBe(bindings);
           expect(bindingsNew.size).toBe(8);

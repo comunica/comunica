@@ -6,8 +6,16 @@ This package provides a factory for `Bindings` objects, which allow variables to
 This package implements the RDF/JS [`BindingsFactory`](http://rdf.js.org/query-spec/#bindingsfactory-interface)
 and [`Bindings`](http://rdf.js.org/query-spec/#bindings-interface) interfaces.
 
-Internally, it makes use of [`immutable`](https://www.npmjs.com/package/immutable)
-to make sure that operations such as `set` and `delete` reuse internal memory when possible.
+Internally, the values of a bindings object are stored in a plain array,
+in the order of the variables of a shared, interned `BindingsShape`.
+Bindings over the same variables share a shape,
+so that plans for merging and subsetting them are only computed once per pair of shapes.
+
+Values can be RDF terms, or encodings of terms in the dictionary of an RDF store,
+which are only decoded when they are read.
+Two encodings of the same dictionary are compared without decoding them.
+Stores create such bindings through `BindingsFactory#createEncodedBindingsCreator`,
+which [`rdf-stores`](https://www.npmjs.com/package/rdf-stores) uses when it is available.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).

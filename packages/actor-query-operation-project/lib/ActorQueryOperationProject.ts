@@ -104,12 +104,15 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
    * @param bindings Bindings.
    */
   public static hasScopedBlankNodes(bindings: Bindings): boolean {
-    for (const term of bindings.values()) {
+    // This runs for every result, so it iterates without allocating an array of the values.
+    let scoped = false;
+    // eslint-disable-next-line unicorn/no-array-for-each
+    bindings.forEach((term) => {
       if (term instanceof BlankNodeBindingsScoped) {
-        return true;
+        scoped = true;
       }
-    }
-    return false;
+    });
+    return scoped;
   }
 
   /**

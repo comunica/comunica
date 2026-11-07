@@ -79,13 +79,14 @@ export function skolemizeBindings(
   sourceId: string,
 ): RDF.Bindings {
   // Only blank nodes are skolemized, so bindings without them can be returned as-is.
+  // This runs for every result of a source, so it iterates without allocating an array of the values.
   let hasBlankNodes = false;
-  for (const term of bindings.values()) {
+  // eslint-disable-next-line unicorn/no-array-for-each
+  bindings.forEach((term) => {
     if (term.termType === 'BlankNode' || term.termType === 'Quad') {
       hasBlankNodes = true;
-      break;
     }
-  }
+  });
   if (!hasBlankNodes) {
     return bindings;
   }

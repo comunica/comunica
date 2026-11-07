@@ -2,76 +2,232 @@ import type { IBindingsContextMergeHandler } from '@comunica/bus-merge-bindings-
 import { ActionContext } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IActionContextKey } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { BindingsShape } from './BindingsShape';
 import { bindingsToString } from './bindingsToString';
 
 /**
- * A Bindings object backed by a native Map, which is never modified after construction.
- * Modifications copy the map.
+ * A dictionary with which the encoded values of bindings can be decoded.
+ *
+ * Encodings must be primitive values (such as numbers), and every term must have a single encoding,
+ * so that two encodings of the same dictionary are equal exactly if their terms are equal.
+ */
+export interface IBindingsDictionary {
+  decode: (encoding: any) => RDF.Term;
+}
+
+/**
+ * A value of a bindings object: a term, or the encoding of a term in the dictionary of the bindings object.
+ */
+export type BindingsValue = RDF.Term | number | string | symbol;
+
+/**
+ * A Bindings object that stores its values in a plain array, in the order of the variables of a shared shape.
+ * Values that come from an RDF store can be kept in the encoding of that store's dictionary,
+ * so that they are only decoded when they are read, and compared without decoding them.
+ *
+ * Bindings are never modified after construction. Modifications copy the values.
  */
 export class Bindings implements RDF.Bindings {
   public readonly type = 'bindings';
 
   private readonly dataFactory: ComunicaDataFactory;
-  private readonly entries: ReadonlyMap<string, RDF.Term>;
+  /**
+   * The variables of this bindings object, in the order of `rawValues`.
+   */
+  public readonly shape: BindingsShape;
+  /**
+   * The values in the order of the shape, of which those that are not RDF terms are encodings in `dictionary`.
+   */
+  public readonly rawValues: readonly BindingsValue[];
+  /**
+   * The dictionary of the encoded values, which is only undefined if all values are RDF terms.
+   */
+  public readonly dictionary: IBindingsDictionary | undefined;
   private readonly contextHolder: IContextHolder | undefined;
 
+  /**
+   * @param dataFactory The data factory.
+   * @param entries Either a map of variable names to terms, or a shape of which `values` contains the values.
+   * @param contextHolder An optional context.
+   * @param values If `entries` is a shape, the values in its order.
+   * @param dictionary If `entries` is a shape, the dictionary of the encoded values, if there are any.
+   */
   public constructor(
     dataFactory: ComunicaDataFactory,
-    entries: ReadonlyMap<string, RDF.Term>,
+    entries: ReadonlyMap<string, RDF.Term> | BindingsShape,
     contextHolder?: IContextHolder,
+    values?: readonly BindingsValue[],
+    dictionary?: IBindingsDictionary,
   ) {
     this.dataFactory = dataFactory;
-    this.entries = entries;
+    if (entries instanceof BindingsShape) {
+      this.shape = entries;
+      this.rawValues = values!;
+      this.dictionary = dictionary;
+    } else {
+      this.shape = BindingsShape.of([ ...entries.keys() ]);
+      this.rawValues = [ ...entries.values() ];
+      this.dictionary = undefined;
+    }
     this.contextHolder = contextHolder;
   }
 
+  /**
+   * Create an array of exactly the given length.
+   * Growing an array by pushing to it leaves spare capacity behind,
+   * which every retained bindings object would keep.
+   * @param length The length of the array.
+   */
+  public static allocateValues(length: number): BindingsValue[] {
+    // eslint-disable-next-line unicorn/no-new-array
+    return new Array<BindingsValue>(length);
+  }
+
+  /**
+   * Decode a value.
+   * @param value A value.
+   * @param dictionary The dictionary of the value, if it is encoded.
+   */
+  public static decode(value: BindingsValue, dictionary: IBindingsDictionary | undefined): RDF.Term {
+    return typeof value === 'object' ? value : dictionary!.decode(value);
+  }
+
+  /**
+   * Check if two values represent the same term.
+   * @param left A value.
+   * @param leftDictionary The dictionary of the left value.
+   * @param right A value.
+   * @param rightDictionary The dictionary of the right value.
+   */
+  public static valuesEqual(
+    left: BindingsValue,
+    leftDictionary: IBindingsDictionary | undefined,
+    right: BindingsValue,
+    rightDictionary: IBindingsDictionary | undefined,
+  ): boolean {
+    if (typeof left === 'object') {
+      return left === right || left.equals(Bindings.decode(right, rightDictionary));
+    }
+    if (typeof right === 'object') {
+      return leftDictionary!.decode(left).equals(right);
+    }
+    if (leftDictionary === rightDictionary) {
+      return left === right;
+    }
+    return leftDictionary!.decode(left).equals(rightDictionary!.decode(right));
+  }
+
+  /**
+   * The term at the given position.
+   * @param index A position in the values.
+   */
+  protected termAt(index: number): RDF.Term {
+    const value = this.rawValues[index];
+    return typeof value === 'object' ? value : this.dictionary!.decode(value);
+  }
+
+  protected create(
+    shape: BindingsShape,
+    values: readonly BindingsValue[],
+    dictionary: IBindingsDictionary | undefined,
+    contextHolder?: IContextHolder,
+  ): Bindings {
+    return new Bindings(this.dataFactory, shape, contextHolder, values, dictionary);
+  }
+
   public has(key: RDF.Variable | string): boolean {
-    return this.entries.has(typeof key === 'string' ? key : key.value);
+    return this.shape.indexOf(typeof key === 'string' ? key : key.value) !== undefined;
   }
 
   public get(key: RDF.Variable | string): RDF.Term | undefined {
-    return this.entries.get(typeof key === 'string' ? key : key.value);
+    const index = this.shape.indexOf(typeof key === 'string' ? key : key.value);
+    if (index === undefined) {
+      return undefined;
+    }
+    const value = this.rawValues[index];
+    return typeof value === 'object' ? value : this.dictionary!.decode(value);
   }
 
   public set(key: RDF.Variable | string, value: RDF.Term): Bindings {
-    const entries = new Map(this.entries);
-    entries.set(typeof key === 'string' ? key : key.value, value);
-    return new Bindings(this.dataFactory, entries, this.contextHolder);
+    const name = typeof key === 'string' ? key : key.value;
+    const index = this.shape.indexOf(name);
+    const length = this.rawValues.length;
+    const values = Bindings.allocateValues(index === undefined ? length + 1 : length);
+    for (let i = 0; i < length; i++) {
+      values[i] = this.rawValues[i];
+    }
+    if (index === undefined) {
+      values[length] = value;
+      return this.create(this.shape.append(name), values, this.dictionary, this.contextHolder);
+    }
+    values[index] = value;
+    return this.create(this.shape, values, this.dictionary, this.contextHolder);
   }
 
   public delete(key: RDF.Variable | string): Bindings {
-    const name = typeof key === 'string' ? key : key.value;
-    if (!this.entries.has(name)) {
-      return new Bindings(this.dataFactory, this.entries, this.contextHolder);
+    const index = this.shape.indexOf(typeof key === 'string' ? key : key.value);
+    if (index === undefined) {
+      return this.create(this.shape, this.rawValues, this.dictionary, this.contextHolder);
     }
-    const entries = new Map(this.entries);
-    entries.delete(name);
-    return new Bindings(this.dataFactory, entries, this.contextHolder);
+    const keep: number[] = [];
+    let mask = 0;
+    for (let i = 0; i < this.shape.size; i++) {
+      if (i !== index) {
+        keep.push(i);
+        mask |= 1 << i;
+      }
+    }
+    return this.subset(keep, this.shape.size <= 31 ? mask : undefined);
+  }
+
+  /**
+   * Keep only the values at the given positions.
+   * @param keep Positions in ascending order.
+   * @param mask The bitmask of these positions, if the shape has at most 31 variables.
+   */
+  protected subset(keep: number[], mask: number | undefined): Bindings {
+    const plan = this.shape.getSubsetPlan(keep, mask);
+    const values = Bindings.allocateValues(plan.keep.length);
+    for (let i = 0; i < plan.keep.length; i++) {
+      values[i] = this.rawValues[plan.keep[i]];
+    }
+    return this.create(plan.shape, values, this.dictionary, this.contextHolder);
   }
 
   public keys(): Iterable<RDF.Variable> {
-    return this.mapIterable<string, RDF.Variable>(this.entries.keys(), key => this.dataFactory.variable(key));
+    return this.shape.getVariables(this.dataFactory);
   }
 
   public values(): Iterable<RDF.Term> {
-    return this.entries.values();
+    // Without a dictionary, all values are terms already.
+    if (this.dictionary === undefined) {
+      return <readonly RDF.Term[]> this.rawValues;
+    }
+    const terms = <RDF.Term[]> Bindings.allocateValues(this.rawValues.length);
+    for (let i = 0; i < terms.length; i++) {
+      terms[i] = this.termAt(i);
+    }
+    return terms;
   }
 
   public forEach(fn: (value: RDF.Term, key: RDF.Variable) => any): void {
-    for (const [ key, value ] of this.entries) {
-      fn(value, this.dataFactory.variable(key));
+    const variables = this.shape.getVariables(this.dataFactory);
+    for (const [ i, variable ] of variables.entries()) {
+      fn(this.termAt(i), variable);
     }
   }
 
   public get size(): number {
-    return this.entries.size;
+    return this.shape.size;
   }
 
   public [Symbol.iterator](): Iterator<[RDF.Variable, RDF.Term]> {
-    return this.mapIterable<[string, RDF.Term], [RDF.Variable, RDF.Term]>(
-      this.entries,
-      ([ key, value ]) => [ this.dataFactory.variable(key), value ],
-    )[Symbol.iterator]();
+    const variables = this.shape.getVariables(this.dataFactory);
+    const entries: [RDF.Variable, RDF.Term][] = [];
+    for (const [ i, variable ] of variables.entries()) {
+      entries.push([ variable, this.termAt(i) ]);
+    }
+    return entries[Symbol.iterator]();
   }
 
   public equals(other: RDF.Bindings | null | undefined): boolean {
@@ -81,110 +237,187 @@ export class Bindings implements RDF.Bindings {
     if (this === other) {
       return true;
     }
-
-    // First check if size is equal
     if (this.size !== other.size) {
       return false;
     }
 
-    // Then check if keys and values are equal
-    for (const key of this.keys()) {
-      if (!this.get(key)?.equals(other.get(key))) {
+    // Values of the same shape can be compared position by position.
+    if (other instanceof Bindings && other.shape === this.shape) {
+      for (let i = 0; i < this.rawValues.length; i++) {
+        if (!Bindings.valuesEqual(this.rawValues[i], this.dictionary, other.rawValues[i], other.dictionary)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    const variables = this.shape.getVariables(this.dataFactory);
+    for (const [ i, variable ] of variables.entries()) {
+      const right = other.get(variable);
+      if (!right || !this.termAt(i).equals(right)) {
         return false;
       }
     }
-
     return true;
   }
 
   public filter(fn: (value: RDF.Term, key: RDF.Variable) => boolean): Bindings {
-    const entries = new Map<string, RDF.Term>();
-    for (const [ key, value ] of this.entries) {
-      if (fn(value, this.dataFactory.variable(key))) {
-        entries.set(key, value);
+    const variables = this.shape.getVariables(this.dataFactory);
+    const keep: number[] = [];
+    let mask = 0;
+    for (const [ i, variable ] of variables.entries()) {
+      if (fn(this.termAt(i), variable)) {
+        keep.push(i);
+        mask |= 1 << i;
       }
     }
-    return new Bindings(this.dataFactory, entries, this.contextHolder);
+    if (keep.length === variables.length) {
+      return this.create(this.shape, this.rawValues, this.dictionary, this.contextHolder);
+    }
+    return this.subset(keep, variables.length <= 31 ? mask : undefined);
   }
 
   public map(fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term): Bindings {
-    const entries = new Map<string, RDF.Term>();
-    for (const [ key, value ] of this.entries) {
-      entries.set(key, fn(value, this.dataFactory.variable(key)));
+    const variables = this.shape.getVariables(this.dataFactory);
+    const values: BindingsValue[] = [];
+    for (const [ i, variable ] of variables.entries()) {
+      values.push(fn(this.termAt(i), variable));
     }
-    return new Bindings(this.dataFactory, entries, this.contextHolder);
+    return this.create(this.shape, values, undefined, this.contextHolder);
   }
 
   public merge(other: RDF.Bindings | Bindings): Bindings | undefined {
-    if (this.size < other.size && other instanceof Bindings) {
-      return other.merge(this);
+    if (!(other instanceof Bindings)) {
+      return this.mergeWithRdfJs(undefined, other);
     }
-    // The entries are only copied once, when the first variable that is not in this bindings is found
-    let entries: Map<string, RDF.Term> | undefined;
 
-    // Check if other is of type Bindings, in that case we can access entries immediately.
-    // This skips the unnecessary conversion from string to variable.
-    if (other instanceof Bindings) {
-      for (const [ variable, right ] of other.entries) {
-        const left = this.entries.get(variable);
-        if (left) {
-          if (!left.equals(right)) {
-            return;
-          }
-        } else {
-          entries ??= new Map(this.entries);
-          entries.set(variable, right);
-        }
+    const plan = this.shape.getMergePlan(other.shape);
+    const leftValues = this.rawValues;
+    const rightValues = other.rawValues;
+    const leftDictionary = this.dictionary;
+    const rightDictionary = other.dictionary;
+
+    // Check the shared variables
+    const overlapLeft = plan.overlapLeft;
+    const overlapRight = plan.overlapRight;
+    for (const [ i, element ] of overlapLeft.entries()) {
+      const left = leftValues[element];
+      const right = rightValues[overlapRight[i]];
+      if ((left !== right || leftDictionary !== rightDictionary) &&
+        !Bindings.valuesEqual(left, leftDictionary, right, rightDictionary)) {
+        return;
+      }
+    }
+
+    const [ values, dictionary ] = this.appendValues(plan.extraRight, other);
+    return this.createBindingsWithContexts(plan.shape, values, dictionary, other);
+  }
+
+  /**
+   * Append the given values of other bindings to the values of this one.
+   * Values can only be encoded in a single dictionary, so encodings of another dictionary are decoded.
+   * @param extra Positions in the values of the other bindings.
+   * @param other Other bindings.
+   */
+  protected appendValues(
+    extra: number[],
+    other: Bindings,
+  ): [ readonly BindingsValue[], IBindingsDictionary | undefined ] {
+    if (extra.length === 0) {
+      return [ this.rawValues, this.dictionary ];
+    }
+    const leftValues = this.rawValues;
+    const rightValues = other.rawValues;
+    const length = leftValues.length;
+    const values = Bindings.allocateValues(length + extra.length);
+    for (let i = 0; i < length; i++) {
+      values[i] = leftValues[i];
+    }
+    // Without a dictionary, all values of this bindings object are terms, so the other dictionary can be taken over.
+    const dictionary = this.dictionary ?? other.dictionary;
+    let target = length;
+    if (dictionary === other.dictionary) {
+      for (const index of extra) {
+        values[target++] = rightValues[index];
       }
     } else {
-      for (const [ variable, right ] of other) {
-        const left = this.entries.get(variable.value);
-        if (left) {
-          if (!left.equals(right)) {
-            return;
-          }
-        } else {
-          entries ??= new Map(this.entries);
-          entries.set(variable.value, right);
-        }
+      for (const index of extra) {
+        values[target++] = Bindings.decode(rightValues[index], other.dictionary);
       }
     }
-
-    return this.createBindingsWithContexts(entries ?? this.entries, other);
+    return [ values, dictionary ];
   }
 
   public mergeWith(
     merger: (self: RDF.Term, other: RDF.Term, key: RDF.Variable) => RDF.Term,
     other: RDF.Bindings | Bindings,
   ): Bindings {
-    if (this.size < other.size && other instanceof Bindings) {
-      return other.mergeWith(merger, this);
+    if (!(other instanceof Bindings)) {
+      return this.mergeWithRdfJs(merger, other)!;
     }
-    // For code comments see Bindings.merge function
-    let entries: Map<string, RDF.Term> | undefined;
-    if (other instanceof Bindings) {
-      for (const [ variable, right ] of other.entries) {
-        const left = this.entries.get(variable);
-        if (!left?.equals(right)) {
-          entries ??= new Map(this.entries);
-          entries.set(variable, left ? merger(left, right, this.dataFactory.variable(variable)) : right);
+
+    const plan = this.shape.getMergePlan(other.shape);
+    const [ appended, dictionary ] = this.appendValues(plan.extraRight, other);
+    let values = appended;
+
+    // Resolve conflicts on the shared variables
+    const overlapLeft = plan.overlapLeft;
+    const overlapRight = plan.overlapRight;
+    let copied = values !== this.rawValues;
+    for (const [ i, element ] of overlapLeft.entries()) {
+      const left = this.rawValues[element];
+      const right = other.rawValues[overlapRight[i]];
+      if (!Bindings.valuesEqual(left, this.dictionary, right, other.dictionary)) {
+        if (!copied) {
+          values = [ ...values ];
+          copied = true;
         }
-      }
-    } else {
-      for (const [ variable, right ] of other) {
-        const left = this.entries.get(variable.value);
-        if (!left?.equals(right)) {
-          entries ??= new Map(this.entries);
-          entries.set(variable.value, left ? merger(left, right, variable) : right);
-        }
+        (<BindingsValue[]> values)[element] = merger(
+          this.termAt(element),
+          Bindings.decode(right, other.dictionary),
+          this.shape.getVariables(this.dataFactory)[element],
+        );
       }
     }
 
-    return this.createBindingsWithContexts(entries ?? this.entries, other);
+    return this.createBindingsWithContexts(plan.shape, values, dictionary, other);
+  }
+
+  /**
+   * Merge with bindings of another implementation.
+   * @param merger A function to resolve conflicts with, or undefined if conflicts make the merge fail.
+   * @param other Other bindings.
+   */
+  protected mergeWithRdfJs(
+    merger: ((self: RDF.Term, other: RDF.Term, key: RDF.Variable) => RDF.Term) | undefined,
+    other: RDF.Bindings,
+  ): Bindings | undefined {
+    let shape = this.shape;
+    let values: BindingsValue[] | undefined;
+    for (const [ variable, right ] of other) {
+      const index = this.shape.indexOf(variable.value);
+      if (index === undefined) {
+        values ??= [ ...this.rawValues ];
+        values.push(right);
+        shape = shape.append(variable.value);
+      } else {
+        const left = this.termAt(index);
+        if (!left.equals(right)) {
+          if (!merger) {
+            return;
+          }
+          values ??= [ ...this.rawValues ];
+          values[index] = merger(left, right, variable);
+        }
+      }
+    }
+    return this.createBindingsWithContexts(shape, values ?? this.rawValues, this.dictionary, other);
   }
 
   protected createBindingsWithContexts(
-    entries: ReadonlyMap<string, RDF.Term>,
+    shape: BindingsShape,
+    values: readonly BindingsValue[],
+    dictionary: IBindingsDictionary | undefined,
     other: RDF.Bindings | Bindings,
   ): Bindings {
     // If any context is empty, we skip merging contexts
@@ -195,15 +428,16 @@ export class Bindings implements RDF.Bindings {
         mergedContext = Bindings
           .mergeContext(this.contextHolder.contextMergeHandlers, mergedContext, other.contextHolder.context);
       }
-      return new Bindings(
-        this.dataFactory,
-        entries,
+      return this.create(
+        shape,
+        values,
+        dictionary,
         { contextMergeHandlers: this.contextHolder.contextMergeHandlers, context: mergedContext },
       );
     }
 
     // Otherwise, use optional context from other
-    return new Bindings(this.dataFactory, entries, (<Bindings> other).contextHolder);
+    return this.create(shape, values, dictionary, (<Bindings> other).contextHolder);
   }
 
   private static mergeContext(
@@ -263,23 +497,15 @@ export class Bindings implements RDF.Bindings {
 
   public setContextEntryRaw<V>(key: IActionContextKey<V>, value: any): Bindings {
     if (this.contextHolder && this.contextHolder.context) {
-      return new Bindings(
-        this.dataFactory,
-        this.entries,
-        {
-          contextMergeHandlers: this.contextHolder.contextMergeHandlers,
-          context: this.contextHolder.context.set(key, value),
-        },
-      );
+      return this.create(this.shape, this.rawValues, this.dictionary, {
+        contextMergeHandlers: this.contextHolder.contextMergeHandlers,
+        context: this.contextHolder.context.set(key, value),
+      });
     }
-    return new Bindings(
-      this.dataFactory,
-      this.entries,
-      {
-        contextMergeHandlers: this.contextHolder?.contextMergeHandlers ?? {},
-        context: new ActionContext().set(key, value),
-      },
-    );
+    return this.create(this.shape, this.rawValues, this.dictionary, {
+      contextMergeHandlers: this.contextHolder?.contextMergeHandlers ?? {},
+      context: new ActionContext().set(key, value),
+    });
   }
 
   public deleteContextEntry<V>(key: IActionContextKey<V>): Bindings {
@@ -288,16 +514,12 @@ export class Bindings implements RDF.Bindings {
 
   public deleteContextEntryRaw<V>(key: IActionContextKey<V>): Bindings {
     if (this.contextHolder) {
-      return new Bindings(
-        this.dataFactory,
-        this.entries,
-        {
-          contextMergeHandlers: this.contextHolder.contextMergeHandlers,
-          context: this.contextHolder.context?.delete(key),
-        },
-      );
+      return this.create(this.shape, this.rawValues, this.dictionary, {
+        contextMergeHandlers: this.contextHolder.contextMergeHandlers,
+        context: this.contextHolder.context?.delete(key),
+      });
     }
-    return new Bindings(this.dataFactory, this.entries);
+    return this.create(this.shape, this.rawValues, this.dictionary);
   }
 
   public getContext(): IActionContext | undefined {
@@ -310,12 +532,6 @@ export class Bindings implements RDF.Bindings {
 
   public toString(): string {
     return bindingsToString(this);
-  }
-
-  protected* mapIterable<T, U>(iterable: Iterable<T>, callback: (value: T) => U): Iterable<U> {
-    for (const x of iterable) {
-      yield callback(x);
-    }
   }
 }
 
