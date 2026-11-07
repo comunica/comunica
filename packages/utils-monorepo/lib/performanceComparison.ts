@@ -41,6 +41,14 @@ export interface IComparisonOptions {
   runUrl: string;
 }
 
+/**
+ * The entries of both sides, as produced by `performance-ingestion`.
+ */
+export interface IIngestionComparison {
+  head: IGhbenchEntry[];
+  base: IGhbenchEntry[];
+}
+
 const FAILURES_SUFFIX = ' - failed queries';
 
 function isFailuresEntry(entry: IGhbenchEntry): boolean {
@@ -174,16 +182,54 @@ function formatRow(cells: string[]): string {
   return `| ${cells.join(' | ')} |`;
 }
 
+function formatIngestionCell(entry: IGhbenchEntry | undefined, hasSuite: boolean): string {
+  if (entry === undefined || entry.value === null) {
+    return hasSuite ? 'missing' : '';
+  }
+  return `\`${formatTime(entry.value)}\` ${entry.unit}`;
+}
+
+/**
+ * Render the table rows that compare the ingestion of both sides, one per metric.
+ * @param headEntries The ingestion entries of the pull request.
+ * @param baseEntries The ingestion entries of the base commit.
+ */
+export function renderIngestionRows(headEntries: IGhbenchEntry[], baseEntries: IGhbenchEntry[]): string[] {
+  const head = new Map(headEntries.map(entry => [ entry.name, entry ]));
+  const base = new Map(baseEntries.map(entry => [ entry.name, entry ]));
+  const headSuites = new Set(headEntries.map(entry => getSuite(entry.name)));
+  const baseSuites = new Set(baseEntries.map(entry => getSuite(entry.name)));
+  return [ ...new Set([ ...head.keys(), ...base.keys() ]) ].map((name) => {
+    const headEntry = head.get(name);
+    const baseEntry = base.get(name);
+    const hasBase = baseSuites.has(getSuite(name));
+    let ratio = '';
+    if (typeof headEntry?.value === 'number' && typeof baseEntry?.value === 'number') {
+      ratio = `\`${formatRatio(headEntry.value, baseEntry.value)}\``;
+    } else if (hasBase) {
+      ratio = 'n/a';
+    }
+    return formatRow([
+      `\`${name}\``,
+      formatIngestionCell(headEntry, headSuites.has(getSuite(name))),
+      formatIngestionCell(baseEntry, hasBase),
+      ratio,
+    ]);
+  });
+}
+
 /**
  * Render the comparison comment of a pull request.
  * @param headEntries The ghbench entries of the pull request.
  * @param baseEntries The ghbench entries of the base commit.
  * @param options The commits and CI run that are compared.
+ * @param ingestion The ingestion entries of both sides, if measured.
  */
 export function renderComparisonComment(
   headEntries: IGhbenchEntry[],
   baseEntries: IGhbenchEntry[],
   options: IComparisonOptions,
+  ingestion?: IIngestionComparison,
 ): string {
   const rows = getRows(headEntries, baseEntries);
   const suites = [ ...new Set(rows.map(row => row.suite)) ];
@@ -260,12 +306,18 @@ export function renderComparisonComment(
     ]);
   });
 
+  const ingestionRows = ingestion ? renderIngestionRows(ingestion.head, ingestion.base) : [];
+
   return [
     '<!-- performance-comparison -->\n\n# Benchmarks total results\n\n',
     [ ...header, ...totalRows, ...exclusions ].join('\n'),
     failures ? `\n\n${failures}` : '',
     '\n\n<details>\n<summary>Show detailed results</summary>\n\n',
     [ ...header, ...detailRows ].join('\n'),
-    `\n\n</details>\n\nMeasured by [this CI run](${options.runUrl}).\n`,
+    '\n\n</details>',
+    ingestionRows.length > 0 ?
+      `\n\n# Ingestion results\n\nIngestion time excludes engine startup, and memory is the total resident set size after ingestion.\n\n${[ ...header, ...ingestionRows ].join('\n')}` :
+      '',
+    `\n\nMeasured by [this CI run](${options.runUrl}).\n`,
   ].join('');
 }

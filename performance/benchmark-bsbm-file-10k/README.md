@@ -11,4 +11,13 @@ If you only want to check the performance of your current version of Comunica,
 you can run `npm run performance:ci` instead,
 which is what the CI will run as well for continuous performance measurements.
 
+The CI also measures how long Comunica takes to ingest the dataset, and its total memory usage afterwards.
+Once `npm run performance:ci` has generated the dataset, you can measure this from the repository root with:
+
+```bash
+node --max-old-space-size=8192 packages/utils-monorepo/bin/performance-ingestion.js \
+  engines/query-sparql-file performance/benchmark-bsbm-file-10k/generated/dataset.nt BSBM-File-10k \
+  performance/benchmark-bsbm-file-10k/output/ingestion.json
+```
+
 Continuous performance results are tracked on https://github.com/comunica/comunica-performance-results.

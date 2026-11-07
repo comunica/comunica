@@ -1,5 +1,12 @@
 import type { IGhbenchEntry } from '../lib/performanceComparison';
-import { formatRatio, formatTime, getFailures, getRows, renderComparisonComment } from '../lib/performanceComparison';
+import {
+  formatRatio,
+  formatTime,
+  getFailures,
+  getRows,
+  renderComparisonComment,
+  renderIngestionRows,
+} from '../lib/performanceComparison';
 
 const OPTIONS = { headSha: 'head', baseSha: 'base', runUrl: 'https://ci/1' };
 
@@ -9,6 +16,13 @@ function time(name: string, value: number, errors: boolean[] = [ false, false ])
 
 function failures(suite: string, extra: string, value = 1): IGhbenchEntry {
   return { name: `${suite} - failed queries`, unit: 'failed instantiations', value, extra };
+}
+
+function ingestion(suite: string, time: number | null, memory: number): IGhbenchEntry[] {
+  return [
+    { name: `${suite} - ingestion time`, unit: 'ms', value: time, extra: 'Runs: []' },
+    { name: `${suite} - memory after ingestion`, unit: 'MiB', value: memory, extra: 'Runs: []' },
+  ];
 }
 
 describe('formatRatio', () => {
@@ -110,6 +124,32 @@ describe('getRows', () => {
   it('treats queries that failed for all instantiations as without time', () => {
     expect(getRows([ time('S - q1', 0, [ true, true ]) ], [])[0].head)
       .toEqual({ value: undefined, unit: 'ms', failed: 2, count: 2 });
+  });
+});
+
+describe('renderIngestionRows', () => {
+  it('compares the metrics of both sides', () => {
+    expect(renderIngestionRows(
+      [ ...ingestion('A', 1100, 800), ...ingestion('B', 50.5, 100) ],
+      [ ...ingestion('A', 1000, 1000), ...ingestion('C', 10, 20) ],
+    )).toEqual([
+      '| `A - ingestion time` | `1100` ms | `1000` ms | `1.10` |',
+      '| `A - memory after ingestion` | `800` MiB | `1000` MiB | `0.80` |',
+      '| `B - ingestion time` | `50.5` ms |  |  |',
+      '| `B - memory after ingestion` | `100` MiB |  |  |',
+      '| `C - ingestion time` |  | `10` ms | n/a |',
+      '| `C - memory after ingestion` |  | `20` MiB | n/a |',
+    ]);
+  });
+
+  it('marks missing metrics of measured suites', () => {
+    expect(renderIngestionRows(
+      [ ...ingestion('A', null, 800) ],
+      [ ingestion('A', 1000, 1000)[1] ],
+    )).toEqual([
+      '| `A - ingestion time` | missing | missing | n/a |',
+      '| `A - memory after ingestion` | `800` MiB | `1000` MiB | `0.80` |',
+    ]);
   });
 });
 
@@ -252,5 +292,45 @@ Measured by [this CI run](https://ci/1).
 
 Measured by [this CI run](https://ci/1).
 `);
+  });
+  it('renders ingestion results', () => {
+    expect(renderComparisonComment(
+      [ time('A - q1', 100) ],
+      [ time('A - q1', 50) ],
+      OPTIONS,
+      { head: ingestion('A', 1100, 800), base: ingestion('A', 1000, 1000) },
+    )).toBe(`<!-- performance-comparison -->
+
+# Benchmarks total results
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A\` | \`100\` ms | \`50\` ms | \`2.00\` |
+
+<details>
+<summary>Show detailed results</summary>
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A - q1\` | \`100\` ms | \`50\` ms | \`2.00\` |
+
+</details>
+
+# Ingestion results
+
+Ingestion time excludes engine startup, and memory is the total resident set size after ingestion.
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A - ingestion time\` | \`1100\` ms | \`1000\` ms | \`1.10\` |
+| \`A - memory after ingestion\` | \`800\` MiB | \`1000\` MiB | \`0.80\` |
+
+Measured by [this CI run](https://ci/1).
+`);
+  });
+
+  it('omits ingestion results if none were measured', () => {
+    expect(renderComparisonComment([ time('A - q1', 100) ], [ time('A - q1', 50) ], OPTIONS, { head: [], base: []}))
+      .toBe(renderComparisonComment([ time('A - q1', 100) ], [ time('A - q1', 50) ], OPTIONS));
   });
 });

@@ -311,6 +311,9 @@ jobs:
         benchmark: ${{ github.event_name == 'pull_request' && fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "ldbc-snb-file", "ldbc-snb-bi-file"]') || fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "ldbc-snb-file", "ldbc-snb-bi-file", "web"]') }}
     env:
       BENCHMARK_BASE: ${{ github.event_name == 'pull_request' }}
+      # The labels of the benchmarks whose dataset is measured for ingestion.
+      # LDBC-SNB-BI-File is omitted, as it shares its dataset with LDBC-SNB-File.
+      INGESTION_LABELS: '{"watdiv-file": "WatDiv-File", "bsbm-file": "BSBM-File", "bsbm-file-10k": "BSBM-File-10k", "ldbc-snb-file": "LDBC-SNB-File"}'
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
@@ -348,6 +351,25 @@ jobs:
         run: docker ps -aq | xargs -r docker rm -f
       - name: Run benchmarks
         run: cd head/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
+      - name: Measure ingestion of the base commit
+        # The script and dataset of the pull request are used, so that only the engine differs.
+        if: env.BENCHMARK_BASE == 'true' && fromJSON(env.INGESTION_LABELS)[matrix.benchmark] && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
+        working-directory: head
+        run: >-
+          node --max-old-space-size=8192 packages/utils-monorepo/bin/performance-ingestion.js
+          ../base/engines/query-sparql-file
+          performance/benchmark-${{ matrix.benchmark }}/generated/dataset.nt
+          "${{ fromJSON(env.INGESTION_LABELS)[matrix.benchmark] }}"
+          ../base/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/ingestion.json
+      - name: Measure ingestion
+        if: fromJSON(env.INGESTION_LABELS)[matrix.benchmark]
+        working-directory: head
+        run: >-
+          node --max-old-space-size=8192 packages/utils-monorepo/bin/performance-ingestion.js
+          engines/query-sparql-file
+          performance/benchmark-${{ matrix.benchmark }}/generated/dataset.nt
+          "${{ fromJSON(env.INGESTION_LABELS)[matrix.benchmark] }}"
+          performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/ingestion.json
       - uses: actions/upload-artifact@v7
         with:
           name: performance-benchmark-${{ matrix.benchmark }}
@@ -421,10 +443,14 @@ jobs:
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,Web --total false --detailed true --failures --name ghbench-detail.json
       - name: Process benchmark total results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,Web --total true --detailed false --name ghbench-total.json
+      - name: Process benchmark ingestion results
+        run: jq -s 'add' performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
       - name: Determine benchmark detailed results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_DETAIL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail" >> $GITHUB_ENV
       - name: Determine benchmarks total results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_TOTAL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-total" >> $GITHUB_ENV
+      - name: Determine benchmarks ingestion results target directory name
+        run: echo "BENCHMARK_DATA_DIR_PATH_INGESTION=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-ingestion" >> $GITHUB_ENV
       - name: Finalize benchmarks detailed results
         uses: benchmark-action/github-action-benchmark@v1
         with:
@@ -455,9 +481,26 @@ jobs:
           gh-repository: github.com/comunica/comunica-performance-results
           gh-pages-branch: master
           benchmark-data-dir-path: ${{ env.BENCHMARK_DATA_DIR_PATH_TOTAL }}
+      - name: Cleanup benchmark-action data
+        run: rm -rf ./benchmark-data-repository
+      - name: Finalize benchmarks ingestion results
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Benchmarks ingestion results
+          tool: customSmallerIsBetter
+          output-file-path: ghbench-ingestion.json
+          github-token: ${{ secrets.PAT }}
+          auto-push: true
+          # Ingestion varies less than query times, so smaller regressions are alerted
+          alert-threshold: '130%'
+          comment-on-alert: true
+          alert-comment-cc-users: '@rubensworks'
+          gh-repository: github.com/comunica/comunica-performance-results
+          gh-pages-branch: master
+          benchmark-data-dir-path: ${{ env.BENCHMARK_DATA_DIR_PATH_INGESTION }}
       - name: Prepare comment on commit with link to performance results
         run: |
-          echo -e "Performance benchmarks succeeded! 🚀\n\n\[[Summarized results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-total/)\] \[[Detailed results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail/)\]" > ./commit-comment-body.txt
+          echo -e "Performance benchmarks succeeded! 🚀\n\n\[[Summarized results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-total/)\] \[[Detailed results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail/)\] \[[Ingestion results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-ingestion/)\]" > ./commit-comment-body.txt
           # Failed queries have no time, so they are listed separately
           jq -r '
             map(select((.name | endswith(" - failed queries")) and .value > 0))
@@ -569,6 +612,13 @@ jobs:
           echo "BASE_BENCHMARK_LABELS=$labels" >> $GITHUB_ENV
       - name: Process base commit benchmark detailed results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench $BASE_BENCHMARK_DIRS --overrideCombinationLabels $BASE_BENCHMARK_LABELS --total false --detailed true --failures --name ghbench-base-detail.json
+      - name: Collect benchmark ingestion results
+        # Benchmarks without a dataset to ingest, or without base results, have no ingestion results
+        run: |
+          shopt -s nullglob
+          collect() { if [ $# -gt 0 ]; then jq -s 'add' "$@"; else echo '[]'; fi; }
+          collect performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
+          collect base/performance/*/combinations/combination_0/output/ingestion.json > ghbench-base-ingestion.json
       - name: Assemble the comparison comment
         # Posted by the performance-comment workflow, as this job
         # receives a read-only GITHUB_TOKEN on pull requests from forks.
@@ -580,7 +630,8 @@ jobs:
           set -eu
           npx ts-node --transpile-only -O '{"rootDir":"."}' packages/utils-monorepo/bin/performance-comparison.ts \
             ghbench-detail.json ghbench-base-detail.json "$HEAD_SHA" "$BASE_SHA" \
-            "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" > comparison-comment.md
+            "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" \
+            ghbench-ingestion.json ghbench-base-ingestion.json > comparison-comment.md
           echo "$PULL_REQUEST_NUMBER" > comparison-pull-request.txt
           cat comparison-comment.md >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@v7
