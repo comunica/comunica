@@ -8,9 +8,6 @@ concurrency:
 env:
   NODE_VERSION_LOWEST: 22.x
   NODE_VERSION_HIGHEST: 26.x
-  # The performance benchmarks whose dataset is measured for ingestion.
-  # ldbc-snb-bi-file is omitted, as it shares its dataset with ldbc-snb-file.
-  INGESTION_BENCHMARKS: '["watdiv-file", "bsbm-file", "bsbm-file-10k", "ldbc-snb-file"]'
 
 jobs:
 
@@ -449,7 +446,7 @@ jobs:
       - name: Run benchmarks
         run: cd head/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
       - name: Measure ingestion of the base commit
-        if: env.BENCHMARK_BASE == 'true' && contains(fromJSON(env.INGESTION_BENCHMARKS), matrix.benchmark) && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
+        if: env.BENCHMARK_BASE == 'true' && contains(matrix.benchmark, '-file') && matrix.benchmark != 'ldbc-snb-bi-file' && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
         working-directory: head
         run: >-
           node --max-old-space-size=8192 packages/utils-monorepo/bin/performance-ingestion.js
@@ -458,7 +455,8 @@ jobs:
           ${{ matrix.benchmark }}
           ../base/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/ingestion.json
       - name: Measure ingestion
-        if: contains(fromJSON(env.INGESTION_BENCHMARKS), matrix.benchmark)
+        # Excludes ldbc-snb-bi-file, as it shares its dataset with ldbc-snb-file
+        if: contains(matrix.benchmark, '-file') && matrix.benchmark != 'ldbc-snb-bi-file'
         working-directory: head
         run: >-
           node --max-old-space-size=8192 packages/utils-monorepo/bin/performance-ingestion.js
@@ -540,12 +538,7 @@ jobs:
       - name: Process benchmark total results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,Web --total true --detailed false --name ghbench-total.json
       - name: Process benchmark ingestion results
-        run: |
-          files=()
-          for benchmark in $(jq -r '.[]' <<< "$INGESTION_BENCHMARKS"); do
-            files+=("performance/benchmark-$benchmark/combinations/combination_0/output/ingestion.json")
-          done
-          jq -s 'add' "${files[@]}" > ghbench-ingestion.json
+        run: jq -s 'add' performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
       - name: Determine benchmark detailed results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_DETAIL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail" >> $GITHUB_ENV
       - name: Determine benchmarks total results target directory name
@@ -717,22 +710,10 @@ jobs:
       - name: Collect benchmark ingestion results
         # Benchmarks without base results have no base ingestion results
         run: |
-          collect() {
-            local files=()
-            for benchmark in $(jq -r '.[]' <<< "$INGESTION_BENCHMARKS"); do
-              local file="$1/benchmark-$benchmark/combinations/combination_0/output/ingestion.json"
-              if [ -f "$file" ]; then
-                files+=("$file")
-              fi
-            done
-            if [ ${#files[@]} -gt 0 ]; then
-              jq -s 'add' "${files[@]}"
-            else
-              echo '[]'
-            fi
-          }
-          collect performance > ghbench-ingestion.json
-          collect base/performance > ghbench-base-ingestion.json
+          shopt -s nullglob
+          collect() { if [ $# -gt 0 ]; then jq -s 'add' "$@"; else echo '[]'; fi; }
+          collect performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
+          collect base/performance/*/combinations/combination_0/output/ingestion.json > ghbench-base-ingestion.json
       - name: Assemble the comparison comment
         # Posted by the performance-comment workflow, as this job
         # receives a read-only GITHUB_TOKEN on pull requests from forks.
