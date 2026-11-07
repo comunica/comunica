@@ -493,8 +493,10 @@ jobs:
           auto-push: true
           # Ingestion varies less than query times, so smaller regressions are alerted
           alert-threshold: '130%'
+          comment-always: true
           comment-on-alert: true
           alert-comment-cc-users: '@rubensworks'
+          summary-always: true
           gh-repository: github.com/comunica/comunica-performance-results
           gh-pages-branch: master
           benchmark-data-dir-path: ${{ env.BENCHMARK_DATA_DIR_PATH_INGESTION }}
