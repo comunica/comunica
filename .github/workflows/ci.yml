@@ -554,7 +554,7 @@ jobs:
           benchmark-data-dir-path: ${{ env.BENCHMARK_DATA_DIR_PATH_TOTAL }}
       - name: Prepare comment on commit with link to performance results
         run: |
-          echo -e "Performance benchmarks succeeded! 🚀\n\n\[[Summarized results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-total/)\] \[[Detailed results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail/)\]" > ./commit-comment-body.txt
+          echo -e "Performance benchmarks succeeded! 🚀\n\n\[[Summarized results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-total/)\] \[[Detailed results](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail/)\] \[[Bundle sizes](https://comunica.github.io/comunica-performance-results/comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/bundle-sizes/)\]" > ./commit-comment-body.txt
           # Failed queries have no time, so they are listed separately
           jq -r '
             map(select((.name | endswith(" - failed queries")) and .value > 0))
