@@ -8,6 +8,9 @@ concurrency:
 env:
   NODE_VERSION_LOWEST: 22.x
   NODE_VERSION_HIGHEST: 26.x
+  # The labels of the performance benchmarks whose dataset is measured for ingestion, in the order of their results.
+  # LDBC-SNB-BI-File is omitted, as it shares its dataset with LDBC-SNB-File.
+  INGESTION_LABELS: '{"watdiv-file": "WatDiv-File", "bsbm-file": "BSBM-File", "bsbm-file-10k": "BSBM-File-10k", "ldbc-snb-file": "LDBC-SNB-File"}'
 
 jobs:
 
@@ -311,9 +314,6 @@ jobs:
         benchmark: ${{ github.event_name == 'pull_request' && fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "ldbc-snb-file", "ldbc-snb-bi-file"]') || fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "ldbc-snb-file", "ldbc-snb-bi-file", "web"]') }}
     env:
       BENCHMARK_BASE: ${{ github.event_name == 'pull_request' }}
-      # The labels of the benchmarks whose dataset is measured for ingestion.
-      # LDBC-SNB-BI-File is omitted, as it shares its dataset with LDBC-SNB-File.
-      INGESTION_LABELS: '{"watdiv-file": "WatDiv-File", "bsbm-file": "BSBM-File", "bsbm-file-10k": "BSBM-File-10k", "ldbc-snb-file": "LDBC-SNB-File"}'
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
@@ -444,7 +444,12 @@ jobs:
       - name: Process benchmark total results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,Web --total true --detailed false --name ghbench-total.json
       - name: Process benchmark ingestion results
-        run: jq -s 'add' performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
+        run: |
+          files=()
+          for benchmark in $(jq -r 'keys_unsorted[]' <<< "$INGESTION_LABELS"); do
+            files+=("performance/benchmark-$benchmark/combinations/combination_0/output/ingestion.json")
+          done
+          jq -s 'add' "${files[@]}" > ghbench-ingestion.json
       - name: Determine benchmark detailed results target directory name
         run: echo "BENCHMARK_DATA_DIR_PATH_DETAIL=comunica/${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}/benchmarks-detail" >> $GITHUB_ENV
       - name: Determine benchmarks total results target directory name
@@ -615,12 +620,24 @@ jobs:
       - name: Process base commit benchmark detailed results
         run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench $BASE_BENCHMARK_DIRS --overrideCombinationLabels $BASE_BENCHMARK_LABELS --total false --detailed true --failures --name ghbench-base-detail.json
       - name: Collect benchmark ingestion results
-        # Benchmarks without a dataset to ingest, or without base results, have no ingestion results
+        # Benchmarks without base results have no base ingestion results
         run: |
-          shopt -s nullglob
-          collect() { if [ $# -gt 0 ]; then jq -s 'add' "$@"; else echo '[]'; fi; }
-          collect performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
-          collect base/performance/*/combinations/combination_0/output/ingestion.json > ghbench-base-ingestion.json
+          collect() {
+            local files=()
+            for benchmark in $(jq -r 'keys_unsorted[]' <<< "$INGESTION_LABELS"); do
+              local file="$1/benchmark-$benchmark/combinations/combination_0/output/ingestion.json"
+              if [ -f "$file" ]; then
+                files+=("$file")
+              fi
+            done
+            if [ ${#files[@]} -gt 0 ]; then
+              jq -s 'add' "${files[@]}"
+            else
+              echo '[]'
+            fi
+          }
+          collect performance > ghbench-ingestion.json
+          collect base/performance > ghbench-base-ingestion.json
       - name: Assemble the comparison comment
         # Posted by the performance-comment workflow, as this job
         # receives a read-only GITHUB_TOKEN on pull requests from forks.
