@@ -12544,10 +12544,10 @@ rdf-stores@^2.0.0:
     rdf-string "^2.0.0"
     rdf-terms "^2.0.0"
 
-rdf-stores@^2.9.0:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/rdf-stores/-/rdf-stores-2.9.0.tgz#d7e59c8049e2b6cdaab89f26f92242303e83843c"
-  integrity sha512-HTUtnLTlf/IBipU2SeiSOo+unc/lNiKqWUl0Ogm9w3trdt6Zi+pi3365iIvUep9J66X76F1H4bZUQ9wt6iph9Q==
+rdf-stores@^2.9.1:
+  version "2.9.1"
+  resolved "https://registry.yarnpkg.com/rdf-stores/-/rdf-stores-2.9.1.tgz#73194172c95001bb41215ac4c3cd8ceb7af35607"
+  integrity sha512-dw/IQiP8hPnmasKNVWdN6yA4Aevshow37AHh6H2FqjWJz9fzbrw79VaVHShsewkxppkRFXwbWNU3zi22gvzx3Q==
   dependencies:
     asynciterator "^3.8.0"
     rdf-data-factory "^2.0.1"
