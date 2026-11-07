@@ -15,6 +15,7 @@ import type { Bindings, BindingsStream, IActionContext, IExpressionEvaluator } f
 import type { Algebra } from '@comunica/utils-algebra';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
 import { NestedLoopJoin } from 'asyncjoin';
+import { EqualityIndex } from './EqualityIndex';
 
 /**
  * A comunica Optional Nested Loop RDF Join Actor.
@@ -60,6 +61,8 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
   /**
    * Left join in which joined bindings are only kept if the expression evaluates to true,
    * and left bindings without such joined bindings are kept as-is.
+   * If the expression requires a variable of the left bindings to be equal to one of the right bindings,
+   * the right bindings are indexed by its value, and only those that may be equal are evaluated.
    * @param action The join action.
    * @param expression The join expression.
    */
@@ -67,15 +70,18 @@ export class ActorRdfJoinOptionalNestedLoop extends ActorRdfJoin {
   Promise<BindingsStream> {
     const evaluator = await this.mediatorExpressionEvaluatorFactory!
       .mediate({ algExpr: expression, context: action.context });
-    let rightBindings: Promise<Bindings[]> | undefined;
+    const equality = EqualityIndex.findEquality(expression, await ActorRdfJoin.getMetadatas(action.entries));
+    let rightBindings: Promise<Bindings[] | EqualityIndex> | undefined;
     const bindingsStream: BindingsStream = action.entries[0].output.bindingsStream.transform<Bindings>({
       autoStart: false,
       // eslint-disable-next-line ts/no-misused-promises
       transform: async(left, done, push) => {
         try {
-          rightBindings ??= action.entries[1].output.bindingsStream.toArray();
+          rightBindings ??= action.entries[1].output.bindingsStream.toArray()
+            .then(bindings => equality ? new EqualityIndex(bindings, ...equality) : bindings);
+          const rights = await rightBindings;
           let matched = false;
-          for (const right of await rightBindings) {
+          for (const right of rights instanceof EqualityIndex ? rights.candidates(left) : rights) {
             const joined = ActorRdfJoin.joinBindings(left, right);
             if (joined && await this.evaluateExpression(evaluator, joined, action.context)) {
               matched = true;
