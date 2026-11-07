@@ -1,3 +1,11 @@
+import {
+  getBytesPerTriple,
+  getThroughput,
+  getTriples,
+  INGESTION_MEMORY_SUFFIX,
+  INGESTION_TIME_SUFFIX,
+} from './performanceIngestion';
+
 /**
  * An entry of a JSON file produced by `psbr csv ghbench --detailed --failures`.
  */
@@ -182,27 +190,88 @@ function formatRow(cells: string[]): string {
   return `| ${cells.join(' | ')} |`;
 }
 
-function formatIngestionCell(entry: IGhbenchEntry | undefined, hasSuite: boolean): string {
+/**
+ * A metric of the ingestion tables, which is rendered with a metric derived from the number of triples.
+ */
+export interface IIngestionMetric {
+  title: string;
+  suffix: string;
+  derive: (triples: number, value: number) => string | undefined;
+}
+
+export const INGESTION_METRICS: IIngestionMetric[] = [
+  {
+    title: 'Ingestion time',
+    suffix: INGESTION_TIME_SUFFIX,
+    derive(triples, value) {
+      const throughput = getThroughput(triples, value);
+      return throughput === undefined ? undefined : `${formatCount(throughput)} triples/s`;
+    },
+  },
+  {
+    title: 'Memory after ingestion',
+    suffix: INGESTION_MEMORY_SUFFIX,
+    derive(triples, value) {
+      const bytes = getBytesPerTriple(triples, value);
+      return bytes === undefined ? undefined : `${formatCount(bytes)} bytes/triple`;
+    },
+  },
+];
+
+/**
+ * Format an integer with thousands separators.
+ * @param value An integer.
+ */
+export function formatCount(value: number): string {
+  return value.toLocaleString('en-US');
+}
+
+function formatIngestionCell(
+  entry: IGhbenchEntry | undefined,
+  hasSuite: boolean,
+  metric: IIngestionMetric,
+): string {
   if (entry === undefined || entry.value === null) {
     return hasSuite ? 'missing' : '';
   }
-  return `\`${formatTime(entry.value)}\` ${entry.unit}`;
+  const triples = getTriples(entry);
+  const derived = triples === undefined ? undefined : metric.derive(triples, entry.value);
+  return `\`${formatTime(entry.value)}\` ${entry.unit}${derived === undefined ? '' : ` (${derived})`}`;
+}
+
+function formatTriplesCell(head: IGhbenchEntry | undefined, base: IGhbenchEntry | undefined): string {
+  const headTriples = head ? getTriples(head) : undefined;
+  const baseTriples = base ? getTriples(base) : undefined;
+  if (headTriples !== undefined && baseTriples !== undefined && headTriples !== baseTriples) {
+    return `${formatCount(headTriples)} (base: ${formatCount(baseTriples)})`;
+  }
+  const triples = headTriples ?? baseTriples;
+  return triples === undefined ? '' : formatCount(triples);
 }
 
 /**
- * Render the table rows that compare the ingestion of both sides, one per metric.
+ * Render the table rows that compare an ingestion metric of both sides, one per benchmark suite.
  * @param headEntries The ingestion entries of the pull request.
  * @param baseEntries The ingestion entries of the base commit.
+ * @param metric The metric to compare.
  */
-export function renderIngestionRows(headEntries: IGhbenchEntry[], baseEntries: IGhbenchEntry[]): string[] {
-  const head = new Map(headEntries.map(entry => [ entry.name, entry ]));
-  const base = new Map(baseEntries.map(entry => [ entry.name, entry ]));
-  const headSuites = new Set(headEntries.map(entry => getSuite(entry.name)));
-  const baseSuites = new Set(baseEntries.map(entry => getSuite(entry.name)));
-  return [ ...new Set([ ...head.keys(), ...base.keys() ]) ].map((name) => {
-    const headEntry = head.get(name);
-    const baseEntry = base.get(name);
-    const hasBase = baseSuites.has(getSuite(name));
+export function renderIngestionRows(
+  headEntries: IGhbenchEntry[],
+  baseEntries: IGhbenchEntry[],
+  metric: IIngestionMetric,
+): string[] {
+  const getSuites = (entries: IGhbenchEntry[]): Set<string> => new Set(entries.map(entry => getSuite(entry.name)));
+  const getMetricEntries = (entries: IGhbenchEntry[]): Map<string, IGhbenchEntry> => new Map(entries
+    .filter(entry => entry.name.endsWith(metric.suffix))
+    .map(entry => [ entry.name.slice(0, -metric.suffix.length), entry ]));
+  const headSuites = getSuites(headEntries);
+  const baseSuites = getSuites(baseEntries);
+  const head = getMetricEntries(headEntries);
+  const base = getMetricEntries(baseEntries);
+  return [ ...new Set([ ...head.keys(), ...base.keys() ]) ].map((suite) => {
+    const headEntry = head.get(suite);
+    const baseEntry = base.get(suite);
+    const hasBase = baseSuites.has(suite);
     let ratio = '';
     if (typeof headEntry?.value === 'number' && typeof baseEntry?.value === 'number') {
       ratio = `\`${formatRatio(headEntry.value, baseEntry.value)}\``;
@@ -210,12 +279,30 @@ export function renderIngestionRows(headEntries: IGhbenchEntry[], baseEntries: I
       ratio = 'n/a';
     }
     return formatRow([
-      `\`${name}\``,
-      formatIngestionCell(headEntry, headSuites.has(getSuite(name))),
-      formatIngestionCell(baseEntry, hasBase),
+      `\`${suite}\``,
+      formatTriplesCell(headEntry, baseEntry),
+      formatIngestionCell(headEntry, headSuites.has(suite), metric),
+      formatIngestionCell(baseEntry, hasBase, metric),
       ratio,
     ]);
   });
+}
+
+/**
+ * Render the tables that compare the ingestion of both sides, one per metric.
+ * @param ingestion The ingestion entries of both sides.
+ * @param options The commits and CI run that are compared.
+ */
+export function renderIngestionTables(ingestion: IIngestionComparison, options: IComparisonOptions): string {
+  const header = [
+    formatRow([ 'Benchmark suite', 'Triples', `Current: ${options.headSha}`, `Base: ${options.baseSha}`, 'Ratio' ]),
+    '|-|-|-|-|-|',
+  ];
+  return INGESTION_METRICS
+    .map(metric => ({ metric, rows: renderIngestionRows(ingestion.head, ingestion.base, metric) }))
+    .filter(({ rows }) => rows.length > 0)
+    .map(({ metric, rows }) => `\n\n# ${metric.title}\n\n${[ ...header, ...rows ].join('\n')}`)
+    .join('');
 }
 
 /**
@@ -306,8 +393,6 @@ export function renderComparisonComment(
     ]);
   });
 
-  const ingestionRows = ingestion ? renderIngestionRows(ingestion.head, ingestion.base) : [];
-
   return [
     '<!-- performance-comparison -->\n\n# Benchmarks total results\n\n',
     [ ...header, ...totalRows, ...exclusions ].join('\n'),
@@ -315,9 +400,7 @@ export function renderComparisonComment(
     '\n\n<details>\n<summary>Show detailed results</summary>\n\n',
     [ ...header, ...detailRows ].join('\n'),
     '\n\n</details>',
-    ingestionRows.length > 0 ?
-      `\n\n# Ingestion results\n\nIngestion time excludes engine startup, and memory is the total resident set size after ingestion.\n\n${[ ...header, ...ingestionRows ].join('\n')}` :
-      '',
+    ingestion ? renderIngestionTables(ingestion, options) : '',
     `\n\nMeasured by [this CI run](${options.runUrl}).\n`,
   ].join('');
 }

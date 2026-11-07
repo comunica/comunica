@@ -4,7 +4,7 @@
 import { spawnSync } from 'node:child_process';
 
 // eslint-disable-next-line import/no-nodejs-modules
-import { createReadStream, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 
 // eslint-disable-next-line import/no-nodejs-modules
 import { tmpdir } from 'node:os';
@@ -13,10 +13,11 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 
 import type { IIngestionRun } from '../lib/performanceIngestion';
-import { toIngestionEntries } from '../lib/performanceIngestion';
+import { countTriples, toIngestionEntries } from '../lib/performanceIngestion';
 
 // Usage: performance-ingestion <engine dir> <dataset> <label> <output file> [runs]
-// Measures how long a file-based engine takes to ingest an RDF dataset, and its total memory usage afterwards.
+// Measures how long a file-based engine takes to ingest a line-based RDF dataset (such as N-Triples),
+// and its total memory usage afterwards.
 // Each run uses a fresh process, which inherits the Node.js options of this one (such as --max-old-space-size).
 
 interface IQueryEngine {
@@ -24,6 +25,15 @@ interface IQueryEngine {
 }
 
 const MEASURE_FLAG = '--measure';
+
+// By default, glibc keeps a varying amount of freed memory, depending on thread and allocation timing,
+// which makes the RSS after ingestion vary by about 6% across runs.
+// Fixing its thresholds and limiting its arenas makes it vary by less than 1%.
+const MALLOC_OPTIONS = {
+  MALLOC_ARENA_MAX: '2',
+  MALLOC_MMAP_THRESHOLD_: '131072',
+  MALLOC_TRIM_THRESHOLD_: '131072',
+};
 
 /**
  * Execute an ASK query over a file, which requires the file to be fully ingested.
@@ -85,18 +95,20 @@ async function run(args: string[]): Promise<void> {
     throw new Error('Usage: performance-ingestion <engine dir> <dataset> <label> <output file> [runs]');
   }
 
-  // Read the dataset once, so that the OS file cache is equally warm for all runs
-  await new Promise<void>((resolvePromise, reject) => createReadStream(dataset)
-    .on('error', reject)
-    .on('end', () => resolvePromise())
-    .resume());
+  // Counting reads the dataset once, so that the OS file cache is also equally warm for all runs
+  const triples = await countTriples(dataset);
+  process.stderr.write(`Counted ${triples} triples\n`);
 
   const runs: IIngestionRun[] = [];
   for (let i = 1; i <= runCount; i++) {
     const child = spawnSync(
       process.execPath,
       [ ...process.execArgv, '--expose-gc', __filename, MEASURE_FLAG, resolve(engineDir), resolve(dataset) ],
-      { stdio: [ 'ignore', 'pipe', 'inherit' ], encoding: 'utf8' },
+      {
+        stdio: [ 'ignore', 'pipe', 'inherit' ],
+        encoding: 'utf8',
+        env: { ...MALLOC_OPTIONS, ...process.env },
+      },
     );
     if (child.status !== 0) {
       throw new Error(`Ingestion run ${i} failed with ${child.error?.message ?? child.signal ?? child.status}`);
@@ -106,7 +118,7 @@ async function run(args: string[]): Promise<void> {
     runs.push(measured);
   }
 
-  const output = JSON.stringify(toIngestionEntries(label, runs), null, '  ');
+  const output = JSON.stringify(toIngestionEntries(label, triples, runs), null, '  ');
   mkdirSync(dirname(outputFile), { recursive: true });
   writeFileSync(outputFile, output, 'utf8');
   process.stdout.write(`${output}\n`);
