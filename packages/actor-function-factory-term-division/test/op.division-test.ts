@@ -40,6 +40,11 @@ describe('evaluation of \'/\' like', () => {
       INF  0f  = INF
       0f  -INF = 0f
     
+      3d   2i  = ${decimal('1.5')}
+      -5d  2d  = ${decimal('-2.5')}
+      3d   0f  = INF
+      0d   0f  = NaN
+
       NaN    NaN    = NaN
       NaN    anyNum = NaN
       anyNum NaN    = NaN
@@ -47,6 +52,10 @@ describe('evaluation of \'/\' like', () => {
     errorTable: `
       0i 0i = 'Integer division by 0'
       3i 0i = 'Integer division by 0'
+      1d 0i = 'Decimal division by 0'
+      3i 0d = 'Decimal division by 0'
+      -5d 0d = 'Decimal division by 0'
+      0d 0d = 'Decimal division by 0'
     `,
   });
   runFuncTestTable({
