@@ -107,9 +107,9 @@ describe('getTriples', () => {
 describe('toIngestionEntries', () => {
   it('reports the median of each metric, with the number of triples and derived metrics', () => {
     expect(toIngestionEntries('S', 1_048_576, [
-      { ingestionTime: 1000.4, rss: 800.4 * MIB, heapUsed: 80 * MIB, external: 120 * MIB },
-      { ingestionTime: 900.6, rss: 790 * MIB, heapUsed: 79 * MIB, external: 121 * MIB },
-      { ingestionTime: 1100, rss: 810 * MIB, heapUsed: 81 * MIB, external: 119 * MIB },
+      { ingestionTime: 1000.4, rss: 800.4 * MIB, heapUsed: 80 * MIB, external: 120 * MIB, storeSize: 400.4 * MIB },
+      { ingestionTime: 900.6, rss: 790 * MIB, heapUsed: 79 * MIB, external: 121 * MIB, storeSize: 402 * MIB },
+      { ingestionTime: 1100, rss: 810 * MIB, heapUsed: 81 * MIB, external: 119 * MIB, storeSize: 398 * MIB },
     ])).toEqual([
       {
         name: 'S - ingestion time',
@@ -124,12 +124,19 @@ describe('toIngestionEntries', () => {
         extra: 'Triples: 1048576; Per triple: 800 bytes; Runs: [800,790,810]; ' +
           'Heap used: [80,79,81]; External: [120,121,119]',
       },
+      {
+        name: 'S - store size after ingestion',
+        unit: 'MiB',
+        value: 400,
+        extra: 'Triples: 1048576; Per triple: 400 bytes; Runs: [400,402,398]',
+      },
     ]);
   });
 
   it('reports unavailable derived metrics', () => {
-    const entries = toIngestionEntries('S', 0, [{ ingestionTime: 0, rss: 0, heapUsed: 0, external: 0 }]);
+    const entries = toIngestionEntries('S', 0, [{ ingestionTime: 0, rss: 0, heapUsed: 0, external: 0, storeSize: 0 }]);
     expect(entries[0].extra).toBe('Triples: 0; Throughput: n/a triples/s; Runs: [0]');
     expect(entries[1].extra).toBe('Triples: 0; Per triple: n/a bytes; Runs: [0]; Heap used: [0]; External: [0]');
+    expect(entries[2].extra).toBe('Triples: 0; Per triple: n/a bytes; Runs: [0]');
   });
 });

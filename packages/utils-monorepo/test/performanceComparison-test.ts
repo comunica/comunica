@@ -10,7 +10,7 @@ import {
   renderIngestionRows,
 } from '../lib/performanceComparison';
 
-const [ TIME, MEMORY ] = INGESTION_METRICS;
+const [ TIME, MEMORY, STORE ] = INGESTION_METRICS;
 
 const OPTIONS = { headSha: 'head', baseSha: 'base', runUrl: 'https://ci/1' };
 
@@ -26,12 +26,14 @@ function ingestion(
   suite: string,
   time: number | null,
   memory: number,
+  store: number,
   triples: number | null = 1_048_576,
 ): IGhbenchEntry[] {
   const extra = triples === null ? 'Runs: []' : `Triples: ${triples}; Runs: []`;
   return [
     { name: `${suite} - ingestion time`, unit: 'ms', value: time, extra },
     { name: `${suite} - memory after ingestion`, unit: 'MiB', value: memory, extra },
+    { name: `${suite} - store size after ingestion`, unit: 'MiB', value: store, extra },
   ];
 }
 
@@ -145,8 +147,8 @@ describe('formatCount', () => {
 });
 
 describe('renderIngestionRows', () => {
-  const head = [ ...ingestion('A', 1000, 800), ...ingestion('B', 500, 100) ];
-  const base = [ ...ingestion('A', 1250, 1000), ...ingestion('C', 10, 20) ];
+  const head = [ ...ingestion('A', 1000, 800, 400), ...ingestion('B', 500, 100, 50) ];
+  const base = [ ...ingestion('A', 1250, 1000, 500), ...ingestion('C', 10, 20, 10) ];
 
   it('compares ingestion times of both sides, with their throughput', () => {
     expect(renderIngestionRows(head, base, TIME)).toEqual([
@@ -164,19 +166,30 @@ describe('renderIngestionRows', () => {
     ]);
   });
 
+  it('compares store sizes of both sides, with their bytes per triple', () => {
+    expect(renderIngestionRows(head, base, STORE)).toEqual([
+      '| `A` | 1,048,576 | `400` MiB (400 bytes/triple) | `500` MiB (500 bytes/triple) | `0.80` |',
+      '| `B` | 1,048,576 | `50` MiB (50 bytes/triple) |  |  |',
+      '| `C` | 1,048,576 |  | `10` MiB (10 bytes/triple) | n/a |',
+    ]);
+  });
+
   it('marks missing metrics of measured suites, and differing numbers of triples', () => {
-    const headEntries = ingestion('A', null, 800);
-    const baseEntries = [ ingestion('A', 1000, 1000, 2_097_152)[1] ];
+    const headEntries = ingestion('A', null, 800, 400);
+    const baseEntries = [ ingestion('A', 1000, 1000, 500, 2_097_152)[1] ];
     expect(renderIngestionRows(headEntries, baseEntries, TIME)).toEqual([
       '| `A` | 1,048,576 | missing | missing | n/a |',
     ]);
     expect(renderIngestionRows(headEntries, baseEntries, MEMORY)).toEqual([
       '| `A` | 1,048,576 (base: 2,097,152) | `800` MiB (800 bytes/triple) | `1000` MiB (500 bytes/triple) | `0.80` |',
     ]);
+    expect(renderIngestionRows(headEntries, baseEntries, STORE)).toEqual([
+      '| `A` | 1,048,576 | `400` MiB (400 bytes/triple) | missing | n/a |',
+    ]);
   });
 
   it('omits unavailable derived metrics', () => {
-    const entries = [ ...ingestion('A', 0, 5, 0), ...ingestion('B', 10, 20, null) ];
+    const entries = [ ...ingestion('A', 0, 5, 2, 0), ...ingestion('B', 10, 20, 4, null) ];
     expect(renderIngestionRows(entries, [], TIME)).toEqual([
       '| `A` | 0 | `0` ms |  |  |',
       '| `B` |  | `10` ms |  |  |',
@@ -184,6 +197,10 @@ describe('renderIngestionRows', () => {
     expect(renderIngestionRows(entries, [], MEMORY)).toEqual([
       '| `A` | 0 | `5` MiB |  |  |',
       '| `B` |  | `20` MiB |  |  |',
+    ]);
+    expect(renderIngestionRows(entries, [], STORE)).toEqual([
+      '| `A` | 0 | `2` MiB |  |  |',
+      '| `B` |  | `4` MiB |  |  |',
     ]);
   });
 });
@@ -333,7 +350,7 @@ Measured by [this CI run](https://ci/1).
       [ time('A - q1', 100) ],
       [ time('A - q1', 50) ],
       OPTIONS,
-      { head: ingestion('A', 1000, 800), base: ingestion('A', 1250, 1000) },
+      { head: ingestion('A', 1000, 800, 400), base: ingestion('A', 1250, 1000, 500) },
     )).toBe(`<!-- performance-comparison -->
 
 # Benchmarks total results
@@ -362,6 +379,12 @@ Measured by [this CI run](https://ci/1).
 | Benchmark suite | Triples | Current: head | Base: base | Ratio |
 |-|-|-|-|-|
 | \`A\` | 1,048,576 | \`800\` MiB (800 bytes/triple) | \`1000\` MiB (1,000 bytes/triple) | \`0.80\` |
+
+# Store size after ingestion
+
+| Benchmark suite | Triples | Current: head | Base: base | Ratio |
+|-|-|-|-|-|
+| \`A\` | 1,048,576 | \`400\` MiB (400 bytes/triple) | \`500\` MiB (500 bytes/triple) | \`0.80\` |
 
 Measured by [this CI run](https://ci/1).
 `);
