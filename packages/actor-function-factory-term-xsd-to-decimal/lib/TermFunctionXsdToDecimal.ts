@@ -24,12 +24,12 @@ export class TermFunctionXsdToDecimal extends TermFunctionBase {
           return decimal(result);
         })
         .onString1(() => (val: Term) => {
-          const str = val.str();
-          const result = /^([+-])?(\d+(\.\d+)?)$/u.test(str) ? parseXSDDecimal(str) : undefined;
-          if (result === undefined) {
+          // The xsd:decimal lexical form, with surrounding whitespace collapsed
+          const match = /^[\t\n\r ]*([+-]?(?:\d+(?:\.\d*)?|\.\d+))[\t\n\r ]*$/u.exec(val.str());
+          if (!match) {
             throw new CastError(val, TypeURL.XSD_DECIMAL);
           }
-          return decimal(result);
+          return decimal(Number(match[1]));
         }, false)
         .onBoolean1Typed(() => val => decimal(val ? 1 : 0))
         .collect(),
