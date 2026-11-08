@@ -1820,6 +1820,78 @@ SELECT * {
 `, context)))).resolves.toHaveLength(0);
       });
 
+      it('should handle one-or-more paths with the same variable as subject and object', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix : <http://example.org/> .
+:a :knows :b . :b :knows :c . :c :knows :a .
+:g :knows :g .
+:h :knows :h . :h :knows :x .
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(arrayifyStream(await engine.queryBindings(`
+PREFIX : <http://example.org/>
+SELECT ?s {
+  ?s :knows+ ?s.
+}
+`, context))).resolves.toEqualBindingsArray([
+          BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/a') ]]),
+          BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/b') ]]),
+          BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/c') ]]),
+          BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/g') ]]),
+          BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/h') ]]),
+        ], true);
+      });
+
+      it('should handle one-or-more paths with the same variable as subject and object in named graphs', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix : <http://example.org/> .
+:g1 { :a :knows :b . :b :knows :a . }
+:g2 { :b :knows :c . :c :knows :b . :d :knows :b . }
+`,
+              mediaType: 'application/trig',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(arrayifyStream(await engine.queryBindings(`
+PREFIX : <http://example.org/>
+SELECT ?s ?b {
+  GRAPH ?b { ?s :knows+ ?s. }
+}
+`, context))).resolves.toEqualBindingsArray([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/a') ],
+            [ DF.variable('b'), DF.namedNode('http://example.org/g1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/b') ],
+            [ DF.variable('b'), DF.namedNode('http://example.org/g1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/b') ],
+            [ DF.variable('b'), DF.namedNode('http://example.org/g2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/c') ],
+            [ DF.variable('b'), DF.namedNode('http://example.org/g2') ],
+          ]),
+        ], true);
+      });
+
       it('should handle zero-or-more paths with 1 variable for no data', async() => {
         const context: QueryStringContext = {
           sources: [
