@@ -263,6 +263,77 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
         await new Promise(setImmediate);
       });
 
+      it('should identify a source forced to be a file while its metadata is extracted', async() => {
+        const steps: string[] = [];
+        mediatorQuerySourceIdentifyHypermedia.mediate = <any> jest.fn(async() => {
+          steps.push('identify');
+          return { dataset: 'MYDATASET', source: 'QUERYSOURCE' };
+        });
+        mediatorMetadataExtract.mediate = async({ metadata }: any) => {
+          await new Promise(setImmediate);
+          steps.push('extract');
+          return { metadata };
+        };
+
+        const { source, metadata, dataset } = await actor.run({
+          link: { url: 'startUrl', forceSourceType: 'file' },
+          context: new ActionContext(),
+        });
+        expect(source).toBe('QUERYSOURCE');
+        expect(metadata).toEqual({ a: 1 });
+        expect(dataset).toBe('MYDATASET');
+        expect(steps).toEqual([ 'identify', 'extract' ]);
+        expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(1);
+        expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledWith({
+          context: new ActionContext(),
+          forceSourceType: 'file',
+          handledDatasets: undefined,
+          metadata: {},
+          quads: expect.anything(),
+          url: 'startUrl',
+        });
+      });
+
+      it('should delegate metadata errors of a source forced to be a file to the source', async() => {
+        mediatorQuerySourceIdentifyHypermedia.mediate = <any> jest.fn(async({ quads }: any) => ({
+          dataset: 'MYDATASET',
+          source: { sourceContents: quads },
+        }));
+        const error = new Error('metadata error');
+        mediatorMetadataExtract.mediate = async() => {
+          throw error;
+        };
+
+        const { source, metadata } = await actor.run({
+          link: { url: 'startUrl', forceSourceType: 'file' },
+          context: new ActionContext(),
+        });
+        expect(metadata).toEqual({ cardinality: { type: 'exact', value: 0 }});
+        expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledTimes(2);
+        await expect(arrayifyStream((<any> source).sourceContents)).rejects.toThrow(error);
+      });
+
+      it('should ignore a failed identification of a source forced to be a file if its metadata fails', async() => {
+        const error = new Error('data error');
+        let calls = 0;
+        mediatorQuerySourceIdentifyHypermedia.mediate = <any> jest.fn(async({ quads }: any) => {
+          if (calls++ === 0) {
+            throw error;
+          }
+          return { dataset: 'MYDATASET', source: { sourceContents: quads }};
+        });
+        mediatorMetadataExtract.mediate = async() => {
+          await new Promise(setImmediate);
+          throw error;
+        };
+
+        const { source } = await actor.run({
+          link: { url: 'startUrl', forceSourceType: 'file' },
+          context: new ActionContext(),
+        });
+        await expect(arrayifyStream((<any> source).sourceContents)).rejects.toThrow(error);
+      });
+
       it('should wrap a cache policy', async() => {
         const { source, cachePolicy } = await actor.run({
           link: { url: 'cachepolicy' },
