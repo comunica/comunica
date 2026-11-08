@@ -86,8 +86,9 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
         // A source forced to be a file is used as a plain document: it is not identified based on its metadata,
         // and the links in it are not followed. So its metadata is not extracted, and its quads can be stored as
         // they are parsed, instead of being kept in memory until all of them have been read for the metadata.
+        // As for a plain document, its metadata has no cardinality, so that queries can be delegated to it directly.
         quads = dereferenceRdfOutput.data;
-        ({ metadata } = await this.mediatorMetadataAccumulate.mediate({ context, mode: 'initialize' }));
+        metadata = {};
       } else {
         // Determine the metadata
         const rdfMetadataOutput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(

@@ -263,9 +263,10 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
         await new Promise(setImmediate);
       });
 
-      it('should not extract metadata of a source forced to be a file', async() => {
+      it('should not extract metadata of a source forced to be a file, nor give it a cardinality', async() => {
         jest.spyOn(mediatorMetadata, 'mediate');
         jest.spyOn(mediatorMetadataExtract, 'mediate');
+        jest.spyOn(mediatorMetadataAccumulate, 'mediate');
         mediatorQuerySourceIdentifyHypermedia.mediate = <any> jest.fn(async({ quads }: any) => ({
           dataset: 'MYDATASET',
           source: { sourceContents: quads },
@@ -275,13 +276,15 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
           link: { url: 'firstUrl', forceSourceType: 'file' },
           context: new ActionContext(),
         });
-        expect(metadata).toEqual({ cardinality: { type: 'exact', value: 0 }});
+        // A cardinality in the link metadata would stop queries from being delegated to the source directly.
+        expect(metadata).toEqual({});
         expect(dataset).toBe('MYDATASET');
         expect(mediatorMetadata.mediate).not.toHaveBeenCalled();
         expect(mediatorMetadataExtract.mediate).not.toHaveBeenCalled();
+        expect(mediatorMetadataAccumulate.mediate).not.toHaveBeenCalled();
         expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledWith(expect.objectContaining({
           forceSourceType: 'file',
-          metadata: { cardinality: { type: 'exact', value: 0 }},
+          metadata: {},
         }));
         const quads: RDF.Quad[] = await arrayifyStream((<any> source).sourceContents);
         expect(quads.map(q => q.subject.value)).toEqual([ 's1', 's2' ]);
