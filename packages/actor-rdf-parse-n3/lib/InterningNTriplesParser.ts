@@ -1,17 +1,34 @@
 /* eslint-disable */
-// PROTOTYPE: an N-Triples/N-Quads stream parser that interns terms by their bytes,
+// PROTOTYPE: an N-Triples/N-Quads stream parser that interns terms by their bytes, with N3's checks,
 // so every occurrence of a term is the same RDF/JS object. It emits ordinary quads.
 import type * as RDF from '@rdfjs/types';
 import { Transform } from 'readable-stream';
 
 const TAB = 9; const LF = 10; const CR = 13; const SPACE = 32; const QUOTE = 34; const HASH = 35; const DOT = 46;
 const LT = 60; const GT = 62; const AT = 64; const BACKSLASH = 92; const CARET = 94; const UNDERSCORE = 95;
-const ESCAPE = /\\(?:u([\dA-Fa-f]{4})|U([\dA-Fa-f]{8})|(.))/gu;
-const ESCAPED = { t: '\t', b: '\b', n: '\n', r: '\r', f: '\f', '"': '"', '\'': '\'', '\\': '\\' };
+const OPEN = 40; const CLOSE = 41;
+const ESCAPE = /\\(?:u([\dA-Fa-f]{4})|U([\dA-Fa-f]{8})|([^]))/gu;
+const ESCAPED: Record<string, string> = { t: '\t', b: '\b', n: '\n', r: '\r', f: '\f', '"': '"', '\'': '\'', '\\': '\\' };
+// As N3's lexer and parser check N-Triples and N-Quads
+const ILLEGAL_IRI = /[\x00-\x20<>\\"{}|^`]/u;
+const ABSOLUTE_IRI = /^[a-z][a-z0-9+.-]*:/iu;
+const LANGUAGE = /^[a-z]+(?:-[a-z0-9]+)*(?:--[a-z]+)?$/iu;
+const BLANK_LABEL = /^(?:[0-9A-Z_a-z\xC0-\xD6\xD8-\xF6\xF8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD]|[\uD800-\uDB7F][\uDC00-\uDFFF])(?:\.?(?:[\-0-9A-Z_a-z\xB7\xC0-\xD6\xD8-\xF6\xF8-\u037D\u037F-\u1FFF\u200C\u200D\u203F\u2040\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD]|[\uD800-\uDB7F][\uDC00-\uDFFF]))*$/u;
 
-function unescape(value: string): string {
-  return value.replace(ESCAPE, (m: string, u4: string, u8: string, c: string) => u4 ? String.fromCodePoint(Number.parseInt(u4, 16)) :
-    u8 ? String.fromCodePoint(Number.parseInt(u8, 16)) : (<Record<string, string>> ESCAPED)[c]);
+// Undefined for an invalid escape; IRIs only allow numeric escapes.
+function unescape(value: string, characters: boolean): string | undefined {
+  let valid = true;
+  const result = value.replace(ESCAPE, (m: string, u4: string, u8: string, c: string) => {
+    if (u4 || u8) {
+      return String.fromCodePoint(Number.parseInt(u4 || u8, 16));
+    }
+    if (characters && c in ESCAPED) {
+      return ESCAPED[c];
+    }
+    valid = false;
+    return '';
+  });
+  return valid ? result : undefined;
 }
 
 export class InterningNTriplesParser extends Transform {
@@ -26,6 +43,7 @@ export class InterningNTriplesParser extends Transform {
   private arena: Uint8Array;
   private arenaSize: number;
   private remainder: Buffer | undefined;
+  private line = 1;
 
   public constructor(options: { factory: RDF.DataFactory; blankNodePrefix?: string }) {
     super({ readableObjectMode: true, readableHighWaterMark: 1024 });
@@ -89,31 +107,44 @@ export class InterningNTriplesParser extends Transform {
     while (pos < end) {
       const lineEnd = bytes.indexOf(LF, pos);
       pos = this.space(bytes, pos);
-      if (bytes[pos] === LF || bytes[pos] === HASH) {
-        pos = lineEnd + 1;
-        continue;
-      }
-      let e = this.termEnd(bytes, pos, lineEnd);
-      const subject = this.term(bytes, pos, e);
-      pos = this.space(bytes, e);
-      e = this.termEnd(bytes, pos, lineEnd);
-      const predicate = this.term(bytes, pos, e);
-      pos = this.space(bytes, e);
-      e = this.termEnd(bytes, pos, lineEnd);
-      const object = this.term(bytes, pos, e);
-      pos = this.space(bytes, e);
-      let graph: RDF.Term = this.defaultGraph;
-      if (bytes[pos] === LT || bytes[pos] === UNDERSCORE) {
-        e = this.termEnd(bytes, pos, lineEnd);
-        graph = this.term(bytes, pos, e);
+      while (bytes[pos] !== LF && bytes[pos] !== HASH) {
+        let e = this.termEnd(bytes, pos, lineEnd);
+        if (bytes[pos] === LT ? bytes[pos + 1] === LT : bytes[pos] !== UNDERSCORE) {
+          this.error(bytes, pos, e, 'subject');
+        }
+        const subject = this.term(bytes, pos, e);
         pos = this.space(bytes, e);
+        e = this.termEnd(bytes, pos, lineEnd);
+        if (bytes[pos] !== LT || bytes[pos + 1] === LT) {
+          this.error(bytes, pos, e, 'predicate');
+        }
+        const predicate = this.term(bytes, pos, e);
+        pos = this.space(bytes, e);
+        e = this.termEnd(bytes, pos, lineEnd);
+        const object = this.term(bytes, pos, e);
+        pos = this.space(bytes, e);
+        let graph: RDF.Term = this.defaultGraph;
+        if (bytes[pos] !== DOT) {
+          e = this.termEnd(bytes, pos, lineEnd);
+          if (bytes[pos] === LT ? bytes[pos + 1] === LT : bytes[pos] !== UNDERSCORE) {
+            this.error(bytes, pos, e, 'graph');
+          }
+          graph = this.term(bytes, pos, e);
+          pos = this.space(bytes, e);
+          if (bytes[pos] !== DOT) {
+            this.error(bytes, pos, pos + 1, 'punctuation');
+          }
+        }
+        this.push(this.factory.quad(<RDF.Quad_Subject> subject, <RDF.Quad_Predicate> predicate, <RDF.Quad_Object> object, <RDF.Quad_Graph> graph));
+        pos = this.space(bytes, pos + 1);
       }
-      if (bytes[pos] !== DOT) {
-        throw new Error('Expected a dot');
-      }
-      this.push(this.factory.quad(<RDF.Quad_Subject> subject, <RDF.Quad_Predicate> predicate, <RDF.Quad_Object> object, <RDF.Quad_Graph> graph));
       pos = lineEnd + 1;
+      this.line++;
     }
+  }
+
+  private error(bytes: Buffer, start: number, end: number, what: string): never {
+    throw new Error(`Unexpected ${what} "${this.decoder.decode(bytes.subarray(start, Math.max(end, start + 1)))}" on line ${this.line}.`);
   }
 
   private space(bytes: Buffer, pos: number): number {
@@ -127,7 +158,19 @@ export class InterningNTriplesParser extends Transform {
   private termEnd(bytes: Buffer, pos: number, lineEnd: number): number {
     const b = bytes[pos];
     let end: number;
-    if (b === LT) {
+    if (b === LT && bytes[pos + 1] === LT) {
+      if (bytes[pos + 2] !== OPEN) {
+        this.error(bytes, pos, pos + 3, 'token');
+      }
+      let p = this.space(bytes, pos + 3);
+      for (let i = 0; i < 3; i++) {
+        p = this.space(bytes, this.termEnd(bytes, p, lineEnd));
+      }
+      if (bytes[p] !== CLOSE || bytes[p + 1] !== GT || bytes[p + 2] !== GT) {
+        this.error(bytes, p, p + 3, 'token');
+      }
+      end = p + 3;
+    } else if (b === LT) {
       end = bytes.indexOf(GT, pos + 1) + 1;
     } else if (b === QUOTE) {
       end = bytes.indexOf(QUOTE, pos + 1);
@@ -151,10 +194,10 @@ export class InterningNTriplesParser extends Transform {
       while (c !== SPACE && c !== TAB && c !== LT && c !== CR && c !== LF) c = bytes[++end];
       while (bytes[end - 1] === DOT) end--;
     } else {
-      throw new Error(`Unexpected term start ${b}`);
+      this.error(bytes, pos, pos + 1, 'token');
     }
     if (end <= pos || end > lineEnd) {
-      throw new Error('Unterminated term');
+      this.error(bytes, pos, lineEnd, 'unterminated term');
     }
     return end;
   }
@@ -186,7 +229,17 @@ export class InterningNTriplesParser extends Transform {
         }
       }
     }
-    const term = this.create(this.decoder.decode(bytes.subarray(start, end)));
+    let term: RDF.Term;
+    if (bytes[start] === LT && bytes[start + 1] === LT) {
+      term = this.createTripleTerm(bytes, start);
+      // Inner terms may have been added
+      slot = h & this.mask;
+      while (this.table[(slot * 4) + 1] !== 0) {
+        slot = (slot + 1) & this.mask;
+      }
+    } else {
+      term = this.create(this.decoder.decode(bytes.subarray(start, end)), bytes, start, end);
+    }
     if (this.arenaSize + length > this.arena.length) {
       const grown = new Uint8Array(Math.max(this.arena.length * 2, this.arenaSize + length));
       grown.set(this.arena.subarray(0, this.arenaSize));
@@ -195,10 +248,10 @@ export class InterningNTriplesParser extends Transform {
     this.arena.set(bytes.subarray(start, end), this.arenaSize);
     this.terms.push(term);
     const o = slot * 4;
-    table[o] = h;
-    table[o + 1] = this.terms.length;
-    table[o + 2] = this.arenaSize;
-    table[o + 3] = length;
+    this.table[o] = h;
+    this.table[o + 1] = this.terms.length;
+    this.table[o + 2] = this.arenaSize;
+    this.table[o + 3] = length;
     this.arenaSize += length;
     if (++this.size * 2 > mask) {
       this.grow();
@@ -219,24 +272,78 @@ export class InterningNTriplesParser extends Transform {
     }
   }
 
-  private create(text: string): RDF.Term {
+  private createTripleTerm(bytes: Buffer, start: number): RDF.Term {
+    const lineEnd = bytes.indexOf(LF, start);
+    let pos = this.space(bytes, start + 3);
+    let e = this.termEnd(bytes, pos, lineEnd);
+    if (bytes[pos] === LT ? bytes[pos + 1] === LT : bytes[pos] !== UNDERSCORE) {
+      this.error(bytes, pos, e, 'subject');
+    }
+    const subject = this.term(bytes, pos, e);
+    pos = this.space(bytes, e);
+    e = this.termEnd(bytes, pos, lineEnd);
+    if (bytes[pos] !== LT || bytes[pos + 1] === LT) {
+      this.error(bytes, pos, e, 'predicate');
+    }
+    const predicate = this.term(bytes, pos, e);
+    pos = this.space(bytes, e);
+    e = this.termEnd(bytes, pos, lineEnd);
+    const object = this.term(bytes, pos, e);
+    return this.factory.quad(<RDF.Quad_Subject> subject, <RDF.Quad_Predicate> predicate, <RDF.Quad_Object> object);
+  }
+
+  private iri(value: string, bytes: Buffer, start: number, end: number): RDF.NamedNode {
+    const iri = value.includes('\\') ? unescape(value, false) : value;
+    if (iri === undefined || ILLEGAL_IRI.test(iri) || !ABSOLUTE_IRI.test(iri)) {
+      this.error(bytes, start, end, 'IRI');
+    }
+    return this.factory.namedNode(iri);
+  }
+
+  private create(text: string, bytes: Buffer, start: number, end: number): RDF.Term {
     const c = text.charCodeAt(0);
     if (c === LT) {
-      const value = text.slice(1, -1);
-      return this.factory.namedNode(value.includes('\\') ? unescape(value) : value);
+      return this.iri(text.slice(1, -1), bytes, start, end);
     }
     if (c === UNDERSCORE) {
-      return this.factory.blankNode(this.blankNodePrefix + text.slice(2));
+      const label = text.slice(2);
+      if (text.charCodeAt(1) !== 58 || !BLANK_LABEL.test(label)) {
+        this.error(bytes, start, end, 'blank node');
+      }
+      return this.factory.blankNode(this.blankNodePrefix + label);
     }
     const close = text.lastIndexOf('"');
-    let value = text.slice(1, close);
-    if (value.includes('\\')) value = unescape(value);
+    let value: string | undefined = text.slice(1, close);
+    if (value.includes('\\')) {
+      value = unescape(value, true);
+    }
+    if (value === undefined || text.slice(1, close).includes('\r')) {
+      this.error(bytes, start, end, 'literal');
+    }
     const s = text.charCodeAt(close + 1);
-    if (s === CARET) return this.factory.literal(value, this.factory.namedNode(text.slice(close + 4, -1)));
+    if (s === CARET) {
+      if (text.charCodeAt(close + 2) !== CARET || text.charCodeAt(close + 3) !== LT) {
+        this.error(bytes, start, end, 'literal');
+      }
+      return this.factory.literal(value, this.iri(text.slice(close + 4, -1), bytes, start, end));
+    }
     if (s === AT) {
       const tag = text.slice(close + 2);
+      if (!LANGUAGE.test(tag)) {
+        this.error(bytes, start, end, 'language tag');
+      }
       const dir = tag.indexOf('--');
-      return this.factory.literal(value, dir < 0 ? tag : { language: tag.slice(0, dir), direction: <'ltr' | 'rtl'> tag.slice(dir + 2) });
+      if (dir < 0) {
+        return this.factory.literal(value, tag);
+      }
+      const direction = tag.slice(dir + 2);
+      if (direction !== 'ltr' && direction !== 'rtl') {
+        this.error(bytes, start, end, 'direction');
+      }
+      return this.factory.literal(value, { language: tag.slice(0, dir), direction });
+    }
+    if (close + 1 !== text.length) {
+      this.error(bytes, start, end, 'literal');
     }
     return this.factory.literal(value);
   }
