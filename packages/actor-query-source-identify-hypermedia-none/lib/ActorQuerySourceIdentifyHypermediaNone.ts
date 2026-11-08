@@ -18,7 +18,7 @@ import type {
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { compareTerms } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
-import { RdfStore } from 'rdf-stores';
+import { defaultTermSortKey, RdfStore } from 'rdf-stores';
 
 /**
  * A comunica None Query Source Identify Hypermedia Actor.
@@ -69,6 +69,8 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     if (ordered) {
       return <RdfStore<any, Q>><unknown> RdfStore.createOrdered({
         termComparator: compareTerms,
+        // Same order as compareTerms, so many new terms can be sorted on strings
+        termSortKey: defaultTermSortKey,
         nodes: true,
       });
     }
