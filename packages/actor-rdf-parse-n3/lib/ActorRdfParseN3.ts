@@ -3,6 +3,7 @@ import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import { StreamParser } from 'n3';
+import { InterningNTriplesParser } from './InterningNTriplesParser';
 import type { Readable } from 'readable-stream';
 
 /**
@@ -11,6 +12,8 @@ import type { Readable } from 'readable-stream';
  * It is able to parse N3-based RDF serializations and announce the presence of them by media type.
  */
 export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
+  public static blankNodePrefixCounter = 0;
+
   /**
    * @param args -
    *   \ @defaultNested {{
@@ -36,7 +39,14 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
   Promise<IActorRdfParseOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     action.data.on('error', error => data.emit('error', error));
-    const data = <Readable><any>action.data.pipe(new StreamParser({
+    // PROTOTYPE: N-Triples and N-Quads are parsed by a parser that interns terms by their bytes,
+    // so that every occurrence of a term is the same object. It does not support RDF 1.2 triple terms.
+    const data = mediaType === 'application/n-triples' || mediaType === 'application/n-quads' ?
+      <Readable><any>action.data.pipe(new InterningNTriplesParser({
+        factory: dataFactory,
+        blankNodePrefix: `n${ActorRdfParseN3.blankNodePrefixCounter++}_`,
+      })) :
+      <Readable><any>action.data.pipe(new StreamParser({
       factory: dataFactory,
       baseIRI: action.metadata?.baseIRI,
       // Enable RDF-star-mode on all formats, except N3, where this is not supported.
