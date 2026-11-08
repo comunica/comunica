@@ -26,10 +26,16 @@ export interface IIngestionRun {
    * The memory in bytes of C++ objects bound to JavaScript objects, after full ingestion and garbage collection.
    */
   external: number;
+  /**
+   * The size in bytes of what ingestion keeps alive, which is mainly the in-memory store.
+   * This is the used heap and external memory after ingestion, minus those before it, both after garbage collection.
+   */
+  storeSize: number;
 }
 
 export const INGESTION_TIME_SUFFIX = ' - ingestion time';
 export const INGESTION_MEMORY_SUFFIX = ' - memory after ingestion';
+export const INGESTION_STORE_SUFFIX = ' - store size after ingestion';
 
 /**
  * Determine the median of the given values.
@@ -110,8 +116,10 @@ export function toIngestionEntries(label: string, triples: number, runs: IIngest
   const rss = runs.map(run => toMebibytes(run.rss));
   const heapUsed = runs.map(run => toMebibytes(run.heapUsed));
   const external = runs.map(run => toMebibytes(run.external));
+  const storeSizes = runs.map(run => toMebibytes(run.storeSize));
   const time = median(times);
   const memory = median(rss);
+  const storeSize = median(storeSizes);
   return [
     {
       name: `${label}${INGESTION_TIME_SUFFIX}`,
@@ -124,6 +132,12 @@ export function toIngestionEntries(label: string, triples: number, runs: IIngest
       unit: 'MiB',
       value: memory,
       extra: `Triples: ${triples}; Per triple: ${formatOptional(getBytesPerTriple(triples, memory))} bytes; Runs: [${rss.join(',')}]; Heap used: [${heapUsed.join(',')}]; External: [${external.join(',')}]`,
+    },
+    {
+      name: `${label}${INGESTION_STORE_SUFFIX}`,
+      unit: 'MiB',
+      value: storeSize,
+      extra: `Triples: ${triples}; Per triple: ${formatOptional(getBytesPerTriple(triples, storeSize))} bytes; Runs: [${storeSizes.join(',')}]`,
     },
   ];
 }

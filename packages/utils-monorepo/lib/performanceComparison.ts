@@ -3,6 +3,7 @@ import {
   getThroughput,
   getTriples,
   INGESTION_MEMORY_SUFFIX,
+  INGESTION_STORE_SUFFIX,
   INGESTION_TIME_SUFFIX,
 } from './performanceIngestion';
 
@@ -199,6 +200,11 @@ export interface IIngestionMetric {
   derive: (triples: number, value: number) => string | undefined;
 }
 
+function deriveBytesPerTriple(triples: number, mebibytes: number): string | undefined {
+  const bytes = getBytesPerTriple(triples, mebibytes);
+  return bytes === undefined ? undefined : `${formatCount(bytes)} bytes/triple`;
+}
+
 export const INGESTION_METRICS: IIngestionMetric[] = [
   {
     title: 'Ingestion time',
@@ -211,10 +217,12 @@ export const INGESTION_METRICS: IIngestionMetric[] = [
   {
     title: 'Memory after ingestion',
     suffix: INGESTION_MEMORY_SUFFIX,
-    derive(triples, value) {
-      const bytes = getBytesPerTriple(triples, value);
-      return bytes === undefined ? undefined : `${formatCount(bytes)} bytes/triple`;
-    },
+    derive: deriveBytesPerTriple,
+  },
+  {
+    title: 'Store size after ingestion',
+    suffix: INGESTION_STORE_SUFFIX,
+    derive: deriveBytesPerTriple,
   },
 ];
 

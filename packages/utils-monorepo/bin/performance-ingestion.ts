@@ -17,7 +17,7 @@ import { countTriples, toIngestionEntries } from '../lib/performanceIngestion';
 
 // Usage: performance-ingestion <engine dir> <dataset> <label> <output file> [runs]
 // Measures how long a file-based engine takes to ingest a line-based RDF dataset (such as N-Triples),
-// and its total memory usage afterwards.
+// its total memory usage afterwards, and the size of what ingestion keeps alive, which is mainly the in-memory store.
 // Each run uses a fresh process, which inherits the Node.js options of this one (such as --max-old-space-size).
 
 interface IQueryEngine {
@@ -52,6 +52,18 @@ async function ask(engine: IQueryEngine, file: string): Promise<number> {
 }
 
 /**
+ * Collect garbage and determine the memory usage afterwards.
+ * Collect twice with a pause in between, as V8 releases array buffer memory asynchronously.
+ * @param gc The garbage collector.
+ */
+async function settleMemory(gc: () => void): Promise<NodeJS.MemoryUsage> {
+  gc();
+  await new Promise(resolvePromise => setTimeout(resolvePromise, 500));
+  gc();
+  return process.memoryUsage();
+}
+
+/**
  * Measure a single ingestion run in the current process.
  * @param engineDir The directory of the engine package.
  * @param dataset The path of the dataset.
@@ -75,17 +87,20 @@ async function measure(engineDir: string, dataset: string): Promise<IIngestionRu
   } finally {
     rmSync(warmupDir, { recursive: true, force: true });
   }
+  const before = await settleMemory(gc);
 
   // The first query ingests the dataset, and the second one only measures query overhead by reusing the cached source
   const cold = await ask(engine, dataset);
-  // The cached source keeps the ingested dataset in memory.
-  // Collect twice with a pause in between, as V8 releases array buffer memory asynchronously.
-  gc();
-  await new Promise(resolvePromise => setTimeout(resolvePromise, 500));
-  gc();
-  const { rss, heapUsed, external } = process.memoryUsage();
+  // The cached source keeps the ingested dataset in memory
+  const { rss, heapUsed, external } = await settleMemory(gc);
   const cached = await ask(engine, dataset);
-  return { ingestionTime: cold - cached, rss, heapUsed, external };
+  return {
+    ingestionTime: cold - cached,
+    rss,
+    heapUsed,
+    external,
+    storeSize: heapUsed + external - before.heapUsed - before.external,
+  };
 }
 
 async function run(args: string[]): Promise<void> {
@@ -114,7 +129,7 @@ async function run(args: string[]): Promise<void> {
       throw new Error(`Ingestion run ${i} failed with ${child.error?.message ?? child.signal ?? child.status}`);
     }
     const measured: IIngestionRun = JSON.parse(child.stdout.trim().split('\n').pop()!);
-    process.stderr.write(`Run ${i}: ingested in ${Math.round(measured.ingestionTime)} ms, using ${Math.round(measured.rss / 1024 / 1024)} MiB\n`);
+    process.stderr.write(`Run ${i}: ingested in ${Math.round(measured.ingestionTime)} ms, using ${Math.round(measured.rss / 1024 / 1024)} MiB, of which the store takes ${Math.round(measured.storeSize / 1024 / 1024)} MiB\n`);
     runs.push(measured);
   }
 
