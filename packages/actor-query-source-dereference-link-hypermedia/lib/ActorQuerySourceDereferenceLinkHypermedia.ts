@@ -105,8 +105,8 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
         quads = await action.link.transform(quads);
       }
 
-      // A source forced to a type whose identification does not depend on metadata is identified while its metadata is
-      // extracted, so its quads are consumed as they come in, instead of all being kept in memory until the metadata is.
+      // A source forced to be a file does not need its metadata to be identified, so it is identified while its
+      // metadata is extracted. Its quads are then stored as they come in, instead of being kept in memory until then.
       if (action.link.forceSourceType === 'file') {
         identified = this.mediatorQuerySourceIdentifyHypermedia.mediate({
           context,
