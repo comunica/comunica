@@ -7,7 +7,10 @@ import type {
   IActorQuerySourceDereferenceLinkOutput,
   IActorQuerySourceDereferenceLinkArgs,
 } from '@comunica/bus-query-source-dereference-link';
-import type { MediatorQuerySourceIdentifyHypermedia } from '@comunica/bus-query-source-identify-hypermedia';
+import type {
+  IActorQuerySourceIdentifyHypermediaOutput,
+  MediatorQuerySourceIdentifyHypermedia,
+} from '@comunica/bus-query-source-identify-hypermedia';
 import type { IActorRdfMetadataOutput, MediatorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import type { MediatorRdfMetadataAccumulate } from '@comunica/bus-rdf-metadata-accumulate';
 import type { MediatorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
@@ -73,6 +76,7 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     let quads: RDF.Stream;
     let metadata: Record<string, any>;
     let cachePolicy: ICachePolicy<IActionQuerySourceDereferenceLink> | undefined;
+    let identified: Promise<IActorQuerySourceIdentifyHypermediaOutput> | undefined;
     try {
       const dereferenceRdfContext = this.getDereferenceRdfContext(context, url, action.link.forceSourceType);
       const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediatorDereferenceRdf
@@ -94,6 +98,30 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
         // If we don't do this, we end up with an unhandled error message
       });
 
+      quads = rdfMetadataOutput.data;
+
+      // Transform quads if needed.
+      if (action.link.transform) {
+        quads = await action.link.transform(quads);
+      }
+
+      // A source forced to a type whose identification does not depend on metadata is identified while its metadata is
+      // extracted, so its quads are consumed as they come in, instead of all being kept in memory until the metadata is.
+      if (action.link.forceSourceType === 'file') {
+        identified = this.mediatorQuerySourceIdentifyHypermedia.mediate({
+          context,
+          forceSourceType: action.link.forceSourceType,
+          handledDatasets: action.handledDatasets,
+          metadata: {},
+          quads,
+          url,
+        });
+        // Its errors are also those of the metadata extraction, which reports them
+        identified.catch(() => {
+          // Do nothing
+        });
+      }
+
       metadata = (await this.mediatorMetadataExtract.mediate({
         context,
         url,
@@ -102,13 +130,8 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
         headers: dereferenceRdfOutput.headers,
         requestTime: dereferenceRdfOutput.requestTime,
       })).metadata;
-      quads = rdfMetadataOutput.data;
-
-      // Transform quads if needed.
-      if (action.link.transform) {
-        quads = await action.link.transform(quads);
-      }
     } catch (error: unknown) {
+      identified = undefined;
       // Make sure that dereference errors are only emitted once an actor really needs the read quads
       // This allows SPARQL endpoints that error on service description fetching to still be source-forcible
       quads = new Readable();
@@ -124,14 +147,14 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     }
 
     // Determine the source
-    const { source, dataset } = await this.mediatorQuerySourceIdentifyHypermedia.mediate({
+    const { source, dataset } = await (identified ?? this.mediatorQuerySourceIdentifyHypermedia.mediate({
       context,
       forceSourceType: action.link.forceSourceType,
       handledDatasets: action.handledDatasets,
       metadata,
       quads,
       url,
-    });
+    }));
 
     if (dataset && action.handledDatasets) {
       // Mark the dataset as applied
