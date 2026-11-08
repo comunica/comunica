@@ -82,27 +82,35 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
         cachePolicy = new QuerySourceCachePolicyDereferenceWrapper(dereferenceRdfOutput.cachePolicy);
       }
 
-      // Determine the metadata
-      const rdfMetadataOutput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
-        { context, url, quads: dereferenceRdfOutput.data, triples: dereferenceRdfOutput.metadata?.triples },
-      );
+      if (action.link.forceSourceType === 'file') {
+        // A source forced to be a file is used as a plain document: it is not identified based on its metadata,
+        // and the links in it are not followed. So its metadata is not extracted, and its quads can be stored as
+        // they are parsed, instead of being kept in memory until all of them have been read for the metadata.
+        quads = dereferenceRdfOutput.data;
+        ({ metadata } = await this.mediatorMetadataAccumulate.mediate({ context, mode: 'initialize' }));
+      } else {
+        // Determine the metadata
+        const rdfMetadataOutput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
+          { context, url, quads: dereferenceRdfOutput.data, triples: dereferenceRdfOutput.metadata?.triples },
+        );
 
-      rdfMetadataOutput.data.on('error', () => {
-        // Silence errors in the data stream,
-        // as they will be emitted again in the metadata stream,
-        // and will result in a promise rejection anyways.
-        // If we don't do this, we end up with an unhandled error message
-      });
+        rdfMetadataOutput.data.on('error', () => {
+          // Silence errors in the data stream,
+          // as they will be emitted again in the metadata stream,
+          // and will result in a promise rejection anyways.
+          // If we don't do this, we end up with an unhandled error message
+        });
 
-      metadata = (await this.mediatorMetadataExtract.mediate({
-        context,
-        url,
-        // The problem appears to be conflicting metadata keys here
-        metadata: rdfMetadataOutput.metadata,
-        headers: dereferenceRdfOutput.headers,
-        requestTime: dereferenceRdfOutput.requestTime,
-      })).metadata;
-      quads = rdfMetadataOutput.data;
+        metadata = (await this.mediatorMetadataExtract.mediate({
+          context,
+          url,
+          // The problem appears to be conflicting metadata keys here
+          metadata: rdfMetadataOutput.metadata,
+          headers: dereferenceRdfOutput.headers,
+          requestTime: dereferenceRdfOutput.requestTime,
+        })).metadata;
+        quads = rdfMetadataOutput.data;
+      }
 
       // Transform quads if needed.
       if (action.link.transform) {

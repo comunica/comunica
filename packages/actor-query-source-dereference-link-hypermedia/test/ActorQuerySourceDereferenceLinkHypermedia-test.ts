@@ -263,6 +263,46 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
         await new Promise(setImmediate);
       });
 
+      it('should not extract metadata of a source forced to be a file', async() => {
+        jest.spyOn(mediatorMetadata, 'mediate');
+        jest.spyOn(mediatorMetadataExtract, 'mediate');
+        mediatorQuerySourceIdentifyHypermedia.mediate = <any> jest.fn(async({ quads }: any) => ({
+          dataset: 'MYDATASET',
+          source: { sourceContents: quads },
+        }));
+
+        const { source, metadata, dataset } = await actor.run({
+          link: { url: 'firstUrl', forceSourceType: 'file' },
+          context: new ActionContext(),
+        });
+        expect(metadata).toEqual({ cardinality: { type: 'exact', value: 0 }});
+        expect(dataset).toBe('MYDATASET');
+        expect(mediatorMetadata.mediate).not.toHaveBeenCalled();
+        expect(mediatorMetadataExtract.mediate).not.toHaveBeenCalled();
+        expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledWith(expect.objectContaining({
+          forceSourceType: 'file',
+          metadata: { cardinality: { type: 'exact', value: 0 }},
+        }));
+        const quads: RDF.Quad[] = await arrayifyStream((<any> source).sourceContents);
+        expect(quads.map(q => q.subject.value)).toEqual([ 's1', 's2' ]);
+      });
+
+      it('should apply the link transformation to a source forced to be a file', async() => {
+        mediatorQuerySourceIdentifyHypermedia.mediate = <any> jest.fn(async({ quads }: any) => ({
+          dataset: 'MYDATASET',
+          source: { sourceContents: quads },
+        }));
+        const transformQuads = jest.fn(inputQuads => inputQuads
+          .map((q: RDF.Quad) => DF.quad(q.subject, q.predicate, DF.literal(`TRANSFORMED(${q.object.value})`))));
+
+        const { source } = await actor.run({
+          link: { url: 'firstUrl', forceSourceType: 'file', transform: transformQuads },
+          context: new ActionContext(),
+        });
+        const quads: RDF.Quad[] = await arrayifyStream((<any> source).sourceContents);
+        expect(quads.map(q => q.object.value)).toEqual([ 'TRANSFORMED(o1)', 'TRANSFORMED(o2)' ]);
+      });
+
       it('should wrap a cache policy', async() => {
         const { source, cachePolicy } = await actor.run({
           link: { url: 'cachepolicy' },
