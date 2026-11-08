@@ -83,10 +83,7 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
       }
 
       if (action.link.forceSourceType === 'file') {
-        // A source forced to be a file is used as a plain document: it is not identified based on its metadata,
-        // and the links in it are not followed. So its metadata is not extracted, and its quads can be stored as
-        // they are parsed, instead of being kept in memory until all of them have been read for the metadata.
-        // As for a plain document, its metadata has no cardinality, so that queries can be delegated to it directly.
+        // Skip unnecessary metadata bus for forced file types.
         quads = dereferenceRdfOutput.data;
         metadata = {};
       } else {
