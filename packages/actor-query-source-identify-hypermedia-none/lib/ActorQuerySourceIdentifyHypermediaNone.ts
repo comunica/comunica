@@ -25,6 +25,7 @@ import { RdfStore } from 'rdf-stores';
  */
 export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIdentifyHypermedia {
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
+  public static blankNodePrefixCounter = 0;
   public readonly nonOrderedStore: boolean;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaNoneArgs) {
@@ -46,12 +47,27 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
     const resolveConflictMode = action.context.get(KeysInitQuery.dereferenceFromNamedConflictMode) ??
       ((): DereferenceFromNamedConflictMode => 'error');
 
-    const source = new QuerySourceRdfJs(
-      await ActorQuerySourceIdentifyHypermediaNone.storeStream(
+    // PROTOTYPE: a local N-Triples or N-Quads file is imported from its bytes.
+    const nTriplesPath: string | undefined = (<any> action.quads).nTriplesPath;
+    let store: RDF.Store;
+    if (nTriplesPath && !namedGraph) {
+      const rdfStore = ActorQuerySourceIdentifyHypermediaNone.createStore(!this.nonOrderedStore);
+      // eslint-disable-next-line ts/no-require-imports
+      const fs: typeof import('node:fs') = require('node:fs');
+      await rdfStore.importNTriples(
+        fs.createReadStream(nTriplesPath, { highWaterMark: 1 << 20 }),
+        { blankNodePrefix: `f${ActorQuerySourceIdentifyHypermediaNone.blankNodePrefixCounter++}_` },
+      );
+      store = rdfStore;
+    } else {
+      store = await ActorQuerySourceIdentifyHypermediaNone.storeStream(
         action.quads,
         namedGraph ? { dataFactory, graph: namedGraph, url: action.url, resolveConflictMode } : undefined,
         !this.nonOrderedStore,
-      ),
+      );
+    }
+    const source = new QuerySourceRdfJs(
+      store,
       dataFactory,
       await BindingsFactory.create(this.mediatorMergeBindingsContext, action.context, dataFactory),
     );

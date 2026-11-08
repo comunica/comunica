@@ -77,6 +77,25 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     let metadata: Record<string, any>;
     let cachePolicy: ICachePolicy<IActionQuerySourceDereferenceLink> | undefined;
     let identified: Promise<IActorQuerySourceIdentifyHypermediaOutput> | undefined;
+
+    // PROTOTYPE: a local N-Triples or N-Quads file forced to be a file source is loaded from its bytes,
+    // skipping RDF parsing and metadata extraction.
+    const nTriplesPath = action.link.forceSourceType === 'file' && !action.link.transform ?
+      ActorQuerySourceDereferenceLinkHypermedia.getLocalNTriplesPath(url) :
+      undefined;
+    if (nTriplesPath) {
+      ({ metadata } = await this.mediatorMetadataAccumulate.mediate({ context, mode: 'initialize' }));
+      const { source, dataset } = await this.mediatorQuerySourceIdentifyHypermedia.mediate({
+        context,
+        forceSourceType: action.link.forceSourceType,
+        handledDatasets: action.handledDatasets,
+        metadata,
+        quads: <RDF.Stream> <unknown> Object.assign(new Readable(), { nTriplesPath }),
+        url,
+      });
+      return { source, metadata: <MetadataBindings> metadata, dataset };
+    }
+
     try {
       const dereferenceRdfContext = this.getDereferenceRdfContext(context, url, action.link.forceSourceType);
       const dereferenceRdfOutput: IActorDereferenceRdfOutput = await this.mediatorDereferenceRdf
@@ -167,6 +186,23 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     context.get(KeysStatistics.dereferencedLinks)?.updateStatistic({ url: action.link.url, metadata }, source);
 
     return { source, metadata: <MetadataBindings> metadata, dataset, cachePolicy };
+  }
+
+  /**
+   * The path of a local N-Triples or N-Quads file, if the URL refers to one.
+   * @param url A URL or path.
+   */
+  public static getLocalNTriplesPath(url: string): string | undefined {
+    if (!/\.n[qt]$/u.test(url)) {
+      return undefined;
+    }
+    const path = url.startsWith('file://') ? decodeURIComponent(url.slice(7)) : url;
+    if (/^[a-z][\d+.a-z-]*:/iu.test(path) && !/^[a-z]:[/\\]/iu.test(path)) {
+      return undefined;
+    }
+    // eslint-disable-next-line ts/no-require-imports
+    const fs: typeof import('node:fs') = require('node:fs');
+    return fs.existsSync(path) ? path : undefined;
   }
 }
 
