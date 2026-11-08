@@ -204,6 +204,10 @@ export class InterningNTriplesParser extends Transform {
 
   // The interned term for bytes [start, end)
   private term(bytes: Buffer, start: number, end: number): RDF.Term {
+    // Literals are mostly distinct, and the store builds a new key string for them anyway
+    if (bytes[start] === QUOTE) {
+      return this.create(this.decoder.decode(bytes.subarray(start, end)), bytes, start, end);
+    }
     const length = end - start;
     let h = 0x811C9DC5;
     for (let i = start; i < end; i++) {
