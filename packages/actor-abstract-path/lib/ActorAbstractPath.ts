@@ -61,7 +61,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     }
 
     // Path predicates can't contain variables
-    if (path && (path.subject.value === name || path.object.value === name)) {
+    if (path && (path.subject.value === name || path.object.value === name || path.graph.value === name)) {
       return this.generateVariable(dataFactory, path, `${name}b`);
     }
 

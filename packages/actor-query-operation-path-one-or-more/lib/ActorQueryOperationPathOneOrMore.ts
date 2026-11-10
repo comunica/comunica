@@ -63,6 +63,27 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         metadata: async() => ({ ...await starEval.metadata(), variables }),
       };
     }
+    if (operation.subject.termType === 'Variable' && operation.subject.equals(operation.object)) {
+      const subjectVar = operation.subject;
+      const objectVar = this.generateVariable(dataFactory, operation);
+      const results = getSafeBindings(await this.mediatorQueryOperation.mediate({
+        context,
+        operation: algebraFactory.createPath(subjectVar, predicate, objectVar, operation.graph),
+      }));
+      const bindingsStream = results.bindingsStream.map<Bindings>(bindings =>
+        bindings.get(subjectVar)!.equals(bindings.get(objectVar)) ? bindings.delete(objectVar) : null);
+      return {
+        type: 'bindings',
+        bindingsStream,
+        metadata: async() => {
+          const metadata = await results.metadata();
+          return {
+            ...metadata,
+            variables: metadata.variables.filter(({ variable }) => !variable.equals(objectVar)),
+          };
+        },
+      };
+    }
     if (operation.subject.termType === 'Variable' && operation.object.termType === 'Variable') {
       // Get all the results of subjects with same predicate, but once, then fill in first variable for those
       const single = algebraFactory.createDistinct(
