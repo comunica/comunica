@@ -64,8 +64,6 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       };
     }
     if (operation.subject.termType === 'Variable' && operation.subject.equals(operation.object)) {
-      // ?x P+ ?x matches the nodes that reach themselves,
-      // so evaluate it with a fresh object variable and keep the solutions that end where they started.
       const subjectVar = operation.subject;
       const objectVar = this.generateVariable(dataFactory, operation);
       const results = getSafeBindings(await this.mediatorQueryOperation.mediate({
