@@ -49,6 +49,6 @@
     "@comunica/types": "^5.4.0",
     "@comunica/utils-bindings-factory": "^5.4.0",
     "@rdfjs/types": "*",
-    "rdf-stores": "^2.9.1"
+    "rdf-stores": "^2.10.0"
   }
 }
