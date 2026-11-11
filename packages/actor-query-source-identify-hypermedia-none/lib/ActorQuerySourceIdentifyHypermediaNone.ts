@@ -16,7 +16,6 @@ import type {
   DereferenceFromNamedConflictModeResolver,
 } from '@comunica/types';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { compareTerms } from '@comunica/utils-iterator';
 import type * as RDF from '@rdfjs/types';
 import { RdfStore } from 'rdf-stores';
 
@@ -67,10 +66,7 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
    */
   public static createStore<Q extends RDF.BaseQuad = RDF.Quad>(ordered: boolean): RdfStore<any, Q> {
     if (ordered) {
-      return <RdfStore<any, Q>><unknown> RdfStore.createOrdered({
-        termComparator: compareTerms,
-        nodes: true,
-      });
+      return <RdfStore<any, Q>><unknown> RdfStore.createOrdered({ nodes: true });
     }
     return <RdfStore<any, Q>><unknown> RdfStore.createDefault(true);
   }
