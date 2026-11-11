@@ -66,8 +66,6 @@ export class ActorQuerySourceIdentifyHypermediaNone extends ActorQuerySourceIden
    */
   public static createStore<Q extends RDF.BaseQuad = RDF.Quad>(ordered: boolean): RdfStore<any, Q> {
     if (ordered) {
-      // The default term order of rdf-stores is the one of `compareTerms`, which merge joins rely on.
-      // Only without a custom comparator can the store rank terms on their values directly.
       return <RdfStore<any, Q>><unknown> RdfStore.createOrdered({ nodes: true });
     }
     return <RdfStore<any, Q>><unknown> RdfStore.createDefault(true);
