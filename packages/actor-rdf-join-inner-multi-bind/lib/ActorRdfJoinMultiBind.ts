@@ -381,12 +381,14 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       .reduce((sum, element) => sum + element, 0);
 
     // Each binding re-plans and re-runs every remaining operation.
-    // If all of them share a variable with the first entry, a binding turns each of them into a lookup.
-    // Otherwise, the operations that share none still have to be joined with the others for every binding.
+    // If all of them are patterns sharing a variable with the first entry, a binding turns each into a lookup.
+    // Otherwise, a binding still leaves sub-queries to evaluate, such as paths, unions, or patterns sharing
+    // no variable that have to be joined with the others.
     // This does not apply to remote sources, where this cost is already incorporated into requestTime.
     let subPlanCost = 0;
     if (!isRemoteAccess) {
-      subPlanCost = entriesWithoutSharedVariable === 0 ?
+      subPlanCost = entriesWithoutSharedVariable === 0 &&
+        remainingEntries.every(entry => entry.operation.type === Algebra.Types.PATTERN) ?
         this.lookupCost * remainingEntries.length :
         this.subQueryCost * remainingEntries.length * (1 + entriesWithoutSharedVariable);
     }
@@ -433,8 +435,8 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs<IActorRdfJ
   subQueryCost?: number;
   // TODO: in next major, make mandatory.
   /**
-   * The cost of looking up a single bound operation, expressed in produced rows.
-   * It replaces subQueryCost if all bound operations share a variable with the first entry,
+   * The cost of looking up a single bound pattern, expressed in produced rows.
+   * It replaces subQueryCost if all bound operations are patterns that share a variable with the first entry,
    * so that each binding turns them into lookups. Not applied to remote sources.
    * @range {double}
    * @default {25}

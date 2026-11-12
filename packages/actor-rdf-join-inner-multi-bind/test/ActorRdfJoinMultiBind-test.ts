@@ -919,15 +919,15 @@ IQueryOperationResultBindings
             entries: [
               {
                 output: <any>{},
-                operation: FACTORY.createNop(),
+                operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o')),
               },
               {
                 output: <any>{},
-                operation: FACTORY.createNop(),
+                operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o')),
               },
               {
                 output: <any>{},
-                operation: FACTORY.createNop(),
+                operation: FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o')),
               },
             ],
             context: new ActionContext(),
@@ -969,6 +969,35 @@ IQueryOperationResultBindings
         )).resolves.toPassTest({
           // 2 bindings, each adding 1 row per remaining entry and 2 lookups
           iterations: 2 * (2 + (2 * 25)),
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 0,
+        });
+      });
+
+      it('should charge the sub-query cost for local access when a remaining entry is not a pattern', async() => {
+        const metadata = (cardinality: number): MetadataBindings => ({
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: cardinality },
+          pageSize: 100,
+          requestTime: 0,
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        });
+        const pattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.namedNode('o'));
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              { output: <any>{}, operation: pattern },
+              { output: <any>{}, operation: pattern },
+              { output: <any>{}, operation: FACTORY.createUnion([ pattern, pattern ]) },
+            ],
+            context: new ActionContext(),
+          },
+          { metadatas: [ metadata(2), metadata(3), metadata(201) ]},
+        )).resolves.toPassTest({
+          // 2 bindings, each adding 1 row per remaining entry and a sub-plan over both remaining entries
+          iterations: 2 * (2 + (100 * 2)),
           persistedItems: 0,
           blockingItems: 0,
           requestTime: 0,
