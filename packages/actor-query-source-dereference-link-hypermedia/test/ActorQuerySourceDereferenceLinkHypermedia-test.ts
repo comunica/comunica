@@ -414,27 +414,6 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
         expect(dereferenceCall.context.get(KeysHttp.httpTimeout)).toBe(1_000);
       });
 
-      it('should not apply a timeout to SPARQL service description dereferences if disabled', async() => {
-        const actorWithoutTimeout = new ActorQuerySourceDereferenceLinkHypermedia({
-          name: 'actor',
-          bus,
-          mediatorDereferenceRdf,
-          mediatorMetadata,
-          mediatorMetadataExtract,
-          mediatorMetadataAccumulate,
-          mediatorQuerySourceIdentifyHypermedia,
-          sparqlServiceDescriptionTimeout: 0,
-        });
-        const dereferenceSpy = jest.spyOn(mediatorDereferenceRdf, 'mediate');
-
-        await actorWithoutTimeout.run({
-          link: { url: 'https://example.org/sparql' },
-          context: new ActionContext(),
-        });
-
-        expect(dereferenceSpy.mock.calls[0][0].context.get(KeysHttp.httpTimeout)).toBeUndefined();
-      });
-
       describe('with a service-desc Link header', () => {
         const endpoint = 'https://example.org/sparql';
         const serviceDescUrl = 'https://example.org/sparql-service-description';

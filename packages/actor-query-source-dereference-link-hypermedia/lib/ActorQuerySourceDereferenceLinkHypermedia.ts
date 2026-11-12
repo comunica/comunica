@@ -53,18 +53,10 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
   ): IActionContext {
     const isSparqlServiceDescriptionDereference = forceSourceType === 'sparql' ||
       (!forceSourceType && (url.endsWith('/sparql') || url.endsWith('/sparql/')));
-    if (isSparqlServiceDescriptionDereference) {
-      return this.getSparqlServiceDescriptionContext(context);
-    }
-    return context;
-  }
-
-  /**
-   * Bound the HTTP timeout of the given context for dereferencing a SPARQL service description.
-   * @param context An action context.
-   */
-  protected getSparqlServiceDescriptionContext(context: IActionContext): IActionContext {
-    if (this.sparqlServiceDescriptionTimeout > 0) {
+    if (
+      this.sparqlServiceDescriptionTimeout > 0 &&
+      isSparqlServiceDescriptionDereference
+    ) {
       const existingTimeout = context.get(KeysHttp.httpTimeout);
       const effectiveTimeout = existingTimeout !== undefined && existingTimeout > 0 ?
         Math.min(existingTimeout, this.sparqlServiceDescriptionTimeout) :
@@ -200,7 +192,7 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     const serviceDescUrlAbsolute = resolveIri(serviceDescUrl, url);
     try {
       const serviceDescription = await this.mediatorDereferenceRdf.mediate({
-        context: this.getSparqlServiceDescriptionContext(context),
+        context: this.getDereferenceRdfContext(context, serviceDescUrlAbsolute, 'sparql'),
         url: serviceDescUrlAbsolute,
       });
       const { metadata: serviceDescriptionMetadata } = await this.mediatorMetadataExtract.mediate({
