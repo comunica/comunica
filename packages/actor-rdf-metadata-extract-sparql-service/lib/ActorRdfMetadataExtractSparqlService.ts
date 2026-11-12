@@ -50,13 +50,17 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
       const sparqlVersion12 = `${ActorRdfMetadataExtractSparqlService.SPARQL}version-1.2`;
       const sparqlVersion12Basic = `${ActorRdfMetadataExtractSparqlService.SPARQL}version-1.2-basic`;
 
-      action.metadata.on('data', (quad: RDF.Quad) => {
+      // Service description quads of subjects that are not (yet) accepted.
+      // These are replayed if their subject becomes accepted later on.
+      const pendingQuads = new Map<string, RDF.Quad[]>();
+
+      const handleQuad = (quad: RDF.Quad): void => {
         if (quad.predicate.value === 'http://rdfs.org/ns/void#subset' && quad.object.value === action.url) {
           // When the requested URI is a subset of another dataset, as indicated by this predicate, then also
           // consider that other dataset for the extraction of the following predicate values.
           // This works an issue with Quad Pattern Fragments that has the sd:defaultGraph predicate associated
           // with a subject value that is neither the data source URI nor the sd:defaultDataset.
-          acceptSubjectUris.add(quad.subject.value);
+          acceptSubject(quad.subject.value);
         } else if (
           quad.subject.value === metadata.defaultDataset ||
           quad.subject.termType === 'BlankNode' ||
@@ -133,8 +137,36 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
               extensionFunctions.add(quad.object.value);
               break;
           }
+        } else if (quad.predicate.value.startsWith(ActorRdfMetadataExtractSparqlService.SD)) {
+          if (
+            quad.predicate.value === `${ActorRdfMetadataExtractSparqlService.SD}endpoint` &&
+            quad.object.value === action.url
+          ) {
+            acceptSubject(quad.subject.value);
+            handleQuad(quad);
+          } else {
+            let quads = pendingQuads.get(quad.subject.value);
+            if (!quads) {
+              quads = [];
+              pendingQuads.set(quad.subject.value, quads);
+            }
+            quads.push(quad);
+          }
         }
-      });
+      };
+
+      const acceptSubject = (subject: string): void => {
+        acceptSubjectUris.add(subject);
+        const quads = pendingQuads.get(subject);
+        if (quads) {
+          pendingQuads.delete(subject);
+          for (const quad of quads) {
+            handleQuad(quad);
+          }
+        }
+      };
+
+      action.metadata.on('data', handleQuad);
 
       // Only return the metadata if an endpoint IRI was discovered
       action.metadata.on('end', () => {
