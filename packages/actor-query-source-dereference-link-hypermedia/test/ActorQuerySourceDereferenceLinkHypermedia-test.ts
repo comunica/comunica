@@ -543,17 +543,6 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
           expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledTimes(1);
         });
 
-        it('should ignore invalid service-desc links', async() => {
-          linkHeader = '<http://[invalid>; rel="service-desc"';
-          const logWarn = jest.spyOn(<any> actor, 'logWarn').mockImplementation(() => {
-            // Do nothing
-          });
-          const { metadata } = await actor.run({ link: { url: endpoint }, context: new ActionContext() });
-          expect(metadata).toEqual({ a: 1 });
-          expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledTimes(1);
-          expect(logWarn).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('invalid service-desc'));
-        });
-
         it('should ignore failures when dereferencing the service description', async() => {
           const mediate = mediatorDereferenceRdf.mediate;
           mediatorDereferenceRdf.mediate = <any> jest.fn(async(action: IActionDereferenceRdf) => {

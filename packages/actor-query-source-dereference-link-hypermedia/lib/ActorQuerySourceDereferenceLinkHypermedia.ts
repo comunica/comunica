@@ -18,6 +18,7 @@ import type { IActionContext, ICachePolicy, MetadataBindings } from '@comunica/t
 import type * as RDF from '@rdfjs/types';
 import { parse as parseLinkHeader } from 'http-link-header';
 import { Readable } from 'readable-stream';
+import { resolve as resolveIri } from 'relative-to-absolute-iri';
 import { QuerySourceCachePolicyDereferenceWrapper } from './QuerySourceCachePolicyDereferenceWrapper';
 
 /**
@@ -174,10 +175,6 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
   /**
    * If the response headers contain a `Link` header with relation type `service-desc` (RFC 8631),
    * dereference that SPARQL service description, and merge its metadata into the given metadata.
-   * This allows SPARQL endpoints that can not return a service description at the endpoint URL
-   * (e.g. because the endpoint URL returns a dataset) to still be detected as such.
-   * The service description is only applied if it declares the dereferenced URL as `sd:endpoint`.
-   * @see https://github.com/w3c/sparql-service-description/pull/51
    * @param context An action context.
    * @param url The final URL of the dereferenced document.
    * @param originalUrl The URL of the link, before following redirects.
@@ -200,21 +197,12 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
       return metadata;
     }
 
-    let serviceDescUrlAbsolute: string;
-    try {
-      serviceDescUrlAbsolute = new URL(serviceDescUrl, url).href;
-    } catch {
-      this.logWarn(context, `Ignoring invalid service-desc link ${serviceDescUrl} in ${url}`);
-      return metadata;
-    }
-
+    const serviceDescUrlAbsolute = resolveIri(serviceDescUrl, url);
     try {
       const serviceDescription = await this.mediatorDereferenceRdf.mediate({
         context: this.getSparqlServiceDescriptionContext(context),
         url: serviceDescUrlAbsolute,
       });
-      // The whole document is a service description, so all of its quads are considered metadata.
-      // Headers are not passed, as these describe the service description document, not the endpoint.
       const { metadata: serviceDescriptionMetadata } = await this.mediatorMetadataExtract.mediate({
         context,
         url,

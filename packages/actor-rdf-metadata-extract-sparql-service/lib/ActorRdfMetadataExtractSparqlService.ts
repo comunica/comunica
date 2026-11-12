@@ -142,8 +142,6 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
             quad.predicate.value === `${ActorRdfMetadataExtractSparqlService.SD}endpoint` &&
             quad.object.value === action.url
           ) {
-            // A named service that declares the requested URI as its endpoint, as is common in service descriptions
-            // that are not served at the endpoint URL itself (e.g. linked via a service-desc Link header).
             acceptSubject(quad.subject.value);
             handleQuad(quad);
           } else {

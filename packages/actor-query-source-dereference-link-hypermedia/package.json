@@ -53,6 +53,7 @@
     "@comunica/types": "^5.4.0",
     "@types/http-link-header": "^1.0.7",
     "http-link-header": "^1.1.3",
-    "readable-stream": "^4.8.0"
+    "readable-stream": "^4.8.0",
+    "relative-to-absolute-iri": "^1.0.7"
   }
 }
