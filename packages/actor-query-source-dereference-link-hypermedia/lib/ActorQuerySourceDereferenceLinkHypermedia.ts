@@ -16,6 +16,7 @@ import type { TestResult, IActorTest } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { IActionContext, ICachePolicy, MetadataBindings } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
+import { parse as parseLinkHeader } from 'http-link-header';
 import { Readable } from 'readable-stream';
 import { QuerySourceCachePolicyDereferenceWrapper } from './QuerySourceCachePolicyDereferenceWrapper';
 
@@ -51,10 +52,18 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
   ): IActionContext {
     const isSparqlServiceDescriptionDereference = forceSourceType === 'sparql' ||
       (!forceSourceType && (url.endsWith('/sparql') || url.endsWith('/sparql/')));
-    if (
-      this.sparqlServiceDescriptionTimeout > 0 &&
-      isSparqlServiceDescriptionDereference
-    ) {
+    if (isSparqlServiceDescriptionDereference) {
+      return this.getSparqlServiceDescriptionContext(context);
+    }
+    return context;
+  }
+
+  /**
+   * Bound the HTTP timeout of the given context for dereferencing a SPARQL service description.
+   * @param context An action context.
+   */
+  protected getSparqlServiceDescriptionContext(context: IActionContext): IActionContext {
+    if (this.sparqlServiceDescriptionTimeout > 0) {
       const existingTimeout = context.get(KeysHttp.httpTimeout);
       const effectiveTimeout = existingTimeout !== undefined && existingTimeout > 0 ?
         Math.min(existingTimeout, this.sparqlServiceDescriptionTimeout) :
@@ -108,6 +117,16 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
           requestTime: dereferenceRdfOutput.requestTime,
         })).metadata;
         quads = rdfMetadataOutput.data;
+
+        if (!metadata.sparqlService) {
+          metadata = await this.extractLinkedSparqlServiceDescription(
+            context,
+            url,
+            action.link.url,
+            dereferenceRdfOutput.headers,
+            metadata,
+          );
+        }
       }
 
       // Transform quads if needed.
@@ -150,6 +169,69 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     context.get(KeysStatistics.dereferencedLinks)?.updateStatistic({ url: action.link.url, metadata }, source);
 
     return { source, metadata: <MetadataBindings> metadata, dataset, cachePolicy };
+  }
+
+  /**
+   * If the response headers contain a `Link` header with relation type `service-desc` (RFC 8631),
+   * dereference that SPARQL service description, and merge its metadata into the given metadata.
+   * This allows SPARQL endpoints that can not return a service description at the endpoint URL
+   * (e.g. because the endpoint URL returns a dataset) to still be detected as such.
+   * The service description is only applied if it declares the dereferenced URL as `sd:endpoint`.
+   * @see https://github.com/w3c/sparql-service-description/pull/51
+   * @param context An action context.
+   * @param url The final URL of the dereferenced document.
+   * @param originalUrl The URL of the link, before following redirects.
+   * @param headers The response headers of the dereferenced document.
+   * @param metadata The metadata extracted from the dereferenced document.
+   */
+  protected async extractLinkedSparqlServiceDescription(
+    context: IActionContext,
+    url: string,
+    originalUrl: string,
+    headers: Headers | undefined,
+    metadata: Record<string, any>,
+  ): Promise<Record<string, any>> {
+    const linkHeader = headers?.get('link');
+    if (!linkHeader) {
+      return metadata;
+    }
+    const serviceDescUrl = parseLinkHeader(linkHeader).get('rel', 'service-desc')[0]?.uri;
+    if (!serviceDescUrl) {
+      return metadata;
+    }
+
+    let serviceDescUrlAbsolute: string;
+    try {
+      serviceDescUrlAbsolute = new URL(serviceDescUrl, url).href;
+    } catch {
+      this.logWarn(context, `Ignoring invalid service-desc link ${serviceDescUrl} in ${url}`);
+      return metadata;
+    }
+
+    try {
+      const serviceDescription = await this.mediatorDereferenceRdf.mediate({
+        context: this.getSparqlServiceDescriptionContext(context),
+        url: serviceDescUrlAbsolute,
+      });
+      // The whole document is a service description, so all of its quads are considered metadata.
+      // Headers are not passed, as these describe the service description document, not the endpoint.
+      const { metadata: serviceDescriptionMetadata } = await this.mediatorMetadataExtract.mediate({
+        context,
+        url,
+        metadata: serviceDescription.data,
+        requestTime: serviceDescription.requestTime,
+      });
+      const sparqlService = serviceDescriptionMetadata.sparqlService;
+      if (sparqlService !== url && sparqlService !== originalUrl) {
+        this.logWarn(context, `Ignoring service description ${serviceDescUrlAbsolute} linked from ${url}, as it does not declare ${url} as sd:endpoint`);
+        return metadata;
+      }
+      this.logDebug(context, `Applied service description ${serviceDescUrlAbsolute} linked from ${url}`);
+      return { ...serviceDescriptionMetadata, ...metadata };
+    } catch (error: unknown) {
+      this.logWarn(context, `Dereferencing service description ${serviceDescUrlAbsolute} linked from ${url} failed: ${(<Error>error).message}`);
+      return metadata;
+    }
   }
 }
 
