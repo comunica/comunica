@@ -37,8 +37,8 @@
   },
   "dependencies": {
     "@rdfjs/types": "*",
-    "@traqula/algebra-transformations-1-2": "^1.4.0",
-    "@traqula/core": "^1.3.0",
+    "@traqula/algebra-transformations-1-2": "^1.5.0-alpha.4",
+    "@traqula/core": "^1.5.0-alpha.4",
     "rdf-terms": "^2.0.0"
   }
 }

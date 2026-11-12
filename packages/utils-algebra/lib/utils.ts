@@ -2,10 +2,17 @@ import type * as RDF from '@rdfjs/types';
 import type { Algebra as TraqulaAlgebra } from '@traqula/algebra-transformations-1-2';
 import { algebraUtils, Types } from '@traqula/algebra-transformations-1-2';
 
-// eslint-disable-next-line unused-imports/no-unused-imports,unused-imports/no-unused-imports-ts
-import type { Patch, PreOrderMappingReturn, Safeness, TransformContext, VisitContext } from '@traqula/core';
-import { TransformerSubTyped } from '@traqula/core';
-import type { KnownOperation, Operation } from './Algebra';
+import type {
+  DefaultNodePreVisitor,
+  Patch,
+  // eslint-disable-next-line unused-imports/no-unused-imports,unused-imports/no-unused-imports-ts
+  PreOrderMappingReturn,
+  Safeness,
+  TransformContext,
+  VisitContext,
+} from '@traqula/core';
+import { forEveryNodeType, TransformerSubTyped, visitOnlyKnownKeys } from '@traqula/core';
+import type { Construct, DeleteInsert, DistinctTerms, KnownOperation, Nodes, Operation, Path } from './Algebra';
 import { TypesComunica } from './TypesComunica';
 
 export const resolveIRI = algebraUtils.resolveIRI;
@@ -64,29 +71,17 @@ export const defaultObjectContext: TransformContext = {
   shallowKeys: new Set([ 'metadata' ]),
   ignoreKeys: new Set([ 'metadata' ]),
 };
-export const defaultNodePreVisitor: ConstructorParameters<typeof TransformerSubTyped<KnownOperation>>[1] = {
-  // Optimization that causes search tree pruning
-  [Types.PATTERN]: { ignoreKeys: new Set([ 'subject', 'predicate', 'object', 'graph', 'metadata' ]) },
-  [Types.EXPRESSION]: { ignoreKeys: new Set([ 'name', 'term', 'wildcard', 'variable', 'metadata' ]) },
-  [Types.DESCRIBE]: { ignoreKeys: new Set([ 'terms', 'metadata' ]) },
-  [Types.EXTEND]: { ignoreKeys: new Set([ 'variable', 'metadata' ]) },
-  [Types.FROM]: { ignoreKeys: new Set([ 'default', 'named', 'metadata' ]) },
-  [Types.GRAPH]: { ignoreKeys: new Set([ 'name', 'metadata' ]) },
-  [Types.GROUP]: { ignoreKeys: new Set([ 'variables', 'metadata' ]) },
-  [Types.LINK]: { ignoreKeys: new Set([ 'iri', 'metadata' ]) },
-  [Types.NPS]: { ignoreKeys: new Set([ 'iris', 'metadata' ]) },
-  [Types.PATH]: { ignoreKeys: new Set([ 'subject', 'object', 'graph', 'metadata' ]) },
-  [Types.PROJECT]: { ignoreKeys: new Set([ 'variables', 'metadata' ]) },
-  [Types.SERVICE]: { ignoreKeys: new Set([ 'name', 'metadata' ]) },
-  [Types.VALUES]: { ignoreKeys: new Set([ 'variables', 'bindings', 'metadata' ]) },
-  [Types.LOAD]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
-  [Types.CLEAR]: { ignoreKeys: new Set([ 'source', 'metadata' ]) },
-  [Types.CREATE]: { ignoreKeys: new Set([ 'source', 'metadata' ]) },
-  [Types.DROP]: { ignoreKeys: new Set([ 'source', 'metadata' ]) },
-  [Types.ADD]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
-  [Types.MOVE]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
-  [Types.COPY]: { ignoreKeys: new Set([ 'source', 'destination', 'metadata' ]) },
-  [TypesComunica.NODES]: { ignoreKeys: new Set([ 'variable', 'metadata' ]) },
+/**
+ * Per operation type, a context that only visits the keys that can hold operations.
+ * Keys Comunica does not know, like the metadata of an operation or the keys of an extension, are never traversed.
+ * Operation types Comunica does not know get the {@link defaultObjectContext}.
+ */
+export const defaultNodePreVisitor: DefaultNodePreVisitor<KnownOperation> = {
+  ...<DefaultNodePreVisitor<KnownOperation>> algebraUtils.knownKeysAllowlist,
+  ...visitOnlyKnownKeys<Nodes | DistinctTerms>({
+    [TypesComunica.NODES]: { graph: false, variable: false, metadata: false },
+    [TypesComunica.DISTINCT_TERMS]: { variables: false, terms: false, filters: false, metadata: false },
+  }),
 };
 
 export const transformer = new TransformerSubTyped<KnownOperation>(defaultObjectContext, defaultNodePreVisitor);
@@ -407,45 +402,45 @@ export const visitOperation = transformer.visitNode.bind(transformer);
 export const visitOperationSub = transformer.visitNodeSpecific.bind(transformer);
 
 /**
- * Visit the values held directly by the given operation, without descending into them.
+ * Visit the operations the given transformer reaches first when stepping into the given operation,
+ * without descending into them.
+ * With the default transformer, these are the operations under the keys that can hold operations
+ * of an operation type Comunica knows, and the operations under any key but the metadata of other operation types.
  *
  * @param operation The operation to take apart.
- * @param visitor Called with each value, in the order the keys occur.
- * @param ignoreKeys Keys to skip on top of the ones that are skipped anyway.
+ * @param visitor Called with each operation, in the order the transformer visits them,
+ *   which keeps the order of the elements of an array.
+ * @param membersTransformer The transformer deciding which keys to step into.
  */
 export function visitOperationMembers(
   operation: Operation,
-  visitor: (value: unknown, key: string) => void,
-  ignoreKeys?: Set<string>,
+  visitor: (member: Operation) => void,
+  membersTransformer: Pick<typeof transformer, 'visitNode'> = transformer,
 ): void {
-  const ignoreKeysAll = [
-    defaultObjectContext.ignoreKeys,
-    defaultNodePreVisitor?.[<KnownOperation['type']> operation.type]?.ignoreKeys,
-    ignoreKeys,
-  ];
-  for (const [ key, value ] of Object.entries(operation)) {
-    if (ignoreKeysAll.some(keys => keys?.has(key))) {
-      continue;
-    }
-    for (const entry of Array.isArray(value) ? value : [ value ]) {
-      visitor(entry, key);
-    }
-  }
+  membersTransformer.visitNode(operation, forEveryNodeType({
+    // Step into the given operation only, visiting the operations right below it
+    preVisitor(node: Operation): VisitContext {
+      if (node === operation) {
+        return {};
+      }
+      visitor(node);
+      return { continue: false };
+    },
+  }));
 }
 
 /**
- * The keys that hold something other than the operations an operation is composed of.
- *
- * These come on top of the keys that {@link defaultNodePreVisitor} already leaves alone.
+ * The transformer stepping into the keys that hold the operations an operation is composed of.
+ * Of the keys that can hold operations, these leave out those holding templates or the predicate of a path.
  */
-const nonOperationKeys: Partial<Record<string, Set<string>>> = {
-  [Types.PATH]: new Set([ 'predicate' ]),
-  [Types.CONSTRUCT]: new Set([ 'template' ]),
-  [Types.DELETE_INSERT]: new Set([ 'delete', 'insert' ]),
-};
+const subOperationsTransformer = transformer.clone({}, visitOnlyKnownKeys<Path | Construct | DeleteInsert>({
+  [Types.PATH]: { subject: false, predicate: false, object: false, graph: false, metadata: false },
+  [Types.CONSTRUCT]: { input: true, template: false, metadata: false },
+  [Types.DELETE_INSERT]: { where: true, delete: false, insert: false, metadata: false },
+}));
 
 /**
- * Obtain the operations that the given operation is directly composed of, in the order they occur.
+ * Obtain the operations that the given operation is directly composed of, in the order of an array holding them.
  *
  * Expressions are not included.
  *
@@ -454,20 +449,12 @@ const nonOperationKeys: Partial<Record<string, Set<string>>> = {
  */
 export function getSubOperations(operation: Operation): Operation[] {
   const subOperations: Operation[] = [];
-  visitOperationMembers(operation, (value) => {
-    if (isOperationObject(value) && value.type !== Types.EXPRESSION) {
-      subOperations.push(value);
+  visitOperationMembers(operation, (member) => {
+    if (member.type !== Types.EXPRESSION) {
+      subOperations.push(member);
     }
-  }, nonOperationKeys[operation.type]);
+  }, subOperationsTransformer);
   return subOperations;
-}
-
-/**
- * If the given value is an algebra operation.
- * @param value Any value occurring within an operation.
- */
-export function isOperationObject(value: any): value is Operation {
-  return typeof value === 'object' && value !== null && typeof value.type === 'string';
 }
 
 /**
