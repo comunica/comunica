@@ -6,7 +6,7 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext, IQueryOperationResultBindings } from '@comunica/types';
+import type { IActionContext, IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
 import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -94,6 +94,7 @@ IQueryOperationResultBindings
         bindOrder: 'depth-first',
         selectivityModifier: 0.1,
         subQueryCost: 100,
+        lookupCost: 25,
         mediatorQueryOperation,
         mediatorJoinSelectivity,
         mediatorJoinEntriesSort,
@@ -120,6 +121,20 @@ IQueryOperationResultBindings
           mediatorMergeBindingsContext,
           minMaxCardinalityRatio: 100,
         }).subQueryCost).toBe(100);
+      });
+
+      it('should fall back to a default lookup cost', () => {
+        expect(new ActorRdfJoinMultiBind({
+          name: 'actor',
+          bus,
+          bindOrder: 'depth-first',
+          selectivityModifier: 0.1,
+          mediatorQueryOperation,
+          mediatorJoinSelectivity,
+          mediatorJoinEntriesSort,
+          mediatorMergeBindingsContext,
+          minMaxCardinalityRatio: 100,
+        }).lookupCost).toBe(25);
       });
     });
 
@@ -952,7 +967,36 @@ IQueryOperationResultBindings
             ],
           },
         )).resolves.toPassTest({
-          iterations: 404,
+          // 2 bindings, each adding 1 row per remaining entry and 2 lookups
+          iterations: 2 * (2 + (2 * 25)),
+          persistedItems: 0,
+          blockingItems: 0,
+          requestTime: 0,
+        });
+      });
+
+      it('should charge the sub-query cost for local access when an entry shares no variable', async() => {
+        const metadata = (cardinality: number, variable: string): MetadataBindings => ({
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: cardinality },
+          pageSize: 100,
+          requestTime: 0,
+          variables: [{ variable: DF.variable(variable), canBeUndef: false }],
+        });
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'inner',
+            entries: [
+              { output: <any>{}, operation: FACTORY.createNop() },
+              { output: <any>{}, operation: FACTORY.createNop() },
+              { output: <any>{}, operation: FACTORY.createNop() },
+            ],
+            context: new ActionContext(),
+          },
+          { metadatas: [ metadata(2, 'a'), metadata(3, 'a'), metadata(201, 'b') ]},
+        )).resolves.toPassTest({
+          // 2 bindings, each adding 1 row for the entry sharing a, and a sub-plan over both remaining entries
+          iterations: 2 * ((1 + (201 * (0.8 * 0.1))) + (100 * 2 * 2)),
           persistedItems: 0,
           blockingItems: 0,
           requestTime: 0,

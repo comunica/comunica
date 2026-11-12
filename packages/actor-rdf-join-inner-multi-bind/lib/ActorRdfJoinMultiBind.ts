@@ -39,6 +39,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
   public readonly selectivityModifier: number;
   public readonly minMaxCardinalityRatio: number;
   public readonly subQueryCost: number;
+  public readonly lookupCost: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorQueryOperation: MediatorQueryOperation;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
@@ -54,6 +55,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     this.selectivityModifier = args.selectivityModifier;
     this.minMaxCardinalityRatio = args.minMaxCardinalityRatio;
     this.subQueryCost = args.subQueryCost ?? 100;
+    this.lookupCost = args.lookupCost ?? 25;
     this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
     this.mediatorQueryOperation = args.mediatorQueryOperation;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
@@ -379,10 +381,15 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       .reduce((sum, element) => sum + element, 0);
 
     // Each binding re-plans and re-runs every remaining operation.
+    // If all of them share a variable with the first entry, a binding turns each of them into a lookup.
+    // Otherwise, the operations that share none still have to be joined with the others for every binding.
     // This does not apply to remote sources, where this cost is already incorporated into requestTime.
-    const subPlanCost = isRemoteAccess ?
-      0 :
-      this.subQueryCost * remainingEntries.length * (1 + entriesWithoutSharedVariable);
+    let subPlanCost = 0;
+    if (!isRemoteAccess) {
+      subPlanCost = entriesWithoutSharedVariable === 0 ?
+        this.lookupCost * remainingEntries.length :
+        this.subQueryCost * remainingEntries.length * (1 + entriesWithoutSharedVariable);
+    }
 
     return passTestWithSideData({
       iterations: cardinalityFirst * (cardinalityRemaining + subPlanCost),
@@ -424,6 +431,15 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs<IActorRdfJ
    * @default {100}
    */
   subQueryCost?: number;
+  // TODO: in next major, make mandatory.
+  /**
+   * The cost of looking up a single bound operation, expressed in produced rows.
+   * It replaces subQueryCost if all bound operations share a variable with the first entry,
+   * so that each binding turns them into lookups. Not applied to remote sources.
+   * @range {double}
+   * @default {25}
+   */
+  lookupCost?: number;
   /**
    * The join entries sort mediator
    */
