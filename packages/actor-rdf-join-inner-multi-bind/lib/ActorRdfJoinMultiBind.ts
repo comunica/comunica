@@ -381,9 +381,6 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       .reduce((sum, element) => sum + element, 0);
 
     // Each binding re-plans and re-runs every remaining operation.
-    // If all of them are patterns sharing a variable with the first entry, a binding turns each into a lookup.
-    // Otherwise, a binding still leaves sub-queries to evaluate, such as paths, unions, or patterns sharing
-    // no variable that have to be joined with the others.
     // This does not apply to remote sources, where this cost is already incorporated into requestTime.
     let subPlanCost = 0;
     if (!isRemoteAccess) {
