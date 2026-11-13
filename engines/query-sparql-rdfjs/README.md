@@ -1,6 +1,7 @@
 # Comunica SPARQL RDF/JS
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Fquery-sparql-rdfjs.svg)](https://www.npmjs.com/package/@comunica/query-sparql-rdfjs)
+[![Node.js versions](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcomunica%2Fcomunica%2Fmaster%2F.github%2Fworkflows%2Fci.yml&query=%24.jobs.test.strategy.matrix%5B%27node-version%27%5D&label=node.js)](https://github.com/comunica/comunica/blob/master/.github/workflows/ci.yml)
 
 Comunica SPARQL is a SPARQL query engine for JavaScript for querying RDF/JS sources
 that implement the [Source interface](http://rdf.js.org/#source-interface).

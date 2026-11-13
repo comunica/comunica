@@ -1,6 +1,7 @@
 # Comunica SPARQL
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Fquery-sparql.svg)](https://www.npmjs.com/package/@comunica/query-sparql)
+[![Node.js versions](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcomunica%2Fcomunica%2Fmaster%2F.github%2Fworkflows%2Fci.yml&query=%24.jobs.test.strategy.matrix%5B%27node-version%27%5D&label=node.js)](https://github.com/comunica/comunica/blob/master/.github/workflows/ci.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/comunica/query-sparql.svg)](https://hub.docker.com/r/comunica/query-sparql/)
 
 Comunica SPARQL is a SPARQL query engine for JavaScript for querying over decentralized RDF knowledge graphs on the Web.
