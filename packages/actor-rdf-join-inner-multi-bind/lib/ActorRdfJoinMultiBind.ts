@@ -435,9 +435,8 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs<IActorRdfJ
   subQueryCost?: number;
   // TODO: in next major, make mandatory.
   /**
-   * The cost of looking up a single bound pattern, expressed in produced rows.
-   * It replaces subQueryCost if all bound operations are patterns that share a variable with the first entry,
-   * so that each binding turns them into lookups. Not applied to remote sources.
+   * The cost of looking up a single bound pattern, in number of produced results.
+   * This is used for local sources instead of subQueryCost.
    * @range {double}
    * @default {25}
    */
