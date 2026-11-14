@@ -237,6 +237,7 @@ describe('ActorHttpLimitRate', () => {
     it.each([
       [ 'specific host data when specified', url, 1 ],
       [ 'all host data when not specified', undefined, 0 ],
+      [ 'no host data for values that are not URLs', '/path/to/file.hdt', 2 ],
     ])('correctly clears %s', async(_, url, expectedSize) => {
       actorHostData.set(host, { latestRequestTimestamp: 0, rateLimited: true, requestInterval: 0 });
       actorHostData.set('otherhost:3000', { latestRequestTimestamp: 0, rateLimited: true, requestInterval: 0 });

@@ -34,6 +34,9 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
     args.httpInvalidator.addInvalidateListener(
       ({ url }: IActionHttpInvalidate) => {
         if (url) {
+          if (!URL.canParse(url)) {
+            return;
+          }
           const parsedUrl = new URL(url);
           // eslint-disable-next-line ts/no-floating-promises
           this.cache.delete({ origin: parsedUrl.origin, path: parsedUrl.pathname + parsedUrl.search, method: 'GET' });

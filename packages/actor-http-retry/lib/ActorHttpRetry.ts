@@ -282,6 +282,9 @@ export class ActorHttpRetry extends ActorHttp {
    * @param {IActionHttpInvalidate} action The invalidation action
    */
   public handleHttpInvalidateEvent(action: IActionHttpInvalidate): void {
+    if (action.url && !URL.canParse(action.url)) {
+      return;
+    }
     const invalidatedHost = action.url ? new URL(action.url).host : undefined;
     for (const host of Object.keys(this.activeDelays)) {
       if (!invalidatedHost || host === invalidatedHost) {
