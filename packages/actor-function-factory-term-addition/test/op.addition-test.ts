@@ -66,6 +66,8 @@ describe('evaluation of \'+\' like', () => {
     `,
     errorTable: `
       "apple"^^xsd:integer "0"^^xsd:integer = 'Invalid lexical form'
+      "1200"^^xsd:byte "1"^^xsd:integer = 'Invalid lexical form'
+      "1.5"^^xsd:integer "1"^^xsd:integer = 'Invalid lexical form'
     `,
   });
   runFuncTestTable({

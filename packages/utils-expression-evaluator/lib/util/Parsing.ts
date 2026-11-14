@@ -1,4 +1,5 @@
 import type {
+  GeneralSuperTypeDict,
   IDateRepresentation,
   IDateTimeRepresentation,
   IDayTimeDurationRepresentation,
@@ -7,9 +8,59 @@ import type {
   ITimeZoneRepresentation,
   IYearMonthDurationRepresentation,
 } from '@comunica/types';
+import { TypeURL } from './Consts';
 import { simplifyDurationRepresentation } from './DateTimeHelpers';
 import { ParseError } from './Errors';
 import { maximumDayInMonthFor } from './SpecAlgos';
+
+// Lexical spaces of the numeric XSD datatypes, allowing surrounding whitespace
+const LEXICAL_INTEGER = /^[\t\n\r ]*[+-]?\d+[\t\n\r ]*$/u;
+const LEXICAL_DECIMAL = /^[\t\n\r ]*[+-]?(?:\d+(?:\.\d*)?|\.\d+)[\t\n\r ]*$/u;
+const LEXICAL_FLOAT = /^[\t\n\r ]*(?:[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[Ee][+-]?\d+)?|[+-]?INF|NaN)[\t\n\r ]*$/u;
+
+// Value ranges of the integer datatypes derived from xsd:integer
+const INTEGER_RANGES: [string, bigint | number, bigint | number][] = [
+  [ TypeURL.XSD_NON_POSITIVE_INTEGER, Number.NEGATIVE_INFINITY, 0n ],
+  [ TypeURL.XSD_NEGATIVE_INTEGER, Number.NEGATIVE_INFINITY, -1n ],
+  [ TypeURL.XSD_LONG, -9_223_372_036_854_775_808n, 9_223_372_036_854_775_807n ],
+  [ TypeURL.XSD_INT, -2_147_483_648n, 2_147_483_647n ],
+  [ TypeURL.XSD_SHORT, -32_768n, 32_767n ],
+  [ TypeURL.XSD_BYTE, -128n, 127n ],
+  [ TypeURL.XSD_NON_NEGATIVE_INTEGER, 0n, Number.POSITIVE_INFINITY ],
+  [ TypeURL.XSD_POSITIVE_INTEGER, 1n, Number.POSITIVE_INFINITY ],
+  [ TypeURL.XSD_UNSIGNED_LONG, 0n, 18_446_744_073_709_551_615n ],
+  [ TypeURL.XSD_UNSIGNED_INT, 0n, 4_294_967_295n ],
+  [ TypeURL.XSD_UNSIGNED_SHORT, 0n, 65_535n ],
+  [ TypeURL.XSD_UNSIGNED_BYTE, 0n, 255n ],
+];
+
+/**
+ * Check if a lexical form is valid for a numeric datatype:
+ * it must be in the lexical space of the datatype, and its value must be in the range of the datatype.
+ * @param value The lexical form.
+ * @param superTypeDict The super types of the datatype, which must include xsd:decimal, xsd:float, or xsd:double.
+ */
+export function isValidXSDNumeric(value: string, superTypeDict: GeneralSuperTypeDict): boolean {
+  if (TypeURL.XSD_INTEGER in superTypeDict) {
+    if (!LEXICAL_INTEGER.test(value)) {
+      return false;
+    }
+    let bigValue: bigint | undefined;
+    for (const [ type, min, max ] of INTEGER_RANGES) {
+      if (type in superTypeDict) {
+        bigValue ??= BigInt(value);
+        if (bigValue < min || bigValue > max) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  if (TypeURL.XSD_DECIMAL in superTypeDict) {
+    return LEXICAL_DECIMAL.test(value);
+  }
+  return LEXICAL_FLOAT.test(value);
+}
 
 /**
  * Parses float datatypes (double, float).
