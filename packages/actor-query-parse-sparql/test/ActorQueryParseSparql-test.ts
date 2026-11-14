@@ -5,6 +5,7 @@ import type { IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryParseSparql } from '..';
+import { FastSparqlParser } from '../lib/FastSparqlParser';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
@@ -41,6 +42,43 @@ describe('ActorQueryParseSparql', () => {
     beforeEach(() => {
       actor = new ActorQueryParseSparql({ name: 'actor', bus });
       context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
+    });
+
+    describe('with the fast parser', () => {
+      const query = 'SELECT ?s WHERE { ?s ?p ?o }';
+
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
+
+      it('should parse supported queries with the fast parser', async() => {
+        const spy = jest.spyOn(FastSparqlParser.prototype, 'parse');
+        const output = await actor.run({ query, context });
+        expect(spy).toHaveReturnedWith(output.operation);
+        expect(output.baseIRI).toBeUndefined();
+        await expect(new ActorQueryParseSparql({ name: 'actor', bus, fastParser: false }).run({ query, context }))
+          .resolves.toEqual(output);
+      });
+
+      it('should fall back to the regular parser for unsupported queries', async() => {
+        const spy = jest.spyOn(FastSparqlParser.prototype, 'parse');
+        const output = await actor.run({ query: 'BASE <http://ex.org/> SELECT * WHERE { ?s ?p ?o }', context });
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect(output.baseIRI).toBe('http://ex.org/');
+      });
+
+      it('should not use the fast parser when disabled', async() => {
+        const spy = jest.spyOn(FastSparqlParser.prototype, 'parse');
+        await new ActorQueryParseSparql({ name: 'actor', bus, fastParser: false }).run({ query, context });
+        expect(spy).not.toHaveBeenCalled();
+      });
+
+      it('should rethrow other errors of the fast parser', async() => {
+        jest.spyOn(FastSparqlParser.prototype, 'parse').mockImplementation(() => {
+          throw new Error('Unexpected');
+        });
+        await expect(actor.run({ query, context })).rejects.toThrow('Unexpected');
+      });
     });
 
     it('should not test on the graphql format', async() => {
