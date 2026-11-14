@@ -1,0 +1,18 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/sparql-custom/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^6.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-largerdfbench-file:combination_0",
+  "@type": "ExperimentSparqlCustom",
+  "queriesPath": "../../generated/queries/",
+  "endpointUrl": "http://localhost:3001/sparql",
+  "queryRunnerReplication": 1,
+  "queryRunnerWarmupRounds": 1,
+  "queryRunnerRequestDelay": 0,
+  "queryRunnerEndpointAvailabilityCheckTimeout": 1000,
+  "queryRunnerUrlParams": {},
+  "queryTimeoutFallback": 150000,
+  "hookSparqlEndpoint": {"@id": "urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpoint", "@type": "HookCli", "entrypoint": ["bash", "start-federation.sh"], "statsFilePath": "output/stats.csv"}
+}

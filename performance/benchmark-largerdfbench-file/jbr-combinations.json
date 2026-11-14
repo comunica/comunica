@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^6.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-largerdfbench-file-combinations",
+  "@type": "FullFactorialCombinationProvider",
+  "commonGenerated": true,
+  "factors": {
+    "hookSparqlEndpoint": [
+      "{\"@id\": \"urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpoint\", \"@type\": \"HookCli\", \"entrypoint\": [\"bash\", \"start-federation.sh\"], \"statsFilePath\": \"output/stats.csv\"}"
+    ]
+  }
+}
