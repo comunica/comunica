@@ -18,6 +18,12 @@ const DF = new DataFactory();
 const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 
+// RdfStore indexes the distinct objects per predicate
+function withDistinctObjectCounts(store: RdfStore): RdfStore {
+  (<any> store.features).indexDistinctObjectCounts = true;
+  return store;
+}
+
 describe('QuerySourceRdfJs', () => {
   let ctx: IActionContext;
 
@@ -25,7 +31,7 @@ describe('QuerySourceRdfJs', () => {
   let source: QuerySourceRdfJs;
   beforeEach(() => {
     ctx = new ActionContext({});
-    store = RdfStore.createDefault(true);
+    store = withDistinctObjectCounts(RdfStore.createDefault(true));
     source = new QuerySourceRdfJs(store, DF, BF);
   });
 
@@ -150,6 +156,34 @@ describe('QuerySourceRdfJs', () => {
           ],
           requestTime: 0,
         });
+    });
+
+    it('should not count distinct values for sources that can not count distinct objects cheaply', async() => {
+      store = RdfStore.createDefault(true);
+      const countDistinctTerms = jest.spyOn(store, 'countDistinctTerms');
+      source = new QuerySourceRdfJs(store, DF, BF);
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({ s: DF.namedNode('s1'), o: DF.namedNode('o1') }),
+        BF.fromRecord({ s: DF.namedNode('s2'), o: DF.namedNode('o2') }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 2 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
+          requestTime: 0,
+        });
+      expect(countDistinctTerms).not.toHaveBeenCalled();
     });
 
     it('should not count distinct values of a variable that occurs multiple times', async() => {
@@ -727,7 +761,7 @@ describe('QuerySourceRdfJs', () => {
     describe('for quoted triples', () => {
       describe('with a store supporting quoted triple filtering', () => {
         beforeEach(() => {
-          store = RdfStore.createDefault();
+          store = withDistinctObjectCounts(RdfStore.createDefault());
           source = new QuerySourceRdfJs(store, DF, BF);
         });
 

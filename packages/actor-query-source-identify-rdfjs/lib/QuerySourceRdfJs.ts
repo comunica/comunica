@@ -452,8 +452,10 @@ export class QuerySourceRdfJs implements IQuerySource {
       return cardinality;
     }
 
-    // Only objects are indexed after the graph and predicate, so counting subjects would walk the map
-    if (position !== 'object' || !('countDistinctTerms' in this.source) || !this.source.countDistinctTerms) {
+    // Only objects are counted, and only by sources that index them per predicate,
+    // as counting them otherwise iterates over all quads of the predicate
+    if (position !== 'object' || !('features' in this.source) || !this.source.features?.indexDistinctObjectCounts ||
+      !this.source.countDistinctTerms) {
       return undefined;
     }
     const predicate = QuerySourceRdfJs.nullifyVariables(operation.predicate, quotedTripleFiltering);
