@@ -5,13 +5,13 @@
   "scripts": {
     "jbr": "cross-env NODE_OPTIONS=--max-old-space-size=8192 jbr",
     "validate": "jbr validate",
-    "fetch-assets": "curl -s -L https://github.com/comunica/comunica-performance-assets/raw/master/largerdfbench-sample.tar.gz?download= | tar --exclude=\".*\" -xz",
+    "fetch-assets": "curl -s -L https://github.com/comunica/comunica-performance-assets/raw/483439d2346aec08626567bd89d05abf66545a5e/largerdfbench-sample.tar.gz?download= | tar --exclude=\".*\" -xz",
     "performance": "npm run fetch-assets && jbr prepare && jbr run && psbr tex query combinations/combination_*/output --svg --logY",
     "performance:ci": "npm run fetch-assets && jbr prepare -c 0 && jbr run -c 0 -f '^(?!(C2|C6|S1|S9)$)'"
   },
   "dependencies": {
-    "@jbr-experiment/largerdfbench": "^6.6.0",
-    "@jbr-hook/cli": "^6.6.0",
+    "@jbr-experiment/sparql-custom": "^6.0.0",
+    "@jbr-hook/cli": "^6.2.0",
     "cross-env": "^7.0.3",
     "jbr": "^6.2.0"
   }
