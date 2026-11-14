@@ -831,7 +831,18 @@ export class HttpServiceSparqlEndpoint {
 
     let eventEmitter: EventEmitter | undefined;
     try {
-      const { data } = await engine.resultToString(result, mediaType);
+      let serialized: { data: NodeJS.ReadableStream };
+      try {
+        serialized = await engine.resultToString(result, mediaType);
+      } catch (error: unknown) {
+        // Updates have no results, so clients that request a results format for all operations still succeed
+        if (result.resultType !== 'void') {
+          throw error;
+        }
+        mediaType = 'simple';
+        serialized = await engine.resultToString(result, mediaType);
+      }
+      const { data } = serialized;
 
       // Only write the header once serialization has started, so that a failure can still be reported as such
       response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });

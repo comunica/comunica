@@ -2435,6 +2435,37 @@ INSERT DATA {
         expect(execute).toHaveBeenCalledTimes(1);
       });
 
+      it('should fallback to simple for updates if the media type can not serialize them', async() => {
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = () => ({ resultType: 'void', execute: () => Promise.resolve() });
+        engine.resultToString = async(result: any, type: string) => {
+          if (type !== 'simple') {
+            throw new Error(`Unsupported ${type}`);
+          }
+          return { data: Readable.from([ 'ok' ]) };
+        };
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          'application/sparql-results+xml',
+          false,
+          true,
+          0,
+        );
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(
+          200,
+          { 'content-type': 'simple', 'Access-Control-Allow-Origin': '*' },
+        );
+      });
+
       it('should fallback to simple for updates if media type is falsy', async() => {
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => ({ resultType: 'void', execute: () => Promise.resolve() });
