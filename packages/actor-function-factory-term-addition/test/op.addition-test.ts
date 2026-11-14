@@ -4,10 +4,12 @@ import * as Eval from '@comunica/utils-expression-evaluator';
 import {
   runFuncTestTable,
   dateTimeTyped,
+  dateTyped,
   dayTimeDurationTyped,
   int,
   numeric,
   Notation,
+  yearMonthDurationTyped,
 } from '@comunica/utils-jest';
 import type { FuncTestTableConfig } from '@comunica/utils-jest';
 import { LRUCache } from 'lru-cache';
@@ -63,6 +65,14 @@ describe('evaluation of \'+\' like', () => {
       "0"^^xsd:double 0f = "0.0E0"^^xsd:double
       
       '${dateTimeTyped('2012-02-28T12:14:45Z')}' '${dayTimeDurationTyped('P2D')}' = '${dateTimeTyped('2012-03-01T12:14:45Z')}'
+
+      '${dateTimeTyped('2020-01-31T00:00:00Z')}' '${yearMonthDurationTyped('P1M')}' = '${dateTimeTyped('2020-02-29T00:00:00Z')}'
+      '${dateTimeTyped('2019-01-31T23:59:59Z')}' '${yearMonthDurationTyped('P1M')}' = '${dateTimeTyped('2019-02-28T23:59:59Z')}'
+      '${dateTimeTyped('2020-03-31T12:00:00Z')}' '${yearMonthDurationTyped('-P1M')}' = '${dateTimeTyped('2020-02-29T12:00:00Z')}'
+      '${dateTimeTyped('2020-08-31T12:00:00Z')}' '${yearMonthDurationTyped('P1M')}' = '${dateTimeTyped('2020-09-30T12:00:00Z')}'
+      '${dateTyped('2020-02-29')}' '${yearMonthDurationTyped('P1Y')}' = '${dateTyped('2021-02-28')}'
+      '${dateTyped('2020-02-29')}' '${yearMonthDurationTyped('P4Y')}' = '${dateTyped('2024-02-29')}'
+      '${dateTyped('2000-10-30')}' '${yearMonthDurationTyped('P1Y2M')}' = '${dateTyped('2001-12-30')}'
     `,
     errorTable: `
       "apple"^^xsd:integer "0"^^xsd:integer = 'Invalid lexical form'
