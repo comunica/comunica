@@ -2435,15 +2435,10 @@ INSERT DATA {
         expect(execute).toHaveBeenCalledTimes(1);
       });
 
-      it('should fallback to simple for updates if the media type can not serialize them', async() => {
+      it('should serialize updates as simple if another media type is requested', async() => {
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => ({ resultType: 'void', execute: () => Promise.resolve() });
-        engine.resultToString = async(result: any, type: string) => {
-          if (type !== 'simple') {
-            throw new Error(`Unsupported ${type}`);
-          }
-          return { data: Readable.from([ 'ok' ]) };
-        };
+        const resultToString = jest.spyOn(engine, 'resultToString');
 
         await instance.writeQueryResult(
           engine,
@@ -2459,6 +2454,8 @@ INSERT DATA {
         );
 
         await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(resultToString).toHaveBeenCalledTimes(1);
+        expect(resultToString).toHaveBeenCalledWith(expect.anything(), 'simple');
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
           200,

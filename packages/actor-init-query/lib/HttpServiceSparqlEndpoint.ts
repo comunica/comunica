@@ -806,8 +806,9 @@ export class HttpServiceSparqlEndpoint {
       this.serviceDescriptions.clear();
     }
 
-    // Default to SPARQL JSON for bindings and boolean
-    if (!mediaType) {
+    // Default to SPARQL JSON for bindings and boolean.
+    // Updates have no results, so they ignore the requested media type, which may only apply to queries.
+    if (!mediaType || result.resultType === 'void') {
       switch (result.resultType) {
         case 'quads':
           mediaType = 'application/trig';
@@ -831,18 +832,7 @@ export class HttpServiceSparqlEndpoint {
 
     let eventEmitter: EventEmitter | undefined;
     try {
-      let serialized: { data: NodeJS.ReadableStream };
-      try {
-        serialized = await engine.resultToString(result, mediaType);
-      } catch (error: unknown) {
-        // Updates have no results, so clients that request a results format for all operations still succeed
-        if (result.resultType !== 'void') {
-          throw error;
-        }
-        mediaType = 'simple';
-        serialized = await engine.resultToString(result, mediaType);
-      }
-      const { data } = serialized;
+      const { data } = await engine.resultToString(result, mediaType);
 
       // Only write the header once serialization has started, so that a failure can still be reported as such
       response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
