@@ -8,7 +8,7 @@
   "@type": "ExperimentSparqlCustom",
   "queriesPath": "../../generated/queries/",
   "endpointUrl": "http://localhost:3001/sparql",
-  "queryRunnerReplication": 1,
+  "queryRunnerReplication": 2,
   "queryRunnerWarmupRounds": 1,
   "queryRunnerRequestDelay": 0,
   "queryRunnerEndpointAvailabilityCheckTimeout": 1000,
