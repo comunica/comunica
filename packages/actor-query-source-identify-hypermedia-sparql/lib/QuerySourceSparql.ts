@@ -19,7 +19,7 @@ import type {
 import type { AlgebraFactory } from '@comunica/utils-algebra';
 import { Algebra, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { MetadataValidationState } from '@comunica/utils-metadata';
+import { MetadataValidationState, onFirstMetadataRequest } from '@comunica/utils-metadata';
 import {
   estimateCardinality,
   getOperationEquivalentQueryString,
@@ -320,6 +320,15 @@ export class QuerySourceSparql implements IQuerySource {
   }
 
   protected attachMetadata(
+    target: AsyncIterator<any>,
+    context: IActionContext,
+    operationPromise: Promise<Algebra.Operation>,
+  ): void {
+    // The cardinality may require a COUNT query, so it is only determined once the metadata is requested.
+    onFirstMetadataRequest(target, () => this.determineMetadata(target, context, operationPromise));
+  }
+
+  protected determineMetadata(
     target: AsyncIterator<any>,
     context: IActionContext,
     operationPromise: Promise<Algebra.Operation>,
