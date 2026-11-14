@@ -8,6 +8,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { assignOperationEquivalentQueryString } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 
@@ -49,6 +50,15 @@ function testUrl(label: string): string {
 const iriS = DF.namedNode(testUrl('s'));
 const iriP = DF.namedNode(testUrl('p'));
 const iriO = DF.namedNode(testUrl('o'));
+
+/**
+ * Request the metadata of the given stream, so that its cardinality is determined, and return the stream.
+ * @param stream A stream from a query source.
+ */
+function withMetadata<T extends AsyncIterator<any>>(stream: T): T {
+  stream.getProperty('metadata');
+  return stream;
+}
 
 function isCountQuery(query: string): boolean {
   return query.indexOf('COUNT') > 0;
@@ -231,7 +241,7 @@ describe('QuerySourceSparql', () => {
     });
 
     it('should count the HTTP requests it makes', async() => {
-      await source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), planContext).toArray();
+      await withMetadata(source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), planContext)).toArray();
 
       expect(planNode.appendMetadata).toHaveBeenCalledWith({ httpRequests: 1 });
       expect(planNode.appendMetadata).toHaveBeenCalledWith({ httpRequests: 2 });
@@ -246,11 +256,11 @@ describe('QuerySourceSparql', () => {
 
   describe('queryBindings', () => {
     it('should return data', async() => {
-      await expect(source.queryBindings(AF.createPattern(
+      await expect(withMetadata(source.queryBindings(AF.createPattern(
         iriS,
         DF.variable('p'),
         iriO,
-      ), ctx))
+      ), ctx)))
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
@@ -275,13 +285,35 @@ describe('QuerySourceSparql', () => {
       });
     });
 
+    it('should only send a count query once the metadata is requested', async() => {
+      const stream = source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), ctx);
+      await expect(stream.toArray()).resolves.toHaveLength(3);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
+        .toMatchObject({ cardinality: { type: 'exact', value: 3 }});
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+      expect(mediatorHttp.mediate).toHaveBeenLastCalledWith({
+        context: contextWithAbortSignal(ctx),
+        init: {
+          body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: url,
+      });
+    });
+
     it('should return data with local cardinality estimation', async() => {
       jest.spyOn(source, 'estimateOperationCardinality').mockResolvedValue({
         type: 'estimate',
         value: 1,
         dataset: url,
       });
-      await expect(source.queryBindings(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), ctx))
+      await expect(withMetadata(source.queryBindings(
+        AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+        ctx,
+      )))
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
@@ -1101,6 +1133,43 @@ describe('QuerySourceSparql', () => {
         .rejects.toThrow(new Error('Some stream error'));
     });
 
+    it('should emit metadata with infinity count for an erroring count stream', async() => {
+      const thisMediator: any = {
+        mediate() {
+          const stream = new PassThrough();
+          stream._read = () => setImmediate(() => stream.emit('error', new Error('Some stream error')));
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: stream,
+            ok: true,
+          };
+        },
+      };
+      source = new QuerySourceSparql(
+        url,
+        url,
+        ctx,
+        thisMediator,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        true,
+        0,
+        false,
+        {},
+      );
+      const stream = source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO, DF.defaultGraph()), ctx);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+      });
+    });
+
     it('should emit metadata with infinity count for invalid count results', async() => {
       const thisMediator: any = {
         mediate(action: any) {
@@ -1356,7 +1425,10 @@ describe('QuerySourceSparql', () => {
         {},
       );
 
-      await expect(source.queryBindings(AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')), ctx))
+      await expect(withMetadata(source.queryBindings(
+        AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
+        ctx,
+      )))
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
@@ -1423,7 +1495,7 @@ describe('QuerySourceSparql', () => {
       it('should perform an url encoded HTTP POST request when acceptPost includes the url-encoded type', async() => {
         source = getSource([ 'application/x-www-form-urlencoded', 'application/sparql-query' ]);
 
-        await expect(source.queryBindings(operationIn, ctx)).toEqualBindingsStream(expectedResult);
+        await expect(withMetadata(source.queryBindings(operationIn, ctx))).toEqualBindingsStream(expectedResult);
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
@@ -1440,7 +1512,7 @@ describe('QuerySourceSparql', () => {
       it('should perform a direct HTTP POST request when acceptPost doesn\'t include the url-encoded type', async() => {
         source = getSource([ 'application/sparql-query' ]);
 
-        await expect(source.queryBindings(operationIn, ctx)).toEqualBindingsStream(expectedResult);
+        await expect(withMetadata(source.queryBindings(operationIn, ctx))).toEqualBindingsStream(expectedResult);
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
@@ -1602,7 +1674,7 @@ describe('QuerySourceSparql', () => {
     });
 
     it('should return data when joining bindings', async() => {
-      await expect(source.queryBindings(
+      await expect(withMetadata(source.queryBindings(
         AF.createPattern(iriS, DF.variable('p'), iriO),
         ctx,
         {
@@ -1611,7 +1683,7 @@ describe('QuerySourceSparql', () => {
             metadata: <any> { variables: []},
           },
         },
-      ))
+      )))
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
@@ -1637,7 +1709,7 @@ describe('QuerySourceSparql', () => {
     });
 
     it('ignores queryString for joinBindings', async() => {
-      await expect(source.queryBindings(
+      await expect(withMetadata(source.queryBindings(
         AF.createPattern(iriS, DF.variable('p'), iriO),
         ctx.set(KeysInitQuery.queryString, 'abc'), // This must be ignored
         {
@@ -1646,7 +1718,7 @@ describe('QuerySourceSparql', () => {
             metadata: <any> { variables: []},
           },
         },
-      ))
+      )))
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
@@ -1788,10 +1860,10 @@ describe('QuerySourceSparql', () => {
         false,
         {},
       );
-      source.queryBindings(
+      withMetadata(source.queryBindings(
         AF.createPattern(iriS, DF.variable('p'), iriO),
         ctx.set(KeysHttp.httpAbortSignal, existingAbortController.signal),
-      );
+      ));
       await new Promise(resolve => setImmediate(resolve));
       const signal = countContext!.get(KeysHttp.httpAbortSignal)!;
       expect(signal.aborted).toBeFalsy();
@@ -1901,12 +1973,12 @@ describe('QuerySourceSparql', () => {
     });
 
     it('should not pass the original queryString if queryFormat is not sparql', async() => {
-      await expect(source.queryBindings(
+      await expect(withMetadata(source.queryBindings(
         AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
         ctx
           .set(KeysInitQuery.queryString, 'abc')
           .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }),
-      ))
+      )))
         .toEqualBindingsStream([
           BF.fromRecord({
             p: DF.namedNode('p1'),
