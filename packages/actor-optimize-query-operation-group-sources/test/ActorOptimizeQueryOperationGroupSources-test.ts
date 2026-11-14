@@ -380,6 +380,115 @@ describe('ActorOptimizeQueryOperationGroupSources', () => {
         });
       });
 
+      describe('for a join operation with inputs without source', () => {
+        it('should cluster patterns with equal sources without nesting inputs without source', async() => {
+          const opIn = AF.createJoin([
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s1'), DF.namedNode('s'), DF.namedNode('s')),
+              source1,
+            ),
+            AF.createUnion([
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u1'), DF.namedNode('s'), DF.namedNode('s')),
+                source1,
+              ),
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u2'), DF.namedNode('s'), DF.namedNode('s')),
+                source2,
+              ),
+            ]),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s2'), DF.namedNode('s'), DF.namedNode('s')),
+              source1,
+            ),
+            AF.createUnion([
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u3'), DF.namedNode('s'), DF.namedNode('s')),
+                source1,
+              ),
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u4'), DF.namedNode('s'), DF.namedNode('s')),
+                source2,
+              ),
+            ]),
+          ]);
+          const opOut = await actor.groupOperation(opIn, ctx);
+          expect(opOut).toEqual(AF.createJoin([
+            AF.createUnion([
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u1'), DF.namedNode('s'), DF.namedNode('s')),
+                source1,
+              ),
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u2'), DF.namedNode('s'), DF.namedNode('s')),
+                source2,
+              ),
+            ]),
+            AF.createUnion([
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u3'), DF.namedNode('s'), DF.namedNode('s')),
+                source1,
+              ),
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u4'), DF.namedNode('s'), DF.namedNode('s')),
+                source2,
+              ),
+            ]),
+            assignOperationSource(
+              AF.createJoin([
+                AF.createPattern(DF.namedNode('s1'), DF.namedNode('s'), DF.namedNode('s')),
+                AF.createPattern(DF.namedNode('s2'), DF.namedNode('s'), DF.namedNode('s')),
+              ]),
+              source1,
+            ),
+          ], false));
+        });
+
+        it('should flatten inputs without source if no cluster could be grouped', async() => {
+          const opIn = AF.createJoin([
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s1'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePattern,
+            ),
+            AF.createUnion([
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u1'), DF.namedNode('s'), DF.namedNode('s')),
+                source1,
+              ),
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u2'), DF.namedNode('s'), DF.namedNode('s')),
+                source2,
+              ),
+            ]),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s2'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePattern,
+            ),
+          ]);
+          const opOut = await actor.groupOperation(opIn, ctx);
+          expect(opOut).toEqual(AF.createJoin([
+            AF.createUnion([
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u1'), DF.namedNode('s'), DF.namedNode('s')),
+                source1,
+              ),
+              assignOperationSource(
+                AF.createPattern(DF.namedNode('u2'), DF.namedNode('s'), DF.namedNode('s')),
+                source2,
+              ),
+            ]),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s1'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePattern,
+            ),
+            assignOperationSource(
+              AF.createPattern(DF.namedNode('s2'), DF.namedNode('s'), DF.namedNode('s')),
+              sourcePattern,
+            ),
+          ]));
+        });
+      });
+
       describe('for a union operation', () => {
         it('should group patterns with equal sources if the source accepts it', async() => {
           const opIn = AF.createUnion([

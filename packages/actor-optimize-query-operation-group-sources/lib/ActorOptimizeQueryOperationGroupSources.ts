@@ -162,15 +162,19 @@ export class ActorOptimizeQueryOperationGroupSources extends ActorOptimizeQueryO
   ): Promise<Algebra.Operation> {
     let flatten = true;
     const nestedMerges = await Promise.all(clusters.map(async(cluster) => {
-      const source = getOperationSource(cluster[0])!;
+      const source = getOperationSource(cluster[0]);
+      // Operations without source are not nested, so they remain visible to the evaluation of this operation.
+      if (!source) {
+        return cluster;
+      }
       const merged = await this
         .moveSourceAnnotationUpwardsIfPossible(factoryMethod(cluster, true), cluster, source, context);
       if (getOperationSource(merged)) {
         flatten = false;
       }
-      return merged;
+      return [ merged ];
     }));
-    return factoryMethod(nestedMerges, flatten);
+    return factoryMethod(nestedMerges.flat(), flatten);
   }
 
   /**
