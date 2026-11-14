@@ -480,9 +480,32 @@ export function isOperationObject(value: any): value is Operation {
  * @returns {RDF.Variable[]} List of unique in-scope variables.
  */
 export const inScopeVariables: typeof algebraUtils.inScopeVariables =
-  (op: Operation, visitor = <typeof algebraUtils.visitOperation>visitOperation): RDF.Variable[] =>
-    algebraUtils.inScopeVariables(op, (startObject, nodeCallBacks) =>
+  (op: Operation, visitor = <typeof algebraUtils.visitOperation>visitOperation): RDF.Variable[] => {
+    // Patterns are the most common case, and their variables can be read without visiting them
+    if (op.type === Types.PATTERN) {
+      const variables: Record<string, RDF.Variable> = {};
+      addTermVariables(<TraqulaAlgebra.Pattern> op, variables);
+      return Object.values(variables);
+    }
+    return algebraUtils.inScopeVariables(op, (startObject, nodeCallBacks) =>
       visitor(startObject, ignoreDefaultKeys(nodeCallBacks)));
+  };
+
+/**
+ * Add the variables of the given quad to the given variables, including those of quoted triples,
+ * in the same order as inScopeVariables of traqula.
+ * @param quad A pattern or quoted triple.
+ * @param variables Variables by name.
+ */
+function addTermVariables(quad: RDF.BaseQuad, variables: Record<string, RDF.Variable>): void {
+  for (const term of [ quad.subject, quad.predicate, quad.object, quad.graph ]) {
+    if (term.termType === 'Variable') {
+      variables[term.value] = term;
+    } else if (term.termType === 'Quad') {
+      addTermVariables(term, variables);
+    }
+  }
+}
 
 type VisitCallBacks = Parameters<typeof algebraUtils.visitOperation>[1];
 
@@ -493,16 +516,21 @@ type VisitCallBacks = Parameters<typeof algebraUtils.visitOperation>[1];
  * @return The callbacks with adjusted pre-visitors.
  */
 function ignoreDefaultKeys(nodeCallBacks: VisitCallBacks): VisitCallBacks {
-  return Object.fromEntries(Object.entries(nodeCallBacks)
-    .map(([ type, callBacks ]): [ string, NonNullable<VisitCallBacks[keyof VisitCallBacks]> ] => {
-      const preVisitor = <((op: Operation) => VisitContext) | undefined> callBacks.preVisitor;
-      return [ type, { ...callBacks, preVisitor: preVisitor && ((op: Operation) => {
-        const context = preVisitor(op);
-        return context.ignoreKeys ?
-            { ...context, ignoreKeys: new Set([ ...defaultObjectContext.ignoreKeys!, ...context.ignoreKeys ]) } :
-          context;
-      }) }];
-    }));
+  // A plain loop, as Object.entries and Object.fromEntries would cost more than visiting a small operation
+  const wrapped: Record<string, NonNullable<VisitCallBacks[keyof VisitCallBacks]>> = {};
+  for (const type of Object.keys(nodeCallBacks)) {
+    const callBacks = nodeCallBacks[<keyof VisitCallBacks> type]!;
+    const preVisitor = <((op: Operation) => VisitContext) | undefined> callBacks.preVisitor;
+    wrapped[type] = preVisitor ?
+        { ...callBacks, preVisitor: (op: Operation) => {
+          const context = preVisitor(op);
+          return context.ignoreKeys ?
+              { ...context, ignoreKeys: new Set([ ...defaultObjectContext.ignoreKeys!, ...context.ignoreKeys ]) } :
+            context;
+        } } :
+      callBacks;
+  }
+  return wrapped;
 }
 
 /**
