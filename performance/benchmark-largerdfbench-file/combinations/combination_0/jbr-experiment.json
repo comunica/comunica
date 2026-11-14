@@ -1,0 +1,240 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/largerdfbench/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^6.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-largerdfbench-file:combination_0",
+  "@type": "ExperimentLargeRdfBench",
+  "zenodoRecord": "22140177",
+  "datasets": [
+    "ChEBI",
+    "DBPedia-Subset",
+    "DrugBank",
+    "GeoNames",
+    "Jamendo",
+    "KEGG",
+    "LMDB",
+    "NYT",
+    "SWDFood"
+  ],
+  "queries": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10",
+    "S11",
+    "S12",
+    "S13",
+    "S14",
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5",
+    "C6",
+    "C7",
+    "C8",
+    "C9"
+  ],
+  "sample": true,
+  "sampleSubjectRates": {
+    "DBPedia-Subset": 0.02,
+    "GeoNames": 0.02,
+    "LMDB": 0.25
+  },
+  "sampleOtherTriplesRate": 0.2,
+  "sampleSeed": "largerdfbench-sample-v1",
+  "sampleValidate": true,
+  "generationQueryTimeout": 1800,
+  "endpointUrl": "http://localhost:3001/sparql",
+  "endpointUrlExternal": "http://localhost:3001/sparql",
+  "sourceUrlsExternal": [
+    "http://localhost:4001/sparql",
+    "http://localhost:4002/sparql",
+    "http://localhost:4003/sparql",
+    "http://localhost:4004/sparql",
+    "http://localhost:4005/sparql",
+    "http://localhost:4006/sparql",
+    "http://localhost:4007/sparql",
+    "http://localhost:4008/sparql",
+    "http://localhost:4009/sparql"
+  ],
+  "queryRunnerReplication": 1,
+  "queryRunnerWarmupRounds": 1,
+  "queryRunnerRequestDelay": 0,
+  "queryRunnerEndpointAvailabilityCheckTimeout": 1000,
+  "queryRunnerUrlParams": {},
+  "queryTimeoutFallback": 150000,
+  "hookSparqlEndpoint": {"@id": "urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpoint", "@type": "HookCli", "entrypoint": ["node", "--max-old-space-size=4096", "../../engines/query-sparql/bin/http.js", "sparql@http://localhost:4001/sparql", "sparql@http://localhost:4002/sparql", "sparql@http://localhost:4003/sparql", "sparql@http://localhost:4004/sparql", "sparql@http://localhost:4005/sparql", "sparql@http://localhost:4006/sparql", "sparql@http://localhost:4007/sparql", "sparql@http://localhost:4008/sparql", "sparql@http://localhost:4009/sparql", "-p", "3001", "-t", "120", "-i"], "statsFilePath": "output/stats.csv", "logName": "federator"},
+  "hookSparqlEndpointSources": [
+    {
+      "@id": "urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpointSources_ChEBI",
+      "@type": "HookCli",
+      "entrypoint": [
+        "node",
+        "--max-old-space-size=1536",
+        "../../engines/query-sparql-file/bin/http.js",
+        "file@generated/datasets/ChEBI.nt",
+        "-p",
+        "4001",
+        "-t",
+        "300",
+        "--warmup",
+        "2000"
+      ],
+      "statsFilePath": "output/stats-ChEBI.csv",
+      "logName": "ChEBI"
+    },
+    {
+      "@id": "urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpointSources_DBPedia-Subset",
+      "@type": "HookCli",
+      "entrypoint": [
+        "node",
+        "--max-old-space-size=1536",
+        "../../engines/query-sparql-file/bin/http.js",
+        "file@generated/datasets/DBPedia-Subset.nt",
+        "-p",
+        "4002",
+        "-t",
+        "300",
+        "--warmup",
+        "2000"
+      ],
+      "statsFilePath": "output/stats-DBPedia-Subset.csv",
+      "logName": "DBPedia-Subset"
+    },
+    {
+      "@id": "urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpointSources_DrugBank",
+      "@type": "HookCli",
+      "entrypoint": [
+        "node",
+        "--max-old-space-size=1536",
+        "../../engines/query-sparql-file/bin/http.js",
+        "file@generated/datasets/DrugBank.nt",
+        "-p",
+        "4003",
+        "-t",
+        "300",
+        "--warmup",
+        "2000"
+      ],
+      "statsFilePath": "output/stats-DrugBank.csv",
+      "logName": "DrugBank"
+    },
+    {
+      "@id": "urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpointSources_GeoNames",
+      "@type": "HookCli",
+      "entrypoint": [
+        "node",
+        "--max-old-space-size=1536",
+        "../../engines/query-sparql-file/bin/http.js",
+        "file@generated/datasets/GeoNames.nt",
+        "-p",
+        "4004",
+        "-t",
+        "300",
+        "--warmup",
+        "2000"
+      ],
+      "statsFilePath": "output/stats-GeoNames.csv",
+      "logName": "GeoNames"
+    },
+    {
+      "@id": "urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpointSources_Jamendo",
+      "@type": "HookCli",
+      "entrypoint": [
+        "node",
+        "--max-old-space-size=1536",
+        "../../engines/query-sparql-file/bin/http.js",
+        "file@generated/datasets/Jamendo.nt",
+        "-p",
+        "4005",
+        "-t",
+        "300",
+        "--warmup",
+        "2000"
+      ],
+      "statsFilePath": "output/stats-Jamendo.csv",
+      "logName": "Jamendo"
+    },
+    {
+      "@id": "urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpointSources_KEGG",
+      "@type": "HookCli",
+      "entrypoint": [
+        "node",
+        "--max-old-space-size=1536",
+        "../../engines/query-sparql-file/bin/http.js",
+        "file@generated/datasets/KEGG.nt",
+        "-p",
+        "4006",
+        "-t",
+        "300",
+        "--warmup",
+        "2000"
+      ],
+      "statsFilePath": "output/stats-KEGG.csv",
+      "logName": "KEGG"
+    },
+    {
+      "@id": "urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpointSources_LMDB",
+      "@type": "HookCli",
+      "entrypoint": [
+        "node",
+        "--max-old-space-size=1536",
+        "../../engines/query-sparql-file/bin/http.js",
+        "file@generated/datasets/LMDB.nt",
+        "-p",
+        "4007",
+        "-t",
+        "300",
+        "--warmup",
+        "2000"
+      ],
+      "statsFilePath": "output/stats-LMDB.csv",
+      "logName": "LMDB"
+    },
+    {
+      "@id": "urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpointSources_NYT",
+      "@type": "HookCli",
+      "entrypoint": [
+        "node",
+        "--max-old-space-size=1536",
+        "../../engines/query-sparql-file/bin/http.js",
+        "file@generated/datasets/NYT.nt",
+        "-p",
+        "4008",
+        "-t",
+        "300",
+        "--warmup",
+        "2000"
+      ],
+      "statsFilePath": "output/stats-NYT.csv",
+      "logName": "NYT"
+    },
+    {
+      "@id": "urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpointSources_SWDFood",
+      "@type": "HookCli",
+      "entrypoint": [
+        "node",
+        "--max-old-space-size=1536",
+        "../../engines/query-sparql-file/bin/http.js",
+        "file@generated/datasets/SWDFood.nt",
+        "-p",
+        "4009",
+        "-t",
+        "300",
+        "--warmup",
+        "2000"
+      ],
+      "statsFilePath": "output/stats-SWDFood.csv",
+      "logName": "SWDFood"
+    }
+  ]
+}
