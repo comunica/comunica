@@ -282,7 +282,6 @@ export class ActorHttpRetry extends ActorHttp {
    * @param {IActionHttpInvalidate} action The invalidation action
    */
   public handleHttpInvalidateEvent(action: IActionHttpInvalidate): void {
-    // Values that are not URLs, such as paths of local files, do not concern any host
     if (action.url && !URL.canParse(action.url)) {
       return;
     }
