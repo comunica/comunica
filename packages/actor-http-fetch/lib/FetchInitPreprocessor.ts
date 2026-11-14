@@ -34,7 +34,6 @@ export class FetchInitPreprocessor implements IFetchInitPreprocessor {
     args.httpInvalidator.addInvalidateListener(
       ({ url }: IActionHttpInvalidate) => {
         if (url) {
-          // Values that are not URLs, such as paths of local files, are never cached
           if (!URL.canParse(url)) {
             return;
           }
