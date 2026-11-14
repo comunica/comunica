@@ -111,6 +111,26 @@ describe('evaluation of \'<\'', () => {
     });
   });
 
+  describe('with string operands using codepoint collation like', () => {
+    runFuncTestTable({
+      ...config,
+      testTable: `
+        "Z" "a" = true
+        "a" "Z" = false
+        "B" "a" = true
+        "a" "B" = false
+        "ab" "a\\u200Bb" = true
+        "a\\u200Bb" "ab" = false
+        "e\\u0301" "\\u00E9" = true
+        "\\u00E9" "e\\u0301" = false
+        "\\uFF61" "\\U0001F600" = true
+        "\\U0001F600" "\\uFF61" = false
+        "\\U0001F600" "\\U0001F601" = true
+        "a" "\\U0001F600" = true
+      `,
+    });
+  });
+
   describe('with language string operands like', () => {
     runFuncTestTable({
       ...config,
@@ -129,6 +149,8 @@ describe('evaluation of \'<\'', () => {
         "a"@en "b"@de = true
         "a"@en "a"@de = false
         "a"@en "a"@en = false
+        "Z"@en "a"@en = true
+        "\\uFF61"@en "\\U0001F600"@en = true
       `,
     });
   });
