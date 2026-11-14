@@ -364,6 +364,13 @@ describe('ActorHttpRetry', () => {
       actor.handleHttpInvalidateEvent({ context, url: 'http://example.org/abc' });
       expect(activeDelays).toStrictEqual({ 'example.com': { timeout: undefined }});
     });
+
+    it('should clear no delays with a value that is not a URL', () => {
+      const activeDelays = <Record<string, { timeout: NodeJS.Timeout }>>(<any>actor).activeDelays;
+      activeDelays['example.org'] = { timeout: <any>undefined };
+      actor.handleHttpInvalidateEvent({ context, url: '/path/to/file.hdt' });
+      expect(activeDelays).toStrictEqual({ 'example.org': { timeout: undefined }});
+    });
   });
 
   describe('isRetryableOnError', () => {
