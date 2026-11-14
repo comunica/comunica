@@ -23,6 +23,10 @@ class EngineMock {
     return Promise.resolve({data: result});
   }
 
+  canResultToString(queryResult, mediaType){
+    return Promise.resolve(mediaType !== "mediatype_unsupported");
+  }
+
   queryBindings() {
     return {
       on: (event, func) => {

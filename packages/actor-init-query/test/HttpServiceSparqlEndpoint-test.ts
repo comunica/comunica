@@ -2435,7 +2435,10 @@ INSERT DATA {
         expect(execute).toHaveBeenCalledTimes(1);
       });
 
-      it('should serialize updates as simple if another media type is requested', async() => {
+      it.each([
+        [ 'simple if the requested media type can not serialize them', 'mediatype_unsupported', 'simple' ],
+        [ 'the requested media type if it can serialize them', 'mtype_1', 'mtype_1' ],
+      ])('should serialize updates as %s', async(_name, requested, serialized) => {
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => ({ resultType: 'void', execute: () => Promise.resolve() });
         const resultToString = jest.spyOn(engine, 'resultToString');
@@ -2447,7 +2450,7 @@ INSERT DATA {
           request,
           response,
           query,
-          'application/sparql-results+xml',
+          requested,
           false,
           true,
           0,
@@ -2455,11 +2458,11 @@ INSERT DATA {
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(resultToString).toHaveBeenCalledTimes(1);
-        expect(resultToString).toHaveBeenCalledWith(expect.anything(), 'simple');
+        expect(resultToString).toHaveBeenCalledWith(expect.anything(), serialized);
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
           200,
-          { 'content-type': 'simple', 'Access-Control-Allow-Origin': '*' },
+          { 'content-type': serialized, 'Access-Control-Allow-Origin': '*' },
         );
       });
 

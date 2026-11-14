@@ -807,8 +807,8 @@ export class HttpServiceSparqlEndpoint {
     }
 
     // Default to SPARQL JSON for bindings and boolean.
-    // Updates have no results, so they ignore the requested media type, which may only apply to queries.
-    if (!mediaType || result.resultType === 'void') {
+    // Updates have no results, so they also use the default if the requested media type can not serialize them.
+    if (!mediaType || (result.resultType === 'void' && !await engine.canResultToString(result, mediaType))) {
       switch (result.resultType) {
         case 'quads':
           mediaType = 'application/trig';
