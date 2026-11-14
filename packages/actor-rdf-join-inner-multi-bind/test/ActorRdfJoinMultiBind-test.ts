@@ -6,7 +6,7 @@ import type { IActionRdfJoinSelectivity, IActorRdfJoinSelectivityOutput } from '
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IActionContext, IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
+import type { Bindings, IActionContext, IQueryOperationResultBindings, MetadataBindings } from '@comunica/types';
 import { AlgebraFactory, Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -1033,7 +1033,152 @@ IQueryOperationResultBindings
       });
     });
 
+    describe('getOperationVariableNames', () => {
+      it('returns the variables of patterns and expressions, but not of metadata', () => {
+        const pattern = FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p'), DF.variable('b'));
+        (<any> pattern).metadata = { x: DF.variable('m') };
+        const operation = FACTORY.createFilter(
+          pattern,
+          FACTORY.createOperatorExpression('=', [
+            FACTORY.createTermExpression(DF.variable('b')),
+            FACTORY.createTermExpression(DF.variable('c')),
+          ]),
+        );
+        expect([ ...ActorRdfJoinMultiBind.getOperationVariableNames([ operation, pattern ]) ].sort())
+          .toEqual([ 'a', 'b', 'c' ]);
+      });
+    });
+
+    describe('createReusingOperationBinder', () => {
+      const operations = [ FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p'), DF.variable('b')) ];
+      let operationBinder: jest.Mock;
+
+      function row(a: string, x: string): Bindings {
+        return BF.bindings([
+          [ DF.variable('a'), DF.namedNode(a) ],
+          [ DF.variable('x'), DF.namedNode(x) ],
+        ]);
+      }
+
+      beforeEach(() => {
+        operationBinder = jest.fn(async(boundOperations: Algebra.Operation[], bindings: Bindings) =>
+          new ArrayIterator([
+            BF.bindings([[ DF.variable('b'), DF.namedNode(`${bindings.get(DF.variable('a'))!.value}-b1`) ]]),
+            BF.bindings([[ DF.variable('b'), DF.namedNode(`${bindings.get(DF.variable('a'))!.value}-b2`) ]]),
+          ], { autoStart: false }));
+      });
+
+      it('reuses all results for bindings that agree on the variables of the operations', async() => {
+        const binder = ActorRdfJoinMultiBind.createReusingOperationBinder(operations, operationBinder);
+        const expected = [
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a1-b1') ]]),
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a1-b2') ]]),
+        ];
+        const stream1 = await binder(operations, row('ex:a1', 'ex:x1'));
+        await expect(stream1).toEqualBindingsStream(expected);
+        const stream2 = await binder(operations, row('ex:a1', 'ex:x2'));
+        await expect(stream2).toEqualBindingsStream(expected);
+        expect(operationBinder).toHaveBeenCalledTimes(1);
+      });
+
+      it('evaluates bindings that differ on a variable of the operations', async() => {
+        const binder = ActorRdfJoinMultiBind.createReusingOperationBinder(operations, operationBinder);
+        const stream3 = await binder(operations, row('ex:a1', 'ex:x1'));
+        await expect(stream3).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a1-b1') ]]),
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a1-b2') ]]),
+        ]);
+        const stream4 = await binder(operations, row('ex:a2', 'ex:x1'));
+        await expect(stream4).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a2-b1') ]]),
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a2-b2') ]]),
+        ]);
+        expect(operationBinder).toHaveBeenCalledTimes(2);
+      });
+
+      it('evaluates again while the results of the first evaluation are not all produced', async() => {
+        const binder = ActorRdfJoinMultiBind.createReusingOperationBinder(operations, operationBinder);
+        const first = await binder(operations, row('ex:a1', 'ex:x1'));
+        const stream5 = await binder(operations, row('ex:a1', 'ex:x2'));
+        await expect(stream5).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a1-b1') ]]),
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a1-b2') ]]),
+        ]);
+        first.destroy();
+        await binder(operations, row('ex:a1', 'ex:x3'));
+        expect(operationBinder).toHaveBeenCalledTimes(2);
+      });
+
+      it('does not reuse results that were not all produced', async() => {
+        const binder = ActorRdfJoinMultiBind.createReusingOperationBinder(operations, operationBinder);
+        (await binder(operations, row('ex:a1', 'ex:x1'))).destroy();
+        await binder(operations, row('ex:a1', 'ex:x2'));
+        expect(operationBinder).toHaveBeenCalledTimes(2);
+      });
+
+      it('does not reuse more results than the maximum per bound operation', async() => {
+        const binder = ActorRdfJoinMultiBind.createReusingOperationBinder(operations, operationBinder, 1);
+        const stream6 = await binder(operations, row('ex:a1', 'ex:x1'));
+        await expect(stream6).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a1-b1') ]]),
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a1-b2') ]]),
+        ]);
+        const stream7 = await binder(operations, row('ex:a1', 'ex:x2'));
+        await expect(stream7).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a1-b1') ]]),
+          BF.bindings([[ DF.variable('b'), DF.namedNode('ex:a1-b2') ]]),
+        ]);
+        expect(operationBinder).toHaveBeenCalledTimes(2);
+      });
+
+      it('forgets kept results when more than the total maximum would be kept', async() => {
+        const binder = ActorRdfJoinMultiBind.createReusingOperationBinder(operations, operationBinder, 10, 3);
+        await (await binder(operations, row('ex:a1', 'ex:x1'))).toArray();
+        await (await binder(operations, row('ex:a2', 'ex:x1'))).toArray();
+        await (await binder(operations, row('ex:a2', 'ex:x2'))).toArray();
+        await (await binder(operations, row('ex:a1', 'ex:x2'))).toArray();
+        expect(operationBinder).toHaveBeenCalledTimes(3);
+      });
+    });
+
     describe('createBindStream', () => {
+      it('binds bindings that agree on the variables of the operations', async() => {
+        const operationBinder = jest.fn(async(boundOperations: Algebra.Operation[], bindings: Bindings): Promise<any> =>
+          new ArrayIterator([
+            BF.bindings([[ DF.variable('b'), DF.namedNode(`${bindings.get(DF.variable('a'))!.value}-b`) ]]),
+          ], { autoStart: false }));
+        const stream = ActorRdfJoinMultiBind.createBindStream(
+          'depth-first',
+          new ArrayIterator<Bindings>([
+            BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ], [ DF.variable('x'), DF.namedNode('ex:x1') ]]),
+            BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ], [ DF.variable('x'), DF.namedNode('ex:x2') ]]),
+            BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a2') ], [ DF.variable('x'), DF.namedNode('ex:x3') ]]),
+          ], { autoStart: false }),
+          [ FACTORY.createPattern(DF.variable('a'), DF.namedNode('ex:p'), DF.variable('b')) ],
+          operationBinder,
+          false,
+          FACTORY,
+          BF,
+        );
+        await expect(stream).toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a1') ],
+            [ DF.variable('x'), DF.namedNode('ex:x1') ],
+            [ DF.variable('b'), DF.namedNode('ex:a1-b') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a1') ],
+            [ DF.variable('x'), DF.namedNode('ex:x2') ],
+            [ DF.variable('b'), DF.namedNode('ex:a1-b') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a2') ],
+            [ DF.variable('x'), DF.namedNode('ex:x3') ],
+            [ DF.variable('b'), DF.namedNode('ex:a2-b') ],
+          ]),
+        ], true);
+      });
+
       it('throws when an unknown bind order is passed', async() => {
         await expect(
           async() => await (<any> ActorRdfJoinMultiBind).createBindStream('unknown').catch((error: any) => {
