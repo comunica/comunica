@@ -319,6 +319,21 @@ implements IQueryEngine<QueryStringContextInner, QueryAlgebraContextInner> {
   }
 
   /**
+   * Check if a query result can be converted to a string stream in a certain media type,
+   * without converting it.
+   * @param {IQueryOperationResult} queryResult A query result.
+   * @param {string} mediaType A media type.
+   * @param {ActionContext} context An optional context.
+   * @return {Promise<boolean>} If an actor can serialize the result in the media type.
+   */
+  public async canResultToString(queryResult: RDF.Query<any>, mediaType: string, context?: any): Promise<boolean> {
+    context = ActionContext.ensureActionContext(context);
+    const handle: IActionSparqlSerialize = { ...await QueryEngineBase.finalToInternalResult(queryResult), context };
+    return (await this.actorInitQuery.mediatorQueryResultSerialize
+      .mediateActor({ context, handle, handleMediaType: mediaType })).isPassed();
+  }
+
+  /**
    * Invalidate all internal caches related to the given page URL.
    * If no page URL is given, then all pages will be invalidated.
    * @param {string} url The page URL to invalidate.
