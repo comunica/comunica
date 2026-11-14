@@ -131,8 +131,10 @@ export class ActorHttpLimitRate extends ActorHttp {
    */
   public handleHttpInvalidateEvent(action: IActionHttpInvalidate): void {
     if (action.url) {
-      const invalidatedHost = new URL(action.url).host;
-      this.hostData.delete(invalidatedHost);
+      // Values that are not URLs, such as paths of local files, do not concern any host
+      if (URL.canParse(action.url)) {
+        this.hostData.delete(new URL(action.url).host);
+      }
     } else {
       this.hostData.clear();
     }
