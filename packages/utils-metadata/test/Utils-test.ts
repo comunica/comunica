@@ -123,7 +123,7 @@ describe('Utils', () => {
 
   describe('onFirstMetadataRequest', () => {
     it('calls the function once, when metadata is first requested', async() => {
-      const it = new ArrayIterator([], { autoStart: false });
+      const it = new ArrayIterator<any>([], { autoStart: false });
       const onRequest = jest.fn(() => it.setProperty('metadata', { a: 'b' }));
       onFirstMetadataRequest(it, onRequest);
       expect(onRequest).not.toHaveBeenCalled();
