@@ -255,14 +255,6 @@ export interface IQueryEngine<
    */
   resultToString: (queryResult: QueryType, mediaType?: string, context?: any) => any;
   /**
-   * Check if a query result can be converted to a string stream in a certain media type, without converting it.
-   * @param {QueryType} queryResult A query result.
-   * @param {string} mediaType A media type.
-   * @param {IActionContext} context An optional context.
-   * @return {Promise<boolean>} If the result can be serialized in the media type.
-   */
-  canResultToString: (queryResult: QueryType, mediaType: string, context?: any) => Promise<boolean>;
-  /**
    * Invalidate all internal caches related to the given page URL.
    * If no page URL is given, then all pages will be invalidated.
    * @param {string} url The page URL to invalidate.

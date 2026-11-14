@@ -345,10 +345,10 @@ describe('QueryEngineBase', () => {
           name: 'actor',
           queryString,
         });
-        queryEngine = new QueryEngineBase(actor);
+        const engine = new QueryEngineBase(actor);
         const result: any = { resultType: 'void', execute: () => Promise.resolve() };
-        await expect(queryEngine.canResultToString(result, 'simple')).resolves.toBe(true);
-        await expect(queryEngine.canResultToString(result, 'application/sparql-results+xml')).resolves.toBe(false);
+        await expect(engine.canResultToString(result, 'simple')).resolves.toBe(true);
+        await expect(engine.canResultToString(result, 'application/sparql-results+xml')).resolves.toBe(false);
         expect(med.mediateActor).toHaveBeenLastCalledWith({
           context: expect.any(ActionContext),
           handle: expect.objectContaining({ type: 'void' }),
