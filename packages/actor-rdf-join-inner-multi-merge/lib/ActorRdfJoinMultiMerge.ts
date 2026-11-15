@@ -26,8 +26,9 @@ import { MultiMergeJoinIterator } from './MultiMergeJoinIterator';
 export class ActorRdfJoinMultiMerge extends ActorRdfJoin<IActorRdfJoinMultiMergeTestSideData> {
   /**
    * The cost of reading one binding when every merged entry can skip, as for the merge join.
+   * Most of these reads skip ahead, which restarts a search in the source, so they cost more than reading on.
    */
-  public static readonly ITERATION_COST_ORDERED = 0.8;
+  public static readonly ITERATION_COST_ORDERED = 3;
   /**
    * The cost of reading one binding otherwise, as for the merge join.
    */

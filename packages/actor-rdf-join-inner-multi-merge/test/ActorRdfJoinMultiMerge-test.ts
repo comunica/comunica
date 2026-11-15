@@ -225,7 +225,7 @@ describe('ActorRdfJoinMultiMerge', () => {
         ],
         context,
       })).resolves.toPassTest({
-        iterations: 30 * 0.8,
+        iterations: 30 * 3,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 0,
@@ -247,7 +247,7 @@ describe('ActorRdfJoinMultiMerge', () => {
         context,
       })).resolves.toPassTest({
         // 100 keys from the smallest entry, checked against the next two, of which about 4 remain for the last.
-        iterations: (100 + 100 + 100 + 4) * 0.8,
+        iterations: (100 + 100 + 100 + 4) * 3,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 0,
@@ -284,7 +284,7 @@ describe('ActorRdfJoinMultiMerge', () => {
         context,
       })).resolves.toPassTest({
         // 30 bindings merged, then 10 + 50 and 10 + 5.
-        iterations: (30 * 0.8) + 60 + 15,
+        iterations: (30 * 3) + 60 + 15,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 0,

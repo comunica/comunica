@@ -55,7 +55,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     this.selectivityModifier = args.selectivityModifier;
     this.minMaxCardinalityRatio = args.minMaxCardinalityRatio;
     this.subQueryCost = args.subQueryCost ?? 100;
-    this.lookupCost = args.lookupCost ?? 25;
+    this.lookupCost = args.lookupCost ?? 40;
     this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
     this.mediatorQueryOperation = args.mediatorQueryOperation;
     this.mediatorMergeBindingsContext = args.mediatorMergeBindingsContext;
@@ -388,6 +388,12 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
         remainingEntries.every(entry => entry.operation.type === Algebra.Types.PATTERN) ?
         this.lookupCost * remainingEntries.length :
         this.subQueryCost * remainingEntries.length * (1 + entriesWithoutSharedVariable);
+      // Entries sharing no variable with the first are not restricted by its bindings, so each run reads them fully
+      for (const entry of remainingEntries) {
+        if (ActorRdfJoin.getSharedVariableJoinCardinality([ metadatas[0], entry.metadata ]) === undefined) {
+          subPlanCost += entry.metadata.cardinality.value;
+        }
+      }
     }
 
     return passTestWithSideData({
@@ -435,7 +441,7 @@ export interface IActorRdfJoinMultiBindArgs extends IActorRdfJoinArgs<IActorRdfJ
    * The cost of looking up a single bound pattern, in number of produced results.
    * This is used for local sources instead of subQueryCost.
    * @range {double}
-   * @default {25}
+   * @default {40}
    */
   lookupCost?: number;
   /**

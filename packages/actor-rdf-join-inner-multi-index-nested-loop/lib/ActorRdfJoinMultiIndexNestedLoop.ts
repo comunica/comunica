@@ -198,7 +198,8 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
         bound.add(variable.variable.value);
       }
     }
-    return { order, iterations, cardinality: rows };
+    // The results themselves are produced by any join, so they are left out of its cost
+    return { order, iterations: iterations - rows, cardinality: rows };
   }
 
   protected async getJoinCoefficients(
@@ -242,9 +243,9 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
 export interface IActorRdfJoinMultiIndexNestedLoopArgs
   extends IActorRdfJoinArgs<IActorRdfJoinMultiIndexNestedLoopTestSideData> {
   /**
-   * The cost of looking up a single bound operation, expressed in produced rows.
+   * The cost of looking up a single bound operation, relative to producing a row or reading a binding from a stream.
    * @range {double}
-   * @default {1}
+   * @default {2}
    */
   lookupCost: number;
   /**

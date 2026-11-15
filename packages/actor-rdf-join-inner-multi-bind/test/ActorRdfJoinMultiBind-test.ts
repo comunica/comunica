@@ -134,7 +134,7 @@ IQueryOperationResultBindings
           mediatorJoinEntriesSort,
           mediatorMergeBindingsContext,
           minMaxCardinalityRatio: 100,
-        }).lookupCost).toBe(25);
+        }).lookupCost).toBe(40);
       });
     });
 

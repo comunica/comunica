@@ -259,7 +259,7 @@ describe('ActorRdfJoinMerge', () => {
       });
     });
 
-    it('charges two ordered sources the same per binding as the hash join', async() => {
+    it('charges two ordered sources more per binding, as most reads skip ahead', async() => {
       const action: IActionRdfJoin = {
         type: 'inner',
         entries: [
@@ -268,9 +268,9 @@ describe('ActorRdfJoinMerge', () => {
         ],
         context,
       };
-      // Same reads as above, but at 0.8 rather than 1, so that a chain of merges can form.
+      // Same reads as above, but at 3 rather than 1, as skipping ahead restarts a search in the source.
       await expect(actor.test(action)).resolves.toPassTest({
-        iterations: 16,
+        iterations: 60,
         persistedItems: 0.01,
         blockingItems: 0,
         requestTime: 0,

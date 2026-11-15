@@ -27,9 +27,10 @@ export class ActorRdfJoinMerge extends ActorRdfJoin<IActorRdfJoinMergeTestSideDa
   public static readonly ITERATION_COST = 1;
 
   /**
-   * The cost of reading one binding when both entries are ordered sources.
+   * The cost of reading one binding when both entries are ordered sources that can skip ahead.
+   * Most of these reads skip ahead, which restarts a search in the source, so they cost more than reading on.
    */
-  public static readonly ITERATION_COST_ORDERED = 0.8;
+  public static readonly ITERATION_COST_ORDERED = 3;
 
   public constructor(args: IActorRdfJoinMergeArgs) {
     super(args, {
