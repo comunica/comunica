@@ -7,6 +7,7 @@ import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/
 import { Algebra } from '@comunica/utils-algebra';
 import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
+import { estimateCardinality } from '@comunica/utils-metadata';
 import { getSafeBindings, validateQueryOutput } from '@comunica/utils-query-operation';
 
 /**
@@ -62,7 +63,11 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
 
     // eslint-disable-next-line ts/no-misused-promises
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform, autoStart: false });
-    return { type: 'bindings', bindingsStream, metadata: output.metadata };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      metadata: async() => estimateCardinality(await output.metadata()),
+    };
   }
 }
 

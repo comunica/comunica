@@ -15,6 +15,7 @@ import type {
   IQueryOperationResultQuads,
 } from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
+import { estimateCardinality } from '@comunica/utils-metadata';
 import { getSafeBindings, getSafeQuads } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -48,7 +49,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
       return {
         type: 'quads',
         quadStream,
-        metadata: outputQuads.metadata,
+        metadata: async() => estimateCardinality(await outputQuads.metadata()),
       };
     }
 
@@ -62,7 +63,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: outputBindings.metadata,
+      metadata: async() => estimateCardinality(await outputBindings.metadata()),
     };
   }
 

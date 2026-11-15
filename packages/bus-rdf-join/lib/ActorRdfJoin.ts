@@ -143,6 +143,24 @@ TS
   }
 
   /**
+   * Check if a variable occurs in more than one of the given metadata objects.
+   * @param metadatas An array of optional metadata objects for the entries.
+   */
+  public static hasSharedVariable(metadatas: MetadataBindings[]): boolean {
+    const variables = new Set<string>();
+    for (const metadata of metadatas) {
+      const entryVariables = new Set(metadata.variables.map(({ variable }) => variable.value));
+      for (const variable of entryVariables) {
+        if (variables.has(variable)) {
+          return true;
+        }
+        variables.add(variable);
+      }
+    }
+    return false;
+  }
+
+  /**
    * Returns the variables that will occur in the joined bindings.
    * @param dataFactory The data factory.
    * @param {MetadataBindings[]} metadatas An array of metadata objects for the entries.
@@ -323,7 +341,12 @@ TS
         }, { type: 'exact', value: 1 });
       // The cardinality should only be zero if one of the entries has zero cardinality, not due to float overflow
       if (!hasZeroCardinality || optional) {
-        cardinalityJoined.value *= (await this.mediatorJoinSelectivity.mediate({ entries, context })).selectivity;
+        const { selectivity } = await this.mediatorJoinSelectivity.mediate({ entries, context });
+        cardinalityJoined.value *= selectivity;
+        // The selectivity is estimated, so the cardinality is only exact for a cross product that it does not change
+        if (selectivity !== 1 || ActorRdfJoin.hasSharedVariable(metadatas)) {
+          cardinalityJoined.type = 'estimate';
+        }
         // The selectivity heuristic is purely structural, so it can only scale down the cross product by a
         // constant factor, no matter how large the entries are. Cap the estimate with one that does look at the
         // cardinalities, so that joining two large entries on a shared variable is not estimated as their product.
