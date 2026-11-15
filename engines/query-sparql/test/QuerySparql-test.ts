@@ -64,6 +64,14 @@ describe('System test: QuerySparql', () => {
     };
   }
 
+  describe('getResultMediaTypes', () => {
+    it('prefers the standard SPARQL results formats over the generic JSON format', async() => {
+      const mediaTypes = await engine.getResultMediaTypes();
+      expect(mediaTypes['application/sparql-results+json']).toBeGreaterThan(mediaTypes['application/json']);
+      expect(mediaTypes['application/sparql-results+xml']).toBeGreaterThan(mediaTypes['application/json']);
+    });
+  });
+
   describe('instantiated multiple times', () => {
     it('should contain different actors', () => {
       const engine2 = new QueryEngine();
