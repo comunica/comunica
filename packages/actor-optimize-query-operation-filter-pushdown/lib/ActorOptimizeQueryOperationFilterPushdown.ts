@@ -103,9 +103,11 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
           const variables = getExpressionVariables(filterOp.expression);
           const [ isModified, result ] = this
             .filterPushdown(filterOp.expression, variables, filterOp.input, algebraFactory, action.context);
-          if (isModified) {
-            repeat = true;
+          if (!isModified) {
+            // Keep the filter as is, as recreating it would lose its metadata
+            return filterOp;
           }
+          repeat = true;
           return result;
         } },
       });
@@ -123,11 +125,11 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
           if (op.input.type === Algebra.Types.FILTER) {
             const { nestedExpressions, input } = this.getNestedFilterExpressions(op);
             this.logDebug(action.context, `Merge ${nestedExpressions.length} nested filters into conjunctive filter`);
-            return algebraFactory.createFilter(
+            return algebraUtils.copyMetadata(algebraFactory.createFilter(
               input,
               nestedExpressions.slice(1).reduce((previous, current) =>
                 algebraFactory.createOperatorExpression('&&', [ previous, current ]), nestedExpressions[0]),
-            );
+            ), op);
           }
           return op;
         } },
@@ -316,7 +318,10 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       // Always pass
       const [ isModified, result ] = this
         .filterPushdown(expression, expressionVariables, operation.input, factory, context);
-      return [ isModified, factory.createFilter(result, operation.expression) ];
+      return [
+        isModified,
+        algebraUtils.copyMetadata(factory.createFilter(result, operation.expression), operation),
+      ];
     }
     if (isKnownOperation(operation, Algebra.Types.JOIN)) {
       // Don't push down for empty join

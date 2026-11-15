@@ -2,7 +2,7 @@ import { QuerySourceSparql } from '@comunica/actor-query-source-identify-hyperme
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { assignOperationSource, getExpressionVariables } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorOptimizeQueryOperationFilterPushdown } from '../lib/ActorOptimizeQueryOperationFilterPushdown';
@@ -252,10 +252,10 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
         expect(operationOut).toEqual(AF.createFilter(
           AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
           AF.createOperatorExpression('&&', [
-            AF.createTermExpression(DF.variable('s3')),
+            AF.createTermExpression(DF.variable('s1')),
             AF.createOperatorExpression('&&', [
               AF.createTermExpression(DF.variable('s2')),
-              AF.createTermExpression(DF.variable('s1')),
+              AF.createTermExpression(DF.variable('s3')),
             ]),
           ]),
         ));
@@ -287,16 +287,59 @@ describe('ActorOptimizeQueryOperationFilterPushdown', () => {
           context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
           operation: operationIn,
         });
-        expect(operationOut).toEqual(AF.createFilter(
-          AF.createFilter(
-            AF.createFilter(
-              AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
-              AF.createTermExpression(DF.variable('s1')),
-            ),
-            AF.createTermExpression(DF.variable('s2')),
+        // Filters that can not be pushed down are kept as they are
+        expect(operationOut).toEqual(operationIn);
+      });
+
+      it('keeps the metadata of filters that are not pushed down', async() => {
+        const operationIn = algebraUtils.withMetadata(AF.createFilter(
+          AF.createJoin([
+            AF.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+            AF.createPattern(DF.variable('c'), DF.namedNode('p'), DF.variable('d')),
+          ]),
+          AF.createOperatorExpression('=', [
+            AF.createTermExpression(DF.variable('b')),
+            AF.createTermExpression(DF.variable('d')),
+          ]),
+        ));
+        operationIn.metadata.isHoistedLeftJoinFilter = true;
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: AF.createLeftJoin(
+            AF.createPattern(DF.variable('a'), DF.namedNode('q'), DF.variable('c')),
+            operationIn,
           ),
+        });
+        expect((<Algebra.LeftJoin> operationOut).input[1]).toEqual(operationIn);
+        expect((<Algebra.LeftJoin> operationOut).input[1].metadata).toEqual({ isHoistedLeftJoinFilter: true });
+      });
+
+      it('keeps the metadata of filters that other filters are pushed through or merged into', async() => {
+        const inner = algebraUtils.withMetadata(AF.createFilter(
+          AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
           AF.createTermExpression(DF.variable('s3')),
         ));
+        inner.metadata.x = 'y';
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: AF.createFilter(
+            AF.createJoin([
+              inner,
+              AF.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+            ]),
+            AF.createTermExpression(DF.variable('s1')),
+          ),
+        });
+        expect(operationOut).toEqual(AF.createJoin([
+          Object.assign(AF.createFilter(
+            AF.createPattern(DF.variable('s1'), DF.variable('s2'), DF.variable('s3')),
+            AF.createOperatorExpression('&&', [
+              AF.createTermExpression(DF.variable('s3')),
+              AF.createTermExpression(DF.variable('s1')),
+            ]),
+          ), { metadata: { x: 'y' }}),
+          AF.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+        ]));
       });
     });
 
