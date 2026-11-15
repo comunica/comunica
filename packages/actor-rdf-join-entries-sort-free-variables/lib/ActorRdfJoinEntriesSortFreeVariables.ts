@@ -7,7 +7,7 @@ import type {
 import { ActorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
-import type { IJoinEntryWithMetadata } from '@comunica/types';
+import type { IJoinEntryWithMetadata, IQuerySource } from '@comunica/types';
 import { Algebra, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import { getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -27,8 +27,8 @@ import type * as RDF from '@rdfjs/types';
  * 5. The number of their patterns, as more patterns restrict the results further.
  * 6. Their cardinality, if it is known.
  *
- * It applies if a cardinality is unknown, as the cardinality-based sort places such entries last,
- * however selective they are.
+ * It applies to entries over multiple sources if a cardinality is unknown,
+ * as the cardinality-based sort places such entries last, however selective they are.
  */
 export class ActorRdfJoinEntriesSortFreeVariables extends ActorRdfJoinEntriesSort {
   public constructor(args: IActorRdfJoinEntriesSortArgs) {
@@ -36,8 +36,13 @@ export class ActorRdfJoinEntriesSortFreeVariables extends ActorRdfJoinEntriesSor
   }
 
   public async test(action: IActionRdfJoinEntriesSort): Promise<TestResult<IActorRdfJoinEntriesSortTest>> {
-    if (!action.entries.some(entry => ActorRdfJoinEntriesSortFreeVariables.hasSources(entry.operation))) {
-      return failTest(`Actor ${this.name} can only sort entries of which operations are assigned to sources`);
+    // With a single source, e.g., a local file, the existing sorts apply as before.
+    const sources = new Set<IQuerySource>();
+    for (const entry of action.entries) {
+      ActorRdfJoinEntriesSortFreeVariables.addSources(entry.operation, sources);
+    }
+    if (sources.size < 2) {
+      return failTest(`Actor ${this.name} can only sort entries of which operations are assigned to multiple sources`);
     }
     // The cardinality-based sort would place entries with an unknown cardinality last, however selective they are.
     if (action.entries.every(entry => Number.isFinite(entry.metadata.cardinality.value))) {
@@ -77,16 +82,19 @@ export class ActorRdfJoinEntriesSortFreeVariables extends ActorRdfJoinEntriesSor
   }
 
   /**
-   * Check if the given operation, or all inputs of the given union, are assigned to a source.
+   * Add the sources that the given operation, or the inputs of the given union, are assigned to.
    * @param operation An operation.
+   * @param sources The sources to add to.
    */
-  public static hasSources(operation: Algebra.Operation): boolean {
-    if (getOperationSource(operation)) {
-      return true;
+  public static addSources(operation: Algebra.Operation, sources: Set<IQuerySource>): void {
+    const source = getOperationSource(operation);
+    if (source) {
+      sources.add(source.source);
+    } else if (isKnownOperation(operation, Algebra.Types.UNION)) {
+      for (const input of operation.input) {
+        ActorRdfJoinEntriesSortFreeVariables.addSources(input, sources);
+      }
     }
-    return isKnownOperation(operation, Algebra.Types.UNION) &&
-      operation.input.length > 0 &&
-      operation.input.every(input => getOperationSource(input));
   }
 
   /**
