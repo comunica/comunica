@@ -180,7 +180,8 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         .map(async joinEntry => withMetadata(joinEntry, await joinEntry.output.metadata())));
       expect(ActorRdfJoinMultiIndexNestedLoop.getLookupOrder(entries, 1, 1)).toEqual({
         order: [ 0, 2 ],
-        iterations: 2 + 2 * (1 + 1) + 2 * (1 + 1),
+        // The results themselves are left out
+        iterations: 2 + 2 * (1 + 1) + 2 * (1 + 1) - 2,
         cardinality: 2,
       });
     });
@@ -191,7 +192,7 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       const action: IActionRdfJoin = { type: 'inner', entries: reviewEntries(), context };
       const result = await actor.test(action);
       expect(result.get()).toEqual({
-        iterations: 1 + 1 * (1 + 1) + 1 * (1 + 1),
+        iterations: 1 + 1 * (1 + 1) + 1 * (1 + 1) - 1,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 0,
@@ -293,7 +294,7 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         pageSize: 10,
       }));
       await expect(actor.test({ type: 'inner', entries, context })).resolves.toPassTest({
-        iterations: 1 + 1 * (1 + 1) + 1 * (1 + 1),
+        iterations: 1 + 1 * (1 + 1) + 1 * (1 + 1) - 1,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 10,
