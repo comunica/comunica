@@ -102,7 +102,7 @@ export class AlgebraTransformer extends ExprEval.TermTransformer {
     if (!operatorFunc.checkArity(operatorArgs)) {
       throw new ExprEval.InvalidArity(operatorArgs, operator);
     }
-    return new ExprEval.Operator(operator, operatorArgs, operatorFunc.apply);
+    return new ExprEval.Operator(operator, operatorArgs, operatorFunc.apply, operatorFunc.applySynchronously);
   }
 
   public static transformAggregate(expr: Algebra.AggregateExpression): ExprEval.Aggregate {

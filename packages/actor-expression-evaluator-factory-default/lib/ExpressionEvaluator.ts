@@ -8,6 +8,8 @@ import { InternalEvaluator } from './InternalEvaluator';
 
 export class ExpressionEvaluator implements IExpressionEvaluator {
   private readonly internalEvaluator: InternalEvaluator;
+  public readonly evaluateSynchronously?: (mapping: RDF.Bindings) => RDF.Term;
+  public readonly evaluateAsEBVSynchronously?: (mapping: RDF.Bindings) => boolean;
   public constructor(
     public readonly context: IActionContext,
     public readonly expr: Expression,
@@ -17,6 +19,12 @@ export class ExpressionEvaluator implements IExpressionEvaluator {
   ) {
     this.internalEvaluator =
       new InternalEvaluator(context, mediatorFunctionFactory, mediatorQueryOperation, bindingsFactory);
+    if (InternalEvaluator.isSynchronous(expr)) {
+      this.evaluateSynchronously = mapping => this.internalEvaluator
+        .evaluateExpressionSynchronously(this.expr, mapping).toRDF(this.context.getSafe(KeysInitQuery.dataFactory));
+      this.evaluateAsEBVSynchronously = mapping => this.internalEvaluator
+        .evaluateExpressionSynchronously(this.expr, mapping).coerceEBV();
+    }
   }
 
   public async evaluate(mapping: RDF.Bindings): Promise<RDF.Term> {

@@ -101,6 +101,16 @@ describe('should be able to handle EXIST filters', () => {
     await expect(evaluator.evaluateAsEBV(BF.bindings())).rejects.toBeTruthy();
   });
 
+  it('not synchronously', async() => {
+    const expr = factory.createExistenceExpression(false, factory.createBgp([]));
+    const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
+    expect(evaluator.evaluateSynchronously).toBeUndefined();
+    expect(evaluator.evaluateAsEBVSynchronously).toBeUndefined();
+    const { internalEvaluator } = <any> evaluator;
+    expect(() => internalEvaluator.evaluateExpressionSynchronously((<any> evaluator).expr, BF.bindings()))
+      .toThrow('Expressions of type existence can not be evaluated synchronously');
+  });
+
   describe('with an existenceResolver in the context', () => {
     let existenceResolver: jest.Mock;
 

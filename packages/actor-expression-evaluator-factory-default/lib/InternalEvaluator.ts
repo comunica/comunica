@@ -42,6 +42,35 @@ export class InternalEvaluator {
     return this.subEvaluators[expr.expressionType](expr, mapping);
   }
 
+  /**
+   * Whether the given expression can be evaluated without promises,
+   * which is the case for terms, variables, and operators of which the function and all arguments can.
+   * @param expr An expression.
+   */
+  public static isSynchronous(expr: Expression): boolean {
+    if (expr.expressionType === ExpressionType.Term || expr.expressionType === ExpressionType.Variable) {
+      return true;
+    }
+    return expr.expressionType === ExpressionType.Operator && expr.applySynchronously !== undefined &&
+      expr.args.every(arg => InternalEvaluator.isSynchronous(arg));
+  }
+
+  /**
+   * Evaluate the given expression without promises, which `isSynchronous` must accept.
+   * @param expr An expression.
+   * @param mapping The bindings to evaluate against.
+   */
+  public evaluateExpressionSynchronously(expr: Expression, mapping: RDF.Bindings): TermExpression {
+    if (expr.expressionType === ExpressionType.Operator) {
+      return expr.applySynchronously!({ args: expr.args, mapping, exprEval: this });
+    }
+    const term = this.evaluateDirectly(expr, mapping);
+    if (!term) {
+      throw new Error(`Expressions of type ${expr.expressionType} can not be evaluated synchronously`);
+    }
+    return term;
+  }
+
   public evaluateDirectly(expr: Expression, mapping: RDF.Bindings): TermExpression | undefined {
     if (expr.expressionType === ExpressionType.Term) {
       return expr;

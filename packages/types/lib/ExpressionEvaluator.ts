@@ -86,6 +86,20 @@ export interface IExpressionEvaluator extends IInternalEvaluator {
   evaluateAsEBV: (mapping: RDF.Bindings) => Promise<boolean>;
 
   evaluateAsEvaluatorExpression: (mapping: RDF.Bindings) => Promise<TermExpression>;
+  /**
+   * Evaluates the provided bindings like `evaluate`, but without promises.
+   * This is only present if the expression can be evaluated synchronously,
+   * which is the case if all of its functions can.
+   * @param mapping the RDF bindings to evaluate against.
+   */
+  evaluateSynchronously?: (mapping: RDF.Bindings) => RDF.Term;
+  /**
+   * Evaluates the provided bindings like `evaluateAsEBV`, but without promises.
+   * This is only present if the expression can be evaluated synchronously,
+   * which is the case if all of its functions can.
+   * @param mapping the RDF bindings to evaluate against.
+   */
+  evaluateAsEBVSynchronously?: (mapping: RDF.Bindings) => boolean;
 }
 
 /**
@@ -124,6 +138,11 @@ export interface IInternalEvaluator {
    * @return The evaluated term, or undefined if the expression must be evaluated asynchronously.
    */
   evaluateDirectly?: (expr: Expression, mapping: RDF.Bindings) => TermExpression | undefined;
+  /**
+   * Evaluate the given expression without promises,
+   * which is possible for terms, variables, and operators of which the function and all arguments can.
+   */
+  evaluateExpressionSynchronously?: (expr: Expression, mapping: RDF.Bindings) => TermExpression;
 
   context: IActionContext;
 }
@@ -174,6 +193,11 @@ export type OperatorExpression = IExpressionProps & {
   name: string;
   args: Expression[];
   apply: FunctionApplication;
+  /**
+   * Applies the function without promises, if the function supports this.
+   * This may only be used if all arguments can be evaluated synchronously as well.
+   */
+  applySynchronously?: SynchronousFunctionApplication;
 };
 
 export type VariableExpression = IExpressionProps & {
@@ -185,6 +209,7 @@ export type SimpleApplication = (args: TermExpression[]) => TermExpression;
 export type SimpleApplicationTuple<T> = (args: T) => TermExpression;
 
 export type FunctionApplication = (evalContext: IEvalContext) => Promise<TermExpression>;
+export type SynchronousFunctionApplication = (evalContext: IEvalContext) => TermExpression;
 
 export type ImplementationFunction = (expressionEvaluator: IInternalEvaluator) => SimpleApplication;
 export type ImplementationFunctionTuple<T> = (expressionEvaluator: IInternalEvaluator) => SimpleApplicationTuple<T>;
