@@ -437,6 +437,24 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Check if a request prefers the HTML view over the service description.
+   * This requires HTML to be accepted explicitly, and at least as much as the media type of the service description.
+   * Clients such as Comunica accept HTML with a low preference, to parse RDFa, but prefer RDF formats.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {string} mediaType The negotiated media type of the service description, if any.
+   */
+  public static prefersHtml(request: http.IncomingMessage, mediaType: string | undefined): boolean {
+    const variants = require('negotiate').choose([
+      { type: HttpServiceSparqlEndpoint.MIME_HTML },
+      ...mediaType ? [{ type: mediaType }] : [],
+    ], request);
+    const html = variants.find((variant: any) => variant.type === HttpServiceSparqlEndpoint.MIME_HTML);
+    const other = variants.find((variant: any) => variant.type !== HttpServiceSparqlEndpoint.MIME_HTML);
+    // Require qts of at least 3, which is a match on text/html or text/*, and not only on */* or *.
+    return html.qts >= 3 && html.q > 0 && (!other || html.q >= other.q);
+  }
+
+  /**
    * Handles an HTTP request.
    * @param {QueryEngineBase} engine A SPARQL engine.
    * @param {{type: string; quality: number}[]} variants Allowed variants.
@@ -736,9 +754,8 @@ export class HttpServiceSparqlEndpoint {
     queryId: number,
   ): Promise<void> {
     if (!queryBody || !queryBody.value) {
-      // Check if HTML is requested
-      const acceptHeader = request.headers.accept ?? '';
-      if (acceptHeader.includes('text/html')) {
+      // Check if HTML is preferred over the service description
+      if (HttpServiceSparqlEndpoint.prefersHtml(request, mediaType)) {
         return this.writeHtmlView(stdout, request, response);
       }
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
