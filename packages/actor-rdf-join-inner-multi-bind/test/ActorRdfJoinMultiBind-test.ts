@@ -1024,8 +1024,9 @@ IQueryOperationResultBindings
           },
           { metadatas: [ metadata(2, 'a'), metadata(3, 'a'), metadata(201, 'b') ]},
         )).resolves.toPassTest({
-          // 2 bindings, each adding 1 row for the entry sharing a, and a sub-plan over both remaining entries
-          iterations: 2 * ((1 + (201 * (0.8 * 0.1))) + (100 * 2 * 2)),
+          // 2 bindings, each adding 1 row for the entry sharing a, and a sub-plan over both remaining entries,
+          // which reads the entry sharing no variable in full
+          iterations: 2 * ((1 + (201 * (0.8 * 0.1))) + ((100 * 2 * 2) + 201)),
           persistedItems: 0,
           blockingItems: 0,
           requestTime: 0,
