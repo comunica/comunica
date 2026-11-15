@@ -6,7 +6,7 @@ import type {
   IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -231,8 +231,13 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
     // Only the first entry is requested, as lookups are synchronous.
     const requestTime = ActorRdfJoin.getRequestInitialTimes(metadatas)[best!.first] +
       metadatas[best!.first].cardinality.value * ActorRdfJoin.getRequestItemTimes(metadatas)[best!.first];
+
+    // Results are produced one binding of the first entry at a time, so a limit on them also limits the work
+    const limit = action.context.get(KeysQueryOperation.limitIndicator);
+    const share = limit !== undefined && best!.cardinality > limit ? limit / best!.cardinality : 1;
+
     return passTestWithSideData({
-      iterations: best!.iterations,
+      iterations: best!.iterations * share,
       persistedItems: 0,
       blockingItems: 0,
       requestTime,

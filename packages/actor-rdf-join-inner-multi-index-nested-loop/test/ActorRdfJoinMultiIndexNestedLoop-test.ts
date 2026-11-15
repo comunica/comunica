@@ -1,7 +1,7 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type {
   IActionContext,
@@ -201,6 +201,28 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       expect(sideData.first).toBe(2);
       expect(sideData.order).toEqual([ 0, 1 ]);
       expect(sideData.cardinality).toBe(1);
+    });
+
+    it('should only charge for the share of the results that a limit needs', async() => {
+      const entries = [
+        entry(pattern('?review', 'ex:reviewer', '?reviewer'), metadata(20, [ 'review', 'reviewer' ])),
+        entry(pattern('?reviewer', 'ex:name', '?name'), metadata(10, [ 'reviewer', 'name' ])),
+      ];
+      const full = await actor.test({ type: 'inner', entries, context });
+      const { cardinality } = full.getSideData();
+      expect(cardinality).toBeGreaterThan(4);
+      const limited = await actor.test({
+        type: 'inner',
+        entries,
+        context: context.set(KeysQueryOperation.limitIndicator, cardinality / 4),
+      });
+      expect(limited.get()!.iterations).toBeCloseTo(full.get()!.iterations / 4);
+      const beyond = await actor.test({
+        type: 'inner',
+        entries,
+        context: context.set(KeysQueryOperation.limitIndicator, cardinality * 2),
+      });
+      expect(beyond.get()!.iterations).toBe(full.get()!.iterations);
     });
 
     it('should allow a single entry that can not be looked up as first entry', async() => {
