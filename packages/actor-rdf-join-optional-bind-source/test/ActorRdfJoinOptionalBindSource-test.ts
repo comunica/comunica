@@ -32,7 +32,12 @@ describe('ActorRdfJoinOptionalBindSource', () => {
   let context: IActionContext;
   let mediatorJoinSelectivity: MediatorRdfJoinSelectivity;
   let actor: ActorRdfJoinOptionalBindSource;
-  let calls: { operation: Algebra.Operation; bindings: RDF.Bindings[]; context: IActionContext }[];
+  let calls: {
+    operation: Algebra.Operation;
+    bindings: RDF.Bindings[];
+    variables: RDF.Variable[];
+    context: IActionContext;
+  }[];
   let source: IQuerySourceWrapper;
   let sourceTriplePattern: IQuerySourceWrapper;
 
@@ -45,11 +50,13 @@ describe('ActorRdfJoinOptionalBindSource', () => {
       bus,
       selectivityModifier: 0.000_001,
       blockSize: 2,
+      maxBlockBindings: 3,
       mediatorJoinSelectivity,
     });
     calls = [];
-    // A source with a match for ex:a1 and two matches for ex:a2, as a SPARQL endpoint joins VALUES
-    const data: Record<string, string[]> = { 'ex:a1': [ 'ex:b1' ], 'ex:a2': [ 'ex:b2', 'ex:b3' ]};
+    // A source with a match for ex:a1, two matches for ex:a2, and ex:b0 for an unbound ?a,
+    // as a SPARQL endpoint joins VALUES
+    const data: Record<string, string[]> = { 'ex:a1': [ 'ex:b1' ], 'ex:a2': [ 'ex:b2', 'ex:b3' ], '': [ 'ex:b0' ]};
     source = <any> {
       source: {
         getSelectorShape: async() => ({
@@ -59,7 +66,12 @@ describe('ActorRdfJoinOptionalBindSource', () => {
         }),
         queryBindings(operation: Algebra.Operation, ctx: IActionContext, options: any) {
           const results = options.joinBindings.bindings.toArray().then((bindings: RDF.Bindings[]) => {
-            calls.push({ operation, bindings, context: ctx });
+            calls.push({
+              operation,
+              bindings,
+              variables: options.joinBindings.metadata.variables.map((entry: any) => entry.variable),
+              context: ctx,
+            });
             return bindings.flatMap(binding => (data[binding.get(DF.variable('a'))?.value ?? ''] ?? [])
               .map(value => binding.set(DF.variable('b'), DF.namedNode(value))));
           });
@@ -184,7 +196,11 @@ describe('ActorRdfJoinOptionalBindSource', () => {
       ], true);
       expect(calls).toHaveLength(2);
       expect(calls[0].operation).toBe(action.entries[1].operation);
-      expect(calls[0].bindings).toHaveLength(2);
+      expect(calls[0].bindings).toEqual([
+        BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a0') ]]),
+      ]);
+      expect(calls[0].variables).toEqual([ DF.variable('a') ]);
       expect(calls[0].context).toBe(context);
       await expect(result.metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
@@ -236,29 +252,93 @@ describe('ActorRdfJoinOptionalBindSource', () => {
       expect(calls[0].context.get(<any> { name: 'x' })).toBe('y');
     });
 
-    it('does not pass bindings with blank nodes for operation variables, and passes others as IRIs', async() => {
+    it('only passes the distinct values of the variables of the operation', async() => {
+      const action = getAction([
+        row(DF.namedNode('ex:a1'), 'ex:x1'),
+        row(DF.namedNode('ex:a1'), 'ex:x2'),
+        row(DF.namedNode('ex:a2'), 'ex:x3'),
+        row(DF.namedNode('ex:a0'), 'ex:x4'),
+        row(DF.namedNode('ex:a0'), 'ex:x5'),
+      ], source);
+      const { result } = await (<any> actor).getOutput(action);
+      await expect(result.bindingsStream).toEqualBindingsStream([
+        row(DF.namedNode('ex:a1'), 'ex:x1').set(DF.variable('b'), DF.namedNode('ex:b1')),
+        row(DF.namedNode('ex:a1'), 'ex:x2').set(DF.variable('b'), DF.namedNode('ex:b1')),
+        row(DF.namedNode('ex:a2'), 'ex:x3').set(DF.variable('b'), DF.namedNode('ex:b2')),
+        row(DF.namedNode('ex:a2'), 'ex:x3').set(DF.variable('b'), DF.namedNode('ex:b3')),
+        row(DF.namedNode('ex:a0'), 'ex:x4'),
+        row(DF.namedNode('ex:a0'), 'ex:x5'),
+      ], true);
+      // Blocks hold at most 2 distinct values and 3 bindings
+      expect(calls.map(call => call.bindings.map(binding => binding.get(DF.variable('a'))!.value))).toEqual([
+        [ 'ex:a1', 'ex:a2' ],
+        [ 'ex:a0' ],
+      ]);
+    });
+
+    it('does not pass values of blank nodes, and joins these bindings with no results', async() => {
       const action = getAction([
         row(DF.blankNode('a'), 'ex:x1'),
         BF.bindings([
           [ DF.variable('a'), DF.namedNode('ex:a1') ],
           [ DF.variable('x'), DF.blankNode('x') ],
-          [ DF.variable('y'), DF.literal('y') ],
         ]),
       ], source);
       const { result } = await (<any> actor).getOutput(action);
       await expect(result.bindingsStream).toEqualBindingsStream([
-        row(DF.blankNode('a'), 'ex:x1'),
         BF.bindings([
           [ DF.variable('a'), DF.namedNode('ex:a1') ],
           [ DF.variable('x'), DF.blankNode('x') ],
-          [ DF.variable('y'), DF.literal('y') ],
           [ DF.variable('b'), DF.namedNode('ex:b1') ],
         ]),
+        row(DF.blankNode('a'), 'ex:x1'),
       ], true);
       expect(calls).toHaveLength(1);
-      expect(calls[0].bindings).toHaveLength(1);
-      expect(calls[0].bindings[0].get(DF.variable('x')))
-        .toEqual(DF.namedNode(`${ActorRdfJoinOptionalBindSource.BLANK_NODE_IRI_PREFIX}0`));
+      expect(calls[0].bindings).toEqual([ BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]) ]);
+    });
+
+    it('passes bindings without values for all variables of the operation as a whole', async() => {
+      const action = getAction([
+        row(DF.namedNode('ex:a1'), 'ex:x1'),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('ex:x2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('ex:x3') ]]),
+      ], source);
+      const { result } = await (<any> actor).getOutput(action);
+      await expect(result.bindingsStream).toEqualBindingsStream([
+        row(DF.namedNode('ex:a1'), 'ex:x1').set(DF.variable('b'), DF.namedNode('ex:b1')),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('ex:x2') ], [ DF.variable('b'), DF.namedNode('ex:b0') ]]),
+        BF.bindings([[ DF.variable('x'), DF.namedNode('ex:x3') ], [ DF.variable('b'), DF.namedNode('ex:b0') ]]),
+      ], true);
+      // Bindings without a value count as a distinct value each
+      expect(calls.map(call => call.bindings)).toEqual(expect.arrayContaining([
+        [ BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]) ],
+        [ BF.bindings([[ DF.variable('x'), DF.namedNode('ex:x2') ]]) ],
+        [ BF.bindings([[ DF.variable('x'), DF.namedNode('ex:x3') ]]) ],
+      ]));
+      expect(calls).toHaveLength(3);
+    });
+
+    it('passes blank nodes as IRIs in bindings that are passed as a whole', async() => {
+      const action = getAction([
+        BF.bindings([[ DF.variable('x'), DF.blankNode('x') ], [ DF.variable('y'), DF.literal('y') ]]),
+        BF.bindings([[ DF.variable('a'), DF.blankNode('a') ]]),
+      ], source);
+      const { result } = await (<any> actor).getOutput(action);
+      await expect(result.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('x'), DF.blankNode('x') ],
+          [ DF.variable('y'), DF.literal('y') ],
+          [ DF.variable('b'), DF.namedNode('ex:b0') ],
+        ]),
+        BF.bindings([[ DF.variable('a'), DF.blankNode('a') ]]),
+      ], true);
+      expect(calls).toHaveLength(1);
+      expect(calls[0].bindings).toEqual([
+        BF.bindings([
+          [ DF.variable('x'), DF.namedNode(`${ActorRdfJoinOptionalBindSource.BLANK_NODE_IRI_PREFIX}0`) ],
+          [ DF.variable('y'), DF.literal('y') ],
+        ]),
+      ]);
     });
 
     it('does not query the source if all bindings of a block have blank nodes for operation variables', async() => {

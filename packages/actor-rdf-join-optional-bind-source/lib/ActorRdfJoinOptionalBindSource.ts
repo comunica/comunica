@@ -14,7 +14,6 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { inScopeVariables } from '@comunica/utils-algebra';
-import { ChunkedIterator } from '@comunica/utils-iterator';
 import {
   doesShapeAcceptOperationInContext,
   getOperationSource,
@@ -23,16 +22,20 @@ import {
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
+import { termToString } from 'rdf-string';
+import { KeyedChunkedIterator } from './KeyedChunkedIterator';
 
 /**
  * A comunica Optional Bind Source RDF Join Actor.
  * It sends blocks of left bindings to the source of the right operation, and adds the left bindings without results.
+ * Left bindings with the same values for the variables of the right operation are sent once.
  */
 export class ActorRdfJoinOptionalBindSource extends ActorRdfJoin {
   public static readonly BLANK_NODE_IRI_PREFIX = 'urn:comunica:optional-bind-source:blank-node:';
 
   public readonly selectivityModifier: number;
   public readonly blockSize: number;
+  public readonly maxBlockBindings: number;
 
   public constructor(args: IActorRdfJoinOptionalBindSourceArgs) {
     super(args, {
@@ -46,6 +49,7 @@ export class ActorRdfJoinOptionalBindSource extends ActorRdfJoin {
     });
     this.selectivityModifier = args.selectivityModifier;
     this.blockSize = args.blockSize;
+    this.maxBlockBindings = args.maxBlockBindings;
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorRdfJoinOutputInner> {
@@ -59,17 +63,26 @@ export class ActorRdfJoinOptionalBindSource extends ActorRdfJoin {
     const variables = ActorRdfJoinOptionalBindSource.getVariableNames(operation);
     const metadata = await action.entries[0].output.metadata();
     const context = sourceWrapper.context ? action.context.merge(sourceWrapper.context) : action.context;
+    // Left bindings with the same values for the left variables of the operation have the same results
+    const keyVariables = metadata.variables
+      .map(({ variable }) => variable)
+      .filter(variable => variables.has(variable.value));
+    let unkeyedCounter = 0;
+    const getKey = (binding: RDF.Bindings): string => ActorRdfJoinOptionalBindSource
+      .getKey(binding, keyVariables) ?? `unkeyed:${unkeyedCounter++}`;
 
-    // Slice the left stream into blocks, and join each block with the right operation in the source
-    const chunks: AsyncIterator<AsyncIterator<RDF.Bindings>> = new ChunkedIterator(
+    // Slice the left stream into blocks of distinct keys, and join each block with the right operation in the source
+    const chunks: AsyncIterator<AsyncIterator<RDF.Bindings>> = new KeyedChunkedIterator(
       action.entries[0].output.bindingsStream,
       this.blockSize,
+      this.maxBlockBindings,
+      getKey,
       { autoStart: false },
     );
     // A block is joined as soon as it is read, so that the blocks in the buffer are joined in parallel
     const joinChunk = (chunk: AsyncIterator<RDF.Bindings>): AsyncIterator<RDF.Bindings> => {
       const results = chunk.toArray().then(bindings => ActorRdfJoinOptionalBindSource
-        .joinBlock(sourceWrapper, operation, variables, bindings, metadata, context, dataFactory));
+        .joinBlock(sourceWrapper, operation, variables, keyVariables, bindings, metadata, context, dataFactory));
       results.catch(() => {
         // Errors are emitted by the iterator once it is read
       });
@@ -121,7 +134,122 @@ export class ActorRdfJoinOptionalBindSource extends ActorRdfJoin {
   }
 
   /**
+   * Determine the key of a binding: its values for the given variables.
+   * @param binding A binding.
+   * @param keyVariables The variables of the key.
+   * @return The key, or undefined if the binding does not bind all variables.
+   */
+  public static getKey(binding: RDF.Bindings, keyVariables: RDF.Variable[]): string | undefined {
+    const terms = keyVariables.map(variable => binding.get(variable));
+    if (terms.every(Boolean)) {
+      return JSON.stringify(terms.map(term => termToString(term)));
+    }
+  }
+
+  /**
    * Left join a block of bindings with an operation in a source.
+   *
+   * Bindings that bind all key variables share the results of their values for these variables,
+   * so only the distinct values are passed to the source.
+   * Other bindings are passed as a whole, as values that are not bound match any value in the source.
+   *
+   * @param sourceWrapper The source of the operation.
+   * @param operation The operation.
+   * @param variables The names of all variables in the operation.
+   * @param keyVariables The variables of the left bindings that occur in the operation.
+   * @param bindings The left bindings.
+   * @param metadata The metadata of the left bindings.
+   * @param context The action context.
+   * @param dataFactory The data factory.
+   * @return The joined bindings, and the left bindings without results.
+   */
+  public static async joinBlock(
+    sourceWrapper: IQuerySourceWrapper,
+    operation: Algebra.Operation,
+    variables: Set<string>,
+    keyVariables: RDF.Variable[],
+    bindings: RDF.Bindings[],
+    metadata: MetadataBindings,
+    context: IActionContext,
+    dataFactory: ComunicaDataFactory,
+  ): Promise<RDF.Bindings[]> {
+    const keyed: RDF.Bindings[] = [];
+    const unkeyed: RDF.Bindings[] = [];
+    for (const binding of bindings) {
+      (ActorRdfJoinOptionalBindSource.getKey(binding, keyVariables) ? keyed : unkeyed).push(binding);
+    }
+    const [ keyedResults, unkeyedResults ] = await Promise.all([
+      ActorRdfJoinOptionalBindSource.joinBlockOnKeys(sourceWrapper, operation, keyVariables, keyed, metadata, context),
+      ActorRdfJoinOptionalBindSource
+        .joinBlockOnBindings(sourceWrapper, operation, variables, unkeyed, metadata, context, dataFactory),
+    ]);
+    return [ ...keyedResults, ...unkeyedResults ];
+  }
+
+  /**
+   * Left join a block of bindings that bind all key variables with an operation in a source,
+   * by passing the distinct values of the key variables.
+   *
+   * Blank nodes can not be passed to a source, as their labels are scoped to the result they came from.
+   * So keys with a blank node can not have results.
+   *
+   * @param sourceWrapper The source of the operation.
+   * @param operation The operation.
+   * @param keyVariables The variables of the left bindings that occur in the operation.
+   * @param bindings The left bindings, which bind all key variables.
+   * @param metadata The metadata of the left bindings.
+   * @param context The action context.
+   * @return The joined bindings, and the left bindings without results.
+   */
+  public static async joinBlockOnKeys(
+    sourceWrapper: IQuerySourceWrapper,
+    operation: Algebra.Operation,
+    keyVariables: RDF.Variable[],
+    bindings: RDF.Bindings[],
+    metadata: MetadataBindings,
+    context: IActionContext,
+  ): Promise<RDF.Bindings[]> {
+    const keyBindings = new Map<string, RDF.Bindings>();
+    for (const binding of bindings) {
+      const key = ActorRdfJoinOptionalBindSource.getKey(binding, keyVariables)!;
+      if (!keyBindings.has(key) &&
+        keyVariables.every(variable => binding.get(variable)!.termType !== 'BlankNode')) {
+        keyBindings.set(key, binding
+          .filter((_, variable) => keyVariables.some(keyVariable => keyVariable.equals(variable))));
+      }
+    }
+
+    const resultsByKey = new Map<string, RDF.Bindings[]>();
+    if (keyBindings.size > 0) {
+      const results = await sourceWrapper.source.queryBindings(operation, context, {
+        joinBindings: {
+          bindings: new ArrayIterator([ ...keyBindings.values() ], { autoStart: false }),
+          metadata: {
+            ...metadata,
+            variables: metadata.variables
+              .filter(({ variable }) => keyVariables.some(keyVariable => keyVariable.equals(variable))),
+          },
+        },
+      }).toArray();
+      for (const result of results) {
+        const key = ActorRdfJoinOptionalBindSource.getKey(result, keyVariables)!;
+        const keyResults = resultsByKey.get(key);
+        if (keyResults) {
+          keyResults.push(result);
+        } else {
+          resultsByKey.set(key, [ result ]);
+        }
+      }
+    }
+
+    return bindings.flatMap((binding) => {
+      const results = resultsByKey.get(ActorRdfJoinOptionalBindSource.getKey(binding, keyVariables)!);
+      return results ? results.map(result => binding.merge(result)!) : [ binding ];
+    });
+  }
+
+  /**
+   * Left join a block of bindings with an operation in a source, by passing the bindings as a whole.
    *
    * Blank nodes can not be passed to a source, as their labels are scoped to the result they came from.
    * So bindings with a blank node for a variable of the operation can not have results.
@@ -136,7 +264,7 @@ export class ActorRdfJoinOptionalBindSource extends ActorRdfJoin {
    * @param dataFactory The data factory.
    * @return The joined bindings, and the left bindings without results.
    */
-  public static async joinBlock(
+  public static async joinBlockOnBindings(
     sourceWrapper: IQuerySourceWrapper,
     operation: Algebra.Operation,
     variables: Set<string>,
@@ -239,8 +367,14 @@ export interface IActorRdfJoinOptionalBindSourceArgs extends IActorRdfJoinArgs {
    */
   selectivityModifier: number;
   /**
-   * The maximum amount of left bindings to send to the source per request.
+   * The maximum amount of distinct values of the left bindings for the variables of the right operation
+   * to send to the source per request.
    * @default {16}
    */
   blockSize: number;
+  /**
+   * The maximum amount of left bindings per request, which may share their values for these variables.
+   * @default {1024}
+   */
+  maxBlockBindings: number;
 }
