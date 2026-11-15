@@ -15,10 +15,10 @@ export async function fetch(...args: Parameters<typeof fetchFn>): ReturnType<typ
   // @ts-expect-error
   options.headers = Object.fromEntries(options.headers?.entries() ?? []);
 
-  const json = JSON.stringify([
+  const toJson = (entries: [string, any][]): string => JSON.stringify([
     // eslint-disable-next-line ts/no-base-to-string
     args[0].toString(),
-    Object.entries(options)
+    entries
       .map(([ k, v ]: [ string, any ]) => {
         // Omit user-agent header, as this can be different when running on different systems.
         if (k === 'headers') {
@@ -29,8 +29,14 @@ export async function fetch(...args: Parameters<typeof fetchFn>): ReturnType<typ
       })
       .sort(([ a ], [ b ]) => a.localeCompare(b)),
   ]);
-  const jsonHash = createHash('md5', { encoding: 'utf-8' }).update(json).digest('hex');
-  const pth = path.join(__dirname, 'networkCache', jsonHash);
+  const toPath = (json: string): string =>
+    path.join(__dirname, 'networkCache', createHash('md5', { encoding: 'utf-8' }).update(json).digest('hex'));
+  const json = toJson(Object.entries(options));
+  let pth = toPath(json);
+  // An abort signal does not affect the response, so also look for the entry of the request without signal
+  if (!fs.existsSync(pth) && 'signal' in options) {
+    pth = toPath(toJson(Object.entries(options).filter(([ k ]) => k !== 'signal')));
+  }
   if (!fs.existsSync(pth)) {
     // eslint-disable-next-line no-console
     console.warn(`Creating new test network cache entry for request: ${json} (${pth})}`);
