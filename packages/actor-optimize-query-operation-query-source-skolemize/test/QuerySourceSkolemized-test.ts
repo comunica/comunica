@@ -334,6 +334,33 @@ describe('QuerySourceSkolemized', () => {
       expect((<any> sourceInner.queryBindings).mock.results[0].value.destroyed).toBe(true);
     });
 
+    it('should add a single listener to the signal for all streams', () => {
+      const addEventListener = jest.spyOn(abortController.signal, 'addEventListener');
+      source.queryBindings(AF.createNop(), context, undefined);
+      source.queryQuads(AF.createNop(), context);
+      abortController.abort();
+      expect(addEventListener).toHaveBeenCalledTimes(1);
+      expect((<any> sourceInner.queryBindings).mock.results[0].value.destroyed).toBe(true);
+      expect((<any> sourceInner.queryQuads).mock.results[0].value.destroyed).toBe(true);
+    });
+
+    it('should remove streams that were destroyed once the number of streams has doubled', () => {
+      const pruneSize = QuerySourceSkolemized.abortableStreamsPruneSize;
+      QuerySourceSkolemized.abortableStreamsPruneSize = 2;
+      try {
+        source.queryBindings(AF.createNop(), context, undefined).destroy();
+        source.queryBindings(AF.createNop(), context, undefined).destroy();
+        const stream = source.queryBindings(AF.createNop(), context, undefined);
+        const { streams, pruneSize: newPruneSize } = (<any> QuerySourceSkolemized).abortableStreams
+          .get(abortController.signal)!;
+        expect([ ...streams ]).toEqual([ (<any> sourceInner.queryBindings).mock.results[2].value ]);
+        expect(newPruneSize).toBe(2);
+        expect(stream.destroyed).toBe(false);
+      } finally {
+        QuerySourceSkolemized.abortableStreamsPruneSize = pruneSize;
+      }
+    });
+
     it('should not destroy streams that ended before the signal aborts', async() => {
       const result = source.queryBindings(AF.createNop(), context, undefined);
       await result.toArray();
