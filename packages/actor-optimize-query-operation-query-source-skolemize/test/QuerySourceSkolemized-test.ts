@@ -1,4 +1,4 @@
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IQuerySource } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
@@ -290,6 +290,57 @@ describe('QuerySourceSkolemized', () => {
       const stream = source.queryBindings(pattern, context, undefined);
       expect(stream).not.toBe((<any> sourceInner.queryBindings).mock.results[0].value);
       await expect(stream.toArray()).resolves.toHaveLength(3);
+    });
+  });
+
+  describe('with an abort signal in the context', () => {
+    let abortController: AbortController;
+    let context: ActionContext;
+
+    beforeEach(() => {
+      abortController = new AbortController();
+      context = new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysHttp.httpAbortSignal.name]: abortController.signal,
+      });
+    });
+
+    it('should destroy the streams of queryBindings once the signal aborts', () => {
+      source.queryBindings(AF.createNop(), context, undefined);
+      const stream = (<any> sourceInner.queryBindings).mock.results[0].value;
+      expect(stream.destroyed).toBe(false);
+      abortController.abort();
+      expect(stream.destroyed).toBe(true);
+    });
+
+    it('should destroy the streams of queryBindings for passed through patterns once the signal aborts', () => {
+      sourceInner.canContainBlankNodes = () => false;
+      const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+      const result = source.queryBindings(pattern, context, undefined);
+      abortController.abort();
+      expect(result.destroyed).toBe(true);
+    });
+
+    it('should destroy the streams of queryQuads once the signal aborts', () => {
+      source.queryQuads(AF.createNop(), context);
+      const stream = (<any> sourceInner.queryQuads).mock.results[0].value;
+      abortController.abort();
+      expect(stream.destroyed).toBe(true);
+    });
+
+    it('should destroy streams if the signal already aborted', () => {
+      abortController.abort();
+      source.queryBindings(AF.createNop(), context, undefined);
+      expect((<any> sourceInner.queryBindings).mock.results[0].value.destroyed).toBe(true);
+    });
+
+    it('should not destroy streams that ended before the signal aborts', async() => {
+      const result = source.queryBindings(AF.createNop(), context, undefined);
+      await result.toArray();
+      const stream = (<any> sourceInner.queryBindings).mock.results[0].value;
+      const destroy = jest.spyOn(stream, 'destroy');
+      abortController.abort();
+      expect(destroy).not.toHaveBeenCalled();
     });
   });
 
