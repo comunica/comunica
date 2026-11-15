@@ -816,7 +816,11 @@ SELECT ?person ?label WHERE {
                   headers: { 'Content-Type': 'application/sparql-results+json' },
                 });
               }
-              return new Response(JSON.stringify({ head: { vars: []}, results: { bindings: []}}), {
+              // Painters are found, but no labels that match
+              const bindings = sparqlQuery.includes('<http://example.org/Painter>') && !sparqlQuery.includes('COUNT') ?
+                  [{ person: { type: 'uri', value: 'http://example.org/rembrandt' }}] :
+                  [];
+              return new Response(JSON.stringify({ head: { vars: [ 'person' ]}, results: { bindings }}), {
                 status: 200,
                 headers: { 'Content-Type': 'application/sparql-results+json' },
               });
@@ -827,8 +831,13 @@ SELECT ?person ?label WHERE {
           // The filter must never be sent along with a pattern that does not bind ?label
           expect(queries.filter(sparqlQuery => sparqlQuery.includes('bif:contains') &&
             !sparqlQuery.includes('<http://www.w3.org/2000/01/rdf-schema#label> ?label'))).toEqual([]);
-          expect(queries.filter(sparqlQuery => sparqlQuery === 'SELECT ?person ?label WHERE { ?person <http://www.w3.org/2000/01/rdf-schema#label> ?label . FILTER ( <bif:contains> ( ?label , "\'rembrandt\'"^^<http://www.w3.org/2001/XMLSchema#string> ) ) }'))
-            .toHaveLength(2);
+          // The filter must be sent along with the pattern that binds ?label, to each endpoint
+          const labelQueries = queries.filter(sparqlQuery => sparqlQuery.startsWith('SELECT ?person ?label') &&
+            sparqlQuery.includes('<http://www.w3.org/2000/01/rdf-schema#label> ?label'));
+          expect(labelQueries).toHaveLength(2);
+          for (const labelQuery of labelQueries) {
+            expect(labelQuery).toContain('FILTER ( <bif:contains> ( ?label , "\'rembrandt\'"^^<http://www.w3.org/2001/XMLSchema#string> ) )');
+          }
         });
       });
 
