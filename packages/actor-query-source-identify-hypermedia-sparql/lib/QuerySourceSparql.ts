@@ -541,17 +541,65 @@ export class QuerySourceSparql implements IQuerySource {
 
     switch (bindMethod) {
       case 'values':
-        return algebraFactory.createJoin([
-          algebraFactory.createValues(
-            addBindings.metadata.variables.map(v => v.variable),
-            bindings.map(binding => Object.fromEntries([ ...binding ]
-              .map(([ key, value ]) => [ key.value, <RDF.Literal | RDF.NamedNode> value ]))),
-          ),
-          operation,
-        ], false);
+        return QuerySourceSparql.joinValues(algebraFactory, algebraFactory.createValues(
+          addBindings.metadata.variables.map(v => v.variable),
+          bindings.map(binding => Object.fromEntries([ ...binding ]
+            .map(([ key, value ]) => [ key.value, <RDF.Literal | RDF.NamedNode> value ]))),
+        ), operation);
       case 'union': { throw new Error('Not implemented yet: "union" case'); }
       case 'filter': { throw new Error('Not implemented yet: "filter" case'); }
     }
+  }
+
+  /**
+   * Join values with an operation.
+   * If the operation is a filter of which the expression uses none of the variables of the values,
+   * the values are joined inside the filter, as that does not change the results.
+   * This lets endpoints bind the values into the filtered operation, instead of evaluating it in full.
+   * @param algebraFactory The algebra factory.
+   * @param values The values.
+   * @param operation The operation to join with.
+   */
+  public static joinValues(
+    algebraFactory: AlgebraFactory,
+    values: Algebra.Values,
+    operation: Algebra.Operation,
+  ): Algebra.Operation {
+    if (operation.type === Algebra.Types.FILTER) {
+      const expressionVariables = QuerySourceSparql.getVariableNames((<Algebra.Filter> operation).expression);
+      if (!values.variables.some(variable => expressionVariables.has(variable.value))) {
+        return algebraFactory.createFilter(
+          QuerySourceSparql.joinValues(algebraFactory, values, (<Algebra.Filter> operation).input),
+          (<Algebra.Filter> operation).expression,
+        );
+      }
+    }
+    return algebraFactory.createJoin([ values, operation ], false);
+  }
+
+  /**
+   * Determine the names of all variables that occur in the given value, such as an expression,
+   * including in the operations of EXISTS expressions.
+   * @param value A value.
+   */
+  public static getVariableNames(value: object): Set<string> {
+    const names = new Set<string>();
+    const visited = new Set<object>();
+    const visit = (child: any): void => {
+      if (child && typeof child === 'object' && !visited.has(child)) {
+        visited.add(child);
+        if (child.termType === 'Variable') {
+          names.add(child.value);
+        }
+        for (const [ key, grandChild ] of Object.entries(child)) {
+          if (key !== 'metadata') {
+            visit(grandChild);
+          }
+        }
+      }
+    };
+    visit(value);
+    return names;
   }
 
   /**
