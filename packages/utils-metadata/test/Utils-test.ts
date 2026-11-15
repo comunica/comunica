@@ -2,6 +2,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import {
   cachifyMetadata,
+  estimateCardinality,
   getMetadataBindings,
   getMetadataQuads,
   MetadataValidationState,
@@ -137,6 +138,24 @@ describe('Utils', () => {
 
       expect(it.getProperty('metadata')).toEqual({ a: 'b' });
       expect(onRequest).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('estimateCardinality', () => {
+    it('marks an exact cardinality as an estimate', () => {
+      const metadata = { cardinality: { type: 'exact', value: 3 }, other: true };
+      expect(estimateCardinality(<any> metadata)).toEqual({ cardinality: { type: 'estimate', value: 3 }, other: true });
+      expect(metadata.cardinality.type).toBe('exact');
+    });
+
+    it('keeps an exact cardinality of zero', () => {
+      const metadata = { cardinality: { type: 'exact', value: 0 }};
+      expect(estimateCardinality(<any> metadata)).toBe(metadata);
+    });
+
+    it('keeps an estimated cardinality', () => {
+      const metadata = { cardinality: { type: 'estimate', value: 3 }};
+      expect(estimateCardinality(<any> metadata)).toBe(metadata);
     });
   });
 });

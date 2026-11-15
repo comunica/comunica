@@ -15,6 +15,7 @@ import { bindingsToCompactString } from '@comunica/utils-bindings-factory';
 import type { IBindingsIndex } from '@comunica/utils-bindings-index';
 import { BindingsIndexDef, BindingsIndexUndef } from '@comunica/utils-bindings-index';
 import { ClosableTransformIterator } from '@comunica/utils-iterator';
+import { estimateCardinality } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { termToString } from 'rdf-string';
 
@@ -85,7 +86,7 @@ export class ActorRdfJoinMinusHash extends ActorRdfJoin {
       result: {
         type: 'bindings',
         bindingsStream,
-        metadata: output.metadata,
+        metadata: async() => estimateCardinality(await output.metadata()),
       },
     };
   }

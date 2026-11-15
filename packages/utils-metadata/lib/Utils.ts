@@ -92,3 +92,17 @@ export function onFirstMetadataRequest(iterator: AsyncIterator<any>, onRequest: 
     return getProperty(propertyName, callback);
   };
 }
+
+/**
+ * Mark the cardinality of the given metadata as an estimate,
+ * for an operation that can produce fewer or more results than its input, such as a filter.
+ * An exact cardinality of zero stays exact, as these operations produce no results for an empty input.
+ * @param metadata The metadata of the input.
+ * @return The metadata with an estimated cardinality.
+ */
+export function estimateCardinality<M extends { cardinality: RDF.QueryResultCardinality }>(metadata: M): M {
+  if (metadata.cardinality.type !== 'exact' || metadata.cardinality.value === 0) {
+    return metadata;
+  }
+  return { ...metadata, cardinality: { ...metadata.cardinality, type: 'estimate' }};
+}
