@@ -436,7 +436,7 @@ export class QuerySourceRdfJs implements IQuerySource {
     quotedTripleFiltering: boolean,
   ): number | undefined {
     // Values of a variable that occurs multiple times are constrained by all of its positions at once
-    let position: string | undefined;
+    let position: QuadTermName | undefined;
     for (const name of QUAD_TERM_NAMES) {
       const term = operation[name];
       if (term.termType === 'Variable' && term.value === variable.value) {
@@ -452,10 +452,14 @@ export class QuerySourceRdfJs implements IQuerySource {
       return cardinality;
     }
 
-    // Only objects are counted, and only by sources that index them per predicate,
-    // as counting them otherwise iterates over all quads of the predicate
-    if (position !== 'object' || !('features' in this.source) || !this.source.features?.indexDistinctObjectCounts ||
-      !this.source.countDistinctTerms) {
+    // Only subjects and objects are counted, and only by sources that index them per predicate,
+    // as counting them otherwise iterates over all quads of the predicate.
+    // Subjects are only counted along with objects, as lookups by object would otherwise seem cheaper than they are.
+    if (position !== 'subject' && position !== 'object') {
+      return undefined;
+    }
+    if (!('features' in this.source) || !this.source.features?.indexDistinctObjectCounts ||
+      (position === 'subject' && !this.source.features.indexDistinctSubjectCounts) || !this.source.countDistinctTerms) {
       return undefined;
     }
     const predicate = QuerySourceRdfJs.nullifyVariables(operation.predicate, quotedTripleFiltering);
@@ -465,7 +469,7 @@ export class QuerySourceRdfJs implements IQuerySource {
     }
 
     return this.source.countDistinctTerms(
-      [ 'graph', 'predicate', 'object' ],
+      [ 'graph', 'predicate', position ],
       [ undefined, predicate, undefined, graph ],
     );
   }

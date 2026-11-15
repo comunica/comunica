@@ -120,15 +120,28 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         {},
         { o: 20 },
       ));
-      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 'o' ]))).toBe(5);
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 'o' ]), new Map())).toBe(5);
     });
 
-    it('assumes a bound variable without distinct values to identify a single result', () => {
+    it('divides by the largest distinct values of a bound variable in the join', () => {
+      const joinEntry = withMetadata(entry(pattern('?s', 'ex:p', '?o'), metadata(100, [])), metadata(
+        100,
+        [ 's', 'o' ],
+        {},
+        { o: 20 },
+      ));
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 'o' ]), new Map([[ 'o', 400 ]])))
+        .toBe(0.25);
+    });
+
+    it('assumes a bound variable without distinct values to take a different value in each result', () => {
       const joinEntry = withMetadata(entry(pattern('?s', 'ex:p', '?o'), metadata(100, [])), metadata(
         100,
         [ 's', 'o' ],
       ));
-      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 's' ]))).toBe(1);
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 's' ]), new Map())).toBe(1);
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 's' ]), new Map([[ 's', 200 ]])))
+        .toBe(0.5);
     });
 
     it('takes the most selective bound variable', () => {
@@ -138,7 +151,7 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         {},
         { s: 50, o: 2 },
       ));
-      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 's', 'o' ]))).toBe(2);
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 's', 'o' ]), new Map())).toBe(2);
     });
 
     it('returns the cardinality for entries sharing no bound variables', () => {
@@ -146,7 +159,18 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         100,
         [ 's', 'o' ],
       ));
-      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 'x' ]))).toBe(100);
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 'x' ]), new Map())).toBe(100);
+    });
+  });
+
+  describe('getUniverses', () => {
+    it('takes the largest known distinct values of each variable', () => {
+      const entries = [
+        metadata(100, [ 's', 'o' ], {}, { s: 20 }),
+        metadata(10, [ 's', 'x' ], {}, { s: 10, x: 5 }),
+        metadata(1000, [ 'o' ]),
+      ].map(meta => withMetadata(entry(pattern('?s', 'ex:p', '?o'), meta), meta));
+      expect(ActorRdfJoinMultiIndexNestedLoop.getUniverses(entries)).toEqual(new Map([[ 's', 20 ], [ 'x', 5 ]]));
     });
   });
 

@@ -115,18 +115,50 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
 
   /**
    * Estimate how many results a lookup of the given entry produces when the given variables are bound.
+   *
+   * The entries of a join often each cover a part of the same set of values of a variable,
+   * such as different properties of entities of the same type, of which the largest part approximates the set.
+   * Assuming that each entry covers a uniform and independent part of it, a bound value occurs in the entry with
+   * probability V / U, where V is the number of distinct values of the variable in the entry and U in the set,
+   * and then gives cardinality / V results, so a lookup gives cardinality / U results on average.
+   * If V is unknown, each result of the entry is assumed to have a different value.
+   * Only the most selective bound variable is taken into account.
+   *
    * @param entry A join entry.
    * @param bound The names of the bound variables.
+   * @param universes Per variable, the largest number of distinct values it is known to take in an entry of the join.
    */
-  public static estimateFanout(entry: IJoinEntryWithMetadata, bound: Set<string>): number {
+  public static estimateFanout(
+    entry: IJoinEntryWithMetadata,
+    bound: Set<string>,
+    universes: Map<string, number>,
+  ): number {
     const cardinality = entry.metadata.cardinality.value;
     let fanout = cardinality;
     for (const variable of entry.metadata.variables) {
-      if (bound.has(variable.variable.value)) {
-        fanout = Math.min(fanout, cardinality / Math.max(1, variable.distinctValues ?? cardinality));
+      const name = variable.variable.value;
+      if (bound.has(name)) {
+        const values = Math.max(1, variable.distinctValues ?? cardinality, universes.get(name) ?? 0);
+        fanout = Math.min(fanout, cardinality / values);
       }
     }
     return fanout;
+  }
+
+  /**
+   * Determine the largest number of distinct values that each variable is known to take in an entry.
+   * @param entries The join entries.
+   */
+  public static getUniverses(entries: IJoinEntryWithMetadata[]): Map<string, number> {
+    const universes = new Map<string, number>();
+    for (const entry of entries) {
+      for (const { variable, distinctValues } of entry.metadata.variables) {
+        if (distinctValues !== undefined) {
+          universes.set(variable.value, Math.max(distinctValues, universes.get(variable.value) ?? 0));
+        }
+      }
+    }
+    return universes;
   }
 
   /**
@@ -142,6 +174,7 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
     first: number,
     lookupCost: number,
   ): { order: number[]; iterations: number; cardinality: number } {
+    const universes = ActorRdfJoinMultiIndexNestedLoop.getUniverses(entries);
     const bound = new Set(entries[first].metadata.variables.map(variable => variable.variable.value));
     const todo = entries.map((_, i) => i).filter(i => i !== first);
     const order: number[] = [];
@@ -151,7 +184,7 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       let best = 0;
       let bestFanout = Number.POSITIVE_INFINITY;
       for (const [ i, index ] of todo.entries()) {
-        const fanout = ActorRdfJoinMultiIndexNestedLoop.estimateFanout(entries[index], bound);
+        const fanout = ActorRdfJoinMultiIndexNestedLoop.estimateFanout(entries[index], bound, universes);
         if (fanout < bestFanout) {
           best = i;
           bestFanout = fanout;
