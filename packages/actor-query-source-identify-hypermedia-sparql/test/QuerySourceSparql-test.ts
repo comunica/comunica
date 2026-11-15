@@ -1,6 +1,6 @@
 import { PassThrough } from 'node:stream';
 import { ActorQuerySerializeSparql } from '@comunica/actor-query-serialize-sparql';
-import { KeysCore, KeysHttp, KeysInitQuery } from '@comunica/context-entries';
+import { KeysCore, KeysHttp, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, ActionContextKey } from '@comunica/core';
 import type { IActionContext, IDataset, QueryResultCardinality } from '@comunica/types';
 import { AlgebraFactory, Algebra } from '@comunica/utils-algebra';
@@ -588,6 +588,26 @@ describe('QuerySourceSparql', () => {
           p: DF.namedNode('p3'),
         }),
       ]);
+    });
+
+    it('should not send a COUNT query when the query has a single source', async() => {
+      const singleSourceContext = ctx.set(KeysQueryOperation.querySources, [ <any> {} ]);
+      const stream = source.queryBindings(AF.createPattern(
+        DF.namedNode('s'),
+        DF.variable('p'),
+        DF.namedNode('o'),
+        DF.defaultGraph(),
+      ), singleSourceContext);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          state: expect.any(MetadataValidationState),
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: url },
+          variables: [
+            { variable: DF.variable('p'), canBeUndef: false },
+          ],
+        });
+      await expect(stream.toArray()).resolves.toHaveLength(3);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
     });
 
     it('should emit metadata when cardinalityCountQueries is false', async() => {

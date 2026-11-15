@@ -93,6 +93,12 @@ export interface IActorQuerySourceIdentifyHypermediaOutput extends IActorOutput 
    * The dataset that was handled.
    */
   dataset?: string;
+  /**
+   * If the source queries a service that the document describes, such as a SPARQL endpoint,
+   * instead of the contents of the document.
+   * Such a source remains usable when the document is no longer fresh, so it is not identified again.
+   */
+  queriesService?: boolean;
 }
 
 export type IActorQuerySourceIdentifyHypermediaArgs<TS = undefined> = IActorArgs<
