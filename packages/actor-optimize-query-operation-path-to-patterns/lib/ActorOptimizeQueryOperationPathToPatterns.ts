@@ -68,9 +68,9 @@ export class ActorOptimizeQueryOperationPathToPatterns extends ActorOptimizeQuer
     switch (predicate.type) {
       case Algebra.Types.LINK: {
         const link = <Algebra.Link> predicate;
-        return Object.assign(
+        return algebraUtils.copyMetadata(
           algebraFactory.createPattern(subject, link.iri, object, graph),
-          { metadata: link.metadata },
+          link,
         );
       }
       case Algebra.Types.INV:

@@ -12,7 +12,7 @@ import type {
   MetadataVariable,
   QuerySourceReference,
 } from '@comunica/types';
-import { Algebra, AlgebraFactory, isKnownOperation, TypesComunica } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils, isKnownOperation, TypesComunica } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { SeekableMappingIterator } from '@comunica/utils-iterator';
 import { MetadataValidationState } from '@comunica/utils-metadata';
@@ -328,9 +328,9 @@ export class QuerySourceRdfJs implements IQuerySource {
   protected toUnionDefaultGraph(operation: Algebra.Pattern, unionDefaultGraph: boolean): Algebra.Pattern {
     if (unionDefaultGraph && operation.graph.termType === 'DefaultGraph') {
       const { subject, predicate, object } = operation;
-      return Object.assign(
+      return algebraUtils.copyMetadata(
         this.algebraFactory.createPattern(subject, predicate, object, this.dummyDefaultGraph),
-        { metadata: operation.metadata },
+        operation,
       );
     }
     return operation;

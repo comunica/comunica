@@ -3,7 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 
 /**
@@ -21,8 +21,8 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     const predicate = <Algebra.Nps> operation.predicate;
     const blank = this.generateVariable(dataFactory, operation);
 
-    const pattern = Object.assign(algebraFactory
-      .createPattern(operation.subject, blank, operation.object, operation.graph), { metadata: predicate.metadata });
+    const pattern = algebraUtils.copyMetadata(algebraFactory
+      .createPattern(operation.subject, blank, operation.object, operation.graph), predicate);
     const output = getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern, context }),
     );
