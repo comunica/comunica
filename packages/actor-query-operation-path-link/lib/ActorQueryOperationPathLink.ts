@@ -2,7 +2,7 @@ import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 
 /**
  * A comunica Path Link Query Operation Actor.
@@ -20,12 +20,12 @@ export class ActorQueryOperationPathLink extends ActorAbstractPath {
     const algebraFactory = new AlgebraFactory(dataFactory);
 
     const predicate = <Algebra.Link> operationOriginal.predicate;
-    const operation = Object.assign(algebraFactory.createPattern(
+    const operation = algebraUtils.copyMetadata(algebraFactory.createPattern(
       operationOriginal.subject,
       predicate.iri,
       operationOriginal.object,
       operationOriginal.graph,
-    ), { metadata: predicate.metadata });
+    ), predicate);
     return this.mediatorQueryOperation.mediate({ operation, context });
   }
 }
