@@ -54,42 +54,44 @@ describe('ActorRdfJoinEntriesSortFreeVariables', () => {
   });
 
   describe('test', () => {
+    const message = 'Actor actor can only sort entries of which operations are assigned to multiple sources';
+
     it('should fail without operations assigned to sources', async() => {
       await expect(actor.test({ entries: [ entry(pattern('?s', 'p', '?o')) ], context })).resolves
-        .toFailTest('Actor actor can only sort entries of which operations are assigned to sources');
+        .toFailTest(message);
     });
 
-    it('should fail for unions with an input that is not assigned to a source', async() => {
+    it('should fail for operations assigned to a single source', async() => {
       const operation = AF.createUnion([
         assignOperationSource(pattern('?s', 'p', '?o'), sourceA),
         pattern('?s', 'p', '?o'),
       ]);
-      await expect(actor.test({ entries: [ entry(operation) ], context })).resolves.toFailTest(
-        'Actor actor can only sort entries of which operations are assigned to sources',
-      );
+      const other = assignOperationSource(pattern('?s', 'q', '?o'), sourceA);
+      await expect(actor.test({ entries: [ entry(operation), entry(other) ], context })).resolves
+        .toFailTest(message);
     });
 
     it('should fail for empty unions', async() => {
-      await expect(actor.test({ entries: [ entry(AF.createUnion([])) ], context })).resolves.toFailTest(
-        'Actor actor can only sort entries of which operations are assigned to sources',
-      );
+      await expect(actor.test({ entries: [ entry(AF.createUnion([])) ], context })).resolves.toFailTest(message);
     });
 
     it('should fail if all cardinalities are known', async() => {
-      const operation = assignOperationSource(pattern('?s', 'p', '?o'), sourceA);
+      const operation = overSources(pattern('?s', 'p', '?o'));
       await expect(actor.test({ entries: [ entry(operation, false, 3), entry(operation, false, 0) ], context }))
         .resolves.toFailTest('Actor actor can only sort entries of which a cardinality is unknown');
     });
 
     it('should pass if a cardinality is unknown', async() => {
-      const operation = assignOperationSource(pattern('?s', 'p', '?o'), sourceA);
+      const operation = overSources(pattern('?s', 'p', '?o'));
       await expect(actor.test({ entries: [ entry(operation, false, 3), entry(operation) ], context }))
         .resolves.toPassTest({ accuracy: 1 });
     });
 
-    it('should pass for an operation assigned to a source', async() => {
-      const operation = assignOperationSource(pattern('?s', 'p', '?o'), sourceA);
-      await expect(actor.test({ entries: [ entry(operation) ], context })).resolves.toPassTest({ accuracy: 1 });
+    it('should pass for operations assigned to different sources', async() => {
+      const operationA = assignOperationSource(pattern('?s', 'p', '?o'), sourceA);
+      const operationB = assignOperationSource(pattern('?s', 'q', '?o'), sourceB);
+      await expect(actor.test({ entries: [ entry(operationA), entry(operationB) ], context })).resolves
+        .toPassTest({ accuracy: 1 });
     });
 
     it('should pass for a union of operations assigned to sources', async() => {
