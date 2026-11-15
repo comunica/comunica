@@ -11,6 +11,7 @@ import type {
   IQueryOperationResultBindings,
 } from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
+import { estimateCardinality } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
@@ -41,7 +42,7 @@ export class ActorQueryOperationReducedHash extends ActorQueryOperationTypedMedi
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: output.metadata,
+      metadata: async() => estimateCardinality(await output.metadata()),
     };
   }
 

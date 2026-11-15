@@ -11,6 +11,7 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { estimateCardinality } from '@comunica/utils-metadata';
 import { groupRepeatedSubOperations } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { MultiTransformIterator, TransformIterator, BufferedIterator } from 'asynciterator';
@@ -104,7 +105,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       return {
         type: 'bindings',
         bindingsStream,
-        metadata: async() => ({ ...await results.metadata(), variables }),
+        metadata: async() => estimateCardinality({ ...await results.metadata(), variables }),
       };
     }
     if (!sVar && !oVar) {
@@ -130,7 +131,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       return {
         type: 'bindings',
         bindingsStream,
-        metadata: async() => ({
+        metadata: async() => estimateCardinality({
           ...await starEval.metadata(),
           variables: (operation.graph.termType === 'Variable' ? [ operation.graph ] : [])
             .map(variable => ({ variable, canBeUndef: false })),
@@ -156,7 +157,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     return {
       type: 'bindings',
       bindingsStream: starEval.bindingsStream,
-      metadata: async() => ({ ...await starEval.metadata(), variables }),
+      metadata: async() => estimateCardinality({ ...await starEval.metadata(), variables }),
     };
   }
 }

@@ -192,7 +192,7 @@ describe('ActorRdfJoinOptionalIndexNestedLoop', () => {
       expect(joinEntries[1].output.bindingsStream.done).toBeTruthy();
       expect(mediatorMergeBindingsContext.mediate).not.toHaveBeenCalled();
       await expect(result.metadata()).resolves.toMatchObject({
-        cardinality: { type: 'exact', value: 1 },
+        cardinality: { type: 'estimate', value: 1 },
         variables: [
           { variable: DF.variable('review'), canBeUndef: false },
           { variable: DF.variable('rating'), canBeUndef: true },
