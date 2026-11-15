@@ -202,6 +202,7 @@
     "@comunica/actor-http-wayback": "^5.4.0",
     "@comunica/actor-init-query": "^5.4.0",
     "@comunica/actor-optimize-query-operation-annotate-union-order": "^5.4.0",
+    "@comunica/actor-optimize-query-operation-annotate-unused-variables": "^5.4.1",
     "@comunica/actor-optimize-query-operation-assign-sources-exhaustive": "^5.4.0",
     "@comunica/actor-optimize-query-operation-bgp-to-join": "^5.4.0",
     "@comunica/actor-optimize-query-operation-construct-distinct": "^5.4.0",

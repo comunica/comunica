@@ -3,6 +3,19 @@ import type { EventEmitter } from 'node:events';
 import type * as RDF from '@rdfjs/types';
 import type { QuadTermName } from 'rdf-terms';
 
+/**
+ * Options for producing bindings, which sources only receive if they declare the corresponding feature.
+ */
+export interface IRdfJsBindingsOptions {
+  /**
+   * Variables of the pattern of which the values are not needed, as the query does not use them elsewhere.
+   * They must be matched as any other variable, but must not be bound,
+   * and the bindings must not be ordered on them or on any component after them.
+   * Only passed if the source declares the `unusedVariables` feature.
+   */
+  unusedVariables?: RDF.Variable[];
+}
+
 export interface IRdfJsSourceExtended extends RDF.Source {
   /**
    * If false, this source certainly contains no blank nodes.
@@ -32,6 +45,11 @@ export interface IRdfJsSourceExtended extends RDF.Source {
      * Sources that would need to iterate over all quads of the predicate should not set this.
      */
     indexDistinctObjectCounts?: boolean;
+    /**
+     * If this is true, `matchBindings` and `getBindings` accept the `unusedVariables` option,
+     * and do not bind those variables.
+     */
+    unusedVariables?: boolean;
   };
 
   /**
@@ -58,6 +76,7 @@ export interface IRdfJsSourceExtended extends RDF.Source {
    * @param predicate The predicate, which can be a variable.
    * @param object The object, which can be a variable.
    * @param graph The graph, which can be a variable.
+   * @param options Options, if the source declares the features they need.
    */
   matchBindings?: (
     bindingsFactory: RDF.BindingsFactory,
@@ -65,6 +84,7 @@ export interface IRdfJsSourceExtended extends RDF.Source {
     predicate: RDF.Term,
     object: RDF.Term,
     graph: RDF.Term,
+    options?: IRdfJsBindingsOptions,
   ) => EventEmitter;
 
   /**
@@ -80,6 +100,7 @@ export interface IRdfJsSourceExtended extends RDF.Source {
    * @param predicate The predicate, which can be a variable.
    * @param object The object, which can be a variable.
    * @param graph The graph, which can be a variable.
+   * @param options Options, if the source declares the features they need.
    */
   getBindings?: (
     bindingsFactory: RDF.BindingsFactory,
@@ -87,6 +108,7 @@ export interface IRdfJsSourceExtended extends RDF.Source {
     predicate: RDF.Term,
     object: RDF.Term,
     graph: RDF.Term,
+    options?: IRdfJsBindingsOptions,
   ) => RDF.Bindings[];
 
   matchNodes?: (graph: RDF.Term) => EventEmitter;

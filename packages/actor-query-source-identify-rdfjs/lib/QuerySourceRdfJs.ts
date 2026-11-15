@@ -20,7 +20,7 @@ import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
 import type { QuadTermName } from 'rdf-terms';
 import { filterTermsNested, QUAD_TERM_NAMES, someTerms, someTermsNested, uniqTerms } from 'rdf-terms';
-import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
+import type { IRdfJsBindingsOptions, IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
 /**
  * A bindings scan knows the order of results, and can skip ahead within it.
@@ -50,17 +50,21 @@ function getOrderedScan(stream: EventEmitter & Partial<IOrderedBindingsScan>): I
  * Components the pattern repeats are dropped, since a variable is only sorted on by its first occurrence.
  * @param resultOrder The components the scan varies over, in the order it produces them.
  * @param operation The pattern being matched.
+ * @param unusedVariables The variables of the pattern that are not bound.
  */
 function scanOrderToBindingsOrder(
   resultOrder: QuadTermName[],
   operation: Algebra.Pattern,
+  unusedVariables: RDF.Variable[],
 ): [QuadTermName, RDF.Variable][] {
   const order: [QuadTermName, RDF.Variable][] = [];
   const seen = new Set<string>();
   for (const component of resultOrder) {
     const term = operation[component];
-    if (term.termType !== 'Variable' || seen.has(term.value)) {
-      // A scan only varies over variables, and a repeated one adds nothing to the order.
+    if (term.termType !== 'Variable' || seen.has(term.value) ||
+      unusedVariables.some(variable => variable.equals(term))) {
+      // A scan only varies over variables, a repeated one adds nothing to the order,
+      // and an unused one is not bound, so the bindings are not ordered on anything after it.
       break;
     }
     seen.add(term.value);
@@ -228,12 +232,14 @@ export class QuerySourceRdfJs implements IQuerySource {
     // Get bindings directly if the source allows it
     // This will be more efficient, as it avoids the intermediary quads translation and representation.
     if ('matchBindings' in this.source && this.source.matchBindings) {
+      const unusedVariables = this.getUnusedVariables(operation);
       const rawStream = this.source.matchBindings(
         this.bindingsFactory,
         pattern.subject,
         pattern.predicate,
         pattern.object,
         pattern.graph,
+        ...QuerySourceRdfJs.bindingsOptions(unusedVariables),
       );
       let it: AsyncIterator<RDF.Bindings> = rawStream instanceof AsyncIterator ?
         rawStream :
@@ -256,7 +262,7 @@ export class QuerySourceRdfJs implements IQuerySource {
 
       // If the stream has a `seekTo` method with a valid order, we make our iterator seekable.
       const scan = it === rawStream ? getOrderedScan(rawStream) : undefined;
-      const order = scan ? scanOrderToBindingsOrder(scan.resultOrder, operation) : [];
+      const order = scan ? scanOrderToBindingsOrder(scan.resultOrder, operation, unusedVariables) : [];
       const seekTo = order.length > 0 ? scan?.seekTo : undefined;
       if (seekTo) {
         // A scan can only skip ahead on one component, so seeks skip on the first one of the order.
@@ -271,7 +277,9 @@ export class QuerySourceRdfJs implements IQuerySource {
 
       // Determine metadata
       if (!it.getProperty('metadata')) {
-        const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
+        const variables = getVariables(operation)
+          .filter(variable => !unusedVariables.some(unused => unused.equals(variable)))
+          .map(variable => ({ variable, canBeUndef: false }));
         this.setMetadata(it, pattern, context, forceEstimateCardinality, {
           variables,
           ...order.length > 0 && {
@@ -336,6 +344,28 @@ export class QuerySourceRdfJs implements IQuerySource {
     return operation;
   }
 
+  /**
+   * The variables of a pattern that the query does not use elsewhere, as annotated in its metadata,
+   * if the source supports not binding them.
+   * @param operation A pattern.
+   */
+  protected getUnusedVariables(operation: Algebra.Pattern): RDF.Variable[] {
+    const names = <string[] | undefined> operation.metadata?.unusedVariables;
+    if (!names || !('features' in this.source) || !this.source.features?.unusedVariables) {
+      return [];
+    }
+    return [ operation.subject, operation.predicate, operation.object ]
+      .filter((term): term is RDF.Variable => term.termType === 'Variable' && names.includes(term.value));
+  }
+
+  /**
+   * The trailing arguments for producing bindings, which are omitted if there are no options.
+   * @param unusedVariables The variables of the pattern that need not be bound.
+   */
+  protected static bindingsOptions(unusedVariables: RDF.Variable[]): [ IRdfJsBindingsOptions ] | [] {
+    return unusedVariables.length > 0 ? [{ unusedVariables }] : [];
+  }
+
   public canContainBlankNodes(): boolean {
     return !('hasBlankNodes' in this.source && this.source.hasBlankNodes === false);
   }
@@ -357,6 +387,7 @@ export class QuerySourceRdfJs implements IQuerySource {
       operation.predicate,
       operation.object,
       graph,
+      ...QuerySourceRdfJs.bindingsOptions(this.getUnusedVariables(operation)),
     );
     if (graph.termType === 'Variable') {
       if (unionDefaultGraph) {
