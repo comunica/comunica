@@ -686,6 +686,93 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(process.exit).toHaveBeenCalledTimes(1);
       });
 
+      it('should ask the main process for a replacement when a query times out in a cluster', async() => {
+        // Start server
+        await instance.run(stdout, stderr);
+        const server = http.createServer.mock.results[0].value;
+
+        // Open new connection
+        const response1 = new EventEmitter();
+        (response1).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response1);
+
+        // Open a connection for the query that times out
+        const response2 = new EventEmitter();
+        (response2).end = jest.fn();
+        server.emit('request', undefined, response2);
+
+        const send = jest.fn();
+        const processSend = process.send;
+        process.send = send;
+        (<any> cluster).isWorker = true;
+        try {
+          instance.timeOutQuery(0, stderr, response2);
+        } finally {
+          process.send = processSend;
+          (<any> cluster).isWorker = false;
+        }
+
+        expect(send).toHaveBeenCalledWith('replace');
+        expect((response2).end).toHaveBeenCalledWith('!TIMEDOUT!');
+        expect((response1).end).not.toHaveBeenCalled();
+        await new Promise(setImmediate);
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      describe('on drain messages', () => {
+        let messageListener: any;
+
+        beforeEach(() => {
+          (<any> process).on = (event: any, listener: any): void => {
+            if (event === 'message') {
+              messageListener = listener;
+            }
+          };
+        });
+
+        it('should stop accepting connections and exit without open connections', async() => {
+          await instance.run(stdout, stderr);
+          const server = http.createServer.mock.results[0].value;
+
+          messageListener('drain');
+
+          expect(server.close).toHaveBeenCalledTimes(1);
+          expect(process.exit).toHaveBeenCalledWith(15);
+        });
+
+        it('should exit once the open connections are closed', async() => {
+          await instance.run(stdout, stderr);
+          const server = http.createServer.mock.results[0].value;
+          const response1 = new EventEmitter();
+          (response1).end = jest.fn();
+          server.emit('request', undefined, response1);
+
+          messageListener('drain');
+          expect(server.close).toHaveBeenCalledTimes(1);
+          expect(process.exit).not.toHaveBeenCalled();
+
+          response1.emit('close');
+          expect((response1).end).not.toHaveBeenCalled();
+          expect(process.exit).toHaveBeenCalledWith(15);
+        });
+
+        it('should end the open connections after the timeout', async() => {
+          await instance.run(stdout, stderr);
+          const server = http.createServer.mock.results[0].value;
+          const response1 = new EventEmitter();
+          (response1).end = jest.fn((message, resolve) => resolve());
+          server.emit('request', undefined, response1);
+
+          messageListener('drain');
+          expect(process.exit).not.toHaveBeenCalled();
+
+          jest.runAllTimers();
+          expect((response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+          await new Promise(setImmediate);
+          expect(process.exit).toHaveBeenCalledWith(15);
+        });
+      });
+
       it('should end multiple open connections on shutdown messages', async() => {
         let shutdownListener: any;
         (<any> process).on = (event: any, listener: any): void => {
@@ -880,6 +967,37 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         expect(cluster.fork).toHaveBeenCalledTimes(4);
         expect(cluster.disconnect).toHaveBeenCalledTimes(1);
+      });
+
+      it('should replace a worker that asks for it once the new worker listens', async() => {
+        const newWorker = new EventEmitter();
+        (<any> cluster).fork = jest.fn(() => newWorker);
+        await instance.run(stdout, stderr);
+        const calls: any[][] = jest.mocked(cluster.on).mock.calls;
+        const onListening = calls.find(call => call[0] === 'listening')![1];
+        const onMessage = calls.find(call => call[0] === 'message')![1];
+
+        // Simulate listening event
+        const dummyWorker: any = new EventEmitter();
+        dummyWorker.id = 1;
+        dummyWorker.process = {};
+        dummyWorker.send = jest.fn();
+        onListening(dummyWorker);
+
+        // Simulate replace messages
+        onMessage(dummyWorker, 'replace');
+        onMessage(dummyWorker, 'replace');
+        onMessage(dummyWorker, 'other');
+        expect(cluster.fork).toHaveBeenCalledTimes(5);
+        expect(dummyWorker.send).not.toHaveBeenCalled();
+
+        // Simulate the new worker listening
+        newWorker.emit('listening');
+        expect(dummyWorker.send).toHaveBeenCalledWith('drain');
+
+        // Simulate the exit of the replaced worker
+        dummyWorker.emit('exit', 15);
+        expect(cluster.fork).toHaveBeenCalledTimes(5);
       });
 
       it('should not track the queries of workers', async() => {
@@ -2304,7 +2422,7 @@ INSERT DATA {
         expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60_000);
         expect(instance.timeOutQuery).not.toHaveBeenCalled();
         jest.runAllTimers();
-        expect(instance.timeOutQuery).toHaveBeenCalledWith(0, stderr);
+        expect(instance.timeOutQuery).toHaveBeenCalledWith(0, stderr, response);
 
         // A query that timed out is not reported as completed
         response.emit('close');

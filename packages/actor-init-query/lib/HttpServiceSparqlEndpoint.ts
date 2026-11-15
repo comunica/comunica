@@ -262,10 +262,16 @@ export class HttpServiceSparqlEndpoint {
       cluster.fork();
     }
 
+    // Workers that are replaced by a new worker are not respawned when they exit
+    const replacedWorkers = new Set<number>();
+
     // Attach listeners to each new worker
     cluster.on('listening', (worker) => {
       // Respawn crashed workers
       worker.once('exit', (code, signal) => {
+        if (replacedWorkers.delete(worker.id)) {
+          return;
+        }
         if (!worker.exitedAfterDisconnect) {
           if (code === 9 || signal === 'SIGKILL') {
             stderr.write(`Worker ${worker.process.pid} forcefully killed with ${code || signal}. Killing main process as well.\n`);
@@ -276,6 +282,15 @@ export class HttpServiceSparqlEndpoint {
           }
         }
       });
+    });
+
+    // Replace workers that ask for it, and only stop them once the new worker accepts connections,
+    // so that the endpoint keeps accepting connections.
+    cluster.on('message', (worker, message) => {
+      if (message === 'replace' && !replacedWorkers.has(worker.id)) {
+        replacedWorkers.add(worker.id);
+        cluster.fork().once('listening', () => worker.send('drain'));
+      }
     });
 
     // Disconnect from cluster on SIGINT, so that the process can cleanly terminate
@@ -306,14 +321,21 @@ export class HttpServiceSparqlEndpoint {
 
   /**
    * Stop this worker because a query took longer than the timeout.
-   * The main process then starts a new worker.
+   * In a cluster, the response of the query is ended, and the main process first starts a new worker,
+   * and then tells this one to stop once its other queries are done.
    * @param queryId The id of the query that timed out.
    * @param stderr Error stream to write to.
+   * @param response The response of the query.
    */
-  public timeOutQuery(queryId: number, stderr: Writable): void {
+  public timeOutQuery(queryId: number, stderr: Writable, response?: http.ServerResponse): void {
     stderr.write(`Worker ${process.pid} timed out for query ${queryId}.\n`);
-    // eslint-disable-next-line ts/no-floating-promises
-    this.shutdownWorker?.();
+    if (cluster.isWorker) {
+      response?.end('!TIMEDOUT!');
+      process.send!('replace');
+    } else {
+      // eslint-disable-next-line ts/no-floating-promises
+      this.shutdownWorker?.();
+    }
   }
 
   /**
@@ -368,11 +390,33 @@ export class HttpServiceSparqlEndpoint {
       process.exit(15);
     };
 
+    // Stop once all open connections are done, but not later than the timeout
+    const drainWorker = (): void => {
+      stderr.write(`Draining worker ${process.pid} with ${openConnections.size} open connections.\n`);
+      server.close();
+      const exitIfDone = (): void => {
+        if (openConnections.size === 0) {
+          // eslint-disable-next-line unicorn/no-process-exit
+          process.exit(15);
+        }
+      };
+      for (const connection of openConnections) {
+        connection.on('close', exitIfDone);
+      }
+      setTimeout(() => {
+        // eslint-disable-next-line ts/no-floating-promises
+        this.shutdownWorker!();
+      }, this.timeout);
+      exitIfDone();
+    };
+
     // Subscribe to shutdown messages
     // eslint-disable-next-line ts/no-misused-promises
     process.on('message', async(message: string): Promise<void> => {
       if (message === 'shutdown') {
         await this.shutdownWorker!();
+      } else if (message === 'drain') {
+        drainWorker();
       }
     });
 
@@ -754,7 +798,7 @@ export class HttpServiceSparqlEndpoint {
     let timedOut = false;
     const timeout = setTimeout(() => {
       timedOut = true;
-      this.timeOutQuery(queryId, stderr);
+      this.timeOutQuery(queryId, stderr, response);
     }, this.timeout);
     response.on('close', () => {
       clearTimeout(timeout);
