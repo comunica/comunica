@@ -70,9 +70,12 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     const metadataInner = await output.metadata();
     const variablesInner = metadataInner.variables.map(v => v.variable);
 
-    // A count of all bindings without grouping is the cardinality of the input, if that is exact,
-    // so the input does not have to be consumed, as for patterns over an in-memory store.
-    if (ActorQueryOperationGroup.isCountAll(operation) && metadataInner.cardinality.type === 'exact') {
+    // A count of all bindings of a pattern without grouping is the cardinality of the pattern, if that is exact,
+    // so the pattern does not have to be consumed, as for patterns over an in-memory store.
+    // This only applies to patterns, as other operations, such as joins and filters, may report an exact cardinality
+    // that is not their own.
+    if (ActorQueryOperationGroup.isCountAll(operation) && operation.input.type === Algebra.Types.PATTERN &&
+      metadataInner.cardinality.type === 'exact') {
       output.bindingsStream.destroy();
       const count = dataFactory.literal(
         String(metadataInner.cardinality.value),
