@@ -73,6 +73,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly httpRequestsByPlanNode = new WeakMap<IPhysicalQueryPlanNode, number>();
   private httpQueryMethodRejected = false;
   private readonly batchAskQueries: boolean;
+  private readonly countFallback?: ICountFallback;
   /**
    * The ASK queries that wait to be sent in a single request, if ASK queries are batched.
    */
@@ -97,6 +98,7 @@ export class QuerySourceSparql implements IQuerySource {
     parseUnsupportedVersions: boolean,
     metadata: Record<string, any>,
     batchAskQueries = false,
+    countFallback?: ICountFallback,
   ) {
     this.referenceValue = urlBackup;
     this.url = url;
@@ -139,6 +141,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.extensionFunctions = metadata.extensionFunctions;
     this.propertyFeatures = metadata.propertyFeatures ? new Set(metadata.propertyFeatures) : undefined;
     this.batchAskQueries = batchAskQueries;
+    this.countFallback = countFallback;
   }
 
   /**
@@ -480,10 +483,11 @@ export class QuerySourceSparql implements IQuerySource {
           }
         }
 
-        // Don't send count queries if disabled.
+        // Don't send count queries if disabled, or if the endpoint did not answer one in time recently.
         // Cardinalities can be infinity when we're querying just a single source.
         // This is determined per query, as the source can be used by queries with different sources.
-        if (!this.cardinalityCountQueries || context.get(KeysQueryOperation.querySources)?.length === 1) {
+        if (!this.cardinalityCountQueries || context.get(KeysQueryOperation.querySources)?.length === 1 ||
+          this.countFallback?.isActive(isKnownOperation(operation, Algebra.Types.PATTERN))) {
           return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         }
 
@@ -497,10 +501,17 @@ export class QuerySourceSparql implements IQuerySource {
             dataset: this.url,
           });
           abortController.abort();
+          this.activateCountFallback(context, operation);
         }, this.countTimeout);
         const varCount = this.dataFactory.variable('count');
-        const bindingsStream: BindingsStream = await this
-          .queryBindingsRemote(this.url, countQuery, [ varCount ], countContext, []);
+        let bindingsStream: BindingsStream;
+        try {
+          bindingsStream = await this.queryBindingsRemote(this.url, countQuery, [ varCount ], countContext, []);
+        } catch {
+          clearTimeout(timeoutHandler);
+          this.activateCountFallback(context, operation);
+          return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
+        }
         bindingsStream
           .on('data', (bindings: Bindings) => {
             clearTimeout(timeoutHandler);
@@ -523,6 +534,7 @@ export class QuerySourceSparql implements IQuerySource {
           .on('error', () => {
             clearTimeout(timeoutHandler);
             resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
+            this.activateCountFallback(context, operation);
           })
           .on('end', () => {
             clearTimeout(timeoutHandler);
@@ -542,6 +554,18 @@ export class QuerySourceSparql implements IQuerySource {
         cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url },
         variables: variablesCount,
       }));
+  }
+
+  /**
+   * Stop sending COUNT queries to the endpoint for a while, after one failed or took too long,
+   * unless the query that sent it was aborted.
+   * @param context The context of the query that sent the COUNT query.
+   * @param operation The operation of the COUNT query.
+   */
+  protected activateCountFallback(context: IActionContext, operation: Algebra.Operation): void {
+    if (!context.get(KeysHttp.httpAbortSignal)?.aborted) {
+      this.countFallback?.activate(isKnownOperation(operation, Algebra.Types.PATTERN));
+    }
   }
 
   /**
@@ -905,6 +929,23 @@ export class QuerySourceSparql implements IQuerySource {
   public toString(): string {
     return `QuerySourceSparql(${this.url})`;
   }
+}
+
+/**
+ * Determines whether an endpoint is not sent COUNT queries, after one failed or took too long.
+ */
+export interface ICountFallback {
+  /**
+   * If the endpoint should not be sent COUNT queries over a pattern, or over other operations.
+   * @param pattern If the COUNT query is over a single pattern.
+   */
+  isActive: (pattern: boolean) => boolean;
+  /**
+   * Stop sending COUNT queries over a pattern, or over other operations, to the endpoint for a while,
+   * as one failed or took too long.
+   * @param pattern If the COUNT query was over a single pattern.
+   */
+  activate: (pattern: boolean) => void;
 }
 
 interface IAskBatchEntry {
