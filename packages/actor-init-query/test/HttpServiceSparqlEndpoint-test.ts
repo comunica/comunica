@@ -1,7 +1,7 @@
 /* eslint-disable jest/prefer-spy-on,jest/no-mocks-import */
 import type { Cluster } from 'node:cluster';
 import { PassThrough } from 'node:stream';
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { BindingsStream } from '@comunica/types';
@@ -669,21 +669,22 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(process.exit).toHaveBeenCalledTimes(1);
       });
 
-      it('should end an open connection when a query times out', async() => {
+      it('should not shut down the worker or end other connections when a query times out', async() => {
         // Start server
         await instance.run(stdout, stderr);
         const server = http.createServer.mock.results[0].value;
 
         // Open new connection
         const response1 = new EventEmitter();
-        (response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = jest.fn();
         server.emit('request', undefined, response1);
 
-        instance.timeOutQuery(0, stderr);
+        instance.timeOutQuery(0, <any> { writableEnded: true }, jest.fn(), stderr);
 
-        expect((response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
         await new Promise(setImmediate);
-        expect(process.exit).toHaveBeenCalledTimes(1);
+        expect((response1).end).not.toHaveBeenCalled();
+        expect(server.close).not.toHaveBeenCalled();
+        expect(process.exit).not.toHaveBeenCalled();
       });
 
       it('should end multiple open connections on shutdown messages', async() => {
@@ -2274,12 +2275,142 @@ INSERT DATA {
         expect(responseString).toBe('test_query_result');
       });
 
-      it('should only log a query timeout outside of a worker', async() => {
+      it('should stop a query that timed out, and end its response', async() => {
         const stderr = new PassThrough();
-        instance.timeOutQuery(3, stderr);
+        const stopQuery = jest.fn();
+        instance.timeOutQuery(3, response, stopQuery, stderr);
         stderr.end();
         await expect(stringifyStream(stderr)).resolves.toBe(`Worker ${process.pid} timed out for query 3.\n`);
+        expect(stopQuery).toHaveBeenCalledTimes(1);
+        expect(response.end).toHaveBeenCalledWith('!TIMEDOUT!');
         expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should not end the response of a query that timed out if it has ended already', () => {
+        Object.defineProperty(response, 'writableEnded', { value: true });
+        instance.timeOutQuery(3, response, jest.fn(), new PassThrough());
+        expect(response.end).not.toHaveBeenCalled();
+      });
+
+      describe('when a query is stopped', () => {
+        let engine: any;
+        let stream: ArrayIterator<RDF.Bindings>;
+        let contexts: any[];
+
+        beforeEach(async() => {
+          engine = await new QueryEngineFactoryBase().create();
+          stream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+          contexts = [];
+          engine.query = jest.fn(async(_: string, context: any) => {
+            contexts.push(context);
+            return { resultType: 'bindings', execute: async() => stream };
+          });
+          engine.resultToString = jest.fn(async(result: any) => {
+            await result.execute();
+            return { data: new PassThrough() };
+          });
+        });
+
+        async function write(): Promise<void> {
+          await instance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            query,
+            '',
+            false,
+            true,
+            0,
+          );
+        }
+
+        it('should abort the HTTP requests and destroy the results of a query that times out', async() => {
+          await write();
+          const signal: AbortSignal = contexts[0][KeysHttp.httpAbortSignal.name];
+          expect(signal.aborted).toBe(false);
+          expect(stream.destroyed).toBe(false);
+
+          jest.runAllTimers();
+          expect(signal.aborted).toBe(true);
+          expect(stream.destroyed).toBe(true);
+          expect(response.end).toHaveBeenCalledWith('!TIMEDOUT!');
+        });
+
+        it('should stop a query of which the response is closed before it was finished', async() => {
+          await write();
+          response.emit('close');
+          expect(contexts[0][KeysHttp.httpAbortSignal.name].aborted).toBe(true);
+          expect(stream.destroyed).toBe(true);
+        });
+
+        it('should not stop a query of which the response was finished', async() => {
+          await write();
+          Object.defineProperty(response, 'writableFinished', { value: true });
+          response.emit('close');
+          expect(contexts[0][KeysHttp.httpAbortSignal.name].aborted).toBe(false);
+          expect(stream.destroyed).toBe(false);
+        });
+
+        it('should not write the results of a query that timed out before it was executed', async() => {
+          let resolveQuery: (result: any) => void;
+          engine.query = () => new Promise(resolve => resolveQuery = resolve);
+          const written = write();
+          await new Promise(setImmediate);
+          jest.runAllTimers();
+          resolveQuery!({ resultType: 'bindings', execute: async() => stream });
+          await written;
+          expect(engine.resultToString).not.toHaveBeenCalled();
+          expect(response.writeHead).not.toHaveBeenCalled();
+          expect(response.end).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not report the failure of a query that timed out', async() => {
+          let rejectQuery: (error: Error) => void;
+          engine.query = () => new Promise((_, reject) => rejectQuery = reject);
+          const written = write();
+          await new Promise(setImmediate);
+          jest.runAllTimers();
+          rejectQuery!(new Error('aborted'));
+          await written;
+          expect(response.writeHead).not.toHaveBeenCalled();
+          expect(response.end).toHaveBeenCalledTimes(1);
+        });
+
+        it('should destroy results of a query that are created after it timed out', async() => {
+          engine.resultToString = jest.fn(async(result: any) => {
+            jest.runAllTimers();
+            await result.execute();
+            return { data: new PassThrough() };
+          });
+          await write();
+          expect(stream.destroyed).toBe(true);
+          expect(response.writeHead).not.toHaveBeenCalled();
+        });
+
+        it('should not report a serialization failure of a query that timed out', async() => {
+          engine.resultToString = jest.fn(async() => {
+            jest.runAllTimers();
+            throw new Error('serialization failure');
+          });
+          await write();
+          expect(response.writeHead).not.toHaveBeenCalled();
+          expect(response.end).toHaveBeenCalledTimes(1);
+        });
+
+        it('should abort the HTTP requests of a query if the abort signal of the context aborts', async() => {
+          const abortController = new AbortController();
+          instance = new HttpServiceSparqlEndpoint({
+            ...argsDefault,
+            context: { [KeysHttp.httpAbortSignal.name]: abortController.signal },
+          });
+          await write();
+          const signal: AbortSignal = contexts[0][KeysHttp.httpAbortSignal.name];
+          expect(signal.aborted).toBe(false);
+          abortController.abort();
+          expect(signal.aborted).toBe(true);
+        });
       });
 
       it('should time out the query in the worker', async() => {
@@ -2304,7 +2435,7 @@ INSERT DATA {
         expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60_000);
         expect(instance.timeOutQuery).not.toHaveBeenCalled();
         jest.runAllTimers();
-        expect(instance.timeOutQuery).toHaveBeenCalledWith(0, stderr);
+        expect(instance.timeOutQuery).toHaveBeenCalledWith(0, response, expect.any(Function), stderr);
 
         // A query that timed out is not reported as completed
         response.emit('close');
@@ -2484,6 +2615,7 @@ INSERT DATA {
         expect(engine.query).toHaveBeenCalledWith('default_test_query', {
           '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql',
           [KeysQueryOperation.readOnly.name]: true,
+          [KeysHttp.httpAbortSignal.name]: expect.any(AbortSignal),
         });
       });
 
@@ -2505,7 +2637,10 @@ INSERT DATA {
         );
 
         await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(engine.query).toHaveBeenCalledWith('default_test_query', { '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql' });
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', {
+          '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql',
+          [KeysHttp.httpAbortSignal.name]: expect.any(AbortSignal),
+        });
       });
 
       it('should not override context entries by default', async() => {
@@ -2528,7 +2663,10 @@ INSERT DATA {
         );
 
         await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(engine.query).toHaveBeenCalledWith('default_test_query', { '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql' });
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', {
+          '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql',
+          [KeysHttp.httpAbortSignal.name]: expect.any(AbortSignal),
+        });
       });
 
       it('should override context entries if contextOverride is enabled', async() => {
@@ -2555,6 +2693,7 @@ INSERT DATA {
         expect(engine.query).toHaveBeenCalledWith('default_test_query', {
           '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql',
           overrideKey: 'overrideValue',
+          [KeysHttp.httpAbortSignal.name]: expect.any(AbortSignal),
         });
       });
 
@@ -2657,6 +2796,7 @@ INSERT DATA {
 
         expect(engine.query).toHaveBeenCalledWith('default_test_query', {
           '@comunica/actor-init-query:baseIRI': 'https://example.org/sparql',
+          [KeysHttp.httpAbortSignal.name]: expect.any(AbortSignal),
         });
       });
     });
