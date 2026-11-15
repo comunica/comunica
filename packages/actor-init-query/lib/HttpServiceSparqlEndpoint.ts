@@ -262,10 +262,16 @@ export class HttpServiceSparqlEndpoint {
       cluster.fork();
     }
 
+    // Workers that are replaced by a new worker are not respawned when they exit
+    const replacedWorkers = new Set<number>();
+
     // Attach listeners to each new worker
     cluster.on('listening', (worker) => {
       // Respawn crashed workers
       worker.once('exit', (code, signal) => {
+        if (replacedWorkers.delete(worker.id)) {
+          return;
+        }
         if (!worker.exitedAfterDisconnect) {
           if (code === 9 || signal === 'SIGKILL') {
             stderr.write(`Worker ${worker.process.pid} forcefully killed with ${code || signal}. Killing main process as well.\n`);
@@ -276,6 +282,15 @@ export class HttpServiceSparqlEndpoint {
           }
         }
       });
+    });
+
+    // Replace workers that ask for it, and only stop them once the new worker accepts connections,
+    // so that the endpoint keeps accepting connections.
+    cluster.on('message', (worker, message) => {
+      if (message === 'replace' && !replacedWorkers.has(worker.id)) {
+        replacedWorkers.add(worker.id);
+        cluster.fork().once('listening', () => worker.send('shutdown'));
+      }
     });
 
     // Disconnect from cluster on SIGINT, so that the process can cleanly terminate
@@ -306,14 +321,18 @@ export class HttpServiceSparqlEndpoint {
 
   /**
    * Stop this worker because a query took longer than the timeout.
-   * The main process then starts a new worker.
+   * In a cluster, the main process first starts a new worker, and then tells this one to shut down.
    * @param queryId The id of the query that timed out.
    * @param stderr Error stream to write to.
    */
   public timeOutQuery(queryId: number, stderr: Writable): void {
     stderr.write(`Worker ${process.pid} timed out for query ${queryId}.\n`);
-    // eslint-disable-next-line ts/no-floating-promises
-    this.shutdownWorker?.();
+    if (cluster.isWorker) {
+      process.send!('replace');
+    } else {
+      // eslint-disable-next-line ts/no-floating-promises
+      this.shutdownWorker?.();
+    }
   }
 
   /**
