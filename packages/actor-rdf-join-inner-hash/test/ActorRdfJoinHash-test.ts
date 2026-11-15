@@ -2316,4 +2316,128 @@ IActorRdfJoinSelectivityOutput
       });
     });
   });
+
+  describe.each([ false, true ])('An ActorRdfJoinHash instance with a join mediator and canHandleUndefs %s', (
+    canHandleUndefs,
+  ) => {
+    let mediatorJoin: any;
+    let actor: ActorRdfJoinHash;
+    let replannedOutput: Bindings[];
+
+    function row(a: string, b?: string): Bindings {
+      return BF.bindings(b ?
+          [[ DF.variable('a'), DF.literal(a) ], [ DF.variable('b'), DF.literal(b) ]] :
+          [[ DF.variable('a'), DF.literal(a) ]]);
+    }
+
+    function getAction(
+      build: Bindings[],
+      buildCardinality: { type: 'estimate' | 'exact'; value: number },
+      probe: Bindings[],
+    ): IActionRdfJoin {
+      const entry = (bindings: Bindings[], cardinality: any, variables: string[]): any => ({
+        output: {
+          type: 'bindings',
+          bindingsStream: new ArrayIterator(bindings, { autoStart: false }),
+          metadata: async() => ({
+            state: new MetadataValidationState(),
+            cardinality,
+            variables: variables.map(variable => ({ variable: DF.variable(variable), canBeUndef: false })),
+          }),
+        },
+        operation: <any> { type: variables.join('') },
+      });
+      return {
+        type: 'inner',
+        entries: [
+          entry(build, buildCardinality, [ 'a' ]),
+          entry(probe, { type: 'estimate', value: 1_000 }, [ 'a', 'b' ]),
+        ],
+        context,
+      };
+    }
+
+    beforeEach(() => {
+      replannedOutput = [ row('replanned') ];
+      mediatorJoin = {
+        mediate: jest.fn(async() => ({
+          type: 'bindings',
+          bindingsStream: new ArrayIterator(replannedOutput, { autoStart: false }),
+        })),
+      };
+      actor = new ActorRdfJoinHash({
+        name: 'actor',
+        bus,
+        mediatorJoinSelectivity: <any> { mediate: async() => ({ selectivity: 1 }) },
+        mediatorHashBindings: <any> {
+          mediate: async() => ({
+            hashFunction: (bindings: RDF.Bindings, variables: RDF.Variable[]) => bindingsToString(bindings
+              .filter((_, key) => variables.some(variable => variable.equals(key)))),
+          }),
+        },
+        mediatorJoin,
+        canHandleUndefs,
+      });
+    });
+
+    async function run(action: IActionRdfJoin): Promise<IQueryOperationResultBindings> {
+      return actor.run(action, (await actor.test(action)).getSideData());
+    }
+
+    it('plans the join again if the build stream is smaller than estimated', async() => {
+      const action = getAction([ row('a1') ], { type: 'estimate', value: 10 }, [ row('a1', 'b1') ]);
+      const output = await run(action);
+      await expect(output.bindingsStream).toEqualBindingsStream(replannedOutput);
+      expect(mediatorJoin.mediate).toHaveBeenCalledTimes(1);
+      const { type, entries, context: replanContext } = mediatorJoin.mediate.mock.calls[0][0];
+      expect(type).toBe('inner');
+      expect(replanContext).toBe(context);
+      expect(entries).toHaveLength(2);
+      expect(entries[0].operation).toBe(action.entries[0].operation);
+      expect(entries[0].operationModified).toBe(true);
+      await expect(entries[0].output.bindingsStream).toEqualBindingsStream([ row('a1') ]);
+      await expect(entries[0].output.metadata()).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'exact', value: 1 },
+        variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+      });
+      expect(entries[1]).toBe(action.entries[1]);
+    });
+
+    it('joins without planning again if the build stream is as large as estimated', async() => {
+      const action = getAction(
+        [ row('a1'), row('a2') ],
+        { type: 'estimate', value: 2 },
+        [ row('a1', 'b1'), row('a3', 'b3') ],
+      );
+      const output = await run(action);
+      await expect(output.bindingsStream).toEqualBindingsStream([ row('a1', 'b1') ]);
+      expect(mediatorJoin.mediate).not.toHaveBeenCalled();
+    });
+
+    it('joins without planning again if the cardinality of the build stream is exact', async() => {
+      const action = getAction([ row('a1') ], { type: 'exact', value: 10 }, [ row('a1', 'b1') ]);
+      const output = await run(action);
+      await expect(output.bindingsStream).toEqualBindingsStream([ row('a1', 'b1') ]);
+      expect(mediatorJoin.mediate).not.toHaveBeenCalled();
+    });
+
+    it('propagates errors in the build stream', async() => {
+      const action = getAction([], { type: 'estimate', value: 10 }, []);
+      const buildStream = action.entries[0].output.bindingsStream;
+      buildStream.toArray = () => Promise.reject(new Error('build error'));
+      const output = await run(action);
+      await expect(output.bindingsStream.toArray()).rejects.toThrow('build error');
+    });
+
+    it('destroys both streams if the output is closed', async() => {
+      const action = getAction([ row('a1') ], { type: 'estimate', value: 10 }, [ row('a1', 'b1') ]);
+      const output = await run(action);
+      const ended = new Promise(resolve => output.bindingsStream.on('end', resolve));
+      output.bindingsStream.close();
+      await ended;
+      expect(action.entries[0].output.bindingsStream.destroyed).toBe(true);
+      expect(action.entries[1].output.bindingsStream.destroyed).toBe(true);
+    });
+  });
 });
