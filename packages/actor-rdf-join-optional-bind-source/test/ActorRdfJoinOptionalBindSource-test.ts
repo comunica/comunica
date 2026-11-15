@@ -179,6 +179,35 @@ describe('ActorRdfJoinOptionalBindSource', () => {
       });
     });
 
+    it('joins the blocks in the buffer in parallel', async() => {
+      const action = getAction([
+        row(DF.namedNode('ex:a1'), 'ex:x1'),
+        row(DF.namedNode('ex:a0'), 'ex:x2'),
+        row(DF.namedNode('ex:a2'), 'ex:x3'),
+      ], source);
+      const queryBindings = source.source.queryBindings.bind(source.source);
+      let pending = 0;
+      let maxPending = 0;
+      source.source.queryBindings = <any> ((operation: any, ctx: any, options: any) => {
+        pending++;
+        maxPending = Math.max(maxPending, pending);
+        const results = new Promise(resolve => setTimeout(resolve, 10))
+          .then(() => queryBindings(operation, ctx, options).toArray())
+          .finally(() => pending--);
+        return { toArray: () => results };
+      });
+      const { result } = await (<any> actor).getOutput(action);
+      await expect(result.bindingsStream.toArray()).resolves.toHaveLength(4);
+      expect(maxPending).toBe(2);
+    });
+
+    it('emits errors of the source', async() => {
+      const action = getAction([ row(DF.namedNode('ex:a1'), 'ex:x1') ], source);
+      source.source.queryBindings = <any> (() => ({ toArray: () => Promise.reject(new Error('source error')) }));
+      const { result } = await (<any> actor).getOutput(action);
+      await expect(result.bindingsStream.toArray()).rejects.toThrow('source error');
+    });
+
     it('passes the join expression to the source as a filter, and the source context', async() => {
       source.context = new ActionContext({ x: 'y' });
       const expression = AF.createTermExpression(DF.literal('true'));
