@@ -138,6 +138,24 @@ describe('ActorRdfJoinOptionalBindSource', () => {
       })).resolves.toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus operations');
     });
 
+    it('rejects expressions over variables of the left entry', async() => {
+      await expect(actor.getJoinCoefficients(getAction([], source, AF.createOperatorExpression('>', [
+        AF.createTermExpression(DF.variable('b')),
+        AF.createTermExpression(DF.variable('x')),
+      ])), {
+        metadatas: [ meta(10, [ 'a', 'x' ]), meta(100, [ 'a', 'b' ]) ],
+      })).resolves.toFailTest('Actor actor can not bind with an expression over variables of the left entry');
+    });
+
+    it('accepts expressions over variables of the right entry only', async() => {
+      await expect(actor.getJoinCoefficients(getAction([], source, AF.createOperatorExpression('>', [
+        AF.createTermExpression(DF.variable('b')),
+        AF.createTermExpression(DF.literal('1')),
+      ])), {
+        metadatas: [ meta(10, [ 'a', 'x' ]), meta(100, [ 'a', 'b' ]) ],
+      })).resolves.toPassTest(expect.anything());
+    });
+
     it('costs one request per block', async() => {
       await expect(actor.getJoinCoefficients(getAction([], source), {
         metadatas: [ meta(10, [ 'a', 'x' ], 2), meta(100, [ 'a', 'b' ], 4) ],

@@ -201,6 +201,13 @@ export class ActorRdfJoinOptionalBindSource extends ActorRdfJoin {
     if (!ActorRdfJoinMultiBind.canBindWithOperation(operation, inScopeVariables(action.entries[0].operation))) {
       return failTest(`Actor ${this.name} can not bind on Extend, Group, or conflicting LeftJoin/Minus operations`);
     }
+    // The source evaluates the expression before joining with the left bindings, so it must not use their variables
+    if (action.expression) {
+      const expressionVariables = ActorRdfJoinOptionalBindSource.getVariableNames(action.expression);
+      if (metadatas[0].variables.some(({ variable }) => expressionVariables.has(variable.value))) {
+        return failTest(`Actor ${this.name} can not bind with an expression over variables of the left entry`);
+      }
+    }
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
