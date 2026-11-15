@@ -7,7 +7,7 @@
     "validate": "jbr validate",
     "fetch-assets": "curl -s -L https://github.com/comunica/comunica-performance-assets/raw/483439d2346aec08626567bd89d05abf66545a5e/largerdfbench-sample.tar.gz?download= | tar --exclude=\".*\" -xz",
     "performance": "npm run fetch-assets && jbr prepare && jbr run && psbr tex query combinations/combination_*/output --svg --logY",
-    "performance:ci": "npm run fetch-assets && jbr prepare -c 0 && jbr run -c 0 -f '^(?!(C2|C6|S1|S9)$)'"
+    "performance:ci": "npm run fetch-assets && jbr prepare -c 0 && jbr run -c 0"
   },
   "dependencies": {
     "@jbr-experiment/sparql-custom": "^6.0.0",
