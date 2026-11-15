@@ -142,7 +142,7 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     }
 
     // Determine the source
-    const { source, dataset } = await this.mediatorQuerySourceIdentifyHypermedia.mediate({
+    const { source, dataset, queriesService } = await this.mediatorQuerySourceIdentifyHypermedia.mediate({
       context,
       forceSourceType: action.link.forceSourceType,
       handledDatasets: action.handledDatasets,
@@ -161,7 +161,13 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
     // Track dereference event
     context.get(KeysStatistics.dereferencedLinks)?.updateStatistic({ url: action.link.url, metadata }, source);
 
-    return { source, metadata: <MetadataBindings> metadata, dataset, cachePolicy };
+    // A source that queries a service does not depend on the freshness of the document that describes the service
+    return {
+      source,
+      metadata: <MetadataBindings> metadata,
+      dataset,
+      cachePolicy: queriesService ? undefined : cachePolicy,
+    };
   }
 
   /**
