@@ -4,12 +4,13 @@ import type {
   IActorRdfJoinOutputInner,
   IActorRdfJoinArgs,
   IActorRdfJoinTestSideData,
+  MediatorRdfJoin,
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { TestResult } from '@comunica/core';
 import { passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, IJoinEntry } from '@comunica/types';
+import type { Bindings, BindingsStream, IJoinEntry, MetadataBindings } from '@comunica/types';
 import type { IBindingsIndex } from '@comunica/utils-bindings-index';
 import { BindingsIndexUndef } from '@comunica/utils-bindings-index';
 import { ClosableTransformIterator } from '@comunica/utils-iterator';
@@ -24,6 +25,7 @@ import { termToString } from 'rdf-string';
  */
 export class ActorRdfJoinHash extends ActorRdfJoin<IActorRdfJoinHashTestSideData> {
   public readonly mediatorHashBindings: MediatorHashBindings;
+  public readonly mediatorJoin?: MediatorRdfJoin;
 
   public constructor(args: IActorRdfJoinHashArgs) {
     super(args, {
@@ -34,6 +36,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin<IActorRdfJoinHashTestSideData
       canHandleUndefs: args.canHandleUndefs,
     });
     this.mediatorHashBindings = args.mediatorHashBindings;
+    this.mediatorJoin = args.mediatorJoin;
   }
 
   public async getOutput(
@@ -41,14 +44,76 @@ export class ActorRdfJoinHash extends ActorRdfJoin<IActorRdfJoinHashTestSideData
     sideData: IActorRdfJoinHashTestSideData,
   ): Promise<IActorRdfJoinOutputInner> {
     const metadatas = sideData.metadatas;
-    let bindingsStream: BindingsStream;
+    const [ buildEntry, probeEntry ] = sideData.entriesSorted;
+    const metadata = async(): Promise<MetadataBindings> =>
+      await this.constructResultMetadata(sideData.entriesSorted, metadatas, action.context);
+
+    // The build stream is read in full before the probe stream is read.
+    // If it is smaller than estimated, the join is planned again with its actual size,
+    // as another join may then be cheaper, such as a bind join for a small build stream.
+    const mediatorJoin = this.mediatorJoin;
+    if (mediatorJoin && metadatas[0].cardinality.type === 'estimate') {
+      const bindingsStream = new ClosableTransformIterator(async() => {
+        const bindings = await buildEntry.output.bindingsStream.toArray();
+        const materializedEntry: IJoinEntry = {
+          output: {
+            type: 'bindings',
+            bindingsStream: new ArrayIterator(bindings, { autoStart: false }),
+            metadata: async() => ({ ...metadatas[0], cardinality: { type: 'exact', value: bindings.length }}),
+          },
+          operation: buildEntry.operation,
+          operationModified: true,
+        };
+        if (bindings.length < metadatas[0].cardinality.value) {
+          return (await mediatorJoin.mediate({
+            type: action.type,
+            entries: [ materializedEntry, probeEntry ],
+            context: action.context,
+          })).bindingsStream;
+        }
+        return this.join(action, metadatas, materializedEntry.output.bindingsStream, probeEntry.output.bindingsStream);
+      }, {
+        autoStart: false,
+        onClose() {
+          buildEntry.output.bindingsStream.destroy();
+          probeEntry.output.bindingsStream.destroy();
+        },
+      });
+      return { result: { type: 'bindings', bindingsStream, metadata }};
+    }
+
+    return {
+      result: {
+        type: 'bindings',
+        bindingsStream: await this.join(
+          action,
+          metadatas,
+          buildEntry.output.bindingsStream,
+          probeEntry.output.bindingsStream,
+        ),
+        metadata,
+      },
+    };
+  }
+
+  /**
+   * Join two streams by indexing the bindings of the build stream, and looking up the bindings of the probe stream.
+   * @param action The join action.
+   * @param metadatas The metadata of the build and the probe stream.
+   * @param buildStream The build stream.
+   * @param probeStream The probe stream.
+   */
+  public async join(
+    action: IActionRdfJoin,
+    metadatas: MetadataBindings[],
+    buildStream: BindingsStream,
+    probeStream: BindingsStream,
+  ): Promise<BindingsStream> {
     const variables = ActorRdfJoin.overlappingVariables(metadatas);
     if (this.canHandleUndefs) {
       /* Handle undefined values in bindings */
 
-      const buffer = sideData.entriesSorted[0].output;
-      const output = sideData.entriesSorted[1].output;
-      bindingsStream = new ClosableTransformIterator(async() => {
+      const bindingsStream: BindingsStream = new ClosableTransformIterator(async() => {
         // We index all bindings from the left-hand iterator first in a blocking manner.
         const index: IBindingsIndex<RDF.Bindings[]> = new BindingsIndexUndef(
           variables,
@@ -56,19 +121,19 @@ export class ActorRdfJoinHash extends ActorRdfJoin<IActorRdfJoinHashTestSideData
           true,
         );
         await new Promise((resolve) => {
-          buffer.bindingsStream.on('data', (bindings) => {
+          buildStream.on('data', (bindings) => {
             const iterator = index.getFirst(bindings, false) ?? index.put(bindings, []);
             iterator.push(bindings);
           });
-          buffer.bindingsStream.on('end', resolve);
-          buffer.bindingsStream.on('error', (error) => {
+          buildStream.on('end', resolve);
+          buildStream.on('error', (error) => {
             bindingsStream.emit('error', error);
           });
         });
 
         // Start our left-hand iterator and try to join with the index
         return new MultiTransformIterator(
-          output.bindingsStream,
+          probeStream,
           {
             multiTransform: (bindings: RDF.Bindings): AsyncIterator<RDF.Bindings> => new ArrayIterator<RDF.Bindings>(
               index.get(bindings).flat()
@@ -82,28 +147,22 @@ export class ActorRdfJoinHash extends ActorRdfJoin<IActorRdfJoinHashTestSideData
       }, {
         autoStart: false,
         onClose() {
-          buffer.bindingsStream.destroy();
-          output.bindingsStream.destroy();
+          buildStream.destroy();
+          probeStream.destroy();
         },
       });
-    } else {
-      /* Don't handle undefined values in bindings */
-      const { hashFunction } = await this.mediatorHashBindings.mediate({ context: action.context });
-      const variablesRaw = variables.map(v => v.variable);
-      bindingsStream = new HashJoin<Bindings, number, Bindings>(
-        sideData.entriesSorted[0].output.bindingsStream,
-        sideData.entriesSorted[1].output.bindingsStream,
-        entry => hashFunction(entry, variablesRaw),
-        <any> ActorRdfJoin.joinBindings,
-      );
+      return bindingsStream;
     }
-    return {
-      result: {
-        type: 'bindings',
-        bindingsStream,
-        metadata: async() => await this.constructResultMetadata(sideData.entriesSorted, metadatas, action.context),
-      },
-    };
+
+    /* Don't handle undefined values in bindings */
+    const { hashFunction } = await this.mediatorHashBindings.mediate({ context: action.context });
+    const variablesRaw = variables.map(v => v.variable);
+    return new HashJoin<Bindings, number, Bindings>(
+      buildStream,
+      probeStream,
+      entry => hashFunction(entry, variablesRaw),
+      <any> ActorRdfJoin.joinBindings,
+    );
   }
 
   protected async getJoinCoefficients(
@@ -145,6 +204,10 @@ export interface IActorRdfJoinHashArgs extends IActorRdfJoinArgs<IActorRdfJoinHa
    * If false, performance will be slightly better.
    */
   canHandleUndefs: boolean;
+  /**
+   * An optional join mediator, to plan the join again if the build stream is smaller than estimated.
+   */
+  mediatorJoin?: MediatorRdfJoin;
 }
 
 export interface IActorRdfJoinHashTestSideData extends IActorRdfJoinTestSideData {
