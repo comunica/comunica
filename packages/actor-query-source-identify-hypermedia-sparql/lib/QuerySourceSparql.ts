@@ -72,6 +72,12 @@ export class QuerySourceSparql implements IQuerySource {
    */
   private readonly httpRequestsByPlanNode = new WeakMap<IPhysicalQueryPlanNode, number>();
   private httpQueryMethodRejected = false;
+  private readonly batchAskQueries: boolean;
+  private readonly countFallback?: ICountFallback;
+  /**
+   * The ASK queries that wait to be sent in a single request, if ASK queries are batched.
+   */
+  private askBatch: IAskBatchEntry[] | undefined;
 
   public constructor(
     url: string,
@@ -91,6 +97,8 @@ export class QuerySourceSparql implements IQuerySource {
     forceGetIfUrlLengthBelow: number,
     parseUnsupportedVersions: boolean,
     metadata: Record<string, any>,
+    batchAskQueries = false,
+    countFallback?: ICountFallback,
   ) {
     this.referenceValue = urlBackup;
     this.url = url;
@@ -132,6 +140,8 @@ export class QuerySourceSparql implements IQuerySource {
     this.datasets = metadata.datasets;
     this.extensionFunctions = metadata.extensionFunctions;
     this.propertyFeatures = metadata.propertyFeatures ? new Set(metadata.propertyFeatures) : undefined;
+    this.batchAskQueries = batchAskQueries;
+    this.countFallback = countFallback;
   }
 
   /**
@@ -318,11 +328,107 @@ export class QuerySourceSparql implements IQuerySource {
       return true;
     }
     // Without propertyFeature overlap, perform the actual ASK query.
-    const query: string = QuerySourceSparql.getQueryStringAsIs(operation, context) ??
-      await this.operationToQuery(operation);
+    const queryAsIs = QuerySourceSparql.getQueryStringAsIs(operation, context);
+    if (this.batchAskQueries && !queryAsIs) {
+      return new Promise<boolean>((resolve, reject) => {
+        if (!this.askBatch) {
+          this.askBatch = [];
+          setImmediate(() => this.sendAskBatch());
+        }
+        this.askBatch.push({ operation, context, resolve, reject });
+      });
+    }
+    return this.sendAsk(operation, context, queryAsIs);
+  }
+
+  protected async sendAsk(operation: Algebra.Ask, context: IActionContext, queryAsIs?: string): Promise<boolean> {
+    const query = queryAsIs ?? await this.operationToQuery(operation);
     this.reportSourceQuery(context, query);
-    const promise = this.endpointFetcher.fetchAsk(this.url, query, this.getRequestOptions(context));
-    return promise;
+    return this.endpointFetcher.fetchAsk(this.url, query, this.getRequestOptions(context));
+  }
+
+  /**
+   * Send the ASK queries that were issued in the same tick, such as for source selection, in a single SELECT query,
+   * which binds one variable per ASK query to whether its operation has results.
+   */
+  protected sendAskBatch(): void {
+    const batch = this.askBatch!;
+    this.askBatch = undefined;
+    const answers = batch.length === 1 ?
+      this.sendAsk(batch[0].operation, batch[0].context).then(answer => [ answer ]) :
+      this.sendAskQueriesAsSelect(batch);
+    answers.then(
+      (values) => {
+        for (const [ index, entry ] of batch.entries()) {
+          entry.resolve(values[index]);
+        }
+      },
+      (error: unknown) => {
+        for (const entry of batch) {
+          entry.reject(error);
+        }
+      },
+    );
+  }
+
+  /**
+   * Send the given ASK queries in a single SELECT query.
+   * @param batch The ASK queries.
+   * @return The answer to each ASK query.
+   */
+  protected async sendAskQueriesAsSelect(batch: IAskBatchEntry[]): Promise<boolean[]> {
+    const variables = batch.map((_, index) => this.dataFactory.variable(`ask${index}`));
+    let operation: Algebra.Operation = this.algebraFactory.createBgp([]);
+    for (const [ index, entry ] of batch.entries()) {
+      operation = this.algebraFactory.createExtend(
+        operation,
+        variables[index],
+        this.algebraFactory.createExistenceExpression(false, entry.operation.input),
+      );
+    }
+    const query = await this.operationToQuery(this.algebraFactory.createProject(operation, variables));
+    for (const entry of batch) {
+      this.reportSourceQuery(entry.context, query);
+    }
+
+    // Each ASK query may be aborted, e.g., on a timeout, so only abort the request once all of them are.
+    const abortSignal = QuerySourceSparql
+      .abortSignalOfAll(batch.map(entry => entry.context.get(KeysHttp.httpAbortSignal)));
+    const context = abortSignal ?
+      batch[0].context.set(KeysHttp.httpAbortSignal, abortSignal) :
+      batch[0].context.delete(KeysHttp.httpAbortSignal);
+    const bindings = await (await this.queryBindingsRemote(this.url, query, variables, context, [])).toArray();
+    return variables.map((variable) => {
+      // Without a valid answer, assume that the operation has results, so that it is not pruned.
+      const value = bindings[0]?.get(variable)?.value;
+      return value !== 'false' && value !== '0';
+    });
+  }
+
+  /**
+   * Create an abort signal that aborts once all given signals have aborted.
+   * @param signals Abort signals, of which some may be undefined.
+   * @return An abort signal, or undefined if a signal is undefined, as that one is never aborted.
+   */
+  public static abortSignalOfAll(signals: (AbortSignal | undefined)[]): AbortSignal | undefined {
+    if (signals.some(signal => !signal)) {
+      return undefined;
+    }
+    const abortController = new AbortController();
+    let pending = signals.length;
+    const onAbort = (): void => {
+      if (--pending === 0) {
+        abortController.abort();
+      }
+    };
+    for (const signal of <AbortSignal[]> signals) {
+      if (signal.aborted) {
+        onAbort();
+      } else {
+        signal.addEventListener('abort', onAbort, { once: true });
+      }
+    }
+    return abortController.signal;
   }
 
   public async queryVoid(operation: Algebra.Operation, context: IActionContext): Promise<void> {
@@ -377,10 +483,11 @@ export class QuerySourceSparql implements IQuerySource {
           }
         }
 
-        // Don't send count queries if disabled.
+        // Don't send count queries if disabled, or if the endpoint did not answer one in time recently.
         // Cardinalities can be infinity when we're querying just a single source.
         // This is determined per query, as the source can be used by queries with different sources.
-        if (!this.cardinalityCountQueries || context.get(KeysQueryOperation.querySources)?.length === 1) {
+        if (!this.cardinalityCountQueries || context.get(KeysQueryOperation.querySources)?.length === 1 ||
+          this.countFallback?.isActive(isKnownOperation(operation, Algebra.Types.PATTERN))) {
           return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         }
 
@@ -394,10 +501,17 @@ export class QuerySourceSparql implements IQuerySource {
             dataset: this.url,
           });
           abortController.abort();
+          this.activateCountFallback(context, operation);
         }, this.countTimeout);
         const varCount = this.dataFactory.variable('count');
-        const bindingsStream: BindingsStream = await this
-          .queryBindingsRemote(this.url, countQuery, [ varCount ], countContext, []);
+        let bindingsStream: BindingsStream;
+        try {
+          bindingsStream = await this.queryBindingsRemote(this.url, countQuery, [ varCount ], countContext, []);
+        } catch {
+          clearTimeout(timeoutHandler);
+          this.activateCountFallback(context, operation);
+          return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
+        }
         bindingsStream
           .on('data', (bindings: Bindings) => {
             clearTimeout(timeoutHandler);
@@ -420,6 +534,7 @@ export class QuerySourceSparql implements IQuerySource {
           .on('error', () => {
             clearTimeout(timeoutHandler);
             resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
+            this.activateCountFallback(context, operation);
           })
           .on('end', () => {
             clearTimeout(timeoutHandler);
@@ -439,6 +554,18 @@ export class QuerySourceSparql implements IQuerySource {
         cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url },
         variables: variablesCount,
       }));
+  }
+
+  /**
+   * Stop sending COUNT queries to the endpoint for a while, after one failed or took too long,
+   * unless the query that sent it was aborted.
+   * @param context The context of the query that sent the COUNT query.
+   * @param operation The operation of the COUNT query.
+   */
+  protected activateCountFallback(context: IActionContext, operation: Algebra.Operation): void {
+    if (!context.get(KeysHttp.httpAbortSignal)?.aborted) {
+      this.countFallback?.activate(isKnownOperation(operation, Algebra.Types.PATTERN));
+    }
   }
 
   /**
@@ -802,4 +929,28 @@ export class QuerySourceSparql implements IQuerySource {
   public toString(): string {
     return `QuerySourceSparql(${this.url})`;
   }
+}
+
+/**
+ * Determines whether an endpoint is not sent COUNT queries, after one failed or took too long.
+ */
+export interface ICountFallback {
+  /**
+   * If the endpoint should not be sent COUNT queries over a pattern, or over other operations.
+   * @param pattern If the COUNT query is over a single pattern.
+   */
+  isActive: (pattern: boolean) => boolean;
+  /**
+   * Stop sending COUNT queries over a pattern, or over other operations, to the endpoint for a while,
+   * as one failed or took too long.
+   * @param pattern If the COUNT query was over a single pattern.
+   */
+  activate: (pattern: boolean) => void;
+}
+
+interface IAskBatchEntry {
+  operation: Algebra.Ask;
+  context: IActionContext;
+  resolve: (value: boolean) => void;
+  reject: (error: unknown) => void;
 }

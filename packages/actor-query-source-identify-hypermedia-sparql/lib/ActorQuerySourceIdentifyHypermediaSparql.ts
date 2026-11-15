@@ -13,9 +13,10 @@ import {
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTest } from '@comunica/core';
-import type { ComunicaDataFactory } from '@comunica/types';
+import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import type { ICountFallback } from './QuerySourceSparql';
 import { QuerySourceSparql } from './QuerySourceSparql';
 
 /**
@@ -35,6 +36,14 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly cardinalityEstimateConstruction: boolean;
   public readonly forceGetIfUrlLengthBelow: number;
   public readonly sparqlServerSoftwarePatterns: RegExp[];
+  public readonly batchAskQueries: boolean;
+  public readonly countFallbackDuration: number;
+  /**
+   * For each endpoint of which a COUNT query failed or took too long,
+   * the times until which it is not sent COUNT queries over patterns, and over other operations.
+   * This is shared by all queries, as sources are identified again for each query.
+   */
+  protected readonly countFallbackUntil = new Map<string, { patterns: number; operations: number }>();
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -53,6 +62,8 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     this.sparqlServerSoftwarePatterns = (
       args.sparqlServerSoftwarePatterns ?? []
     ).map(pattern => new RegExp(pattern, 'u'));
+    this.batchAskQueries = args.batchAskQueries;
+    this.countFallbackDuration = args.countFallbackDuration;
   }
 
   public checkServerSoftware(serverSoftware?: string): boolean {
@@ -102,8 +113,40 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.forceGetIfUrlLengthBelow,
       Boolean(action.context.get(KeysInitQuery.parseUnsupportedVersions)),
       action.metadata,
+      this.batchAskQueries,
+      this.createCountFallback(action.url, action.context),
     );
     return { source, queriesService: true };
+  }
+
+  /**
+   * Create the COUNT fallback of an endpoint, which all sources of the endpoint share.
+   * @param url The URL of the endpoint.
+   * @param context The context in which the endpoint is identified.
+   * @return The COUNT fallback, or undefined if disabled.
+   */
+  public createCountFallback(url: string, context: IActionContext): ICountFallback | undefined {
+    if (this.countFallbackDuration <= 0) {
+      return undefined;
+    }
+    // A pattern that can not be counted in time means that other operations can not be either, but not vice versa.
+    const isActive = (pattern: boolean): boolean => {
+      const until = this.countFallbackUntil.get(url);
+      return Boolean(until) && Math.max(until!.patterns, pattern ? 0 : until!.operations) > Date.now();
+    };
+    return {
+      isActive,
+      activate: (pattern: boolean) => {
+        if (!isActive(pattern)) {
+          this.logWarn(context, `Not sending COUNT queries over ${pattern ? 'patterns' : 'operations other than patterns'} to ${url} for ${this.countFallbackDuration} ms, as one failed or took longer than ${this.countTimeout} ms`);
+        }
+        const until = this.countFallbackUntil.get(url) ?? { patterns: 0, operations: 0 };
+        this.countFallbackUntil.set(url, {
+          ...until,
+          [pattern ? 'patterns' : 'operations']: Date.now() + this.countFallbackDuration,
+        });
+      },
+    };
   }
 }
 
@@ -174,6 +217,24 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * Regexes to match against the server header to identify SPARQL endpoints.
    */
   sparqlServerSoftwarePatterns?: string[];
+  /**
+   * The time in ms during which an endpoint is not sent COUNT queries after one of them failed or took longer than
+   * countTimeout, for this and later queries. Its cardinalities are then unknown, so that, e.g., sources are
+   * selected with ASK queries instead and joins are ordered heuristically. COUNT results that were cached before
+   * are still used. COUNT queries over a single pattern and over other operations are distinguished:
+   * if one over a pattern fails, the endpoint is not sent any COUNT queries,
+   * while if one over another operation fails, it is still sent COUNT queries over patterns.
+   * A value of 0 or less disables this.
+   * @range {integer}
+   * @default {3600000}
+   */
+  countFallbackDuration: number;
+  /**
+   * If ASK queries that are issued at the same time, such as for source selection,
+   * should be sent to the endpoint in a single SELECT query.
+   * @default {true}
+   */
+  batchAskQueries: boolean;
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';
