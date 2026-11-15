@@ -2634,6 +2634,150 @@ describe('QuerySourceSparql', () => {
     });
   });
 
+  describe('queryBoolean with batched ASK queries', () => {
+    const patternA = AF.createPattern(iriS, DF.variable('p'), iriO);
+    const patternB = AF.createPattern(DF.variable('s'), iriP, iriO);
+    let queries: string[];
+    let respond: (query: string) => any;
+    let mediator: any;
+
+    function jsonResponse(body: string) {
+      return {
+        headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        body: Readable.from([ body ]),
+        ok: true,
+        status: 200,
+      };
+    }
+
+    function askBindings(values: Record<string, string>) {
+      const bindings = Object.fromEntries(Object.entries(values)
+        .map(([ key, value ]) => [ key, { type: 'literal', value, datatype: 'http://www.w3.org/2001/XMLSchema#boolean' }]));
+      return jsonResponse(JSON.stringify({ head: { vars: Object.keys(values) }, results: { bindings: [ bindings ]}}));
+    }
+
+    beforeEach(() => {
+      queries = [];
+      respond = () => jsonResponse('{ "head": {}, "boolean": true }');
+      mediator = {
+        mediate: jest.fn(async(action: any) => {
+          const query = new URLSearchParams(action.init.body.toString()).get('query')!;
+          queries.push(query);
+          return respond(query);
+        }),
+      };
+      source = new QuerySourceSparql(
+        url,
+        url,
+        ctx,
+        mediator,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        true,
+        0,
+        false,
+        {},
+        true,
+      );
+    });
+
+    it('should send a single ASK query as is', async() => {
+      await expect(source.queryBoolean(AF.createAsk(patternA), ctx)).resolves.toBe(true);
+      expect(queries).toEqual([ `ASK WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }` ]);
+    });
+
+    it('should send ASK queries with a query string as is', async() => {
+      const operation = AF.createAsk(patternA);
+      jest.spyOn(QuerySourceSparql, 'getQueryStringAsIs').mockReturnValueOnce('ASK { ?s ?p ?o }');
+      await expect(source.queryBoolean(operation, ctx)).resolves.toBe(true);
+      expect(queries).toEqual([ 'ASK { ?s ?p ?o }' ]);
+    });
+
+    it('should send ASK queries of the same tick in a single request', async() => {
+      respond = () => askBindings({ ask0: 'true', ask1: 'false' });
+      await expect(Promise.all([
+        source.queryBoolean(AF.createAsk(patternA), ctx),
+        source.queryBoolean(AF.createAsk(patternB), ctx),
+      ])).resolves.toEqual([ true, false ]);
+      expect(queries).toEqual([
+        `SELECT ( EXISTS { <${testUrl('s')}> ?p <${testUrl('o')}> . } AS ?ask0 ) ` +
+        `( EXISTS { ?s <${testUrl('p')}> <${testUrl('o')}> . } AS ?ask1 ) WHERE { }`,
+      ]);
+    });
+
+    it('should send ASK queries of different ticks in different requests', async() => {
+      await expect(source.queryBoolean(AF.createAsk(patternA), ctx)).resolves.toBe(true);
+      await expect(source.queryBoolean(AF.createAsk(patternB), ctx)).resolves.toBe(true);
+      expect(queries).toHaveLength(2);
+    });
+
+    it('should consider numeric false values and assume results without a value', async() => {
+      respond = () => askBindings({ ask0: '0', ask2: 'true' });
+      await expect(Promise.all([
+        source.queryBoolean(AF.createAsk(patternA), ctx),
+        source.queryBoolean(AF.createAsk(patternB), ctx),
+        source.queryBoolean(AF.createAsk(patternB), ctx),
+      ])).resolves.toEqual([ false, true, true ]);
+    });
+
+    it('should assume results without a solution', async() => {
+      respond = () => jsonResponse('{ "head": { "vars": [ "ask0", "ask1" ] }, "results": { "bindings": [] } }');
+      await expect(Promise.all([
+        source.queryBoolean(AF.createAsk(patternA), ctx),
+        source.queryBoolean(AF.createAsk(patternB), ctx),
+      ])).resolves.toEqual([ true, true ]);
+    });
+
+    it('should reject all ASK queries of a failing request', async() => {
+      respond = () => ({ headers: new Headers(), body: Readable.from([ 'failure' ]), ok: false, status: 500 });
+      const results = await Promise.allSettled([
+        source.queryBoolean(AF.createAsk(patternA), ctx),
+        source.queryBoolean(AF.createAsk(patternB), ctx),
+      ]);
+      expect(results.map(result => result.status)).toEqual([ 'rejected', 'rejected' ]);
+    });
+
+    it('should send batched requests with an abort signal if all ASK queries have one', async() => {
+      respond = () => askBindings({ ask0: 'true', ask1: 'true' });
+      const controllerA = new AbortController();
+      const controllerB = new AbortController();
+      await expect(Promise.all([
+        source.queryBoolean(AF.createAsk(patternA), ctx.set(KeysHttp.httpAbortSignal, controllerA.signal)),
+        source.queryBoolean(AF.createAsk(patternB), ctx.set(KeysHttp.httpAbortSignal, controllerB.signal)),
+      ])).resolves.toEqual([ true, true ]);
+      expect(mediator.mediate.mock.calls[0][0].context.get(KeysHttp.httpAbortSignal)).toBeDefined();
+    });
+  });
+
+  describe('abortSignalOfAll', () => {
+    it('should be undefined if a signal is undefined', () => {
+      expect(QuerySourceSparql.abortSignalOfAll([ new AbortController().signal, undefined ])).toBeUndefined();
+    });
+
+    it('should abort once all signals have aborted', () => {
+      const controllerA = new AbortController();
+      const controllerB = new AbortController();
+      const signal = QuerySourceSparql.abortSignalOfAll([ controllerA.signal, controllerB.signal ])!;
+      controllerA.abort();
+      expect(signal.aborted).toBe(false);
+      controllerB.abort();
+      expect(signal.aborted).toBe(true);
+    });
+
+    it('should consider signals that already aborted', () => {
+      const controllerA = new AbortController();
+      controllerA.abort();
+      expect(QuerySourceSparql.abortSignalOfAll([ controllerA.signal ])!.aborted).toBe(true);
+    });
+  });
+
   describe('queryVoid', () => {
     it('should return data', async() => {
       const thisMediator: any = {
