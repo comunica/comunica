@@ -31,7 +31,6 @@ This runs all three modes.
 
 If you only want to run what the CI runs, use `npm run performance:ci` instead.
 It runs the combination in the `BENCHMARK_COMBINATION` environment variable, which defaults to 0 (COUNT).
-To fit within the CI time budget, it runs a single instance of each query after a warmup round,
-and skips C2, C6, S1 and S9, which time out or make the endpoints run out of memory.
+To fit within the CI time budget, it runs a single instance of each query after a warmup round.
 
 Continuous performance results are tracked on https://github.com/comunica/comunica-performance-results.
