@@ -28,6 +28,7 @@ import {
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';
+import { termToString } from 'rdf-string';
 
 /**
  * A comunica Inner Multi Bind Source RDF Join Actor.
@@ -99,9 +100,14 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
   /**
    * Send bindings to a target.
    *
+   * If all bindings bind the variables of the target operation that the bindings can bind,
+   * only the distinct values of these variables are passed, and the results are joined with the bindings locally.
+   * Otherwise, the bindings are passed as a whole, as unbound variables match any value in the source.
+   *
    * Blank nodes can not be passed to a source, as their labels are scoped to the result they came from.
    * So bindings with a blank node for a variable of the target operation can not produce results, and are skipped.
-   * Blank nodes for other variables are passed as IRIs, and restored in the results.
+   * Blank nodes for other variables of bindings that are passed as a whole are passed as IRIs,
+   * and restored in the results.
    */
   public queryTarget(
     target: IBindTarget,
@@ -111,36 +117,80 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     dataFactory: ComunicaDataFactory,
   ): AsyncIterator<RDF.Bindings> {
     const variables = new Set(algebraUtils.inScopeVariables(target.operation).map(variable => variable.value));
-    const blankNodes = new Map<string, RDF.Term>();
-    const joinBindings: RDF.Bindings[] = [];
-    for (const binding of bindings) {
-      const isBlankNodeBound = [ ...binding ]
-        .some(([ variable, term ]) => term.termType === 'BlankNode' && variables.has(variable.value));
-      if (!isBlankNodeBound) {
-        joinBindings.push(binding.map((term) => {
-          if (term.termType !== 'BlankNode') {
-            return term;
-          }
-          const iri = `${ActorRdfJoinMultiBindSource.BLANK_NODE_IRI_PREFIX}${blankNodes.size}`;
-          blankNodes.set(iri, term);
-          return dataFactory.namedNode(iri);
-        }));
-      }
-    }
-    if (joinBindings.length === 0) {
+    const bindingsWithoutBlankNodes = bindings.filter(binding => ![ ...binding ]
+      .some(([ variable, term ]) => term.termType === 'BlankNode' && variables.has(variable.value)));
+    if (bindingsWithoutBlankNodes.length === 0) {
       return new ArrayIterator<RDF.Bindings>([], { autoStart: false });
     }
+    const targetContext = target.sourceWrapper.context ? context.merge(target.sourceWrapper.context) : context;
 
-    const results = target.sourceWrapper.source.queryBindings(
-      target.operation,
-      target.sourceWrapper.context ? context.merge(target.sourceWrapper.context) : context,
-      { joinBindings: { bindings: new ArrayIterator(joinBindings, { autoStart: false }), metadata }},
-    );
+    const keyVariables = metadata.variables
+      .map(({ variable }) => variable)
+      .filter(variable => variables.has(variable.value));
+    const keys = bindingsWithoutBlankNodes.map(binding => ActorRdfJoinMultiBindSource.getKey(binding, keyVariables));
+    if (keys.every(Boolean)) {
+      const bindingsByKey = new Map<string, RDF.Bindings[]>();
+      const keyBindings: RDF.Bindings[] = [];
+      for (const [ index, binding ] of bindingsWithoutBlankNodes.entries()) {
+        const bindingsOfKey = bindingsByKey.get(keys[index]!);
+        if (bindingsOfKey) {
+          bindingsOfKey.push(binding);
+        } else {
+          bindingsByKey.set(keys[index]!, [ binding ]);
+          keyBindings.push(binding
+            .filter((_, variable) => keyVariables.some(keyVariable => keyVariable.equals(variable))));
+        }
+      }
+      return target.sourceWrapper.source.queryBindings(target.operation, targetContext, {
+        joinBindings: {
+          bindings: new ArrayIterator(keyBindings, { autoStart: false }),
+          metadata: {
+            ...metadata,
+            variables: metadata.variables
+              .filter(({ variable }) => keyVariables.some(keyVariable => keyVariable.equals(variable))),
+          },
+        },
+      }).transform({
+        autoStart: false,
+        transform(result, done, push) {
+          for (const binding of bindingsByKey.get(ActorRdfJoinMultiBindSource.getKey(result, keyVariables)!) ?? []) {
+            push(binding.merge(result)!);
+          }
+          done();
+        },
+      });
+    }
+
+    const blankNodes = new Map<string, RDF.Term>();
+    const joinBindings = bindingsWithoutBlankNodes.map(binding => binding.map((term) => {
+      if (term.termType !== 'BlankNode') {
+        return term;
+      }
+      const iri = `${ActorRdfJoinMultiBindSource.BLANK_NODE_IRI_PREFIX}${blankNodes.size}`;
+      blankNodes.set(iri, term);
+      return dataFactory.namedNode(iri);
+    }));
+    const results = target.sourceWrapper.source.queryBindings(target.operation, targetContext, {
+      joinBindings: { bindings: new ArrayIterator(joinBindings, { autoStart: false }), metadata },
+    });
     if (blankNodes.size === 0) {
       return results;
     }
     return results.map(result => result
       .map(term => (term.termType === 'NamedNode' ? blankNodes.get(term.value) : undefined) ?? term));
+  }
+
+  /**
+   * Create a key from the values of the given variables.
+   * @param binding A binding.
+   * @param keyVariables The variables of the key.
+   * @return The key, or undefined if the binding does not bind all variables.
+   */
+  public static getKey(binding: RDF.Bindings, keyVariables: RDF.Variable[]): string | undefined {
+    const terms = keyVariables.map(variable => binding.get(variable));
+    if (terms.every(Boolean)) {
+      return JSON.stringify(terms.map(term => termToString(term)));
+    }
   }
 
   public async getOutput(
