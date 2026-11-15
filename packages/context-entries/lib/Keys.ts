@@ -109,6 +109,7 @@ export const KeysHttp = {
   httpRetryBodyMaxBytes: new ActionContextKey<number>('@comunica/bus-http:http-retry-body-max-bytes'),
   /**
    * An abort signal for aborting pending HTTP requests.
+   * Once it aborts, the query also stops reading from its sources.
    */
   httpAbortSignal: new ActionContextKey<AbortSignal>('@comunica/bus-http:http-abort-controller'),
   /**
