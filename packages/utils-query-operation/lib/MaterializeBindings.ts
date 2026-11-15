@@ -77,11 +77,11 @@ export function materializeOperation(
   return algebraUtils.mapOperation(operation, {
     [Algebra.Types.SERVICE]: {
       // Materialize the target of a SERVICE clause, which is not traversed by default.
-      transform: serviceOp => Object.assign(algebraFactory.createService(
+      transform: serviceOp => algebraUtils.copyMetadata(algebraFactory.createService(
         materializeOperation(serviceOp.input, bindings, algebraFactory, bindingsFactory, options),
         <RDF.Variable | RDF.NamedNode> materializeTerm(serviceOp.name, bindings),
         serviceOp.silent,
-      ), { metadata: serviceOp.metadata }),
+      ), serviceOp),
       preVisitor: () => ({ continue: false }),
     },
     [Algebra.Types.PATH]: {
@@ -89,32 +89,32 @@ export function materializeOperation(
       transform: pathOp =>
         // Materialize variables in a path expression.
         // The predicate expression will be recursed.
-        Object.assign(algebraFactory.createPath(
+        algebraUtils.copyMetadata(algebraFactory.createPath(
           materializeTerm(pathOp.subject, bindings),
           pathOp.predicate,
           materializeTerm(pathOp.object, bindings),
           materializeTerm(pathOp.graph, bindings),
-        ), { metadata: pathOp.metadata }),
+        ), pathOp),
     },
     [Algebra.Types.PATTERN]: {
       preVisitor: () => ({ continue: false }),
       transform: patternOp =>
         // Materialize variables in the quad pattern.
-        Object.assign(algebraFactory.createPattern(
+        algebraUtils.copyMetadata(algebraFactory.createPattern(
           materializeTerm(patternOp.subject, bindings),
           materializeTerm(patternOp.predicate, bindings),
           materializeTerm(patternOp.object, bindings),
           materializeTerm(patternOp.graph, bindings),
-        ), { metadata: patternOp.metadata }),
+        ), patternOp),
     },
     [Algebra.Types.JOIN]: {
       transform: (op, origOp) =>
       // Materialize join operation, and ensure metadata is taken into account.
       // Join entries with metadata should not be flattened, which is decided by the entries as they were
       // before materialization, since materializing an entry may drop its metadata.
-        Object.assign(
+        algebraUtils.copyMetadata(
           algebraFactory.createJoin(op.input, origOp.input.every(input => !input.metadata)),
-          { metadata: op.metadata },
+          op,
         ),
     },
     [Algebra.Types.EXTEND]: { transform: (extendOp) => {
@@ -159,9 +159,9 @@ export function materializeOperation(
         if (origFilterOp.expression.subType === 'existence') {
           // For existence expressions (EXISTS/NOT EXISTS), the filter input and expression are materialized
           // without adding VALUES clauses, since existence evaluation handles bindings directly.
-          return Object.assign(
+          return algebraUtils.copyMetadata(
             algebraFactory.createFilter(filterOp.input, filterOp.expression),
-            { metadata: filterOp.metadata },
+            filterOp,
           );
         }
 
@@ -184,9 +184,9 @@ export function materializeOperation(
           filterOp.input;
 
         // Keep metadata such as source annotations, as these would otherwise be lost for the input.
-        return Object.assign(
+        return algebraUtils.copyMetadata(
           algebraFactory.createFilter(subOperation, filterOp.expression),
-          { metadata: filterOp.metadata },
+          filterOp,
         );
       },
     },
