@@ -2634,6 +2634,146 @@ describe('QuerySourceSparql', () => {
     });
   });
 
+  describe('with a COUNT fallback', () => {
+    const pattern = AF.createPattern(iriS, DF.variable('p'), iriO);
+    let countFallback: { isActive: jest.Mock; activate: jest.Mock };
+
+    function createSource(mediator: any): QuerySourceSparql {
+      return new QuerySourceSparql(
+        url,
+        url,
+        ctx,
+        mediator,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        false,
+        0,
+        false,
+        {},
+        false,
+        countFallback,
+      );
+    }
+
+    async function getMetadata(stream: AsyncIterator<any>): Promise<any> {
+      return new Promise(resolve => stream.getProperty('metadata', resolve));
+    }
+
+    beforeEach(() => {
+      countFallback = { isActive: jest.fn(() => false), activate: jest.fn() };
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('should not send COUNT queries while it is active', async() => {
+      countFallback.isActive.mockReturnValue(true);
+      source = createSource(mediatorHttp);
+      await expect(getMetadata(source.queryBindings(pattern, ctx))).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: url },
+      });
+      expect(mediatorHttp.mediate.mock.calls.filter((call: any) => isCountQuery(call[0].init.body.toString())))
+        .toHaveLength(0);
+      expect(countFallback.isActive).toHaveBeenCalledWith(true);
+      expect(countFallback.activate).not.toHaveBeenCalled();
+    });
+
+    it('should still use cached COUNT results while it is active', async() => {
+      source = createSource(mediatorHttp);
+      await expect(getMetadata(source.queryBindings(pattern, ctx))).resolves.toMatchObject({
+        cardinality: { type: 'exact', value: 3 },
+      });
+      countFallback.isActive.mockReturnValue(true);
+      await expect(getMetadata(source.queryBindings(pattern, ctx))).resolves.toMatchObject({
+        cardinality: { type: 'exact', value: 3 },
+      });
+      expect(countFallback.activate).not.toHaveBeenCalled();
+    });
+
+    it('should be activated when a COUNT query times out', async() => {
+      jest.useFakeTimers();
+      source = createSource({ mediate: () => new Promise(() => {
+        // Never resolve, like a hanging count query
+      }) });
+      const metadata = getMetadata(source.queryBindings(pattern, ctx));
+      await jest.advanceTimersByTimeAsync(10);
+      await expect(metadata).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: url },
+      });
+      expect(countFallback.activate).toHaveBeenCalledTimes(1);
+      expect(countFallback.activate).toHaveBeenCalledWith(true);
+    });
+
+    it('should be activated for other operations when a COUNT query over another operation times out', async() => {
+      jest.useFakeTimers();
+      source = createSource({ mediate: () => new Promise(() => {
+        // Never resolve, like a hanging count query
+      }) });
+      const join = AF.createJoin([ pattern, AF.createPattern(DF.variable('p'), iriP, DF.variable('o')) ]);
+      const metadata = getMetadata(source.queryBindings(join, ctx));
+      await jest.advanceTimersByTimeAsync(10);
+      await expect(metadata).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: url },
+      });
+      expect(countFallback.isActive).toHaveBeenCalledWith(false);
+      expect(countFallback.activate).toHaveBeenCalledWith(false);
+    });
+
+    it('should not be activated when the COUNT query of an aborted query times out', async() => {
+      jest.useFakeTimers();
+      source = createSource({ mediate: () => new Promise(() => {
+        // Never resolve, like a hanging count query
+      }) });
+      const abortController = new AbortController();
+      abortController.abort();
+      const metadata = getMetadata(source
+        .queryBindings(pattern, ctx.set(KeysHttp.httpAbortSignal, abortController.signal)));
+      await jest.advanceTimersByTimeAsync(10);
+      await expect(metadata).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: url },
+      });
+      expect(countFallback.activate).not.toHaveBeenCalled();
+    });
+
+    it('should be activated when a COUNT request fails', async() => {
+      source = createSource({ mediate: async() => ({
+        headers: new Headers(),
+        body: Readable.from([ 'failure' ]),
+        ok: false,
+        status: 500,
+      }) });
+      await expect(getMetadata(source.queryBindings(pattern, ctx))).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: url },
+      });
+      expect(countFallback.activate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should be activated when a COUNT response fails', async() => {
+      source = createSource({ mediate: async() => ({
+        headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        body: new Readable({
+          read() {
+            this.destroy(new Error('failure'));
+          },
+        }),
+        ok: true,
+        status: 200,
+      }) });
+      await expect(getMetadata(source.queryBindings(pattern, ctx))).resolves.toMatchObject({
+        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: url },
+      });
+      expect(countFallback.activate).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('queryBoolean with batched ASK queries', () => {
     const patternA = AF.createPattern(iriS, DF.variable('p'), iriO);
     const patternB = AF.createPattern(DF.variable('s'), iriP, iriO);
