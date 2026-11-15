@@ -12,7 +12,7 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { MetadataValidationState } from '@comunica/utils-metadata';
+import { estimateCardinality, MetadataValidationState } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import {
@@ -93,14 +93,14 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
 
     const metadata = async(): Promise<MetadataBindings> => {
       const innerMetadata = await bindingsOne.metadata();
-      return {
+      return estimateCardinality({
         ...innerMetadata,
         cardinality: {
           ...innerMetadata.cardinality,
           // Add one to cardinality because we allow *ZERO* or more.
           value: innerMetadata.cardinality.value + 1,
         },
-      };
+      });
     };
 
     return {

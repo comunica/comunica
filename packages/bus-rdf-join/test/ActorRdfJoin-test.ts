@@ -138,6 +138,20 @@ IActorRdfJoinSelectivityOutput
     };
   });
 
+  describe('hasSharedVariable', () => {
+    const metadata = (...names: string[]): any => ({
+      variables: names.map(name => ({ variable: DF.variable(name), canBeUndef: false })),
+    });
+
+    it('should be false without shared variables', () => {
+      expect(ActorRdfJoin.hasSharedVariable([ metadata('a', 'b'), metadata('c'), metadata() ])).toBe(false);
+    });
+
+    it('should be true for a variable of two of the entries', () => {
+      expect(ActorRdfJoin.hasSharedVariable([ metadata('a'), metadata('b'), metadata('c', 'a') ])).toBe(true);
+    });
+  });
+
   describe('overlappingVariables', () => {
     it('should return an empty array if there is no overlap', () => {
       expect(ActorRdfJoin.overlappingVariables([
@@ -863,7 +877,7 @@ IActorRdfJoinSelectivityOutput
       });
     });
 
-    it('should combine exact cardinalities', async() => {
+    it('should combine exact cardinalities into an estimate, as the selectivity is estimated', async() => {
       await expect(instance.constructResultMetadata([], [
         {
           state: new MetadataValidationState(),
@@ -878,8 +892,44 @@ IActorRdfJoinSelectivityOutput
         },
       ], action.context, {})).resolves.toEqual({
         state: expect.any(MetadataValidationState),
-        cardinality: { type: 'exact', value: 20 * 0.8 },
+        cardinality: { type: 'estimate', value: 20 * 0.8 },
         variables: [],
+      });
+    });
+
+    it('should keep exact cardinalities of a cross product with a selectivity of 1', async() => {
+      (<any> instance).mediatorJoinSelectivity = { mediate: async() => ({ selectivity: 1 }) };
+      await expect(instance.constructResultMetadata([], [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 10 },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 2 },
+          variables: [{ variable: DF.variable('b'), canBeUndef: false }],
+        },
+      ], action.context, {})).resolves.toMatchObject({
+        cardinality: { type: 'exact', value: 20 },
+      });
+    });
+
+    it('should estimate cardinalities of entries with a shared variable with a selectivity of 1', async() => {
+      (<any> instance).mediatorJoinSelectivity = { mediate: async() => ({ selectivity: 1 }) };
+      await expect(instance.constructResultMetadata([], [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 10 },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 2 },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        },
+      ], action.context, {})).resolves.toMatchObject({
+        cardinality: { type: 'estimate' },
       });
     });
 

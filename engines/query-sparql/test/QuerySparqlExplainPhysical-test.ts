@@ -99,8 +99,8 @@ sources:
 
     it('explains a filter', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:age ?a FILTER(?a > 25) }`)).resolves
-        .toBe(`project (a,s) cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms
-  filter cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms
+        .toBe(`project (a,s) cardEst:~5 cardReal:3 timeSelf:Xms timeLife:Xms
+  filter cardEst:~5 cardReal:3 timeSelf:Xms timeLife:Xms
     pattern (?s http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:
@@ -136,8 +136,8 @@ sources:
 
     it('explains a distinct with order and limit', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT DISTINCT ?n WHERE { ?s foaf:name ?n } ORDER BY ?n LIMIT 3`)).resolves
-        .toBe(`slice cardEst:3 cardReal:3 timeSelf:Xms timeLife:Xms
-  distinct cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed
+        .toBe(`slice cardEst:~3 cardReal:3 timeSelf:Xms timeLife:Xms
+  distinct cardEst:~5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed
     project (n) cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed
       orderby cardEst:5 cardReal:3 timeSelf:Xms timeLife:Xms destroyed
         pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
@@ -158,11 +158,11 @@ sources:
     });
 
     it('explains a property path', async() => {
-      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:knows+ ?o }`)).resolves.toBe(`project (o,s) cardEst:5 cardReal:10 timeSelf:Xms timeLife:Xms
-  path cardEst:5 cardReal:10 timeSelf:Xms timeLife:Xms
-    distinct cardEst:5 cardReal:10 timeSelf:Xms timeLife:Xms
-      path cardEst:5 cardReal:13 timeSelf:Xms timeLife:Xms
-        distinct cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+      await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:knows+ ?o }`)).resolves.toBe(`project (o,s) cardEst:~5 cardReal:10 timeSelf:Xms timeLife:Xms
+  path cardEst:~5 cardReal:10 timeSelf:Xms timeLife:Xms
+    distinct cardEst:~5 cardReal:10 timeSelf:Xms timeLife:Xms
+      path cardEst:~5 cardReal:13 timeSelf:Xms timeLife:Xms
+        distinct cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
           path cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
             pattern (?s http://xmlns.com/foaf/0.1/knows ?o) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
         alp
@@ -175,9 +175,9 @@ sources:
 
     it('explains a minus', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT * WHERE { ?s foaf:name ?n MINUS { ?s foaf:knows ?f } }`)).resolves
-        .toBe(`project (n,s) cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms
-  minus cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms
-    join-minus(hash-def) cardEst:5 cardReal:1 timeSelf:Xms timeLife:Xms
+        .toBe(`project (n,s) cardEst:~5 cardReal:1 timeSelf:Xms timeLife:Xms
+  minus cardEst:~5 cardReal:1 timeSelf:Xms timeLife:Xms
+    join-minus(hash-def) cardEst:~5 cardReal:1 timeSelf:Xms timeLife:Xms
       pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
       pattern (?s http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
@@ -241,8 +241,8 @@ sources:
     it('explains a filter with exists', async() => {
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n FILTER EXISTS { ?s foaf:knows ?f } }`,
-      )).resolves.toBe(`project (n,s) cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
-  filter cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
+      )).resolves.toBe(`project (n,s) cardEst:~5 cardReal:4 timeSelf:Xms timeLife:Xms
+  filter cardEst:~5 cardReal:4 timeSelf:Xms timeLife:Xms
     pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
     exists
       pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
@@ -256,8 +256,8 @@ sources:
     it('explains a filter with two exists expressions', async() => {
       await expect(explainPhysical(
         `${PREFIXES}SELECT * WHERE { ?s foaf:name ?n FILTER(EXISTS { ?s foaf:knows ?f } && EXISTS { ?s foaf:age ?a }) }`,
-      )).resolves.toBe(`project (n,s) cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
-  filter cardEst:5 cardReal:4 timeSelf:Xms timeLife:Xms
+      )).resolves.toBe(`project (n,s) cardEst:~5 cardReal:4 timeSelf:Xms timeLife:Xms
+  filter cardEst:~5 cardReal:4 timeSelf:Xms timeLife:Xms
     pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
     exists
       pattern (http://example.org/alice http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
