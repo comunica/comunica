@@ -316,6 +316,19 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
         expect((<any> cachePolicy).cachePolicy).toBe('CACHEPOLICY');
       });
 
+      it('should not return a cache policy for a source that queries a service', async() => {
+        mediatorQuerySourceIdentifyHypermedia.mediate = async() => ({
+          source: <IQuerySource> <any> 'QUERYSOURCE',
+          queriesService: true,
+        });
+        const { source, cachePolicy } = await actor.run({
+          link: { url: 'cachepolicy' },
+          context: new ActionContext(),
+        });
+        expect(source).toBe('QUERYSOURCE');
+        expect(cachePolicy).toBeUndefined();
+      });
+
       it('should default sparqlServiceDescriptionTimeout to 3000 when undefined', async() => {
         const actorWithoutTimeout = new ActorQuerySourceDereferenceLinkHypermedia({
           name: 'actor',
