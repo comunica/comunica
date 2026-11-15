@@ -76,6 +76,26 @@ describe('IndexNestedLoopIterator', () => {
     expect(syncSource.queryBindings).not.toHaveBeenCalled();
   });
 
+  it('does not look up bindings that do not pass the filters of their depth', async() => {
+    const filters: ((bindings: Bindings) => boolean)[][] = [];
+    filters[1] = [ bindings => bindings.get('y')!.value !== 'ex:b' ];
+    const it = new IndexNestedLoopIterator(input(), [
+      lookup('?x', 'ex:p', '?y', syncSource),
+      lookup('?y', 'ex:q', '?z', syncSource),
+    ], AF, BF, filters);
+    await expect(it).toEqualBindingsStream([]);
+    // The binding with ex:b is not looked up further, and ex:c has no results
+    expect(syncSource.queryBindingsSynchronous).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not look up input bindings that do not pass the filters of the first depth', async() => {
+    const it = new IndexNestedLoopIterator(input(), [
+      lookup('?x', 'ex:p', '?y', syncSource),
+    ], AF, BF, [[ () => false ]]);
+    await expect(it).toEqualBindingsStream([]);
+    expect(syncSource.queryBindingsSynchronous).not.toHaveBeenCalled();
+  });
+
   it('binds the variables of a looked up pattern', async() => {
     const it = new IndexNestedLoopIterator(input(), [ lookup('?x', 'ex:p', '?y', syncSource) ], AF, BF);
     await it.toArray();

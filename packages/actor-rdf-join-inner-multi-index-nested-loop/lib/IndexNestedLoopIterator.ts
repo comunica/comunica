@@ -44,12 +44,14 @@ export class IndexNestedLoopIterator extends AsyncIterator<Bindings> {
    * @param lookups The operations to look up, in order.
    * @param algebraFactory The algebra factory.
    * @param bindingsFactory The bindings factory, which is only needed if a lookup is not a quad pattern.
+   * @param filters Per depth, filters that bindings with as many lookups must pass to be looked up further.
    */
   public constructor(
     private readonly input: BindingsStream,
     private readonly lookups: IIndexNestedLoopLookup[],
     private readonly algebraFactory: AlgebraFactory,
     private readonly bindingsFactory?: BindingsFactory,
+    private readonly filters: ((bindings: Bindings) => boolean)[][] = [],
   ) {
     super();
     input.on('error', error => this.destroy(error));
@@ -111,6 +113,10 @@ export class IndexNestedLoopIterator extends AsyncIterator<Bindings> {
    * @param bindings The bindings that the next operation must be bound to.
    */
   protected lookup(bindings: Bindings): void {
+    const filters = this.filters[this.levels.length];
+    if (filters && !filters.every(filter => filter(bindings))) {
+      return;
+    }
     const { operation, source, context, optional = false } = this.lookups[this.levels.length];
     const bound = this.bindOperation(operation, bindings);
     const results = source.queryBindingsSynchronous?.(bound, context);

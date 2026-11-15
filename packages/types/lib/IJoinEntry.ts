@@ -1,4 +1,5 @@
 import type { Algebra } from '@comunica/utils-algebra';
+import type * as RDF from '@rdfjs/types';
 import type { MetadataBindings } from './IMetadata';
 import type { IQueryOperationResultBindings } from './IQueryOperationResult';
 
@@ -33,6 +34,25 @@ export interface IJoinEntry {
  * A joinable entry with resolved metadata.
  */
 export type IJoinEntryWithMetadata = IJoinEntry & { metadata: MetadataBindings };
+
+/**
+ * A filter over the results of a join, which the join may already apply to intermediate results.
+ */
+export interface IJoinFilter {
+  /**
+   * The join operation of which the results are filtered.
+   */
+  join: Algebra.Operation;
+  /**
+   * The variables that the filter depends on.
+   */
+  variables: RDF.Variable[];
+  /**
+   * Check if bindings in which all variables of the filter are bound may pass it.
+   * Bindings for which this is false certainly do not pass it.
+   */
+  test: (bindings: RDF.Bindings) => boolean;
+}
 
 /**
  * Represents a logical join type.

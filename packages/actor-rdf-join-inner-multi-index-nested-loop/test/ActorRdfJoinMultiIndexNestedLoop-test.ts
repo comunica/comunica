@@ -1,12 +1,13 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type {
   IActionContext,
   IJoinEntry,
   IJoinEntryWithMetadata,
+  IJoinFilter,
   IQuerySourceWrapper,
   MetadataBindings,
 } from '@comunica/types';
@@ -159,6 +160,87 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         iterations: 2 + 2 * (1 + 1) + 2 * (1 + 1),
         cardinality: 2,
       });
+    });
+  });
+
+  describe('join filters', () => {
+    function filterOf(
+      entries: IJoinEntry[],
+      variables: string[],
+      test: (bindings: RDF.Bindings) => boolean = jest.fn(() => true),
+    ): IJoinFilter {
+      return {
+        join: AF.createJoin(entries.map(joinEntry => joinEntry.operation)),
+        variables: variables.map(name => DF.variable(name)),
+        test,
+      };
+    }
+
+    it('only apply to the join of which the entries are the inputs', () => {
+      const entries = reviewEntries();
+      const own = filterOf(entries, [ 'review' ]);
+      const subset = filterOf(entries.slice(1), [ 'review' ]);
+      const other = { ...filterOf(entries, [ 'review' ]), join: AF.createUnion(entries.map(e => e.operation)) };
+      const action: IActionRdfJoin = {
+        type: 'inner',
+        entries,
+        context: context.set(KeysQueryOperation.joinFilters, [ own, subset, other ]),
+      };
+      expect(ActorRdfJoinMultiIndexNestedLoop.getJoinFilters(action)).toEqual([ own ]);
+      expect(ActorRdfJoinMultiIndexNestedLoop.getJoinFilters({ type: 'inner', entries, context })).toEqual([]);
+    });
+
+    it('are applied at the first depth at which their variables are certainly bound', async() => {
+      const entries = reviewEntries();
+      const metadatas = await Promise.all(entries.map(joinEntry => joinEntry.output.metadata()));
+      // The name may be undefined, so a filter on it is left to the filter afterwards
+      metadatas[2] = { ...metadatas[2], variables: metadatas[2].variables
+        .map(variable => ({ ...variable, canBeUndef: variable.variable.value === 'name' })) };
+      const first = filterOf(entries, [ 'review' ]);
+      const second = filterOf(entries, [ 'reviewer' ]);
+      const all = filterOf(entries, [ 'name' ]);
+      const action: IActionRdfJoin = {
+        type: 'inner',
+        entries,
+        context: context.set(KeysQueryOperation.joinFilters, [ first, second, all ]),
+      };
+      const depths = ActorRdfJoinMultiIndexNestedLoop.getLookupFilters(action, metadatas, [ 1, 0, 2 ]);
+      expect(depths).toEqual([[ first.test ], [ second.test ]]);
+    });
+
+    it('make lookups after which filters apply come first', async() => {
+      const entries = await Promise.all([
+        entry(pattern('?a', 'ex:p', '?b'), metadata(10, [ 'a' ])),
+        entry(pattern('?a', 'ex:q', '?c'), metadata(10, [ 'a', 'c' ])),
+        entry(pattern('?a', 'ex:r', '?d'), metadata(10, [ 'a', 'd' ])),
+      ].map(async joinEntry => withMetadata(joinEntry, await joinEntry.output.metadata())));
+      expect(ActorRdfJoinMultiIndexNestedLoop.getLookupOrder(entries, 0, 1).order).toEqual([ 1, 2 ]);
+      const filter = filterOf(entries, [ 'd' ]);
+      const filtered = ActorRdfJoinMultiIndexNestedLoop.getLookupOrder(entries, 0, 1, [ filter ]);
+      expect(filtered.order).toEqual([ 2, 1 ]);
+      expect(filtered.iterations).toBeCloseTo(10 + 10 * (1 + (1 / 3)) + (10 / 3) * (1 + 1));
+      expect(filtered.cardinality).toBeCloseTo(10 / 3);
+      // Filters on the first entry reduce its bindings
+      expect(ActorRdfJoinMultiIndexNestedLoop.getLookupOrder(entries, 0, 1, [ filterOf(entries, [ 'a' ]) ]).cardinality)
+        .toBeCloseTo(10 / 3);
+    });
+
+    it('drop bindings before further lookups when joining', async() => {
+      const entries = reviewEntries();
+      const test = jest.fn((bindings: RDF.Bindings) => bindings.get('reviewer')!.value !== 'ex:person1');
+      const action: IActionRdfJoin = {
+        type: 'inner',
+        entries,
+        context: context.set(KeysQueryOperation.joinFilters, [ filterOf(entries, [ 'reviewer' ], test) ]),
+      };
+      const sideData = (await actor.test(action)).getSideData();
+      expect(sideData.first).toBe(2);
+      const queryBindingsSynchronous = jest.spyOn(<any> source.source, 'queryBindingsSynchronous');
+      const result = await actor.run(action, sideData);
+      await expect(result.bindingsStream).toEqualBindingsStream([]);
+      // The only name is of the reviewer that the filter rejects, before any lookup
+      expect(test).toHaveBeenCalledTimes(1);
+      expect(queryBindingsSynchronous).not.toHaveBeenCalled();
     });
   });
 

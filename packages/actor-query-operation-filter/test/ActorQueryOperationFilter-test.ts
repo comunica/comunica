@@ -1,15 +1,18 @@
 import {
   ActorFunctionFactoryExpressionConcat,
 } from '@comunica/actor-function-factory-expression-concat';
+import {
+  ActorFunctionFactoryExpressionLogicalAnd,
+} from '@comunica/actor-function-factory-expression-logical-and';
 import { ActorFunctionFactoryTermAddition } from '@comunica/actor-function-factory-term-addition';
 import { ActorFunctionFactoryTermEquality } from '@comunica/actor-function-factory-term-equality';
 import { ActorFunctionFactoryTermIri } from '@comunica/actor-function-factory-term-iri';
 import { ActorFunctionFactoryTermStr } from '@comunica/actor-function-factory-term-str';
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@comunica/types';
+import type { IQueryOperationResultBindings, Bindings, IActionContext, IJoinFilter } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -110,6 +113,7 @@ describe('ActorQueryOperationFilter', () => {
           args => new ActorFunctionFactoryTermStr(args),
           args => new ActorFunctionFactoryExpressionConcat(args),
           args => new ActorFunctionFactoryTermIri(args),
+          args => new ActorFunctionFactoryExpressionLogicalAnd(args),
         ], {}),
       });
 
@@ -232,6 +236,45 @@ describe('ActorQueryOperationFilter', () => {
       const op = { operation: AF.createFilter(AF.createBgp([]), parse('concat(?a + ?a)')), context };
       const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
       await expect(output.bindingsStream).toEqualBindingsStream([]);
+    });
+
+    it('should pass the conjuncts that can be evaluated synchronously to a join over its input', async() => {
+      const mediate = jest.spyOn(mediatorQueryOperation, 'mediate');
+      const join = AF.createJoin([ AF.createBgp([]) ]);
+      const op = { operation: AF.createFilter(join, parse('?a = "1" && concat(?a) = "1" && ?b = "2"')), context };
+      await actor.run(op, undefined);
+      const filters: IJoinFilter[] = (<any> mediate.mock.calls[0][0]).context.get(KeysQueryOperation.joinFilters);
+      expect(filters.map(filter => filter.join)).toEqual([ join, join ]);
+      expect(filters.map(filter => filter.variables)).toEqual([[ DF.variable('a') ], [ DF.variable('b') ]]);
+      expect(filters[0].test(BF.bindings([[ DF.variable('a'), DF.literal('1') ]]))).toBe(true);
+      expect(filters[0].test(BF.bindings([[ DF.variable('a'), DF.literal('2') ]]))).toBe(false);
+      // Errors are left to the filter afterwards
+      expect(filters[0].test(BF.bindings())).toBe(true);
+    });
+
+    it('should keep the join filters of filters around it', async() => {
+      const mediate = jest.spyOn(mediatorQueryOperation, 'mediate');
+      const outer = <IJoinFilter> <any> {};
+      const op = {
+        operation: AF.createFilter(AF.createJoin([ AF.createBgp([]) ]), parse('?a = "1"')),
+        context: context.set(KeysQueryOperation.joinFilters, [ outer ]),
+      };
+      await actor.run(op, undefined);
+      const filters: IJoinFilter[] = (<any> mediate.mock.calls[0][0]).context.get(KeysQueryOperation.joinFilters);
+      expect(filters).toHaveLength(2);
+      expect(filters[0]).toBe(outer);
+    });
+
+    it('should not pass join filters for inputs other than joins, or without synchronous conjuncts', async() => {
+      const mediate = jest.spyOn(mediatorQueryOperation, 'mediate');
+      await actor.run({ operation: AF.createFilter(AF.createBgp([]), parse('?a = "1"')), context }, undefined);
+      await actor.run({
+        operation: AF.createFilter(AF.createJoin([ AF.createBgp([]) ]), parse('concat(?a) = "1"')),
+        context,
+      }, undefined);
+      for (const call of mediate.mock.calls) {
+        expect((<any> call[0]).context.get(KeysQueryOperation.joinFilters)).toBeUndefined();
+      }
     });
 
     it('should emit an error for a hard erroring filter', async() => {

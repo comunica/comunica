@@ -1,13 +1,14 @@
 import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expression-evaluator-factory';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { Bindings, BindingsStream, IActionContext, IQueryOperationResult } from '@comunica/types';
-import { Algebra } from '@comunica/utils-algebra';
+import type { Bindings, BindingsStream, IActionContext, IJoinFilter, IQueryOperationResult } from '@comunica/types';
+import { Algebra, isKnownSubType } from '@comunica/utils-algebra';
 import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
-import { getSafeBindings, validateQueryOutput } from '@comunica/utils-query-operation';
+import { getExpressionVariables, getSafeBindings, validateQueryOutput } from '@comunica/utils-query-operation';
 
 /**
  * A comunica Filter Sparqlee Query Operation Actor.
@@ -26,7 +27,17 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
 
   public async runOperation(operation: Algebra.Filter, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
+    // Joins may already apply the parts of the filter that they can evaluate synchronously
+    let inputContext = context;
+    if (operation.input.type === Algebra.Types.JOIN) {
+      const filters = await this.getJoinFilters(operation, context);
+      if (filters.length > 0) {
+        inputContext = context
+          .set(KeysQueryOperation.joinFilters, [ ...context.get(KeysQueryOperation.joinFilters) ?? [], ...filters ]);
+      }
+    }
+
+    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context: inputContext });
     const output = getSafeBindings(outputRaw);
     validateQueryOutput(output, 'bindings');
 
@@ -81,6 +92,48 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
     // eslint-disable-next-line ts/no-misused-promises
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform, autoStart: false });
     return { type: 'bindings', bindingsStream, metadata: output.metadata };
+  }
+
+  /**
+   * Determine the filters that the join of the given filter operation may already apply,
+   * one for each conjunct of its expression that can be evaluated synchronously.
+   * A binding is only rejected early if a conjunct is false for it, as the whole expression is then false as well.
+   * @param operation A filter over a join.
+   * @param context The action context.
+   */
+  public async getJoinFilters(operation: Algebra.Filter, context: IActionContext): Promise<IJoinFilter[]> {
+    const conjuncts: Algebra.Expression[] = [];
+    const split = (expression: Algebra.Expression): void => {
+      if (isKnownSubType(expression, Algebra.ExpressionTypes.OPERATOR) && expression.operator === '&&') {
+        for (const arg of expression.args) {
+          split(arg);
+        }
+      } else {
+        conjuncts.push(expression);
+      }
+    };
+    split(operation.expression);
+
+    const filters: IJoinFilter[] = [];
+    for (const conjunct of conjuncts) {
+      const evaluator = await this.mediatorExpressionEvaluatorFactory.mediate({ algExpr: conjunct, context });
+      const { evaluateAsEBVSynchronously } = evaluator;
+      if (evaluateAsEBVSynchronously) {
+        filters.push({
+          join: operation.input,
+          variables: getExpressionVariables(conjunct),
+          test(bindings) {
+            // Errors are left to the filter afterwards
+            try {
+              return evaluateAsEBVSynchronously(bindings);
+            } catch {
+              return true;
+            }
+          },
+        });
+      }
+    }
+    return filters;
   }
 }
 
