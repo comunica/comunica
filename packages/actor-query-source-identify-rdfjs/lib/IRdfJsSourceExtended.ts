@@ -27,6 +27,11 @@ export interface IRdfJsSourceExtended extends RDF.Source {
      * If this is true, matchDistinctTerms and countDistinctTerms must be available.
      */
     indexDistinctTerms?: boolean;
+    /**
+     * If this is true, countDistinctTerms can cheaply count the distinct objects of a predicate in a graph,
+     * Sources that would need to iterate over all quads of the predicate should not set this.
+     */
+    indexDistinctObjectCounts?: boolean;
   };
 
   /**
