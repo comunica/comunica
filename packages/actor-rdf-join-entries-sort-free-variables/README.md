@@ -22,7 +22,7 @@ Entries are compared by, in order:
 5. The number of their patterns, as more patterns restrict the results further.
 6. Their cardinality, if it is known.
 
-It only applies to entries of which operations are assigned to sources, if a cardinality is unknown.
+It only applies to entries of which operations are assigned to multiple sources, if a cardinality is unknown.
 In that case, it wins over the cardinality-based sort, as that one places entries with an unknown cardinality last,
 however selective they are.
 
