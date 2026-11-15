@@ -1708,6 +1708,69 @@ describe('QuerySourceSparql', () => {
         });
     });
 
+    function createSourceWithMediator(thisMediator: any): QuerySourceSparql {
+      return new QuerySourceSparql(
+        url,
+        url,
+        ctx,
+        thisMediator,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        false,
+        false,
+        0,
+        false,
+        {},
+      );
+    }
+
+    it('should abort the request when its results are not read until the end', async() => {
+      let requestContext: IActionContext | undefined;
+      const body = new Readable({
+        read() {
+          // Never end, like a large result that is not read further
+        },
+      });
+      body.push('{ "head": { "vars": [ "p" ] }, "results": { "bindings": [ { "p": { "type": "uri", "value": "p1" } },');
+      source = createSourceWithMediator({
+        async mediate(action: any) {
+          requestContext = action.context;
+          // Like a real response, the body errors when the request is aborted
+          action.context.get(KeysHttp.httpAbortSignal)
+            .addEventListener('abort', () => body.destroy(new Error('aborted')));
+          return { headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }), body, ok: true };
+        },
+      });
+      const stream = source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), ctx);
+      await expect(new Promise(resolve => stream.once('data', resolve))).resolves.toBeDefined();
+      const signal = requestContext!.get(KeysHttp.httpAbortSignal)!;
+      expect(signal.aborted).toBeFalsy();
+
+      stream.destroy();
+      await new Promise(resolve => setImmediate(resolve));
+      expect(signal.aborted).toBeTruthy();
+    });
+
+    it('should not abort the request when its results are read until the end', async() => {
+      let requestContext: IActionContext | undefined;
+      source = createSourceWithMediator({
+        mediate(action: any) {
+          requestContext = action.context;
+          return mediatorHttp.mediate(action);
+        },
+      });
+      await expect(source.queryBindings(AF.createPattern(iriS, DF.variable('p'), iriO), ctx).toArray())
+        .resolves.toHaveLength(3);
+      await new Promise(resolve => setImmediate(resolve));
+      expect(requestContext!.get(KeysHttp.httpAbortSignal)!.aborted).toBeFalsy();
+    });
+
     it.each([
       [ 'without', false ],
       [ 'with', true ],
@@ -1869,7 +1932,7 @@ describe('QuerySourceSparql', () => {
         ]);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: ctx.set(KeysInitQuery.queryString, 'abc'),
+        context: contextWithAbortSignal(ctx.set(KeysInitQuery.queryString, 'abc')),
         init: {
           body: new URLSearchParams({ query: 'abc' }),
           headers: expect.anything(),
@@ -1890,7 +1953,7 @@ describe('QuerySourceSparql', () => {
       ]);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: ctx.set(KeysInitQuery.queryString, 'abc'),
+        context: contextWithAbortSignal(ctx.set(KeysInitQuery.queryString, 'abc')),
         init: {
           body: new URLSearchParams({ query: 'equivalent' }),
           headers: expect.anything(),
@@ -2614,7 +2677,7 @@ describe('QuerySourceSparql', () => {
       await expect(source.queryBindings(pattern, ctx)).toEqualBindingsStream([
         BF.fromRecord({ p: DF.literal('anonymous') }),
       ]);
-      expect(contexts).toEqual([ ctx ]);
+      expect(contexts).toEqual([ contextWithAbortSignal(ctx) ]);
     });
 
     it('should send quads requests with the context of the call, not of the source creation', async() => {
@@ -2668,7 +2731,11 @@ describe('QuerySourceSparql', () => {
         expect(source.queryBindings(pattern, ctxA)).toEqualBindingsStream([ BF.fromRecord({ p: DF.literal('A') }) ]),
         expect(source.queryBindings(pattern, ctxB)).toEqualBindingsStream([ BF.fromRecord({ p: DF.literal('B') }) ]),
       ]);
-      expect(contexts).toEqual([ ctxA, ctxB, ctxA ]);
+      expect(contexts).toEqual([
+        contextWithAbortSignal(ctxA),
+        contextWithAbortSignal(ctxB),
+        contextWithAbortSignal(ctxA),
+      ]);
       expect(mediatorHttpUser.mediate.mock.calls.map((call: any) => call[0].input))
         .toEqual([ url, url, `${url}backup` ]);
     });
