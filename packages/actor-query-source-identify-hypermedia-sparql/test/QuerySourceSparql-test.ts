@@ -558,6 +558,31 @@ describe('QuerySourceSparql', () => {
       ]);
     });
 
+    it('should share the SPARQL query parser of endpoint fetchers between sources', () => {
+      const otherSource = new QuerySourceSparql(
+        url,
+        url,
+        ctx,
+        mediatorHttp,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        true,
+        0,
+        false,
+        {},
+      );
+      expect((<any> otherSource).endpointFetcher.sparqlQueryParser)
+        .toBe((<any> source).endpointFetcher.sparqlQueryParser);
+      expect((<any> source).endpointFetcher.sparqlQueryParser).toBe(QuerySourceSparql.getSparqlQueryParser());
+    });
+
     it('should emit metadata when cardinalityCountQueries is false', async() => {
       source = new QuerySourceSparql(
         url,
