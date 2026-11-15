@@ -21,6 +21,11 @@ export class ExpressionFunctionSameTerm extends ExpressionFunctionBase {
         const [ left, right ] = await Promise.all([ leftExpr, rightExpr ]);
         return bool(left.toRDF(dataFactory).equals(right.toRDF(dataFactory)));
       },
+      applySynchronously: ({ args, mapping, exprEval }: IEvalContext): TermExpression => {
+        const dataFactory: ComunicaDataFactory = exprEval.context.getSafe(KeysInitQuery.dataFactory);
+        const [ left, right ] = args.map(arg => exprEval.evaluateExpressionSynchronously!(arg, mapping));
+        return bool(left.toRDF(dataFactory).equals(right.toRDF(dataFactory)));
+      },
     });
   }
 }

@@ -34,6 +34,20 @@ export class ExpressionFunctionLogicalOr extends ExpressionFunctionBase {
           return bool(true);
         }
       },
+      applySynchronously: ({ args, mapping, exprEval }: IEvalContext): TermExpression => {
+        const [ leftExpr, rightExpr ] = args;
+        try {
+          if (exprEval.evaluateExpressionSynchronously!(leftExpr, mapping).coerceEBV()) {
+            return bool(true);
+          }
+          return bool(exprEval.evaluateExpressionSynchronously!(rightExpr, mapping).coerceEBV());
+        } catch (error: unknown) {
+          if (!exprEval.evaluateExpressionSynchronously!(rightExpr, mapping).coerceEBV()) {
+            throw error;
+          }
+          return bool(true);
+        }
+      },
     });
   }
 }

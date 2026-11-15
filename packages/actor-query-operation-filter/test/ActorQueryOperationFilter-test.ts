@@ -206,6 +206,34 @@ describe('ActorQueryOperationFilter', () => {
       }
     });
 
+    it('should evaluate expressions of which all functions are synchronous without promises', async() => {
+      const expression = parse('?a = "2"');
+      const evaluator = await mediatorExpressionEvaluatorFactory.mediate({ algExpr: expression, context });
+      expect(evaluator.evaluateAsEBVSynchronously).toBeDefined();
+      const op = { operation: AF.createFilter(AF.createBgp([]), expression), context };
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+      ]);
+    });
+
+    it('should evaluate expressions with asynchronous functions with promises', async() => {
+      const expression = parse('concat(?a) = "2"');
+      const evaluator = await mediatorExpressionEvaluatorFactory.mediate({ algExpr: expression, context });
+      expect(evaluator.evaluateAsEBVSynchronously).toBeUndefined();
+      const op = { operation: AF.createFilter(AF.createBgp([]), expression), context };
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('a'), DF.literal('2') ]]),
+      ]);
+    });
+
+    it('should return an empty stream when expressions with asynchronous functions error', async() => {
+      const op = { operation: AF.createFilter(AF.createBgp([]), parse('concat(?a + ?a)')), context };
+      const output: IQueryOperationResultBindings = <any> await actor.run(op, undefined);
+      await expect(output.bindingsStream).toEqualBindingsStream([]);
+    });
+
     it('should emit an error for a hard erroring filter', async() => {
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       // eslint-disable-next-line jest/prefer-spy-on

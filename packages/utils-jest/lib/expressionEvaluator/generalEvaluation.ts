@@ -81,5 +81,32 @@ async function evaluateAsync(
   const evaluator = await (exprEvalFactory ?? getMockEEFactory())
     // eslint-disable-next-line unicorn/no-useless-undefined
     .run({ algExpr: parse(expr, toAlgebraParse), context: actionContext }, undefined);
-  return evaluator.evaluate(bindings);
+  // Expressions that can be evaluated synchronously must give the same result, or the same error
+  let synchronous: { term: RDF.Term } | { error: unknown } | undefined;
+  if (evaluator.evaluateSynchronously) {
+    try {
+      synchronous = { term: evaluator.evaluateSynchronously(bindings) };
+    } catch (error: unknown) {
+      synchronous = { error };
+    }
+  }
+  let term: RDF.Term;
+  try {
+    term = await evaluator.evaluate(bindings);
+  } catch (error: unknown) {
+    if (synchronous && 'term' in synchronous) {
+      throw new Error(`Synchronous evaluation gave ${synchronous.term.value}, but asynchronous evaluation failed: ${(<Error> error).message}`);
+    }
+    if (synchronous && (<Error> synchronous.error).message !== (<Error> error).message) {
+      throw new Error(`Synchronous evaluation failed with ${(<Error> synchronous.error).message}, but asynchronous evaluation with ${(<Error> error).message}`);
+    }
+    throw error;
+  }
+  if (synchronous && 'error' in synchronous) {
+    throw new Error(`Synchronous evaluation failed with ${(<Error> synchronous.error).message}, but asynchronous evaluation gave ${term.value}`);
+  }
+  if (synchronous && !synchronous.term.equals(term)) {
+    throw new Error(`Synchronous evaluation gave ${synchronous.term.value}, but asynchronous evaluation ${term.value}`);
+  }
+  return term;
 }

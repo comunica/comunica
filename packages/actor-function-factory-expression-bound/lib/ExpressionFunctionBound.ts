@@ -18,14 +18,16 @@ export class ExpressionFunctionBound extends ExpressionFunctionBase {
     super({
       arity: 1,
       operator: SparqlOperator.BOUND,
-      apply: async({ args, mapping, exprEval }: IEvalContext): Promise<TermExpression> => {
-        const variable = <VariableExpression> args[0];
-        if (variable.expressionType !== ExpressionType.Variable) {
-          throw new InvalidArgumentTypes(args, SparqlOperator.BOUND);
-        }
-        const val = mapping.has(expressionToVar(exprEval.context.getSafe(KeysInitQuery.dataFactory), variable));
-        return bool(val);
-      },
+      apply: async(context: IEvalContext): Promise<TermExpression> => ExpressionFunctionBound.bound(context),
+      applySynchronously: ExpressionFunctionBound.bound,
     });
+  }
+
+  private static bound({ args, mapping, exprEval }: IEvalContext): TermExpression {
+    const variable = <VariableExpression> args[0];
+    if (variable.expressionType !== ExpressionType.Variable) {
+      throw new InvalidArgumentTypes(args, SparqlOperator.BOUND);
+    }
+    return bool(mapping.has(expressionToVar(exprEval.context.getSafe(KeysInitQuery.dataFactory), variable)));
   }
 }
