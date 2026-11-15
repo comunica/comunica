@@ -45,6 +45,18 @@ describe('XmlSerializer', () => {
 `);
   });
 
+  it('should replace characters that XML 1.0 does not allow', () => {
+    data.push(XmlSerializer.header);
+    data.push(serializer.serializeNode({
+      name: 'bar',
+      attributes: { baz: 'a\u0003b' },
+      children: 'a\u0000\u0008\u000B\u000C\u0019\uFFFE\uFFFF\uDFFF\uD800b\t\n\r\uD83D\uDE00\u0080&',
+    }));
+    expect(data.join('')).toBe(`<?xml version="1.0" encoding="UTF-8"?>
+<bar baz="a\uFFFDb">a\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFD\uFFFDb\t\n\r\uD83D\uDE00\u0080&amp;</bar>
+`);
+  });
+
   it('should escape attributes', () => {
     data.push(XmlSerializer.header);
     data.push(serializer.serializeNode({ name: 'bar', attributes: { baz: '\'&<>"' }}));
