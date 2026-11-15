@@ -1,6 +1,6 @@
 import type { Bindings, BindingsStream, IActionContext, IQuerySource } from '@comunica/types';
 import type { AlgebraFactory } from '@comunica/utils-algebra';
-import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
+import { Algebra, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { materializeOperation, materializeTerm } from '@comunica/utils-query-operation';
 import { AsyncIterator } from 'asynciterator';
@@ -140,12 +140,12 @@ export class IndexNestedLoopIterator extends AsyncIterator<Bindings> {
   protected bindOperation(operation: Algebra.Operation, bindings: Bindings): Algebra.Operation {
     // Patterns are bound directly, as they are the most common lookups.
     if (isKnownOperation(operation, Algebra.Types.PATTERN)) {
-      return Object.assign(this.algebraFactory.createPattern(
+      return algebraUtils.copyMetadata(this.algebraFactory.createPattern(
         materializeTerm(operation.subject, bindings),
         materializeTerm(operation.predicate, bindings),
         materializeTerm(operation.object, bindings),
         materializeTerm(operation.graph, bindings),
-      ), { metadata: operation.metadata });
+      ), operation);
     }
     return materializeOperation(operation, bindings, this.algebraFactory, this.bindingsFactory!);
   }
