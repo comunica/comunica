@@ -15,6 +15,7 @@ import type {
 import { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getGroupOutputCardinality, getSafeBindings } from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { GroupsState } from './GroupsState';
 
@@ -33,6 +34,18 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
   public async testOperation(): Promise<TestResult<IActorTest>> {
     return passTestVoid();
+  }
+
+  /**
+   * Check if the given group operation only counts all bindings of its input, without grouping.
+   * @param operation A group operation.
+   */
+  public static isCountAll(operation: Algebra.Group): boolean {
+    return operation.variables.length === 0 &&
+      operation.aggregates.length === 1 &&
+      operation.aggregates[0].aggregator === 'count' &&
+      !operation.aggregates[0].distinct &&
+      operation.aggregates[0].expression.subType === 'wildcard';
   }
 
   public async runOperation(operation: Algebra.Group, context: IActionContext):
@@ -54,7 +67,32 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       ...aggregates.map(agg => agg.variable),
     ].map(variable => ({ variable, canBeUndef: false }));
 
-    const variablesInner = (await output.metadata()).variables.map(v => v.variable);
+    const metadataInner = await output.metadata();
+    const variablesInner = metadataInner.variables.map(v => v.variable);
+
+    // A count of all bindings without grouping is the cardinality of the input, if that is exact,
+    // so the input does not have to be consumed, as for patterns over an in-memory store.
+    if (ActorQueryOperationGroup.isCountAll(operation) && metadataInner.cardinality.type === 'exact') {
+      output.bindingsStream.destroy();
+      const count = dataFactory.literal(
+        String(metadataInner.cardinality.value),
+        dataFactory.namedNode('http://www.w3.org/2001/XMLSchema#integer'),
+      );
+      return {
+        type: 'bindings',
+        bindingsStream: new ArrayIterator<RDF.Bindings>(
+          [ bindingsFactory.bindings([[ aggregates[0].variable, count ]]) ],
+          { autoStart: false },
+        ),
+        metadata: async() => ({
+          ...metadataInner,
+          cardinality: { type: 'exact', value: 1 },
+          variables,
+          termOrder: undefined,
+          canSeek: undefined,
+        }),
+      };
+    }
 
     // Wrap a new promise inside an iterator that completes when the stream has ended or when an error occurs
     const bindingsStream = new TransformIterator(() => new Promise<BindingsStream>((resolve, reject) => {
