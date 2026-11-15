@@ -336,12 +336,14 @@ describe('ActorQueryOperationGroup', () => {
         BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
         BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
       ];
+      const inputOp: any = { type: Algebra.Types.PATTERN };
 
-      it('should use an exact cardinality of the input without consuming it', async() => {
+      it('should use an exact cardinality of a pattern without consuming it', async() => {
         const { actor, op, mediatorQueryOperation } = constructCase({
           inputBindings,
           inputVariables: [ 'x' ],
           aggregates: [ countAll ],
+          inputOp,
         });
         const mediate = mediatorQueryOperation.mediate;
         let inputStream: any;
@@ -364,17 +366,38 @@ describe('ActorQueryOperationGroup', () => {
         });
       });
 
-      it('should count the bindings of the input for an estimated cardinality', async() => {
+      it('should count the bindings of a pattern for an estimated cardinality', async() => {
         const { actor, op, mediatorQueryOperation } = constructCase({
           inputBindings,
           inputVariables: [ 'x' ],
           aggregates: [ countAll ],
+          inputOp,
         });
         const mediate = mediatorQueryOperation.mediate;
         mediatorQueryOperation.mediate = async(arg: any) => {
           const output = await mediate(arg);
           const metadata = await output.metadata();
           return { ...output, metadata: async() => ({ ...metadata, cardinality: { type: 'estimate', value: 10 }}) };
+        };
+        const output = <any> await actor.run(op, undefined);
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('c'), termInt('3') ]]),
+        ]);
+      });
+
+      it('should count the bindings of other operations than patterns for an exact cardinality', async() => {
+        // Joins and filters may report an exact cardinality that is not their own
+        const { actor, op, mediatorQueryOperation } = constructCase({
+          inputBindings,
+          inputVariables: [ 'x' ],
+          aggregates: [ countAll ],
+          inputOp: { type: Algebra.Types.JOIN },
+        });
+        const mediate = mediatorQueryOperation.mediate;
+        mediatorQueryOperation.mediate = async(arg: any) => {
+          const output = await mediate(arg);
+          const metadata = await output.metadata();
+          return { ...output, metadata: async() => ({ ...metadata, cardinality: { type: 'exact', value: 10 }}) };
         };
         const output = <any> await actor.run(op, undefined);
         await expect(output.bindingsStream).toEqualBindingsStream([
