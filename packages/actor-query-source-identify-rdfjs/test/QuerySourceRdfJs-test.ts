@@ -18,12 +18,6 @@ const DF = new DataFactory();
 const AF = new AlgebraFactory();
 const BF = new BindingsFactory(DF);
 
-// RdfStore indexes the distinct objects per predicate
-function withDistinctObjectCounts(store: RdfStore): RdfStore {
-  (<any> store.features).indexDistinctObjectCounts = true;
-  return store;
-}
-
 describe('QuerySourceRdfJs', () => {
   let ctx: IActionContext;
 
@@ -31,7 +25,7 @@ describe('QuerySourceRdfJs', () => {
   let source: QuerySourceRdfJs;
   beforeEach(() => {
     ctx = new ActionContext({});
-    store = withDistinctObjectCounts(RdfStore.createDefault(true));
+    store = RdfStore.createDefault(true);
     source = new QuerySourceRdfJs(store, DF, BF);
   });
 
@@ -160,6 +154,8 @@ describe('QuerySourceRdfJs', () => {
 
     it('should not count distinct values for sources that can not count distinct objects cheaply', async() => {
       store = RdfStore.createDefault(true);
+      // As a source that can count distinct terms, but does not declare that this is cheap
+      store.features.indexDistinctObjectCounts = false;
       const countDistinctTerms = jest.spyOn(store, 'countDistinctTerms');
       source = new QuerySourceRdfJs(store, DF, BF);
       store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
@@ -761,7 +757,7 @@ describe('QuerySourceRdfJs', () => {
     describe('for quoted triples', () => {
       describe('with a store supporting quoted triple filtering', () => {
         beforeEach(() => {
-          store = withDistinctObjectCounts(RdfStore.createDefault());
+          store = RdfStore.createDefault();
           source = new QuerySourceRdfJs(store, DF, BF);
         });
 
