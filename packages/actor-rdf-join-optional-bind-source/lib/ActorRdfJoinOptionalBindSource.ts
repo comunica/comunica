@@ -66,13 +66,19 @@ export class ActorRdfJoinOptionalBindSource extends ActorRdfJoin {
       this.blockSize,
       { autoStart: false },
     );
-    const joinChunk = (chunk: AsyncIterator<RDF.Bindings>): AsyncIterator<RDF.Bindings> =>
-      new TransformIterator(async() => new ArrayIterator(
-        await ActorRdfJoinOptionalBindSource
-          .joinBlock(sourceWrapper, operation, variables, await chunk.toArray(), metadata, context, dataFactory),
+    // A block is joined as soon as it is read, so that the blocks in the buffer are joined in parallel
+    const joinChunk = (chunk: AsyncIterator<RDF.Bindings>): AsyncIterator<RDF.Bindings> => {
+      const results = chunk.toArray().then(bindings => ActorRdfJoinOptionalBindSource
+        .joinBlock(sourceWrapper, operation, variables, bindings, metadata, context, dataFactory));
+      results.catch(() => {
+        // Errors are emitted by the iterator once it is read
+      });
+      return new TransformIterator(
+        async() => new ArrayIterator(await results, { autoStart: false }),
         { autoStart: false },
-      ), { autoStart: false });
-    // Blocks are joined as results are needed, so the left stream is not read ahead, e.g., for a LIMIT
+      );
+    };
+    // Blocks are only read as results are needed, so the left stream is not read far ahead, e.g., for a LIMIT
     const bindingsStream = new MultiTransformIterator(chunks, { autoStart: false, multiTransform: joinChunk });
 
     return {
@@ -194,6 +200,13 @@ export class ActorRdfJoinOptionalBindSource extends ActorRdfJoin {
     }
     if (!ActorRdfJoinMultiBind.canBindWithOperation(operation, inScopeVariables(action.entries[0].operation))) {
       return failTest(`Actor ${this.name} can not bind on Extend, Group, or conflicting LeftJoin/Minus operations`);
+    }
+    // The source evaluates the expression before joining with the left bindings, so it must not use their variables
+    if (action.expression) {
+      const expressionVariables = ActorRdfJoinOptionalBindSource.getVariableNames(action.expression);
+      if (metadatas[0].variables.some(({ variable }) => expressionVariables.has(variable.value))) {
+        return failTest(`Actor ${this.name} can not bind with an expression over variables of the left entry`);
+      }
     }
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
