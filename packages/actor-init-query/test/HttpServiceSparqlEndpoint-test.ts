@@ -3183,6 +3183,28 @@ INSERT DATA {
         expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
       });
 
+      it('should not call writeHtmlView when RDF is preferred over text/html', async() => {
+        request.headers.accept = 'application/n-quads,text/turtle;q=0.6,text/html;q=0.2';
+        const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
+        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+
+        await instance.writeQueryResult(
+          await new QueryEngineFactoryBase().create(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          'application/n-quads',
+          false,
+          true,
+          0,
+        );
+
+        expect(spyWriteHtmlView).toHaveBeenCalledTimes(0);
+        expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
+      });
+
       it('should not call writeHtmlView when query is provided even with text/html Accept header', async() => {
         const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
 
@@ -3200,6 +3222,40 @@ INSERT DATA {
         );
 
         expect(spyWriteHtmlView).toHaveBeenCalledTimes(0);
+      });
+    });
+
+    describe('prefersHtml', () => {
+      function prefersHtml(accept: string | undefined, mediaType?: string): boolean {
+        return HttpServiceSparqlEndpoint.prefersHtml(<any> { headers: { accept }}, mediaType);
+      }
+
+      it('should be true for browsers', () => {
+        expect(prefersHtml('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'application/xml'))
+          .toBe(true);
+      });
+
+      it('should be true for text/html or text/* without another media type', () => {
+        expect(prefersHtml('text/html')).toBe(true);
+        expect(prefersHtml('text/*')).toBe(true);
+      });
+
+      it('should be true when text/html is preferred as much as the other media type', () => {
+        expect(prefersHtml('text/html,text/turtle', 'text/turtle')).toBe(true);
+      });
+
+      it('should be false when another media type is preferred over text/html', () => {
+        expect(prefersHtml('application/n-quads,text/html;q=0.2', 'application/n-quads')).toBe(false);
+      });
+
+      it('should be false without an explicit text/html', () => {
+        expect(prefersHtml(undefined)).toBe(false);
+        expect(prefersHtml('*/*')).toBe(false);
+        expect(prefersHtml('text/turtle', 'text/turtle')).toBe(false);
+      });
+
+      it('should be false when text/html is not acceptable', () => {
+        expect(prefersHtml('text/html;q=0')).toBe(false);
       });
     });
 
