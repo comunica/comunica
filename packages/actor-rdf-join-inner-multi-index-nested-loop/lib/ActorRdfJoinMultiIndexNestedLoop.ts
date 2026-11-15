@@ -6,18 +6,21 @@ import type {
   IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
 import type {
+  Bindings,
   ComunicaDataFactory,
   IActionContext,
   IJoinEntry,
   IJoinEntryWithMetadata,
+  IJoinFilter,
   IQuerySourceWrapper,
+  MetadataBindings,
 } from '@comunica/types';
-import { AlgebraFactory } from '@comunica/utils-algebra';
+import { Algebra, AlgebraFactory, isKnownOperation } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { doesShapeAcceptOperation, getOperationSource, getSourceSelectorShape } from '@comunica/utils-query-operation';
 import type { IIndexNestedLoopLookup } from './IndexNestedLoopIterator';
@@ -31,6 +34,10 @@ import { IndexNestedLoopIterator } from './IndexNestedLoopIterator';
  * internally.
  */
 export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoinMultiIndexNestedLoopTestSideData> {
+  /**
+   * The share of bindings that is assumed to pass a filter.
+   */
+  public static readonly FILTER_SELECTIVITY = 1 / 3;
   public readonly lookupCost: number;
   public readonly mediatorMergeBindingsContext: MediatorMergeBindingsContext;
 
@@ -81,6 +88,7 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
           lookups,
           algebraFactory,
           bindingsFactory,
+          ActorRdfJoinMultiIndexNestedLoop.getLookupFilters(action, sideData.metadatas, [ first, ...order ]),
         ),
         metadata: async() => {
           const metadata = await this.constructResultMetadata(action.entries, sideData.metadatas, action.context, {
@@ -97,6 +105,33 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
         lookupOrder: order,
       },
     };
+  }
+
+  /**
+   * Determine the filters in the context that apply to the results of this join, and the depth of lookups at which
+   * they can already be applied, which is the first at which all of their variables are certainly bound.
+   * Filters that need all entries are left to the filter afterwards.
+   * @param action The join action.
+   * @param metadatas The metadata of the join entries.
+   * @param steps The indexes of the first entry and of the entries that are looked up, in order.
+   * @return Per depth, the filters to apply to bindings before the lookup at that depth.
+   */
+  public static getLookupFilters(
+    action: IActionRdfJoin,
+    metadatas: MetadataBindings[],
+    steps: number[],
+  ): ((bindings: Bindings) => boolean)[][] {
+    let pending = ActorRdfJoinMultiIndexNestedLoop.getJoinFilters(action);
+    const depths: ((bindings: Bindings) => boolean)[][] = [];
+    const certain = new Set<string>();
+    for (const [ depth, index ] of steps.slice(0, -1).entries()) {
+      const remaining = ActorRdfJoinMultiIndexNestedLoop.bindCertainly(certain, metadatas[index], pending);
+      if (remaining.length < pending.length) {
+        depths[depth] = pending.filter(filter => !remaining.includes(filter)).map(filter => filter.test);
+        pending = remaining;
+      }
+    }
+    return depths;
   }
 
   /**
@@ -141,17 +176,25 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
     entries: IJoinEntryWithMetadata[],
     first: number,
     lookupCost: number,
+    filters: IJoinFilter[] = [],
   ): { order: number[]; iterations: number; cardinality: number } {
     const bound = new Set(entries[first].metadata.variables.map(variable => variable.variable.value));
+    const certain = new Set<string>();
+    let pending = ActorRdfJoinMultiIndexNestedLoop.bindCertainly(certain, entries[first].metadata, filters);
     const todo = entries.map((_, i) => i).filter(i => i !== first);
     const order: number[] = [];
-    let rows = entries[first].metadata.cardinality.value;
+    let rows = entries[first].metadata.cardinality.value *
+      (ActorRdfJoinMultiIndexNestedLoop.FILTER_SELECTIVITY ** (filters.length - pending.length));
     let iterations = rows;
     while (todo.length > 0) {
       let best = 0;
       let bestFanout = Number.POSITIVE_INFINITY;
       for (const [ i, index ] of todo.entries()) {
-        const fanout = ActorRdfJoinMultiIndexNestedLoop.estimateFanout(entries[index], bound);
+        // Filters that become applicable after a lookup reduce its results
+        const applicable = pending.filter(filter => filter.variables.every(variable => certain.has(variable.value) ||
+          entries[index].metadata.variables.some(v => !v.canBeUndef && v.variable.equals(variable)))).length;
+        const fanout = ActorRdfJoinMultiIndexNestedLoop.estimateFanout(entries[index], bound) *
+          (ActorRdfJoinMultiIndexNestedLoop.FILTER_SELECTIVITY ** applicable);
         if (fanout < bestFanout) {
           best = i;
           bestFanout = fanout;
@@ -164,8 +207,35 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       for (const variable of entries[index].metadata.variables) {
         bound.add(variable.variable.value);
       }
+      pending = ActorRdfJoinMultiIndexNestedLoop.bindCertainly(certain, entries[index].metadata, pending);
     }
     return { order, iterations, cardinality: rows };
+  }
+
+  /**
+   * Register the variables that an entry certainly binds, and determine the filters that still need others.
+   * @param certain The variables that are certainly bound so far.
+   * @param metadata The metadata of the entry.
+   * @param filters The filters that still need other variables.
+   */
+  public static bindCertainly(certain: Set<string>, metadata: MetadataBindings, filters: IJoinFilter[]): IJoinFilter[] {
+    for (const variable of metadata.variables) {
+      if (!variable.canBeUndef) {
+        certain.add(variable.variable.value);
+      }
+    }
+    return filters.filter(filter => !filter.variables.every(variable => certain.has(variable.value)));
+  }
+
+  /**
+   * Determine the filters in the context that apply to the results of the given join.
+   * @param action The join action.
+   */
+  public static getJoinFilters(action: IActionRdfJoin): IJoinFilter[] {
+    return (action.context.get(KeysQueryOperation.joinFilters) ?? [])
+      .filter(({ join }) => isKnownOperation(join, Algebra.Types.JOIN) &&
+        join.input.length === action.entries.length &&
+        action.entries.every(entry => join.input.includes(entry.operation)));
   }
 
   protected async getJoinCoefficients(
@@ -185,10 +255,11 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       return failTest(`Actor ${this.name} requires all entries but one to be operations over sources that support synchronous lookups`);
     }
 
-    // Pick the first entry that leads to the cheapest order.
+    // Pick the first entry that leads to the cheapest order, preferring lookups after which filters apply.
+    const filters = ActorRdfJoinMultiIndexNestedLoop.getJoinFilters(action);
     let best: { first: number; order: number[]; iterations: number; cardinality: number } | undefined;
     for (const first of firstCandidates) {
-      const lookupOrder = ActorRdfJoinMultiIndexNestedLoop.getLookupOrder(entries, first, this.lookupCost);
+      const lookupOrder = ActorRdfJoinMultiIndexNestedLoop.getLookupOrder(entries, first, this.lookupCost, filters);
       if (!best || lookupOrder.iterations < best.iterations) {
         best = { first, ...lookupOrder };
       }

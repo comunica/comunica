@@ -7,6 +7,7 @@ import type {
   IActionContext,
   ICliArgsHandler,
   IDataDestination,
+  IJoinFilter,
   IPhysicalQueryPlanLogger,
   IPhysicalQueryPlanNode,
   IProxyHandler,
@@ -425,6 +426,11 @@ export const KeysQueryOperation = {
    * An indicator that the stream will be limited to the given number of elements afterwards.
    */
   limitIndicator: new ActionContextKey<number>('@comunica/bus-query-operation:limitIndicator'),
+  /**
+   * Filters over the results of joins, which these joins may already apply to their intermediate results.
+   * The filters are applied to the results of the joins afterwards in any case.
+   */
+  joinFilters: new ActionContextKey<IJoinFilter[]>('@comunica/bus-query-operation:joinFilters'),
   /**
    * If the default graph should also contain the union of all named graphs.
    */
