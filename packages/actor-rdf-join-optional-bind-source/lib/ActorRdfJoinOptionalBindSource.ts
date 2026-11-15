@@ -66,13 +66,19 @@ export class ActorRdfJoinOptionalBindSource extends ActorRdfJoin {
       this.blockSize,
       { autoStart: false },
     );
-    const joinChunk = (chunk: AsyncIterator<RDF.Bindings>): AsyncIterator<RDF.Bindings> =>
-      new TransformIterator(async() => new ArrayIterator(
-        await ActorRdfJoinOptionalBindSource
-          .joinBlock(sourceWrapper, operation, variables, await chunk.toArray(), metadata, context, dataFactory),
+    // A block is joined as soon as it is read, so that the blocks in the buffer are joined in parallel
+    const joinChunk = (chunk: AsyncIterator<RDF.Bindings>): AsyncIterator<RDF.Bindings> => {
+      const results = chunk.toArray().then(bindings => ActorRdfJoinOptionalBindSource
+        .joinBlock(sourceWrapper, operation, variables, bindings, metadata, context, dataFactory));
+      results.catch(() => {
+        // Errors are emitted by the iterator once it is read
+      });
+      return new TransformIterator(
+        async() => new ArrayIterator(await results, { autoStart: false }),
         { autoStart: false },
-      ), { autoStart: false });
-    // Blocks are joined as results are needed, so the left stream is not read ahead, e.g., for a LIMIT
+      );
+    };
+    // Blocks are only read as results are needed, so the left stream is not read far ahead, e.g., for a LIMIT
     const bindingsStream = new MultiTransformIterator(chunks, { autoStart: false, multiTransform: joinChunk });
 
     return {
