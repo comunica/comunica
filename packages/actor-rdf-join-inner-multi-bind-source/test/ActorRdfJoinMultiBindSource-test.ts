@@ -712,7 +712,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
         };
       });
 
-      it('skips bindings with blank nodes for variables of the operation, and passes others as IRIs', async() => {
+      it('skips bindings with blank nodes for variables of the operation, and only passes these variables', async() => {
         const bindings = [
           BF.bindings([[ DF.variable('a'), DF.blankNode('a') ]]),
           BF.bindings([
@@ -721,7 +721,12 @@ describe('ActorRdfJoinMultiBindSource', () => {
           ]),
           BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a2') ]]),
         ];
-        await expect(actor.queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadata, context, DF))
+        const metadataAx: any = { variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]};
+        await expect(actor
+          .queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadataAx, context, DF))
           .toEqualBindingsStream([
             BF.bindings([
               [ DF.variable('a'), DF.namedNode('ex:a1') ],
@@ -733,10 +738,106 @@ describe('ActorRdfJoinMultiBindSource', () => {
               [ DF.variable('c'), DF.literal('c') ],
             ]),
           ]);
-        expect(calls).toHaveLength(1);
-        expect(calls[0]).toHaveLength(2);
-        expect(calls[0][0].get(DF.variable('x')))
-          .toEqual(DF.namedNode(`${ActorRdfJoinMultiBindSource.BLANK_NODE_IRI_PREFIX}0`));
+        expect(calls).toEqual([[
+          BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a2') ]]),
+        ]]);
+        expect(sourceRecording.source.queryBindings).toHaveBeenCalledWith(operation, context, {
+          joinBindings: {
+            bindings: expect.anything(),
+            metadata: { variables: [{ variable: DF.variable('a'), canBeUndef: false }]},
+          },
+        });
+      });
+
+      it('passes the values of the variables of the operation once', async() => {
+        const bindings = [
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a1') ],
+            [ DF.variable('x'), DF.namedNode('ex:x1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a1') ],
+            [ DF.variable('x'), DF.namedNode('ex:x2') ],
+          ]),
+        ];
+        const metadataAx: any = { variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]};
+        await expect(actor
+          .queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadataAx, context, DF))
+          .toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a1') ],
+              [ DF.variable('x'), DF.namedNode('ex:x1') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a1') ],
+              [ DF.variable('x'), DF.namedNode('ex:x2') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+          ]);
+        expect(calls).toEqual([[ BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]) ]]);
+      });
+
+      it('ignores results for values that were not passed', async() => {
+        sourceRecording = <IQuerySourceWrapper> <any> {
+          source: {
+            queryBindings: jest.fn(() => new ArrayIterator([
+              BF.bindings([[ DF.variable('a'), DF.namedNode('ex:other') ], [ DF.variable('c'), DF.literal('c') ]]),
+            ], { autoStart: false })),
+          },
+        };
+        const bindings = [ BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]) ];
+        const metadataA: any = { variables: [{ variable: DF.variable('a'), canBeUndef: false }]};
+        await expect(actor.queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadataA, context, DF))
+          .toEqualBindingsStream([]);
+      });
+
+      it('passes all bindings as a whole if one lacks a variable of the operation, blank nodes as IRIs', async() => {
+        const bindings = [
+          BF.bindings([[ DF.variable('x'), DF.blankNode('x') ]]),
+          BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+        ];
+        const metadataAx: any = { variables: [
+          { variable: DF.variable('a'), canBeUndef: true },
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]};
+        await expect(actor
+          .queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadataAx, context, DF))
+          .toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('x'), DF.blankNode('x') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a1') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+          ]);
+        expect(calls).toEqual([[
+          BF.bindings([[ DF.variable('x'), DF.namedNode(`${ActorRdfJoinMultiBindSource.BLANK_NODE_IRI_PREFIX}0`) ]]),
+          BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+        ]]);
+      });
+
+      it('passes bindings without all variables of the operation and blank nodes as is', async() => {
+        const bindings = [ BF.bindings([[ DF.variable('x'), DF.namedNode('ex:x1') ]]) ];
+        const metadataAx: any = { variables: [
+          { variable: DF.variable('a'), canBeUndef: true },
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]};
+        await expect(actor
+          .queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadataAx, context, DF))
+          .toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('x'), DF.namedNode('ex:x1') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+          ]);
+        expect(calls).toEqual([ bindings ]);
       });
 
       it('does not query if all bindings have blank nodes for variables of the operation', async() => {
