@@ -207,6 +207,7 @@
     "@comunica/actor-optimize-query-operation-construct-distinct": "^5.4.0",
     "@comunica/actor-optimize-query-operation-describe-to-constructs-subject": "^5.4.0",
     "@comunica/actor-optimize-query-operation-distinct-terms-pushdown": "^5.4.0",
+    "@comunica/actor-optimize-query-operation-filter-equality-join": "^5.4.0",
     "@comunica/actor-optimize-query-operation-filter-pushdown": "^5.4.0",
     "@comunica/actor-optimize-query-operation-group-file-sources": "^5.4.0",
     "@comunica/actor-optimize-query-operation-group-sources": "^5.4.0",
