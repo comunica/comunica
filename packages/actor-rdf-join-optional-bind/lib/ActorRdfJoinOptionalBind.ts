@@ -13,11 +13,11 @@ import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTestWithSideData, failTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { Bindings, BindingsStream, ComunicaDataFactory } from '@comunica/types';
+import type { Bindings, BindingsStream, ComunicaDataFactory, IQuerySource } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory, algebraUtils, inScopeVariables } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getSafeBindings, groupRepeatedSubOperations } from '@comunica/utils-query-operation';
+import { getOperationSource, getSafeBindings, groupRepeatedSubOperations } from '@comunica/utils-query-operation';
 
 /**
  * A comunica Optional Bind RDF Join Actor.
@@ -111,11 +111,41 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     return filterOperation;
   }
 
+  /**
+   * Determine the sources that the operations within the given operation are assigned to.
+   * @param operation An operation.
+   */
+  public static getOperationSources(operation: Algebra.Operation): Set<IQuerySource> {
+    const sources = new Set<IQuerySource>();
+    const visit = (subOperation: Algebra.Operation): void => {
+      const source = getOperationSource(subOperation);
+      if (source) {
+        sources.add(source.source);
+      } else {
+        for (const child of algebraUtils.getSubOperations(subOperation)) {
+          visit(child);
+        }
+      }
+    };
+    visit(operation);
+    return sources;
+  }
+
   public async getJoinCoefficients(
     action: IActionRdfJoin,
     sideData: IActorRdfJoinTestSideData,
   ): Promise<TestResult<IMediatorTypeJoinCoefficients, IActorRdfJoinTestSideData>> {
     const { metadatas } = sideData;
+
+    // Without cardinalities, all optional joins have the same cost, and this one comes first on the bus.
+    // Binding pays off when the right side spans multiple sources, as evaluating it as a whole would download from
+    // each of them, while other right sides, e.g., over a single local source, are evaluated as a whole more cheaply.
+    // Entries that require their operation can only be bound, so this does not apply to them.
+    if (!action.entries.some((entry, index) => ActorRdfJoin.isOperationRequired(entry, metadatas[index])) &&
+      metadatas.some(metadata => !Number.isFinite(metadata.cardinality.value)) &&
+      ActorRdfJoinOptionalBind.getOperationSources(action.entries[1].operation).size < 2) {
+      return failTest(`Actor ${this.name} can only bind on a right side with an unknown cardinality if it spans multiple sources`);
+    }
 
     const requestInitialTimes = ActorRdfJoin.getRequestInitialTimes(metadatas);
     const requestItemTimes = ActorRdfJoin.getRequestItemTimes(metadatas);
