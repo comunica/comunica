@@ -252,7 +252,7 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
   }
 
   /**
-   * Compare two strings by Unicode codepoints, as required by the codepoint collation of fn:compare.
+   * Compare two strings by Unicode codepoints.
    * @param left A string.
    * @param right Another string.
    * @return -1 if left comes before right, 1 if it comes after, 0 if they are equal.
