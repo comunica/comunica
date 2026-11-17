@@ -80,10 +80,11 @@ describe('ActorRdfMetadataExtractVoid', () => {
       const datasets: IDataset[] = (await actor.run(<any>{ metadata, url: sparqlEndpoint.value })).metadata.datasets;
       expect(datasets.map(dataset => dataset.uri)).toEqual([ defaultGraph.value ]);
       const pattern = (predicate: string): any =>
-        AF.createPattern(DF.variable('s'), DF.namedNode(predicate), DF.variable('o'));
+        AF.createPattern(DF.namedNode('ex:s'), DF.namedNode(predicate), DF.variable('o'));
+      // The triples of the property per distinct subject
       await expect(datasets[0].getCardinality(pattern('ex:p'))).resolves.toEqual({
         type: 'estimate',
-        value: 10,
+        value: 2,
         dataset: defaultGraph.value,
       });
       await expect(datasets[0].getCardinality(pattern('ex:other'))).resolves.toEqual({
