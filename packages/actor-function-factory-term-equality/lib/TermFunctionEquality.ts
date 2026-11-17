@@ -45,7 +45,6 @@ export class TermFunctionEquality extends TermFunctionBase {
           exprEval => this.literalEquality(exprEval),
           false,
         )
-        // Codepoint collation: strings are only equal if they have the same codepoints
         .stringTest(() => (left, right) => left === right)
         .set(
           [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],

@@ -126,7 +126,10 @@ describe('evaluation of \'<\'', () => {
         "\\uFF61" "\\U0001F600" = true
         "\\U0001F600" "\\uFF61" = false
         "\\U0001F600" "\\U0001F601" = true
+        "\\U0001F600" "\\U0001F600a" = true
+        "\\U0001F600a" "\\U0001F600" = false
         "a" "\\U0001F600" = true
+        "\\uFF61" "a" = false
       `,
     });
   });

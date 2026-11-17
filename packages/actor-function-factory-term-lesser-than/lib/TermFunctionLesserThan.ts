@@ -35,30 +35,6 @@ import type {
 
 type Tuple<T> = readonly [T, T];
 
-/**
- * Compare two strings by Unicode codepoints, as required by the codepoint collation of fn:compare.
- * Plain JS string comparison works on UTF-16 code units,
- * which orders surrogate pairs (U+10000 and up) before U+E000-U+FFFF.
- * @param left A string.
- * @param right Another string.
- * @return -1 if left comes before right, 1 if it comes after, 0 if they are equal.
- */
-function compareCodepoints(left: string, right: string): -1 | 0 | 1 {
-  if (left === right) {
-    return 0;
-  }
-  const length = Math.min(left.length, right.length);
-  for (let i = 0; i < length; i++) {
-    // At the first difference, this reads the full codepoint, also when it is a surrogate pair
-    const leftPoint = <number> left.codePointAt(i);
-    const rightPoint = <number> right.codePointAt(i);
-    if (leftPoint !== rightPoint) {
-      return leftPoint < rightPoint ? -1 : 1;
-    }
-  }
-  return left.length < right.length ? -1 : 1;
-}
-
 export class TermFunctionLesserThan extends TermFunctionBase {
   /**
    * The order this operator puts terms of different types in.
@@ -74,6 +50,11 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     defaultGraph: 4,
   };
 
+  /**
+   * Matches strings containing a code unit of U+D800 or higher.
+   */
+  private static readonly HIGH_CODE_UNIT = /[\uD800-\u{10FFFF}]/u;
+
   // TODO: remove in next major, as it's unused
   public constructor(private readonly equalityFunction: ITermFunction) {
     super({
@@ -86,7 +67,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
           false,
         )
         // No non-lexical handling for strings, since they can't have invalid lexicals
-        .stringTest(() => (left, right) => compareCodepoints(left, right) === -1)
+        .stringTest(() => (left, right) => TermFunctionLesserThan.compareCodepoints(left, right) === -1)
         .set(
           [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
           exprEval => ([ left, right ]: LangStringLiteral[]) => {
@@ -94,7 +75,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
             if (left.str() === right.str()) {
               return bool(left.language < right.language);
             }
-            return bool(compareCodepoints(left.str(), right.str()) === -1);
+            return bool(TermFunctionLesserThan.compareCodepoints(left.str(), right.str()) === -1);
           },
         )
         .set(
@@ -268,5 +249,32 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
 
   private comparePrimitives<T>(valueA: T, valueB: T): -1 | 0 | 1 {
     return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
+  }
+
+  /**
+   * Compare two strings by Unicode codepoints, as required by the codepoint collation of fn:compare.
+   * @param left A string.
+   * @param right Another string.
+   * @return -1 if left comes before right, 1 if it comes after, 0 if they are equal.
+   */
+  private static compareCodepoints(left: string, right: string): -1 | 0 | 1 {
+    if (left === right) {
+      return 0;
+    }
+    // JS compares UTF-16 code units, which orders surrogate pairs (U+10000 and up) before U+E000-U+FFFF.
+    // That only matters if both strings contain a code unit of U+D800 or higher.
+    if (!TermFunctionLesserThan.HIGH_CODE_UNIT.test(left) || !TermFunctionLesserThan.HIGH_CODE_UNIT.test(right)) {
+      return left < right ? -1 : 1;
+    }
+    const length = Math.min(left.length, right.length);
+    for (let i = 0; i < length; i++) {
+      // At the first difference, this reads the full codepoint, also when it is a surrogate pair
+      const leftPoint = <number> left.codePointAt(i);
+      const rightPoint = <number> right.codePointAt(i);
+      if (leftPoint !== rightPoint) {
+        return leftPoint < rightPoint ? -1 : 1;
+      }
+    }
+    return left.length < right.length ? -1 : 1;
   }
 }
