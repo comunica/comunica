@@ -49,9 +49,10 @@ IDateTimeRepresentation {
   tempDiv = fDiv(date.hours + duration.hours + tempDiv.intDiv, 24);
   newDate.hours = tempDiv.remainder;
 
-  // We skip a part of the spec code since: Defined spec code can not happen since it would be an invalid literal
-
-  newDate.day = date.day + duration.day + tempDiv.intDiv;
+  // Days: pin the day to the last day of the new month, e.g. 2020-01-31 + P1M = 2020-02-29.
+  // The spec's `S[day] < 1` branch is skipped, as valid literals can not have such days.
+  const tempDays = Math.min(date.day, maximumDayInMonthFor(newDate.year, newDate.month));
+  newDate.day = tempDays + duration.day + tempDiv.intDiv;
 
   while (true) {
     let carry;
