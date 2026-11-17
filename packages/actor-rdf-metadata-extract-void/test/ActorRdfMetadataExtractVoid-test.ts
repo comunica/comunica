@@ -60,6 +60,39 @@ describe('ActorRdfMetadataExtractVoid', () => {
       await expect(actor.run(<any>{ metadata, url: sparqlEndpoint.value })).resolves.toEqual({ metadata: {}});
     });
 
+    it('should estimate patterns from property partitions of the default graph of a service description', async() => {
+      // The layout of the service descriptions of Comunica SPARQL endpoints
+      const defaultDataset = DF.blankNode('defaultDataset');
+      const defaultGraph = DF.blankNode('defaultGraph');
+      const propertyPartition = DF.blankNode('propertyPartition0');
+      const metadata = streamifyArray([
+        DF.quad(sparqlEndpoint, DF.namedNode(SD_DEFAULT_DATASET), defaultDataset),
+        DF.quad(defaultDataset, DF.namedNode(RDF_TYPE), DF.namedNode(VOID_DATASET)),
+        DF.quad(defaultDataset, DF.namedNode(SD_DEFAULT_GRAPH), defaultGraph),
+        DF.quad(defaultGraph, DF.namedNode(RDF_TYPE), DF.namedNode(SD_GRAPH)),
+        DF.quad(defaultGraph, DF.namedNode(VOID_TRIPLES), DF.literal('100')),
+        DF.quad(defaultGraph, DF.namedNode(VOID_PROPERTY_PARTITION), propertyPartition),
+        DF.quad(propertyPartition, DF.namedNode(VOID_PROPERTY), DF.namedNode('ex:p')),
+        DF.quad(propertyPartition, DF.namedNode(VOID_TRIPLES), DF.literal('10')),
+        DF.quad(propertyPartition, DF.namedNode(VOID_DISTINCT_SUBJECTS), DF.literal('5')),
+        DF.quad(propertyPartition, DF.namedNode(VOID_DISTINCT_OBJECTS), DF.literal('2')),
+      ]);
+      const datasets: IDataset[] = (await actor.run(<any>{ metadata, url: sparqlEndpoint.value })).metadata.datasets;
+      expect(datasets.map(dataset => dataset.uri)).toEqual([ defaultGraph.value ]);
+      const pattern = (predicate: string): any =>
+        AF.createPattern(DF.variable('s'), DF.namedNode(predicate), DF.variable('o'));
+      await expect(datasets[0].getCardinality(pattern('ex:p'))).resolves.toEqual({
+        type: 'estimate',
+        value: 10,
+        dataset: defaultGraph.value,
+      });
+      await expect(datasets[0].getCardinality(pattern('ex:other'))).resolves.toEqual({
+        type: 'exact',
+        value: 0,
+        dataset: defaultGraph.value,
+      });
+    });
+
     describe.each([
       [ 'void:Dataset', VOID_DATASET ],
       [ 'sd:Graph', SD_GRAPH ],
