@@ -268,7 +268,6 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
     }
     const length = Math.min(left.length, right.length);
     for (let i = 0; i < length; i++) {
-      // At the first difference, this reads the full codepoint, also when it is a surrogate pair
       const leftPoint = <number> left.codePointAt(i);
       const rightPoint = <number> right.codePointAt(i);
       if (leftPoint !== rightPoint) {
