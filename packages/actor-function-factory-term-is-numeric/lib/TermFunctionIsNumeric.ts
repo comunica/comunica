@@ -16,7 +16,6 @@ export class TermFunctionIsNumeric extends TermFunctionBase {
       arity: 1,
       operator: SparqlOperator.IS_NUMERIC,
       overloads: declare(SparqlOperator.IS_NUMERIC)
-        // Numeric datatypes with an invalid lexical form are not numeric
         .onNumeric1(() => val => bool(!isNonLexicalLiteral(val)), false)
         .onTerm1(() => () => bool(false))
         .collect(),
