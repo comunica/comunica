@@ -72,12 +72,10 @@ export function estimatePatternCardinalityRaw(dataset: IVoidDataset, pattern: Al
   }
   // <s> ?p ?o (from the original paper)
   // _:s ?p ?o (also accounted for)
-  // <s> ?p "o"
-  // _:s ?p "o"
   if (
     (pattern.subject.termType === 'NamedNode' || pattern.subject.termType === 'BlankNode') &&
     pattern.predicate.termType === 'Variable' &&
-    (pattern.object.termType === 'Variable' || pattern.object.termType === 'Literal')
+    pattern.object.termType === 'Variable'
   ) {
     const distinctSubjects = getDistinctSubjects(dataset);
     if (distinctSubjects > 0) {
@@ -85,11 +83,10 @@ export function estimatePatternCardinalityRaw(dataset: IVoidDataset, pattern: Al
     }
   }
   // ?s <p> ?o (from the original paper)
-  // ?s <p> "o" (also accounted for)
   if (
     pattern.subject.termType === 'Variable' &&
     pattern.predicate.termType === 'NamedNode' &&
-    (pattern.object.termType === 'Variable' || pattern.object.termType === 'Literal')
+    pattern.object.termType === 'Variable'
   ) {
     return getPredicateTriples(dataset, pattern.predicate);
   }
@@ -112,12 +109,10 @@ export function estimatePatternCardinalityRaw(dataset: IVoidDataset, pattern: Al
   }
   // <s> <p> ?o (from the original paper)
   // _:s <p> ?o (also accounted for)
-  // <s> <p> "o"
-  // _:s <p> "o"
   if (
     (pattern.subject.termType === 'NamedNode' || pattern.subject.termType === 'BlankNode') &&
     pattern.predicate.termType === 'NamedNode' &&
-    (pattern.object.termType === 'Variable' || pattern.object.termType === 'Literal')
+    pattern.object.termType === 'Variable'
   ) {
     const predicateTriples = getPredicateTriples(dataset, pattern.predicate);
     const predicateSubjects = getPredicateSubjects(dataset, pattern.predicate);
@@ -127,10 +122,13 @@ export function estimatePatternCardinalityRaw(dataset: IVoidDataset, pattern: Al
   // _:s ?p _:o (also accounted for)
   // _:s ?p <o>
   // <s> ?p _:o
+  // <s> ?p "o"
+  // _:s ?p "o"
   if (
     (pattern.subject.termType === 'NamedNode' || pattern.subject.termType === 'BlankNode') &&
     pattern.predicate.termType === 'Variable' &&
-    (pattern.object.termType === 'NamedNode' || pattern.object.termType === 'BlankNode')
+    (pattern.object.termType === 'NamedNode' || pattern.object.termType === 'BlankNode' ||
+      pattern.object.termType === 'Literal')
   ) {
     const distinctSubjects = getDistinctSubjects(dataset);
     const distinctObjects = getDistinctObjects(dataset);
@@ -140,10 +138,12 @@ export function estimatePatternCardinalityRaw(dataset: IVoidDataset, pattern: Al
   }
   // ?s <p> <o> (from the original paper)
   // ?s <p> _:o (also accounted for)
+  // ?s <p> "o"
   if (
     pattern.subject.termType === 'Variable' &&
     pattern.predicate.termType === 'NamedNode' &&
-    (pattern.object.termType === 'NamedNode' || pattern.object.termType === 'BlankNode')
+    (pattern.object.termType === 'NamedNode' || pattern.object.termType === 'BlankNode' ||
+      pattern.object.termType === 'Literal')
   ) {
     const predicateTriples = getPredicateTriples(dataset, pattern.predicate);
     const predicateObjects = getPredicateObjects(dataset, pattern.predicate);
@@ -153,10 +153,13 @@ export function estimatePatternCardinalityRaw(dataset: IVoidDataset, pattern: Al
   // _:s <p> _:o (also accounted for)
   // <s> <p> _:o
   // _:s <p> <o>
+  // <s> <p> "o"
+  // _:s <p> "o"
   if (
     (pattern.subject.termType === 'NamedNode' || pattern.subject.termType === 'BlankNode') &&
     pattern.predicate.termType === 'NamedNode' &&
-    (pattern.object.termType === 'NamedNode' || pattern.object.termType === 'BlankNode')
+    (pattern.object.termType === 'NamedNode' || pattern.object.termType === 'BlankNode' ||
+      pattern.object.termType === 'Literal')
   ) {
     const predicateTriples = getPredicateTriples(dataset, pattern.predicate);
     const predicateSubjects = getPredicateSubjects(dataset, pattern.predicate);
