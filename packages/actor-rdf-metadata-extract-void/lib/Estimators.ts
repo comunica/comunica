@@ -16,10 +16,40 @@ export function estimatePatternCardinality(
     const value = estimatePatternCardinalityRaw(dataset, pattern);
     if (value > 0) {
       estimate.value = value;
-      estimate.type = 'estimate';
+      estimate.type = isPatternCardinalityExact(dataset, pattern) ? 'exact' : 'estimate';
     }
   }
   return estimate;
+}
+
+/**
+ * Check if the VoID description contains the number of results of the given pattern in the default graph,
+ * which is the case for the triples of the dataset, the triples of a property partition,
+ * and the entities of a class partition.
+ */
+export function isPatternCardinalityExact(dataset: IVoidDataset, pattern: Algebra.Pattern): boolean {
+  if (
+    pattern.graph.termType !== 'DefaultGraph' ||
+    pattern.subject.termType !== 'Variable' ||
+    pattern.subject.equals(pattern.predicate) ||
+    pattern.subject.equals(pattern.object) ||
+    pattern.predicate.equals(pattern.object)
+  ) {
+    return false;
+  }
+  // ?s ?p ?o
+  if (pattern.predicate.termType === 'Variable') {
+    return pattern.object.termType === 'Variable';
+  }
+  // ?s <p> ?o
+  if (pattern.object.termType === 'Variable') {
+    return dataset.propertyPartitions?.[pattern.predicate.value]?.triples !== undefined;
+  }
+  // ?s rdf:type <o>
+  if (pattern.predicate.value === RDF_TYPE && pattern.object.termType !== 'Literal') {
+    return dataset.classPartitions?.[pattern.object.value]?.entities !== undefined;
+  }
+  return false;
 }
 
 /**

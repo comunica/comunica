@@ -10,6 +10,7 @@ import {
   getPredicateTriples,
   getDistinctSubjects,
   getDistinctObjects,
+  isPatternCardinalityExact,
   matchPatternVocabularies,
   matchPatternResourceUris,
 } from '../lib/Estimators';
@@ -104,8 +105,13 @@ describe('Estimators', () => {
 
   describe('estimatePatternCardinality', () => {
     it('should return the estimated cardinality', () => {
-      const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+      const pattern = AF.createPattern(DF.namedNode('ex:s'), DF.variable('p'), DF.variable('o'));
       expect(estimatePatternCardinality(dataset, pattern)).toEqual({ type: 'estimate', value: datasetTripleCount });
+    });
+
+    it('should return the exact cardinality if the dataset describes it', () => {
+      const pattern = AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o'));
+      expect(estimatePatternCardinality(dataset, pattern)).toEqual({ type: 'exact', value: datasetTripleCount });
     });
 
     it('should return the estimated cardinality for an empty dataset', () => {
@@ -116,6 +122,58 @@ describe('Estimators', () => {
     it('should return 0 when resource URIs are not found in the dataset', () => {
       const pattern = AF.createPattern(DF.namedNode('ex2:s'), DF.variable('p'), DF.namedNode('ex2:o'));
       expect(estimatePatternCardinality(dataset, pattern)).toEqual({ type: 'exact', value: 0 });
+    });
+  });
+
+  describe('isPatternCardinalityExact', () => {
+    beforeEach(() => {
+      dataset.propertyPartitions![predicateNamedNode.value] = {
+        triples: 100,
+        distinctSubjects: undefined,
+        distinctObjects: undefined,
+      };
+      dataset.classPartitions![objectNamedNode.value] = { entities: 10, propertyPartitions: undefined };
+    });
+
+    it.each([
+      [ '?s ?p ?o', AF.createPattern(subjectVariable, predicateVariable, objectVariable) ],
+      [ '?s <p> ?o', AF.createPattern(subjectVariable, predicateNamedNode, objectVariable) ],
+      [ '?s rdf:type <o>', AF.createPattern(subjectVariable, rdfType, objectNamedNode) ],
+    ])('should be true for %s', (_, pattern) => {
+      expect(isPatternCardinalityExact(dataset, pattern)).toBe(true);
+    });
+
+    it.each([
+      [ '<s> ?p ?o', AF.createPattern(subjectNamedNode, predicateVariable, objectVariable) ],
+      [ '?s ?p <o>', AF.createPattern(subjectVariable, predicateVariable, objectNamedNode) ],
+      [ '?s <p> <o>', AF.createPattern(subjectVariable, predicateNamedNode, objectNamedNode) ],
+      [ '?s rdf:type "o"', AF.createPattern(subjectVariable, rdfType, objectLiteral) ],
+      [ '?s ?p ?s', AF.createPattern(subjectVariable, predicateVariable, subjectVariable) ],
+      [ '?s ?s ?o', AF.createPattern(subjectVariable, subjectVariable, objectVariable) ],
+      [ '?s ?p ?p', AF.createPattern(subjectVariable, predicateVariable, predicateVariable) ],
+      [ '?s ?p ?o ?g', AF.createPattern(subjectVariable, predicateVariable, objectVariable, DF.variable('g')) ],
+    ])('should be false for %s', (_, pattern) => {
+      expect(isPatternCardinalityExact(dataset, pattern)).toBe(false);
+    });
+
+    it('should be false without the triples of the property partition', () => {
+      const pattern = AF.createPattern(subjectVariable, predicateNamedNode, objectVariable);
+      dataset.propertyPartitions![predicateNamedNode.value] = {
+        triples: undefined,
+        distinctSubjects: undefined,
+        distinctObjects: undefined,
+      };
+      expect(isPatternCardinalityExact(dataset, pattern)).toBe(false);
+      dataset.propertyPartitions = undefined;
+      expect(isPatternCardinalityExact(dataset, pattern)).toBe(false);
+    });
+
+    it('should be false without the entities of the class partition', () => {
+      const pattern = AF.createPattern(subjectVariable, rdfType, objectNamedNode);
+      dataset.classPartitions![objectNamedNode.value] = { entities: undefined, propertyPartitions: {}};
+      expect(isPatternCardinalityExact(dataset, pattern)).toBe(false);
+      dataset.classPartitions = undefined;
+      expect(isPatternCardinalityExact(dataset, pattern)).toBe(false);
     });
   });
 
