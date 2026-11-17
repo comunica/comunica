@@ -1959,55 +1959,17 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       describe('VoID description', () => {
-        const xsd = 'http://www.w3.org/2001/XMLSchema#';
-
-        let queryBindings: (query: string) => BindingsStream;
+        let queryBindings: () => BindingsStream;
 
         beforeEach(() => {
           instance.voidMetadataEmitter.invalidateCache();
-          queryBindings = (query: string): BindingsStream => {
-            let bindingsArray: RDF.Bindings[];
-            if (query.includes('?triples')) {
-              bindingsArray = [
-                BF.bindings([
-                  [ DF.variable('triples'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-                  [ DF.variable('entities'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-                  [ DF.variable('distinctSubjects'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-                  [ DF.variable('properties'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
-                  [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-              ];
-            } else if (query.includes('?classes')) {
-              bindingsArray = [
-                BF.bindings([
-                  [ DF.variable('classes'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-              ];
-            } else if (query.includes('?class ')) {
-              bindingsArray = [
-                BF.bindings([
-                  [ DF.variable('class'), DF.namedNode('http://example.org/classA') ],
-                  [ DF.variable('count'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-                BF.bindings([
-                  [ DF.variable('class'), DF.namedNode('http://example.org/classB') ],
-                  [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-              ];
-            } else {
-              bindingsArray = [
-                BF.bindings([
-                  [ DF.variable('property'), DF.namedNode('http://example.org/propertyA') ],
-                  [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-                BF.bindings([
-                  [ DF.variable('property'), DF.namedNode('http://example.org/propertyB') ],
-                  [ DF.variable('count'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-              ];
-            }
-            return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray, { autoStart: false }));
-          };
+          queryBindings = (): BindingsStream => <BindingsStream>(new ArrayIterator<RDF.Bindings>([
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('http://example.org/s') ],
+              [ DF.variable('p'), DF.namedNode('http://example.org/propertyA') ],
+              [ DF.variable('o'), DF.literal('o') ],
+            ]),
+          ], { autoStart: false }));
         });
 
         it('should serialize the service description again after an update', async() => {
@@ -2136,8 +2098,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           );
 
           expect(localInstance.voidMetadataEmitter.cachedStatistics).not.toHaveLength(0);
-          // Each void request does 4 calls for the statistics fetch
-          expect(spyQueryBindings).toHaveBeenCalledTimes(4);
+          // Each void request computes the statistics in a single query
+          expect(spyQueryBindings).toHaveBeenCalledTimes(1);
 
           const query = `
 INSERT DATA {
@@ -2160,8 +2122,8 @@ INSERT DATA {
           );
 
           expect(localInstance.voidMetadataEmitter.cachedStatistics).toHaveLength(0);
-          // Should still be 4, insert queries don't fetch again, just invalidate the cache
-          expect(spyQueryBindings).toHaveBeenCalledTimes(4);
+          // Should still be 1, insert queries don't fetch again, just invalidate the cache
+          expect(spyQueryBindings).toHaveBeenCalledTimes(1);
 
           localInstance.voidMetadataEmitter.cachedStatistics = [ <any> {} ];
 
@@ -2186,7 +2148,7 @@ INSERT DATA {
           );
 
           expect(localInstance.voidMetadataEmitter.cachedStatistics).toHaveLength(0);
-          expect(spyQueryBindings).toHaveBeenCalledTimes(4);
+          expect(spyQueryBindings).toHaveBeenCalledTimes(1);
         });
       });
 
