@@ -1,0 +1,18 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-experiment/sparql-custom/^6.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@jbr-hook/cli/^6.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-largerdfbench-file",
+  "@type": "ExperimentSparqlCustom",
+  "queriesPath": "../../generated/queries/",
+  "endpointUrl": "http://localhost:3001/sparql",
+  "queryRunnerReplication": 1,
+  "queryRunnerWarmupRounds": 1,
+  "queryRunnerRequestDelay": 0,
+  "queryRunnerEndpointAvailabilityCheckTimeout": 1000,
+  "queryRunnerUrlParams": {},
+  "queryTimeoutFallback": 150000,
+  "hookSparqlEndpoint": %FACTOR-hookSparqlEndpoint%
+}
