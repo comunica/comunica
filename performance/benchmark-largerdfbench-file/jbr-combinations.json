@@ -7,7 +7,9 @@
   "commonGenerated": true,
   "factors": {
     "hookSparqlEndpoint": [
-      "{\"@id\": \"urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpoint\", \"@type\": \"HookCli\", \"entrypoint\": [\"bash\", \"start-federation.sh\"], \"statsFilePath\": \"output/stats.csv\"}"
+      "{\"@id\": \"urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpoint\", \"@type\": \"HookCli\", \"entrypoint\": [\"bash\", \"start-federation.sh\", \"count\"], \"statsFilePath\": \"output/stats.csv\"}",
+      "{\"@id\": \"urn:jbr:benchmark-largerdfbench-file:combination_1:hookSparqlEndpoint\", \"@type\": \"HookCli\", \"entrypoint\": [\"bash\", \"start-federation.sh\", \"ask\"], \"statsFilePath\": \"output/stats.csv\"}",
+      "{\"@id\": \"urn:jbr:benchmark-largerdfbench-file:combination_2:hookSparqlEndpoint\", \"@type\": \"HookCli\", \"entrypoint\": [\"bash\", \"start-federation.sh\", \"void\"], \"statsFilePath\": \"output/stats.csv\"}"
     ]
   }
 }

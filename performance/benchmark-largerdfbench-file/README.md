@@ -12,9 +12,26 @@ It is downloaded from [comunica-performance-assets](https://github.com/comunica/
 and was generated with the [jbr LargeRDFBench experiment](https://github.com/rubensworks/jbr.js/pull/109).
 Until that experiment is published, this benchmark runs the queries with the generic `sparql-custom` experiment.
 
+## Federation modes
+
+The federation is benchmarked in three modes, as three jbr combinations, which `start-federation.sh` selects with its argument:
+
+| Combination | Mode | Federation | Endpoints |
+|---|---|---|---|
+| `combination_0` | COUNT | Estimates cardinalities with COUNT queries (the default configuration) | Default |
+| `combination_1` | ASK | Sends no COUNT queries, and prunes sources without results with ASK queries | Default |
+| `combination_2` | VoID | Estimates cardinalities from the VoID descriptions of the endpoints | With `--emitVoid` |
+
+The configurations of the federation in `config/` import the default configuration of the engine,
+and only override the parameters of the mode, so they follow changes to the default configuration.
+
+## Running
+
 Run the benchmark locally by running `npm run performance` from within this package.
+This runs all three modes.
 
 If you only want to run what the CI runs, use `npm run performance:ci` instead.
+It runs the combination in the `BENCHMARK_COMBINATION` environment variable, which defaults to 0 (COUNT).
 To fit within the CI time budget, it runs a single instance of each query after a warmup round,
 and skips C2, C6, S1 and S9, which time out or make the endpoints run out of memory.
 

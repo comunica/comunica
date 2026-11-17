@@ -406,8 +406,18 @@ jobs:
         # The web benchmark is omitted on pull requests, as its query set varies across runs,
         # which makes its totals incomparable between two runs.
         benchmark: ${{ github.event_name == 'pull_request' && fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "ldbc-snb-file", "ldbc-snb-bi-file", "largerdfbench-file"]') || fromJSON('["watdiv-file", "watdiv-tpf", "bsbm-file", "bsbm-file-10k", "bsbm-tpf", "ldbc-snb-file", "ldbc-snb-bi-file", "largerdfbench-file", "web"]') }}
+        # Other jbr combinations of a benchmark directory, which run as separate benchmarks
+        include:
+          - benchmark: largerdfbench-file-ask
+            directory: largerdfbench-file
+            combination: 1
+          - benchmark: largerdfbench-file-void
+            directory: largerdfbench-file
+            combination: 2
     env:
       BENCHMARK_BASE: ${{ github.event_name == 'pull_request' }}
+      BENCHMARK_DIRECTORY: ${{ matrix.directory || matrix.benchmark }}
+      BENCHMARK_COMBINATION: ${{ matrix.combination || 0 }}
     steps:
       - name: Ensure line endings are consistent
         run: git config --global core.autocrlf input
@@ -435,18 +445,18 @@ jobs:
         run: yarn install --frozen-lockfile
         working-directory: base
       - name: Run benchmarks of the base commit
-        # A benchmark that is new in the pull request has no base results.
-        if: env.BENCHMARK_BASE == 'true' && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
-        run: cd base/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
+        # A benchmark or combination that is new in the pull request has no base results.
+        if: env.BENCHMARK_BASE == 'true' && hashFiles(format('base/performance/benchmark-{0}/combinations/combination_{1}/jbr-experiment.json', env.BENCHMARK_DIRECTORY, env.BENCHMARK_COMBINATION)) != ''
+        run: cd base/performance/benchmark-$BENCHMARK_DIRECTORY/ && yarn run performance:ci
       - name: Remove containers left behind by the base commit benchmarks
         # The TPF benchmarks run their LDF server in Docker on fixed ports,
         # so the benchmarks below must start from the same clean state as the base ones did.
         if: env.BENCHMARK_BASE == 'true'
         run: docker ps -aq | xargs -r docker rm -f
       - name: Run benchmarks
-        run: cd head/performance/benchmark-${{ matrix.benchmark }}/ && yarn run performance:ci
+        run: cd head/performance/benchmark-$BENCHMARK_DIRECTORY/ && yarn run performance:ci
       - name: Measure ingestion of the base commit
-        if: env.BENCHMARK_BASE == 'true' && contains(matrix.benchmark, '-file') && matrix.benchmark != 'ldbc-snb-bi-file' && matrix.benchmark != 'largerdfbench-file' && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
+        if: env.BENCHMARK_BASE == 'true' && contains(matrix.benchmark, '-file') && matrix.benchmark != 'ldbc-snb-bi-file' && env.BENCHMARK_DIRECTORY != 'largerdfbench-file' && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
         working-directory: head
         run: >-
           node --max-old-space-size=8192 packages/utils-monorepo/bin/performance-ingestion.js
@@ -457,7 +467,7 @@ jobs:
       - name: Measure ingestion
         # Excludes ldbc-snb-bi-file, as it shares its dataset with ldbc-snb-file,
         # and largerdfbench-file, as it has no single dataset
-        if: contains(matrix.benchmark, '-file') && matrix.benchmark != 'ldbc-snb-bi-file' && matrix.benchmark != 'largerdfbench-file'
+        if: contains(matrix.benchmark, '-file') && matrix.benchmark != 'ldbc-snb-bi-file' && env.BENCHMARK_DIRECTORY != 'largerdfbench-file'
         working-directory: head
         run: >-
           node --max-old-space-size=8192 packages/utils-monorepo/bin/performance-ingestion.js
@@ -468,17 +478,17 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: performance-benchmark-${{ matrix.benchmark }}
-          path: head/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
+          path: head/performance/benchmark-${{ env.BENCHMARK_DIRECTORY }}/combinations/combination_${{ env.BENCHMARK_COMBINATION }}/output/
       - uses: actions/upload-artifact@v7
-        if: env.BENCHMARK_BASE == 'true' && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
+        if: env.BENCHMARK_BASE == 'true' && hashFiles(format('base/performance/benchmark-{0}/combinations/combination_{1}/jbr-experiment.json', env.BENCHMARK_DIRECTORY, env.BENCHMARK_COMBINATION)) != ''
         with:
           name: performance-benchmark-base-${{ matrix.benchmark }}
-          path: base/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/
+          path: base/performance/benchmark-${{ env.BENCHMARK_DIRECTORY }}/combinations/combination_${{ env.BENCHMARK_COMBINATION }}/output/
       - name: Print raw output
-        run: cat head/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
+        run: cat head/performance/benchmark-$BENCHMARK_DIRECTORY/combinations/combination_$BENCHMARK_COMBINATION/output/query-times.csv
       - name: Print raw output of the base commit
-        if: env.BENCHMARK_BASE == 'true' && hashFiles(format('base/performance/benchmark-{0}/package.json', matrix.benchmark)) != ''
-        run: cat base/performance/benchmark-${{ matrix.benchmark }}/combinations/combination_0/output/query-times.csv
+        if: env.BENCHMARK_BASE == 'true' && hashFiles(format('base/performance/benchmark-{0}/combinations/combination_{1}/jbr-experiment.json', env.BENCHMARK_DIRECTORY, env.BENCHMARK_COMBINATION)) != ''
+        run: cat base/performance/benchmark-$BENCHMARK_DIRECTORY/combinations/combination_$BENCHMARK_COMBINATION/output/query-times.csv
 
   performance-consolidate:
     name: Performance analysis
@@ -536,12 +546,20 @@ jobs:
           path: performance/benchmark-largerdfbench-file/combinations/combination_0/output/
       - uses: actions/download-artifact@v8
         with:
+          name: performance-benchmark-largerdfbench-file-ask
+          path: performance/benchmark-largerdfbench-file/combinations/combination_1/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-largerdfbench-file-void
+          path: performance/benchmark-largerdfbench-file/combinations/combination_2/output/
+      - uses: actions/download-artifact@v8
+        with:
           name: performance-benchmark-web
           path: performance/benchmark-web/combinations/combination_0/output/
       - name: Process benchmark detailed results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,LargeRDFBench-File,Web --total false --detailed true --failures --name ghbench-detail.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_1/output/ performance/benchmark-largerdfbench-file/combinations/combination_2/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,LargeRDFBench-File,LargeRDFBench-File-ASK,LargeRDFBench-File-VoID,Web --total false --detailed true --failures --name ghbench-detail.json
       - name: Process benchmark total results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_0/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,LargeRDFBench-File,Web --total true --detailed false --name ghbench-total.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_1/output/ performance/benchmark-largerdfbench-file/combinations/combination_2/output/ performance/benchmark-web/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,LargeRDFBench-File,LargeRDFBench-File-ASK,LargeRDFBench-File-VoID,Web --total true --detailed false --name ghbench-total.json
       - name: Process benchmark ingestion results
         run: jq -s 'add' performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
       - name: Determine benchmark detailed results target directory name
@@ -667,6 +685,14 @@ jobs:
           path: performance/benchmark-largerdfbench-file/combinations/combination_0/output/
       - uses: actions/download-artifact@v8
         with:
+          name: performance-benchmark-largerdfbench-file-ask
+          path: performance/benchmark-largerdfbench-file/combinations/combination_1/output/
+      - uses: actions/download-artifact@v8
+        with:
+          name: performance-benchmark-largerdfbench-file-void
+          path: performance/benchmark-largerdfbench-file/combinations/combination_2/output/
+      - uses: actions/download-artifact@v8
+        with:
           name: performance-benchmark-base-watdiv-file
           path: base/performance/benchmark-watdiv-file/combinations/combination_0/output/
       - uses: actions/download-artifact@v8
@@ -703,8 +729,20 @@ jobs:
         with:
           name: performance-benchmark-base-largerdfbench-file
           path: base/performance/benchmark-largerdfbench-file/combinations/combination_0/output/
+      - uses: actions/download-artifact@v8
+        # Missing when the combination is new in the pull request
+        continue-on-error: true
+        with:
+          name: performance-benchmark-base-largerdfbench-file-ask
+          path: base/performance/benchmark-largerdfbench-file/combinations/combination_1/output/
+      - uses: actions/download-artifact@v8
+        # Missing when the combination is new in the pull request
+        continue-on-error: true
+        with:
+          name: performance-benchmark-base-largerdfbench-file-void
+          path: base/performance/benchmark-largerdfbench-file/combinations/combination_2/output/
       - name: Process benchmark detailed results
-        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_0/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,LargeRDFBench-File --total false --detailed true --failures --name ghbench-detail.json
+        run: npx -p @rubensworks/process-sparql-benchmark-results psbr csv ghbench performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_1/output/ performance/benchmark-largerdfbench-file/combinations/combination_2/output/ --overrideCombinationLabels WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,LargeRDFBench-File,LargeRDFBench-File-ASK,LargeRDFBench-File-VoID --total false --detailed true --failures --name ghbench-detail.json
       - name: Determine base commit benchmark results
         # Benchmarks that are new in the pull request have no base results
         run: |
@@ -721,6 +759,14 @@ jobs:
           if [ -f base/performance/benchmark-largerdfbench-file/combinations/combination_0/output/query-times.csv ]; then
             dirs="$dirs base/performance/benchmark-largerdfbench-file/combinations/combination_0/output/"
             labels="$labels,LargeRDFBench-File"
+          fi
+          if [ -f base/performance/benchmark-largerdfbench-file/combinations/combination_1/output/query-times.csv ]; then
+            dirs="$dirs base/performance/benchmark-largerdfbench-file/combinations/combination_1/output/"
+            labels="$labels,LargeRDFBench-File-ASK"
+          fi
+          if [ -f base/performance/benchmark-largerdfbench-file/combinations/combination_2/output/query-times.csv ]; then
+            dirs="$dirs base/performance/benchmark-largerdfbench-file/combinations/combination_2/output/"
+            labels="$labels,LargeRDFBench-File-VoID"
           fi
           echo "BASE_BENCHMARK_DIRS=$dirs" >> $GITHUB_ENV
           echo "BASE_BENCHMARK_LABELS=$labels" >> $GITHUB_ENV
