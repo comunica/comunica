@@ -262,7 +262,7 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
       return 0;
     }
     // JS compares UTF-16 code units, which orders surrogate pairs (U+10000 and up) before U+E000-U+FFFF.
-    // That only matters if both strings contain a code unit of U+D800 or higher.
+    // If they don't contain a code unit of U+D800 or higher, we can use the faster `<` comparison.
     if (!TermFunctionLesserThan.HIGH_CODE_UNIT.test(left) || !TermFunctionLesserThan.HIGH_CODE_UNIT.test(right)) {
       return left < right ? -1 : 1;
     }
