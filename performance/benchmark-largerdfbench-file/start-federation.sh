@@ -15,6 +15,14 @@ case "$mode" in
   *) echo "Unknown mode $mode, expected count, ask or void" >&2; exit 1 ;;
 esac
 trap 'trap - TERM INT EXIT; kill $(jobs -p) 2>/dev/null; wait' TERM INT EXIT
+fail() {
+  echo "$1" >&2
+  # jbr waits for the federation endpoint without a time limit, so it is stopped as well.
+  if ps -o args= -p "$PPID" | grep -q jbr; then
+    kill "$PPID"
+  fi
+  exit 1
+}
 mkdir -p output/logs
 sources=()
 port=4000
@@ -22,19 +30,18 @@ for dataset in ChEBI DBPedia-Subset DrugBank GeoNames Jamendo KEGG LMDB NYT SWDF
   port=$((port + 1))
   start=$SECONDS
   # The endpoint only accepts requests after warming up, which also loads its dataset.
-  # Its service description is requested below, so that its VoID statistics are computed before the queries.
+  # Its availability is checked with a query rather than its service description, so that if computing the
+  # VoID statistics of the service description fails, the queries fail instead of the start of the benchmark.
   node --max-old-space-size=1536 ../../engines/query-sparql-file/bin/http.js "file@generated/datasets/$dataset.nt" \
     -p "$port" -t 300 --warmup 2000 "${member_args[@]}" > "output/logs/member-$dataset.txt" 2>&1 &
   member=$!
-  until curl -sf -o /dev/null "http://localhost:$port/sparql"; do
+  until curl -sf -o /dev/null --data-urlencode 'query=ASK { ?s ?p ?o }' "http://localhost:$port/sparql"; do
     if ! kill -0 "$member" 2>/dev/null; then
-      echo "The endpoint of $dataset stopped, see output/logs/member-$dataset.txt" >&2
-      exit 1
+      fail "The endpoint of $dataset stopped, see output/logs/member-$dataset.txt"
     fi
     # A crashing worker is replaced, so the endpoint itself keeps running.
     if [ $((SECONDS - start)) -gt 600 ]; then
-      echo "The endpoint of $dataset is not available after 600 s, see output/logs/member-$dataset.txt" >&2
-      exit 1
+      fail "The endpoint of $dataset is not available after 600 s, see output/logs/member-$dataset.txt"
     fi
     sleep 0.5
   done
