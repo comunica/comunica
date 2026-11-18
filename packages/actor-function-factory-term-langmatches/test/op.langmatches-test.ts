@@ -6,6 +6,7 @@ import {
 import { ActorFunctionFactoryTermLangmatches } from '../lib';
 
 // TODO: Add errors for when non BCP47 strings are passed
+// https://www.rfc-editor.org/rfc/rfc4647#section-3.3.1
 describe('evaluation of \'langMatches\' like', () => {
   runFuncTestTable({
     registeredActors: [
@@ -16,18 +17,32 @@ describe('evaluation of \'langMatches\' like', () => {
     notation: Notation.Function,
     aliases: bool,
     testTable: `
-       "de-DE" "de-*-DE" = true
-       "de-de" "de-*-DE" = true
-       "de-Latn-DE" "de-*-DE" = true
-       "de-Latf-DE" "de-*-DE" = true
-       "de-DE-x-goethe" "de-*-DE" = true
-       "de-Latn-DE-1996" "de-*-DE" = true
-       "de" "de-*-DE" = false
-       "de-X-De" "de-*-DE" = false
-       "de-Deva" "de-*-DE" = false
+       "de-DE" "de-de" = true
+       "de-DE-1996" "de-de" = true
+       "de-Deva" "de-de" = false
+       "de-Latn-DE" "de-de" = false
+       "en" "en" = true
+       "en-GB" "en" = true
+       "EN-gb" "en" = true
+       "en-GB" "EN" = true
+       "en-GB" "en-gb" = true
+       "eng" "en" = false
+       "eng-GB" "en" = false
+       "en" "en-GB" = false
+       "en" "" = false
        "de" "fr" = false
+       "fr" "*" = true
+       "fr-CA" "*" = true
        "" "*" = false
-       "de-Latn-de" "de-de" = false
+       "" "en" = false
+       "" "" = false
+       "en" "e." = false
+       "en" "e(" = false
+       "*" "en" = false
+       "k" "K" = false
+       "de-Latn-DE" "de-*-DE" = false
+       "de-DE" "de-*-DE" = false
+       "de" "de-*" = false
       `,
   });
 });
