@@ -52,48 +52,24 @@ describe('VoidMetadataEmitter', () => {
     request.headers = { host: 'localhost:3000' };
     response = new ServerResponseMock();
     endCalledPromise = new Promise(resolve => response.onEnd = resolve);
-    queryBindings = (query: string): BindingsStream => {
-      let bindingsArray: RDF.Bindings[];
-      if (query.includes('?triples')) {
-        bindingsArray = [
-          BF.bindings([
-            [ DF.variable('triples'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-            [ DF.variable('entities'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-            [ DF.variable('distinctSubjects'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-            [ DF.variable('properties'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
-            [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
-          ]),
-        ];
-      } else if (query.includes('?classes')) {
-        bindingsArray = [
-          BF.bindings([
-            [ DF.variable('classes'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-          ]),
-        ];
-      } else if (query.includes('?class ')) {
-        bindingsArray = [
-          BF.bindings([
-            [ DF.variable('class'), DF.namedNode('http://example.org/classA') ],
-            [ DF.variable('count'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
-          ]),
-          BF.bindings([
-            [ DF.variable('class'), DF.namedNode('http://example.org/classB') ],
-            [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
-          ]),
-        ];
-      } else {
-        bindingsArray = [
-          BF.bindings([
-            [ DF.variable('property'), DF.namedNode('http://example.org/propertyA') ],
-            [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
-          ]),
-          BF.bindings([
-            [ DF.variable('property'), DF.namedNode('http://example.org/propertyB') ],
-            [ DF.variable('count'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-          ]),
-        ];
-      }
-      return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray, { autoStart: false }));
+    queryBindings = (): BindingsStream => {
+      const ex = 'http://example.org/';
+      const triples: [RDF.Term, RDF.Term, RDF.Term][] = [
+        [ DF.namedNode(`${ex}s1`), DF.namedNode(rdfType), DF.namedNode(`${ex}classA`) ],
+        [ DF.namedNode(`${ex}s2`), DF.namedNode(rdfType), DF.namedNode(`${ex}classA`) ],
+        [ DF.namedNode(`${ex}s3`), DF.namedNode(rdfType), DF.namedNode(`${ex}classB`) ],
+        [ DF.namedNode(`${ex}s1`), DF.namedNode(`${ex}propertyA`), DF.literal('a') ],
+        [ DF.blankNode('b1'), DF.namedNode(`${ex}propertyA`), DF.namedNode(`${ex}s1`) ],
+        [ DF.namedNode(`${ex}s2`), DF.namedNode(`${ex}propertyB`), DF.literal('a') ],
+        [ DF.namedNode(`${ex}s3`), DF.namedNode(`${ex}propertyB`), DF.literal('b', 'en') ],
+        [ DF.namedNode(`${ex}s3`), DF.namedNode(`${ex}propertyB`), DF.literal('b') ],
+      ];
+      return <BindingsStream>(new ArrayIterator<RDF.Bindings>(triples.map(([ subject, predicate, object ]) =>
+        BF.bindings([
+          [ DF.variable('s'), subject ],
+          [ DF.variable('p'), predicate ],
+          [ DF.variable('o'), object ],
+        ])), { autoStart: false }));
     };
   });
 
@@ -124,6 +100,7 @@ describe('VoidMetadataEmitter', () => {
     const classPartition1 = '_:classPartition1';
     const propertyPartition0 = '_:propertyPartition0';
     const propertyPartition1 = '_:propertyPartition1';
+    const propertyPartition2 = '_:propertyPartition2';
     const expectedQuads = [
       quad(s, `${sd}defaultDataset`, dataset),
       quad(dataset, rdfType, `${sd}Dataset`),
@@ -138,31 +115,42 @@ describe('VoidMetadataEmitter', () => {
       quad(dataset, `${sd}defaultGraph`, graph),
       quad(graph, rdfType, `${sd}Graph`),
       quad(graph, `${vd}triples`, `"8"^^${xsd}integer`),
-      quad(graph, `${vd}entities`, `"8"^^${xsd}integer`),
-      quad(graph, `${vd}distinctSubjects`, `"8"^^${xsd}integer`),
-      quad(graph, `${vd}properties`, `"5"^^${xsd}integer`),
-      quad(graph, `${vd}distinctObjects`, `"4"^^${xsd}integer`),
+      quad(graph, `${vd}entities`, `"7"^^${xsd}integer`),
+      quad(graph, `${vd}distinctSubjects`, `"4"^^${xsd}integer`),
+      quad(graph, `${vd}properties`, `"3"^^${xsd}integer`),
+      quad(graph, `${vd}distinctObjects`, `"6"^^${xsd}integer`),
       quad(graph, `${vd}classes`, `"2"^^${xsd}integer`),
 
-      quad(dataset, `${vd}classPartition`, classPartition0),
+      quad(graph, `${vd}classPartition`, classPartition0),
       quad(classPartition0, rdfType, `${vd}ClassPartition`),
       quad(classPartition0, `${vd}class`, 'http://example.org/classA'),
-      quad(classPartition0, `${vd}entities`, `"5"^^${xsd}integer`),
+      quad(classPartition0, `${vd}entities`, `"2"^^${xsd}integer`),
 
-      quad(dataset, `${vd}propertyPartition`, propertyPartition0),
-      quad(propertyPartition0, rdfType, `${vd}PropertyPartition`),
-      quad(propertyPartition0, `${vd}property`, 'http://example.org/propertyA'),
-      quad(propertyPartition0, `${vd}triples`, `"3"^^${xsd}integer`),
-
-      quad(dataset, `${vd}classPartition`, classPartition1),
+      quad(graph, `${vd}classPartition`, classPartition1),
       quad(classPartition1, rdfType, `${vd}ClassPartition`),
       quad(classPartition1, `${vd}class`, 'http://example.org/classB'),
-      quad(classPartition1, `${vd}entities`, `"3"^^${xsd}integer`),
+      quad(classPartition1, `${vd}entities`, `"1"^^${xsd}integer`),
 
-      quad(dataset, `${vd}propertyPartition`, propertyPartition1),
+      quad(graph, `${vd}propertyPartition`, propertyPartition0),
+      quad(propertyPartition0, rdfType, `${vd}PropertyPartition`),
+      quad(propertyPartition0, `${vd}property`, rdfType),
+      quad(propertyPartition0, `${vd}triples`, `"3"^^${xsd}integer`),
+      quad(propertyPartition0, `${vd}distinctSubjects`, `"3"^^${xsd}integer`),
+      quad(propertyPartition0, `${vd}distinctObjects`, `"2"^^${xsd}integer`),
+
+      quad(graph, `${vd}propertyPartition`, propertyPartition1),
       quad(propertyPartition1, rdfType, `${vd}PropertyPartition`),
-      quad(propertyPartition1, `${vd}property`, 'http://example.org/propertyB'),
+      quad(propertyPartition1, `${vd}property`, 'http://example.org/propertyA'),
       quad(propertyPartition1, `${vd}triples`, `"2"^^${xsd}integer`),
+      quad(propertyPartition1, `${vd}distinctSubjects`, `"2"^^${xsd}integer`),
+      quad(propertyPartition1, `${vd}distinctObjects`, `"2"^^${xsd}integer`),
+
+      quad(graph, `${vd}propertyPartition`, propertyPartition2),
+      quad(propertyPartition2, rdfType, `${vd}PropertyPartition`),
+      quad(propertyPartition2, `${vd}property`, 'http://example.org/propertyB'),
+      quad(propertyPartition2, `${vd}triples`, `"3"^^${xsd}integer`),
+      quad(propertyPartition2, `${vd}distinctSubjects`, `"2"^^${xsd}integer`),
+      quad(propertyPartition2, `${vd}distinctObjects`, `"3"^^${xsd}integer`),
     ];
     expect(quads).toEqual(expectedQuads);
   });
@@ -187,8 +175,8 @@ describe('VoidMetadataEmitter', () => {
       response,
     );
 
-    // Each statistics query does 4 calls, so 4 in total since the 2nd one used the cached statistics
-    expect(spyQueryBindings).toHaveBeenCalledTimes(4);
+    // The statistics are computed in a single query, and the 2nd request uses the cached statistics
+    expect(spyQueryBindings).toHaveBeenCalledTimes(1);
   });
 
   it('should handle errors in VoID description statistics query', async() => {
@@ -209,7 +197,7 @@ describe('VoidMetadataEmitter', () => {
 
     // Check if the VD logic has been called
     expect(spyGetVoIDQuads).toHaveBeenCalledTimes(1);
-    expect(spyQueryBindings).toHaveBeenCalledTimes(4);
+    expect(spyQueryBindings).toHaveBeenCalledTimes(1);
 
     await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
   });

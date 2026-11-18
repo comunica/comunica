@@ -9,7 +9,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import { assignOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
-import { ArrayIterator, AsyncIterator } from 'asynciterator';
+import { ArrayIterator, AsyncIterator, TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type {
   IActorRdfJoinMultiBindSourceTestSideData,
@@ -213,7 +213,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             [ DF.variable('bound'), DF.namedNode('ex:bound') ],
             [ DF.variable('a'), DF.namedNode('ex:a3') ],
           ]),
-        ]);
+        ], true);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 3 },
@@ -329,7 +329,7 @@ describe('ActorRdfJoinMultiBindSource', () => {
             [ DF.variable('bound'), DF.namedNode('ex:bound') ],
             [ DF.variable('a'), DF.namedNode('ex:a3') ],
           ]),
-        ]);
+        ], true);
         await expect(result.metadata()).resolves.toEqual({
           state: expect.any(MetadataValidationState),
           cardinality: { type: 'estimate', value: 3 },
@@ -662,6 +662,459 @@ describe('ActorRdfJoinMultiBindSource', () => {
             ],
           },
         )).resolves.toFailTest('Actor actor detected a source that can not handle passing down join bindings');
+      });
+    });
+
+    describe('getBindTargets', () => {
+      it('returns the operation if it has a source', () => {
+        const op = assignOperationSource(AF.createNop(), source1);
+        expect(ActorRdfJoinMultiBindSource.getBindTargets(op)).toEqual([{ sourceWrapper: source1, operation: op }]);
+      });
+
+      it('returns the inputs of a union if they all have a source', () => {
+        const op1 = assignOperationSource(AF.createNop(), source1);
+        const op2 = assignOperationSource(AF.createNop(), source2);
+        expect(ActorRdfJoinMultiBindSource.getBindTargets(AF.createUnion([ op1, op2 ]))).toEqual([
+          { sourceWrapper: source1, operation: op1 },
+          { sourceWrapper: source2, operation: op2 },
+        ]);
+      });
+
+      it('returns undefined for a union with an input without source', () => {
+        const op1 = assignOperationSource(AF.createNop(), source1);
+        expect(ActorRdfJoinMultiBindSource.getBindTargets(AF.createUnion([ op1, AF.createNop() ]))).toBeUndefined();
+      });
+
+      it('returns undefined for another operation without source', () => {
+        expect(ActorRdfJoinMultiBindSource.getBindTargets(AF.createNop())).toBeUndefined();
+      });
+    });
+
+    describe('queryTarget', () => {
+      let calls: RDF.Bindings[][];
+      let sourceRecording: IQuerySourceWrapper;
+      const operation = AF.createPattern(DF.variable('a'), DF.namedNode('ex:p'), DF.variable('c'));
+      const metadata: any = { variables: []};
+
+      beforeEach(() => {
+        calls = [];
+        sourceRecording = <IQuerySourceWrapper> <any> {
+          source: {
+            queryBindings: jest.fn((op: any, ctx: any, options: any) => new TransformIterator(async() => {
+              const bindings: RDF.Bindings[] = await options.joinBindings.bindings.toArray();
+              calls.push(bindings);
+              return new ArrayIterator(
+                bindings.map(binding => binding.set(DF.variable('c'), DF.literal('c'))),
+                { autoStart: false },
+              );
+            }, { autoStart: false })),
+          },
+        };
+      });
+
+      it('skips bindings with blank nodes for variables of the operation, and only passes these variables', async() => {
+        const bindings = [
+          BF.bindings([[ DF.variable('a'), DF.blankNode('a') ]]),
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a1') ],
+            [ DF.variable('x'), DF.blankNode('x') ],
+          ]),
+          BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a2') ]]),
+        ];
+        const metadataAx: any = { variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]};
+        await expect(actor
+          .queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadataAx, context, DF))
+          .toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a1') ],
+              [ DF.variable('x'), DF.blankNode('x') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a2') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+          ]);
+        expect(calls).toEqual([[
+          BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+          BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a2') ]]),
+        ]]);
+        expect(sourceRecording.source.queryBindings).toHaveBeenCalledWith(operation, context, {
+          joinBindings: {
+            bindings: expect.anything(),
+            metadata: { variables: [{ variable: DF.variable('a'), canBeUndef: false }]},
+          },
+        });
+      });
+
+      it('passes the values of the variables of the operation once', async() => {
+        const bindings = [
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a1') ],
+            [ DF.variable('x'), DF.namedNode('ex:x1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a1') ],
+            [ DF.variable('x'), DF.namedNode('ex:x2') ],
+          ]),
+        ];
+        const metadataAx: any = { variables: [
+          { variable: DF.variable('a'), canBeUndef: false },
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]};
+        await expect(actor
+          .queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadataAx, context, DF))
+          .toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a1') ],
+              [ DF.variable('x'), DF.namedNode('ex:x1') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a1') ],
+              [ DF.variable('x'), DF.namedNode('ex:x2') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+          ]);
+        expect(calls).toEqual([[ BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]) ]]);
+      });
+
+      it('ignores results for values that were not passed', async() => {
+        sourceRecording = <IQuerySourceWrapper> <any> {
+          source: {
+            queryBindings: jest.fn(() => new ArrayIterator([
+              BF.bindings([[ DF.variable('a'), DF.namedNode('ex:other') ], [ DF.variable('c'), DF.literal('c') ]]),
+            ], { autoStart: false })),
+          },
+        };
+        const bindings = [ BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]) ];
+        const metadataA: any = { variables: [{ variable: DF.variable('a'), canBeUndef: false }]};
+        await expect(actor.queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadataA, context, DF))
+          .toEqualBindingsStream([]);
+      });
+
+      it('passes all bindings as a whole if one lacks a variable of the operation, blank nodes as IRIs', async() => {
+        const bindings = [
+          BF.bindings([[ DF.variable('x'), DF.blankNode('x') ]]),
+          BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+        ];
+        const metadataAx: any = { variables: [
+          { variable: DF.variable('a'), canBeUndef: true },
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]};
+        await expect(actor
+          .queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadataAx, context, DF))
+          .toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('x'), DF.blankNode('x') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a1') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+          ]);
+        expect(calls).toEqual([[
+          BF.bindings([[ DF.variable('x'), DF.namedNode(`${ActorRdfJoinMultiBindSource.BLANK_NODE_IRI_PREFIX}0`) ]]),
+          BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+        ]]);
+      });
+
+      it('passes bindings without all variables of the operation and blank nodes as is', async() => {
+        const bindings = [ BF.bindings([[ DF.variable('x'), DF.namedNode('ex:x1') ]]) ];
+        const metadataAx: any = { variables: [
+          { variable: DF.variable('a'), canBeUndef: true },
+          { variable: DF.variable('x'), canBeUndef: false },
+        ]};
+        await expect(actor
+          .queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadataAx, context, DF))
+          .toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('x'), DF.namedNode('ex:x1') ],
+              [ DF.variable('c'), DF.literal('c') ],
+            ]),
+          ]);
+        expect(calls).toEqual([ bindings ]);
+      });
+
+      it('does not query if all bindings have blank nodes for variables of the operation', async() => {
+        const bindings = [
+          BF.bindings([[ DF.variable('a'), DF.blankNode('a') ]]),
+        ];
+        await expect(actor.queryTarget({ sourceWrapper: sourceRecording, operation }, bindings, metadata, context, DF))
+          .toEqualBindingsStream([]);
+        expect(sourceRecording.source.queryBindings).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('with a join mediator', () => {
+      let mediatorJoin: any;
+      let sourceOther: IQuerySourceWrapper;
+
+      function meta(cardinality: number, variables: string[]): any {
+        return {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: cardinality },
+          variables: variables.map(variable => ({ variable: DF.variable(variable), canBeUndef: false })),
+        };
+      }
+
+      function makeActor(minMaxCardinalityRatio?: number): ActorRdfJoinMultiBindSource {
+        return new ActorRdfJoinMultiBindSource({
+          name: 'actor',
+          bus,
+          selectivityModifier: 0.000_1,
+          blockSize: 2,
+          minMaxCardinalityRatio,
+          mediatorJoinSelectivity,
+          mediatorJoinEntriesSort,
+          mediatorJoin,
+        });
+      }
+
+      beforeEach(() => {
+        mediatorJoin = {
+          mediate: jest.fn(async(action: IActionRdfJoin) => ({
+            type: 'bindings',
+            bindingsStream: action.entries[0].output.bindingsStream,
+            metadata: action.entries[0].output.metadata,
+          })),
+        };
+        sourceOther = <IQuerySourceWrapper> <any> {
+          source: {
+            getSelectorShape() {
+              return {
+                type: 'operation',
+                operation: { operationType: 'wildcard' },
+                joinBindings: true,
+              };
+            },
+            queryBindings: jest.fn((operation: any, ctx: any, options: any) => {
+              return options.joinBindings.bindings.map((binding: RDF.Bindings) =>
+                binding.set(DF.variable('bound'), DF.namedNode('ex:bound-other')));
+            }),
+          },
+        };
+      });
+
+      describe('getJoinCoefficients', () => {
+        const left = AF.createPattern(DF.variable('a'), DF.namedNode('ex:p'), DF.namedNode('ex:o'));
+        const unionInput1 = AF.createPattern(DF.variable('a'), DF.namedNode('ex:p'), DF.variable('c'));
+        const unionInput2 = AF.createPattern(DF.variable('a'), DF.namedNode('ex:p'), DF.variable('c'));
+        const other = AF.createPattern(DF.variable('d'), DF.namedNode('ex:q'), DF.namedNode('ex:o'));
+
+        function getAction(): IActionRdfJoin {
+          return {
+            type: 'inner',
+            entries: [
+              {
+                output: <any>{},
+                operation: assignOperationSource(left, source2),
+              },
+              {
+                output: <any>{},
+                operation: AF.createUnion([
+                  assignOperationSource(unionInput1, source1),
+                  assignOperationSource(unionInput2, sourceOther),
+                ]),
+              },
+              {
+                output: <any>{},
+                operation: assignOperationSource(other, source1),
+              },
+            ],
+            context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          };
+        }
+
+        it('binds on the first remaining operation that shares a variable', async() => {
+          const action = getAction();
+          const result = await makeActor().getJoinCoefficients(action, {
+            metadatas: [ meta(2, [ 'a' ]), meta(200, [ 'a', 'c' ]), meta(300, [ 'd' ]) ],
+          });
+          expect(result).toPassTest({
+            iterations: 1,
+            persistedItems: 2,
+            blockingItems: 2,
+            requestTime: 0,
+          });
+          const sideData = result.getSideData();
+          expect(sideData.bindIndex).toBe(0);
+          const unionInputs = (<Algebra.Union> action.entries[1].operation).input;
+          expect(sideData.targets).toHaveLength(2);
+          expect(sideData.targets[0].sourceWrapper).toBe(source1);
+          expect(sideData.targets[0].operation).toBe(unionInputs[0]);
+          expect(sideData.targets[1].sourceWrapper).toBe(sourceOther);
+          expect(sideData.targets[1].operation).toBe(unionInputs[1]);
+        });
+
+        it('skips remaining operations that do not share a variable', async() => {
+          const action = getAction();
+          const result = await makeActor().getJoinCoefficients(action, {
+            metadatas: [ meta(2, [ 'a' ]), meta(400, [ 'a', 'c' ]), meta(300, [ 'd' ]) ],
+          });
+          expect(result.getSideData().bindIndex).toBe(1);
+        });
+
+        it('rejects if no remaining operation with sources shares a variable', async() => {
+          const action = getAction();
+          action.entries[1].operation = AF.createUnion([
+            assignOperationSource(unionInput1, source1),
+            unionInput2,
+          ]);
+          await expect(makeActor().getJoinCoefficients(action, {
+            metadatas: [ meta(2, [ 'a' ]), meta(200, [ 'a', 'c' ]), meta(300, [ 'd' ]) ],
+          })).resolves.toFailTest(
+            'Actor actor found no remaining operation with sources that shares variables to bind on',
+          );
+        });
+
+        it('rejects if the smallest stream is not much smaller than the largest stream', async() => {
+          await expect(makeActor().getJoinCoefficients(getAction(), {
+            metadatas: [ meta(10, [ 'a' ]), meta(200, [ 'a', 'c' ]), meta(300, [ 'd' ]) ],
+          })).resolves.toFailTest(
+            'Actor actor can only bind across sources if the smallest stream is much smaller than largest stream',
+          );
+        });
+
+        it('accepts a configured cardinality ratio', async() => {
+          await expect(makeActor(2).getJoinCoefficients(getAction(), {
+            metadatas: [ meta(10, [ 'a' ]), meta(200, [ 'a', 'c' ]), meta(300, [ 'd' ]) ],
+          })).resolves.toPassTest({
+            iterations: 1,
+            persistedItems: 10,
+            blockingItems: 10,
+            requestTime: 0,
+          });
+        });
+
+        it('rejects if a target can not handle passing down join bindings', async() => {
+          const action = getAction();
+          action.entries[1].operation = AF.createUnion([
+            assignOperationSource(AF.createNop(), source1),
+            assignOperationSource(AF.createNop(), source3TriplePattern),
+          ]);
+          await expect(makeActor().getJoinCoefficients(action, {
+            metadatas: [ meta(2, [ 'a' ]), meta(200, [ 'a', 'c' ]), meta(300, [ 'd' ]) ],
+          })).resolves.toFailTest('Actor actor detected a source that can not handle passing down join bindings');
+        });
+      });
+
+      describe('getOutput', () => {
+        it('binds on a union and joins the result with the other operations', async() => {
+          const unionInput1 = AF.createPattern(DF.variable('a'), DF.namedNode('ex:p'), DF.variable('c'));
+          const unionInput2 = AF.createPattern(DF.variable('a'), DF.namedNode('ex:p'), DF.variable('c'));
+          const union = AF.createUnion([
+            assignOperationSource(unionInput1, source1),
+            assignOperationSource(unionInput2, sourceOther),
+          ]);
+          const left = assignOperationSource(
+            AF.createPattern(DF.variable('a'), DF.namedNode('ex:p'), DF.namedNode('ex:o')),
+            source2,
+          );
+          const other = assignOperationSource(
+            AF.createPattern(DF.variable('d'), DF.namedNode('ex:q'), DF.namedNode('ex:o')),
+            source1,
+          );
+          const unionStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+          const otherStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+          const action: IActionRdfJoin = {
+            context,
+            type: 'inner',
+            entries: [
+              {
+                output: <any> {
+                  bindingsStream: new ArrayIterator([
+                    BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+                    BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a2') ]]),
+                    BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a3') ]]),
+                  ], { autoStart: false }),
+                  metadata: () => Promise.resolve(meta(3, [ 'a' ])),
+                  type: 'bindings',
+                },
+                operation: left,
+              },
+              {
+                output: <any> {
+                  bindingsStream: unionStream,
+                  metadata: () => Promise.resolve(meta(200, [ 'a', 'c' ])),
+                  type: 'bindings',
+                },
+                operation: union,
+              },
+              {
+                output: <any> {
+                  bindingsStream: otherStream,
+                  metadata: () => Promise.resolve(meta(300, [ 'd' ])),
+                  type: 'bindings',
+                },
+                operation: other,
+              },
+            ],
+          };
+          const actorJoin = makeActor();
+          const { result } = await actorJoin.getOutput(action, (await actorJoin.test(action)).getSideData());
+
+          expect(unionStream.closed).toBe(true);
+          expect(otherStream.closed).toBe(false);
+          expect(mediatorJoin.mediate).toHaveBeenCalledWith({
+            type: 'inner',
+            entries: [
+              {
+                output: {
+                  type: 'bindings',
+                  bindingsStream: expect.any(AsyncIterator),
+                  metadata: expect.any(Function),
+                },
+                operation: AF.createJoin([ left, union ], false),
+                operationModified: true,
+              },
+              {
+                output: action.entries[2].output,
+                operation: other,
+                operationModified: undefined,
+              },
+            ],
+            context,
+          });
+          await expect(result.bindingsStream).toEqualBindingsStream([
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a1') ],
+              [ DF.variable('bound'), DF.namedNode('ex:bound') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a2') ],
+              [ DF.variable('bound'), DF.namedNode('ex:bound') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a3') ],
+              [ DF.variable('bound'), DF.namedNode('ex:bound') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a1') ],
+              [ DF.variable('bound'), DF.namedNode('ex:bound-other') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a2') ],
+              [ DF.variable('bound'), DF.namedNode('ex:bound-other') ],
+            ]),
+            BF.bindings([
+              [ DF.variable('a'), DF.namedNode('ex:a3') ],
+              [ DF.variable('bound'), DF.namedNode('ex:bound-other') ],
+            ]),
+          ], true);
+          await expect(result.metadata()).resolves.toEqual({
+            state: expect.any(MetadataValidationState),
+            cardinality: { type: 'estimate', value: 3 },
+            variables: [
+              { variable: DF.variable('a'), canBeUndef: false },
+              { variable: DF.variable('c'), canBeUndef: false },
+            ],
+          });
+        });
       });
     });
 

@@ -5,6 +5,7 @@ import { AlgebraFactory } from '../lib/AlgebraFactory';
 import type { AlgebraTransformer } from '../lib/utils';
 import {
   algebraTransformer,
+  copyMetadata,
   getSubOperations,
   hasOperationType,
   inScopeVariables,
@@ -256,5 +257,19 @@ describe('hasOperationType', () => {
       DF.variable('o'),
     );
     expect(hasOperationType(operation, [ Types.UNION ])).toBe(false);
+  });
+});
+
+describe('copyMetadata', () => {
+  it('copies the metadata of the original operation', () => {
+    const original = Object.assign(AF.createNop(), { metadata: { a: 'b' }});
+    const op: Operation = AF.createNop();
+    expect(copyMetadata(op, original)).toBe(op);
+    expect(op.metadata).toBe(original.metadata);
+  });
+
+  it('keeps the metadata of the operation if the original has none', () => {
+    const op = Object.assign(AF.createNop(), { metadata: { a: 'b' }});
+    expect(copyMetadata(op, AF.createNop()).metadata).toEqual({ a: 'b' });
   });
 });

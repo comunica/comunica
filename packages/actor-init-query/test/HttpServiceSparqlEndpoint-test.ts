@@ -1,7 +1,7 @@
 /* eslint-disable jest/prefer-spy-on,jest/no-mocks-import */
 import type { Cluster } from 'node:cluster';
 import { PassThrough } from 'node:stream';
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { BindingsStream } from '@comunica/types';
@@ -669,21 +669,22 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(process.exit).toHaveBeenCalledTimes(1);
       });
 
-      it('should end an open connection when a query times out', async() => {
+      it('should not shut down the worker or end other connections when a query times out', async() => {
         // Start server
         await instance.run(stdout, stderr);
         const server = http.createServer.mock.results[0].value;
 
         // Open new connection
         const response1 = new EventEmitter();
-        (response1).end = jest.fn((message, resolve) => resolve());
+        (response1).end = jest.fn();
         server.emit('request', undefined, response1);
 
-        instance.timeOutQuery(0, stderr);
+        instance.timeOutQuery(0, <any> { writableEnded: true }, jest.fn(), stderr);
 
-        expect((response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
         await new Promise(setImmediate);
-        expect(process.exit).toHaveBeenCalledTimes(1);
+        expect((response1).end).not.toHaveBeenCalled();
+        expect(server.close).not.toHaveBeenCalled();
+        expect(process.exit).not.toHaveBeenCalled();
       });
 
       it('should end multiple open connections on shutdown messages', async() => {
@@ -1741,6 +1742,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             'content-type': mediaType,
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+            'Cache-Control': 'max-age=3600',
+            Vary: 'Accept',
             'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
             Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
             'Accept-Query': 'application/sparql-query',
@@ -1797,6 +1800,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             'content-type': mediaType,
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+            'Cache-Control': 'max-age=3600',
+            Vary: 'Accept',
             'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
             Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
             'Accept-Query': 'application/sparql-query',
@@ -1843,6 +1848,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             'content-type': mediaType,
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+            'Cache-Control': 'max-age=3600',
+            Vary: 'Accept',
             'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
             Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
             'Accept-Query': 'application/sparql-query',
@@ -1880,6 +1887,37 @@ describe('HttpServiceSparqlEndpoint', () => {
         );
         expect(response.writeHead)
           .toHaveBeenLastCalledWith(400, { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+      });
+
+      describe('getServiceDescriptionCacheControl', () => {
+        it('should let clients reuse service descriptions without VoID', () => {
+          expect(instance.getServiceDescriptionCacheControl()).toBe('max-age=3600');
+        });
+
+        it('should let clients reuse service descriptions with computed VoID of read-only endpoints', () => {
+          const localInstance = new HttpServiceSparqlEndpoint({
+            ...argsDefault,
+            emitVoid: true,
+            context: { [KeysQueryOperation.readOnly.name]: true },
+          });
+          localInstance.voidMetadataEmitter.cachedStatistics = [ <any> {} ];
+          expect(localInstance.getServiceDescriptionCacheControl()).toBe('max-age=3600');
+        });
+
+        it('should not let clients reuse service descriptions with VoID that is not computed yet', () => {
+          const localInstance = new HttpServiceSparqlEndpoint({
+            ...argsDefault,
+            emitVoid: true,
+            context: { [KeysQueryOperation.readOnly.name]: true },
+          });
+          expect(localInstance.getServiceDescriptionCacheControl()).toBe('no-cache');
+        });
+
+        it('should not let clients reuse service descriptions with VoID of endpoints that allow updates', () => {
+          const localInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, emitVoid: true, context: {}});
+          localInstance.voidMetadataEmitter.cachedStatistics = [ <any> {} ];
+          expect(localInstance.getServiceDescriptionCacheControl()).toBe('no-cache');
+        });
       });
 
       describe('service description cache', () => {
@@ -1959,55 +1997,17 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       describe('VoID description', () => {
-        const xsd = 'http://www.w3.org/2001/XMLSchema#';
-
-        let queryBindings: (query: string) => BindingsStream;
+        let queryBindings: () => BindingsStream;
 
         beforeEach(() => {
           instance.voidMetadataEmitter.invalidateCache();
-          queryBindings = (query: string): BindingsStream => {
-            let bindingsArray: RDF.Bindings[];
-            if (query.includes('?triples')) {
-              bindingsArray = [
-                BF.bindings([
-                  [ DF.variable('triples'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-                  [ DF.variable('entities'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-                  [ DF.variable('distinctSubjects'), DF.literal('8', DF.namedNode(`${xsd}integer`)) ],
-                  [ DF.variable('properties'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
-                  [ DF.variable('distinctObjects'), DF.literal('4', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-              ];
-            } else if (query.includes('?classes')) {
-              bindingsArray = [
-                BF.bindings([
-                  [ DF.variable('classes'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-              ];
-            } else if (query.includes('?class ')) {
-              bindingsArray = [
-                BF.bindings([
-                  [ DF.variable('class'), DF.namedNode('http://example.org/classA') ],
-                  [ DF.variable('count'), DF.literal('5', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-                BF.bindings([
-                  [ DF.variable('class'), DF.namedNode('http://example.org/classB') ],
-                  [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-              ];
-            } else {
-              bindingsArray = [
-                BF.bindings([
-                  [ DF.variable('property'), DF.namedNode('http://example.org/propertyA') ],
-                  [ DF.variable('count'), DF.literal('3', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-                BF.bindings([
-                  [ DF.variable('property'), DF.namedNode('http://example.org/propertyB') ],
-                  [ DF.variable('count'), DF.literal('2', DF.namedNode(`${xsd}integer`)) ],
-                ]),
-              ];
-            }
-            return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray, { autoStart: false }));
-          };
+          queryBindings = (): BindingsStream => <BindingsStream>(new ArrayIterator<RDF.Bindings>([
+            BF.bindings([
+              [ DF.variable('s'), DF.namedNode('http://example.org/s') ],
+              [ DF.variable('p'), DF.namedNode('http://example.org/propertyA') ],
+              [ DF.variable('o'), DF.literal('o') ],
+            ]),
+          ], { autoStart: false }));
         });
 
         it('should serialize the service description again after an update', async() => {
@@ -2087,6 +2087,8 @@ describe('HttpServiceSparqlEndpoint', () => {
               'content-type': mediaType,
               'Access-Control-Allow-Origin': '*',
               'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+              'Cache-Control': 'no-cache',
+              Vary: 'Accept',
               'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS, POST, QUERY',
               Allow: 'GET, HEAD, OPTIONS, POST, QUERY',
               'Accept-Query': 'application/sparql-query',
@@ -2136,8 +2138,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           );
 
           expect(localInstance.voidMetadataEmitter.cachedStatistics).not.toHaveLength(0);
-          // Each void request does 4 calls for the statistics fetch
-          expect(spyQueryBindings).toHaveBeenCalledTimes(4);
+          // Each void request computes the statistics in a single query
+          expect(spyQueryBindings).toHaveBeenCalledTimes(1);
 
           const query = `
 INSERT DATA {
@@ -2160,8 +2162,8 @@ INSERT DATA {
           );
 
           expect(localInstance.voidMetadataEmitter.cachedStatistics).toHaveLength(0);
-          // Should still be 4, insert queries don't fetch again, just invalidate the cache
-          expect(spyQueryBindings).toHaveBeenCalledTimes(4);
+          // Should still be 1, insert queries don't fetch again, just invalidate the cache
+          expect(spyQueryBindings).toHaveBeenCalledTimes(1);
 
           localInstance.voidMetadataEmitter.cachedStatistics = [ <any> {} ];
 
@@ -2186,7 +2188,7 @@ INSERT DATA {
           );
 
           expect(localInstance.voidMetadataEmitter.cachedStatistics).toHaveLength(0);
-          expect(spyQueryBindings).toHaveBeenCalledTimes(4);
+          expect(spyQueryBindings).toHaveBeenCalledTimes(1);
         });
       });
 
@@ -2274,12 +2276,142 @@ INSERT DATA {
         expect(responseString).toBe('test_query_result');
       });
 
-      it('should only log a query timeout outside of a worker', async() => {
+      it('should stop a query that timed out, and end its response', async() => {
         const stderr = new PassThrough();
-        instance.timeOutQuery(3, stderr);
+        const stopQuery = jest.fn();
+        instance.timeOutQuery(3, response, stopQuery, stderr);
         stderr.end();
         await expect(stringifyStream(stderr)).resolves.toBe(`Worker ${process.pid} timed out for query 3.\n`);
+        expect(stopQuery).toHaveBeenCalledTimes(1);
+        expect(response.end).toHaveBeenCalledWith('!TIMEDOUT!');
         expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should not end the response of a query that timed out if it has ended already', () => {
+        Object.defineProperty(response, 'writableEnded', { value: true });
+        instance.timeOutQuery(3, response, jest.fn(), new PassThrough());
+        expect(response.end).not.toHaveBeenCalled();
+      });
+
+      describe('when a query is stopped', () => {
+        let engine: any;
+        let stream: ArrayIterator<RDF.Bindings>;
+        let contexts: any[];
+
+        beforeEach(async() => {
+          engine = await new QueryEngineFactoryBase().create();
+          stream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+          contexts = [];
+          engine.query = jest.fn(async(_: string, context: any) => {
+            contexts.push(context);
+            return { resultType: 'bindings', execute: async() => stream };
+          });
+          engine.resultToString = jest.fn(async(result: any) => {
+            await result.execute();
+            return { data: new PassThrough() };
+          });
+        });
+
+        async function write(): Promise<void> {
+          await instance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            query,
+            '',
+            false,
+            true,
+            0,
+          );
+        }
+
+        it('should abort the HTTP requests and destroy the results of a query that times out', async() => {
+          await write();
+          const signal: AbortSignal = contexts[0][KeysHttp.httpAbortSignal.name];
+          expect(signal.aborted).toBe(false);
+          expect(stream.destroyed).toBe(false);
+
+          jest.runAllTimers();
+          expect(signal.aborted).toBe(true);
+          expect(stream.destroyed).toBe(true);
+          expect(response.end).toHaveBeenCalledWith('!TIMEDOUT!');
+        });
+
+        it('should stop a query of which the response is closed before it was finished', async() => {
+          await write();
+          response.emit('close');
+          expect(contexts[0][KeysHttp.httpAbortSignal.name].aborted).toBe(true);
+          expect(stream.destroyed).toBe(true);
+        });
+
+        it('should not stop a query of which the response was finished', async() => {
+          await write();
+          Object.defineProperty(response, 'writableFinished', { value: true });
+          response.emit('close');
+          expect(contexts[0][KeysHttp.httpAbortSignal.name].aborted).toBe(false);
+          expect(stream.destroyed).toBe(false);
+        });
+
+        it('should not write the results of a query that timed out before it was executed', async() => {
+          let resolveQuery: (result: any) => void;
+          engine.query = () => new Promise(resolve => resolveQuery = resolve);
+          const written = write();
+          await new Promise(setImmediate);
+          jest.runAllTimers();
+          resolveQuery!({ resultType: 'bindings', execute: async() => stream });
+          await written;
+          expect(engine.resultToString).not.toHaveBeenCalled();
+          expect(response.writeHead).not.toHaveBeenCalled();
+          expect(response.end).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not report the failure of a query that timed out', async() => {
+          let rejectQuery: (error: Error) => void;
+          engine.query = () => new Promise((_, reject) => rejectQuery = reject);
+          const written = write();
+          await new Promise(setImmediate);
+          jest.runAllTimers();
+          rejectQuery!(new Error('aborted'));
+          await written;
+          expect(response.writeHead).not.toHaveBeenCalled();
+          expect(response.end).toHaveBeenCalledTimes(1);
+        });
+
+        it('should destroy results of a query that are created after it timed out', async() => {
+          engine.resultToString = jest.fn(async(result: any) => {
+            jest.runAllTimers();
+            await result.execute();
+            return { data: new PassThrough() };
+          });
+          await write();
+          expect(stream.destroyed).toBe(true);
+          expect(response.writeHead).not.toHaveBeenCalled();
+        });
+
+        it('should not report a serialization failure of a query that timed out', async() => {
+          engine.resultToString = jest.fn(async() => {
+            jest.runAllTimers();
+            throw new Error('serialization failure');
+          });
+          await write();
+          expect(response.writeHead).not.toHaveBeenCalled();
+          expect(response.end).toHaveBeenCalledTimes(1);
+        });
+
+        it('should abort the HTTP requests of a query if the abort signal of the context aborts', async() => {
+          const abortController = new AbortController();
+          instance = new HttpServiceSparqlEndpoint({
+            ...argsDefault,
+            context: { [KeysHttp.httpAbortSignal.name]: abortController.signal },
+          });
+          await write();
+          const signal: AbortSignal = contexts[0][KeysHttp.httpAbortSignal.name];
+          expect(signal.aborted).toBe(false);
+          abortController.abort();
+          expect(signal.aborted).toBe(true);
+        });
       });
 
       it('should time out the query in the worker', async() => {
@@ -2304,7 +2436,7 @@ INSERT DATA {
         expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60_000);
         expect(instance.timeOutQuery).not.toHaveBeenCalled();
         jest.runAllTimers();
-        expect(instance.timeOutQuery).toHaveBeenCalledWith(0, stderr);
+        expect(instance.timeOutQuery).toHaveBeenCalledWith(0, response, expect.any(Function), stderr);
 
         // A query that timed out is not reported as completed
         response.emit('close');
@@ -2484,6 +2616,7 @@ INSERT DATA {
         expect(engine.query).toHaveBeenCalledWith('default_test_query', {
           '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql',
           [KeysQueryOperation.readOnly.name]: true,
+          [KeysHttp.httpAbortSignal.name]: expect.any(AbortSignal),
         });
       });
 
@@ -2505,7 +2638,10 @@ INSERT DATA {
         );
 
         await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(engine.query).toHaveBeenCalledWith('default_test_query', { '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql' });
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', {
+          '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql',
+          [KeysHttp.httpAbortSignal.name]: expect.any(AbortSignal),
+        });
       });
 
       it('should not override context entries by default', async() => {
@@ -2528,7 +2664,10 @@ INSERT DATA {
         );
 
         await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(engine.query).toHaveBeenCalledWith('default_test_query', { '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql' });
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', {
+          '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql',
+          [KeysHttp.httpAbortSignal.name]: expect.any(AbortSignal),
+        });
       });
 
       it('should override context entries if contextOverride is enabled', async() => {
@@ -2555,6 +2694,7 @@ INSERT DATA {
         expect(engine.query).toHaveBeenCalledWith('default_test_query', {
           '@comunica/actor-init-query:baseIRI': 'http://localhost:3000/sparql',
           overrideKey: 'overrideValue',
+          [KeysHttp.httpAbortSignal.name]: expect.any(AbortSignal),
         });
       });
 
@@ -2657,6 +2797,7 @@ INSERT DATA {
 
         expect(engine.query).toHaveBeenCalledWith('default_test_query', {
           '@comunica/actor-init-query:baseIRI': 'https://example.org/sparql',
+          [KeysHttp.httpAbortSignal.name]: expect.any(AbortSignal),
         });
       });
     });
@@ -3065,6 +3206,28 @@ INSERT DATA {
         expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
       });
 
+      it('should not call writeHtmlView when RDF is preferred over text/html', async() => {
+        request.headers.accept = 'application/n-quads,text/turtle;q=0.6,text/html;q=0.2';
+        const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
+        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+
+        await instance.writeQueryResult(
+          await new QueryEngineFactoryBase().create(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          { type: 'query', value: '', context: undefined },
+          'application/n-quads',
+          false,
+          true,
+          0,
+        );
+
+        expect(spyWriteHtmlView).toHaveBeenCalledTimes(0);
+        expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
+      });
+
       it('should not call writeHtmlView when query is provided even with text/html Accept header', async() => {
         const spyWriteHtmlView = jest.spyOn(instance, 'writeHtmlView');
 
@@ -3082,6 +3245,40 @@ INSERT DATA {
         );
 
         expect(spyWriteHtmlView).toHaveBeenCalledTimes(0);
+      });
+    });
+
+    describe('prefersHtml', () => {
+      function prefersHtml(accept: string | undefined, mediaType?: string): boolean {
+        return HttpServiceSparqlEndpoint.prefersHtml(<any> { headers: { accept }}, mediaType);
+      }
+
+      it('should be true for browsers', () => {
+        expect(prefersHtml('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'application/xml'))
+          .toBe(true);
+      });
+
+      it('should be true for text/html or text/* without another media type', () => {
+        expect(prefersHtml('text/html')).toBe(true);
+        expect(prefersHtml('text/*')).toBe(true);
+      });
+
+      it('should be true when text/html is preferred as much as the other media type', () => {
+        expect(prefersHtml('text/html,text/turtle', 'text/turtle')).toBe(true);
+      });
+
+      it('should be false when another media type is preferred over text/html', () => {
+        expect(prefersHtml('application/n-quads,text/html;q=0.2', 'application/n-quads')).toBe(false);
+      });
+
+      it('should be false without an explicit text/html', () => {
+        expect(prefersHtml(undefined)).toBe(false);
+        expect(prefersHtml('*/*')).toBe(false);
+        expect(prefersHtml('text/turtle', 'text/turtle')).toBe(false);
+      });
+
+      it('should be false when text/html is not acceptable', () => {
+        expect(prefersHtml('text/html;q=0')).toBe(false);
       });
     });
 

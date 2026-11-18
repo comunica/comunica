@@ -9,7 +9,7 @@ import * as querystring from 'node:querystring';
 import type { Writable } from 'node:stream';
 import type { TLSSocket } from 'node:tls';
 import * as url from 'node:url';
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraTransformer } from '@comunica/utils-algebra';
@@ -68,6 +68,10 @@ export class HttpServiceSparqlEndpoint {
    * The maximum number of distinct request headers for which negotiated media types are cached.
    */
   public static readonly NEGOTIATION_CACHE_SIZE = 1_000;
+  /**
+   * The number of seconds for which clients may reuse a service description.
+   */
+  public static readonly SERVICE_DESCRIPTION_MAX_AGE = 3_600;
 
   public readonly engine: Promise<QueryEngineBase>;
 
@@ -305,15 +309,19 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
-   * Stop this worker because a query took longer than the timeout.
-   * The main process then starts a new worker.
+   * Stop a query because it took longer than the timeout, and end its response.
+   * The worker continues to handle other queries.
    * @param queryId The id of the query that timed out.
+   * @param response The response of the query.
+   * @param stopQuery A function that stops the query.
    * @param stderr Error stream to write to.
    */
-  public timeOutQuery(queryId: number, stderr: Writable): void {
+  public timeOutQuery(queryId: number, response: ServerResponse, stopQuery: () => void, stderr: Writable): void {
     stderr.write(`Worker ${process.pid} timed out for query ${queryId}.\n`);
-    // eslint-disable-next-line ts/no-floating-promises
-    this.shutdownWorker?.();
+    stopQuery();
+    if (!response.writableEnded) {
+      response.end('!TIMEDOUT!');
+    }
   }
 
   /**
@@ -351,7 +359,7 @@ export class HttpServiceSparqlEndpoint {
       });
     });
 
-    // Shut down on query timeouts and shutdown messages, after ending all open connections
+    // Shut down on shutdown messages, after ending all open connections
     this.shutdownWorker = async(): Promise<void> => {
       stderr.write(`Shutting down worker ${process.pid} with ${openConnections.size} open connections.\n`);
 
@@ -434,6 +442,24 @@ export class HttpServiceSparqlEndpoint {
       cache.set(key, mediaType);
     }
     return mediaType;
+  }
+
+  /**
+   * Check if a request prefers the HTML view over the service description.
+   * This requires HTML to be accepted explicitly, and at least as much as the media type of the service description.
+   * Clients such as Comunica accept HTML with a low preference, to parse RDFa, but prefer RDF formats.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {string} mediaType The negotiated media type of the service description, if any.
+   */
+  public static prefersHtml(request: http.IncomingMessage, mediaType: string | undefined): boolean {
+    const variants = require('negotiate').choose([
+      { type: HttpServiceSparqlEndpoint.MIME_HTML },
+      ...mediaType ? [{ type: mediaType }] : [],
+    ], request);
+    const html = variants.find((variant: any) => variant.type === HttpServiceSparqlEndpoint.MIME_HTML);
+    const other = variants.find((variant: any) => variant.type !== HttpServiceSparqlEndpoint.MIME_HTML);
+    // Require qts of at least 3, which is a match on text/html or text/*, and not only on */* or *.
+    return html.qts >= 3 && html.q > 0 && (!other || html.q >= other.q);
   }
 
   /**
@@ -736,9 +762,8 @@ export class HttpServiceSparqlEndpoint {
     queryId: number,
   ): Promise<void> {
     if (!queryBody || !queryBody.value) {
-      // Check if HTML is requested
-      const acceptHeader = request.headers.accept ?? '';
-      if (acceptHeader.includes('text/html')) {
+      // Check if HTML is preferred over the service description
+      if (HttpServiceSparqlEndpoint.prefersHtml(request, mediaType)) {
         return this.writeHtmlView(stdout, request, response);
       }
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
@@ -751,23 +776,44 @@ export class HttpServiceSparqlEndpoint {
 
     // The worker times out its own queries, as messaging the main process for every query is costly
     stderr.write(`Worker ${process.pid} got assigned a new query (${queryId}).\n`);
+
+    // Stopping a query aborts its HTTP requests and destroys its results, so that the worker can handle other queries
+    const abortController = new AbortController();
+    let resultStream: { destroy: () => void } | undefined;
+    let data: NodeJS.ReadableStream | undefined;
+    let stopped = false;
+    const stopQuery = (): void => {
+      stopped = true;
+      abortController.abort();
+      data?.unpipe(response);
+      resultStream?.destroy();
+    };
+
     let timedOut = false;
     const timeout = setTimeout(() => {
       timedOut = true;
-      this.timeOutQuery(queryId, stderr);
+      this.timeOutQuery(queryId, response, stopQuery, stderr);
     }, this.timeout);
     response.on('close', () => {
       clearTimeout(timeout);
+      // Stop the query if its response is closed before it was finished, e.g., by the client
+      if (!response.writableFinished && !stopped) {
+        stopQuery();
+      }
       if (!timedOut) {
         stderr.write(`Worker ${process.pid} has completed query ${queryId}.\n`);
       }
     });
 
     // Determine context
+    const contextAbortSignal: AbortSignal | undefined = this.context[KeysHttp.httpAbortSignal.name];
     let context = {
       [KeysInitQuery.baseIRI.name]: HttpServiceSparqlEndpoint.getBaseIRI(request, this.port),
       ...this.context,
       ...this.contextOverride ? queryBody.context : undefined,
+      [KeysHttp.httpAbortSignal.name]: contextAbortSignal ?
+        AbortSignal.any([ contextAbortSignal, abortController.signal ]) :
+        abortController.signal,
     };
     if (readOnly) {
       context = { ...context, [KeysQueryOperation.readOnly.name]: readOnly };
@@ -790,8 +836,29 @@ export class HttpServiceSparqlEndpoint {
         result = { ...result, execute: () => executed };
       }
     } catch (error: unknown) {
-      this.writeBadRequest(stdout, response, (<Error> error).message);
+      if (!stopped) {
+        this.writeBadRequest(stdout, response, (<Error> error).message);
+      }
       return;
+    }
+    if (stopped) {
+      return;
+    }
+
+    // Keep the result stream, so that it can be destroyed if the query is stopped
+    if (result.resultType === 'bindings' || result.resultType === 'quads') {
+      const original = result;
+      result = <QueryType> {
+        ...result,
+        async execute(opts?: any) {
+          const stream = await original.execute(opts);
+          resultStream = stream;
+          if (stopped) {
+            stream.destroy();
+          }
+          return stream;
+        },
+      };
     }
 
     // If the query was an update query, invalidate the void metadata emitter cache
@@ -831,7 +898,10 @@ export class HttpServiceSparqlEndpoint {
 
     let eventEmitter: EventEmitter | undefined;
     try {
-      const { data } = await engine.resultToString(result, mediaType);
+      data = (await engine.resultToString(result, mediaType)).data;
+      if (stopped) {
+        return;
+      }
 
       // Only write the header once serialization has started, so that a failure can still be reported as such
       response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
@@ -845,11 +915,13 @@ export class HttpServiceSparqlEndpoint {
       data.pipe(response);
       eventEmitter = data;
     } catch {
-      this.writeBadRequest(
-        stdout,
-        response,
-        'The response for the given query could not be serialized for the requested media type',
-      );
+      if (!stopped) {
+        this.writeBadRequest(
+          stdout,
+          response,
+          'The response for the given query could not be serialized for the requested media type',
+        );
+      }
     }
 
     this.stopResponse(response, queryId, process.stderr, eventEmitter);
@@ -935,6 +1007,8 @@ export class HttpServiceSparqlEndpoint {
       'Access-Control-Allow-Origin': '*',
       // Without this, browser clients are not allowed to read the QUERY advertisement.
       'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+      'Cache-Control': this.getServiceDescriptionCacheControl(),
+      Vary: 'Accept',
     }));
 
     if (headOnly) {
@@ -1028,6 +1102,19 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
     this.stopResponse(response, 0, process.stderr, eventEmitter);
+  }
+
+  /**
+   * Determine the Cache-Control header of service descriptions.
+   * Service descriptions only change when the endpoint is restarted,
+   * except for VoID statistics, which change with updates, and which may fail to be computed the first time.
+   */
+  public getServiceDescriptionCacheControl(): string {
+    if (this.emitVoid && (!ActionContext.ensureActionContext(this.context).get(KeysQueryOperation.readOnly) ||
+      this.voidMetadataEmitter.cachedStatistics.length === 0)) {
+      return 'no-cache';
+    }
+    return `max-age=${HttpServiceSparqlEndpoint.SERVICE_DESCRIPTION_MAX_AGE}`;
   }
 
   /**

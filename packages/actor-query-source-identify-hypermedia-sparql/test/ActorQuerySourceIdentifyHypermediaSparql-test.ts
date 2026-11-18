@@ -62,6 +62,8 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         cardinalityCountQueries: true,
         cardinalityEstimateConstruction: false,
         forceGetIfUrlLengthBelow: 600,
+        batchAskQueries: false,
+        countFallbackDuration: 1_000,
         sparqlServerSoftwarePatterns: [ 'Virtuoso', 'Fuseki' ],
       });
     });
@@ -129,6 +131,8 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          batchAskQueries: false,
+          countFallbackDuration: 1_000,
         });
         await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context })).resolves
           .toFailTest('Actor actor could not detect a SPARQL service description or URL ending on /sparql.');
@@ -149,6 +153,8 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          batchAskQueries: false,
+          countFallbackDuration: 1_000,
         });
         await expect(actor
           .test({ url: 'URL/sparql', metadata: {}, quads: <any> null, forceSourceType: 'file', context }))
@@ -170,6 +176,8 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          batchAskQueries: false,
+          countFallbackDuration: 1_000,
         });
         await expect(actor.test({
           url: 'URL',
@@ -195,6 +203,8 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          batchAskQueries: false,
+          countFallbackDuration: 1_000,
         });
         await expect(actor.test({
           url: 'URL',
@@ -250,6 +260,8 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          batchAskQueries: false,
+          countFallbackDuration: 1_000,
           sparqlServerSoftwarePatterns: [ 'Custom' ],
         });
         await expect(actor.test({
@@ -276,6 +288,8 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          batchAskQueries: false,
+          countFallbackDuration: 1_000,
         });
         await expect(actor.test({
           url: 'URL',
@@ -287,12 +301,86 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
       });
     });
 
+    describe('createCountFallback', () => {
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
+
+      it('should be undefined if disabled', () => {
+        actor = new ActorQuerySourceIdentifyHypermediaSparql({ ...(<any> actor), countFallbackDuration: 0 });
+        expect(actor.createCountFallback('URL', context)).toBeUndefined();
+      });
+
+      it('should be active for the duration after its activation for patterns', () => {
+        const now = jest.spyOn(Date, 'now').mockReturnValue(10_000);
+        const countFallback = actor.createCountFallback('URL', context)!;
+        expect(countFallback.isActive(true)).toBe(false);
+        expect(countFallback.isActive(false)).toBe(false);
+        countFallback.activate(true);
+        expect(countFallback.isActive(true)).toBe(true);
+        expect(countFallback.isActive(false)).toBe(true);
+        now.mockReturnValue(10_999);
+        expect(countFallback.isActive(true)).toBe(true);
+        expect(countFallback.isActive(false)).toBe(true);
+        now.mockReturnValue(11_000);
+        expect(countFallback.isActive(true)).toBe(false);
+        expect(countFallback.isActive(false)).toBe(false);
+      });
+
+      it('should only be active for other operations after its activation for other operations', () => {
+        const now = jest.spyOn(Date, 'now').mockReturnValue(10_000);
+        const countFallback = actor.createCountFallback('URL', context)!;
+        countFallback.activate(false);
+        expect(countFallback.isActive(true)).toBe(false);
+        expect(countFallback.isActive(false)).toBe(true);
+        now.mockReturnValue(10_500);
+        countFallback.activate(true);
+        now.mockReturnValue(11_200);
+        expect(countFallback.isActive(true)).toBe(true);
+        expect(countFallback.isActive(false)).toBe(true);
+        now.mockReturnValue(11_500);
+        expect(countFallback.isActive(true)).toBe(false);
+        expect(countFallback.isActive(false)).toBe(false);
+      });
+
+      it('should be shared by the sources of an endpoint', () => {
+        actor.createCountFallback('URL', context)!.activate(true);
+        expect(actor.createCountFallback('URL', context)!.isActive(true)).toBe(true);
+        expect(actor.createCountFallback('OTHER', context)!.isActive(true)).toBe(false);
+      });
+
+      it('should log a warning when it becomes active', () => {
+        const logWarn = jest.spyOn(<any> actor, 'logWarn').mockImplementation(() => {
+          // Do nothing
+        });
+        const countFallback = actor.createCountFallback('URL', context)!;
+        countFallback.activate(false);
+        countFallback.activate(false);
+        countFallback.activate(true);
+        countFallback.activate(true);
+        expect(logWarn).toHaveBeenCalledTimes(2);
+        expect(logWarn).toHaveBeenNthCalledWith(1, context, 'Not sending COUNT queries over operations other than ' +
+          'patterns to URL for 1000 ms, as one failed or took longer than 3000 ms');
+        expect(logWarn).toHaveBeenNthCalledWith(2, context, 'Not sending COUNT queries over patterns to URL ' +
+          'for 1000 ms, as one failed or took longer than 3000 ms');
+      });
+    });
+
     describe('#run', () => {
+      it('should return sources that share the COUNT fallback of their endpoint', async() => {
+        const output1 = await actor.run({ url: 'URL', metadata: {}, quads: <any> null, context });
+        const output2 = await actor.run({ url: 'URL', metadata: {}, quads: <any> null, context });
+        (<any> output1.source).countFallback.activate(true);
+        expect((<any> output2.source).countFallback.isActive(true)).toBe(true);
+      });
+
       it('should return a source', async() => {
         const output = await actor
           .run({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null, context });
         expect(output.source).toBeInstanceOf(QuerySourceSparql);
+        expect(output.queriesService).toBe(true);
         expect((<any> output.source).url).toBe('SERVICE');
+        expect((<any> output.source).cardinalityCountQueries).toBe(true);
         expect((<any> output.source).endpointFetcher.sparqlJsonParser.parseUnsupportedVersions).toBe(false);
         expect((<any> output.source).endpointFetcher.sparqlXmlParser.parseUnsupportedVersions).toBe(false);
       });

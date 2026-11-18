@@ -1,6 +1,13 @@
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
-import { cachifyMetadata, getMetadataBindings, getMetadataQuads, MetadataValidationState } from '../lib';
+import {
+  cachifyMetadata,
+  estimateCardinality,
+  getMetadataBindings,
+  getMetadataQuads,
+  MetadataValidationState,
+  onFirstMetadataRequest,
+} from '../lib';
 
 describe('Utils', () => {
   describe('getMetadataQuads', () => {
@@ -112,6 +119,43 @@ describe('Utils', () => {
       expect((await cached()).value).toBe(1);
       expect((await cached()).value).toBe(1);
       expect(cb).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('onFirstMetadataRequest', () => {
+    it('calls the function once, when metadata is first requested', async() => {
+      const it = new ArrayIterator<any>([], { autoStart: false });
+      const onRequest = jest.fn(() => it.setProperty('metadata', { a: 'b' }));
+      onFirstMetadataRequest(it, onRequest);
+      expect(onRequest).not.toHaveBeenCalled();
+
+      it.getProperty('other');
+      expect(onRequest).not.toHaveBeenCalled();
+
+      const metadata = new Promise(resolve => it.getProperty('metadata', resolve));
+      expect(onRequest).toHaveBeenCalledTimes(1);
+      await expect(metadata).resolves.toEqual({ a: 'b' });
+
+      expect(it.getProperty('metadata')).toEqual({ a: 'b' });
+      expect(onRequest).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('estimateCardinality', () => {
+    it('marks an exact cardinality as an estimate', () => {
+      const metadata = { cardinality: { type: 'exact', value: 3 }, other: true };
+      expect(estimateCardinality(<any> metadata)).toEqual({ cardinality: { type: 'estimate', value: 3 }, other: true });
+      expect(metadata.cardinality.type).toBe('exact');
+    });
+
+    it('keeps an exact cardinality of zero', () => {
+      const metadata = { cardinality: { type: 'exact', value: 0 }};
+      expect(estimateCardinality(<any> metadata)).toBe(metadata);
+    });
+
+    it('keeps an estimated cardinality', () => {
+      const metadata = { cardinality: { type: 'estimate', value: 3 }};
+      expect(estimateCardinality(<any> metadata)).toBe(metadata);
     });
   });
 });

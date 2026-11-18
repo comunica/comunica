@@ -64,6 +64,14 @@ describe('System test: QuerySparql', () => {
     };
   }
 
+  describe('getResultMediaTypes', () => {
+    it('prefers the standard SPARQL results formats over the generic JSON format', async() => {
+      const mediaTypes = await engine.getResultMediaTypes();
+      expect(mediaTypes['application/sparql-results+json']).toBeGreaterThan(mediaTypes['application/json']);
+      expect(mediaTypes['application/sparql-results+xml']).toBeGreaterThan(mediaTypes['application/json']);
+    });
+  });
+
   describe('instantiated multiple times', () => {
     it('should contain different actors', () => {
       const engine2 = new QueryEngine();
@@ -808,7 +816,11 @@ SELECT ?person ?label WHERE {
                   headers: { 'Content-Type': 'application/sparql-results+json' },
                 });
               }
-              return new Response(JSON.stringify({ head: { vars: []}, results: { bindings: []}}), {
+              // Painters are found, but no labels that match
+              const bindings = sparqlQuery.includes('<http://example.org/Painter>') && !sparqlQuery.includes('COUNT') ?
+                  [{ person: { type: 'uri', value: 'http://example.org/rembrandt' }}] :
+                  [];
+              return new Response(JSON.stringify({ head: { vars: [ 'person' ]}, results: { bindings }}), {
                 status: 200,
                 headers: { 'Content-Type': 'application/sparql-results+json' },
               });
@@ -819,8 +831,13 @@ SELECT ?person ?label WHERE {
           // The filter must never be sent along with a pattern that does not bind ?label
           expect(queries.filter(sparqlQuery => sparqlQuery.includes('bif:contains') &&
             !sparqlQuery.includes('<http://www.w3.org/2000/01/rdf-schema#label> ?label'))).toEqual([]);
-          expect(queries.filter(sparqlQuery => sparqlQuery === 'SELECT ?person ?label WHERE { ?person <http://www.w3.org/2000/01/rdf-schema#label> ?label . FILTER ( <bif:contains> ( ?label , "\'rembrandt\'"^^<http://www.w3.org/2001/XMLSchema#string> ) ) }'))
-            .toHaveLength(2);
+          // The filter must be sent along with the pattern that binds ?label, to each endpoint
+          const labelQueries = queries.filter(sparqlQuery => sparqlQuery.startsWith('SELECT ?person ?label') &&
+            sparqlQuery.includes('<http://www.w3.org/2000/01/rdf-schema#label> ?label'));
+          expect(labelQueries).toHaveLength(2);
+          for (const labelQuery of labelQueries) {
+            expect(labelQuery).toContain('FILTER ( <bif:contains> ( ?label , "\'rembrandt\'"^^<http://www.w3.org/2001/XMLSchema#string> ) )');
+          }
         });
       });
 
@@ -1020,6 +1037,64 @@ SELECT ?person ?label WHERE {
             [ DF.variable('s'), DF.namedNode('http://ex.org/s') ],
             [ DF.variable('o'), DF.namedNode('http://ex.org/o') ],
             [ DF.variable('c'), DF.literal('0', xsdInteger) ],
+          ]),
+        ]);
+      });
+    });
+
+    describe('filter with an equality between patterns that are not joined otherwise', () => {
+      let store: Store;
+
+      beforeEach(() => {
+        const ex = (name: string): RDF.NamedNode => DF.namedNode(`http://ex.org/${name}`);
+        store = new Store([
+          DF.quad(ex('a1'), ex('name'), DF.literal('Alice', 'en')),
+          DF.quad(ex('a2'), ex('name'), DF.literal('Bob', 'en')),
+          DF.quad(ex('a3'), ex('name'), DF.blankNode('b')),
+          DF.quad(ex('m1'), ex('actor'), DF.literal('Alice')),
+          DF.quad(ex('m2'), ex('actor'), ex('Alice')),
+          DF.quad(ex('m3'), ex('actor'), DF.literal('Carol')),
+          DF.quad(ex('m4'), ex('actor'), DF.blankNode('b')),
+          DF.quad(ex('a1'), ex('knows'), ex('m2')),
+          DF.quad(ex('m1'), ex('likes'), ex('m2')),
+          DF.quad(ex('m1'), ex('likes'), ex('m3')),
+        ]);
+      });
+
+      it('should join on an equality of STR calls', async() => {
+        const result = <QueryBindings> await engine.query(`
+          PREFIX ex: <http://ex.org/>
+          SELECT * WHERE {
+            ?a ex:name ?n .
+            ?m ex:actor ?x .
+            FILTER(STR(?n) = STR(?x))
+          }`, { sources: [ store ]});
+
+        await expect(result.execute()).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('http://ex.org/a1') ],
+            [ DF.variable('n'), DF.literal('Alice', 'en') ],
+            [ DF.variable('m'), DF.namedNode('http://ex.org/m1') ],
+            [ DF.variable('x'), DF.literal('Alice') ],
+          ]),
+        ]);
+      });
+
+      it('should join on a sameTerm call', async() => {
+        const result = <QueryBindings> await engine.query(`
+          PREFIX ex: <http://ex.org/>
+          SELECT * WHERE {
+            ?a ex:knows ?x .
+            ?b ex:likes ?y .
+            FILTER(sameTerm(?x, ?y))
+          }`, { sources: [ store ]});
+
+        await expect(result.execute()).resolves.toEqualBindingsStream([
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('http://ex.org/a1') ],
+            [ DF.variable('x'), DF.namedNode('http://ex.org/m2') ],
+            [ DF.variable('b'), DF.namedNode('http://ex.org/m1') ],
+            [ DF.variable('y'), DF.namedNode('http://ex.org/m2') ],
           ]),
         ]);
       });

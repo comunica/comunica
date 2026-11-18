@@ -73,3 +73,36 @@ export function cachifyMetadata<M extends IMetadata<T>, T extends RDF.Variable |
     return lastReturn;
   };
 }
+
+/**
+ * Call the given function once the metadata of the given iterator is requested for the first time.
+ * This allows metadata that is expensive to obtain, such as a cardinality that requires a COUNT query,
+ * to only be determined when it is needed.
+ * @param iterator An iterator.
+ * @param onRequest The function to call, once.
+ */
+export function onFirstMetadataRequest(iterator: AsyncIterator<any>, onRequest: () => void): void {
+  const getProperty = iterator.getProperty.bind(iterator);
+  let requested = false;
+  iterator.getProperty = <P>(propertyName: string, callback?: (value: P) => void): P | undefined => {
+    if (!requested && propertyName === 'metadata') {
+      requested = true;
+      onRequest();
+    }
+    return getProperty(propertyName, callback);
+  };
+}
+
+/**
+ * Mark the cardinality of the given metadata as an estimate,
+ * for an operation that can produce fewer or more results than its input, such as a filter.
+ * An exact cardinality of zero stays exact, as these operations produce no results for an empty input.
+ * @param metadata The metadata of the input.
+ * @return The metadata with an estimated cardinality.
+ */
+export function estimateCardinality<M extends { cardinality: RDF.QueryResultCardinality }>(metadata: M): M {
+  if (metadata.cardinality.type !== 'exact' || metadata.cardinality.value === 0) {
+    return metadata;
+  }
+  return { ...metadata, cardinality: { ...metadata.cardinality, type: 'estimate' }};
+}

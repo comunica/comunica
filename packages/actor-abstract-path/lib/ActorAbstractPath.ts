@@ -16,6 +16,7 @@ import type {
 import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
 import type { AlgebraFactory } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { estimateCardinality } from '@comunica/utils-metadata';
 import {
   assignOperationSource,
   getOperationSource,
@@ -162,7 +163,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
     return {
       bindingsStream,
-      metadata: results.metadata,
+      metadata: async() => estimateCardinality(await results.metadata()),
     };
   }
 
@@ -218,8 +219,10 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
         });
         // Increment cardinality by one, because we always have at least one result once we reach this stage.
         // See the transformation above where we push a single binding.
-        metadata.cardinality.value++;
-        return metadata;
+        return estimateCardinality({
+          ...metadata,
+          cardinality: { ...metadata.cardinality, value: metadata.cardinality.value + 1 },
+        });
       },
     };
   }
