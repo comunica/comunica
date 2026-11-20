@@ -1,5 +1,11 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import type { Expression, IEvalContext, IInternalEvaluator, TermExpression } from '@comunica/types';
+import type {
+  Expression,
+  IEvalContext,
+  IInternalEvaluator,
+  SynchronousFunctionApplication,
+  TermExpression,
+} from '@comunica/types';
 import type {
   GeneralOperator,
   OverloadTree,
@@ -16,17 +22,20 @@ interface BaseFunctionDefinitionArgs {
   arity: number | number[];
   operator: GeneralOperator;
   apply: (evalContext: IEvalContext) => Promise<TermExpression>;
+  applySynchronously?: SynchronousFunctionApplication;
 }
 
 export class ExpressionFunctionBase implements IExpressionFunction {
   protected readonly arity: number | number[];
   public readonly operator: GeneralOperator;
   public readonly apply: (evalContext: IEvalContext) => Promise<TermExpression>;
+  public readonly applySynchronously?: SynchronousFunctionApplication;
 
-  public constructor({ arity, operator, apply }: BaseFunctionDefinitionArgs) {
+  public constructor({ arity, operator, apply, applySynchronously }: BaseFunctionDefinitionArgs) {
     this.arity = arity;
     this.operator = operator;
     this.apply = apply;
+    this.applySynchronously = applySynchronously;
   }
 
   public checkArity(args: Expression[]): boolean {
@@ -77,6 +86,11 @@ export class TermFunctionBase extends ExpressionFunctionBase implements ITermFun
       apply: async({ args, exprEval, mapping }: IEvalContext): Promise<TermExpression> => this.applyOnTerms(
         TermFunctionBase.evaluateArgumentsDirectly(args, exprEval, mapping) ??
           await Promise.all(args.map(arg => exprEval.evaluatorExpressionEvaluation(arg, mapping))),
+        exprEval,
+      ),
+      // Term functions themselves are synchronous, so only their arguments may need promises
+      applySynchronously: ({ args, exprEval, mapping }: IEvalContext): TermExpression => this.applyOnTerms(
+        args.map(arg => exprEval.evaluateExpressionSynchronously!(arg, mapping)),
         exprEval,
       ),
     });

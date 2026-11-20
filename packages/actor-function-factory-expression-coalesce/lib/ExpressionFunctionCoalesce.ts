@@ -25,6 +25,17 @@ export class ExpressionFunctionCoalesce extends ExpressionFunctionBase {
         }
         throw new CoalesceError(errors);
       },
+      applySynchronously: ({ args, mapping, exprEval }: IEvalContext): TermExpression => {
+        const errors: Error[] = [];
+        for (const expr of args) {
+          try {
+            return exprEval.evaluateExpressionSynchronously!(expr, mapping);
+          } catch (error: unknown) {
+            errors.push(<Error> error);
+          }
+        }
+        throw new CoalesceError(errors);
+      },
     });
   }
 }

@@ -81,5 +81,28 @@ async function evaluateAsync(
   const evaluator = await (exprEvalFactory ?? getMockEEFactory())
     // eslint-disable-next-line unicorn/no-useless-undefined
     .run({ algExpr: parse(expr, toAlgebraParse), context: actionContext }, undefined);
-  return evaluator.evaluate(bindings);
+  const asynchronous = await outcome(() => evaluator.evaluate(bindings));
+  // Expressions that can be evaluated synchronously must give the same result, or an error with the same message
+  if (evaluator.evaluateSynchronously) {
+    const synchronous = await outcome(async() => evaluator.evaluateSynchronously!(bindings));
+    expect(summarize(synchronous)).toEqual(summarize(asynchronous));
+  }
+  if ('error' in asynchronous) {
+    throw asynchronous.error;
+  }
+  return asynchronous.term;
+}
+
+type Outcome = { term: RDF.Term } | { error: Error };
+
+async function outcome(evaluate: () => Promise<RDF.Term>): Promise<Outcome> {
+  try {
+    return { term: await evaluate() };
+  } catch (error: unknown) {
+    return { error: <Error> error };
+  }
+}
+
+function summarize(result: Outcome): { term: RDF.Term } | { error: string } {
+  return 'error' in result ? { error: result.error.message } : result;
 }
