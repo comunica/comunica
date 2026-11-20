@@ -1,6 +1,6 @@
 import { Readable, Transform } from 'node:stream';
 import { KeysCore, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import { Bus, ActionContext } from '@comunica/core';
+import { Bus, ActionContext, failTest, passTest } from '@comunica/core';
 import type {
   IActionContext,
   QueryStringContext,
@@ -324,6 +324,37 @@ describe('QueryEngineBase', () => {
         queryEngine = new QueryEngineBase(actor);
         await expect(queryEngine.getResultMediaTypeFormats())
           .resolves.toEqual({ data: 'DATA' });
+      });
+    });
+
+    describe('canResultToString', () => {
+      it('should test if an actor can serialize the result in the media type, without running it', async() => {
+        const med: any = {
+          mediate: jest.fn(),
+          mediateActor: jest.fn((action: any) => Promise.resolve(action.handleMediaType === 'simple' ?
+            passTest({}) :
+            failTest('unsupported'))),
+        };
+        actor = new ActorInitQuery({
+          bus,
+          mediatorHttpInvalidate,
+          mediatorQueryProcess,
+          mediatorQueryResultSerialize: med,
+          mediatorQueryResultSerializeMediaTypeCombiner: med,
+          mediatorQueryResultSerializeMediaTypeFormatCombiner: med,
+          name: 'actor',
+          queryString,
+        });
+        const engine = new QueryEngineBase(actor);
+        const result: any = { resultType: 'void', execute: () => Promise.resolve() };
+        await expect(engine.canResultToString(result, 'simple')).resolves.toBe(true);
+        await expect(engine.canResultToString(result, 'application/sparql-results+xml')).resolves.toBe(false);
+        expect(med.mediateActor).toHaveBeenLastCalledWith({
+          context: expect.any(ActionContext),
+          handle: expect.objectContaining({ type: 'void' }),
+          handleMediaType: 'application/sparql-results+xml',
+        });
+        expect(med.mediate).not.toHaveBeenCalled();
       });
     });
   });

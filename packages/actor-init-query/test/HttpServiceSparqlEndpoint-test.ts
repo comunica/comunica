@@ -2435,6 +2435,37 @@ INSERT DATA {
         expect(execute).toHaveBeenCalledTimes(1);
       });
 
+      it.each([
+        [ 'simple if the requested media type can not serialize them', 'mediatype_unsupported', 'simple' ],
+        [ 'the requested media type if it can serialize them', 'mtype_1', 'mtype_1' ],
+      ])('should serialize updates as %s', async(_name, requested, serialized) => {
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = () => ({ resultType: 'void', execute: () => Promise.resolve() });
+        const resultToString = jest.spyOn(engine, 'resultToString');
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          requested,
+          false,
+          true,
+          0,
+        );
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(resultToString).toHaveBeenCalledTimes(1);
+        expect(resultToString).toHaveBeenCalledWith(expect.anything(), serialized);
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(
+          200,
+          { 'content-type': serialized, 'Access-Control-Allow-Origin': '*' },
+        );
+      });
+
       it('should fallback to simple for updates if media type is falsy', async() => {
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => ({ resultType: 'void', execute: () => Promise.resolve() });
