@@ -6,7 +6,7 @@ import type {
   IActorRdfJoinTestSideData,
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -115,18 +115,50 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
 
   /**
    * Estimate how many results a lookup of the given entry produces when the given variables are bound.
+   *
+   * The entries of a join often each cover a part of the same set of values of a variable,
+   * such as different properties of entities of the same type, of which the largest part approximates the set.
+   * Assuming that each entry covers a uniform and independent part of it, a bound value occurs in the entry with
+   * probability V / U, where V is the number of distinct values of the variable in the entry and U in the set,
+   * and then gives cardinality / V results, so a lookup gives cardinality / U results on average.
+   * If V is unknown, each result of the entry is assumed to have a different value.
+   * Only the most selective bound variable is taken into account.
+   *
    * @param entry A join entry.
    * @param bound The names of the bound variables.
+   * @param universes Per variable, the largest number of distinct values it is known to take in an entry of the join.
    */
-  public static estimateFanout(entry: IJoinEntryWithMetadata, bound: Set<string>): number {
+  public static estimateFanout(
+    entry: IJoinEntryWithMetadata,
+    bound: Set<string>,
+    universes: Map<string, number>,
+  ): number {
     const cardinality = entry.metadata.cardinality.value;
     let fanout = cardinality;
     for (const variable of entry.metadata.variables) {
-      if (bound.has(variable.variable.value)) {
-        fanout = Math.min(fanout, cardinality / Math.max(1, variable.distinctValues ?? cardinality));
+      const name = variable.variable.value;
+      if (bound.has(name)) {
+        const values = Math.max(1, variable.distinctValues ?? cardinality, universes.get(name) ?? 0);
+        fanout = Math.min(fanout, cardinality / values);
       }
     }
     return fanout;
+  }
+
+  /**
+   * Determine the largest number of distinct values that each variable is known to take in an entry.
+   * @param entries The join entries.
+   */
+  public static getUniverses(entries: IJoinEntryWithMetadata[]): Map<string, number> {
+    const universes = new Map<string, number>();
+    for (const entry of entries) {
+      for (const { variable, distinctValues } of entry.metadata.variables) {
+        if (distinctValues !== undefined) {
+          universes.set(variable.value, Math.max(distinctValues, universes.get(variable.value) ?? 0));
+        }
+      }
+    }
+    return universes;
   }
 
   /**
@@ -142,6 +174,7 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
     first: number,
     lookupCost: number,
   ): { order: number[]; iterations: number; cardinality: number } {
+    const universes = ActorRdfJoinMultiIndexNestedLoop.getUniverses(entries);
     const bound = new Set(entries[first].metadata.variables.map(variable => variable.variable.value));
     const todo = entries.map((_, i) => i).filter(i => i !== first);
     const order: number[] = [];
@@ -151,7 +184,7 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
       let best = 0;
       let bestFanout = Number.POSITIVE_INFINITY;
       for (const [ i, index ] of todo.entries()) {
-        const fanout = ActorRdfJoinMultiIndexNestedLoop.estimateFanout(entries[index], bound);
+        const fanout = ActorRdfJoinMultiIndexNestedLoop.estimateFanout(entries[index], bound, universes);
         if (fanout < bestFanout) {
           best = i;
           bestFanout = fanout;
@@ -165,7 +198,8 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
         bound.add(variable.variable.value);
       }
     }
-    return { order, iterations, cardinality: rows };
+    // The results themselves are produced by any join, so they are left out of its cost
+    return { order, iterations: iterations - rows, cardinality: rows };
   }
 
   protected async getJoinCoefficients(
@@ -197,8 +231,13 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
     // Only the first entry is requested, as lookups are synchronous.
     const requestTime = ActorRdfJoin.getRequestInitialTimes(metadatas)[best!.first] +
       metadatas[best!.first].cardinality.value * ActorRdfJoin.getRequestItemTimes(metadatas)[best!.first];
+
+    // Results are produced one binding of the first entry at a time, so a limit on them also limits the work
+    const limit = action.context.get(KeysQueryOperation.limitIndicator);
+    const share = limit !== undefined && best!.cardinality > limit ? limit / best!.cardinality : 1;
+
     return passTestWithSideData({
-      iterations: best!.iterations,
+      iterations: best!.iterations * share,
       persistedItems: 0,
       blockingItems: 0,
       requestTime,
@@ -209,9 +248,9 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
 export interface IActorRdfJoinMultiIndexNestedLoopArgs
   extends IActorRdfJoinArgs<IActorRdfJoinMultiIndexNestedLoopTestSideData> {
   /**
-   * The cost of looking up a single bound operation, expressed in produced rows.
+   * The cost of looking up a single bound operation, relative to producing a row or reading a binding from a stream.
    * @range {double}
-   * @default {1}
+   * @default {2}
    */
   lookupCost: number;
   /**

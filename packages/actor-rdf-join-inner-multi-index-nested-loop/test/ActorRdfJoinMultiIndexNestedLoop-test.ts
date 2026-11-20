@@ -1,7 +1,7 @@
 import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinSelectivity } from '@comunica/bus-rdf-join-selectivity';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type {
   IActionContext,
@@ -120,15 +120,28 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         {},
         { o: 20 },
       ));
-      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 'o' ]))).toBe(5);
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 'o' ]), new Map())).toBe(5);
     });
 
-    it('assumes a bound variable without distinct values to identify a single result', () => {
+    it('divides by the largest distinct values of a bound variable in the join', () => {
+      const joinEntry = withMetadata(entry(pattern('?s', 'ex:p', '?o'), metadata(100, [])), metadata(
+        100,
+        [ 's', 'o' ],
+        {},
+        { o: 20 },
+      ));
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 'o' ]), new Map([[ 'o', 400 ]])))
+        .toBe(0.25);
+    });
+
+    it('assumes a bound variable without distinct values to take a different value in each result', () => {
       const joinEntry = withMetadata(entry(pattern('?s', 'ex:p', '?o'), metadata(100, [])), metadata(
         100,
         [ 's', 'o' ],
       ));
-      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 's' ]))).toBe(1);
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 's' ]), new Map())).toBe(1);
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 's' ]), new Map([[ 's', 200 ]])))
+        .toBe(0.5);
     });
 
     it('takes the most selective bound variable', () => {
@@ -138,7 +151,7 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         {},
         { s: 50, o: 2 },
       ));
-      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 's', 'o' ]))).toBe(2);
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 's', 'o' ]), new Map())).toBe(2);
     });
 
     it('returns the cardinality for entries sharing no bound variables', () => {
@@ -146,7 +159,18 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         100,
         [ 's', 'o' ],
       ));
-      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 'x' ]))).toBe(100);
+      expect(ActorRdfJoinMultiIndexNestedLoop.estimateFanout(joinEntry, new Set([ 'x' ]), new Map())).toBe(100);
+    });
+  });
+
+  describe('getUniverses', () => {
+    it('takes the largest known distinct values of each variable', () => {
+      const entries = [
+        metadata(100, [ 's', 'o' ], {}, { s: 20 }),
+        metadata(10, [ 's', 'x' ], {}, { s: 10, x: 5 }),
+        metadata(1000, [ 'o' ]),
+      ].map(meta => withMetadata(entry(pattern('?s', 'ex:p', '?o'), meta), meta));
+      expect(ActorRdfJoinMultiIndexNestedLoop.getUniverses(entries)).toEqual(new Map([[ 's', 20 ], [ 'x', 5 ]]));
     });
   });
 
@@ -156,7 +180,8 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         .map(async joinEntry => withMetadata(joinEntry, await joinEntry.output.metadata())));
       expect(ActorRdfJoinMultiIndexNestedLoop.getLookupOrder(entries, 1, 1)).toEqual({
         order: [ 0, 2 ],
-        iterations: 2 + 2 * (1 + 1) + 2 * (1 + 1),
+        // The results themselves are left out
+        iterations: 2 + 2 * (1 + 1) + 2 * (1 + 1) - 2,
         cardinality: 2,
       });
     });
@@ -167,7 +192,7 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       const action: IActionRdfJoin = { type: 'inner', entries: reviewEntries(), context };
       const result = await actor.test(action);
       expect(result.get()).toEqual({
-        iterations: 1 + 1 * (1 + 1) + 1 * (1 + 1),
+        iterations: 1 + 1 * (1 + 1) + 1 * (1 + 1) - 1,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 0,
@@ -176,6 +201,28 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
       expect(sideData.first).toBe(2);
       expect(sideData.order).toEqual([ 0, 1 ]);
       expect(sideData.cardinality).toBe(1);
+    });
+
+    it('should only charge for the share of the results that a limit needs', async() => {
+      const entries = [
+        entry(pattern('?review', 'ex:reviewer', '?reviewer'), metadata(20, [ 'review', 'reviewer' ])),
+        entry(pattern('?reviewer', 'ex:name', '?name'), metadata(10, [ 'reviewer', 'name' ])),
+      ];
+      const full = await actor.test({ type: 'inner', entries, context });
+      const { cardinality } = full.getSideData();
+      expect(cardinality).toBeGreaterThan(4);
+      const limited = await actor.test({
+        type: 'inner',
+        entries,
+        context: context.set(KeysQueryOperation.limitIndicator, cardinality / 4),
+      });
+      expect(limited.get()!.iterations).toBeCloseTo(full.get()!.iterations / 4);
+      const beyond = await actor.test({
+        type: 'inner',
+        entries,
+        context: context.set(KeysQueryOperation.limitIndicator, cardinality * 2),
+      });
+      expect(beyond.get()!.iterations).toBe(full.get()!.iterations);
     });
 
     it('should allow a single entry that can not be looked up as first entry', async() => {
@@ -269,7 +316,7 @@ describe('ActorRdfJoinMultiIndexNestedLoop', () => {
         pageSize: 10,
       }));
       await expect(actor.test({ type: 'inner', entries, context })).resolves.toPassTest({
-        iterations: 1 + 1 * (1 + 1) + 1 * (1 + 1),
+        iterations: 1 + 1 * (1 + 1) + 1 * (1 + 1) - 1,
         persistedItems: 0,
         blockingItems: 0,
         requestTime: 10,
