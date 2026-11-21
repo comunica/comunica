@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 # Deploys the web clients built in the given directory to the gh-pages branch of comunica/comunica-web-clients.
-# Only the directory of this build (such as master or v5.4) is replaced. The branch is replaced by a single
-# commit, so that it does not grow with every build. If another deploy changed the branch in the meantime,
-# this deploy is retried on top of it.
 set -euo pipefail
 
 build=$(realpath "$1")
