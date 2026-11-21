@@ -8,6 +8,7 @@ import type { IQueryOperationResultBindings, Bindings, IActionContext } from '@c
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinOptionalBind } from '../lib/ActorRdfJoinOptionalBind';
@@ -183,6 +184,97 @@ IQueryOperationResultBindings
           expression,
           context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
         })).toEqual(expected);
+      });
+    });
+
+    describe('getOperationSources', () => {
+      it('should collect the sources of the operations within an operation', () => {
+        const AF0 = new AlgebraFactory(DF);
+        const sourceA = <any> { source: 'a' };
+        const sourceB = <any> { source: 'b' };
+        const pattern = AF0.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'));
+        const operation = AF0.createJoin([
+          AF0.createUnion([ assignOperationSource(pattern, sourceA), assignOperationSource(pattern, sourceB) ]),
+          AF0.createFilter(assignOperationSource(pattern, sourceA), AF0.createTermExpression(DF.literal('true'))),
+          pattern,
+        ]);
+        expect(ActorRdfJoinOptionalBind.getOperationSources(operation)).toEqual(new Set([ 'a', 'b' ]));
+      });
+    });
+
+    describe('getJoinCoefficients with unknown cardinalities', () => {
+      const AF0 = new AlgebraFactory(DF);
+      const pattern = AF0.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('o'));
+      const metadatas: any[] = [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY },
+          variables: [{ variable: DF.variable('a'), canBeUndef: false }],
+        },
+      ];
+
+      it('should fail for a right side over a single source', async() => {
+        const right = assignOperationSource(pattern, <any> { source: 'a' });
+        await expect(actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [{ output: <any>{}, operation: pattern }, { output: <any>{}, operation: right }],
+            context,
+          },
+          { metadatas },
+        )).resolves.toFailTest(
+          'Actor actor can only bind on a right side with an unknown cardinality if it spans multiple sources',
+        );
+      });
+
+      it('should pass for a right side over a single source if its operation is required', async() => {
+        const right = assignOperationSource(pattern, <any> { source: 'a' });
+        const result = await actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [
+              { output: <any>{}, operation: pattern },
+              { output: <any>{}, operation: right, operationRequired: true },
+            ],
+            context,
+          },
+          { metadatas },
+        );
+        expect(result.isPassed()).toBe(true);
+      });
+
+      it('should pass for a right side over a single source if its metadata requires its operation', async() => {
+        const right = assignOperationSource(pattern, <any> { source: 'a' });
+        const result = await actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [{ output: <any>{}, operation: pattern }, { output: <any>{}, operation: right }],
+            context,
+          },
+          { metadatas: [ metadatas[0], { ...metadatas[1], operationRequired: true }]},
+        );
+        expect(result.isPassed()).toBe(true);
+      });
+
+      it('should pass for a right side over multiple sources', async() => {
+        const right = AF0.createUnion([
+          assignOperationSource(pattern, <any> { source: 'a' }),
+          assignOperationSource(pattern, <any> { source: 'b' }),
+        ]);
+        const result = await actor.getJoinCoefficients(
+          {
+            type: 'optional',
+            entries: [{ output: <any>{}, operation: pattern }, { output: <any>{}, operation: right }],
+            context,
+          },
+          { metadatas },
+        );
+        expect(result.isPassed()).toBe(true);
       });
     });
 
