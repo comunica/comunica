@@ -340,6 +340,15 @@ jobs:
       - name: Build browser bundles
         run: yarn run build:browser:webpack && yarn run build:browser:vite
         working-directory: head
+      - name: Check for duplicate packages in browser bundles
+        # Allowed duplicates, until they are fixed upstream:
+        # - entities: htmlparser2 depends on v6, while its dom-serializer dependency depends on v4.
+        # - rdf-data-factory, sparqljson-parse: the released sparqljson-to-tree still depends on their old majors.
+        run: >-
+          node head/packages/utils-monorepo/bin/bundle-duplicates.js head
+          --allow entities
+          --allow rdf-data-factory
+          --allow sparqljson-parse
       - name: Measure bundle sizes
         run: node head/packages/utils-monorepo/bin/bundle-sizes.js measure head > bundle-sizes.json
       - name: Install dependencies and build monorepo of the base commit
