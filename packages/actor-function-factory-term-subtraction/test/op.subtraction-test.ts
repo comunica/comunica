@@ -2,6 +2,7 @@ import type { FuncTestTableConfig } from '@comunica/utils-jest';
 import {
   runFuncTestTable,
   dateTimeTyped,
+  dateTyped,
   error,
   merge,
   numeric,
@@ -46,6 +47,10 @@ describe('evaluation of \'-\' like', () => {
       anyNum NaN    = NaN
       
       '${dateTimeTyped('2019-05-28T12:14:45Z')}' '${yearMonthDurationTyped('P1Y1M')}' = '${dateTimeTyped('2018-04-28T12:14:45Z')}'
+      '${dateTimeTyped('2021-03-31T10:00:00Z')}' '${yearMonthDurationTyped('P1M')}' = '${dateTimeTyped('2021-02-28T10:00:00Z')}'
+      '${dateTyped('2021-03-31')}' '${yearMonthDurationTyped('P1M')}' = '${dateTyped('2021-02-28')}'
+      '${dateTyped('2000-02-29Z')}' '${yearMonthDurationTyped('P1Y')}' = '${dateTyped('1999-02-28Z')}'
+      '${dateTyped('2000-10-31-05:00')}' '${yearMonthDurationTyped('P1Y1M')}' = '${dateTyped('1999-09-30-05:00')}'
     `,
     errorTable: `
       anyNum invalidDateTime  = 'Argument types not valid'

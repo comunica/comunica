@@ -111,6 +111,10 @@ describe('evaluation of \'=\'', () => {
         "test1" "test2"@en = false
         "test1" "test1"@en = false
         "test1" "test1"^^xsd:normalizedString = true
+        "a\\u200Bb" "ab" = false
+        "\\u00E9" "e\\u0301" = false
+        "\\u00E9" "\\u00E9" = true
+        "A" "a" = false
       `,
     });
   });
