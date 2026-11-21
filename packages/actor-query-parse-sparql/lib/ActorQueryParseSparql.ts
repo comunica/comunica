@@ -7,6 +7,7 @@ import type { ComunicaDataFactory } from '@comunica/types';
 import { toAlgebra } from '@traqula/algebra-sparql-1-2';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import { AstFactory } from '@traqula/rules-sparql-1-2';
+import { FastParserFallbackError, FastSparqlParser } from './FastSparqlParser';
 
 /**
  * A comunica Algebra SPARQL Parse Actor.
@@ -14,12 +15,14 @@ import { AstFactory } from '@traqula/rules-sparql-1-2';
 export class ActorQueryParseSparql extends ActorQueryParse {
   public readonly prefixes: Record<string, string> | undefined;
   public readonly minimalErrorMessages: boolean;
+  public readonly fastParser: boolean;
   private readonly parser: SparqlParser;
 
   public constructor(args: IActorQueryParseSparqlArgs) {
     super(args);
     this.prefixes = Object.freeze(args.prefixes);
     this.minimalErrorMessages = args.minimalErrorMessages ?? false;
+    this.fastParser = args.fastParser ?? true;
     this.parser = new SparqlParser({ lexerConfig: {
       positionTracking: this.minimalErrorMessages ? 'onlyOffset' : 'full',
     }});
@@ -34,6 +37,15 @@ export class ActorQueryParseSparql extends ActorQueryParse {
 
   public async run(action: IActionQueryParse): Promise<IActorQueryParseOutput> {
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
+    if (this.fastParser) {
+      try {
+        return { operation: new FastSparqlParser(dataFactory).parse(action.query, this.prefixes) };
+      } catch (error: unknown) {
+        if (!(error instanceof FastParserFallbackError)) {
+          throw error;
+        }
+      }
+    }
     const astFactory = new AstFactory();
     const parsedSyntax = this.parser.parse(action.query, {
       prefixes: this.prefixes,
@@ -89,4 +101,10 @@ export interface IActorQueryParseSparqlArgs extends IActorQueryParseArgs {
    * @default {false}
    */
   minimalErrorMessages?: boolean;
+  /**
+   * If common SELECT queries should first be parsed with a faster parser that produces the same algebra,
+   * falling back to the regular parser for all other queries.
+   * @default {true}
+   */
+  fastParser?: boolean;
 }
