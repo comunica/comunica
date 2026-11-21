@@ -188,20 +188,27 @@ jobs:
   configtest:
     name: Config backwards-compat tests
     runs-on: ubuntu-latest
-    if: '!startsWith(github.event.head_commit.message, ''Bump to release version'')'
+    env:
+      # Skip step-by-step, to avoid skipping dependent jobs.
+      SKIP_CONFIG_COMPAT: ${{ startsWith(github.event.head_commit.message, 'Bump to release version') }}
     steps:
       - name: Ensure line endings are consistent
+        if: env.SKIP_CONFIG_COMPAT != 'true'
         run: git config --global core.autocrlf input
       - name: Check out repository
+        if: env.SKIP_CONFIG_COMPAT != 'true'
         uses: actions/checkout@v7
       - name: Use Node.js ${{ env.NODE_VERSION_LOWEST }}
+        if: env.SKIP_CONFIG_COMPAT != 'true'
         uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION_LOWEST }}
           cache: yarn
       - name: Install dependencies and build monorepo
+        if: env.SKIP_CONFIG_COMPAT != 'true'
         run: yarn install --frozen-lockfile
       - name: Test current configs in previous versions of Comunica from npm
+        if: env.SKIP_CONFIG_COMPAT != 'true'
         run: yarn run test:config-compat
 
   coveralls:
