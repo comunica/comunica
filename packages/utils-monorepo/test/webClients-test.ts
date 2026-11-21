@@ -304,6 +304,10 @@ describe('renderSiteIndex', () => {
     expect(html).not.toContain('An older description.');
   });
 
+  it('opens links outside of an embedding iframe', () => {
+    expect(renderSiteIndex(MANIFEST, [ directory('master', false) ])).toContain('<base target="_top">');
+  });
+
   it('omits groups without directories', () => {
     const html = renderSiteIndex(MANIFEST, [ directory('master', false) ]);
     expect(html).toContain('Development branches');

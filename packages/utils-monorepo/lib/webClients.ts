@@ -245,6 +245,8 @@ function renderPage(title: string, body: string[]): string {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>${escapeHtml(title)}</title>
+  <!-- Links leave the iframe when the page is embedded, such as on comunica.dev -->
+  <base target="_top">
   <style>${STYLE}
   </style>
 </head>
