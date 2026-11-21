@@ -224,8 +224,11 @@ const STYLE = `
       max-width: 50rem; margin: 2rem auto; padding: 0 1rem; color: #222; line-height: 1.5; }
     a { color: #740008; text-decoration: none; }
     a:hover, a:focus { text-decoration: underline; }
-    h3 { margin-bottom: 0; }
-    .meta { margin-top: 0; color: #666; }`;
+    .meta { margin-top: 0; color: #666; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { text-align: left; padding: 0.4rem 1rem 0.4rem 0; border-bottom: 1px solid #ddd; }
+    thead th { color: #666; font-weight: normal; font-size: 0.9rem; }
+    tr.group th { padding-top: 1.5rem; font-size: 1.1rem; border-bottom: 2px solid #bbb; }`;
 
 function escapeHtml(text: string): string {
   return text
@@ -260,16 +263,13 @@ function getTitle(directory: IWebClientsDirectory): string {
   return directory.release ? directory.directory : directory.name;
 }
 
-function renderDirectory(directory: IWebClientsDirectory, heading: string, prefix: string): string[] {
-  const source = directory.release ? escapeHtml(directory.name) : `<code>${directory.sha.slice(0, 7)}</code>`;
-  return [
-    `<${heading}>${escapeHtml(getTitle(directory))}</${heading}>`,
-    `<p class="meta">Built on ${directory.date.slice(0, 10)} from <a href="${escapeHtml(directory.sourceUrl)}">${source}</a></p>`,
-    '<ul>',
-    ...directory.clients.map(client =>
-      `  <li><a href="${prefix}${client.id}/">${escapeHtml(client.label)}</a>: ${escapeHtml(client.description)}</li>`),
-    '</ul>',
-  ];
+/**
+ * Render a link to the release or commit that a deployed directory was built from.
+ * @param directory The deployed directory.
+ */
+function renderSource(directory: IWebClientsDirectory): string {
+  const text = directory.release ? escapeHtml(directory.name) : `<code>${directory.sha.slice(0, 7)}</code>`;
+  return `<a href="${escapeHtml(directory.sourceUrl)}">${text}</a>`;
 }
 
 /**
@@ -278,7 +278,12 @@ function renderDirectory(directory: IWebClientsDirectory, heading: string, prefi
  */
 export function renderDirectoryIndex(directory: IWebClientsDirectory): string {
   return renderPage(`Comunica ${getTitle(directory)} web clients`, [
-    ...renderDirectory(directory, 'h1', './'),
+    `<h1>${escapeHtml(getTitle(directory))}</h1>`,
+    `<p class="meta">Built on ${directory.date.slice(0, 10)} from ${renderSource(directory)}</p>`,
+    '<ul>',
+    ...directory.clients.map(client =>
+      `  <li><a href="./${client.id}/">${escapeHtml(client.label)}</a>: ${escapeHtml(client.description)}</li>`),
+    '</ul>',
     '<p><a href="../">All versions</a></p>',
   ]);
 }
@@ -305,20 +310,43 @@ export function sortDirectories(directories: IWebClientsDirectory[]): IWebClient
  * @param directories The deployed directories, in the order in which they must be shown.
  */
 export function renderSiteIndex(manifest: IWebClientsManifest, directories: IWebClientsDirectory[]): string {
-  const sections: [string, IWebClientsDirectory[]][] = [
+  const groups: [string, IWebClientsDirectory[]][] = [
     [ 'Development branches', directories.filter(directory => !directory.release) ],
     [ 'Releases', directories.filter(directory => directory.release) ],
   ];
+  // Each config is described once, as in the first directory that contains it.
+  const configs = new Map<string, IWebClientsDirectory['clients'][number]>();
+  for (const client of directories.flatMap(directory => directory.clients)) {
+    if (!configs.has(client.id)) {
+      configs.set(client.id, client);
+    }
+  }
   return renderPage('Comunica web clients', [
     '<h1>Comunica web clients</h1>',
-    `<p>Web clients of <a href="${escapeHtml(manifest.repositoryUrl)}">Comunica</a>, ` +
-    'built on every commit of its development branches, and for every release.</p>',
-    ...sections
+    `<p>Web clients of <a href="${escapeHtml(manifest.repositoryUrl)}">Comunica</a> that are built on every commit.</p>`,
+    '<table>',
+    '  <thead><tr><th>Version</th><th>Web clients</th><th>From</th><th>Built</th></tr></thead>',
+    ...groups
       .filter(([ , entries ]) => entries.length > 0)
       .flatMap(([ title, entries ]) => [
-        `<h2>${title}</h2>`,
-        ...entries.flatMap(directory => renderDirectory(directory, 'h3', `./${directory.directory}/`)),
+        '  <tbody>',
+        `    <tr class="group"><th colspan="4">${title}</th></tr>`,
+        ...entries.map(directory => `    <tr>${[
+          `<a href="./${directory.directory}/">${escapeHtml(getTitle(directory))}</a>`,
+          directory.clients
+            .map(client => `<a href="./${directory.directory}/${client.id}/">${escapeHtml(client.label)}</a>`)
+            .join(', '),
+          renderSource(directory),
+          directory.date.slice(0, 10),
+        ].map(cell => `<td>${cell}</td>`).join('')}</tr>`),
+        '  </tbody>',
       ]),
+    '</table>',
+    '<h2>Configs</h2>',
+    '<ul>',
+    ...[ ...configs.values() ]
+      .map(client => `  <li><strong>${escapeHtml(client.label)}</strong>: ${escapeHtml(client.description)}</li>`),
+    '</ul>',
   ]);
 }
 

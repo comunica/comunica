@@ -264,19 +264,50 @@ describe('renderDirectoryIndex', () => {
 });
 
 describe('renderSiteIndex', () => {
-  it('renders branches and releases', () => {
-    const html = renderSiteIndex(MANIFEST, [ directory('next/major', false), directory('v5.4.1', true) ]);
-    expect(html).toContain('<a href="https://github.com/example/repo">Comunica</a>');
-    expect(html).toContain('<h2>Development branches</h2>\n<h3>next/major</h3>');
-    expect(html).toContain('<a href="./next-major/default/">Default</a>');
-    expect(html).toContain('<h2>Releases</h2>\n<h3>v5.4</h3>');
-    expect(html).toContain('<a href="./v5.4/default/">Default</a>');
+  it('renders a row per branch and release', () => {
+    const html = renderSiteIndex(MANIFEST, [
+      directory('next/major', false, [ DEFAULT, OTHER ]),
+      directory('v5.4.1', true),
+    ]);
+    expect(html).toContain('<p>Web clients of <a href="https://github.com/example/repo">Comunica</a> ' +
+      'that are built on every commit.</p>');
+    expect(html).toContain([
+      '  <tbody>',
+      '    <tr class="group"><th colspan="4">Development branches</th></tr>',
+      '    <tr><td><a href="./next-major/">next/major</a></td>' +
+      '<td><a href="./next-major/default/">Default</a>, <a href="./next-major/other/">Other</a></td>' +
+      '<td><a href="https://github.com/example/repo/next/major"><code>0123456</code></a></td>' +
+      '<td>2026-11-21</td></tr>',
+      '  </tbody>',
+      '  <tbody>',
+      '    <tr class="group"><th colspan="4">Releases</th></tr>',
+      '    <tr><td><a href="./v5.4/">v5.4</a></td>' +
+      '<td><a href="./v5.4/default/">Default</a></td>' +
+      '<td><a href="https://github.com/example/repo/v5.4.1">v5.4.1</a></td>' +
+      '<td>2026-11-21</td></tr>',
+      '  </tbody>',
+    ].join('\n'));
   });
 
-  it('omits sections without directories', () => {
+  it('describes each config once, as in the first directory that contains it', () => {
+    const html = renderSiteIndex(MANIFEST, [
+      directory('master', false, [ DEFAULT, OTHER ]),
+      directory('v5.4.1', true, [{ ...DEFAULT, description: 'An older description.' }]),
+    ]);
+    expect(html).toContain([
+      '<h2>Configs</h2>',
+      '<ul>',
+      '  <li><strong>Default</strong>: The default config.</li>',
+      '  <li><strong>Other</strong>: Another config.</li>',
+      '</ul>',
+    ].join('\n'));
+    expect(html).not.toContain('An older description.');
+  });
+
+  it('omits groups without directories', () => {
     const html = renderSiteIndex(MANIFEST, [ directory('master', false) ]);
-    expect(html).toContain('<h2>Development branches</h2>');
-    expect(html).not.toContain('<h2>Releases</h2>');
+    expect(html).toContain('Development branches');
+    expect(html).not.toContain('Releases');
   });
 });
 
