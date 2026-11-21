@@ -1,5 +1,6 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
+import { once } from 'node:events';
 import { Readable } from 'node:stream';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { Logger } from '@comunica/types';
@@ -2179,14 +2180,14 @@ SELECT ?option WHERE {
 
         it('for an n3.js store', async() => {
           const store = new Store();
-          await new Promise(resolve => store.import(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
+          await once(store.import(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ex: <https://example.org/> .
 ex:devShape a sh:NodeShape ;
     sh:targetClass ex:Main ;
     sh:property [
         sh:path ex:foo ;
         sh:in ( ex:bar1 ex:bar2 ex:bar3 ex:bar4 ex:bar5 ex:bar6 ex:bar7 ex:bar8 ex:bar9 ex:bar10 ) ;
-    ] .`).pipe(new StreamParser())).on('end', resolve));
+    ] .`).pipe(new StreamParser())), 'end');
 
           await expect((arrayifyStream(await engine.queryBindings(`
 PREFIX sh: <http://www.w3.org/ns/shacl#>
