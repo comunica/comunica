@@ -1,0 +1,8 @@
+{
+  "name": "comunica-web-clients",
+  "private": true,
+  "description": "Builds the Comunica web clients, as described in README.md.",
+  "dependencies": {
+    "@comunica/web-client-generator": "^4.2.0"
+  }
+}
