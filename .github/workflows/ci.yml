@@ -189,7 +189,7 @@ jobs:
     name: Config backwards-compat tests
     runs-on: ubuntu-latest
     env:
-      # Release commits are skipped per step, as a skipped job would also skip all jobs that need it.
+      # Skip step-by-step, to avoid skipping dependent jobs.
       SKIP_CONFIG_COMPAT: ${{ startsWith(github.event.head_commit.message, 'Bump to release version') }}
     steps:
       - name: Ensure line endings are consistent
