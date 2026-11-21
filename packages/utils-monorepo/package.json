@@ -25,7 +25,6 @@
     "access": "public"
   },
   "bin": {
-    "bundle-duplicates": "./bin/bundle-duplicates.js",
     "bundle-sizes": "./bin/bundle-sizes.js",
     "depcheckTask": "./bin/depcheckTask.js",
     "performance-comparison": "./bin/performance-comparison.js",
