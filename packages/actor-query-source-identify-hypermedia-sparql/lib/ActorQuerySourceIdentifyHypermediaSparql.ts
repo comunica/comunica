@@ -35,6 +35,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly cardinalityEstimateConstruction: boolean;
   public readonly forceGetIfUrlLengthBelow: number;
   public readonly sparqlServerSoftwarePatterns: RegExp[];
+  public readonly batchAskQueries: boolean;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -53,6 +54,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     this.sparqlServerSoftwarePatterns = (
       args.sparqlServerSoftwarePatterns ?? []
     ).map(pattern => new RegExp(pattern, 'u'));
+    this.batchAskQueries = args.batchAskQueries;
   }
 
   public checkServerSoftware(serverSoftware?: string): boolean {
@@ -102,6 +104,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.forceGetIfUrlLengthBelow,
       Boolean(action.context.get(KeysInitQuery.parseUnsupportedVersions)),
       action.metadata,
+      this.batchAskQueries,
     );
     return { source, queriesService: true };
   }
@@ -174,6 +177,12 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * Regexes to match against the server header to identify SPARQL endpoints.
    */
   sparqlServerSoftwarePatterns?: string[];
+  /**
+   * If ASK queries that are issued at the same time, such as for source selection,
+   * should be sent to the endpoint in a single SELECT query.
+   * @default {true}
+   */
+  batchAskQueries: boolean;
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';
