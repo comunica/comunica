@@ -89,5 +89,8 @@
     "webpack": "^5.0.0",
     "webpack-bundle-analyzer": "^5.0.0",
     "webpack-cli": "^7.0.0"
+  },
+  "resolutions": {
+    "rdf-test-suite-ldf/rdf-parse": "^5.0.0"
   }
 }
