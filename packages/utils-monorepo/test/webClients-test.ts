@@ -16,6 +16,7 @@ import {
   renderSiteIndex,
   selectWebClients,
   sortDirectories,
+  updateSite,
 } from '../lib/webClients';
 
 jest.mock<typeof import('node:child_process')>('node:child_process', () => <any> ({
@@ -52,10 +53,7 @@ const RELEASE = getTarget('refs/tags/v5.4.1', SHA);
 
 function directory(name: string, release: boolean, clients = [ DEFAULT ]): IWebClientsDirectory {
   return {
-    name,
-    directory: name.replaceAll('/', '-'),
-    sha: SHA,
-    release,
+    ...getTarget(`refs/${release ? 'tags' : 'heads'}/${name}`, SHA),
     sourceUrl: `https://github.com/example/repo/${name}`,
     date: '2026-11-21T10:00:00.000Z',
     clients: clients.map(({ id, label, description }) => ({ id, label, description })),
@@ -75,8 +73,9 @@ describe('getTarget', () => {
 
   it('handles release tags', () => {
     expect(getTarget('refs/tags/v5.4.1', SHA))
-      .toEqual({ name: 'v5.4.1', directory: 'v5.4.1', sha: SHA, release: true });
-    expect(getTarget('refs/tags/v6.0.0-alpha.1', SHA).release).toBe(true);
+      .toEqual({ name: 'v5.4.1', directory: 'v5.4', sha: SHA, release: true });
+    expect(getTarget('refs/tags/v6.0.0-alpha.1', SHA))
+      .toEqual({ name: 'v6.0.0-alpha.1', directory: 'v6.0', sha: SHA, release: true });
   });
 
   it('handles tags that are not releases', () => {
@@ -152,7 +151,7 @@ describe('selectWebClients', () => {
 
 describe('getWebClientUrl', () => {
   it('returns the URL of a web client', () => {
-    expect(getWebClientUrl(MANIFEST, RELEASE, DEFAULT)).toBe('https://example.org/web-clients/v5.4.1/default/');
+    expect(getWebClientUrl(MANIFEST, RELEASE, DEFAULT)).toBe('https://example.org/web-clients/v5.4/default/');
   });
 });
 
@@ -215,7 +214,7 @@ describe('createSettings', () => {
       context: { lenient: true },
       alternativeEngines: {
         'All versions': 'https://example.org/web-clients/',
-        'Other (v5.4.1)': 'https://example.org/web-clients/v5.4.1/other/',
+        'Other (v5.4.1)': 'https://example.org/web-clients/v5.4/other/',
       },
     });
   });
@@ -252,8 +251,10 @@ describe('renderDirectoryIndex', () => {
   });
 
   it('renders the web clients of a release', () => {
-    expect(renderDirectoryIndex(directory('v5.4.1', true)))
-      .toContain('Built on 2026-11-21 from <a href="https://github.com/example/repo/v5.4.1">v5.4.1</a>');
+    const html = renderDirectoryIndex(directory('v5.4.1', true));
+    expect(html).toContain('<title>Comunica v5.4 web clients</title>');
+    expect(html).toContain('<h1>v5.4</h1>');
+    expect(html).toContain('Built on 2026-11-21 from <a href="https://github.com/example/repo/v5.4.1">v5.4.1</a>');
   });
 
   it('escapes HTML', () => {
@@ -268,8 +269,8 @@ describe('renderSiteIndex', () => {
     expect(html).toContain('<a href="https://github.com/example/repo">Comunica</a>');
     expect(html).toContain('<h2>Development branches</h2>\n<h3>next/major</h3>');
     expect(html).toContain('<a href="./next-major/default/">Default</a>');
-    expect(html).toContain('<h2>Releases</h2>\n<h3>v5.4.1</h3>');
-    expect(html).toContain('<a href="./v5.4.1/default/">Default</a>');
+    expect(html).toContain('<h2>Releases</h2>\n<h3>v5.4</h3>');
+    expect(html).toContain('<a href="./v5.4/default/">Default</a>');
   });
 
   it('omits sections without directories', () => {
@@ -365,7 +366,7 @@ describe('with a monorepo', () => {
         env: expect.objectContaining({ WEB_CLIENT_SOURCE_MAPS: 'false' }),
       }));
       expect(result.clients).toEqual([{ id: 'default', label: 'Default', description: 'The default config.' }]);
-      expect(existsSync(Path.join(output, 'v5.4.1', 'manifest.json'))).toBe(true);
+      expect(existsSync(Path.join(output, 'v5.4', 'manifest.json'))).toBe(true);
     });
 
     it('replaces previous builds of a web client', () => {
@@ -404,6 +405,76 @@ describe('with a monorepo', () => {
       const result = indexWebClients(monorepo, site);
       expect(result.map(entry => entry.name)).toEqual([ 'master', 'v5.4.1' ]);
       expect(readFileSync(Path.join(site, 'index.html'), 'utf8')).toBe(renderSiteIndex(MANIFEST, result));
+    });
+  });
+
+  describe('updateSite', () => {
+    let build: string;
+    let site: string;
+
+    beforeEach(() => {
+      build = Path.join(monorepo, 'build');
+      site = Path.join(monorepo, 'site');
+      mkdirSync(site);
+    });
+
+    function writeDirectory(root: string, entry: IWebClientsDirectory, file: string): void {
+      mkdirSync(Path.join(root, entry.directory, 'default'), { recursive: true });
+      writeFileSync(Path.join(root, entry.directory, 'manifest.json'), JSON.stringify(entry));
+      writeFileSync(Path.join(root, entry.directory, 'default', file), '');
+    }
+
+    it('adds a new directory, and indexes the site', () => {
+      writeDirectory(site, directory('master', false), 'master.js');
+      writeDirectory(build, directory('v5.4.1', true), 'release.js');
+      expect(updateSite(monorepo, build, site)).toEqual({ built: directory('v5.4.1', true), replaced: true });
+      expect(existsSync(Path.join(site, 'v5.4', 'default', 'release.js'))).toBe(true);
+      expect(existsSync(Path.join(site, 'master', 'default', 'master.js'))).toBe(true);
+      expect(readFileSync(Path.join(site, 'index.html'), 'utf8'))
+        .toBe(renderSiteIndex(MANIFEST, [ directory('master', false), directory('v5.4.1', true) ]));
+    });
+
+    it('replaces a branch', () => {
+      writeDirectory(site, directory('master', false), 'old.js');
+      writeDirectory(build, directory('master', false), 'new.js');
+      expect(updateSite(monorepo, build, site).replaced).toBe(true);
+      expect(existsSync(Path.join(site, 'master', 'default', 'old.js'))).toBe(false);
+      expect(existsSync(Path.join(site, 'master', 'default', 'new.js'))).toBe(true);
+    });
+
+    it('replaces an older or the same release of the same minor version', () => {
+      writeDirectory(site, directory('v5.4.1', true), 'v5.4.1.js');
+      writeDirectory(build, directory('v5.4.2', true), 'v5.4.2.js');
+      expect(updateSite(monorepo, build, site).replaced).toBe(true);
+      expect(existsSync(Path.join(site, 'v5.4', 'default', 'v5.4.1.js'))).toBe(false);
+      expect(existsSync(Path.join(site, 'v5.4', 'default', 'v5.4.2.js'))).toBe(true);
+
+      rmSync(build, { recursive: true });
+      writeDirectory(build, directory('v5.4.2', true), 'rerun.js');
+      expect(updateSite(monorepo, build, site).replaced).toBe(true);
+      expect(existsSync(Path.join(site, 'v5.4', 'default', 'rerun.js'))).toBe(true);
+    });
+
+    it('keeps a newer release of the same minor version', () => {
+      writeDirectory(site, directory('v5.4.2', true), 'v5.4.2.js');
+      writeDirectory(build, directory('v5.4.1', true), 'v5.4.1.js');
+      expect(updateSite(monorepo, build, site)).toEqual({ built: directory('v5.4.1', true), replaced: false });
+      expect(existsSync(Path.join(site, 'v5.4', 'default', 'v5.4.2.js'))).toBe(true);
+      expect(existsSync(Path.join(site, 'v5.4', 'default', 'v5.4.1.js'))).toBe(false);
+      expect(JSON.parse(readFileSync(Path.join(site, 'v5.4', 'manifest.json'), 'utf8')).name).toBe('v5.4.2');
+    });
+
+    it('replaces a deployed directory that is no release', () => {
+      writeDirectory(site, directory('v5.4', false), 'branch.js');
+      writeDirectory(build, directory('v5.4.1', true), 'release.js');
+      expect(updateSite(monorepo, build, site).replaced).toBe(true);
+      expect(existsSync(Path.join(site, 'v5.4', 'default', 'branch.js'))).toBe(false);
+    });
+
+    it('throws if the build does not contain a single directory', () => {
+      mkdirSync(Path.join(build, 'a'), { recursive: true });
+      mkdirSync(Path.join(build, 'b'));
+      expect(() => updateSite(monorepo, build, site)).toThrow('Expected a single built directory in');
     });
   });
 });

@@ -2,7 +2,7 @@
 import { spawnSync } from 'node:child_process';
 
 // eslint-disable-next-line import/no-nodejs-modules
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 
 // eslint-disable-next-line import/no-nodejs-modules
 import { tmpdir } from 'node:os';
@@ -60,7 +60,7 @@ export interface IWebClientsTarget {
    */
   name: string;
   /**
-   * The directory of the deployment, such as 'master', 'next-major' or 'v5.4.1'.
+   * The directory of the deployment, such as 'master', 'next-major' or 'v5.4'.
    */
   directory: string;
   sha: string;
@@ -84,16 +84,19 @@ export interface IWebClientsDirectory extends IWebClientsTarget {
 
 /**
  * Determine what a build is for.
+ * Releases are built in a directory of their major and minor version,
+ * so that a patch release replaces the previous release of that minor version.
  * @param ref A git ref, such as 'refs/heads/master' or 'refs/tags/v5.4.1'.
  * @param sha The commit of the build.
  */
 export function getTarget(ref: string, sha: string): IWebClientsTarget {
   const name = ref.replace(/^refs\/(?:heads|tags)\//u, '').replace(/^refs\//u, '');
+  const version = ref.startsWith('refs/tags/') ? semver.parse(name) : null;
   return {
     name,
-    directory: name.replaceAll(/[^\w.-]+/gu, '-'),
+    directory: version ? `v${version.major}.${version.minor}` : name.replaceAll(/[^\w.-]+/gu, '-'),
     sha,
-    release: ref.startsWith('refs/tags/') && semver.valid(name) !== null,
+    release: version !== null,
   };
 }
 
@@ -249,10 +252,18 @@ ${body.join('\n')}
 `;
 }
 
+/**
+ * The title of a deployed directory, which is its branch, or its minor version for releases.
+ * @param directory The deployed directory.
+ */
+function getTitle(directory: IWebClientsDirectory): string {
+  return directory.release ? directory.directory : directory.name;
+}
+
 function renderDirectory(directory: IWebClientsDirectory, heading: string, prefix: string): string[] {
   const source = directory.release ? escapeHtml(directory.name) : `<code>${directory.sha.slice(0, 7)}</code>`;
   return [
-    `<${heading}>${escapeHtml(directory.name)}</${heading}>`,
+    `<${heading}>${escapeHtml(getTitle(directory))}</${heading}>`,
     `<p class="meta">Built on ${directory.date.slice(0, 10)} from <a href="${escapeHtml(directory.sourceUrl)}">${source}</a></p>`,
     '<ul>',
     ...directory.clients.map(client =>
@@ -266,7 +277,7 @@ function renderDirectory(directory: IWebClientsDirectory, heading: string, prefi
  * @param directory The deployed directory.
  */
 export function renderDirectoryIndex(directory: IWebClientsDirectory): string {
-  return renderPage(`Comunica ${directory.name} web clients`, [
+  return renderPage(`Comunica ${getTitle(directory)} web clients`, [
     ...renderDirectory(directory, 'h1', './'),
     '<p><a href="../">All versions</a></p>',
   ]);
@@ -403,4 +414,40 @@ export function indexWebClients(monorepoPath: string, sitePath: string): IWebCli
     .map(entry => JSON.parse(readFileSync(Path.join(sitePath, entry.name, 'manifest.json'), 'utf8'))));
   writeFileSync(Path.join(sitePath, 'index.html'), renderSiteIndex(manifest, directories));
   return directories;
+}
+
+export interface IWebClientsSiteUpdate {
+  built: IWebClientsDirectory;
+  /**
+   * If the built directory replaced the deployed one.
+   */
+  replaced: boolean;
+}
+
+/**
+ * Replace the directory that was built with buildWebClients in a site of deployed web clients,
+ * and regenerate the index page of the site.
+ * A release directory is kept if it contains a newer release already, such as when the build of an older tag is re-run.
+ * @param monorepoPath The path to the monorepo.
+ * @param buildPath The output directory of buildWebClients, which must contain a single built directory.
+ * @param sitePath The path to the site.
+ */
+export function updateSite(monorepoPath: string, buildPath: string, sitePath: string): IWebClientsSiteUpdate {
+  const entries = readdirSync(buildPath, { withFileTypes: true }).filter(entry => entry.isDirectory());
+  if (entries.length !== 1) {
+    throw new Error(`Expected a single built directory in ${buildPath}`);
+  }
+  const name = entries[0].name;
+  const built: IWebClientsDirectory = JSON.parse(readFileSync(Path.join(buildPath, name, 'manifest.json'), 'utf8'));
+  const deployedPath = Path.join(sitePath, name, 'manifest.json');
+  const deployed: IWebClientsDirectory | undefined = existsSync(deployedPath) ?
+    JSON.parse(readFileSync(deployedPath, 'utf8')) :
+    undefined;
+  const replaced = !(built.release && deployed?.release && semver.gt(deployed.name, built.name));
+  if (replaced) {
+    rmSync(Path.join(sitePath, name), { recursive: true, force: true });
+    cpSync(Path.join(buildPath, name), Path.join(sitePath, name), { recursive: true });
+  }
+  indexWebClients(monorepoPath, sitePath);
+  return { built, replaced };
 }

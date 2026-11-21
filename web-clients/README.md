@@ -43,8 +43,12 @@ Only logging in with Solid requires the web client to run at its deployed URL.
   If a breaking change requires changes to the generator, such as on `next/major`, it can point to a branch of the generator instead.
 * [`webpack.config.js`](webpack.config.js) adapts the webpack config of the generator,
   so that the web clients bundle the packages of this repository, instead of the released packages that the generator depends on.
-* The [`web-clients` tool](../packages/utils-monorepo/lib/webClients.ts) builds the web clients of a branch or tag in a directory named after it,
-  such as `master/`, `next-major/` or `v5.4.1/`. Releases are built without source maps, which make up most of the size of a web client.
+* The [`web-clients` tool](../packages/utils-monorepo/lib/webClients.ts) builds the web clients of a branch in a directory named after it,
+  such as `master/` or `next-major/`.
+  Releases are built in a directory of their major and minor version, such as `v5.4/`,
+  so that a patch release such as v5.4.2 replaces v5.4.1.
+  Releases are built without source maps, which make up most of the size of a web client.
 * [`deploy.sh`](deploy.sh) replaces that directory on the `gh-pages` branch, and regenerates the index of all directories.
-  It replaces the branch with a single commit, so that it does not grow with every build.
+  A release directory is kept if it contains a newer release already, such as when the build of an older tag is re-run.
+  The branch is replaced with a single commit, so that it does not grow with every build.
   If the site exceeds 900 MB, the deploy fails, and old releases must be removed from the `gh-pages` branch first.
