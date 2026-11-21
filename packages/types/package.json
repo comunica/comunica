@@ -46,6 +46,7 @@
     "@rdfjs/types": "*",
     "@types/yargs": "^17.0.24",
     "asynciterator": "^3.10.0",
-    "lru-cache": "^11.2.2"
+    "lru-cache": "^11.2.2",
+    "tslib": "^2.8.1"
   }
 }

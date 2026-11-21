@@ -15,6 +15,7 @@
     "strictPropertyInitialization": true,
     "noImplicitOverride": true,
     "declaration": true,
+    "importHelpers": true,
     "inlineSources": true,
     "preserveConstEnums": true,
     "removeComments": false,

@@ -62,6 +62,7 @@
     "lru-cache": "^11.2.2",
     "object-inspect": "^1.13.2",
     "rdf-data-factory": "^2.1.0",
-    "rdf-string": "^2.0.1"
+    "rdf-string": "^2.0.1",
+    "tslib": "^2.8.1"
   }
 }

@@ -56,6 +56,7 @@
     "asynciterator": "^3.10.0",
     "fetch-sparql-endpoint": "^7.3.0",
     "lru-cache": "^11.2.2",
-    "rdf-terms": "^2.0.0"
+    "rdf-terms": "^2.0.0",
+    "tslib": "^2.8.1"
   }
 }

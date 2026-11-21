@@ -38,6 +38,7 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\""
   },
   "dependencies": {
-    "@rdfjs/types": "*"
+    "@rdfjs/types": "*",
+    "tslib": "^2.8.1"
   }
 }

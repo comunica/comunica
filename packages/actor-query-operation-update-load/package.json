@@ -48,6 +48,7 @@
     "@comunica/core": "^5.4.0",
     "@comunica/types": "^5.4.0",
     "@comunica/utils-algebra": "^5.4.0",
-    "@comunica/utils-query-operation": "^5.4.0"
+    "@comunica/utils-query-operation": "^5.4.0",
+    "tslib": "^2.8.1"
   }
 }

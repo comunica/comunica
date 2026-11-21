@@ -49,6 +49,7 @@
     "@comunica/utils-query-operation": "^5.4.0",
     "@rdfjs/types": "*",
     "asynciterator": "^3.10.0",
-    "rdf-terms": "^2.0.0"
+    "rdf-terms": "^2.0.0",
+    "tslib": "^2.8.1"
   }
 }

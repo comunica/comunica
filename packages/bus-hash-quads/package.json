@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@comunica/core": "^5.4.0",
-    "rdf-data-factory": "^2.1.0"
+    "rdf-data-factory": "^2.1.0",
+    "tslib": "^2.8.1"
   }
 }

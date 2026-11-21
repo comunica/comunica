@@ -44,6 +44,7 @@
   "dependencies": {
     "@comunica/bus-dereference": "^5.4.0",
     "@comunica/bus-dereference-rdf": "^5.4.0",
-    "@comunica/bus-rdf-parse": "^5.4.0"
+    "@comunica/bus-rdf-parse": "^5.4.0",
+    "tslib": "^2.8.1"
   }
 }

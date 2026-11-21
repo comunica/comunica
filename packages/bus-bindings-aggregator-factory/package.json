@@ -43,6 +43,7 @@
     "@comunica/utils-algebra": "^5.4.0",
     "@comunica/utils-expression-evaluator": "^5.4.0",
     "@rdfjs/types": "*",
-    "rdf-string": "^2.0.1"
+    "rdf-string": "^2.0.1",
+    "tslib": "^2.8.1"
   }
 }

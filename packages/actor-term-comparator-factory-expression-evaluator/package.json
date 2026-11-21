@@ -45,6 +45,7 @@
     "@comunica/core": "^5.4.0",
     "@comunica/utils-bindings-factory": "^5.4.0",
     "@comunica/utils-expression-evaluator": "^5.4.0",
-    "@rdfjs/types": "*"
+    "@rdfjs/types": "*",
+    "tslib": "^2.8.1"
   }
 }

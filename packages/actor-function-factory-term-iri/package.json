@@ -40,6 +40,7 @@
     "@comunica/bus-function-factory": "^5.4.0",
     "@comunica/context-entries": "^5.4.0",
     "@comunica/utils-expression-evaluator": "^5.4.0",
-    "relative-to-absolute-iri": "^1.0.7"
+    "relative-to-absolute-iri": "^1.0.7",
+    "tslib": "^2.8.1"
   }
 }

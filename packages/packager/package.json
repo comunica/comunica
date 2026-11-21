@@ -41,6 +41,7 @@
     "@types/minimist": "^1.2.2",
     "componentsjs": "^6.5.0",
     "minimist": "^1.2.7",
-    "process": "^0.11.10"
+    "process": "^0.11.10",
+    "tslib": "^2.8.1"
   }
 }

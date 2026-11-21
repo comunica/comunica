@@ -51,6 +51,7 @@
     "@rdfjs/types": "*",
     "asynciterator": "^3.10.0",
     "fetch-sparql-endpoint": "^7.3.0",
-    "rdf-string-ttl": "^2.0.1"
+    "rdf-string-ttl": "^2.0.1",
+    "tslib": "^2.8.1"
   }
 }

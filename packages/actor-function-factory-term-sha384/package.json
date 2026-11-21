@@ -39,6 +39,7 @@
   "dependencies": {
     "@comunica/bus-function-factory": "^5.4.0",
     "@comunica/utils-expression-evaluator": "^5.4.0",
-    "hash.js": "^1.1.7"
+    "hash.js": "^1.1.7",
+    "tslib": "^2.8.1"
   }
 }
