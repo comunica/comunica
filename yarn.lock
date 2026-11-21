@@ -1263,6 +1263,27 @@
     "@types/yargs" "^17.0.0"
     fs-extra "^10.0.0"
 
+"@jbr-experiment/largerdfbench@^6.7.1":
+  version "6.7.1"
+  resolved "https://registry.yarnpkg.com/@jbr-experiment/largerdfbench/-/largerdfbench-6.7.1.tgz#17f657e27bb501158a68f78685b09c657cba697d"
+  integrity sha512-OebbrQNUZXaLK5n9uZYqV+RmyGwW4GUgWD7uyzL1drbbShr5SQJwpz+Ch67U5wRBv0QVYR9ASYDVYU2+QSP+Wg==
+  dependencies:
+    "@rdfjs/types" "*"
+    "@traqula/algebra-sparql-1-1" "^1.4.0"
+    "@traqula/algebra-transformations-1-1" "^1.4.0"
+    "@traqula/generator-sparql-1-1" "^1.4.0"
+    "@traqula/parser-sparql-1-1" "^1.4.0"
+    "@traqula/rules-sparql-1-1" "^1.4.0"
+    "@types/fs-extra" "^11.0.0"
+    "@types/n3" "^1.26.1"
+    "@types/yauzl" "^3.4.0"
+    fs-extra "^11.0.0"
+    n3 "^1.26.0"
+    rdf-stores "^2.10.0"
+    rdf-string-ttl "^2.0.1"
+    sparql-benchmark-runner "^5.3.0"
+    yauzl "^3.4.0"
+
 "@jbr-experiment/ldbc-snb@^6.2.1":
   version "6.2.1"
   resolved "https://registry.yarnpkg.com/@jbr-experiment/ldbc-snb/-/ldbc-snb-6.2.1.tgz#f1987f7a56a3910e83f9dff9c33ab44982e4f684"
@@ -1323,6 +1344,14 @@
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/@jbr-hook/cli/-/cli-6.2.0.tgz#60bfb3c5e06ace2c5922344800758e015fb87db8"
   integrity sha512-YSs9nUKlzJ669AnXkTMVRQtxCahpejiJK/VSchnDsdW5fgINYZ7r1lfqI3WI4/1GzxE1TxOkaBG62gDR+UHDaQ==
+  dependencies:
+    "@types/fs-extra" "^11.0.0"
+    fs-extra "^11.0.0"
+
+"@jbr-hook/cli@^6.7.0":
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/@jbr-hook/cli/-/cli-6.7.0.tgz#bcd6ab77cfb3104863c11f7e1ecbe49292827c56"
+  integrity sha512-GLNvXG7CxAe2GVqvL9rbvcFLCHXlVUVyVkCn3vGS52XDnt5BCXSCX/FSVoXHj0gSzvkNJ8ZGJj2H/xO+/RfT8Q==
   dependencies:
     "@types/fs-extra" "^11.0.0"
     fs-extra "^11.0.0"
@@ -2757,7 +2786,7 @@
   dependencies:
     "@traqula/chevrotain" "^1.1.0"
 
-"@traqula/generator-sparql-1-1@^1.3.1":
+"@traqula/generator-sparql-1-1@^1.3.1", "@traqula/generator-sparql-1-1@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@traqula/generator-sparql-1-1/-/generator-sparql-1-1-1.4.0.tgz#a273eade6e2a908ef84673f4e144ae32ed019143"
   integrity sha512-4C3UETTYFSe8xRKwxkbddRgmBfMncpgk3lcmbgFaFsVatHpZe2CdKFZc+oW+hF8tOu2biJXc09YUdKeWiFNOzw==
@@ -3336,6 +3365,13 @@
   integrity sha512-WpxBCKWPLr4xSsHgz511rFJAM+wS28w2zEO1QDNY5zM/S8ok70NNfztH0xwhqKyaK0OHCbN98LDAZuy1ctxDkA==
   dependencies:
     "@types/yargs-parser" "*"
+
+"@types/yauzl@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@types/yauzl/-/yauzl-3.4.0.tgz#93de17db1589472d30b4e106c5e7711bcf32a5e9"
+  integrity sha512-NRPn5w6h8dhcnmx3YIRQcqMywY/+nND/uOkJessedcrowO3C0AssHp3tMJpxKAwOhFOo0OV1y9VtsC5hbKKBAw==
+  dependencies:
+    "@types/node" "*"
 
 "@typescript-eslint/eslint-plugin@^6.20.0":
   version "6.21.0"
@@ -11591,6 +11627,11 @@ peek-stream@^1.1.0:
     duplexify "^3.5.0"
     through2 "^2.0.3"
 
+pend@~1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/pend/-/pend-1.2.0.tgz#7a57eb550a6783f9115331fcf4663d5c8e007a50"
+  integrity sha512-F3asv42UuXchdzt+xXqfW1OGlVBe+mxa2mqI0pg5yAHZPvFmY3Y6drSf/GQ1A86WgWEN9Kzh/WrgKa6iGcHXLg==
+
 performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
@@ -13274,6 +13315,15 @@ sparql-benchmark-runner@^5.0.0, sparql-benchmark-runner@^5.1.0:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/sparql-benchmark-runner/-/sparql-benchmark-runner-5.1.1.tgz#6889f1b7d7378418f339a2c9a34b4d2a6f95e158"
   integrity sha512-0TtabwjW9YXo0J+L2XzB8QQih69/IeyZKcwzas0n/Pqp67Y2fgq9NLApBb+XD8G6WdGit+zJXyV2pi65SeuPhA==
+  dependencies:
+    fetch-sparql-endpoint "^5.1.0"
+    rdf-string "^1.0.0"
+    yargs "^17.0.0"
+
+sparql-benchmark-runner@^5.3.0:
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/sparql-benchmark-runner/-/sparql-benchmark-runner-5.5.0.tgz#59a429232abb0c45cc98f5dd9596587716a0b464"
+  integrity sha512-xZ3oNrB3TPNkG2bY9SHfeVXnYlN5sUP18G0yjG7hcBUjx2POc+P4Gk6PMyjkkKCIeGiyIPWNbmFGl9h+pxbxmQ==
   dependencies:
     fetch-sparql-endpoint "^5.1.0"
     rdf-string "^1.0.0"
@@ -15152,6 +15202,13 @@ yargs@^18.0.0:
     string-width "^8.2.1"
     y18n "^5.0.5"
     yargs-parser "^22.0.0"
+
+yauzl@^3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/yauzl/-/yauzl-3.4.0.tgz#88b2a21455f37ca7dccf2eeb33bacb4392322719"
+  integrity sha512-jIH9yLR9wqr0wOS0TpBvo/g/2UgZH5qePVbjgRliiF0BYvOZyaBknKsF+x9Iht0O6sqgnB93rCICdOZFecJuDw==
+  dependencies:
+    pend "~1.2.0"
 
 yn@3.1.1:
   version "3.1.1"
