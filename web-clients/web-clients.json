@@ -1,0 +1,13 @@
+{
+  "baseUrl": "https://comunica.github.io/comunica-web-clients/",
+  "repositoryUrl": "https://github.com/comunica/comunica",
+  "clients": [
+    {
+      "id": "default",
+      "label": "Default",
+      "description": "The default config of Comunica SPARQL.",
+      "config": "engines/query-sparql/config/config-default.json",
+      "release": true
+    }
+  ]
+}
