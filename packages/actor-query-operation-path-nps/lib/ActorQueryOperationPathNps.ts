@@ -4,6 +4,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { ComunicaDataFactory, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
+import { estimateCardinality } from '@comunica/utils-metadata';
 import { getSafeBindings } from '@comunica/utils-query-operation';
 
 /**
@@ -34,7 +35,7 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: output.metadata,
+      metadata: async() => estimateCardinality(await output.metadata()),
     };
   }
 }
