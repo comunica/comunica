@@ -68,6 +68,10 @@ export class HttpServiceSparqlEndpoint {
    * The maximum number of distinct request headers for which negotiated media types are cached.
    */
   public static readonly NEGOTIATION_CACHE_SIZE = 1_000;
+  /**
+   * The number of seconds for which clients may reuse a service description.
+   */
+  public static readonly SERVICE_DESCRIPTION_MAX_AGE = 3_600;
 
   public readonly engine: Promise<QueryEngineBase>;
 
@@ -952,6 +956,8 @@ export class HttpServiceSparqlEndpoint {
       'Access-Control-Allow-Origin': '*',
       // Without this, browser clients are not allowed to read the QUERY advertisement.
       'Access-Control-Expose-Headers': 'Accept-Query, Allow',
+      'Cache-Control': this.getServiceDescriptionCacheControl(),
+      Vary: 'Accept',
     }));
 
     if (headOnly) {
@@ -1045,6 +1051,19 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
     this.stopResponse(response, 0, process.stderr, eventEmitter);
+  }
+
+  /**
+   * Determine the Cache-Control header of service descriptions.
+   * Service descriptions only change when the endpoint is restarted,
+   * except for VoID statistics, which change with updates, and which may fail to be computed the first time.
+   */
+  public getServiceDescriptionCacheControl(): string {
+    if (this.emitVoid && (!ActionContext.ensureActionContext(this.context).get(KeysQueryOperation.readOnly) ||
+      this.voidMetadataEmitter.cachedStatistics.length === 0)) {
+      return 'no-cache';
+    }
+    return `max-age=${HttpServiceSparqlEndpoint.SERVICE_DESCRIPTION_MAX_AGE}`;
   }
 
   /**
