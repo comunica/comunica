@@ -42,6 +42,7 @@ function classify(q) {
   if (/^ASK/i.test(body)) return 'ask';
   if (/^SELECT/i.test(body) && /EXISTS\s*\{/i.test(body) && /^SELECT\s*\(\s*EXISTS/i.test(body)) return 'ask-batch';
   if (/^SELECT\s*\(\s*COUNT\s*\(/i.test(body)) return 'count';
+  if (/^SELECT\s*\*\s*WHERE\s*\{\s*\{\s*SELECT\s*\(\s*COUNT\s*\(/i.test(body)) return 'count-batch';
   if (/^SELECT/i.test(body)) return 'select';
   if (/^CONSTRUCT/i.test(body)) return 'construct';
   return 'other';
