@@ -31,6 +31,10 @@ describe('System test: QuerySparql federation with BIND in a UNION over multiple
     });
   });
 
+  afterEach(async() => {
+    await federation.idle();
+  });
+
   it('binds the left bindings into the union instead of fetching its branches in full', async() => {
     const bindings = await (await engine.queryBindings(`
       PREFIX ex: <http://example.org/>
