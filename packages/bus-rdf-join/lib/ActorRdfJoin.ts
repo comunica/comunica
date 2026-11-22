@@ -359,9 +359,12 @@ TS
           cardinalityJoined.value = capped;
           cardinalityJoined.type = 'estimate';
         }
-        if (cardinalityJoined.value === 0) {
-          cardinalityJoined.value = Number.MIN_VALUE;
-        }
+      }
+      // Without an empty entry, estimate at least one result,
+      // as near-zero estimates make the cost of joining this result with other entries vanish.
+      if (!hasZeroCardinality && cardinalityJoined.value < 1) {
+        cardinalityJoined.value = 1;
+        cardinalityJoined.type = 'estimate';
       }
     }
 
