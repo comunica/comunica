@@ -125,7 +125,7 @@ export class QuerySourceSparql implements IQuerySource {
   /**
    * The number of result rows whose transfer is assumed to cost as much as one request.
    */
-  public static readonly ROWS_PER_REQUEST_TIME = 1_000;
+  public static readonly ROWS_PER_REQUEST_TIME = Number(process.env.COMUNICA_SPARQL_ROWS_PER_REQUEST_TIME ?? '1000');
 
   /**
    * The number of HTTP requests made for each physical query plan node.
@@ -604,6 +604,18 @@ export class QuerySourceSparql implements IQuerySource {
           return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         }
 
+        // Send COUNT queries issued in the same tick in one request, with a timeout per batch.
+        if (QuerySourceSparql.BATCH_COUNT_QUERIES) {
+          const count = await this.batchCount(countQuery, context);
+          if (count === undefined) {
+            this.activateCountFallback(context, operation);
+            return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
+          }
+          const cardinality: QueryResultCardinality = { type: 'exact', value: count, dataset: this.url };
+          this.cache?.set(countQuery, cardinality);
+          return resolve(cardinality);
+        }
+
         // Wait for a request slot first, so that waiting for other requests to this host does not count as time-out.
         const countLimiter = this.getHostLimiter();
         await countLimiter?.acquire();
@@ -694,6 +706,79 @@ export class QuerySourceSparql implements IQuerySource {
       }
     }
     return this.limiter;
+  }
+
+  public static BATCH_COUNT_QUERIES = process.env.COMUNICA_SPARQL_BATCH_COUNTS !== '0';
+  public static COUNT_BATCH_MAX_SIZE = 16;
+  private countBatch: { query: string; context: IActionContext; resolve: (count: number | undefined) => void }[] |
+    undefined;
+
+  /**
+   * Answer a COUNT query as part of a batch of COUNT queries that are issued in the same tick.
+   * @param countQuery A COUNT query with a ?count variable.
+   * @param context The action context.
+   * @return The count, or undefined if it is not known in time.
+   */
+  protected batchCount(countQuery: string, context: IActionContext): Promise<number | undefined> {
+    return new Promise((resolve) => {
+      if (!this.countBatch) {
+        this.countBatch = [];
+        setTimeout(() => this.flushCountBatch());
+      }
+      this.countBatch.push({ query: countQuery, context, resolve });
+    });
+  }
+
+  protected flushCountBatch(): void {
+    const entries = this.countBatch!;
+    this.countBatch = undefined;
+    for (let start = 0; start < entries.length; start += QuerySourceSparql.COUNT_BATCH_MAX_SIZE) {
+      // eslint-disable-next-line ts/no-floating-promises
+      this.sendCountBatch(entries.slice(start, start + QuerySourceSparql.COUNT_BATCH_MAX_SIZE));
+    }
+  }
+
+  protected async sendCountBatch(
+    batch: { query: string; context: IActionContext; resolve: (count: number | undefined) => void }[],
+  ): Promise<void> {
+    const variables = batch.map((_, index) => this.dataFactory.variable(`count${index}`));
+    const query = batch.length === 1 ?
+      batch[0].query.replace(/AS \?count \)/u, 'AS ?count0 )') :
+      `SELECT * WHERE { ${batch.map((entry, index) =>
+        `{ ${entry.query.replace(/AS \?count \)/u, `AS ?count${index} )`)} }`).join(' ')} }`;
+    const abortController = new AbortController();
+    const context = QuerySourceSparql.withAbortSignal(batch[0].context, abortController.signal);
+    let answered = false;
+    const timeout = setTimeout(() => {
+      if (!answered) {
+        answered = true;
+        abortController.abort();
+        for (const entry of batch) {
+          entry.resolve(undefined);
+        }
+      }
+    }, this.countTimeout);
+    const start = performance.now();
+    try {
+      const rows = await (await this.queryBindingsRemoteUncached(this.url, query, variables, context, [])).toArray();
+      if (!answered) {
+        answered = true;
+        this.recordRequestTime(performance.now() - start);
+        for (const [ index, entry ] of batch.entries()) {
+          const value = Number.parseInt(rows[0]?.get(variables[index])?.value ?? '', 10);
+          entry.resolve(Number.isNaN(value) ? undefined : value);
+        }
+      }
+    } catch {
+      if (!answered) {
+        answered = true;
+        for (const entry of batch) {
+          entry.resolve(undefined);
+        }
+      }
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   /**
@@ -1023,7 +1108,70 @@ export class QuerySourceSparql implements IQuerySource {
    */
   public static readonly MIN_SUSPECTED_RESULT_LIMIT = 1_000;
 
+  /**
+   * Results of identical queries to this source, shared while in flight and replayed once complete,
+   * if they have at most RESULT_CACHE_MAX_ROWS rows.
+   */
+  private readonly resultCache = new Map<string, Promise<RDF.Bindings[] | undefined>>();
+  public static RESULT_CACHE_MAX_ROWS = Number(process.env.COMUNICA_SPARQL_RESULT_CACHE_ROWS ?? '1000');
+  public static RESULT_CACHE_MAX_ENTRIES = 10_000;
+
   public async queryBindingsRemote(
+    endpoint: string,
+    query: string,
+    variables: RDF.Variable[],
+    context: IActionContext,
+    undefVariables: RDF.Variable[],
+  ): Promise<BindingsStream> {
+    if (QuerySourceSparql.RESULT_CACHE_MAX_ROWS <= 0) {
+      return this.queryBindingsRemoteUncached(endpoint, query, variables, context, undefVariables);
+    }
+    const key = `${endpoint} ${variables.map(variable => variable.value).join(',')} ${query}`;
+    const shared = this.resultCache.get(key);
+    if (shared) {
+      const results = await shared;
+      if (results) {
+        return new ArrayIterator(results, { autoStart: false });
+      }
+    }
+    // Collect the results while they are read, and share them once the response was read completely.
+    let resolveShared: (results: RDF.Bindings[] | undefined) => void;
+    if (!shared && this.resultCache.size < QuerySourceSparql.RESULT_CACHE_MAX_ENTRIES) {
+      this.resultCache.set(key, new Promise((resolve) => {
+        resolveShared = resolve;
+      }));
+    }
+    const stream = await this.queryBindingsRemoteUncached(endpoint, query, variables, context, undefVariables);
+    if (!resolveShared!) {
+      return stream;
+    }
+    let collected: RDF.Bindings[] | undefined = [];
+    let settled = false;
+    const done = (results: RDF.Bindings[] | undefined): void => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      if (!results) {
+        this.resultCache.delete(key);
+      }
+      resolveShared(results);
+    };
+    stream.on('end', () => done(collected));
+    stream.on('error', () => done(undefined));
+    stream.on('close', () => done(undefined));
+    return stream.map((bindings) => {
+      if (collected) {
+        collected.push(bindings);
+        if (collected.length > QuerySourceSparql.RESULT_CACHE_MAX_ROWS) {
+          collected = undefined;
+        }
+      }
+      return bindings;
+    });
+  }
+
+  public async queryBindingsRemoteUncached(
     endpoint: string,
     query: string,
     variables: RDF.Variable[],
