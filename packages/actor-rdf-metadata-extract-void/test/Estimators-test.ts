@@ -338,6 +338,30 @@ describe('Estimators', () => {
       });
     });
 
+    describe('for patterns with a bound literal object', () => {
+      beforeEach(() => {
+        dataset.distinctSubjects = 200;
+        dataset.distinctObjects = 400;
+        dataset.propertyPartitions![predicateNamedNode.value] = {
+          distinctObjects: 20,
+          distinctSubjects: 50,
+          triples: 100,
+        };
+      });
+
+      it.each([
+        [ '?s <p> "o"', subjectVariable, predicateNamedNode, 100 / 20 ],
+        [ '<s> <p> "o"', subjectNamedNode, predicateNamedNode, 100 / (50 * 20) ],
+        [ '_:s <p> "o"', subjectBNode, predicateNamedNode, 100 / (50 * 20) ],
+        [ '<s> ?p "o"', subjectNamedNode, predicateVariable, datasetTripleCount / (200 * 400) ],
+      ])('should estimate %s like a bound named node object', (_, subject, predicate, expected) => {
+        expect(estimatePatternCardinalityRaw(dataset, AF.createPattern(subject, predicate, objectLiteral)))
+          .toBe(expected);
+        expect(estimatePatternCardinalityRaw(dataset, AF.createPattern(subject, predicate, objectNamedNode)))
+          .toBe(expected);
+      });
+    });
+
     describe.each(Object.entries(ignoredPatternExamples))('for patterns in the style of %s', (_, pattern) => {
       it('should return dataset triple count', () => {
         expect(estimatePatternCardinalityRaw(dataset, pattern)).toBe(datasetTripleCount);
