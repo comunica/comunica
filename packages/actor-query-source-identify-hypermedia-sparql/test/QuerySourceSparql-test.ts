@@ -2674,6 +2674,81 @@ describe('QuerySourceSparql', () => {
     });
   });
 
+  describe('request sharing', () => {
+    const pattern = AF.createPattern(DF.variable('s'), iriP, iriO);
+    let sharingCtx: IActionContext;
+
+    function createSource(shareRequestsMaxBindings?: number): QuerySourceSparql {
+      return new QuerySourceSparql(
+        url,
+        url,
+        sharingCtx,
+        mediatorHttp,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10_000,
+        true,
+        false,
+        0,
+        false,
+        {},
+        shareRequestsMaxBindings,
+      );
+    }
+
+    function queriesSent(): string[] {
+      return mediatorHttp.mediate.mock.calls.map((call: any) => call[0].init.body.toString());
+    }
+
+    beforeEach(() => {
+      sharingCtx = ctx.set(KeysInitQuery.queryTimestamp, new Date());
+    });
+
+    it('should share identical requests of the same query while they are in flight', async() => {
+      const source = createSource(1_000);
+      const results = await Promise.all([
+        source.queryBindings(pattern, sharingCtx).toArray(),
+        source.queryBindings(pattern, sharingCtx).toArray(),
+      ]);
+      expect(results.map(result => result.length)).toEqual([ 3, 3 ]);
+      expect(queriesSent().filter(query => !isCountQuery(query))).toHaveLength(1);
+    });
+
+    it('should share identical COUNT requests of the same query while they are in flight', async() => {
+      const source = createSource(1_000);
+      const metadata = await Promise.all([ 0, 1 ].map(() => new Promise((resolve) => {
+        source.queryBindings(pattern, sharingCtx).getProperty('metadata', resolve);
+      })));
+      expect(metadata).toEqual([ 0, 1 ].map(() => expect.objectContaining({
+        cardinality: expect.objectContaining({ type: 'exact', value: 3 }),
+      })));
+      expect(queriesSent().filter(isCountQuery)).toHaveLength(1);
+    });
+
+    it('should not share requests of different queries', async() => {
+      const source = createSource(1_000);
+      await Promise.all([
+        source.queryBindings(pattern, sharingCtx).toArray(),
+        source.queryBindings(pattern, sharingCtx.set(KeysInitQuery.queryTimestamp, new Date())).toArray(),
+      ]);
+      expect(queriesSent().filter(query => !isCountQuery(query))).toHaveLength(2);
+    });
+
+    it('should not share requests by default', async() => {
+      const source = createSource();
+      await Promise.all([
+        source.queryBindings(pattern, sharingCtx).toArray(),
+        source.queryBindings(pattern, sharingCtx).toArray(),
+      ]);
+      expect(queriesSent().filter(query => !isCountQuery(query))).toHaveLength(2);
+    });
+  });
+
   describe('addBindingsToOperation', () => {
     it('should handle an empty stream for values', async() => {
       await expect(QuerySourceSparql.addBindingsToOperation(AF, 'values', AF.createNop(), {

@@ -62,6 +62,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         cardinalityCountQueries: true,
         cardinalityEstimateConstruction: false,
         forceGetIfUrlLengthBelow: 600,
+        shareRequestsMaxBindings: 1000,
         sparqlServerSoftwarePatterns: [ 'Virtuoso', 'Fuseki' ],
       });
     });
@@ -129,6 +130,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          shareRequestsMaxBindings: 1000,
         });
         await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, context })).resolves
           .toFailTest('Actor actor could not detect a SPARQL service description or URL ending on /sparql.');
@@ -149,6 +151,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          shareRequestsMaxBindings: 1000,
         });
         await expect(actor
           .test({ url: 'URL/sparql', metadata: {}, quads: <any> null, forceSourceType: 'file', context }))
@@ -170,6 +173,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          shareRequestsMaxBindings: 1000,
         });
         await expect(actor.test({
           url: 'URL',
@@ -195,6 +199,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          shareRequestsMaxBindings: 1000,
         });
         await expect(actor.test({
           url: 'URL',
@@ -250,6 +255,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          shareRequestsMaxBindings: 1000,
           sparqlServerSoftwarePatterns: [ 'Custom' ],
         });
         await expect(actor.test({
@@ -276,6 +282,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
           cardinalityEstimateConstruction: false,
           cacheSize: 0,
           forceGetIfUrlLengthBelow: 0,
+          shareRequestsMaxBindings: 1000,
         });
         await expect(actor.test({
           url: 'URL',
@@ -295,6 +302,7 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         expect((<any> output.source).url).toBe('SERVICE');
         expect((<any> output.source).endpointFetcher.sparqlJsonParser.parseUnsupportedVersions).toBe(false);
         expect((<any> output.source).endpointFetcher.sparqlXmlParser.parseUnsupportedVersions).toBe(false);
+        expect((<any> output.source).requestSharing.maxBufferedBindings).toBe(1000);
       });
 
       it('should pass parseUnsupportedVersions to the parsers', async() => {
