@@ -3,6 +3,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^5.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-optional-bind/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-optional-bind-source/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-optional-hash/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-optional-index-nested-loop/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-optional-nestedloop/^5.0.0/components/context.jsonld"
@@ -10,6 +11,11 @@
   "@id": "urn:comunica:default:Runner",
   "@type": "Runner",
   "actors": [
+    {
+      "@id": "urn:comunica:default:rdf-join/actors#optional-bind-source",
+      "@type": "ActorRdfJoinOptionalBindSource",
+      "mediatorJoinSelectivity": { "@id": "urn:comunica:default:rdf-join-selectivity/mediators#main" }
+    },
     {
       "@id": "urn:comunica:default:rdf-join/actors#optional-bind",
       "@type": "ActorRdfJoinOptionalBind",

@@ -233,6 +233,7 @@
     "@comunica/actor-rdf-join-inner-symmetrichash": "^5.4.0",
     "@comunica/actor-rdf-join-minus-hash": "^5.4.0",
     "@comunica/actor-rdf-join-optional-bind": "^5.4.0",
+    "@comunica/actor-rdf-join-optional-bind-source": "^5.4.0",
     "@comunica/actor-rdf-join-optional-hash": "^5.4.0",
     "@comunica/actor-rdf-join-optional-index-nested-loop": "^5.4.0",
     "@comunica/actor-rdf-join-optional-nestedloop": "^5.4.0",
