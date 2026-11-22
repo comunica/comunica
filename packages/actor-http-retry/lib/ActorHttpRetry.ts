@@ -178,7 +178,9 @@ export class ActorHttpRetry extends ActorHttp {
   }
 
   /**
-   * Retry rate-limited requests, for when no retry count is set in the context.
+   * Retry rate-limited requests, and requests that lost their connection,
+   * for when no retry count is set in the context.
+   * Requests that lost their connection are only retried if they may be sent again (see isRetryableOnError).
    * All other responses and errors are passed through unchanged,
    * and so is the last rate-limited response once the retries are exhausted.
    * @param {IActionHttp} action The HTTP action.
@@ -190,12 +192,28 @@ export class ActorHttpRetry extends ActorHttp {
       this.rateLimitRetryDelayFallback;
     const retryDelayLimit = action.context.get(KeysHttp.httpRetryDelayLimit);
     const replayable = ActorHttp.isReplayableRequestBody(action);
+    const retryOnConnectionLoss = ActorHttpRetry.isRetryableOnError(action);
 
     for (let attempt = 1; ; attempt++) {
-      const response = await this.mediatorHttp.mediate({
-        ...action,
-        context: action.context.set(ActorHttpRetry.keyWrapped, true),
-      });
+      let response: IActorHttpOutput;
+      try {
+        response = await this.mediatorHttp.mediate({
+          ...action,
+          context: action.context.set(ActorHttpRetry.keyWrapped, true),
+        });
+      } catch (error: unknown) {
+        // A lost connection says nothing about the request itself, so it is sent again on a new connection.
+        if (!retryOnConnectionLoss || attempt === attemptLimit || !ActorHttpRetry.isConnectionLostError(error) ||
+          ActorHttpRetry.isAbortedByCaller(action)) {
+          throw error;
+        }
+        this.logDebug(action.context, 'Retrying request after the connection was lost', () => ({
+          url: url.href,
+          error: (<Error> error).message,
+          currentAttempt: `${attempt} / ${attemptLimit}`,
+        }));
+        continue;
+      }
       if (!ActorHttpRetry.isRateLimited(response) || attempt === attemptLimit || !replayable) {
         return response;
       }
@@ -224,6 +242,23 @@ export class ActorHttpRetry extends ActorHttp {
       await ActorHttpRetry.sleep(retryDelay);
     }
   }
+
+  /**
+   * Check if the given error was caused by losing the connection to the server, such as when the server closed it,
+   * as opposed to, e.g., not being able to connect at all.
+   * @param {unknown} error An error, of which the cause may be the actual error.
+   */
+  public static isConnectionLostError(error: unknown): boolean {
+    for (let current: any = error; current; current = current.cause) {
+      if (ActorHttpRetry.connectionLostCodes.has(current.code) || /GOAWAY/u.test(current.message)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Error codes of Node.js and undici for connections that were closed while a request was in flight
+  private static readonly connectionLostCodes = new Set([ 'ECONNRESET', 'EPIPE', 'UND_ERR_SOCKET', 'UND_ERR_CLOSED' ]);
 
   /**
    * Check if the given response indicates that the server is rate-limiting or temporarily unavailable.
