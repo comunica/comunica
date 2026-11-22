@@ -18,6 +18,9 @@ import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory, algebraUtils, inScopeVariables } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getOperationSource, getSafeBindings, groupRepeatedSubOperations } from '@comunica/utils-query-operation';
+import type * as RDF from '@rdfjs/types';
+import { ArrayIterator, TransformIterator } from 'asynciterator';
+import { termToString } from 'rdf-string';
 
 /**
  * A comunica Optional Bind RDF Join Actor.
@@ -54,6 +57,27 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
     );
     // Close the right stream, since we don't need that one
     action.entries[1].output.bindingsStream.close();
+
+    // A right side over multiple sources is joined with all left bindings at once,
+    // so that the join can pass blocks of bindings to each source, instead of one request per binding and source.
+    if (!action.expression && ActorRdfJoinOptionalBind.getOperationSources(action.entries[1].operation).size >= 2) {
+      return {
+        result: {
+          type: 'bindings',
+          bindingsStream: this.createInnerJoinOptionalStream(action, algebraFactory),
+          metadata: async() => await this.constructResultMetadata(
+            action.entries,
+            await ActorRdfJoin.getMetadatas(action.entries),
+            action.context,
+            {},
+            true,
+          ),
+        },
+        physicalPlanMetadata: {
+          bindOrder: 'inner-join',
+        },
+      };
+    }
 
     // Bind the right pattern for each binding in the stream
     const leftMetadata = await action.entries[0].output.metadata();
@@ -94,6 +118,65 @@ export class ActorRdfJoinOptionalBind extends ActorRdfJoin {
         bindOrder: this.bindOrder,
       },
     };
+  }
+
+  /**
+   * Evaluate the optional join as an inner join of all left bindings with the right operation,
+   * followed by the left bindings that no result matches.
+   * @param action The join action.
+   * @param algebraFactory The algebra factory.
+   */
+  public createInnerJoinOptionalStream(action: IActionRdfJoin, algebraFactory: AlgebraFactory): BindingsStream {
+    return new TransformIterator<Bindings>(async() => {
+      const left: Bindings[] = await action.entries[0].output.bindingsStream.toArray();
+      if (left.length === 0) {
+        return new ArrayIterator<Bindings>([], { autoStart: false });
+      }
+
+      // Left bindings may bind different sets of variables, so they are matched per set of variables.
+      const signatures = new Map<string, RDF.Variable[]>();
+      const variables = new Map<string, RDF.Variable>();
+      for (const binding of left) {
+        const bindingVariables = [ ...binding.keys() ].sort((a, b) => a.value.localeCompare(b.value));
+        signatures.set(bindingVariables.map(variable => variable.value).join(' '), bindingVariables);
+        for (const variable of bindingVariables) {
+          variables.set(variable.value, variable);
+        }
+      }
+      const keyOf = (signature: string, binding: Bindings): string | undefined => {
+        const terms = signatures.get(signature)!.map(variable => binding.get(variable));
+        if (terms.every(Boolean)) {
+          return `${signature}|${terms.map(term => termToString(term)).join(' ')}`;
+        }
+      };
+
+      const values = algebraFactory.createValues(
+        [ ...variables.values() ],
+        left.map(binding => Object.fromEntries([ ...binding ]
+          .map(([ variable, term ]) => [ variable.value, <RDF.NamedNode | RDF.Literal> term ]))),
+      );
+      const output = getSafeBindings(await this.mediatorQueryOperation.mediate({
+        operation: algebraFactory.createJoin([ values, action.entries[1].operation ]),
+        context: action.context,
+      }));
+
+      const matched = new Set<string>();
+      const results = output.bindingsStream.map((result) => {
+        for (const signature of signatures.keys()) {
+          const key = keyOf(signature, result);
+          if (key) {
+            matched.add(key);
+          }
+        }
+        return result;
+      });
+      const unmatched = new TransformIterator<Bindings>(async() => new ArrayIterator(left.filter((binding) => {
+        const signature = [ ...binding.keys() ].map(variable => variable.value)
+          .sort((a, b) => a.localeCompare(b)).join(' ');
+        return !matched.has(keyOf(signature, binding)!);
+      }), { autoStart: false }), { autoStart: false });
+      return results.append(unmatched);
+    }, { autoStart: false });
   }
 
   /**
