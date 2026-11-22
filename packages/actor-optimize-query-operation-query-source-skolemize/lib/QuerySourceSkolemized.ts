@@ -10,6 +10,7 @@ import type {
   QuerySourceReference,
 } from '@comunica/types';
 import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
+import type { BlankNodeScoped } from '@comunica/utils-data-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -21,6 +22,7 @@ import {
   skolemizeBindings,
   skolemizeBindingsStream,
   skolemizeQuadStream,
+  SKOLEM_PREFIX,
 } from './utils';
 
 /**
@@ -52,6 +54,11 @@ export class QuerySourceSkolemized implements IQuerySource {
 
   public async getSelectorShape(context: IActionContext): Promise<FragmentSelectorShape> {
     return this.innerSource.getSelectorShape(context);
+  }
+
+  public isBlankNodeLocal(term: RDF.BlankNode): boolean {
+    return 'skolemized' in term &&
+      (<BlankNodeScoped> term).skolemized.value.startsWith(`${SKOLEM_PREFIX}${this.sourceId}:`);
   }
 
   public async getFilterFactor(context: IActionContext): Promise<number> {

@@ -286,6 +286,17 @@ export class QuerySourceSparql implements IQuerySource {
     context: IActionContext,
     options?: IQueryBindingsOptions,
   ): BindingsStream {
+    // Blank nodes in a SPARQL query are variables, so a blank node from an earlier result can not be referred to.
+    if (QuerySourceSparql.hasBlankNodeTerms(operationIn)) {
+      const empty = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+      empty.setProperty('metadata', {
+        state: new MetadataValidationState(),
+        cardinality: { type: 'exact', value: 0, dataset: this.url },
+        variables: algebraUtils.inScopeVariables(operationIn).map(variable => ({ variable, canBeUndef: false })),
+      });
+      return empty;
+    }
+
     // If bindings are passed, modify the operations
     let operationPromise: Promise<Algebra.Operation>;
     if (options?.joinBindings) {
@@ -325,6 +336,36 @@ export class QuerySourceSparql implements IQuerySource {
     this.attachMetadata(bindings, context, operationPromise);
 
     return bindings;
+  }
+
+  /**
+   * Check if the given operation contains blank nodes as terms, such as from a binding that was bound into it.
+   * Blank nodes are variables in a SPARQL query, so a blank node from an earlier result can not be referred to,
+   * and an operation with such blank nodes can not have results in this source.
+   * @param operation An operation.
+   */
+  public static hasBlankNodeTerms(operation: Algebra.Operation): boolean {
+    let found = false;
+    const check = (terms: RDF.Term[]): void => {
+      if (terms.some(term => term.termType === 'BlankNode')) {
+        found = true;
+      }
+    };
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.PATTERN]: {
+        preVisitor: (pattern: Algebra.Pattern) => {
+          check([ pattern.subject, pattern.predicate, pattern.object, pattern.graph ]);
+          return { continue: !found };
+        },
+      },
+      [Algebra.Types.PATH]: {
+        preVisitor: (path: Algebra.Path) => {
+          check([ path.subject, path.object, path.graph ]);
+          return { continue: !found };
+        },
+      },
+    });
+    return found;
   }
 
   /**
@@ -832,7 +873,9 @@ export class QuerySourceSparql implements IQuerySource {
     operation: Algebra.Operation,
     addBindings: { bindings: BindingsStream; metadata: MetadataBindings },
   ): Promise<Algebra.Operation> {
-    const bindings = await addBindings.bindings.toArray();
+    // Blank nodes can not be passed in VALUES, and a blank node from an earlier result can not match in a query
+    const bindings = (await addBindings.bindings.toArray())
+      .filter(binding => ![ ...binding ].some(([ , value ]) => value.termType === 'BlankNode'));
 
     switch (bindMethod) {
       case 'values':

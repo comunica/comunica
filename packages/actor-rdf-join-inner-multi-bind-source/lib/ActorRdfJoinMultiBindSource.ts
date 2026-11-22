@@ -14,6 +14,7 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type {
   IJoinEntryWithMetadata,
   IQueryOperationResultBindings,
+  IQuerySource,
   IQuerySourceWrapper,
   IActionContext,
   ComunicaDataFactory,
@@ -84,14 +85,15 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     metadata: IJoinEntryWithMetadata['metadata'],
     context: IActionContext,
     dataFactory: ComunicaDataFactory,
+    reanchoring?: IBlankNodeReanchoring,
   ): AsyncIterator<RDF.Bindings> {
     return new TransformIterator(async() => {
       const bindings = await chunk.toArray();
       if (targets.length === 1) {
-        return this.queryTarget(targets[0], bindings, metadata, context, dataFactory);
+        return this.queryTarget(targets[0], bindings, metadata, context, dataFactory, reanchoring);
       }
       return new UnionIterator(
-        targets.map(target => this.queryTarget(target, bindings, metadata, context, dataFactory)),
+        targets.map(target => this.queryTarget(target, bindings, metadata, context, dataFactory, reanchoring)),
         { autoStart: false },
       );
     }, { autoStart: false });
@@ -115,10 +117,37 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     metadata: IJoinEntryWithMetadata['metadata'],
     context: IActionContext,
     dataFactory: ComunicaDataFactory,
+    reanchoring?: IBlankNodeReanchoring,
   ): AsyncIterator<RDF.Bindings> {
     const variables = new Set(algebraUtils.inScopeVariables(target.operation).map(variable => variable.value));
-    const bindingsWithoutBlankNodes = bindings.filter(binding => ![ ...binding ]
-      .some(([ variable, term ]) => term.termType === 'BlankNode' && variables.has(variable.value)));
+    const bindingsWithoutBlankNodes: RDF.Bindings[] = [];
+    const bindingsWithBlankNodes: RDF.Bindings[] = [];
+    for (const binding of bindings) {
+      if ([ ...binding ].some(([ variable, term ]) => term.termType === 'BlankNode' && variables.has(variable.value))) {
+        bindingsWithBlankNodes.push(binding);
+      } else {
+        bindingsWithoutBlankNodes.push(binding);
+      }
+    }
+    const reanchored = reanchoring && bindingsWithBlankNodes.length > 0 ?
+      this.reanchorBlankNodes(target, bindingsWithBlankNodes, reanchoring, metadata, context, dataFactory) :
+      undefined;
+    const results = this
+      .queryTargetWithoutBlankNodes(target, bindingsWithoutBlankNodes, metadata, context, dataFactory);
+    return reanchored ? new UnionIterator([ results, reanchored ], { autoStart: false }) : results;
+  }
+
+  /**
+   * Send bindings without blank nodes for variables of the target operation to a target.
+   */
+  public queryTargetWithoutBlankNodes(
+    target: IBindTarget,
+    bindingsWithoutBlankNodes: RDF.Bindings[],
+    metadata: IJoinEntryWithMetadata['metadata'],
+    context: IActionContext,
+    dataFactory: ComunicaDataFactory,
+  ): AsyncIterator<RDF.Bindings> {
+    const variables = new Set(algebraUtils.inScopeVariables(target.operation).map(variable => variable.value));
     if (bindingsWithoutBlankNodes.length === 0) {
       return new ArrayIterator<RDF.Bindings>([], { autoStart: false });
     }
@@ -181,6 +210,170 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
   }
 
   /**
+   * Re-anchor left bindings with blank nodes for variables of the target in the source of the target.
+   *
+   * Blank nodes can not be passed to a source, as their labels are scoped to the result they came from.
+   * But a blank node produced by the source of the target can only match within that source,
+   * together with the patterns of the left operation that produced it.
+   * So these patterns are joined with the target operation, filtered to blank nodes for these variables,
+   * and sent to that source as one query, bound on the other values of the bindings.
+   * This is done once per distinct set of other values over the whole left stream,
+   * as the query finds the results of all left bindings that only differ in their blank nodes.
+   *
+   * @param target A bind target.
+   * @param bindings Left bindings with a blank node for a variable of the target operation.
+   * @param reanchoring The left operation, and the re-anchored keys per source.
+   * @param metadata The metadata of the left bindings.
+   * @param context The action context.
+   * @param dataFactory The data factory.
+   */
+  public reanchorBlankNodes(
+    target: IBindTarget,
+    bindings: RDF.Bindings[],
+    reanchoring: IBlankNodeReanchoring,
+    metadata: IJoinEntryWithMetadata['metadata'],
+    context: IActionContext,
+    dataFactory: ComunicaDataFactory,
+  ): AsyncIterator<RDF.Bindings> | undefined {
+    const source = target.sourceWrapper.source;
+    if (!source.isBlankNodeLocal) {
+      return;
+    }
+    let seen = reanchoring.seen.get(source);
+    if (!seen) {
+      seen = new Set();
+      reanchoring.seen.set(source, seen);
+    }
+    const targetVariables = new Set(algebraUtils.inScopeVariables(target.operation).map(variable => variable.value));
+
+    // Group the bindings by their blank node variables, which determine the patterns to re-anchor
+    const groups = new Map<string, IBlankNodeGroup>();
+    for (const binding of bindings) {
+      const blankVariables = new Set([ ...binding ]
+        .filter(([ variable, term ]) => term.termType === 'BlankNode' && targetVariables.has(variable.value))
+        .map(([ variable ]) => variable.value));
+      // Blank nodes of other sources can not match in this source
+      if ([ ...blankVariables ].some(variable => !source.isBlankNodeLocal!(<RDF.BlankNode> binding.get(variable)))) {
+        continue;
+      }
+      // The left patterns that mention these variables, and other blank nodes of these patterns
+      let patterns: Algebra.Pattern[] = [];
+      let size = -1;
+      while (blankVariables.size !== size) {
+        size = blankVariables.size;
+        patterns = reanchoring.patterns.filter(pattern => ActorRdfJoinMultiBindSource.getPatternVariables(pattern)
+          .some(variable => blankVariables.has(variable.value)));
+        for (const variable of patterns.flatMap(pattern => ActorRdfJoinMultiBindSource.getPatternVariables(pattern))) {
+          if (binding.get(variable)?.termType === 'BlankNode') {
+            blankVariables.add(variable.value);
+          }
+        }
+      }
+      if (patterns.length === 0) {
+        continue;
+      }
+      const reduced = binding.filter((_, variable) => !blankVariables.has(variable.value));
+      const groupKey = [ ...blankVariables ].sort().join(' ');
+      const key = `${groupKey} ${JSON.stringify([ ...reduced ]
+        .map(([ variable, term ]) => `${variable.value} ${termToString(term)}`).sort())}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      let group = groups.get(groupKey);
+      if (!group) {
+        group = { patterns, blankVariables, reduced: []};
+        groups.set(groupKey, group);
+      }
+      group.reduced.push(reduced);
+    }
+
+    const algebraFactory = new AlgebraFactory(dataFactory);
+    const targetContext = target.sourceWrapper.context ? context.merge(target.sourceWrapper.context) : context;
+    const outputs: AsyncIterator<RDF.Bindings>[] = [];
+    for (const { patterns, blankVariables, reduced } of groups.values()) {
+      const join = algebraFactory.createJoin([ ...patterns, target.operation ], false);
+      // Bind on the variables of the query that all bindings bind
+      const anchorVariables = algebraUtils.inScopeVariables(join)
+        .filter(variable => !blankVariables.has(variable.value) && reduced.every(binding => binding.has(variable)));
+      const operation = algebraFactory.createFilter(join, [ ...blankVariables ]
+        .map(variable => algebraFactory.createOperatorExpression('isblank', [
+          algebraFactory.createTermExpression(dataFactory.variable(variable)),
+        ]))
+        .reduce((left, right) => algebraFactory.createOperatorExpression('&&', [ left, right ])));
+      const reducedByAnchor = new Map<string, RDF.Bindings[]>();
+      const anchors: RDF.Bindings[] = [];
+      for (const binding of reduced) {
+        const anchorKey = ActorRdfJoinMultiBindSource.getKey(binding, anchorVariables)!;
+        const reducedOfAnchor = reducedByAnchor.get(anchorKey);
+        if (reducedOfAnchor) {
+          reducedOfAnchor.push(binding);
+        } else {
+          reducedByAnchor.set(anchorKey, [ binding ]);
+          anchors.push(binding.filter((_, variable) => anchorVariables.some(anchor => anchor.equals(variable))));
+        }
+      }
+      const results = anchorVariables.length > 0 ?
+        source.queryBindings(operation, targetContext, {
+          joinBindings: {
+            bindings: new ArrayIterator(anchors, { autoStart: false }),
+            metadata: {
+              ...metadata,
+              variables: anchorVariables.map(variable => ({ variable, canBeUndef: false })),
+            },
+          },
+        }) :
+        source.queryBindings(operation, targetContext);
+      outputs.push(results.transform({
+        autoStart: false,
+        transform(result, done, push) {
+          const anchorKey = ActorRdfJoinMultiBindSource.getKey(result, anchorVariables)!;
+          for (const binding of reducedByAnchor.get(anchorKey) ?? []) {
+            const merged = binding.merge(result);
+            if (merged) {
+              push(merged);
+            }
+          }
+          done();
+        },
+      }));
+    }
+    if (outputs.length === 0) {
+      return;
+    }
+    return outputs.length === 1 ? outputs[0] : new UnionIterator(outputs, { autoStart: false });
+  }
+
+  /**
+   * The variables of a pattern, excluding nested quoted triples.
+   * @param pattern A pattern.
+   */
+  public static getPatternVariables(pattern: Algebra.Pattern): RDF.Variable[] {
+    return [ pattern.subject, pattern.predicate, pattern.object, pattern.graph ]
+      .filter((term): term is RDF.Variable => term.termType === 'Variable');
+  }
+
+  /**
+   * The distinct patterns of an operation, as the same pattern may occur once per source.
+   * @param operation An operation.
+   */
+  public static getDistinctPatterns(operation: Algebra.Operation): Algebra.Pattern[] {
+    const patterns = new Map<string, Algebra.Pattern>();
+    algebraUtils.visitOperation(operation, {
+      [Algebra.Types.PATTERN]: {
+        preVisitor: (pattern: Algebra.Pattern) => {
+          const key = [ pattern.subject, pattern.predicate, pattern.object, pattern.graph ].map(termToString).join(' ');
+          if (!patterns.has(key)) {
+            patterns.set(key, pattern);
+          }
+          return {};
+        },
+      },
+    });
+    return [ ...patterns.values() ];
+  }
+
+  /**
    * Create a key from the values of the given variables.
    * @param binding A binding.
    * @param keyVariables The variables of the key.
@@ -234,9 +427,22 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
       { autoStart: false },
     );
 
+    // Bindings with blank nodes are re-anchored in their source, once per distinct set of other values
+    const reanchoring: IBlankNodeReanchoring = {
+      patterns: ActorRdfJoinMultiBindSource.getDistinctPatterns(entries[0].operation),
+      seen: new Map(),
+    };
+
     // For each chunk, pass the query and the bindings to the sources for execution
     const bindingsStream = new UnionIterator(
-      chunkedStreams.map(chunk => this.queryTargets(targets, chunk, smallestMetadata, action.context, dataFactory)),
+      chunkedStreams.map(chunk => this.queryTargets(
+        targets,
+        chunk,
+        smallestMetadata,
+        action.context,
+        dataFactory,
+        reanchoring,
+      )),
       { autoStart: false },
     );
 
@@ -449,4 +655,24 @@ export interface IActorRdfJoinMultiBindSourceTestSideData extends IActorRdfJoinT
   entriesSorted: IJoinEntryWithMetadata[];
   targets: IBindTarget[];
   bindIndex: number;
+}
+
+/**
+ * The state for re-anchoring left bindings with blank nodes in their source.
+ */
+export interface IBlankNodeReanchoring {
+  /**
+   * The distinct patterns of the left operation.
+   */
+  patterns: Algebra.Pattern[];
+  /**
+   * The keys of the bindings that were re-anchored per source.
+   */
+  seen: Map<IQuerySource, Set<string>>;
+}
+
+interface IBlankNodeGroup {
+  patterns: Algebra.Pattern[];
+  blankVariables: Set<string>;
+  reduced: RDF.Bindings[];
 }

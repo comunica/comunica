@@ -131,6 +131,15 @@ export interface IQuerySource {
   canContainBlankNodes?: () => boolean;
 
   /**
+   * If the given blank node was produced by this source.
+   * Blank nodes are scoped to the source they came from, so such a blank node can only match within this source,
+   * although it can not be passed to it in a query.
+   * Sources that do not implement this can not tell where blank nodes came from.
+   * @param term A blank node.
+   */
+  isBlankNodeLocal?: (term: RDF.BlankNode) => boolean;
+
+  /**
    * Returns a (possibly lazy) stream that returns all quads matching the operation.
    *
    * This method should only be supported if the selector type returned from `getSelectorShape`
