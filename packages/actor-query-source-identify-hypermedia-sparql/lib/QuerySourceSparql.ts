@@ -26,6 +26,7 @@ import {
   getOriginalSparqlQueryString,
 } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
+import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
 import type { ISparqlEndpointFetcherRequestOptions } from 'fetch-sparql-endpoint';
@@ -39,6 +40,10 @@ export class QuerySourceSparql implements IQuerySource {
    * The query format that endpoints advertise via the `Accept-Query` header when they support HTTP QUERY (RFC 10008).
    */
   public static readonly MEDIATYPE_SPARQL_QUERY = 'application/sparql-query';
+  /**
+   * The SPARQL query parser of all endpoint fetchers, as creating one takes tens of milliseconds.
+   */
+  private static sparqlQueryParser: SparqlParser | undefined;
 
   public readonly referenceValue: string;
   private url: string;
@@ -114,6 +119,7 @@ export class QuerySourceSparql implements IQuerySource {
       forceGetIfUrlLengthBelow,
       directPost: metadata.postAccepted && !metadata.postAccepted.includes('application/x-www-form-urlencoded'),
       parseUnsupportedVersions,
+      sparqlQueryParser: QuerySourceSparql.getSparqlQueryParser(),
     });
     this.cache = cacheSize > 0 ?
       new LRUCache<string, QueryResultCardinality>({ max: cacheSize }) :
@@ -175,6 +181,14 @@ export class QuerySourceSparql implements IQuerySource {
 
   public async getFilterFactor(): Promise<number> {
     return 1;
+  }
+
+  /**
+   * Get the SPARQL query parser that is shared by all endpoint fetchers.
+   */
+  public static getSparqlQueryParser(): SparqlParser {
+    QuerySourceSparql.sparqlQueryParser ??= new SparqlParser({ lexerConfig: { positionTracking: 'onlyOffset' }});
+    return QuerySourceSparql.sparqlQueryParser;
   }
 
   public async getSelectorShape(): Promise<FragmentSelectorShape> {
