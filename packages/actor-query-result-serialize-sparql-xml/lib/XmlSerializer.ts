@@ -5,7 +5,9 @@ export class XmlSerializer {
   private readonly stack: string[] = [];
 
   public static header = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  private static readonly ESCAPED_CHARACTERS = /["&'<>]/u;
+  private static readonly ESCAPED_CHARACTERS_GLOBAL =
+    // eslint-disable-next-line no-control-regex
+    /["&'<>\u0000-\u0008\u000B\u000C\u000E-\u001F\uD800-\uDFFF\uFFFE\uFFFF]/gu;
 
   public constructor() {}
 
@@ -65,18 +67,19 @@ export class XmlSerializer {
   }
 
   private escape(text: string): string {
-    if (!XmlSerializer.ESCAPED_CHARACTERS.test(text)) {
+    if (text.search(XmlSerializer.ESCAPED_CHARACTERS_GLOBAL) < 0) {
       return text;
     }
-    return text.replaceAll(/["&'<>]/gu, <(substring: string) => string> ((char: '"' | '&' | '\'' | '<' | '>') => {
+    return text.replaceAll(XmlSerializer.ESCAPED_CHARACTERS_GLOBAL, (char: string) => {
       switch (char) {
         case '<': return '&lt;';
         case '>': return '&gt;';
         case '&': return '&amp;';
         case '\'': return '&apos;';
         case '"': return '&quot;';
+        default: return '\uFFFD';
       }
-    }));
+    });
   }
 }
 
