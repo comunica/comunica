@@ -1,0 +1,142 @@
+{
+ "status": "ok",
+ "results": 53,
+ "timeMs": 60235,
+ "firstResultMs": 50461,
+ "cpuMs": 6828,
+ "httpRequests": 560,
+ "httpRequestsWire": 567,
+ "byKind": {
+  "no-query": 9,
+  "count": 63,
+  "select": 488
+ },
+ "decodedBytes": 951173,
+ "wireBytes": 790891,
+ "sourcesGiven": 9,
+ "sourcesContacted": 9,
+ "sourcesWithData": [
+  "https://data.niod.nl/PoolParty/sparql/WO2_Thesaurus",
+  "https://www.genealogieonline.nl/wo2slachtoffers/sparql",
+  "https://sparql.ldmax.nl/wo2net"
+ ],
+ "byEndpoint": {
+  "https://data.niod.nl/PoolParty/sparql/WO2_Thesaurus": {
+   "requests": 19,
+   "decodedBytes": 26675,
+   "kinds": {
+    "no-query": 1,
+    "count": 7,
+    "select": 11
+   },
+   "dataRows": 48,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://www.genealogieonline.nl/wo2slachtoffers/sparql": {
+   "requests": 76,
+   "decodedBytes": 142635,
+   "kinds": {
+    "no-query": 1,
+    "count": 7,
+    "select": 68
+   },
+   "dataRows": 799,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://sparql.ldmax.nl/wo2net": {
+   "requests": 87,
+   "decodedBytes": 139979,
+   "kinds": {
+    "no-query": 1,
+    "count": 7,
+    "select": 79
+   },
+   "dataRows": 188,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q24033642": {
+   "requests": 63,
+   "decodedBytes": 106979,
+   "kinds": {
+    "no-query": 1,
+    "count": 7,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q4452658": {
+   "requests": 63,
+   "decodedBytes": 106979,
+   "kinds": {
+    "no-query": 1,
+    "count": 7,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q1852477": {
+   "requests": 63,
+   "decodedBytes": 106979,
+   "kinds": {
+    "no-query": 1,
+    "count": 7,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2070053": {
+   "requests": 63,
+   "decodedBytes": 106986,
+   "kinds": {
+    "no-query": 1,
+    "count": 7,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2798268": {
+   "requests": 63,
+   "decodedBytes": 106980,
+   "kinds": {
+    "no-query": 1,
+    "count": 7,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2882945": {
+   "requests": 63,
+   "decodedBytes": 106981,
+   "kinds": {
+    "no-query": 1,
+    "count": 7,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  }
+ }
+}

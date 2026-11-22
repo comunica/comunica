@@ -2,3 +2,4 @@ runs/*.requests.json
 runs-proto/*.requests.json
 runs-proto/*.log
 runs-final/*.requests.json
+runs-clean/**/*.requests.json

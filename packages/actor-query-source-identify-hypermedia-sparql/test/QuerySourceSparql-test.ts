@@ -22,6 +22,26 @@ import '@comunica/utils-jest';
  * Match a context that equals the given context, extended with an abort signal for count requests.
  * @param context The expected context without abort signal.
  */
+/**
+ * Match the context of a COUNT request: the given context with an HTTP timeout over the whole body.
+ */
+function countContext(context: IActionContext): any {
+  return {
+    asymmetricMatch(actual: IActionContext): boolean {
+      if (typeof actual.get(KeysHttp.httpTimeout) !== 'number' || actual.get(KeysHttp.httpBodyTimeout) !== true) {
+        return false;
+      }
+      try {
+        expect(actual.delete(KeysHttp.httpAbortSignal).delete(KeysHttp.httpTimeout).delete(KeysHttp.httpBodyTimeout))
+          .toEqual(context.delete(KeysHttp.httpAbortSignal).delete(KeysHttp.httpTimeout));
+        return true;
+      } catch {
+        return false;
+      }
+    },
+  };
+}
+
 function contextWithAbortSignal(context: IActionContext): any {
   return {
     asymmetricMatch(actual: IActionContext): boolean {
@@ -275,7 +295,7 @@ describe('QuerySourceSparql', () => {
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: contextWithAbortSignal(ctx),
+        context: countContext(ctx),
         init: {
           body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
@@ -294,7 +314,7 @@ describe('QuerySourceSparql', () => {
         .toMatchObject({ cardinality: { type: 'exact', value: 3 }});
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
       expect(mediatorHttp.mediate).toHaveBeenLastCalledWith({
-        context: contextWithAbortSignal(ctx),
+        context: countContext(ctx),
         init: {
           body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),
@@ -1488,7 +1508,7 @@ describe('QuerySourceSparql', () => {
 
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: contextWithAbortSignal(ctx),
+        context: countContext(ctx),
         init: {
           headers: expect.anything(),
           method: 'GET',
@@ -1544,7 +1564,7 @@ describe('QuerySourceSparql', () => {
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-          context: contextWithAbortSignal(ctx),
+          context: countContext(ctx),
           init: {
             body: new URLSearchParams({ query: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }' }),
             headers: expect.anything(),
@@ -1561,7 +1581,7 @@ describe('QuerySourceSparql', () => {
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-          context: contextWithAbortSignal(ctx),
+          context: countContext(ctx),
           init: {
             body: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }',
             headers: expect.anything(),
@@ -1621,7 +1641,7 @@ describe('QuerySourceSparql', () => {
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-          context: contextWithAbortSignal(ctx),
+          context: countContext(ctx),
           init: {
             body: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }',
             headers: expect.anything(),
@@ -1640,7 +1660,7 @@ describe('QuerySourceSparql', () => {
 
         expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-          context: contextWithAbortSignal(ctx),
+          context: countContext(ctx),
           init: {
             body: new URLSearchParams({ query: 'SELECT ( COUNT( * ) AS ?count ) WHERE { <s> ?p <o> . }' }),
             headers: expect.anything(),
@@ -1743,7 +1763,7 @@ describe('QuerySourceSparql', () => {
       expect(lastQuery).toBe(`query=SELECT+%28+COUNT%28+*+%29+AS+%3Fcount+%29+WHERE+%7B+VALUES%28+%29%7B+%7D+%3Chttps%3A%2F%2Fex%2Fs%3E+%3Fp+%3Chttps%3A%2F%2Fex%2Fo%3E+.+%7D`);
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
-        context: contextWithAbortSignal(ctx),
+        context: countContext(ctx),
         init: {
           body: new URLSearchParams({ query: `SELECT ( COUNT( * ) AS ?count ) WHERE { VALUES( ){ } <${testUrl('s')}> ?p <${testUrl('o')}> . }` }),
           headers: expect.anything(),

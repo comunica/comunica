@@ -1,0 +1,3 @@
+q3 {"status":"error","error":"fetch failed","results":25,"timeMs":6803,"firstResultMs":5891,"cpuMs":2175,"httpRequests":113,"httpRequestsWire":120,"byKin
+q2 {"status":"ok","results":53,"timeMs":60235,"firstResultMs":50461,"cpuMs":6828,"httpRequests":560,"httpRequestsWire":567,"byKind":{"no-query":9,"count"
+q4b {"status":"ok","results":2022,"timeMs":372723,"firstResultMs":14449,"cpuMs":25058,"httpRequests":2959,"httpRequestsWire":2990,"byKind":{"no-query":35,

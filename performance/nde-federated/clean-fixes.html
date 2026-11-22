@@ -1,0 +1,216 @@
+<title>NDE Federation Clean Fixes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+
+/* Layout: one reading column; wide tables and code scroll inside their own boxes. Delft blue accent on a cool paper ground. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #17212b; --muted: #5b6673; --line: #dde2e8;
+  --accent: #1f4e9c; --accent-soft: #e4ecf8; --code-bg: #eef1f5;
+  --ok: #1d7a4a; --ok-soft: #e1f2e8; --warn: #a15c07; --warn-soft: #fbeed9; --bad: #b42335; --bad-soft: #f9e2e5;
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f151c; --surface: #161e27; --fg: #e3e8ee; --muted: #9aa6b4; --line: #2a3542;
+  --accent: #8bb0f2; --accent-soft: #1c2b44; --code-bg: #1b2430;
+  --ok: #5fc48d; --ok-soft: #15301f; --warn: #e4a54d; --warn-soft: #33260f; --bad: #f07b8a; --bad-soft: #3a1a20; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0f151c; --surface: #161e27; --fg: #e3e8ee; --muted: #9aa6b4; --line: #2a3542;
+  --accent: #8bb0f2; --accent-soft: #1c2b44; --code-bg: #1b2430;
+  --ok: #5fc48d; --ok-soft: #15301f; --warn: #e4a54d; --warn-soft: #33260f; --bad: #f07b8a; --bad-soft: #3a1a20; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; }
+.wrap { max-width: 68rem; margin: 0 auto; display: grid; gap: 3rem; }
+h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.45rem; font-weight: 600; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+h4 { font-size: 1rem; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+code { font-family: var(--font-mono); font-size: 0.86em; background: var(--code-bg); padding: 0.05em 0.3em; border-radius: 3px; overflow-wrap: anywhere; }
+.eyebrow { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+section { display: grid; gap: 1rem; min-width: 0; }
+.intro { display: grid; gap: 1rem; }
+.lede { font-size: 1.05rem; color: var(--fg); }
+.meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; color: var(--muted); font-size: 0.86rem; }
+.verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.75rem; }
+.verdict div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.9rem 1rem; display: grid; gap: 0.25rem; }
+.verdict strong { font-family: var(--font-display); font-size: 1.6rem; line-height: 1; }
+.verdict .ok strong { color: var(--ok); } .verdict .bad strong { color: var(--bad); } .verdict .dnf strong { color: var(--warn); }
+.verdict span { color: var(--muted); font-size: 0.88rem; }
+.table-box { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+th, td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; white-space: nowrap; }
+tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.name { min-width: 11rem; }
+tbody th a { font-family: var(--font-mono); font-weight: 500; text-decoration: none; }
+.chip { display: inline-block; font-size: 0.74rem; font-weight: 600; padding: 0.1rem 0.5rem; border-radius: 999px; white-space: nowrap; }
+.chip.ok { color: var(--ok); background: var(--ok-soft); } .chip.bad { color: var(--bad); background: var(--bad-soft); } .chip.dnf { color: var(--warn); background: var(--warn-soft); }
+.note { color: var(--muted); font-size: 0.86rem; }
+.chart { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 1rem 1.1rem 0.6rem; display: grid; gap: 0.4rem; }
+.bar-row { display: grid; grid-template-columns: 3rem minmax(0, 1fr) 4.8rem; gap: 0.6rem; align-items: center; font-size: 0.82rem; }
+.bar-label { font-family: var(--font-mono); }
+.bar-value { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.bar-track { position: relative; height: 0.7rem; background: repeating-linear-gradient(90deg, transparent 0 calc(24.39% - 1px), var(--line) calc(24.39% - 1px) 24.39%); }
+.bar { position: absolute; inset: 0 auto 0 0; border-radius: 2px; }
+.bar.ok { background: var(--ok); } .bar.bad { background: var(--bad); } .bar.dnf { background: var(--warn); }
+.axis { display: grid; grid-template-columns: 3rem minmax(0, 1fr) 4.8rem; gap: 0.6rem; }
+.axis-track { position: relative; height: 1.2rem; }
+.tick { position: absolute; top: 0.15rem; transform: translateX(-50%); font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.issue-group { margin-top: 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-family: var(--font-body); }
+.issues { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; counter-reset: issue; }
+.issues li { counter-increment: issue; }
+.issue { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 6px; padding: 0.9rem 1.1rem; display: grid; gap: 0.5rem; }
+.issue.bad { border-left-color: var(--bad); }
+.issue-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.25rem 1rem; }
+.issue-head h4 { max-width: 46rem; }
+.impact { font-size: 0.8rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.fix { color: var(--muted); font-size: 0.92rem; }
+.fix-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--accent); margin-right: 0.35rem; }
+.queries { display: grid; gap: 1.25rem; }
+.query { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; gap: 0; scroll-margin-top: 1rem; }
+.query-head { display: flex; gap: 0.75rem; align-items: baseline; padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--line); background: var(--accent-soft); }
+.qid { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 500; color: var(--accent); white-space: nowrap; }
+.query-body { padding: 1rem 1.1rem; display: grid; gap: 0.75rem; min-width: 0; }
+.facts { margin: 0; display: grid; gap: 0.6rem; }
+.facts div { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: 0.75rem; }
+.facts dt { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-weight: 600; padding-top: 0.2rem; }
+.facts dd { margin: 0; max-width: 68ch; }
+.samples { margin: 0; padding-left: 1.1rem; }
+details.code { border: 1px solid var(--line); border-radius: 6px; min-width: 0; }
+details.code summary { cursor: pointer; padding: 0.45rem 0.75rem; font-size: 0.86rem; font-weight: 500; color: var(--accent); }
+details.code pre { margin: 0; padding: 0.75rem; overflow-x: auto; background: var(--code-bg); border-top: 1px solid var(--line); font-size: 0.8rem; line-height: 1.5; }
+details.code pre code { background: none; padding: 0; font-size: inherit; overflow-wrap: normal; }
+.src { padding: 0.5rem 0.75rem 0.75rem; border-top: 1px solid var(--line); display: grid; gap: 0.25rem; overflow-x: auto; }
+.src-group { font-size: 0.78rem; color: var(--muted); font-weight: 600; margin-top: 0.35rem; }
+.src-list { margin: 0; padding-left: 1.1rem; font-size: 0.8rem; }
+.method { display: grid; gap: 0.6rem; }
+.method ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; max-width: 72ch; }
+footer { color: var(--muted); font-size: 0.84rem; }
+@media (max-width: 560px) {
+  .facts div { grid-template-columns: 1fr; gap: 0.15rem; }
+  .bar-row, .axis { grid-template-columns: 2.6rem minmax(0, 1fr) 4.2rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+.sub { display: block; font-size: 0.78rem; color: var(--muted); margin-top: 0.15rem; white-space: nowrap; }
+th.sep, td.sep { border-left: 2px solid var(--line); }
+.chip.neutral { color: var(--muted); background: var(--code-bg); }
+h3.group { margin-top: 1rem; font-size: 1.05rem; }
+.fixes { display: grid; gap: 0.75rem; }
+.fix { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.9rem 1.1rem; display: grid; gap: 0.6rem; min-width: 0; }
+.fix header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.25rem 1rem; }
+.fix h4 { max-width: 48rem; }
+.issue-ref { font-size: 0.78rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.fix dl { margin: 0; display: grid; gap: 0.45rem; }
+.fix dl div { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0.75rem; }
+.fix dt { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-weight: 600; padding-top: 0.2rem; }
+.fix dd { margin: 0; max-width: 70ch; }
+@media (max-width: 560px) { .fix dl div { grid-template-columns: 1fr; gap: 0.1rem; } }
+
+.wrap { max-width: 82rem; }
+.fix dl div { grid-template-columns: 9rem minmax(0, 1fr); }
+@media (max-width: 560px) { .fix dl div { grid-template-columns: 1fr; } }
+</style>
+<div class="wrap">
+<header class="intro">
+  <span class="eyebrow">Comunica federation over the NDE dataset register</span>
+  <h1>Clean fixes, second pass</h1>
+  <p class="lede">The certain fixes are now separate PRs against master. The uncertain ones were rebuilt as clean
+  implementations on <a href="https://github.com/comunica/comunica/tree/claude/nde-fed-clean"><code>claude/nde-fed-clean</code></a> (feature/performance-fed plus the PRs) and
+  measured on the same ten queries. Service-description skipping turned out to be the wrong fix and was replaced by a
+  different design.</p>
+  <div class="meta"><span>Runs: 22 November 2026, one run per query, public endpoints</span><span>Timeout 600 s</span><span>No PRs for the uncertain fixes</span></div>
+</header>
+
+<section>
+  <div class="verdict">
+    <div class="bad"><strong>3 / 10</strong><span>correct with feature/performance-fed and the PRs</span></div>
+    <div class="ok"><strong>7 / 10</strong><span>correct with the clean fixes</span></div>
+    <div><strong>10 / 10</strong><span>correct with the earlier prototypes</span></div>
+    <div><strong>3</strong><span>still wrong: all three join through blank nodes</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>PRs for the certain fixes</h2>
+  <p>Each is branched from master (except #2035, which builds on the ASK batching of #2010), has unit tests at 100%
+  coverage, and passed the pre-commit hook (lint, build, all unit tests). One correction: the first description of
+  #2031 reported "712 results" for Q5 without saying that they are only 175 distinct items; the Beeld en Geluid branch
+  is still lost to the blank-node problem. I have updated the description.</p>
+  <div class="table-box"><table>
+    <thead><tr><th>PR</th><th>Change</th><th>Issue</th><th>Status</th></tr></thead>
+    <tbody><tr><th scope="row"><a href="https://github.com/comunica/comunica/pull/2030">comunica/comunica#2030</a></th><td>Keep the given URL of forced SPARQL sources after redirects</td><td>Issue 1</td><td><span class='chip neutral'>opened before</span></td></tr><tr><th scope="row"><a href="https://github.com/comunica/comunica/pull/2031">comunica/comunica#2031</a></th><td>Bind into BIND operations that do not assign bound variables</td><td>Issue 7</td><td><span class='chip ok'>opened now</span></td></tr><tr><th scope="row"><a href="https://github.com/comunica/comunica/pull/2032">comunica/comunica#2032</a></th><td>Sort join entries when only non-join variables can be undefined</td><td>Issue 8</td><td><span class='chip ok'>opened now</span></td></tr><tr><th scope="row"><a href="https://github.com/comunica/comunica/pull/2033">comunica/comunica#2033</a></th><td>Floor join estimates of non-empty entries at one</td><td>Issue 8</td><td><span class='chip ok'>opened now</span></td></tr><tr><th scope="row"><a href="https://github.com/comunica/comunica/pull/2034">comunica/comunica#2034</a></th><td>Retry rate-limited requests by default</td><td>Issue 12</td><td><span class='chip ok'>opened now</span></td></tr><tr><th scope="row"><a href="https://github.com/comunica/comunica/pull/2035">comunica/comunica#2035</a></th><td>Use different variables for each batched ASK query (stacked on #2010)</td><td>ASK batching</td><td><span class='chip ok'>opened now</span></td></tr><tr><th scope="row"><a href="https://github.com/rubensworks/fetch-sparql-endpoint.js/pull/105">rubensworks/fetch-sparql-endpoint.js#105</a></th><td>Append URL parameters correctly to endpoints with a query string</td><td>Issue 2</td><td><span class="chip neutral">opened before</span></td></tr></tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2>Skipping service descriptions (issue 13)</h2>
+  <p>You were right: skipping the service description of every forced SPARQL source also drops its VoID
+  description, its <code>sd:</code> features (extension functions, accepted methods, default graph) and the
+  VoID-based estimates, so it is not the right fix in general. I kept it out of the PRs.</p>
+  <p>On this workload, though, the service descriptions contribute nothing: of the 54 endpoints, none serves VoID,
+  only 7 serve any <code>sd:</code> triples, the 32 ldmax endpoints redirect to the site's schema.org catalogue page
+  (99 KB, 780 quads, per source and per query), and TriplyDB answers with JSON or a 400. The cost is mostly latency:
+  the first query request waits 1.3 to 3.8 s, and up to 3 MB are fetched for 35 sources.</p>
+  <p>The clean alternative keeps the service description but takes it off the critical path: identify a forced SPARQL
+  source immediately, merge the service description into the source when it arrives, and only wait for it (with the
+  existing 3 s timeout) where its content is used, such as VoID estimates. In addition, an endpoint whose response had
+  no <code>sd:</code> or <code>void:</code> triples can be remembered for the lifetime of the engine, so later queries
+  skip it. Not implemented yet; it touches how <code>QuerySourceSparql</code> receives its metadata.</p>
+</section>
+
+<section>
+  <h2>Results on the ten queries</h2>
+  <div class="table-box"><table>
+    <thead><tr><th>Query</th><th class="num">Expected</th>
+      <th class="num sep">Feature + PRs</th><th class="num">Time</th><th class="num">Requests</th>
+      <th class="num sep">Clean fixes</th><th class="num">Time</th><th class="num">Requests</th>
+      <th class="num sep">Prototypes</th><th class="num">Time</th><th class="num">Requests</th></tr></thead>
+    <tbody><tr><th scope="row"><code>Q1</code><span class="sub">Women artists (RKD + museums)</span></th><td class="num">334<span class="sub">rows</span></td><td class="num sep">12 <span class="chip bad">wrong</span></td><td class="num">80.4 s</td><td class="num">12,036<span class="sub">5.0 MB</span></td><td class="num sep">334 <span class="chip ok">correct</span></td><td class="num">166.7 s</td><td class="num">637<span class="sub">291.5 MB</span></td><td class="num sep">334 <span class="chip ok">correct</span></td><td class="num">159.8 s</td><td class="num">499<span class="sub">364.5 MB</span></td></tr><tr><th scope="row"><code>Q2</code><span class="sub">Vught victims (WO2)</span></th><td class="num">53<span class="sub">rows</span></td><td class="num sep">0 <span class="chip dnf">error</span></td><td class="num">11.9 s</td><td class="num">135<span class="sub">0.8 MB</span></td><td class="num sep">53 <span class="chip ok">correct</span></td><td class="num">30.5 s</td><td class="num">560<span class="sub">1.0 MB</span></td><td class="num sep">53 <span class="chip ok">correct</span></td><td class="num">46.5 s</td><td class="num">501<span class="sub">0.2 MB</span></td></tr><tr><th scope="row"><code>Q3</code><span class="sub">Camp Vught objects</span></th><td class="num">205<span class="sub">rows</span></td><td class="num sep">205 <span class="chip ok">correct</span></td><td class="num">19.9 s</td><td class="num">268<span class="sub">0.9 MB</span></td><td class="num sep">205 <span class="chip ok">correct</span></td><td class="num">17.2 s</td><td class="num">156<span class="sub">0.8 MB</span></td><td class="num sep">205 <span class="chip ok">correct</span></td><td class="num">14.2 s</td><td class="num">141<span class="sub">98 KB</span></td></tr><tr><th scope="row"><code>Q4</code><span class="sub">Portraits, OPTIONAL date</span></th><td class="num">2,026<span class="sub">distinct rows</span></td><td class="num sep">13 <span class="chip dnf">error</span></td><td class="num">54.1 s</td><td class="num">3,591<span class="sub">4.1 MB</span></td><td class="num sep">2,026 <span class="chip ok">correct</span></td><td class="num">130.2 s</td><td class="num">6,030<span class="sub">4.7 MB</span></td><td class="num sep">2,026 <span class="chip ok">correct</span></td><td class="num">87.3 s</td><td class="num">5,547<span class="sub">1.5 MB</span></td></tr><tr><th scope="row"><code>Q4B</code><span class="sub">Portraits, no OPTIONAL</span></th><td class="num">2,022<span class="sub">rows</span></td><td class="num sep">2,022 <span class="chip ok">correct</span></td><td class="num">30.3 s</td><td class="num">3,028<span class="sub">4.2 MB</span></td><td class="num sep">2,022 <span class="chip ok">correct</span></td><td class="num">31.4 s</td><td class="num">2,959<span class="sub">4.1 MB</span></td><td class="num sep">2,022 <span class="chip ok">correct</span></td><td class="num">58.4 s</td><td class="num">2,785<span class="sub">1.0 MB</span></td></tr><tr><th scope="row"><code>Q5</code><span class="sub">Andriessen (UNION + BIND)</span></th><td class="num">711<span class="sub">items</span></td><td class="num sep">175 <span class="chip bad">wrong</span></td><td class="num">7.4 s</td><td class="num">203<span class="sub">0.7 MB</span></td><td class="num sep">175 <span class="chip bad">wrong</span></td><td class="num">7.2 s</td><td class="num">90<span class="sub">0.3 MB</span></td><td class="num sep">711 <span class="chip ok">correct</span></td><td class="num">11.5 s</td><td class="num">116<span class="sub">0.4 MB</span></td></tr><tr><th scope="row"><code>Q5B</code><span class="sub">Andriessen, anchored</span></th><td class="num">711<span class="sub">items</span></td><td class="num sep">175 <span class="chip bad">wrong</span></td><td class="num">6.8 s</td><td class="num">119<span class="sub">0.3 MB</span></td><td class="num sep">175 <span class="chip bad">wrong</span></td><td class="num">7.1 s</td><td class="num">82<span class="sub">0.3 MB</span></td><td class="num sep">711 <span class="chip ok">correct</span></td><td class="num">8.1 s</td><td class="num">66<span class="sub">0.5 MB</span></td></tr><tr><th scope="row"><code>Q6</code><span class="sub">Gouda monuments, OPTIONAL style</span></th><td class="num">391<span class="sub">distinct rows</span></td><td class="num sep">0 <span class="chip dnf">timeout</span></td><td class="num">600.5 s</td><td class="num">2,487<span class="sub">98.7 MB</span></td><td class="num sep">391 <span class="chip ok">correct</span></td><td class="num">34.8 s</td><td class="num">763<span class="sub">0.8 MB</span></td><td class="num sep">391 <span class="chip ok">correct</span></td><td class="num">41.3 s</td><td class="num">463<span class="sub">0.7 MB</span></td></tr><tr><th scope="row"><code>Q6B</code><span class="sub">Gouda monuments, style required</span></th><td class="num">73<span class="sub">distinct rows</span></td><td class="num sep">73 <span class="chip ok">correct</span></td><td class="num">21.6 s</td><td class="num">480<span class="sub">0.4 MB</span></td><td class="num sep">73 <span class="chip ok">correct</span></td><td class="num">17.4 s</td><td class="num">470<span class="sub">0.4 MB</span></td><td class="num sep">73 <span class="chip ok">correct</span></td><td class="num">25.8 s</td><td class="num">326<span class="sub">0.5 MB</span></td></tr><tr><th scope="row"><code>Q7</code><span class="sub">Dataset discovery</span></th><td class="num">11<span class="sub">rows</span></td><td class="num sep">1 <span class="chip bad">wrong</span></td><td class="num">2.7 s</td><td class="num">39<span class="sub">29 KB</span></td><td class="num sep">1 <span class="chip bad">wrong</span></td><td class="num">2.8 s</td><td class="num">37<span class="sub">29 KB</span></td><td class="num sep">11 <span class="chip ok">correct</span></td><td class="num">7.2 s</td><td class="num">37<span class="sub">46 KB</span></td></tr></tbody>
+  </table></div>
+  <p class="note">Requests include one service-description GET per source; the prototypes skipped those, which is
+  most of their byte difference on Q2 and Q3. Public endpoints vary a lot between runs, so time differences of tens of
+  percent between columns are not significant on their own.</p>
+</section>
+
+<section>
+  <h2>Clean solutions, implemented</h2>
+  <p>All on <a href="https://github.com/comunica/comunica/tree/claude/nde-fed-clean"><code>claude/nde-fed-clean</code></a>, configurable through actor parameters with
+  defaults, no environment switches.</p>
+  <div class="fixes"><article class="fix"><header><h4>OPTIONAL over multiple sources as planned VALUES joins per block</h4><span class="issue-ref">Issue 6</span></header><div class="chips"><span class="chip ok">Clean</span><span class="chip ok">Unit tests: 100%</span><span class="chip dnf">Run the benchmarks before a PR</span></div><dl><div><dt>Design</dt><dd>New actor <code>actor-rdf-join-optional-bind-block</code>. It slices the left side into blocks of up to 64 distinct key values, joins each block with the right side as <code>Join(VALUES, right)</code> (or <code>Filter(Join(...), expr)</code> for OPTIONAL with FILTER) through the normal planner, and adds the left bindings without results. Each VALUES row carries a row number, so results are matched to the row that produced them, even when a row with unbound values produces results that agree with another row.</dd></div><div><dt>Why clean</dt><dd>It is its own actor that competes on coefficients, only for right sides without a single source (those stay with <code>optional-bind-source</code>). A VALUES join is plain SPARQL join semantics, so it needs none of the bind-safety restrictions, and it streams per block instead of materializing the whole left side like the prototype.</dd></div><div><dt>Measured</dt><dd>Q4: failed (baseline) to 2,026 correct distinct rows in 130 s. Q6: 600 s timeout to 391 correct distinct rows in 34.8 s.</dd></div><div><dt>Open</dt><dd>Every block still goes to all 34 sources (3,036 of Q4's 6,030 requests), and a block of 64 keys becomes 3 VALUES requests per source, as the bind-source join splits it into blocks of 25. Aligning the two block sizes and pruning sources by value space would cut that. The prototype was faster on Q4 (87 s); run-to-run endpoint variation is large, so this needs repeated runs to judge.</dd></div></dl></article><article class="fix"><header><h4>Share identical in-flight requests of a query</h4><span class="issue-ref">Issue 5</span></header><div class="chips"><span class="chip ok">Clean</span><span class="chip ok">Helper tests: 100%</span><span class="chip dnf">Integration tests missing</span></div><dl><div><dt>Design</dt><dd><code>SparqlRequestSharing</code> in the SPARQL source. Identical SELECT and COUNT requests of the same query (scoped by its <code>queryTimestamp</code>) share one request while it is in flight. Bindings are read as they arrive into a buffer of at most 1,000 bindings (new parameter <code>shareRequestsMaxBindings</code>), so a consumer never waits for another one. Nothing is kept after a request completes.</dd></div><div><dt>Why not the prototype</dt><dd>The prototype made later consumers wait until the first one had read everything, which can deadlock when both streams feed the same join, and it kept results for the lifetime of the source, which with source reuse (#1992) spans queries and can serve stale data.</dd></div><div><dt>Measured</dt><dd>Q3: 115 duplicate requests to 1, total 268 to 156 requests. All 115 duplicates were concurrent (about 20 ms apart), which is why #1983 (reuse after completion) does not catch them.</dd></div><div><dt>Open</dt><dd>Integration tests in <code>QuerySourceSparql-test</code>. ASK requests are not shared yet.</dd></div></dl></article><article class="fix"><header><h4>Continue results that may be capped with OFFSET pages</h4><span class="issue-ref">Issue 3</span></header><div class="chips"><span class="chip ok">Clean</span><span class="chip dnf">Unit tests missing</span><span class="chip dnf">Relies on stable order</span></div><dl><div><dt>Design</dt><dd>If a response has a multiple of 1,000 rows (new parameter <code>resultPageMultiple</code>), the SPARQL source requests <code>OFFSET n LIMIT n</code> pages until a page is shorter. A false positive costs one request without results. Original query strings and operations with their own slice are not paged.</dd></div><div><dt>Evidence</dt><dd>TriplyDB gives no signal: <code>LIMIT 20000</code> returns exactly 10,000 rows, with no header or response field. Exact COUNTs cannot be the signal either, because the capped Q1 operation is a 4-pattern BGP whose cardinality is only a local estimate. Ordered paging is impossible there: the endpoint refuses <code>ORDER BY</code> with <code>OFFSET 10000 LIMIT 10000</code> with "Virtuoso 22023 Error SR353: Sorted TOP clause specifies more then 20000 rows to sort. Only 10000 are allowed".</dd></div><div><dt>Measured</dt><dd>Q1: 12 of 334 rows to all 334.</dd></div><div><dt>Open</dt><dd>Unit tests. Unordered pages assume the endpoint evaluates the same query in the same order, which held on TriplyDB but is not guaranteed by SPARQL.</dd></div></dl></article><article class="fix"><header><h4>Limit concurrent requests per host once it signals overload</h4><span class="issue-ref">Issue 11</span></header><div class="chips"><span class="chip ok">Clean</span><span class="chip ok">Unit tests: 100%</span><span class="chip dnf">Not exercised by a real overload yet</span></div><dl><div><dt>Design</dt><dd>New HTTP actor <code>actor-http-limit-concurrency</code> in the default config. No limit (up to <code>maxLimit</code>, 10,000) until a host answers 429 or 503 or a connection is lost. The limit then becomes half the requests in flight (once per burst) and grows by one per limit's worth of successes. A slot is released at the response headers, not at the end of the body, since holding slots for unread bodies can deadlock joins.</dd></div><div><dt>Evidence</dt><dd>The ldmax gateway (31 endpoints on one host) scales with concurrency: Q4b took 373 s with a cap of 64, 45 s with slow start from 16 to 1,024, 42 s from 64 to 4,096, and 35 s unlimited (peak 1,911 in flight). So any limit before overload is harmful there. Unlimited is not always safe either: baseline Q4 failed when one request was cut after 31 s with 1,745 requests in flight.</dd></div><div><dt>Measured</dt><dd>In the final run no host signalled overload (no 429, 503 or lost connection), so the limiter never engaged; ldmax peaked at 1,952 in flight. The RCE 503 bursts from earlier days did not recur.</dd></div><div><dt>Open</dt><dd>A test against a real or simulated overloading endpoint. The planner-side cause, thousands of concurrent bind-join requests, is untouched.</dd></div></dl></article><article class="fix"><header><h4>Retry lost connections by default</h4><span class="issue-ref">Issue 12, follow-up to #2034</span></header><div class="chips"><span class="chip ok">Clean</span><span class="chip dnf">Unit tests missing</span></div><dl><div><dt>Design</dt><dd>Without a configured retry count, <code>ActorHttpRetry</code> now also retries requests that lost their connection (<code>ECONNRESET</code>, <code>EPIPE</code>, undici socket and closed errors, HTTP/2 GOAWAY, found by walking <code>error.cause</code>), only for replayable query requests. Refused connections and unknown hosts still fail immediately, so dead links do not get slower.</dd></div><div><dt>Evidence</dt><dd>genealogieonline.nl sends HTTP/2 GOAWAY frames; that made baseline Q2 fail, and one Q3 run. A GOAWAY means the request was not processed, so sending it again is safe.</dd></div><div><dt>Measured</dt><dd>Q2: failed to 53 correct rows in 30.5 s.</dd></div><div><dt>Open</dt><dd>Unit tests, and a decision whether it goes into #2034 or a follow-up PR.</dd></div></dl></article><article class="fix"><header><h4>Start COUNT timeouts when the request is sent</h4><span class="issue-ref">Supports the limiter</span></header><div class="chips"><span class="chip ok">Clean</span><span class="chip bad">20 existing tests to update</span></div><dl><div><dt>Design</dt><dd>COUNT queries use <code>httpTimeout</code> with <code>httpBodyTimeout</code> (the minimum of the context value and <code>countTimeout</code>) instead of their own timer, so time spent waiting for a slot no longer turns into infinite estimates.</dd></div><div><dt>Open</dt><dd>Existing tests asserted the old request context: a matcher for COUNT contexts fixed 8 of 28. Most of the other 20 are knock-on failures of about 6 timeout tests that simulate slow responses with fake timers and now wait for the removed timer; those need rewriting. Planning can now wait longer for queued COUNTs; a fallback timer at a multiple of the timeout would bound that.</dd></div></dl></article></div>
+</section>
+
+<section>
+  <h2>Designs and decisions without code</h2>
+  <div class="fixes"><article class="fix"><header><h4>Blank-node joins across sources (Q5, Q5b, Q7 still wrong)</h4><span class="issue-ref">Issue 4</span></header><div class="chips"><span class="chip dnf">Design only</span></div><dl><div><dt>Recommendation</dt><dd>An optimizer rewrite instead of the prototype's runtime re-anchoring: <code>Join(A@S, Union(B@S, B@T))</code> becomes <code>Union(Join(A, B)@S, Join(A@S, B@T))</code>. This is exact by distributivity, keeps S's blank nodes inside S, and loses nothing, since blank nodes from S can never match T. It also turns the S part into one source query.</dd></div><div><dt>Why not re-anchoring</dt><dd>It needs a public way to get a blank node's source (today only the internal <code>bc_&lt;sourceId&gt;_</code> label and a duck-typed <code>sourceId</code>), and every bind join and optional join would need it.</dd></div></dl></article><article class="fix"><header><h4>Join order without value-space knowledge (Q1: 291 MB)</h4><span class="issue-ref">Issue 10</span></header><div class="chips"><span class="chip dnf">Design only</span></div><dl><div><dt>Finding</dt><dd>Of Q1's 291 MB, about 180 MB are about 100 pages of RKD's own <code>schema:sameAs</code> triples (about 1M rows), and 107 MB are full scans of <code>schema:creator</code> on ldmax. RKD's sameAs links can never join with museum agents, but the planner cannot know that. Paging made this visible; before, the cap hid it by returning wrong results cheaply.</dd></div><div><dt>Recommendation</dt><dd>Value-space knowledge per source. VoID is not the way here: none of the 54 endpoints serves VoID. The NDE Dataset Knowledge Graph linksets are the realistic source.</dd></div></dl></article><article class="fix"><header><h4>Batch COUNT queries per source</h4><span class="issue-ref">Issue 14</span></header><div class="chips"><span class="chip dnf">Design only</span></div><dl><div><dt>Recommendation</dt><dd>Generalize the ASK batcher of #2010 into a batcher for single-row queries, with at most 16 per batch. On a batch timeout, give the slow entries infinite estimates or resend them alone, since one slow COUNT otherwise delays its whole batch. Prototype: Q2 63 to 9 COUNT requests, Q1 176 to 22.</dd></div></dl></article><article class="fix"><header><h4>Prefix pruning, transfer-cost metadata, multi-bind deferral</h4><span class="issue-ref">Issues 8 and 9</span></header><div class="chips"><span class="chip bad">Dropped for now</span></div><dl><div><dt>Why</dt><dd>Prefix ASKs took 2.5 to 9 s on ldmax and slowed queries where nothing could be pruned, and no endpoint publishes <code>void:uriSpace</code>. Transfer-cost metadata was not decisive (the decisive changes were #2032 and #2033), and the multi-bind deferral only fixed a case that the transfer-cost prototype itself caused.</dd></div></dl></article></div>
+</section>
+
+<section class="method">
+  <h2>What it would take to turn these into PRs</h2>
+  <ul>
+    <li>Optional bind block, request sharing, limiter: ready apart from benchmarks; the CI benchmark comment covers
+    that once a PR exists.</li>
+    <li>Paging and lost-connection retries: unit tests (small).</li>
+    <li>COUNT timeout from send time: rewrite about 6 timeout tests in the SPARQL-source tests (20 failing; started).</li>
+    <li>Service descriptions off the critical path, blank-node rewrite, COUNT batching: implementation work, each
+    about the size of one of the new actors.</li>
+  </ul>
+</section>
+
+<footer>Measurements: <code>performance/nde-federated/runs-clean</code> on the branch (baseline in
+<code>base</code>, clean fixes in <code>all</code>, summary in <code>summary.jsonl</code>). Ground truth from the
+scripts in the same directory.</footer>
+</div>

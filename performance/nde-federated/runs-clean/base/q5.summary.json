@@ -1,0 +1,106 @@
+{
+ "status": "ok",
+ "results": 712,
+ "timeMs": 7421,
+ "firstResultMs": 6712,
+ "cpuMs": 2742,
+ "httpRequests": 203,
+ "httpRequestsWire": 204,
+ "byKind": {
+  "no-query": 6,
+  "count": 108,
+  "ask-batch": 1,
+  "select": 88
+ },
+ "decodedBytes": 654160,
+ "wireBytes": 454215,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://gtaa.apis.beeldengeluid.nl/sparql",
+  "https://cat.apis.beeldengeluid.nl/sparql",
+  "https://data.muziekschatten.nl/sparql",
+  "https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql"
+ ],
+ "byEndpoint": {
+  "https://gtaa.apis.beeldengeluid.nl/sparql": {
+   "requests": 15,
+   "decodedBytes": 2986,
+   "kinds": {
+    "no-query": 1,
+    "count": 12,
+    "select": 2
+   },
+   "dataRows": 2,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://cat.apis.beeldengeluid.nl/sparql": {
+   "requests": 28,
+   "decodedBytes": 313934,
+   "kinds": {
+    "no-query": 1,
+    "count": 12,
+    "ask-batch": 1,
+    "select": 14
+   },
+   "dataRows": 2202,
+   "askTrue": 4,
+   "askFalse": 0,
+   "errors": 4
+  },
+  "https://data.muziekschatten.nl/sparql": {
+   "requests": 45,
+   "decodedBytes": 168634,
+   "kinds": {
+    "no-query": 1,
+    "count": 20,
+    "select": 24
+   },
+   "dataRows": 576,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql": {
+   "requests": 53,
+   "decodedBytes": 60774,
+   "kinds": {
+    "no-query": 1,
+    "count": 24,
+    "select": 28
+   },
+   "dataRows": 364,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql": {
+   "requests": 41,
+   "decodedBytes": 4899,
+   "kinds": {
+    "no-query": 1,
+    "count": 24,
+    "select": 16
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://sparql.ldmax.nl/Q2204530": {
+   "requests": 21,
+   "decodedBytes": 102933,
+   "kinds": {
+    "no-query": 1,
+    "count": 16,
+    "select": 4
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  }
+ }
+}
