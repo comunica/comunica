@@ -45,6 +45,17 @@ describe('ActorRdfJoinOptionalBindBlock', () => {
     mediatorQueryOperation = {
       mediate: jest.fn(async({ operation }: { operation: Algebra.Operation }) => {
         operations.push(operation);
+        // A materialized pattern of a binding with a blank node has a match for _:x, and a conflicting one for _:y
+        if (operation.type === Algebra.Types.PATTERN) {
+          const subject = (<Algebra.Pattern> operation).subject;
+          const results = subject.equals(DF.blankNode('x')) ?
+              [ BF.bindings([[ DF.variable('b'), DF.namedNode('ex:bx') ]]) ] :
+              [ BF.bindings([
+                [ DF.variable('a'), DF.namedNode('ex:other') ],
+                [ DF.variable('b'), DF.namedNode('ex:by') ],
+              ]) ];
+          return { type: 'bindings', bindingsStream: new ArrayIterator(results, { autoStart: false }) };
+        }
         const join = operation.type === Algebra.Types.FILTER ? (<Algebra.Filter> operation).input : operation;
         const values = <Algebra.Values> (<Algebra.Join> join).input[0];
         const results = values.bindings.flatMap(row => (data[row.a?.value ?? ''] ?? [])
@@ -121,17 +132,19 @@ describe('ActorRdfJoinOptionalBindBlock', () => {
       const blank = BF.bindings([[ DF.variable('a'), DF.blankNode('x') ]]);
       const unbound = BF.bindings([[ DF.variable('c'), DF.literal('3') ]]);
       const { result } = await (<any> actor).getOutput(createAction([ a1, a1Again, a2, a3, blank, unbound ]));
-      expect(await (<any> result).bindingsStream.toArray()).toEqualBindingsArray([
+      await expect((result).bindingsStream.toArray()).resolves.toEqualBindingsArray([
         a1.set(DF.variable('b'), DF.namedNode('ex:b1')),
         a1Again.set(DF.variable('b'), DF.namedNode('ex:b1')),
         a2.set(DF.variable('b'), DF.namedNode('ex:b2')),
         a2.set(DF.variable('b'), DF.namedNode('ex:b3')),
         a3,
-        blank,
+        blank.set(DF.variable('b'), DF.namedNode('ex:bx')),
         unbound.set(DF.variable('b'), DF.namedNode('ex:b0')),
       ], true);
       // Blocks of at most two distinct keys, of which the bindings with the same key share a row
-      expect(operations.map(operation => (<Algebra.Values> (<Algebra.Join> operation).input[0]).bindings))
+      expect(operations
+        .filter(operation => operation.type === Algebra.Types.JOIN)
+        .map(operation => (<Algebra.Values> (<Algebra.Join> operation).input[0]).bindings))
         .toEqual([
           [
             { a: DF.namedNode('ex:a1'), [rowVariable.value]: DF.literal('0') },
@@ -143,7 +156,7 @@ describe('ActorRdfJoinOptionalBindBlock', () => {
       expect((<Algebra.Values> (<Algebra.Join> operations[0]).input[0]).variables)
         .toEqual([ DF.variable('a'), rowVariable ]);
       expect((<Algebra.Join> operations[0]).input[1]).toBe(right);
-      await expect((<any> result).metadata()).resolves.toEqual({
+      await expect((result).metadata()).resolves.toEqual({
         state: expect.any(MetadataValidationState),
         cardinality: { type: 'estimate', value: expect.any(Number) },
         variables: [
@@ -158,7 +171,7 @@ describe('ActorRdfJoinOptionalBindBlock', () => {
       const expression = AF.createTermExpression(DF.variable('c'));
       const a1 = BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ], [ DF.variable('c'), DF.literal('1') ]]);
       const { result } = await (<any> actor).getOutput(createAction([ a1 ], expression));
-      await expect((<any> result).bindingsStream.toArray()).resolves.toHaveLength(1);
+      await expect((result).bindingsStream.toArray()).resolves.toHaveLength(1);
       expect(operations[0].type).toBe(Algebra.Types.FILTER);
       expect((<Algebra.Filter> operations[0]).expression).toBe(expression);
       // Variables of the expression are passed as well
@@ -166,20 +179,86 @@ describe('ActorRdfJoinOptionalBindBlock', () => {
         .toEqual([ DF.variable('a'), DF.variable('c'), rowVariable ]);
     });
 
-    it('should not evaluate the right operation for blocks without passable values', async() => {
-      const blank = BF.bindings([[ DF.variable('a'), DF.blankNode('x') ]]);
+    it('should join blocks with each branch of a union', async() => {
+      const branch1 = AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('b'));
+      const branch2 = AF.createPattern(DF.variable('a'), DF.namedNode('ex:p2'), DF.variable('b'));
+      const action = createAction([
+        BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a2') ]]),
+      ]);
+      action.entries[1].operation = AF.createUnion([ branch1, branch2 ]);
+      jest.spyOn(mediatorQueryOperation, 'mediate').mockImplementation(async() => ({
+        type: 'bindings',
+        bindingsStream: new ArrayIterator([
+          BF.bindings([
+            [ DF.variable('a'), DF.namedNode('ex:a2') ],
+            [ DF.variable('b'), DF.namedNode('ex:b2') ],
+            [ rowVariable, DF.literal('1') ],
+          ]),
+        ], { autoStart: false }),
+      }));
+      const { result } = await (<any> actor).getOutput(action);
+      await expect(result.bindingsStream.toArray()).resolves.toEqualBindingsArray([
+        BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]),
+        BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a2') ], [ DF.variable('b'), DF.namedNode('ex:b2') ]]),
+      ]);
+      const operation = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+      const values = AF.createValues([ DF.variable('a'), rowVariable ], [
+        { a: DF.namedNode('ex:a1'), [rowVariable.value]: DF.literal('0') },
+        { a: DF.namedNode('ex:a2'), [rowVariable.value]: DF.literal('1') },
+      ]);
+      expect(operation).toEqual(AF.createUnion([
+        AF.createJoin([ values, branch1 ]),
+        AF.createJoin([ values, branch2 ]),
+      ]));
+    });
+
+    it('should bind bindings with blank nodes into the right operation one by one', async() => {
+      const blank = BF.bindings([[ DF.variable('a'), DF.blankNode('x') ], [ DF.variable('c'), DF.literal('1') ]]);
+      const blankAgain = BF.bindings([[ DF.variable('a'), DF.blankNode('x') ], [ DF.variable('c'), DF.literal('2') ]]);
+      const { result } = await (<any> actor).getOutput(createAction([ blank, blankAgain ]));
+      await expect((result).bindingsStream.toArray()).resolves.toEqualBindingsArray([
+        blank.set(DF.variable('b'), DF.namedNode('ex:bx')),
+        blankAgain.set(DF.variable('b'), DF.namedNode('ex:bx')),
+      ]);
+      // Bindings with the same values share the evaluation, and no VALUES are evaluated
+      expect(operations).toEqual([
+        AF.createPattern(DF.blankNode('x'), DF.namedNode('ex:p'), DF.variable('b')),
+      ]);
+    });
+
+    it('should bind bindings with blank nodes into the right operation and the expression', async() => {
+      const expression = AF.createOperatorExpression('bound', [ AF.createTermExpression(DF.variable('c')) ]);
+      const blank = BF.bindings([[ DF.variable('a'), DF.blankNode('x') ], [ DF.variable('c'), DF.literal('1') ]]);
+      mediatorQueryOperation.mediate.mockImplementation(async() => ({
+        type: 'bindings',
+        bindingsStream: new ArrayIterator([ BF.bindings([[ DF.variable('b'), DF.namedNode('ex:bx') ]]) ], {
+          autoStart: false,
+        }),
+      }));
+      const { result } = await (<any> actor).getOutput(createAction([ blank ], expression));
+      await expect((result).bindingsStream.toArray()).resolves.toEqualBindingsArray([
+        blank.set(DF.variable('b'), DF.namedNode('ex:bx')),
+      ]);
+      // The filter is materialized as by the optional bind join
+      expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(1);
+      const operation = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+      expect(operation.type).toBe(Algebra.Types.FILTER);
+    });
+
+    it('should keep left bindings of which all results conflict', async() => {
+      const blank = BF.bindings([[ DF.variable('a'), DF.blankNode('y') ]]);
       const { result } = await (<any> actor).getOutput(createAction([ blank ]));
-      await expect((<any> result).bindingsStream.toArray()).resolves.toEqual([ blank ]);
-      expect(mediatorQueryOperation.mediate).not.toHaveBeenCalled();
+      await expect((result).bindingsStream.toArray()).resolves.toEqualBindingsArray([ blank ]);
     });
 
     it('should emit errors of evaluating a block', async() => {
-      mediatorQueryOperation.mediate = jest.fn(async() => {
+      jest.spyOn(mediatorQueryOperation, 'mediate').mockImplementation(async() => {
         throw new Error('block failed');
       });
       const a1 = BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]);
       const { result } = await (<any> actor).getOutput(createAction([ a1 ]));
-      await expect((<any> result).bindingsStream.toArray()).rejects.toThrow('block failed');
+      await expect((result).bindingsStream.toArray()).rejects.toThrow('block failed');
     });
   });
 });

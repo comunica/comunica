@@ -178,7 +178,9 @@ export class ActorHttpRetry extends ActorHttp {
   }
 
   /**
-   * Retry rate-limited requests, for when no retry count is set in the context.
+   * Retry rate-limited requests, and requests that lost their connection,
+   * for when no retry count is set in the context.
+   * Requests that lost their connection are only retried if they may be sent again (see isRetryableOnError).
    * All other responses and errors are passed through unchanged,
    * and so is the last rate-limited response once the retries are exhausted.
    * @param {IActionHttp} action The HTTP action.
@@ -190,7 +192,6 @@ export class ActorHttpRetry extends ActorHttp {
       this.rateLimitRetryDelayFallback;
     const retryDelayLimit = action.context.get(KeysHttp.httpRetryDelayLimit);
     const replayable = ActorHttp.isReplayableRequestBody(action);
-
     const retryOnConnectionLoss = ActorHttpRetry.isRetryableOnError(action);
 
     for (let attempt = 1; ; attempt++) {

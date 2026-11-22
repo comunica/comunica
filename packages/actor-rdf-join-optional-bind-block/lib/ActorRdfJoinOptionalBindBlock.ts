@@ -1,6 +1,5 @@
 import { ActorRdfJoinOptionalBind } from '@comunica/actor-rdf-join-optional-bind';
 import { ActorRdfJoinOptionalBindSource } from '@comunica/actor-rdf-join-optional-bind-source';
-import { KeyedChunkedIterator } from '@comunica/actor-rdf-join-optional-bind-source/lib/KeyedChunkedIterator';
 import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
@@ -13,10 +12,11 @@ import { KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { failTest, passTestWithSideData } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
-import type { ComunicaDataFactory } from '@comunica/types';
-import type { Algebra } from '@comunica/utils-algebra';
-import { AlgebraFactory } from '@comunica/utils-algebra';
-import { getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
+import type { Bindings, ComunicaDataFactory, IActionContext } from '@comunica/types';
+import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
+import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { KeyedChunkedIterator } from '@comunica/utils-iterator';
+import { getOperationSource, getSafeBindings, materializeOperation } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
@@ -67,7 +67,7 @@ export class ActorRdfJoinOptionalBindBlock extends ActorRdfJoin {
       .filter(variable => variables.has(variable.value));
 
     // Slice the left stream into blocks of distinct keys, and join each block with the right operation
-    const chunks: AsyncIterator<AsyncIterator<RDF.Bindings>> = new KeyedChunkedIterator(
+    const chunks: AsyncIterator<AsyncIterator<Bindings>> = new KeyedChunkedIterator(
       action.entries[0].output.bindingsStream,
       this.blockSize,
       this.maxBlockBindings,
@@ -75,7 +75,7 @@ export class ActorRdfJoinOptionalBindBlock extends ActorRdfJoin {
       { autoStart: false },
     );
     // A block is joined as soon as it is read, so that the blocks in the buffer are joined in parallel
-    const joinChunk = (chunk: AsyncIterator<RDF.Bindings>): AsyncIterator<RDF.Bindings> => {
+    const joinChunk = (chunk: AsyncIterator<Bindings>): AsyncIterator<Bindings> => {
       const results = chunk.toArray()
         .then(bindings => this.joinBlock(action, keyVariables, bindings, algebraFactory, dataFactory));
       results.catch(() => {
@@ -123,8 +123,8 @@ export class ActorRdfJoinOptionalBindBlock extends ActorRdfJoin {
    * each with a row number, so that results can be assigned to the rows that produced them,
    * even if a row with unbound values produces results that agree with another row.
    *
-   * Blank nodes can not be passed in VALUES, as their labels are scoped to the result they came from.
-   * So bindings with a blank node for a key variable can not have results.
+   * Blank nodes can not be passed in VALUES, so bindings with a blank node for a key variable
+   * are bound into the right operation one by one instead, as by the optional bind join.
    *
    * @param action The join action.
    * @param keyVariables The variables of the left bindings that occur in the right operation or the expression.
@@ -136,57 +136,96 @@ export class ActorRdfJoinOptionalBindBlock extends ActorRdfJoin {
   public async joinBlock(
     action: IActionRdfJoin,
     keyVariables: RDF.Variable[],
-    bindings: RDF.Bindings[],
+    bindings: Bindings[],
     algebraFactory: AlgebraFactory,
     dataFactory: ComunicaDataFactory,
-  ): Promise<RDF.Bindings[]> {
+  ): Promise<Bindings[]> {
     const rowVariable = dataFactory.variable(ActorRdfJoinOptionalBindBlock.ROW_VARIABLE);
-    const rows = new Map<string, Record<string, RDF.NamedNode | RDF.Literal>>();
+    const keys = new Set<string>();
+    const rowKeys: string[] = [];
+    const rows: Record<string, RDF.NamedNode | RDF.Literal>[] = [];
+    const blankNodeBindings: [ string, Bindings ][] = [];
     for (const binding of bindings) {
       const key = ActorRdfJoinOptionalBindBlock.getProjectionKey(binding, keyVariables);
-      const terms = keyVariables
-        .map(variable => <[ RDF.Variable, RDF.Term | undefined ]> [ variable, binding.get(variable) ]);
-      if (!rows.has(key) && terms.every(([ _, term ]) => term?.termType !== 'BlankNode')) {
-        const row: Record<string, RDF.NamedNode | RDF.Literal> = {
-          [rowVariable.value]: dataFactory.literal(`${rows.size}`),
-        };
-        for (const [ variable, term ] of terms) {
-          if (term) {
-            row[variable.value] = <RDF.NamedNode | RDF.Literal> term;
+      if (!keys.has(key)) {
+        keys.add(key);
+        if (keyVariables.some(variable => binding.get(variable)?.termType === 'BlankNode')) {
+          blankNodeBindings.push([ key, binding ]);
+        } else {
+          const row: Record<string, RDF.NamedNode | RDF.Literal> = {
+            [rowVariable.value]: dataFactory.literal(`${rows.length}`),
+          };
+          for (const variable of keyVariables) {
+            const term = binding.get(variable);
+            if (term) {
+              row[variable.value] = <RDF.NamedNode | RDF.Literal> term;
+            }
           }
+          rowKeys.push(key);
+          rows.push(row);
         }
-        rows.set(key, row);
       }
     }
 
-    const resultsByRow = new Map<string, RDF.Bindings[]>();
-    if (rows.size > 0) {
-      let operation: Algebra.Operation = algebraFactory.createJoin([
-        algebraFactory.createValues([ ...keyVariables, rowVariable ], [ ...rows.values() ]),
-        action.entries[1].operation,
-      ]);
+    const resultsByKey = new Map<string, Bindings[]>();
+    const addResult = (key: string, result: Bindings): void => {
+      const keyResults = resultsByKey.get(key);
+      if (keyResults) {
+        keyResults.push(result);
+      } else {
+        resultsByKey.set(key, [ result ]);
+      }
+    };
+    const evaluations: Promise<void>[] = [];
+    if (rows.length > 0) {
+      // The block is joined with each branch of a union, so that each branch with a single source receives it at once
+      const values = algebraFactory.createValues([ ...keyVariables, rowVariable ], rows);
+      const right = action.entries[1].operation;
+      let operation: Algebra.Operation = right.type === Algebra.Types.UNION ?
+        algebraFactory.createUnion((<Algebra.Union> right).input
+          .map(branch => algebraFactory.createJoin([ values, branch ]))) :
+        algebraFactory.createJoin([ values, right ]);
       if (action.expression) {
         operation = algebraFactory.createFilter(operation, action.expression);
       }
-      const results = await getSafeBindings(await this.mediatorQueryOperation
-        .mediate({ operation, context: action.context })).bindingsStream.toArray();
-      for (const result of results) {
-        const row = result.get(rowVariable)!.value;
-        const rowResults = resultsByRow.get(row);
-        const cleanResult = result.delete(rowVariable);
-        if (rowResults) {
-          rowResults.push(cleanResult);
-        } else {
-          resultsByRow.set(row, [ cleanResult ]);
+      evaluations.push(this.evaluate(operation, action.context).then((results) => {
+        for (const result of results) {
+          addResult(rowKeys[Number.parseInt(result.get(rowVariable)!.value, 10)], result.delete(rowVariable));
         }
+      }));
+    }
+    if (blankNodeBindings.length > 0) {
+      const bindOperation = ActorRdfJoinOptionalBind.getBindOperation(action);
+      const bindingsFactory = new BindingsFactory(dataFactory);
+      for (const [ key, binding ] of blankNodeBindings) {
+        const operation = materializeOperation(bindOperation, binding, algebraFactory, bindingsFactory, {
+          bindFilter: true,
+        });
+        evaluations.push(this.evaluate(operation, action.context).then((results) => {
+          for (const result of results) {
+            addResult(key, result);
+          }
+        }));
       }
     }
+    await Promise.all(evaluations);
 
     return bindings.flatMap((binding) => {
-      const row = rows.get(ActorRdfJoinOptionalBindBlock.getProjectionKey(binding, keyVariables));
-      const results = row ? resultsByRow.get(row[rowVariable.value].value) : undefined;
-      return results ? results.map(result => binding.merge(result)!) : [ binding ];
+      const joined = (resultsByKey.get(ActorRdfJoinOptionalBindBlock.getProjectionKey(binding, keyVariables)) ?? [])
+        .map(result => binding.merge(result))
+        .filter((result): result is Bindings => result !== undefined);
+      return joined.length > 0 ? joined : [ binding ];
     });
+  }
+
+  /**
+   * Evaluate an operation into an array of bindings.
+   * @param operation An operation.
+   * @param context The action context.
+   */
+  protected async evaluate(operation: Algebra.Operation, context: IActionContext): Promise<Bindings[]> {
+    return await getSafeBindings(await this.mediatorQueryOperation.mediate({ operation, context }))
+      .bindingsStream.toArray();
   }
 
   public async getJoinCoefficients(

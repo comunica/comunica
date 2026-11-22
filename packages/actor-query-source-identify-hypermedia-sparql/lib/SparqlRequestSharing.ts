@@ -129,7 +129,8 @@ export class SharedBindingsRequest {
    */
   public subscribe(): BindingsStream {
     const subscriber = new SubscriberIterator(() => this.unsubscribe(subscriber));
-    for (const bindings of this.history ?? []) {
+    // Consumers only join while the request can be shared, which is while its history is complete.
+    for (const bindings of this.history!) {
       subscriber.pushBindings(bindings);
     }
     if (this.done) {

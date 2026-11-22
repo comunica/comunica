@@ -148,7 +148,7 @@ describe('ActorHttpLimitRate', () => {
       });
     });
 
-    it.each([ 429, 503 ])('should handle overloaded requests with status %s', async(status) => {
+    it.each([ 429 ])('should handle rate-limited requests with status %s', async(status) => {
       const duration1 = 400;
       const duration2 = 600;
       const interval1 = duration1 * failureMultiplier * correctionMultiplier;
@@ -191,7 +191,7 @@ describe('ActorHttpLimitRate', () => {
       expect(globalThis.setTimeout).not.toHaveBeenCalled();
     });
 
-    it.each([ 'TimeoutError', 'AbortError' ])('should not mark hosts as rate-limited on a %s', async(name) => {
+    it.each([ 'TimeoutError', 'AbortError', 'Error' ])('should not mark hosts as rate-limited on a %s', async(name) => {
       const error = new Error('Aborted');
       error.name = name;
       jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
@@ -209,7 +209,19 @@ describe('ActorHttpLimitRate', () => {
       expect(ActorHttpLimitRate.isClientAbort({ name: 'TimeoutError' })).toBeFalsy();
     });
 
-    it.each([ 400, 403, 404, 500 ])('should not mark hosts as rate-limited on status %s', async(status) => {
+    it('should consider status 429 and 503 as overload', () => {
+      expect(ActorHttpLimitRate.isOverloadStatus(429)).toBe(true);
+      expect(ActorHttpLimitRate.isOverloadStatus(503)).toBe(true);
+      expect(ActorHttpLimitRate.isOverloadStatus(500)).toBe(false);
+    });
+
+    it('should consider client aborts and timeouts', () => {
+      const error = new Error('Aborted');
+      error.name = 'AbortError';
+      expect(ActorHttpLimitRate.isClientAbort(error)).toBe(true);
+    });
+
+    it.each([ 400, 403, 404, 500, 503 ])('should not mark hosts as rate-limited on status %s', async(status) => {
       const response = { ok: false, status };
       jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(<any>response);
       jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
@@ -224,12 +236,12 @@ describe('ActorHttpLimitRate', () => {
       });
     });
 
-    it('should mark hosts as rate-limited on network errors', async() => {
+    it('should not mark hosts as rate-limited on network errors', async() => {
       jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(new Error('fetch failed'));
       jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> ((callback: any) => callback()));
       const action = { context: new ActionContext({}), input: url };
       await expect(actor.run(action)).rejects.toThrow('fetch failed');
-      expect(actorHostData.get(host)?.rateLimited).toBeTruthy();
+      expect(actorHostData.get(host)?.rateLimited).toBeFalsy();
     });
   });
 

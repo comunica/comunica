@@ -21,7 +21,7 @@
     "comunica",
     "actor",
     "rdf-join",
-    "optional-bind-source"
+    "optional-bind-block"
   ],
   "sideEffects": false,
   "main": "lib/index.js",
@@ -50,6 +50,7 @@
     "@comunica/mediatortype-join-coefficients": "^5.4.0",
     "@comunica/types": "^5.4.0",
     "@comunica/utils-algebra": "^5.4.0",
+    "@comunica/utils-bindings-factory": "^5.4.0",
     "@comunica/utils-iterator": "^5.0.0",
     "@comunica/utils-query-operation": "^5.4.0",
     "@rdfjs/types": "*",

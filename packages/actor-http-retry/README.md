@@ -36,7 +36,10 @@ After installing, this package can be added to your engine's configuration as fo
 If no retry count is set in the context, only rate-limited requests are retried
 (responses with status 429, 503, or 405 with a `Retry-After` header),
 waiting for the `Retry-After` delay or `rateLimitRetryDelayFallback`, up to `rateLimitRetryCount` times.
+Requests that lost their connection while in flight (such as on a reset connection or an HTTP/2 `GOAWAY` frame)
+are retried as well, right away, if they may be sent again (see below).
 All other responses and errors are then passed through unchanged, and so is the last rate-limited response.
+Requests that can not connect at all, such as to an unknown host, are not retried.
 
 If a retry count is set in the context, requests that fail without a response, such as on connection errors, are also retried.
 This does not apply to requests that the caller aborted, or that exceeded `KeysHttp.httpTimeout`.
