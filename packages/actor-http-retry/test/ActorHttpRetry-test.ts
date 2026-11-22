@@ -419,6 +419,98 @@ describe('ActorHttpRetry', () => {
     });
   });
 
+  describe('run without retry count in the context after a lost connection', () => {
+    let lost: Error;
+
+    beforeEach(() => {
+      context = new ActionContext();
+      lost = new TypeError('fetch failed', {
+        cause: Object.assign(new Error('other side closed'), { code: 'UND_ERR_SOCKET' }),
+      });
+      jest.spyOn(ActorHttpRetry, 'sleep').mockResolvedValue();
+    });
+
+    it('should retry requests that lost their connection', async() => {
+      const response: Response = <any> { ok: true };
+      jest.spyOn(mediatorHttp, 'mediate')
+        .mockRejectedValueOnce(lost)
+        .mockResolvedValueOnce(response);
+      await expect(actor.run({ input, context })).resolves.toBe(response);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+      expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
+    });
+
+    it('should retry POST requests of SPARQL queries that lost their connection', async() => {
+      const response: Response = <any> { ok: true };
+      jest.spyOn(mediatorHttp, 'mediate')
+        .mockRejectedValueOnce(lost)
+        .mockResolvedValueOnce(response);
+      const init = { method: 'POST', body: new URLSearchParams({ query: 'SELECT * {}' }) };
+      await expect(actor.run({ input, init, context })).resolves.toBe(response);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+    });
+
+    it('should throw the last error once retries are exhausted', async() => {
+      jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(lost);
+      await expect(actor.run({ input, context })).rejects.toThrow(lost);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(3);
+    });
+
+    it('should not retry requests that can not be sent again', async() => {
+      jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(lost);
+      const init = {
+        method: 'POST',
+        headers: { 'content-type': 'application/sparql-update' },
+        body: 'INSERT DATA {}',
+      };
+      await expect(actor.run({ input, init, context })).rejects.toThrow(lost);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not retry requests that were aborted by the caller', async() => {
+      const abortController = new AbortController();
+      abortController.abort();
+      jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(lost);
+      await expect(actor.run({ input, init: { signal: abortController.signal }, context })).rejects.toThrow(lost);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not retry other errors', async() => {
+      const error = new TypeError('fetch failed', {
+        cause: Object.assign(new Error('refused'), { code: 'ECONNREFUSED' }),
+      });
+      jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
+      await expect(actor.run({ input, context })).rejects.toThrow(error);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('isConnectionLostError', () => {
+    it.each([ 'ECONNRESET', 'EPIPE', 'UND_ERR_SOCKET', 'UND_ERR_CLOSED' ])('should be true for code %s', (code) => {
+      expect(ActorHttpRetry.isConnectionLostError(Object.assign(new Error('error'), { code }))).toBe(true);
+    });
+
+    it('should be true for errors caused by such errors', () => {
+      expect(ActorHttpRetry.isConnectionLostError(new TypeError('fetch failed', {
+        cause: new Error('wrapper', { cause: Object.assign(new Error('reset'), { code: 'ECONNRESET' }) }),
+      }))).toBe(true);
+    });
+
+    it('should be true for HTTP/2 GOAWAY frames', () => {
+      expect(ActorHttpRetry.isConnectionLostError(new TypeError('fetch failed', {
+        cause: Object.assign(new Error('HTTP/2: "GOAWAY" frame received with code 0'), { code: 'UND_ERR_INFO' }),
+      }))).toBe(true);
+    });
+
+    it('should be false for other errors', () => {
+      expect(ActorHttpRetry.isConnectionLostError(new TypeError('fetch failed', {
+        cause: Object.assign(new Error('getaddrinfo ENOTFOUND'), { code: 'ENOTFOUND' }),
+      }))).toBe(false);
+      expect(ActorHttpRetry.isConnectionLostError(new Error('error'))).toBe(false);
+      expect(ActorHttpRetry.isConnectionLostError(undefined)).toBe(false);
+    });
+  });
+
   describe('isRateLimited', () => {
     it('should be true for status 429 and 503', () => {
       expect(ActorHttpRetry.isRateLimited(<any> { status: 429, headers: new Headers() })).toBe(true);
