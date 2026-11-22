@@ -2707,8 +2707,20 @@ describe('QuerySourceSparql', () => {
         source.queryBoolean(AF.createAsk(patternB), ctx),
       ])).resolves.toEqual([ true, false ]);
       expect(queries).toEqual([
-        `SELECT ( EXISTS { <${testUrl('s')}> ?p <${testUrl('o')}> . } AS ?ask0 ) ` +
-        `( EXISTS { ?s <${testUrl('p')}> <${testUrl('o')}> . } AS ?ask1 ) WHERE { }`,
+        `SELECT ( EXISTS { <${testUrl('s')}> ?p_b0 <${testUrl('o')}> . } AS ?ask0 ) ` +
+        `( EXISTS { ?s_b1 <${testUrl('p')}> <${testUrl('o')}> . } AS ?ask1 ) WHERE { }`,
+      ]);
+    });
+
+    it('should use different variables for each ASK query of a single request', async() => {
+      respond = () => askBindings({ ask0: 'true', ask1: 'true' });
+      await expect(Promise.all([
+        source.queryBoolean(AF.createAsk(patternB), ctx),
+        source.queryBoolean(AF.createAsk(AF.createPattern(DF.variable('s'), iriP, DF.variable('o'))), ctx),
+      ])).resolves.toEqual([ true, true ]);
+      expect(queries).toEqual([
+        `SELECT ( EXISTS { ?s_b0 <${testUrl('p')}> <${testUrl('o')}> . } AS ?ask0 ) ` +
+        `( EXISTS { ?s_b1 <${testUrl('p')}> ?o_b1 . } AS ?ask1 ) WHERE { }`,
       ]);
     });
 
@@ -2753,6 +2765,106 @@ describe('QuerySourceSparql', () => {
         source.queryBoolean(AF.createAsk(patternB), ctx.set(KeysHttp.httpAbortSignal, controllerB.signal)),
       ])).resolves.toEqual([ true, true ]);
       expect(mediator.mediate.mock.calls[0][0].context.get(KeysHttp.httpAbortSignal)).toBeDefined();
+    });
+  });
+
+  describe('renameVariables', () => {
+    const v = (name: string) => DF.variable(name);
+    const rename = (variable: RDF.Variable) => v(`${variable.value}_x`);
+
+    it('should rename variables in patterns, including quoted triples', () => {
+      expect(QuerySourceSparql.renameVariables(
+        AF.createPattern(v('s'), iriP, DF.quad(v('a'), iriP, iriO), v('g')),
+        rename,
+        DF,
+      )).toEqual(AF.createPattern(v('s_x'), iriP, DF.quad(v('a_x'), iriP, iriO), v('g_x')));
+    });
+
+    it('should rename variables in paths', () => {
+      expect(QuerySourceSparql.renameVariables(
+        AF.createPath(v('s'), AF.createLink(iriP), v('o'), v('g')),
+        rename,
+        DF,
+      )).toEqual(AF.createPath(v('s_x'), AF.createLink(iriP), v('o_x'), v('g_x')));
+    });
+
+    it('should rename variables in extend, project, and term expressions', () => {
+      expect(QuerySourceSparql.renameVariables(
+        AF.createProject(
+          AF.createExtend(
+            AF.createPattern(v('s'), iriP, iriO),
+            v('e'),
+            AF.createOperatorExpression('str', [ AF.createTermExpression(v('s')) ]),
+          ),
+          [ v('s'), v('e') ],
+        ),
+        rename,
+        DF,
+      )).toEqual(AF.createProject(
+        AF.createExtend(
+          AF.createPattern(v('s_x'), iriP, iriO),
+          v('e_x'),
+          AF.createOperatorExpression('str', [ AF.createTermExpression(v('s_x')) ]),
+        ),
+        [ v('s_x'), v('e_x') ],
+      ));
+    });
+
+    it('should rename variables in groups and their aggregates', () => {
+      expect(QuerySourceSparql.renameVariables(
+        AF.createGroup(
+          AF.createPattern(v('s'), iriP, v('o')),
+          [ v('s') ],
+          [ AF.createBoundAggregate(v('c'), 'count', AF.createTermExpression(v('o')), false) ],
+        ),
+        rename,
+        DF,
+      )).toEqual(AF.createGroup(
+        AF.createPattern(v('s_x'), iriP, v('o_x')),
+        [ v('s_x') ],
+        [ AF.createBoundAggregate(v('c_x'), 'count', AF.createTermExpression(v('o_x')), false) ],
+      ));
+    });
+
+    it('should rename variables in graphs and services', () => {
+      expect(QuerySourceSparql.renameVariables(
+        AF.createJoin([
+          AF.createGraph(AF.createPattern(v('s'), iriP, iriO), v('g')),
+          AF.createService(AF.createPattern(v('s'), iriP, iriO), v('service')),
+        ]),
+        rename,
+        DF,
+      )).toEqual(AF.createJoin([
+        AF.createGraph(AF.createPattern(v('s_x'), iriP, iriO), v('g_x')),
+        AF.createService(AF.createPattern(v('s_x'), iriP, iriO), v('service_x')),
+      ]));
+    });
+
+    it('should rename variables in values', () => {
+      expect(QuerySourceSparql.renameVariables(
+        AF.createValues([ v('s') ], [{ s: iriS }]),
+        rename,
+        DF,
+      )).toEqual(AF.createValues([ v('s_x') ], [{ s_x: iriS }]));
+    });
+
+    it('should rename variables in nodes', () => {
+      expect(QuerySourceSparql.renameVariables(AF.createNodes(v('g'), v('n')), rename, DF))
+        .toEqual(AF.createNodes(v('g_x'), v('n_x')));
+    });
+
+    it('should rename variables in existence expressions', () => {
+      expect(QuerySourceSparql.renameVariables(
+        AF.createFilter(
+          AF.createPattern(v('s'), iriP, iriO),
+          AF.createExistenceExpression(false, AF.createPattern(v('s'), iriP, v('o'))),
+        ),
+        rename,
+        DF,
+      )).toEqual(AF.createFilter(
+        AF.createPattern(v('s_x'), iriP, iriO),
+        AF.createExistenceExpression(false, AF.createPattern(v('s_x'), iriP, v('o_x'))),
+      ));
     });
   });
 
