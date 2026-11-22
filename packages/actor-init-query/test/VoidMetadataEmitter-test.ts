@@ -121,30 +121,36 @@ describe('VoidMetadataEmitter', () => {
       quad(graph, `${vd}distinctObjects`, `"6"^^${xsd}integer`),
       quad(graph, `${vd}classes`, `"2"^^${xsd}integer`),
 
-      quad(dataset, `${vd}classPartition`, classPartition0),
+      quad(graph, `${vd}classPartition`, classPartition0),
       quad(classPartition0, rdfType, `${vd}ClassPartition`),
       quad(classPartition0, `${vd}class`, 'http://example.org/classA'),
       quad(classPartition0, `${vd}entities`, `"2"^^${xsd}integer`),
 
-      quad(dataset, `${vd}classPartition`, classPartition1),
+      quad(graph, `${vd}classPartition`, classPartition1),
       quad(classPartition1, rdfType, `${vd}ClassPartition`),
       quad(classPartition1, `${vd}class`, 'http://example.org/classB'),
       quad(classPartition1, `${vd}entities`, `"1"^^${xsd}integer`),
 
-      quad(dataset, `${vd}propertyPartition`, propertyPartition0),
+      quad(graph, `${vd}propertyPartition`, propertyPartition0),
       quad(propertyPartition0, rdfType, `${vd}PropertyPartition`),
       quad(propertyPartition0, `${vd}property`, rdfType),
       quad(propertyPartition0, `${vd}triples`, `"3"^^${xsd}integer`),
+      quad(propertyPartition0, `${vd}distinctSubjects`, `"3"^^${xsd}integer`),
+      quad(propertyPartition0, `${vd}distinctObjects`, `"2"^^${xsd}integer`),
 
-      quad(dataset, `${vd}propertyPartition`, propertyPartition1),
+      quad(graph, `${vd}propertyPartition`, propertyPartition1),
       quad(propertyPartition1, rdfType, `${vd}PropertyPartition`),
       quad(propertyPartition1, `${vd}property`, 'http://example.org/propertyA'),
       quad(propertyPartition1, `${vd}triples`, `"2"^^${xsd}integer`),
+      quad(propertyPartition1, `${vd}distinctSubjects`, `"2"^^${xsd}integer`),
+      quad(propertyPartition1, `${vd}distinctObjects`, `"2"^^${xsd}integer`),
 
-      quad(dataset, `${vd}propertyPartition`, propertyPartition2),
+      quad(graph, `${vd}propertyPartition`, propertyPartition2),
       quad(propertyPartition2, rdfType, `${vd}PropertyPartition`),
       quad(propertyPartition2, `${vd}property`, 'http://example.org/propertyB'),
       quad(propertyPartition2, `${vd}triples`, `"3"^^${xsd}integer`),
+      quad(propertyPartition2, `${vd}distinctSubjects`, `"2"^^${xsd}integer`),
+      quad(propertyPartition2, `${vd}distinctObjects`, `"3"^^${xsd}integer`),
     ];
     expect(quads).toEqual(expectedQuads);
   });

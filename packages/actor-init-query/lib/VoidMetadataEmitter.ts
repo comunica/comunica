@@ -129,16 +129,16 @@ export class VoidMetadataEmitter {
     const vd = 'http://rdfs.org/ns/void#';
     const rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
     const rdfType = `${rdf}type`;
-    const dataset = '_:defaultDataset';
     const graph = '_:defaultGraph';
 
     // All statistics are computed in a single pass over the triples,
     // as separate aggregate queries each keep their own state, which does not fit in memory for larger datasets.
+    // They all describe the default graph, as the default dataset only refers to it.
     let triples = 0;
     let entities = 0;
     const distinctSubjects = new Set<string>();
     const distinctObjects = new Set<string>();
-    const propertyTriples = new Map<string, number>();
+    const propertyStatistics = new Map<string, { triples: number; subjects: Set<string>; objects: Set<string> }>();
     const classEntities = new Map<string, { class: RDF.Term; count: number }>();
     const bindingsStream = await engine.queryBindings('SELECT ?s ?p ?o WHERE { ?s ?p ?o }', this.context);
     for await (const bindings of bindingsStream) {
@@ -149,16 +149,24 @@ export class VoidMetadataEmitter {
       if (subject.termType === 'NamedNode') {
         entities++;
       }
-      distinctSubjects.add(termToString(subject));
-      distinctObjects.add(termToString(object));
-      propertyTriples.set(predicate.value, (propertyTriples.get(predicate.value) ?? 0) + 1);
+      const subjectKey = termToString(subject);
+      const objectKey = termToString(object);
+      distinctSubjects.add(subjectKey);
+      distinctObjects.add(objectKey);
+      let propertyEntry = propertyStatistics.get(predicate.value);
+      if (!propertyEntry) {
+        propertyEntry = { triples: 0, subjects: new Set(), objects: new Set() };
+        propertyStatistics.set(predicate.value, propertyEntry);
+      }
+      propertyEntry.triples++;
+      propertyEntry.subjects.add(subjectKey);
+      propertyEntry.objects.add(objectKey);
       if (predicate.value === rdfType) {
-        const key = termToString(object);
-        const classEntry = classEntities.get(key);
+        const classEntry = classEntities.get(objectKey);
         if (classEntry) {
           classEntry.count++;
         } else {
-          classEntities.set(key, { class: object, count: 1 });
+          classEntities.set(objectKey, { class: object, count: 1 });
         }
       }
     }
@@ -170,7 +178,7 @@ export class VoidMetadataEmitter {
       quad(graph, `${vd}triples`, xsdInteger(triples)),
       quad(graph, `${vd}entities`, xsdInteger(entities)),
       quad(graph, `${vd}distinctSubjects`, xsdInteger(distinctSubjects.size)),
-      quad(graph, `${vd}properties`, xsdInteger(propertyTriples.size)),
+      quad(graph, `${vd}properties`, xsdInteger(propertyStatistics.size)),
       quad(graph, `${vd}distinctObjects`, xsdInteger(distinctObjects.size)),
       quad(graph, `${vd}classes`, xsdInteger(classEntities.size)),
     );
@@ -178,20 +186,22 @@ export class VoidMetadataEmitter {
     for (const { class: classTerm, count } of classEntities.values()) {
       const classPartition = `_:classPartition${i++}`;
       this.cachedStatistics.push(
-        quad(dataset, `${vd}classPartition`, classPartition),
+        quad(graph, `${vd}classPartition`, classPartition),
         quad(classPartition, rdfType, `${vd}ClassPartition`),
         quad(classPartition, `${vd}class`, classTerm.value),
         quad(classPartition, `${vd}entities`, xsdInteger(count)),
       );
     }
     i = 0;
-    for (const [ property, count ] of propertyTriples) {
+    for (const [ property, { triples: count, subjects, objects }] of propertyStatistics) {
       const propertyPartition = `_:propertyPartition${i++}`;
       this.cachedStatistics.push(
-        quad(dataset, `${vd}propertyPartition`, propertyPartition),
+        quad(graph, `${vd}propertyPartition`, propertyPartition),
         quad(propertyPartition, rdfType, `${vd}PropertyPartition`),
         quad(propertyPartition, `${vd}property`, property),
         quad(propertyPartition, `${vd}triples`, xsdInteger(count)),
+        quad(propertyPartition, `${vd}distinctSubjects`, xsdInteger(subjects.size)),
+        quad(propertyPartition, `${vd}distinctObjects`, xsdInteger(objects.size)),
       );
     }
   }
