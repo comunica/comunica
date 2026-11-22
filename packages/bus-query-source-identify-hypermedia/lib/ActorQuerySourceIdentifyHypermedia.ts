@@ -56,6 +56,11 @@ export interface IActionQuerySourceIdentifyHypermedia extends IAction {
    */
   url: string;
   /**
+   * The URL of the source as it was given, before following any redirects.
+   * If not set, this is assumed to be equal to `url`.
+   */
+  originalUrl?: string;
+  /**
    * A metadata key-value mapping.
    */
   metadata: Record<string, any>;

@@ -411,6 +411,77 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         expect((<any> output.source).url).toBe('URL');
       });
 
+      it('should keep the original URL of a forced source after a redirect', async() => {
+        const output = await actor.run({
+          url: 'REDIRECTED_URL',
+          originalUrl: 'ORIGINAL_URL',
+          metadata: {},
+          quads: <any> null,
+          forceSourceType: 'sparql',
+          context,
+        });
+        expect((<any> output.source).url).toBe('ORIGINAL_URL');
+        expect((<any> output.source).urlBackup).toBe('REDIRECTED_URL');
+      });
+
+      it('should keep the original URL of a forced source after a redirect, even with a sparqlService', async() => {
+        const output = await actor.run({
+          url: 'REDIRECTED_URL',
+          originalUrl: 'ORIGINAL_URL',
+          metadata: { sparqlService: 'SERVICE' },
+          quads: <any> null,
+          forceSourceType: 'sparql',
+          context,
+        });
+        expect((<any> output.source).url).toBe('ORIGINAL_URL');
+      });
+
+      it('should keep the original URL of a source forced via actor parameter after a redirect', async() => {
+        actor = new ActorQuerySourceIdentifyHypermediaSparql({
+          name: 'actor',
+          bus,
+          mediatorHttp: <any> 'mediator',
+          checkUrlSuffix: true,
+          forceHttpGet: false,
+          forceSourceType: true,
+          bindMethod: 'values',
+          countTimeout: 3_000,
+          mediatorMergeBindingsContext,
+          mediatorQuerySerialize,
+          cardinalityCountQueries: true,
+          cardinalityEstimateConstruction: false,
+          cacheSize: 1_024,
+          forceGetIfUrlLengthBelow: 0,
+        });
+        const output = await actor.run({
+          url: 'REDIRECTED_URL',
+          originalUrl: 'ORIGINAL_URL',
+          metadata: {},
+          quads: <any> null,
+          context,
+        });
+        expect((<any> output.source).url).toBe('ORIGINAL_URL');
+      });
+
+      it('should use the service description and dereferenced URL of a non-forced source after a redirect', async() => {
+        const outputService = await actor.run({
+          url: 'REDIRECTED_URL',
+          originalUrl: 'ORIGINAL_URL',
+          metadata: { sparqlService: 'SERVICE' },
+          quads: <any> null,
+          context,
+        });
+        expect((<any> outputService.source).url).toBe('SERVICE');
+        const outputNoService = await actor.run({
+          url: 'REDIRECTED_URL',
+          originalUrl: 'ORIGINAL_URL',
+          metadata: {},
+          quads: <any> null,
+          context,
+        });
+        expect((<any> outputNoService.source).url).toBe('REDIRECTED_URL');
+      });
+
       it('should return a source with the correct cache size', async() => {
         const output = await actor
           .run({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null, context });
