@@ -149,6 +149,7 @@ export class ActorQuerySourceDereferenceLinkHypermedia extends ActorQuerySourceD
       metadata,
       quads,
       url,
+      originalUrl: action.link.url,
     });
 
     if (dataset && action.handledDatasets) {
