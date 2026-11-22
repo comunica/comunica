@@ -250,7 +250,9 @@ TS
    */
   public static getRequestItemTimes(metadatas: MetadataBindings[]): number[] {
     return metadatas
-      .map(metadata => metadata.pageSize ? (metadata.requestTime ?? 0) / metadata.pageSize : 0);
+      .map(metadata => metadata.pageSize ?
+        (metadata.requestTime ?? 0) / metadata.pageSize :
+        metadata.requestItemTime ?? 0);
   }
 
   /**

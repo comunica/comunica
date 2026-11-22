@@ -33,6 +33,15 @@ export class ActorRdfMetadataAccumulateRequestTime extends ActorRdfMetadataAccum
               requestTime: (action.accumulatedMetadata.requestTime ?? 0) + (action.appendingMetadata.requestTime ?? 0),
             } :
             {},
+        // Items of different sources are transferred in parallel, so the slowest source determines the item time.
+        ...('requestItemTime' in action.accumulatedMetadata) || ('requestItemTime' in action.appendingMetadata) ?
+            {
+              requestItemTime: Math.max(
+                action.accumulatedMetadata.requestItemTime ?? 0,
+                action.appendingMetadata.requestItemTime ?? 0,
+              ),
+            } :
+            {},
       },
     };
   }

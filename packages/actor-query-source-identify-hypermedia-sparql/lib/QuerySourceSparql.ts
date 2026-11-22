@@ -28,7 +28,7 @@ import {
 import type * as RDF from '@rdfjs/types';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import type { AsyncIterator } from 'asynciterator';
-import { TransformIterator, wrap } from 'asynciterator';
+import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';
 import type { ISparqlEndpointFetcherRequestOptions } from 'fetch-sparql-endpoint';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
@@ -36,15 +36,19 @@ import { uniqTerms } from 'rdf-terms';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
 /**
- * Limits the number of requests to a host that are waiting for a response.
+ * Adaptively limits the number of requests to a host that are waiting for a response, like TCP congestion control:
+ * the limit doubles after each window of successful responses until the host first signals overload (429 or 503),
+ * then grows by one per window, and halves on each overload signal.
  * A slot is released once the response headers arrive, as releasing on the end of a body that is never read would
  * block other requests.
  */
 export class HostRequestLimiter {
   private active = 0;
   private readonly waiting: (() => void)[] = [];
+  private successes = 0;
+  private congested = false;
 
-  public constructor(public readonly limit: number) {}
+  public constructor(public limit: number, public readonly maxLimit = 1_024, public readonly minLimit = 2) {}
 
   public async acquire(): Promise<void> {
     if (this.active < this.limit) {
@@ -54,12 +58,19 @@ export class HostRequestLimiter {
     await new Promise<void>(resolve => this.waiting.push(resolve));
   }
 
-  public release(): void {
-    const next = this.waiting.shift();
-    if (next) {
-      next();
-    } else {
-      this.active--;
+  public release(status?: number): void {
+    if (status === 429 || status === 503) {
+      this.congested = true;
+      this.limit = Math.max(this.minLimit, Math.floor(this.limit / 2));
+      this.successes = 0;
+    } else if (status !== undefined && status < 400 && ++this.successes >= this.limit) {
+      this.successes = 0;
+      this.limit = Math.min(this.maxLimit, this.congested ? this.limit + 1 : this.limit * 2);
+    }
+    this.active--;
+    while (this.active < this.limit && this.waiting.length > 0) {
+      this.active++;
+      this.waiting.shift()!();
     }
   }
 }
@@ -98,7 +109,7 @@ export class QuerySourceSparql implements IQuerySource {
   /**
    * The maximum number of requests per host that wait for a response, shared by all SPARQL sources.
    */
-  public static HOST_REQUEST_LIMIT = Number(process.env.COMUNICA_SPARQL_HOST_REQUEST_LIMIT ?? '8');
+  public static HOST_REQUEST_LIMIT = Number(process.env.COMUNICA_SPARQL_HOST_REQUEST_LIMIT ?? '16');
   public static readonly hostLimiters = new Map<string, HostRequestLimiter>();
   /**
    * Context key for a request slot that was acquired before the request, e.g. to exclude waiting time from timeouts.
@@ -109,6 +120,7 @@ export class QuerySourceSparql implements IQuerySource {
    * so that join costs account for transferring results from this endpoint.
    */
   private requestTimeAverage: number | undefined;
+  private limiter: HostRequestLimiter | undefined;
   public static readonly DEFAULT_REQUEST_TIME = 100;
   /**
    * The number of result rows whose transfer is assumed to cost as much as one request.
@@ -220,11 +232,11 @@ export class QuerySourceSparql implements IQuerySource {
     if (limiter && !context.get(QuerySourceSparql.KEY_ACQUIRED_SLOT)) {
       await limiter.acquire();
     }
-    let response: Response;
+    let response: Response | undefined;
     try {
       response = await this.mediatorHttp.mediate({ input, init, context });
     } finally {
-      limiter?.release();
+      limiter?.release(response?.status);
     }
     // If we encounter a 404, try our backup URL.
     // After retrying the request with the new URL, we replace the URL for future requests.
@@ -612,7 +624,8 @@ export class QuerySourceSparql implements IQuerySource {
         cardinality,
         variables: variablesCount,
         requestTime: this.requestTimeAverage ?? QuerySourceSparql.DEFAULT_REQUEST_TIME,
-        pageSize: QuerySourceSparql.ROWS_PER_REQUEST_TIME,
+        requestItemTime: (this.requestTimeAverage ?? QuerySourceSparql.DEFAULT_REQUEST_TIME) /
+          QuerySourceSparql.ROWS_PER_REQUEST_TIME,
       }))
       .catch(() => target.setProperty('metadata', {
         state: new MetadataValidationState(),
@@ -622,19 +635,21 @@ export class QuerySourceSparql implements IQuerySource {
   }
 
   /**
-   * The request limiter for the host of this endpoint, if requests are limited.
+   * The adaptive request limiter for the host of this endpoint, if requests are limited.
    */
   public getHostLimiter(): HostRequestLimiter | undefined {
     if (!(QuerySourceSparql.HOST_REQUEST_LIMIT > 0)) {
       return undefined;
     }
-    const host = new URL(this.url).host;
-    let limiter = QuerySourceSparql.hostLimiters.get(host);
-    if (!limiter) {
-      limiter = new HostRequestLimiter(QuerySourceSparql.HOST_REQUEST_LIMIT);
-      QuerySourceSparql.hostLimiters.set(host, limiter);
+    if (!this.limiter) {
+      const host = new URL(this.url).host;
+      this.limiter = QuerySourceSparql.hostLimiters.get(host);
+      if (!this.limiter) {
+        this.limiter = new HostRequestLimiter(QuerySourceSparql.HOST_REQUEST_LIMIT);
+        QuerySourceSparql.hostLimiters.set(host, this.limiter);
+      }
     }
-    return limiter;
+    return this.limiter;
   }
 
   /**
@@ -959,7 +974,70 @@ export class QuerySourceSparql implements IQuerySource {
    * @param undefVariables Variables that may have undefs.
    * @return {BindingsStream} A stream of bindings.
    */
+  /**
+   * The smallest number of rows of a response that may have been cut off by a result limit of the endpoint.
+   */
+  public static readonly MIN_SUSPECTED_RESULT_LIMIT = 1_000;
+
   public async queryBindingsRemote(
+    endpoint: string,
+    query: string,
+    variables: RDF.Variable[],
+    context: IActionContext,
+    undefVariables: RDF.Variable[],
+  ): Promise<BindingsStream> {
+    const stream = await this.queryBindingsRemoteSingle(endpoint, query, variables, context, undefVariables);
+    // Queries that already slice their results can not have been cut off without the endpoint saying so.
+    if (/\b(?:LIMIT|OFFSET)\s+\d+\s*$/iu.test(query) || /^\s*SELECT\s*\(\s*COUNT/iu.test(query)) {
+      return stream;
+    }
+    return this.withNextPages(stream, endpoint, query, variables, context, undefVariables, 0, undefined);
+  }
+
+  /**
+   * Endpoints such as TriplyDB silently return at most a fixed number of rows (e.g. 10,000).
+   * If a response has a suspiciously round number of rows, request the next page with OFFSET and LIMIT,
+   * until a page has fewer rows than the first one.
+   */
+  protected withNextPages(
+    stream: BindingsStream,
+    endpoint: string,
+    query: string,
+    variables: RDF.Variable[],
+    context: IActionContext,
+    undefVariables: RDF.Variable[],
+    offset: number,
+    pageSize: number | undefined,
+  ): BindingsStream {
+    let count = 0;
+    const counted = stream.map((bindings) => {
+      count++;
+      return bindings;
+    });
+    return counted.append(new TransformIterator<RDF.Bindings>(async() => {
+      const suspected = pageSize === undefined ?
+        count >= QuerySourceSparql.MIN_SUSPECTED_RESULT_LIMIT && count % QuerySourceSparql.MIN_SUSPECTED_RESULT_LIMIT === 0 :
+        count === pageSize;
+      if (!suspected) {
+        return new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+      }
+      const size = pageSize ?? count;
+      const nextOffset = offset + size;
+      if (pageSize === undefined) {
+        Actor.getContextLogger(this.context)?.warn(`The endpoint ${endpoint} returned exactly ${count} results, which may be a result limit, so further pages are requested`);
+      }
+      const next = await this.queryBindingsRemoteSingle(
+        endpoint,
+        `${query} OFFSET ${nextOffset} LIMIT ${size}`,
+        variables,
+        context,
+        undefVariables,
+      );
+      return this.withNextPages(next, endpoint, query, variables, context, undefVariables, nextOffset, size);
+    }, { autoStart: false }));
+  }
+
+  public async queryBindingsRemoteSingle(
     endpoint: string,
     query: string,
     variables: RDF.Variable[],

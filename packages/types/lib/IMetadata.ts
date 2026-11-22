@@ -28,6 +28,10 @@ export interface IMetadata<OrderItemsType extends RDF.Variable | RDF.QuadTermNam
    */
   requestTime?: number;
   /**
+   * The time it takes to transfer a single result item in milliseconds, for sources that are not paged.
+   */
+  requestItemTime?: number;
+  /**
    * The order of the bindings in the stream.
    *
    * For example, [{ variable: 'keyA', order: 'asc' }, { variable: 'keyB', order: 'desc' }] indicates that bindings are
