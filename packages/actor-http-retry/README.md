@@ -33,10 +33,20 @@ After installing, this package can be added to your engine's configuration as fo
 }
 ```
 
-Requests that fail without a response, such as on connection errors, are also retried.
+If no retry count is set in the context, only rate-limited requests are retried
+(responses with status 429, 503, or 405 with a `Retry-After` header),
+waiting for the `Retry-After` delay or `rateLimitRetryDelayFallback`, up to `rateLimitRetryCount` times.
+All other responses and errors are then passed through unchanged, and so is the last rate-limited response.
+
+If a retry count is set in the context, requests that fail without a response, such as on connection errors, are also retried.
 This does not apply to requests that the caller aborted, or that exceeded `KeysHttp.httpTimeout`.
 As the server may have processed such requests already, this only applies to idempotent methods (such as `GET` and `QUERY`)
 and `POST` requests of SPARQL queries, but not of SPARQL updates.
+
+### Config Parameters
+
+* `rateLimitRetryCount`: The number of retries for rate-limited requests if no retry count is set in the context, defaults to `2`. Set to `0` to disable retries if no retry count is set in the context.
+* `rateLimitRetryDelayFallback`: The delay in milliseconds before retrying a rate-limited request without `Retry-After` header if no retry count and retry delay fallback are set in the context, defaults to `1000`.
 
 ### Context Parameters
 

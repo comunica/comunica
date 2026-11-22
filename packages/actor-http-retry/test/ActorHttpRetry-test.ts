@@ -24,7 +24,14 @@ describe('ActorHttpRetry', () => {
       addInvalidateListener: (listener: IInvalidateListener) => httpInvalidatorListener = listener,
     };
     input = 'http://127.0.0.1/abc';
-    actor = new ActorHttpRetry({ bus, mediatorHttp, httpInvalidator, name: 'actor' });
+    actor = new ActorHttpRetry({
+      bus,
+      mediatorHttp,
+      httpInvalidator,
+      name: 'actor',
+      rateLimitRetryCount: 2,
+      rateLimitRetryDelayFallback: 1_000,
+    });
     context = new ActionContext({ [KeysHttp.httpRetryCount.name]: 1 });
     jest.spyOn((<any>actor), 'logDebug').mockImplementation((...args) => (<() => unknown>args[2])());
     jest.spyOn((<any>actor), 'logWarn').mockImplementation((...args) => (<() => unknown>args[2])());
@@ -36,9 +43,22 @@ describe('ActorHttpRetry', () => {
   });
 
   describe('test', () => {
-    it('should reject without retry count in the context', async() => {
+    it('should reject without retry count in the context and without rate limit retries', async() => {
+      actor = new ActorHttpRetry({
+        bus,
+        mediatorHttp,
+        httpInvalidator,
+        name: 'actor',
+        rateLimitRetryCount: 0,
+        rateLimitRetryDelayFallback: 1_000,
+      });
       const context = new ActionContext();
       await expect(actor.test({ input, context })).resolves.toFailTest(`${actor.name} requires a retry count greater than zero to function`);
+    });
+
+    it('should accept without retry count in the context with rate limit retries', async() => {
+      const context = new ActionContext();
+      await expect(actor.test({ input, context })).resolves.toPassTest({ time: 0 });
     });
 
     it('should reject with retry count below 1 in the context', async() => {
@@ -292,6 +312,127 @@ describe('ActorHttpRetry', () => {
       const init = { method: 'POST', body: new URLSearchParams({ query: 'SELECT * {}' }) };
       await expect(actor.run({ input, init, context })).resolves.toBe(response);
       expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('run without retry count in the context', () => {
+    let response429: Response;
+    let cancel: jest.Mock;
+
+    beforeEach(() => {
+      context = new ActionContext();
+      cancel = jest.fn();
+      response429 = <any> { ok: false, status: 429, headers: new Headers(), body: { cancel }};
+      jest.spyOn(ActorHttpRetry, 'sleep').mockResolvedValue();
+      jest.spyOn(Date, 'now').mockReturnValue(0);
+      jest.spyOn(globalThis, 'setTimeout').mockImplementation(<any> (() => 0));
+    });
+
+    it('should handle an immediately successful request', async() => {
+      const response: Response = <any> { ok: true };
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
+      await expect(actor.run({ input, context })).resolves.toBe(response);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        input,
+        context: context.set((<any>ActorHttpRetry).keyWrapped, true),
+      });
+      expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
+    });
+
+    it('should return other failed responses without retrying', async() => {
+      const response: Response = <any> { ok: false, status: 504, headers: new Headers() };
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response);
+      await expect(actor.run({ input, context })).resolves.toBe(response);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+      expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
+    });
+
+    it('should propagate errors without retrying', async() => {
+      const error = new Error('ECONNRESET');
+      jest.spyOn(mediatorHttp, 'mediate').mockRejectedValue(error);
+      await expect(actor.run({ input, context })).rejects.toThrow(error);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should retry rate-limited requests after the fallback delay', async() => {
+      const response: Response = <any> { ok: true };
+      jest.spyOn(mediatorHttp, 'mediate')
+        .mockResolvedValueOnce(response429)
+        .mockResolvedValueOnce(response);
+      await expect(actor.run({ input, context })).resolves.toBe(response);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+      expect(cancel).toHaveBeenCalledTimes(1);
+      expect(ActorHttpRetry.sleep).toHaveBeenCalledTimes(1);
+      expect(ActorHttpRetry.sleep).toHaveBeenCalledWith(1_000);
+    });
+
+    it('should retry rate-limited requests after the fallback delay in the context', async() => {
+      const response: Response = <any> { ok: true };
+      jest.spyOn(mediatorHttp, 'mediate')
+        .mockResolvedValueOnce(response429)
+        .mockResolvedValueOnce(response);
+      await expect(actor.run({ input, context: context.set(KeysHttp.httpRetryDelayFallback, 10) }))
+        .resolves.toBe(response);
+      expect(ActorHttpRetry.sleep).toHaveBeenCalledWith(10);
+    });
+
+    it('should retry rate-limited requests without body after the Retry-After delay', async() => {
+      const response: Response = <any> { ok: true };
+      const response503: Response = <any> {
+        ok: false,
+        status: 503,
+        headers: new Headers({ 'retry-after': '5' }),
+      };
+      jest.spyOn(mediatorHttp, 'mediate')
+        .mockResolvedValueOnce(response503)
+        .mockResolvedValueOnce(response);
+      await expect(actor.run({ input, context })).resolves.toBe(response);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(2);
+      expect(ActorHttpRetry.sleep).toHaveBeenCalledWith(5_000);
+    });
+
+    it('should return the last rate-limited response once retries are exhausted', async() => {
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response429);
+      await expect(actor.run({ input, context })).resolves.toBe(response429);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(3);
+      expect(cancel).toHaveBeenCalledTimes(2);
+      expect(ActorHttpRetry.sleep).toHaveBeenCalledTimes(2);
+    });
+
+    it('should return a rate-limited response if the delay exceeds the limit', async() => {
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response429);
+      await expect(actor.run({ input, context: context.set(KeysHttp.httpRetryDelayLimit, 100) }))
+        .resolves.toBe(response429);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+      expect(cancel).not.toHaveBeenCalled();
+      expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
+      expect((<any>actor).logWarn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should return a rate-limited response if the request body can not be sent again', async() => {
+      jest.spyOn(mediatorHttp, 'mediate').mockResolvedValue(response429);
+      const init = { method: 'POST', body: <any> new ReadableStream() };
+      await expect(actor.run({ input, init, context })).resolves.toBe(response429);
+      expect(mediatorHttp.mediate).toHaveBeenCalledTimes(1);
+      expect(ActorHttpRetry.sleep).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('isRateLimited', () => {
+    it('should be true for status 429 and 503', () => {
+      expect(ActorHttpRetry.isRateLimited(<any> { status: 429, headers: new Headers() })).toBe(true);
+      expect(ActorHttpRetry.isRateLimited(<any> { status: 503, headers: new Headers() })).toBe(true);
+    });
+
+    it('should be true for status 405 with a Retry-After header', () => {
+      expect(ActorHttpRetry.isRateLimited(<any> { status: 405, headers: new Headers({ 'retry-after': '1' }) }))
+        .toBe(true);
+    });
+
+    it('should be false for other statuses', () => {
+      expect(ActorHttpRetry.isRateLimited(<any> { status: 405, headers: new Headers() })).toBe(false);
+      expect(ActorHttpRetry.isRateLimited(<any> { status: 500, headers: new Headers() })).toBe(false);
     });
   });
 
