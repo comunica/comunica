@@ -290,7 +290,16 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     };
 
     algebraUtils.visitOperation(operation, {
-      [Algebra.Types.EXTEND]: skipHandler,
+      // An EXTEND can be bound if it does not assign one of the bound variables.
+      [Algebra.Types.EXTEND]: {
+        preVisitor: (op: Algebra.Extend) => {
+          if (!boundVariables || boundVarNames.includes(op.variable.value)) {
+            valid = false;
+            return { shortcut: true };
+          }
+          return { shortcut: false };
+        },
+      },
       [Algebra.Types.GROUP]: skipHandler,
       [Algebra.Types.LEFT_JOIN]: {
         preVisitor: (op: Algebra.LeftJoin) => {
