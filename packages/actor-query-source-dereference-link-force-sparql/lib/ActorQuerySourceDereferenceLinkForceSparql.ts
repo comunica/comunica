@@ -25,8 +25,15 @@ export class ActorQuerySourceDereferenceLinkForceSparql extends ActorQuerySource
     this.mediatorQuerySourceIdentifyHypermedia = args.mediatorQuerySourceIdentifyHypermedia;
   }
 
+  /**
+   * If the service description of forced SPARQL sources is skipped for any number of sources, not only for one.
+   * Configurations that estimate cardinalities from VoID descriptions in service descriptions should disable this.
+   */
+  public static SKIP_FOR_ALL_SOURCES = process.env.COMUNICA_FORCE_SPARQL_SKIP_ALL !== '0';
+
   public async test(action: IActionQuerySourceDereferenceLink): Promise<TestResult<IActorTest>> {
-    if (action.link.forceSourceType === 'sparql' && action.context.get(KeysQueryOperation.querySources)?.length === 1) {
+    if (action.link.forceSourceType === 'sparql' && (ActorQuerySourceDereferenceLinkForceSparql.SKIP_FOR_ALL_SOURCES ||
+      action.context.get(KeysQueryOperation.querySources)?.length === 1)) {
       return passTestVoid();
     }
     return failTest(`${this.name} can only handle a single forced SPARQL source`);
