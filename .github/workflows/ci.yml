@@ -593,7 +593,8 @@ jobs:
       - name: Process benchmark ingestion results
         run: jq -s 'add' performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
       - name: Process benchmark HTTP request results
-        # Benchmarks without HTTP requests, such as those over local files, get no entries.
+        # Benchmarks without HTTP requests, such as those over local files, get no entries,
+        # as do the BSBM ones, as their driver does not report requests.
         # The web benchmark is left out, as its query set varies across runs.
         run: |
           npx ts-node --transpile-only -O '{"rootDir":"."}' packages/utils-monorepo/bin/performance-requests.ts ghbench-requests.json WatDiv-File,WatDiv-TPF,BSBM-File,BSBM-File-10k,BSBM-TPF,LDBC-SNB-File,LDBC-SNB-BI-File,LargeRDFBench-File performance/benchmark-watdiv-file/combinations/combination_0/output/ performance/benchmark-watdiv-tpf/combinations/combination_0/output/ performance/benchmark-bsbm-file/combinations/combination_0/output/ performance/benchmark-bsbm-file-10k/combinations/combination_0/output/ performance/benchmark-bsbm-tpf/combinations/combination_0/output/ performance/benchmark-ldbc-snb-file/combinations/combination_0/output/ performance/benchmark-ldbc-snb-bi-file/combinations/combination_0/output/ performance/benchmark-largerdfbench-file/combinations/combination_0/output/
@@ -825,7 +826,8 @@ jobs:
           collect performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
           collect base/performance/*/combinations/combination_0/output/ingestion.json > ghbench-base-ingestion.json
       - name: Collect benchmark HTTP request results
-        # Benchmarks without HTTP requests, such as those over local files, get no entries
+        # Benchmarks without HTTP requests, such as those over local files, get no entries,
+        # as do the BSBM ones, as their driver does not report requests
         run: |
           set -eu
           requests() { npx ts-node --transpile-only -O '{"rootDir":"."}' packages/utils-monorepo/bin/performance-requests.ts "$@"; }

@@ -50,8 +50,14 @@ S1;0;false;0;7
     expect(parseQueryTimes('\n')).toEqual([]);
   });
 
-  it('throws on a missing column', () => {
-    expect(() => parseQueryTimes('name;error\nq;false')).toThrow('The query times have no httpRequests column');
+  it('parses files without error and requests columns', () => {
+    expect(parseQueryTimes('name;id;results;time\n1;0;0.4;3.3')).toEqual([
+      { name: '1', failed: false, httpRequests: undefined },
+    ]);
+  });
+
+  it('throws on a missing name column', () => {
+    expect(() => parseQueryTimes('id;error\n0;false')).toThrow('The query times have no name column');
   });
 });
 

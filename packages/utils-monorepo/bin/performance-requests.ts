@@ -10,7 +10,7 @@ import { parseQueryTimes, toRequestsEntries } from '../lib/performanceRequests';
 
 // Usage: performance-requests <output file> <comma-separated labels> <results dir>...
 // Determines the HTTP requests per query of benchmark suites, from the query-times.csv files in their results.
-// Suites without any HTTP requests, such as those over local files, get no entries.
+// Suites without any HTTP requests, such as those over local files, or that do not report them, get no entries.
 const [ outputFile, labelsList, ...resultsDirs ] = process.argv.slice(2);
 const labels = labelsList ? labelsList.split(',') : [];
 if (!outputFile || labels.length !== resultsDirs.length) {

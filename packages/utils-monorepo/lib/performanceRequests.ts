@@ -63,7 +63,9 @@ export function parseDelimited(text: string, delimiter = ';'): string[][] {
 }
 
 /**
- * Parse the query instantiations of a `query-times.csv` file of sparql-benchmark-runner.
+ * Parse the query instantiations of a `query-times.csv` file.
+ * Files of sparql-benchmark-runner have error and httpRequests columns,
+ * but those of other drivers, such as the one of BSBM, may lack them.
  * @param text The contents of the file.
  */
 export function parseQueryTimes(text: string): IQueryInstantiation[] {
@@ -71,21 +73,17 @@ export function parseQueryTimes(text: string): IQueryInstantiation[] {
   if (!header) {
     return [];
   }
-  const getColumn = (name: string): number => {
-    const index = header.indexOf(name);
-    if (index < 0) {
-      throw new Error(`The query times have no ${name} column`);
-    }
-    return index;
-  };
-  const nameColumn = getColumn('name');
-  const errorColumn = getColumn('error');
-  const requestsColumn = getColumn('httpRequests');
+  const nameColumn = header.indexOf('name');
+  if (nameColumn < 0) {
+    throw new Error('The query times have no name column');
+  }
+  const errorColumn = header.indexOf('error');
+  const requestsColumn = header.indexOf('httpRequests');
   return rows.map((row) => {
-    const requests = row[requestsColumn] ?? '';
+    const requests = requestsColumn < 0 ? '' : row[requestsColumn] ?? '';
     return {
       name: row[nameColumn],
-      failed: row[errorColumn] === 'true',
+      failed: errorColumn >= 0 && row[errorColumn] === 'true',
       httpRequests: requests === '' ? undefined : Number(requests),
     };
   });
@@ -95,7 +93,7 @@ export function parseQueryTimes(text: string): IQueryInstantiation[] {
  * Convert query instantiations into entries for the Benchmark Github Action.
  * A query gets the sum of the HTTP requests of its instantiations that succeeded,
  * and the suite, named by the label, gets the sum over its queries without failures.
- * Suites without any HTTP requests, such as those over local files, get no entries.
+ * Suites without any HTTP requests, such as those over local files, or that do not report them, get no entries.
  * @param label The label of the benchmark suite.
  * @param instantiations The query instantiations.
  */
