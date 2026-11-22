@@ -5,12 +5,9 @@ export class XmlSerializer {
   private readonly stack: string[] = [];
 
   public static header = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  // Characters to escape, and characters that XML 1.0 does not allow, not even as character references
-  private static readonly ESCAPED_CHARACTERS =
+  private static readonly ESCAPED_CHARACTERS_GLOBAL =
     // eslint-disable-next-line no-control-regex
-    /["&'<>\u0000-\u0008\u000B\u000C\u000E-\u001F\uD800-\uDFFF\uFFFE\uFFFF]/u;
-
-  private static readonly ESCAPED_CHARACTERS_GLOBAL = new RegExp(XmlSerializer.ESCAPED_CHARACTERS, 'gu');
+    /["&'<>\u0000-\u0008\u000B\u000C\u000E-\u001F\uD800-\uDFFF\uFFFE\uFFFF]/gu;
 
   public constructor() {}
 
@@ -70,7 +67,7 @@ export class XmlSerializer {
   }
 
   private escape(text: string): string {
-    if (!XmlSerializer.ESCAPED_CHARACTERS.test(text)) {
+    if (text.search(XmlSerializer.ESCAPED_CHARACTERS_GLOBAL) < 0) {
       return text;
     }
     return text.replaceAll(XmlSerializer.ESCAPED_CHARACTERS_GLOBAL, (char: string) => {
@@ -80,7 +77,6 @@ export class XmlSerializer {
         case '&': return '&amp;';
         case '\'': return '&apos;';
         case '"': return '&quot;';
-        // Characters that XML 1.0 does not allow are replaced, so that the document remains well-formed
         default: return '\uFFFD';
       }
     });
