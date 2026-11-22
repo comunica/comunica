@@ -92,21 +92,24 @@ export class ActorHttpLimitRate extends ActorHttp {
       }
     };
 
-    try {
-      const response = await this.mediatorHttp.mediate({
-        ...action,
-        context: action.context.set(ActorHttpLimitRate.keyWrapped, true),
-      });
-      // Only responses that signal an overloaded server count as failures.
-      registerCompletedRequest(response.ok || !ActorHttpLimitRate.isOverloadStatus(response.status));
-      return response;
-    } catch (error: unknown) {
-      // Timeouts and aborts are imposed by the client, so they say nothing about the host's request rate.
-      if (!ActorHttpLimitRate.isClientAbort(error)) {
-        registerCompletedRequest(false);
-      }
-      throw error;
-    }
+    const response = await this.mediatorHttp.mediate({
+      ...action,
+      context: action.context.set(ActorHttpLimitRate.keyWrapped, true),
+    });
+    // Only responses that signal a rate limit count as failures.
+    // Overload (503) and failed requests are left to limiting the number of concurrent requests,
+    // as spacing out requests would then send them one after another, which makes a host that
+    // handles many concurrent requests (such as a gateway) many times slower.
+    registerCompletedRequest(response.ok || !ActorHttpLimitRate.isRateLimitStatus(response.status));
+    return response;
+  }
+
+  /**
+   * Check if the given HTTP status code indicates that the client exceeds a rate limit of the server.
+   * @param status An HTTP status code.
+   */
+  public static isRateLimitStatus(status: number): boolean {
+    return status === 429;
   }
 
   /**
