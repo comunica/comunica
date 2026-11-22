@@ -1,0 +1,76 @@
+project (kind,item,title)
+  join
+    join-inner(bind-source) bindIndex:0 srcQuery:0
+      union
+        pattern (?gtaa http://www.w3.org/2004/02/skos/core#prefLabel "Andriessen, Louis"@nl) src:0 srcQuery:1
+        pattern (?gtaa http://www.w3.org/2004/02/skos/core#prefLabel "Andriessen, Louis"@nl) src:1 srcQuery:1
+      union
+        pattern (?gtaa http://www.w3.org/2004/02/skos/core#inScheme http://data.beeldengeluid.nl/gtaa/Persoonsnamen) src:0
+        pattern (?gtaa http://www.w3.org/2004/02/skos/core#inScheme http://data.beeldengeluid.nl/gtaa/Persoonsnamen) src:1
+      join-inner(hash-def)
+        union
+          extend
+            join
+              join-inner(hash-def)
+                union
+                  pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) src:2
+                  pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) src:3
+                  pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) src:4
+                join src:2 srcQuery:2
+                  pattern (?item http://schema.org/composer ?person) delegated
+                  pattern (?item http://schema.org/name ?title) delegated
+          extend
+            join
+              join-inner(bind-source) bindIndex:3 srcQuery:3
+                union
+                  pattern (?item http://www.w3.org/2000/01/rdf-schema#label ?title) src:1
+                  pattern (?item http://www.w3.org/2000/01/rdf-schema#label ?title) src:2
+                  pattern (?item http://www.w3.org/2000/01/rdf-schema#label ?title) src:3
+                join src:3 srcQuery:4
+                  pattern (?mwPerson https://data.muziekweb.nl/vocab/album ?item) delegated
+                join-inner(bind-source) bindIndex:0 srcQuery:5
+                  union
+                    pattern (?person http://www.w3.org/2002/07/owl#sameAs ?mwPerson) src:2
+                    pattern (?person http://www.w3.org/2002/07/owl#sameAs ?mwPerson) src:3
+                    pattern (?person http://www.w3.org/2002/07/owl#sameAs ?mwPerson) src:4
+                  join-inner(bind-source) bindIndex:0 srcQuery:6
+                    union
+                      pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) src:2
+                      pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) src:3
+                      pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) src:4
+          extend
+            join
+              join-inner(bind-source) bindIndex:2 srcQuery:7
+                union
+                  pattern (?item https://schema.org/creator ?role) src:3
+                  pattern (?item https://schema.org/creator ?role) src:4
+                  pattern (?item https://schema.org/creator ?role) src:5
+                union
+                  pattern (?item https://schema.org/name ?title) src:4 srcQuery:8
+                  pattern (?item https://schema.org/name ?title) src:5 srcQuery:8
+                join-inner(bind-source) bindIndex:0 srcQuery:9
+                  union
+                    pattern (?role https://schema.org/creator ?gtaa) src:1
+                    pattern (?role https://schema.org/creator ?gtaa) src:3
+                    pattern (?role https://schema.org/creator ?gtaa) src:4
+                    pattern (?role https://schema.org/creator ?gtaa) src:5
+
+sources:
+  0: QuerySourceHypermedia(https://gtaa.apis.beeldengeluid.nl/sparql)(SkolemID:0)
+  1: QuerySourceHypermedia(https://cat.apis.beeldengeluid.nl/sparql)(SkolemID:1)
+  2: QuerySourceHypermedia(https://data.muziekschatten.nl/sparql)(SkolemID:2)
+  3: QuerySourceHypermedia(https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql)(SkolemID:3)
+  4: QuerySourceHypermedia(https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql)(SkolemID:4)
+  5: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2204530)(SkolemID:5)
+
+source queries:
+  0: SELECT ?gtaa WHERE { VALUES ?gtaa { <http://data.beeldengeluid.nl/gtaa/77493> } ?gtaa <http://www.w3.org/2004/02/skos/core#inScheme> <http://data.beeldengeluid.nl/gtaa/Persoonsnamen> . }
+  1: SELECT ?gtaa WHERE { ?gtaa <http://www.w3.org/2004/02/skos/core#prefLabel> "Andriessen, Louis"@nl . }
+  2: SELECT ?item ?person ?title WHERE { ?item <http://schema.org/composer> ?person . ?item <http://schema.org/name> ?title . }
+  3: SELECT ?item ?title WHERE { VALUES ?item { <https://data.muziekweb.nl/Link/JE14826> <https://data.muziekweb.nl/Link/JE42028> <https://data.muziekweb.nl/Link/JE42032> <https://data.muziekweb.nl/Link/JE45619> <https://data.muziekweb.nl/Link/JE13113> <https://data.muziekweb.nl/Link/JEX3396> <https://data.muziekweb.nl/Link/JE32195> <https://data.muziekweb.nl/Link/JE31649> <https://data.muziekweb.nl/Link/JE26813> <https://data.muziekweb.nl/Link/JE43562> <https://data.muziekweb.nl/Link/JE43699> <https://data.muziekweb.nl/Link/JE15516> <https://data.muziekweb.nl/Link/JEE00224> <https://data.muziekweb.nl/Link/JE11897> <https://data.muziekweb.nl/Link/JE14040> <https://data.muziekweb.nl/Link/JE40103> <https://data.muziekweb.nl/Link/JE15574> <https://data.muziekweb.nl/Link/JE36170> <https://data.muziekweb.nl/Link/JFX4633> <https://data.muziekweb.nl/Link/JEX9936> <https://data.muziekweb.nl/Link/JE12457> <https://data.muziekweb.nl/Link/JE13942> <https://data.muziekweb.nl/Link/JE15341> <https://data.muziekweb.nl/Link/JEX3654> <https://data.muziekweb.nl/Link/JE36911> } ?item <http://www.w3.org/2000/01/rdf-schema#label> ?title . }
+  4: SELECT ?mwPerson ?item WHERE { ?mwPerson <https://data.muziekweb.nl/vocab/album> ?item . }
+  5: SELECT ?mwPerson ?person WHERE { VALUES ?mwPerson { <https://data.muziekweb.nl/Link/M00000268655> <https://data.muziekweb.nl/Link/M00000023898> <https://data.muziekweb.nl/Link/M00000024630> <https://data.muziekweb.nl/Link/M00000075787> <https://data.muziekweb.nl/Link/M00000078018> <https://data.muziekweb.nl/Link/M00000081207> <https://data.muziekweb.nl/Link/M00000085594> <https://data.muziekweb.nl/Link/M00000091336> <https://data.muziekweb.nl/Link/M00000092264> <https://data.muziekweb.nl/Link/M00000024032> <https://data.muziekweb.nl/Link/M00000024559> <https://data.muziekweb.nl/Link/M00000091315> <https://data.muziekweb.nl/Link/M00000024695> <https://data.muziekweb.nl/Link/M00000091279> <https://data.muziekweb.nl/Link/M00000275532> } ?person <http://www.w3.org/2002/07/owl#sameAs> ?mwPerson . }
+  6: SELECT ?person ?gtaa WHERE { VALUES ?person { <https://data.muziekschatten.nl/som/962b299e5fabf0e0ea8613036600ebd4> <https://data.muziekschatten.nl/som/c74353f79d056674001af4bdab82e6c4> <https://data.muziekschatten.nl/som/5138b734f4726f8192d864a0d2bc1523> <https://data.muziekschatten.nl/som/048e1531ddf0eaf4318b0bb3899fe7dd> } ?person <http://www.w3.org/2002/07/owl#sameAs> ?gtaa . }
+  7: SELECT ?item ?role WHERE { VALUES ?item { <https://n2t.net/ark:/88238/01a2c3a54bdb405683551adadf3135b9> <https://www.vondel.humanities.uva.nl/onstage/shows/11369#revenue> <https://n2t.net/ark:/88238/01a31e5989454f1e9b7294d3feca569c> <https://www.vondel.humanities.uva.nl/onstage/shows/1137#location> <https://n2t.net/ark:/88238/01a33f0ef98c462d9cc649f7ec28c1e5#production-role-1> <https://www.vondel.humanities.uva.nl/onstage/shows/11370#location> <https://n2t.net/ark:/88238/01a33f0ef98c462d9cc649f7ec28c1e5> <https://www.vondel.humanities.uva.nl/onstage/shows/11370#revenue> <https://n2t.net/ark:/88238/01a34d6260fd4d0cb19e2859bd130017> <https://www.vondel.humanities.uva.nl/onstage/shows/11371#location> <https://n2t.net/ark:/88238/01a35ef0fcb24bdc8ad9ecb793fe0e66#production-role-1> <https://www.vondel.humanities.uva.nl/onstage/shows/11371#revenue> <https://n2t.net/ark:/88238/01a35ef0fcb24bdc8ad9ecb793fe0e66> <https://www.vondel.humanities.uva.nl/onstage/shows/11372#location> <https://n2t.net/ark:/88238/01a39266383e4295a6ebf391bcdf8856> <https://www.vondel.humanities.uva.nl/onstage/shows/11373#location> <https://n2t.net/ark:/88238/01a39e81bf3849cab99ad17ab8859474#production-role-1> <https://www.vondel.humanities.uva.nl/onstage/shows/11373#revenue> <https://n2t.net/ark:/88238/01a39e81bf3849cab99ad17ab8859474> <https://www.vondel.humanities.uva.nl/onstage/shows/11374#location> <https://n2t.net/ark:/88238/01a3a0403ce6456095b9d6ab1a61eb43> <https://www.vondel.humanities.uva.nl/onstage/shows/11375#location> <https://n2t.net/ark:/88238/01a3d859b8a64fae905e2bb1e323e758> <https://www.vondel.humanities.uva.nl/onstage/shows/11375#revenue> <https://n2t.net/ark:/88238/01a42c18fc464a7dae03bb0c44c43ad9> } ?item <https://schema.org/creator> ?role . }
+  8: SELECT ?item ?title WHERE { ?item <https://schema.org/name> ?title . }
+  9: SELECT ?role ?gtaa WHERE { VALUES ?role { <https://n2t.net/ark:/88238/34b8de0d13ad46eb9e6b4684ce1ac1ad> <https://n2t.net/ark:/88238/0932e4e96dcf47d7978de38cccfeacf2> <https://n2t.net/ark:/88238/8a0774066f314c61a6c2bc2f3b2f2377> <https://n2t.net/ark:/88238/aec5da764a3446b5aac84727e4ee5ec8> <https://n2t.net/ark:/88238/494d35edf9f2496cbaa331d783213fd2> <https://n2t.net/ark:/88238/6ea16bc9c65842f8b9b671487dca3746> <https://n2t.net/ark:/88238/6926a0afcfaa4aeba19289dbc2845e6b> <https://n2t.net/ark:/88238/752b97a0766d452c80764b21cfb2562a> <https://n2t.net/ark:/88238/5638ecec3be04bb582e1b13320fdca45> <https://n2t.net/ark:/88238/6b29e274e2494568ae42c080990f1d64> <https://n2t.net/ark:/88238/3593604f84c249e696d366f20c634751> <https://n2t.net/ark:/88238/a8e56f33d48f4721b7b7e1d92db6fa4b> <https://n2t.net/ark:/88238/cb1b6c5133fd4492b2cbe2d5278e762e> <https://n2t.net/ark:/88238/2f83c5bfca0d43c4a3f2ff3163c82bfb> <https://n2t.net/ark:/88238/366bcc668ef74d7a9b1092ade0b86c22> <https://n2t.net/ark:/88238/4121a6d2e5114a03838ff34f55d6a644> <https://n2t.net/ark:/88238/32154615d758404d8796a4dd3b82a613> <https://n2t.net/ark:/88238/97cf37d2e71a4608898b2af8c1e946b8> <https://n2t.net/ark:/88238/c6f510396b1a40ceaa27b5c82c187e8a> <https://n2t.net/ark:/88238/fdb4d2b9dccd47e2b85ad40ac3fc525e> <https://n2t.net/ark:/88238/00910334e1fb44e7961bc4a0230a936b> <https://n2t.net/ark:/88238/7b82f0a20c1a46e7a8fb885fc4883f43> <https://n2t.net/ark:/88238/0f3092bc881d47e3ab49900c6342fa72> <https://n2t.net/ark:/88238/837b5bd22d074e9c981d4e9667807613> } ?role <https://schema.org/creator> ?gtaa . }

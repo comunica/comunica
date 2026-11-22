@@ -1,0 +1,100 @@
+{
+ "status": "timeout",
+ "results": 0,
+ "timeMs": 300462,
+ "httpRequests": 632,
+ "httpRequestsWire": 633,
+ "byKind": {
+  "no-query": 6,
+  "count": 60,
+  "select": 566
+ },
+ "decodedBytes": 625299,
+ "wireBytes": 107984,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://sparql.goudatijdmachine.nl/",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql"
+ ],
+ "byEndpoint": {
+  "https://sparql.goudatijdmachine.nl/": {
+   "requests": 124,
+   "decodedBytes": 197126,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 113
+   },
+   "dataRows": 1853,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql": {
+   "requests": 241,
+   "decodedBytes": 401885,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 230
+   },
+   "dataRows": 1899,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 3
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql": {
+   "requests": 111,
+   "decodedBytes": 8362,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 100
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 8
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql": {
+   "requests": 26,
+   "decodedBytes": 2787,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 15
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql": {
+   "requests": 26,
+   "decodedBytes": 2793,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 15
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://qlever.coret.org/oabs": {
+   "requests": 104,
+   "decodedBytes": 12346,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 93
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  }
+ }
+}

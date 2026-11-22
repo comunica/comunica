@@ -1,0 +1,102 @@
+{
+ "status": "ok",
+ "results": 3067,
+ "timeMs": 54971,
+ "firstResultMs": 51691,
+ "cpuMs": 9956,
+ "httpRequests": 922,
+ "httpRequestsWire": 923,
+ "byKind": {
+  "no-query": 6,
+  "count": 60,
+  "select": 856
+ },
+ "decodedBytes": 812039,
+ "wireBytes": 173617,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://sparql.goudatijdmachine.nl/",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql"
+ ],
+ "byEndpoint": {
+  "https://sparql.goudatijdmachine.nl/": {
+   "requests": 251,
+   "decodedBytes": 314825,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 240
+   },
+   "dataRows": 2401,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql": {
+   "requests": 359,
+   "decodedBytes": 467245,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 348
+   },
+   "dataRows": 2134,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql": {
+   "requests": 105,
+   "decodedBytes": 8435,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 94
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql": {
+   "requests": 51,
+   "decodedBytes": 4537,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 40
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql": {
+   "requests": 51,
+   "decodedBytes": 4543,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 40
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://qlever.coret.org/oabs": {
+   "requests": 105,
+   "decodedBytes": 12454,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 94
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  }
+ }
+}

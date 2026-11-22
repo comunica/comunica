@@ -1,0 +1,64 @@
+distinct
+  project (object,title)
+    join
+      join-inner(multi-smallest)
+        join-inner(multi-smallest)
+          join-inner(hash-def)
+            union
+              pattern (?object https://schema.org/name ?title) src:0 srcQuery:0
+              pattern (?object https://schema.org/name ?title) src:1 srcQuery:0
+              pattern (?object https://schema.org/name ?title) src:2 srcQuery:0
+              pattern (?object https://schema.org/name ?title) src:3 srcQuery:0
+              pattern (?object https://schema.org/name ?title) src:4 srcQuery:0
+            join-inner(bind-source) bindIndex:0 srcQuery:1
+              join-inner(bind) bindIndex:0
+                join src:5 srcQuery:2
+                  pattern (?cht http://www.w3.org/2004/02/skos/core#prefLabel "portretten"@nl) delegated
+                  pattern (?cht http://www.w3.org/2004/02/skos/core#exactMatch ?aat) delegated
+                union
+                  union
+                    pattern (?term https://schema.org/sameAs ?aat) src:0
+                    pattern (?term https://schema.org/sameAs ?aat) src:1
+                    pattern (?term https://schema.org/sameAs ?aat) src:2
+                    pattern (?term https://schema.org/sameAs ?aat) src:3
+                    pattern (?term https://schema.org/sameAs ?aat) src:4
+                  union
+                    pattern (?term https://schema.org/sameAs ?cht) src:0
+                    pattern (?term https://schema.org/sameAs ?cht) src:1
+                    pattern (?term https://schema.org/sameAs ?cht) src:2
+                    pattern (?term https://schema.org/sameAs ?cht) src:3
+                    pattern (?term https://schema.org/sameAs ?cht) src:4
+                bindings
+                  union compacted-occurrences:2
+                    union
+                      pattern (?term https://schema.org/sameAs https://hdl.handle.net/20.500.11840/termmaster10067158) src:0 srcQuery:3
+                      pattern (?term https://schema.org/sameAs https://hdl.handle.net/20.500.11840/termmaster10067158) src:1 srcQuery:3
+                      pattern (?term https://schema.org/sameAs https://hdl.handle.net/20.500.11840/termmaster10067158) src:2 srcQuery:3
+                      pattern (?term https://schema.org/sameAs https://hdl.handle.net/20.500.11840/termmaster10067158) src:3 srcQuery:3
+                      pattern (?term https://schema.org/sameAs https://hdl.handle.net/20.500.11840/termmaster10067158) src:4 srcQuery:3
+                    union
+                      pattern (?term https://schema.org/sameAs https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e) src:0 srcQuery:4
+                      pattern (?term https://schema.org/sameAs https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e) src:1 srcQuery:4
+                      pattern (?term https://schema.org/sameAs https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e) src:2 srcQuery:4
+                      pattern (?term https://schema.org/sameAs https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e) src:3 srcQuery:4
+                      pattern (?term https://schema.org/sameAs https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e) src:4 srcQuery:4
+              union
+                pattern (?object https://schema.org/artform ?term) src:0
+                pattern (?object https://schema.org/artform ?term) src:1
+                pattern (?object https://schema.org/artform ?term) src:2
+                pattern (?object https://schema.org/artform ?term) src:3
+
+sources:
+  0: QuerySourceHypermedia(https://sparql.ldmax.nl/Q11722011)(SkolemID:1)
+  1: QuerySourceHypermedia(https://sparql.ldmax.nl/Q1542668)(SkolemID:2)
+  2: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2798268)(SkolemID:3)
+  3: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2070053)(SkolemID:4)
+  4: QuerySourceHypermedia(https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql)(SkolemID:5)
+  5: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql)(SkolemID:0)
+
+source queries:
+  0: SELECT ?object ?title WHERE { ?object <https://schema.org/name> ?title . }
+  1: SELECT ?term ?object WHERE { VALUES ?term { <https://n2t.net/ark:/46860/987940D2F1A6491592174B1FDE413883> <https://n2t.net/ark:/46860/FCA6C629B42D4A9BA3209259B63B26C2> <https://n2t.net/ark:/46860/F154D2837B704B338E9ADF8EA826F9C7> <https://hdl.handle.net/20.500.14879/8oaobr> <https://hdl.handle.net/20.500.14879/a1opew> } ?object <https://schema.org/artform> ?term . }
+  2: SELECT ?cht ?aat WHERE { ?cht <http://www.w3.org/2004/02/skos/core#prefLabel> "portretten"@nl . ?cht <http://www.w3.org/2004/02/skos/core#exactMatch> ?aat . }
+  3: SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://hdl.handle.net/20.500.11840/termmaster10067158> . }
+  4: SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e> . }

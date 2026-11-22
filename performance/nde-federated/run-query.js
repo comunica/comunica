@@ -140,6 +140,15 @@ async function main() {
     fetch: countingFetch,
     log: new (require('@comunica/logger-pretty').LoggerPretty)({ level: process.env.LOG_LEVEL || 'warn' }),
   };
+  let planLogger;
+  if (process.env.PLAN) {
+    // Record the physical plan during a normal run, so it can be dumped at the end or at a timeout.
+    const { MemoryPhysicalQueryPlanLogger } = require('../../packages/actor-query-process-explain-physical/lib/MemoryPhysicalQueryPlanLogger.js');
+    const { KeysInitQuery } = require('../../packages/context-entries/lib/Keys.js');
+    planLogger = new MemoryPhysicalQueryPlanLogger();
+    context[KeysInitQuery.physicalQueryPlanLogger.name] = planLogger;
+  }
+  globalThis.__planLogger = planLogger;
   if (process.env.RETRY) {
     // Opt-in retries for rate-limited public endpoints (429/503), off by default in Comunica.
     context.httpRetryCount = Number(process.env.RETRY);
@@ -171,6 +180,7 @@ async function main() {
     const summary = {
       status, error: error && String(error.message ?? error).slice(0, 2000),
       results: results.length, timeMs: Math.round(total), firstResultMs: firstResult && Math.round(firstResult),
+      cpuMs: Math.round((process.cpuUsage().user + process.cpuUsage().system) / 1000),
       httpRequests: requests.length, httpRequestsWire: wireRequests, byKind,
       decodedBytes: requests.reduce((a, r) => a + (r.decodedBytes || 0), 0), wireBytes,
       sourcesGiven: sources.length,
@@ -179,6 +189,9 @@ async function main() {
       byEndpoint,
     };
     fs.writeFileSync(`${outPrefix}.summary.json`, JSON.stringify(summary, null, 1));
+    if (globalThis.__planLogger) {
+      try { fs.writeFileSync(`${outPrefix}.plan.txt`, globalThis.__planLogger.toCompactString(false)); fs.writeFileSync(`${outPrefix}.plan.json`, JSON.stringify(globalThis.__planLogger.toJson(), null, 1)); } catch (e) { fs.writeFileSync(`${outPrefix}.plan.txt`, String(e.stack)); }
+    }
     fs.writeFileSync(`${outPrefix}.requests.json`, JSON.stringify(requests, null, 1));
     fs.writeFileSync(`${outPrefix}.results.json`, JSON.stringify(results, null, 1));
     const { byEndpoint: _, ...short } = summary;
