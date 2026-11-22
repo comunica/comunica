@@ -172,6 +172,16 @@ IQueryOperationResultBindings
             expect(ActorRdfJoinMultiBind.canBindWithOperation(filter)).toBe(false);
           });
 
+          it('should reject binding on an EXTEND', () => {
+            const extend = FACTORY.createExtend(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              DF.variable('c'),
+              FACTORY.createTermExpression(DF.variable('a')),
+            );
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(extend)).toBe(false);
+          });
+
           it('should not reject a FILTER nested inside a FILTER EXISTS', () => {
             const innerFilter: any =
               FACTORY.createFilter(FACTORY.createNop(), FACTORY.createTermExpression(DF.literal('')));
@@ -280,6 +290,60 @@ IQueryOperationResultBindings
             ), <any> {});
 
             expect(ActorRdfJoinMultiBind.canBindWithOperation(filter, [ DF.variable('a') ])).toBe(false);
+          });
+
+          it('should allow binding on an EXTEND that only uses bound variables in scope of its input', () => {
+            const extend = FACTORY.createExtend(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              DF.variable('c'),
+              FACTORY.createTermExpression(DF.variable('a')),
+            );
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(extend, [ DF.variable('a') ])).toBe(true);
+          });
+
+          it('should allow binding on an EXTEND that uses unbound variables out of scope of its input', () => {
+            const extend = FACTORY.createExtend(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              DF.variable('c'),
+              FACTORY.createTermExpression(DF.variable('d')),
+            );
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(extend, [ DF.variable('a') ])).toBe(true);
+          });
+
+          it('should reject binding on an EXTEND that assigns a bound variable', () => {
+            const extend = FACTORY.createExtend(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              DF.variable('c'),
+              FACTORY.createTermExpression(DF.variable('a')),
+            );
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(extend, [ DF.variable('c') ])).toBe(false);
+          });
+
+          it('should reject binding on an EXTEND that uses bound variables out of scope of its input', () => {
+            const extend = FACTORY.createExtend(
+              FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+              DF.variable('c'),
+              FACTORY.createTermExpression(DF.variable('d')),
+            );
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(extend, [ DF.variable('d') ])).toBe(false);
+          });
+
+          it('should reject binding on an EXTEND nested in an EXTEND that assigns a bound variable', () => {
+            const extend = FACTORY.createExtend(
+              FACTORY.createExtend(
+                FACTORY.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b')),
+                DF.variable('c'),
+                FACTORY.createTermExpression(DF.variable('a')),
+              ),
+              DF.variable('d'),
+              FACTORY.createTermExpression(DF.variable('a')),
+            );
+
+            expect(ActorRdfJoinMultiBind.canBindWithOperation(extend, [ DF.variable('c') ])).toBe(false);
           });
         });
       });
@@ -563,7 +627,7 @@ IQueryOperationResultBindings
           .toFailTest('Actor actor requires at least one entry of which the operation does not need to be pushed down');
       });
 
-      it('should reject on a right stream of type extend', async() => {
+      it('should reject on a right stream of type extend that assigns a bound variable', async() => {
         await expect(actor.getJoinCoefficients(
           {
             type: 'inner',
@@ -576,7 +640,11 @@ IQueryOperationResultBindings
                   }),
 
                 },
-                operation: <any>{ type: Algebra.Types.EXTEND },
+                operation: FACTORY.createExtend(
+                  FACTORY.createPattern(DF.variable('b'), DF.namedNode('p'), DF.namedNode('o')),
+                  DF.variable('a'),
+                  FACTORY.createTermExpression(DF.variable('b')),
+                ),
               },
               {
                 output: <any>{
@@ -615,7 +683,7 @@ IQueryOperationResultBindings
             ],
           },
         )).resolves
-          .toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations');
+          .toFailTest('Actor actor can not bind on Group, or conflicting Extend/LeftJoin/Minus/Filter operations');
       });
 
       it('should reject on a right stream of type group', async() => {
@@ -659,7 +727,7 @@ IQueryOperationResultBindings
             ],
           },
         )).resolves
-          .toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations');
+          .toFailTest('Actor actor can not bind on Group, or conflicting Extend/LeftJoin/Minus/Filter operations');
       });
 
       it('should reject on a right stream containing group', async() => {
@@ -703,7 +771,7 @@ IQueryOperationResultBindings
             ],
           },
         )).resolves
-          .toFailTest('Actor actor can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations');
+          .toFailTest('Actor actor can not bind on Group, or conflicting Extend/LeftJoin/Minus/Filter operations');
       });
 
       it('should not reject on a left stream of type group', async() => {
