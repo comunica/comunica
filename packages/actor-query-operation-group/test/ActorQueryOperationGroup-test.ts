@@ -31,7 +31,7 @@ import {
   getMockEEFactory,
 } from '@comunica/utils-jest';
 import arrayifyStream from 'arrayify-stream';
-import { ArrayIterator } from 'asynciterator';
+import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationGroup } from '../lib';
 import { GroupsState } from '../lib/GroupsState';
@@ -805,6 +805,55 @@ describe('ActorQueryOperationGroup', () => {
       await expect(async() => arrayifyStream((<any> await actor.run(op, undefined)).bindingsStream))
         .rejects
         .toBeTruthy();
+    });
+
+    describe('with an input stream that does not end', () => {
+      let input: BufferedIterator<Bindings>;
+      let actor: ActorQueryOperationGroup;
+      let op: IActionQueryOperation;
+
+      beforeEach(() => {
+        input = new BufferedIterator<Bindings>({ autoStart: false });
+        actor = new ActorQueryOperationGroup({
+          name: 'actor',
+          bus,
+          mediatorQueryOperation: <any> {
+            mediate: (arg: any) => Promise.resolve({
+              bindingsStream: input,
+              metadata: () => Promise.resolve({ cardinality: { type: 'estimate', value: 1 }, variables: []}),
+              operated: arg,
+              type: 'bindings',
+            }),
+          },
+          mediatorMergeBindingsContext,
+          mediatorBindingsAggregatorFactory,
+        });
+        op = constructCase({
+          inputBindings: [],
+          groupVariables: [ 'x' ],
+          inputVariables: [ 'x', 'y', 'z' ],
+          inputOp: simpleXYZinput,
+          aggregates: [ countY ],
+        }).op;
+      });
+
+      it('should destroy its input when its output is destroyed while consuming it', async() => {
+        const output = <any> await actor.run(op, undefined);
+        output.bindingsStream.on('data', () => {
+          // Do nothing
+        });
+        await new Promise(setImmediate);
+        expect(input.destroyed).toBe(false);
+
+        output.bindingsStream.destroy();
+        expect(input.destroyed).toBe(true);
+      });
+
+      it('should destroy its input when its output is destroyed before it is read', async() => {
+        const output = <any> await actor.run(op, undefined);
+        output.bindingsStream.destroy();
+        expect(input.destroyed).toBe(true);
+      });
     });
 
     it('should reject in case something unexpected happens when collecting results', async() => {
