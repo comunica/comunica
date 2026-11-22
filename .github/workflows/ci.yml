@@ -444,6 +444,8 @@ jobs:
     name: Performance benchmarks
     if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/tags/') || startsWith(github.ref, 'refs/heads/feature') || startsWith(github.ref, 'refs/heads/next')
     runs-on: ubuntu-latest
+    # Benchmarks take at most about 30 minutes; an endpoint that never starts would otherwise block the job for 6 hours
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
