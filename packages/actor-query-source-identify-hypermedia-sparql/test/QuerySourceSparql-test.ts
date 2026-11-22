@@ -2775,6 +2775,41 @@ describe('QuerySourceSparql', () => {
       ]));
     });
 
+    it('should join values inside filters that do not use variables of the values', async() => {
+      const pattern = AF.createPattern(DF.variable('a'), DF.namedNode('p'), DF.variable('b'));
+      const expressionB = AF.createOperatorExpression('>', [
+        AF.createTermExpression(DF.variable('b')),
+        AF.createTermExpression(DF.literal('1')),
+      ]);
+      const expressionA = AF.createOperatorExpression('bound', [ AF.createTermExpression(DF.variable('a')) ]);
+      const values = AF.createValues([ DF.variable('a') ], [{ a: DF.namedNode('a1') }]);
+      await expect(QuerySourceSparql.addBindingsToOperation(
+        AF,
+        'values',
+        AF.createFilter(AF.createFilter(pattern, expressionA), expressionB),
+        {
+          bindings: new ArrayIterator<RDF.Bindings>([ BF.fromRecord({ a: DF.namedNode('a1') }) ], { autoStart: false }),
+          metadata: <any> { variables: [{ variable: DF.variable('a'), canBeUndef: false }]},
+        },
+      )).resolves.toEqual(AF.createFilter(
+        AF.createJoin([ values, AF.createFilter(pattern, expressionA) ], false),
+        expressionB,
+      ));
+    });
+
+    it('should not join values inside filters with EXISTS expressions that use variables of the values', async() => {
+      const pattern = AF.createPattern(DF.variable('b'), DF.namedNode('p'), DF.variable('c'));
+      const operation = AF.createFilter(
+        pattern,
+        AF.createExistenceExpression(false, AF.createPattern(DF.variable('a'), DF.namedNode('q'), DF.variable('b'))),
+      );
+      const values = AF.createValues([ DF.variable('a') ], [{ a: DF.namedNode('a1') }]);
+      await expect(QuerySourceSparql.addBindingsToOperation(AF, 'values', operation, {
+        bindings: new ArrayIterator<RDF.Bindings>([ BF.fromRecord({ a: DF.namedNode('a1') }) ], { autoStart: false }),
+        metadata: <any> { variables: [{ variable: DF.variable('a'), canBeUndef: false }]},
+      })).resolves.toEqual(AF.createJoin([ values, operation ], false));
+    });
+
     it('should throw on union', async() => {
       await expect(QuerySourceSparql.addBindingsToOperation(AF, 'union', AF.createNop(), {
         bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
@@ -2787,6 +2822,17 @@ describe('QuerySourceSparql', () => {
         bindings: new ArrayIterator<RDF.Bindings>([], { autoStart: false }),
         metadata: <any> { variables: []},
       })).rejects.toThrow(`Not implemented yet: "filter" case`);
+    });
+  });
+
+  describe('getVariableNames', () => {
+    it('should return the variables of an expression, but not of metadata', () => {
+      const expression = AF.createOperatorExpression('=', [
+        AF.createTermExpression(DF.variable('a')),
+        AF.createExistenceExpression(false, AF.createPattern(DF.variable('b'), DF.namedNode('p'), DF.variable('a'))),
+      ]);
+      (<any> expression).metadata = { variable: DF.variable('m') };
+      expect([ ...QuerySourceSparql.getVariableNames(expression) ].sort()).toEqual([ 'a', 'b' ]);
     });
   });
 
