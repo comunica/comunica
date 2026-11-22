@@ -915,7 +915,7 @@ IActorRdfJoinSelectivityOutput
           cardinality: { type: 'estimate', value: Number.MIN_VALUE },
           variables: [],
         },
-      ], action.context, {})).cardinality.value).not.toBe(0);
+      ], action.context, {})).cardinality).toEqual({ type: 'estimate', value: 1 });
       expect((await instance.constructResultMetadata([], [
         {
           state: new MetadataValidationState(),
@@ -940,6 +940,44 @@ IActorRdfJoinSelectivityOutput
           variables: [],
         },
       ], action.context, {}, true)).cardinality.value).toBe(1 * 0.8);
+    });
+
+    it('should estimate at least one result if no entry\'s cardinality is 0', async() => {
+      await expect(instance.constructResultMetadata([], [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 1 },
+          variables: [],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'exact', value: 1 },
+          variables: [],
+        },
+      ], action.context, {})).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'estimate', value: 1 },
+        variables: [],
+      });
+    });
+
+    it('should estimate at least one result for optional joins if no entry\'s cardinality is 0', async() => {
+      await expect(instance.constructResultMetadata([], [
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 0.5 },
+          variables: [],
+        },
+        {
+          state: new MetadataValidationState(),
+          cardinality: { type: 'estimate', value: 0.5 },
+          variables: [],
+        },
+      ], action.context, {}, true)).resolves.toEqual({
+        state: expect.any(MetadataValidationState),
+        cardinality: { type: 'estimate', value: 1 },
+        variables: [],
+      });
     });
 
     it('should join variables', async() => {
