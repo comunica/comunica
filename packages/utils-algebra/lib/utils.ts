@@ -514,6 +514,19 @@ export function withMetadata<T extends Operation>(op: T): T & { metadata: Record
 }
 
 /**
+ * Copy the metadata of an operation to an operation that replaces it, if it has metadata.
+ * @param op The operation to copy the metadata to, which is mutated.
+ * @param original The operation to copy the metadata from.
+ * @return The given operation.
+ */
+export function copyMetadata<T extends Operation>(op: T, original: Operation): T {
+  if (original.metadata) {
+    op.metadata = original.metadata;
+  }
+  return op;
+}
+
+/**
  * Check if an operation contains an operation or expression of one of the given types, including itself.
  * This is cheaper than visiting the operation, as it stops at the first match,
  * and does not descend into terms or metadata.

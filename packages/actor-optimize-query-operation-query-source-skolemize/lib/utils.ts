@@ -251,7 +251,7 @@ export function deskolemizePattern(
     const predicate = deskolemizeTermNestedThrowing(dataFactory, pattern.predicate, sourceId);
     const object = deskolemizeTermNestedThrowing(dataFactory, pattern.object, sourceId);
     const graph = deskolemizeTermNestedThrowing(dataFactory, pattern.graph, sourceId);
-    return Object.assign(AF.createPattern(subject, predicate, object, graph), { metadata: pattern.metadata });
+    return algebraUtils.copyMetadata(AF.createPattern(subject, predicate, object, graph), pattern);
   } catch {
     // Return undefined for skolemized terms not in scope for this source
   }
@@ -274,21 +274,21 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
     return <O> algebraUtils.mapOperation(operation, {
       [Algebra.Types.PATTERN]: {
         preVisitor: () => ({ continue: false }),
-        transform: op => Object.assign(factory.createPattern(
+        transform: op => algebraUtils.copyMetadata(factory.createPattern(
           deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),
           deskolemizeTermNestedThrowing(dataFactory, op.predicate, sourceId),
           deskolemizeTermNestedThrowing(dataFactory, op.object, sourceId),
           deskolemizeTermNestedThrowing(dataFactory, op.graph, sourceId),
-        ), { metadata: op.metadata }),
+        ), op),
       },
       [Algebra.Types.PATH]: {
         preVisitor: () => ({ continue: false }),
-        transform: op => Object.assign(factory.createPath(
+        transform: op => algebraUtils.copyMetadata(factory.createPath(
           deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),
           op.predicate,
           deskolemizeTermNestedThrowing(dataFactory, op.object, sourceId),
           deskolemizeTermNestedThrowing(dataFactory, op.graph, sourceId),
-        ), { metadata: op.metadata }),
+        ), op),
       },
     });
   } catch {

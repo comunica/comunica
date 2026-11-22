@@ -105,6 +105,15 @@ describe('ActorQueryOperationFromQuad', () => {
     });
   });
 
+  describe('#copyMetadata', () => {
+    it('should copy the metadata of the original operation', () => {
+      const original = Object.assign(AF.createNop(), { metadata: { a: 'b' }});
+      const operation = AF.createNop();
+      expect(ActorQueryOperationFromQuad.copyMetadata(operation, original)).toBe(operation);
+      expect((<any> operation).metadata).toEqual({ a: 'b' });
+    });
+  });
+
   describe('#applyOperationDefaultGraph', () => {
     it('should transform a BGP with a default graph pattern', () => {
       const result = <Algebra.Bgp> ActorQueryOperationFromQuad
