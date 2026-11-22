@@ -359,8 +359,10 @@ TS
           cardinalityJoined.value = capped;
           cardinalityJoined.type = 'estimate';
         }
-        if (cardinalityJoined.value === 0) {
-          cardinalityJoined.value = Number.MIN_VALUE;
+        // Without an empty entry, estimate at least one result, as near-zero estimates make the cost of
+        // e.g. nested-loop joins over large entries vanish.
+        if (cardinalityJoined.value < 1) {
+          cardinalityJoined.value = 1;
         }
       }
     }
@@ -388,12 +390,6 @@ TS
     entries: IJoinEntryWithMetadata[],
     context: IActionContext,
   ): Promise<TestResult<IJoinEntryWithMetadata[]>> {
-    // If there is a stream that can contain undefs, we don't modify the join order.
-    const hasUndefVars = entries.some(entry => entry.metadata.variables.some(variable => variable.canBeUndef));
-    if (hasUndefVars) {
-      return passTest(entries);
-    }
-
     // Calculate number of occurrences of each variable
     const variableOccurrences: Record<string, number> = {};
     for (const entry of entries) {
@@ -417,6 +413,14 @@ TS
     // Reject if no entries have common variables
     if (multiOccurrenceVariables.length === 0) {
       return failTest(`Bind join can only join entries with at least one common variable`);
+    }
+
+    // If a join variable can be undefined, we don't modify the join order.
+    // Undefined variables that are not shared do not affect the join, so these entries can still be sorted.
+    const hasUndefJoinVars = entries.some(entry => entry.metadata.variables
+      .some(variable => variable.canBeUndef && multiOccurrenceVariables.includes(variable.variable.value)));
+    if (hasUndefJoinVars) {
+      return passTest(entries);
     }
 
     return passTest((await mediatorJoinEntriesSort.mediate({ entries, context })).entries);
