@@ -1,0 +1,598 @@
+{
+ "logical": "project",
+ "variables": [
+  "building",
+  "name",
+  "monumentNumber",
+  "style",
+  "originalFunction"
+ ],
+ "children": [
+  {
+   "logical": "leftjoin",
+   "children": [
+    {
+     "logical": "join-optional",
+     "physical": "bind",
+     "bindOrder": "inner-join",
+     "cardinalities": [
+      {
+       "type": "estimate",
+       "value": 1485
+      },
+      {
+       "type": "estimate",
+       "value": 132204
+      }
+     ],
+     "joinCoefficients": {
+      "iterations": 0.6701022032671361,
+      "persistedItems": 0,
+      "blockingItems": 0,
+      "requestTime": 0
+     },
+     "children": [
+      {
+       "logical": "join",
+       "cardinality": {
+        "type": "estimate",
+        "value": 1485
+       },
+       "children": [
+        {
+         "logical": "join-inner",
+         "physical": "bind-source",
+         "bindIndex": 4,
+         "cardinalities": [
+          {
+           "type": "exact",
+           "value": 4113906
+          },
+          {
+           "type": "exact",
+           "value": 111687
+          },
+          {
+           "type": "exact",
+           "value": 328666
+          },
+          {
+           "type": "exact",
+           "value": 132204
+          },
+          {
+           "type": "estimate",
+           "value": 1485,
+           "dataset": "https://sparql.goudatijdmachine.nl/"
+          },
+          {
+           "type": "estimate",
+           "value": 69887
+          }
+         ],
+         "joinCoefficients": {
+          "iterations": 1,
+          "persistedItems": 1485,
+          "blockingItems": 1485,
+          "requestTime": 329.97476086177664
+         },
+         "sourceQuery": "SELECT ?building ?monument WHERE { VALUES ?building { <https://n2t.net/ark:/60537/bZo1Ho> <https://n2t.net/ark:/60537/bZo1Iz> <https://n2t.net/ark:/60537/bzYEEY> <https://n2t.net/ark:/60537/bzYEGk> <https://n2t.net/ark:/60537/bzYEHw> <https://n2t.net/ark:/60537/bzYEIH> <https://n2t.net/ark:/60537/bzzfgc> <https://n2t.net/ark:/60537/bzzfiz> <https://n2t.net/ark:/60537/bzzfjK> <https://n2t.net/ark:/60537/bzznhx> } ?building <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }",
+         "httpRequests": 60,
+         "children": [
+          {
+           "logical": "union",
+           "cardinalityReal": 0,
+           "timeSelf": 0,
+           "timeLife": 14.090804000000162,
+           "cardinality": {
+            "type": "exact",
+            "value": 111687
+           },
+           "children": [
+            {
+             "logical": "pattern",
+             "source": "QuerySourceHypermedia(https://sparql.goudatijdmachine.nl/)(SkolemID:0)",
+             "pattern": "?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument",
+             "cardinalityReal": 0,
+             "timeSelf": 0,
+             "timeLife": 14.528311999999914,
+             "streamState": "destroyed",
+             "cardinality": {
+              "type": "exact",
+              "value": 111678,
+              "dataset": "https://sparql.goudatijdmachine.nl/"
+             }
+            },
+            {
+             "logical": "pattern",
+             "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql)(SkolemID:1)",
+             "pattern": "?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument",
+             "cardinalityReal": 0,
+             "timeSelf": 0,
+             "timeLife": 14.534726999999975,
+             "streamState": "destroyed",
+             "cardinality": {
+              "type": "exact",
+              "value": 9
+             }
+            }
+           ]
+          },
+          {
+           "logical": "join",
+           "source": "QuerySourceHypermedia(https://sparql.goudatijdmachine.nl/)(SkolemID:0)",
+           "cardinality": {
+            "type": "estimate",
+            "value": 1485,
+            "dataset": "https://sparql.goudatijdmachine.nl/"
+           },
+           "sourceQuery": "SELECT ?building WHERE { ?building <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.goudatijdmachine.nl/def#Gebouw> . }",
+           "httpRequests": 1,
+           "cardinalityReal": 1485,
+           "timeSelf": 2.219456999999011,
+           "timeLife": 487.5783929999998,
+           "children": [
+            {
+             "logical": "pattern",
+             "pattern": "?building http://www.w3.org/1999/02/22-rdf-syntax-ns#type https://www.goudatijdmachine.nl/def#Gebouw",
+             "delegated": true
+            }
+           ]
+          },
+          {
+           "logical": "join-inner",
+           "physical": "bind-source",
+           "bindIndex": 0,
+           "cardinalities": [
+            {
+             "type": "estimate",
+             "value": 1485
+            },
+            {
+             "type": "estimate",
+             "value": 69887
+            },
+            {
+             "type": "exact",
+             "value": 132204
+            },
+            {
+             "type": "exact",
+             "value": 328666
+            },
+            {
+             "type": "exact",
+             "value": 4113906
+            }
+           ],
+           "joinCoefficients": {
+            "iterations": 1,
+            "persistedItems": 1485,
+            "blockingItems": 1485,
+            "requestTime": 19.641069972333714
+           },
+           "sourceQuery": "SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/14752> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/59065> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/32690> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48807> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/24563> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/19123> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/33982> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/56010> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48577> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/20184> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/38090> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/54134> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/53616> <http://www.wikidata.org/entity/Q3368988> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/10090> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/60975> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48440> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/42009> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }",
+           "httpRequests": 15,
+           "children": [
+            {
+             "logical": "join",
+             "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql)(SkolemID:1)",
+             "cardinalityReal": 0,
+             "timeSelf": 0,
+             "timeLife": 17.142041999999947,
+             "cardinality": {
+              "type": "estimate",
+              "value": 69887
+             },
+             "children": [
+              {
+               "logical": "pattern",
+               "pattern": "?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0",
+               "delegated": true
+              },
+              {
+               "logical": "pattern",
+               "pattern": "?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1",
+               "delegated": true
+              }
+             ]
+            },
+            {
+             "logical": "join-inner",
+             "physical": "bind-source",
+             "bindIndex": 0,
+             "cardinalities": [
+              {
+               "type": "estimate",
+               "value": 1485
+              },
+              {
+               "type": "exact",
+               "value": 132204
+              },
+              {
+               "type": "exact",
+               "value": 328666
+              },
+              {
+               "type": "exact",
+               "value": 4113906
+              }
+             ],
+             "joinCoefficients": {
+              "iterations": 1,
+              "persistedItems": 1485,
+              "blockingItems": 1485,
+              "requestTime": 10.223519751029725
+             },
+             "sourceQuery": "SELECT ?var1 ?originalFunction WHERE { VALUES ?var1 { <https://data.cultureelerfgoed.nl/term/id/rn/2/313b3bdc-e1bd-40b2-b7b3-5d49db458f1c> <https://data.cultureelerfgoed.nl/term/id/rn/2/9d3835fd-b5c9-4086-973f-ebe0cbd40c80> <https://data.cultureelerfgoed.nl/term/id/rn/2/d3f6bc1f-28d2-4c4d-ab89-99244a0d52cc> <https://data.cultureelerfgoed.nl/term/id/rn/2/b964b9ca-8f5a-42de-b96c-ce8320db9e95> <https://data.cultureelerfgoed.nl/term/id/rn/2/6fa5f251-cd84-4f3a-acb7-7c219df2540f> <https://data.cultureelerfgoed.nl/term/id/rn/2/3e3ff935-513f-466e-8131-49aa146ace37> } ?var1 <http://www.w3.org/2004/02/skos/core#prefLabel> ?originalFunction . }",
+             "httpRequests": 15,
+             "children": [
+              {
+               "logical": "union",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 18.235726000000113,
+               "cardinality": {
+                "type": "exact",
+                "value": 132204
+               },
+               "children": [
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://sparql.goudatijdmachine.nl/)(SkolemID:0)",
+                 "pattern": "?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 18.50956999999994,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 46,
+                  "dataset": "https://sparql.goudatijdmachine.nl/"
+                 }
+                },
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql)(SkolemID:1)",
+                 "pattern": "?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 18.51528899999994,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 96864
+                 }
+                },
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql)(SkolemID:3)",
+                 "pattern": "?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 18.525090999999975,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 87
+                 }
+                },
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql)(SkolemID:4)",
+                 "pattern": "?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 18.535956999999826,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 35207
+                 }
+                }
+               ]
+              },
+              {
+               "logical": "join-inner",
+               "physical": "bind-source",
+               "bindIndex": 0,
+               "cardinalities": [
+                {
+                 "type": "estimate",
+                 "value": 1485
+                },
+                {
+                 "type": "exact",
+                 "value": 328666
+                },
+                {
+                 "type": "exact",
+                 "value": 4113906
+                }
+               ],
+               "joinCoefficients": {
+                "iterations": 1,
+                "persistedItems": 1485,
+                "blockingItems": 1485,
+                "requestTime": 3.2389685780411934
+               },
+               "sourceQuery": "SELECT ?monument ?monumentNumber WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/56010> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48577> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer> ?monumentNumber . }",
+               "httpRequests": 45,
+               "children": [
+                {
+                 "logical": "union",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 20.347320999999965,
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 328666
+                 },
+                 "children": [
+                  {
+                   "logical": "pattern",
+                   "source": "QuerySourceHypermedia(https://sparql.goudatijdmachine.nl/)(SkolemID:0)",
+                   "pattern": "?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer ?monumentNumber",
+                   "cardinalityReal": 0,
+                   "timeSelf": 0,
+                   "timeLife": 20.64035600000011,
+                   "streamState": "destroyed",
+                   "cardinality": {
+                    "type": "exact",
+                    "value": 348,
+                    "dataset": "https://sparql.goudatijdmachine.nl/"
+                   }
+                  },
+                  {
+                   "logical": "pattern",
+                   "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql)(SkolemID:1)",
+                   "pattern": "?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer ?monumentNumber",
+                   "cardinalityReal": 0,
+                   "timeSelf": 0,
+                   "timeLife": 20.63454499999989,
+                   "streamState": "destroyed",
+                   "cardinality": {
+                    "type": "exact",
+                    "value": 328318
+                   }
+                  }
+                 ]
+                },
+                {
+                 "logical": "join-inner",
+                 "physical": "bind-source",
+                 "bindIndex": 0,
+                 "cardinalities": [
+                  {
+                   "type": "estimate",
+                   "value": 1485
+                  },
+                  {
+                   "type": "exact",
+                   "value": 4113906
+                  }
+                 ],
+                 "joinCoefficients": {
+                  "iterations": 1,
+                  "persistedItems": 1485,
+                  "blockingItems": 1485,
+                  "requestTime": 1.7023923250390485
+                 },
+                 "sourceQuery": "SELECT ?building ?name WHERE { VALUES ?building { <https://n2t.net/ark:/60537/bzYEEY> <https://n2t.net/ark:/60537/bywKOv> <https://n2t.net/ark:/60537/bYXDfC> <https://n2t.net/ark:/60537/bYydRv> <https://n2t.net/ark:/60537/bZAJmq> } ?building <https://schema.org/name> ?name . }",
+                 "httpRequests": 93,
+                 "children": [
+                  {
+                   "logical": "union",
+                   "cardinalityReal": 0,
+                   "timeSelf": 0,
+                   "timeLife": 22.845593000000008,
+                   "cardinality": {
+                    "type": "exact",
+                    "value": 4113906
+                   },
+                   "children": [
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://sparql.goudatijdmachine.nl/)(SkolemID:0)",
+                     "pattern": "?building https://schema.org/name ?name",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 23.189055999999937,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 2234531,
+                      "dataset": "https://sparql.goudatijdmachine.nl/"
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql)(SkolemID:1)",
+                     "pattern": "?building https://schema.org/name ?name",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 23.19348200000013,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 291
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql)(SkolemID:2)",
+                     "pattern": "?building https://schema.org/name ?name",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 23.196272000000135,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 8263
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://qlever.coret.org/oabs)(SkolemID:5)",
+                     "pattern": "?building https://schema.org/name ?name",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 23.19940100000008,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 1870821
+                     }
+                    }
+                   ]
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "logical": "join",
+       "cardinalityReal": 0,
+       "timeSelf": 0,
+       "timeLife": 10.327605999999832,
+       "cardinality": {
+        "type": "estimate",
+        "value": 132204
+       },
+       "children": [
+        {
+         "logical": "join-inner",
+         "physical": "bind-source",
+         "bindIndex": 0,
+         "cardinalities": [
+          {
+           "type": "exact",
+           "value": 132204
+          },
+          {
+           "type": "estimate",
+           "value": 376627
+          }
+         ],
+         "joinCoefficients": {
+          "iterations": 1,
+          "persistedItems": 132204,
+          "blockingItems": 132204,
+          "requestTime": 40783.10059454647
+         },
+         "cardinalityReal": 0,
+         "timeSelf": 0,
+         "timeLife": 12.448772999999846,
+         "cardinality": {
+          "type": "estimate",
+          "value": 132204
+         },
+         "children": [
+          {
+           "logical": "union",
+           "cardinality": {
+            "type": "exact",
+            "value": 132204
+           },
+           "cardinalityReal": 0,
+           "timeSelf": 0,
+           "timeLife": 25.931861000000026,
+           "streamState": "destroyed",
+           "children": [
+            {
+             "logical": "pattern",
+             "source": "QuerySourceHypermedia(https://sparql.goudatijdmachine.nl/)(SkolemID:0)",
+             "pattern": "?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style",
+             "cardinalityReal": 0,
+             "timeSelf": 0,
+             "timeLife": 26.151292000000012,
+             "streamState": "destroyed",
+             "cardinality": {
+              "type": "exact",
+              "value": 46,
+              "dataset": "https://sparql.goudatijdmachine.nl/"
+             }
+            },
+            {
+             "logical": "pattern",
+             "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql)(SkolemID:1)",
+             "pattern": "?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style",
+             "cardinalityReal": 0,
+             "timeSelf": 0,
+             "timeLife": 26.158484000000044,
+             "streamState": "destroyed",
+             "cardinality": {
+              "type": "exact",
+              "value": 96864
+             }
+            },
+            {
+             "logical": "pattern",
+             "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql)(SkolemID:3)",
+             "pattern": "?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style",
+             "cardinalityReal": 0,
+             "timeSelf": 0,
+             "timeLife": 26.16352599999982,
+             "streamState": "destroyed",
+             "cardinality": {
+              "type": "exact",
+              "value": 87
+             }
+            },
+            {
+             "logical": "pattern",
+             "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql)(SkolemID:4)",
+             "pattern": "?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style",
+             "cardinalityReal": 0,
+             "timeSelf": 0,
+             "timeLife": 26.167061000000103,
+             "streamState": "destroyed",
+             "cardinality": {
+              "type": "exact",
+              "value": 35207
+             }
+            }
+           ]
+          },
+          {
+           "logical": "join",
+           "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql)(SkolemID:1)",
+           "cardinalityReal": 0,
+           "timeSelf": 0,
+           "timeLife": 14.214835999999877,
+           "cardinality": {
+            "type": "estimate",
+            "value": 376627
+           },
+           "children": [
+            {
+             "logical": "pattern",
+             "pattern": "?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2",
+             "delegated": true
+            },
+            {
+             "logical": "pattern",
+             "pattern": "?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3",
+             "delegated": true
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

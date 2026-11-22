@@ -1,0 +1,10 @@
+# Gouda Tijdmachine knowledge graph
+https://sparql.goudatijdmachine.nl/
+# RCE: Cultuurhistorische objecten (monument register)
+https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql
+# RCE: other datasets in the register (candidates)
+https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql
+https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql
+https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql
+# Gouda civil records in PiCo (Gouda Tijdmachine / Open Archives)
+https://qlever.coret.org/oabs

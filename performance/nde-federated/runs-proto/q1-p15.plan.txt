@@ -1,0 +1,118 @@
+project (artist,name,birth,work,title)
+  leftjoin
+    join-optional(bind-source) srcQuery:0
+      join
+        join-inner(multi-smallest)
+          join-inner(multi-smallest)
+            join-inner(hash-def)
+              join-inner(hash-def)
+                join-inner(hash-def)
+                  join src:0 srcQuery:1
+                    pattern (?artist http://www.cidoc-crm.org/cidoc-crm/P2_has_type http://vocab.getty.edu/aat/300189557) delegated
+                    pattern (?artist http://www.w3.org/2000/01/rdf-schema#label ?name) delegated
+                  union
+                    pattern (?agent https://schema.org/sameAs ?artist) src:0 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:1 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:2 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:3 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:4 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:5 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:6 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:7 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:8 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:9 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:10 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:11 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:12 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:13 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:14 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:15 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:16 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:17 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:18 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:19 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:20 srcQuery:2
+                    pattern (?agent https://schema.org/sameAs ?artist) src:21 srcQuery:2
+                join-inner(hash-def)
+                  union
+                    pattern (?work https://schema.org/creator ?agent) src:0 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:1 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:2 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:3 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:4 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:5 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:6 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:7 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:8 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:9 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:10 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:11 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:12 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:13 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:14 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:15 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:16 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:17 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:18 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:19 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:20 srcQuery:3
+                    pattern (?work https://schema.org/creator ?agent) src:21 srcQuery:3
+              join-inner(bind-source) bindIndex:0 srcQuery:4
+                union
+                  pattern (?work https://schema.org/name ?title) src:0
+                  pattern (?work https://schema.org/name ?title) src:1
+                  pattern (?work https://schema.org/name ?title) src:2
+                  pattern (?work https://schema.org/name ?title) src:3
+                  pattern (?work https://schema.org/name ?title) src:4
+                  pattern (?work https://schema.org/name ?title) src:5
+                  pattern (?work https://schema.org/name ?title) src:6
+                  pattern (?work https://schema.org/name ?title) src:7
+                  pattern (?work https://schema.org/name ?title) src:8
+                  pattern (?work https://schema.org/name ?title) src:9
+                  pattern (?work https://schema.org/name ?title) src:10
+                  pattern (?work https://schema.org/name ?title) src:11
+                  pattern (?work https://schema.org/name ?title) src:12
+                  pattern (?work https://schema.org/name ?title) src:13
+                  pattern (?work https://schema.org/name ?title) src:14
+                  pattern (?work https://schema.org/name ?title) src:15
+                  pattern (?work https://schema.org/name ?title) src:16
+                  pattern (?work https://schema.org/name ?title) src:17
+                  pattern (?work https://schema.org/name ?title) src:18
+                  pattern (?work https://schema.org/name ?title) src:19
+                  pattern (?work https://schema.org/name ?title) src:20
+                  pattern (?work https://schema.org/name ?title) src:21
+      join src:0
+        pattern (?artist http://www.cidoc-crm.org/cidoc-crm/P98i_was_born ?var0) delegated
+        pattern (?var0 http://www.cidoc-crm.org/cidoc-crm/P4_has_time-span ?var1) delegated
+        pattern (?var1 http://www.cidoc-crm.org/cidoc-crm/P82a_begin_of_the_begin ?birth) delegated
+
+sources:
+  0: QuerySourceHypermedia(https://api.rkd.triply.cc/datasets/rkd/RKD-Knowledge-Graph/services/SPARQL/sparql)(SkolemID:0)
+  1: QuerySourceHypermedia(https://sparql.ldmax.nl/Q1542668)(SkolemID:1)
+  2: QuerySourceHypermedia(https://sparql.ldmax.nl/Q124789020)(SkolemID:2)
+  3: QuerySourceHypermedia(https://sparql.ldmax.nl/Q110414440)(SkolemID:3)
+  4: QuerySourceHypermedia(https://sparql.ldmax.nl/Q20829167)(SkolemID:4)
+  5: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2798268)(SkolemID:5)
+  6: QuerySourceHypermedia(https://sparql.ldmax.nl/Q110996022)(SkolemID:6)
+  7: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2203052)(SkolemID:7)
+  8: QuerySourceHypermedia(https://sparql.ldmax.nl/Q110271758)(SkolemID:8)
+  9: QuerySourceHypermedia(https://sparql.ldmax.nl/Q4350196)(SkolemID:9)
+  10: QuerySourceHypermedia(https://sparql.ldmax.nl/Q125958534)(SkolemID:10)
+  11: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2070053)(SkolemID:11)
+  12: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2054056)(SkolemID:12)
+  13: QuerySourceHypermedia(https://sparql.ldmax.nl/Q623558)(SkolemID:13)
+  14: QuerySourceHypermedia(https://sparql.ldmax.nl/Q12013217)(SkolemID:14)
+  15: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2168069)(SkolemID:15)
+  16: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2882945)(SkolemID:16)
+  17: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2191118)(SkolemID:17)
+  18: QuerySourceHypermedia(https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql)(SkolemID:18)
+  19: QuerySourceHypermedia(https://eu.api.kleksi.com/apps/lnvajn/datasets/default/sparql)(SkolemID:19)
+  20: QuerySourceHypermedia(https://eu.api.kleksi.com/apps/qb3d1n/datasets/default/sparql)(SkolemID:20)
+  21: QuerySourceHypermedia(https://eu.api.kleksi.com/apps/mn1lmb/datasets/default/sparql)(SkolemID:21)
+
+source queries:
+  0: SELECT ?artist ?var0 ?var1 ?birth WHERE { VALUES ?artist { <https://data.rkd.nl/artists/105906> <https://data.rkd.nl/artists/34845> <https://data.rkd.nl/artists/36988> <https://data.rkd.nl/artists/82967> <https://data.rkd.nl/artists/83671> <https://data.rkd.nl/artists/47724> <https://data.rkd.nl/artists/301626> <https://data.rkd.nl/artists/96469> <https://data.rkd.nl/artists/265870> } ?artist <http://www.cidoc-crm.org/cidoc-crm/P98i_was_born> ?var0 . ?var0 <http://www.cidoc-crm.org/cidoc-crm/P4_has_time-span> ?var1 . ?var1 <http://www.cidoc-crm.org/cidoc-crm/P82a_begin_of_the_begin> ?birth . }
+  1: SELECT ?artist ?name WHERE { ?artist <http://www.cidoc-crm.org/cidoc-crm/P2_has_type> <http://vocab.getty.edu/aat/300189557> . ?artist <http://www.w3.org/2000/01/rdf-schema#label> ?name . }
+  2: SELECT ?agent ?artist WHERE { ?agent <https://schema.org/sameAs> ?artist . }
+  3: SELECT ?work ?agent WHERE { ?work <https://schema.org/creator> ?agent . }
+  4: SELECT ?work ?title WHERE { VALUES ?work { <https://n2t.net/ark:/57463/fb2501b070294e9b917c17359eea67b6> <https://n2t.net/ark:/57463/fc6746d450764dccb233eb80eb08e1bb> <https://n2t.net/ark:/57463/fdc83e116d084c48b2940c16198b03d1> } ?work <https://schema.org/name> ?title . }

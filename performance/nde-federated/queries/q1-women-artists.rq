@@ -1,0 +1,14 @@
+# Works by women artists in Dutch museum collections, with life data from RKD.
+# Museums link their local creator records to RKDartists with schema:sameAs;
+# RKD records gender (AAT 300189557 = female) and birth dates.
+PREFIX schema: <https://schema.org/>
+PREFIX crm: <http://www.cidoc-crm.org/cidoc-crm/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?artist ?name ?birth ?work ?title WHERE {
+  ?work schema:creator ?agent .
+  ?agent schema:sameAs ?artist .
+  ?artist crm:P2_has_type <http://vocab.getty.edu/aat/300189557> ;
+          rdfs:label ?name .
+  ?work schema:name ?title .
+  OPTIONAL { ?artist crm:P98i_was_born/crm:P4_has_time-span/crm:P82a_begin_of_the_begin ?birth }
+}

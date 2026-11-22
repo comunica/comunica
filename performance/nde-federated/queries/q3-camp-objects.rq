@@ -1,0 +1,11 @@
+# Collection objects about Kamp Vught in Dutch WWII collections,
+# either linked directly (WO2Net) or via a local term mapped to the WO2 thesaurus (museums).
+PREFIX schema: <https://schema.org/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+SELECT DISTINCT ?object ?title WHERE {
+  ?camp skos:prefLabel "Kamp Vught"@nl .
+  { ?object schema:about ?camp . }
+  UNION
+  { ?object schema:about ?term . ?term schema:sameAs ?camp . }
+  ?object schema:name ?title .
+}

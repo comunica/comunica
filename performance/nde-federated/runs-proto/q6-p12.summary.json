@@ -1,0 +1,109 @@
+{
+ "status": "ok",
+ "results": 3067,
+ "timeMs": 36150,
+ "firstResultMs": 34579,
+ "cpuMs": 7137,
+ "httpRequests": 622,
+ "httpRequestsWire": 623,
+ "byKind": {
+  "no-query": 6,
+  "count": 60,
+  "select": 539,
+  "ask": 16,
+  "ask-batch": 1
+ },
+ "decodedBytes": 805759,
+ "wireBytes": 154123,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://sparql.goudatijdmachine.nl/",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql"
+ ],
+ "byEndpoint": {
+  "https://sparql.goudatijdmachine.nl/": {
+   "requests": 255,
+   "decodedBytes": 314541,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 240,
+    "ask": 4
+   },
+   "dataRows": 2399,
+   "askTrue": 1,
+   "askFalse": 3,
+   "errors": 3
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql": {
+   "requests": 215,
+   "decodedBytes": 473267,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "ask": 6,
+    "ask-batch": 1,
+    "select": 197
+   },
+   "dataRows": 2191,
+   "askTrue": 5,
+   "askFalse": 4,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql": {
+   "requests": 20,
+   "decodedBytes": 2193,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "ask": 1,
+    "select": 8
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 1,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql": {
+   "requests": 13,
+   "decodedBytes": 1644,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "ask": 2
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 2,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql": {
+   "requests": 13,
+   "decodedBytes": 1650,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "ask": 2
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 2,
+   "errors": 1
+  },
+  "https://qlever.coret.org/oabs": {
+   "requests": 106,
+   "decodedBytes": 12464,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "ask": 1,
+    "select": 94
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 1,
+   "errors": 2
+  }
+ }
+}

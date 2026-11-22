@@ -1,0 +1,330 @@
+{
+ "status": "ok",
+ "results": 334,
+ "timeMs": 159785,
+ "firstResultMs": 141578,
+ "cpuMs": 113333,
+ "httpRequests": 499,
+ "httpRequestsWire": 499,
+ "byKind": {
+  "count-batch": 22,
+  "select": 455,
+  "ask-batch": 22
+ },
+ "decodedBytes": 364473927,
+ "wireBytes": 50497276,
+ "sourcesGiven": 22,
+ "sourcesContacted": 22,
+ "sourcesWithData": [
+  "https://api.rkd.triply.cc/datasets/rkd/RKD-Knowledge-Graph/services/SPARQL/sparql",
+  "https://sparql.ldmax.nl/Q1542668",
+  "https://sparql.ldmax.nl/Q124789020",
+  "https://sparql.ldmax.nl/Q110414440",
+  "https://sparql.ldmax.nl/Q20829167",
+  "https://sparql.ldmax.nl/Q2798268",
+  "https://sparql.ldmax.nl/Q110996022",
+  "https://sparql.ldmax.nl/Q2203052",
+  "https://sparql.ldmax.nl/Q110271758",
+  "https://sparql.ldmax.nl/Q4350196",
+  "https://sparql.ldmax.nl/Q125958534",
+  "https://sparql.ldmax.nl/Q2070053",
+  "https://sparql.ldmax.nl/Q2054056",
+  "https://sparql.ldmax.nl/Q623558",
+  "https://sparql.ldmax.nl/Q12013217",
+  "https://sparql.ldmax.nl/Q2168069",
+  "https://sparql.ldmax.nl/Q2882945",
+  "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql",
+  "https://eu.api.kleksi.com/apps/lnvajn/datasets/default/sparql",
+  "https://eu.api.kleksi.com/apps/qb3d1n/datasets/default/sparql",
+  "https://eu.api.kleksi.com/apps/mn1lmb/datasets/default/sparql",
+  "https://sparql.ldmax.nl/Q2191118"
+ ],
+ "byEndpoint": {
+  "https://api.rkd.triply.cc/datasets/rkd/RKD-Knowledge-Graph/services/SPARQL/sparql": {
+   "requests": 142,
+   "decodedBytes": 256028705,
+   "kinds": {
+    "count-batch": 1,
+    "select": 140,
+    "ask-batch": 1
+   },
+   "dataRows": 1254402,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://sparql.ldmax.nl/Q1542668": {
+   "requests": 17,
+   "decodedBytes": 8930580,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 47868,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://sparql.ldmax.nl/Q124789020": {
+   "requests": 17,
+   "decodedBytes": 52469,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 268,
+   "askTrue": 1,
+   "askFalse": 5,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q110414440": {
+   "requests": 17,
+   "decodedBytes": 2091698,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 11172,
+   "askTrue": 1,
+   "askFalse": 5,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q20829167": {
+   "requests": 17,
+   "decodedBytes": 39454,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 195,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2798268": {
+   "requests": 17,
+   "decodedBytes": 325659,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 1766,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q110996022": {
+   "requests": 17,
+   "decodedBytes": 42355,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 215,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2203052": {
+   "requests": 17,
+   "decodedBytes": 605295,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 3217,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q110271758": {
+   "requests": 17,
+   "decodedBytes": 9147,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 33,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q4350196": {
+   "requests": 17,
+   "decodedBytes": 5255,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 12,
+   "askTrue": 1,
+   "askFalse": 5,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q125958534": {
+   "requests": 17,
+   "decodedBytes": 33225,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 163,
+   "askTrue": 1,
+   "askFalse": 5,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2070053": {
+   "requests": 17,
+   "decodedBytes": 387114,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 2084,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2054056": {
+   "requests": 17,
+   "decodedBytes": 7173,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 23,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q623558": {
+   "requests": 17,
+   "decodedBytes": 5952,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 15,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q12013217": {
+   "requests": 17,
+   "decodedBytes": 9644,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 35,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2168069": {
+   "requests": 17,
+   "decodedBytes": 4215,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 6,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2882945": {
+   "requests": 17,
+   "decodedBytes": 96555,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 505,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql": {
+   "requests": 17,
+   "decodedBytes": 159036,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 958,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://eu.api.kleksi.com/apps/lnvajn/datasets/default/sparql": {
+   "requests": 17,
+   "decodedBytes": 6437,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 22,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://eu.api.kleksi.com/apps/qb3d1n/datasets/default/sparql": {
+   "requests": 17,
+   "decodedBytes": 37459,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 227,
+   "askTrue": 1,
+   "askFalse": 5,
+   "errors": 0
+  },
+  "https://eu.api.kleksi.com/apps/mn1lmb/datasets/default/sparql": {
+   "requests": 17,
+   "decodedBytes": 11583,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 56,
+   "askTrue": 0,
+   "askFalse": 6,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2191118": {
+   "requests": 17,
+   "decodedBytes": 95584917,
+   "kinds": {
+    "count-batch": 1,
+    "select": 15,
+    "ask-batch": 1
+   },
+   "dataRows": 2033,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  }
+ }
+}

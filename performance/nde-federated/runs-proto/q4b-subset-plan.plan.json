@@ -1,0 +1,731 @@
+{
+ "logical": "distinct",
+ "children": [
+  {
+   "logical": "project",
+   "variables": [
+    "object",
+    "title"
+   ],
+   "cardinalityReal": 1967,
+   "timeSelf": 12.70622000000003,
+   "timeLife": 5828.480955,
+   "children": [
+    {
+     "logical": "join",
+     "cardinalityReal": 1967,
+     "timeSelf": 516.3702200001353,
+     "timeLife": 5829.032013000001,
+     "children": [
+      {
+       "logical": "join-inner",
+       "physical": "multi-smallest",
+       "cardinalities": [
+        {
+         "type": "exact",
+         "value": 8912
+        },
+        {
+         "type": "exact",
+         "value": 72481
+        },
+        {
+         "type": "exact",
+         "value": 371902
+        },
+        {
+         "type": "estimate",
+         "value": 1
+        }
+       ],
+       "joinCoefficients": {
+        "iterations": 453299,
+        "persistedItems": 0,
+        "blockingItems": 0,
+        "requestTime": 0
+       },
+       "cardinalityReal": 1967,
+       "timeSelf": 516.3702200001353,
+       "timeLife": 5829.112825999999,
+       "children": [
+        {
+         "logical": "join-inner",
+         "physical": "multi-smallest",
+         "cardinalities": [
+          {
+           "type": "exact",
+           "value": 72481
+          },
+          {
+           "type": "exact",
+           "value": 371902
+          },
+          {
+           "type": "estimate",
+           "value": 1
+          }
+         ],
+         "joinCoefficients": {
+          "iterations": 444386,
+          "persistedItems": 0,
+          "blockingItems": 0,
+          "requestTime": 0
+         },
+         "cardinalityReal": 1967,
+         "timeSelf": 516.3702200001353,
+         "timeLife": 5829.176322,
+         "children": [
+          {
+           "logical": "join-inner",
+           "physical": "hash-def",
+           "cardinalities": [
+            {
+             "type": "estimate",
+             "value": 1
+            },
+            {
+             "type": "exact",
+             "value": 371902
+            }
+           ],
+           "joinCoefficients": {
+            "iterations": 297522.4,
+            "persistedItems": 1,
+            "blockingItems": 1,
+            "requestTime": 0
+           },
+           "cardinalityReal": 1967,
+           "timeSelf": 516.3702200001353,
+           "timeLife": 5829.227208999999,
+           "children": [
+            {
+             "logical": "union",
+             "cardinality": {
+              "type": "exact",
+              "value": 371902
+             },
+             "cardinalityReal": 371902,
+             "timeSelf": 295.6753119999462,
+             "timeLife": 5850.475149,
+             "children": [
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q11722011)(SkolemID:1)",
+               "pattern": "?object https://schema.org/name ?title",
+               "sourceQuery": "SELECT ?object ?title WHERE { ?object <https://schema.org/name> ?title . }",
+               "httpRequests": 1,
+               "cardinalityReal": 74501,
+               "timeSelf": 37.01190299994505,
+               "timeLife": 4191.979848999999,
+               "cardinality": {
+                "type": "exact",
+                "value": 74501,
+                "dataset": "https://sparql.ldmax.nl/Q11722011"
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q1542668)(SkolemID:2)",
+               "pattern": "?object https://schema.org/name ?title",
+               "sourceQuery": "SELECT ?object ?title WHERE { ?object <https://schema.org/name> ?title . }",
+               "httpRequests": 1,
+               "cardinalityReal": 265915,
+               "timeSelf": 101.49002300026586,
+               "timeLife": 5851.217219000001,
+               "cardinality": {
+                "type": "exact",
+                "value": 265915,
+                "dataset": "https://sparql.ldmax.nl/Q1542668"
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2798268)(SkolemID:3)",
+               "pattern": "?object https://schema.org/name ?title",
+               "sourceQuery": "SELECT ?object ?title WHERE { ?object <https://schema.org/name> ?title . }",
+               "httpRequests": 1,
+               "cardinalityReal": 6076,
+               "timeSelf": 3.2502720000461522,
+               "timeLife": 1701.8278340000002,
+               "cardinality": {
+                "type": "exact",
+                "value": 6076,
+                "dataset": "https://sparql.ldmax.nl/Q2798268"
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2070053)(SkolemID:4)",
+               "pattern": "?object https://schema.org/name ?title",
+               "sourceQuery": "SELECT ?object ?title WHERE { ?object <https://schema.org/name> ?title . }",
+               "httpRequests": 1,
+               "cardinalityReal": 15306,
+               "timeSelf": 9.615256999993562,
+               "timeLife": 2302.1020640000006,
+               "cardinality": {
+                "type": "exact",
+                "value": 15306,
+                "dataset": "https://sparql.ldmax.nl/Q2070053"
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql)(SkolemID:5)",
+               "pattern": "?object https://schema.org/name ?title",
+               "sourceQuery": "SELECT ?object ?title WHERE { ?object <https://schema.org/name> ?title . }",
+               "httpRequests": 1,
+               "cardinalityReal": 10104,
+               "timeSelf": 6.333264000006693,
+               "timeLife": 2174.9225250000004,
+               "cardinality": {
+                "type": "exact",
+                "value": 10104,
+                "dataset": "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql"
+               }
+              }
+             ]
+            },
+            {
+             "logical": "join-inner",
+             "physical": "bind-source",
+             "bindIndex": 0,
+             "cardinalities": [
+              {
+               "type": "estimate",
+               "value": 1
+              },
+              {
+               "type": "exact",
+               "value": 72481
+              }
+             ],
+             "joinCoefficients": {
+              "iterations": 1,
+              "persistedItems": 1,
+              "blockingItems": 1,
+              "requestTime": 0
+             },
+             "cardinality": {
+              "type": "exact",
+              "value": 371902
+             },
+             "sourceQuery": "SELECT ?term ?object WHERE { VALUES ?term { <https://n2t.net/ark:/46860/987940D2F1A6491592174B1FDE413883> <https://n2t.net/ark:/46860/FCA6C629B42D4A9BA3209259B63B26C2> <https://n2t.net/ark:/46860/F154D2837B704B338E9ADF8EA826F9C7> <https://hdl.handle.net/20.500.14879/8oaobr> <https://hdl.handle.net/20.500.14879/a1opew> } ?object <https://schema.org/artform> ?term . }",
+             "httpRequests": 2,
+             "cardinalityReal": 1811,
+             "timeSelf": 3.8944279999991522,
+             "timeLife": 1177.4651479999998,
+             "children": [
+              {
+               "logical": "join-inner",
+               "physical": "bind",
+               "bindIndex": 0,
+               "bindOrder": "depth-first",
+               "cardinalities": [
+                {
+                 "type": "estimate",
+                 "value": 1
+                },
+                {
+                 "type": "exact",
+                 "value": 8912
+                }
+               ],
+               "joinCoefficients": {
+                "iterations": 101,
+                "persistedItems": 0,
+                "blockingItems": 0,
+                "requestTime": 0
+               },
+               "cardinality": {
+                "type": "estimate",
+                "value": 1
+               },
+               "cardinalityReal": 30,
+               "timeSelf": 1.458824000003915,
+               "timeLife": 550.069403,
+               "children": [
+                {
+                 "logical": "join",
+                 "source": "QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql)(SkolemID:0)",
+                 "cardinality": {
+                  "type": "estimate",
+                  "value": 1
+                 },
+                 "sourceQuery": "SELECT ?cht ?aat WHERE { ?cht <http://www.w3.org/2004/02/skos/core#prefLabel> \"portretten\"@nl . ?cht <http://www.w3.org/2004/02/skos/core#exactMatch> ?aat . }",
+                 "httpRequests": 1,
+                 "cardinalityReal": 2,
+                 "timeSelf": 0.13321500000029118,
+                 "timeLife": 159.9562890000002,
+                 "children": [
+                  {
+                   "logical": "pattern",
+                   "pattern": "?cht http://www.w3.org/2004/02/skos/core#prefLabel \"portretten\"@nl",
+                   "delegated": true
+                  },
+                  {
+                   "logical": "pattern",
+                   "pattern": "?cht http://www.w3.org/2004/02/skos/core#exactMatch ?aat",
+                   "delegated": true
+                  }
+                 ]
+                },
+                {
+                 "logical": "union",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 16.47620599999982,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 8912
+                 },
+                 "children": [
+                  {
+                   "logical": "union",
+                   "cardinalityReal": 0,
+                   "timeSelf": 0,
+                   "timeLife": 16.462122000000363,
+                   "streamState": "destroyed",
+                   "cardinality": {
+                    "type": "exact",
+                    "value": 4456
+                   },
+                   "children": [
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q11722011)(SkolemID:1)",
+                     "pattern": "?term https://schema.org/sameAs ?aat",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 16.615764000000127,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 1574,
+                      "dataset": "https://sparql.ldmax.nl/Q11722011"
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q1542668)(SkolemID:2)",
+                     "pattern": "?term https://schema.org/sameAs ?aat",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 16.616747999999916,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 940,
+                      "dataset": "https://sparql.ldmax.nl/Q1542668"
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2798268)(SkolemID:3)",
+                     "pattern": "?term https://schema.org/sameAs ?aat",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 16.618373000000247,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 523,
+                      "dataset": "https://sparql.ldmax.nl/Q2798268"
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2070053)(SkolemID:4)",
+                     "pattern": "?term https://schema.org/sameAs ?aat",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 16.618199000000004,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 462,
+                      "dataset": "https://sparql.ldmax.nl/Q2070053"
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql)(SkolemID:5)",
+                     "pattern": "?term https://schema.org/sameAs ?aat",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 16.618781000000126,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 957,
+                      "dataset": "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql"
+                     }
+                    }
+                   ]
+                  },
+                  {
+                   "logical": "union",
+                   "cardinalityReal": 0,
+                   "timeSelf": 0,
+                   "timeLife": 16.492801999999756,
+                   "streamState": "destroyed",
+                   "cardinality": {
+                    "type": "exact",
+                    "value": 4456
+                   },
+                   "children": [
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q11722011)(SkolemID:1)",
+                     "pattern": "?term https://schema.org/sameAs ?cht",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 16.624539999999797,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 1574,
+                      "dataset": "https://sparql.ldmax.nl/Q11722011"
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q1542668)(SkolemID:2)",
+                     "pattern": "?term https://schema.org/sameAs ?cht",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 16.62501099999963,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 940,
+                      "dataset": "https://sparql.ldmax.nl/Q1542668"
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2798268)(SkolemID:3)",
+                     "pattern": "?term https://schema.org/sameAs ?cht",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 16.62655900000027,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 523,
+                      "dataset": "https://sparql.ldmax.nl/Q2798268"
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2070053)(SkolemID:4)",
+                     "pattern": "?term https://schema.org/sameAs ?cht",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 16.632006000000274,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 462,
+                      "dataset": "https://sparql.ldmax.nl/Q2070053"
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql)(SkolemID:5)",
+                     "pattern": "?term https://schema.org/sameAs ?cht",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 16.63436499999989,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 957,
+                      "dataset": "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql"
+                     }
+                    }
+                   ]
+                  }
+                 ]
+                },
+                {
+                 "logical": "bindings",
+                 "childrenCompact": [
+                  {
+                   "occurrences": 2,
+                   "cardinalityRealSum": 30,
+                   "timeSelfSum": 0.7456479999978001,
+                   "timeLifeSum": 768.0739589999998,
+                   "firstOccurrence": {
+                    "logical": "union",
+                    "cardinalityReal": 10,
+                    "timeSelf": 0.3960109999989072,
+                    "timeLife": 350.64031799999975,
+                    "cardinality": {
+                     "type": "exact",
+                     "value": 10
+                    },
+                    "children": [
+                     {
+                      "logical": "union",
+                      "cardinalityReal": 0,
+                      "timeSelf": 0.12633300000106829,
+                      "timeLife": 350.70464800000036,
+                      "cardinality": {
+                       "type": "exact",
+                       "value": 0
+                      },
+                      "children": [
+                       {
+                        "logical": "pattern",
+                        "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q11722011)(SkolemID:1)",
+                        "pattern": "?term https://schema.org/sameAs https://hdl.handle.net/20.500.11840/termmaster10067158",
+                        "sourceQuery": "SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://hdl.handle.net/20.500.11840/termmaster10067158> . }",
+                        "httpRequests": 2,
+                        "cardinalityReal": 0,
+                        "timeSelf": 0.01051099999995131,
+                        "timeLife": 148.7506070000004,
+                        "cardinality": {
+                         "type": "exact",
+                         "value": 0,
+                         "dataset": "https://sparql.ldmax.nl/Q11722011"
+                        }
+                       },
+                       {
+                        "logical": "pattern",
+                        "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q1542668)(SkolemID:2)",
+                        "pattern": "?term https://schema.org/sameAs https://hdl.handle.net/20.500.11840/termmaster10067158",
+                        "sourceQuery": "SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://hdl.handle.net/20.500.11840/termmaster10067158> . }",
+                        "httpRequests": 2,
+                        "cardinalityReal": 0,
+                        "timeSelf": 0.001999000000068918,
+                        "timeLife": 146.18815700000005,
+                        "cardinality": {
+                         "type": "exact",
+                         "value": 0,
+                         "dataset": "https://sparql.ldmax.nl/Q1542668"
+                        }
+                       },
+                       {
+                        "logical": "pattern",
+                        "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2798268)(SkolemID:3)",
+                        "pattern": "?term https://schema.org/sameAs https://hdl.handle.net/20.500.11840/termmaster10067158",
+                        "sourceQuery": "SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://hdl.handle.net/20.500.11840/termmaster10067158> . }",
+                        "httpRequests": 2,
+                        "cardinalityReal": 0,
+                        "timeSelf": 0.005733999999847583,
+                        "timeLife": 248.45502699999997,
+                        "cardinality": {
+                         "type": "exact",
+                         "value": 0,
+                         "dataset": "https://sparql.ldmax.nl/Q2798268"
+                        }
+                       },
+                       {
+                        "logical": "pattern",
+                        "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2070053)(SkolemID:4)",
+                        "pattern": "?term https://schema.org/sameAs https://hdl.handle.net/20.500.11840/termmaster10067158",
+                        "sourceQuery": "SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://hdl.handle.net/20.500.11840/termmaster10067158> . }",
+                        "httpRequests": 2,
+                        "cardinalityReal": 0,
+                        "timeSelf": 0.004016999999748805,
+                        "timeLife": 152.44763199999989,
+                        "cardinality": {
+                         "type": "exact",
+                         "value": 0,
+                         "dataset": "https://sparql.ldmax.nl/Q2070053"
+                        }
+                       },
+                       {
+                        "logical": "pattern",
+                        "source": "QuerySourceHypermedia(https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql)(SkolemID:5)",
+                        "pattern": "?term https://schema.org/sameAs https://hdl.handle.net/20.500.11840/termmaster10067158",
+                        "sourceQuery": "SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://hdl.handle.net/20.500.11840/termmaster10067158> . }",
+                        "httpRequests": 2,
+                        "cardinalityReal": 0,
+                        "timeSelf": 0.015716999999312975,
+                        "timeLife": 349.639134,
+                        "cardinality": {
+                         "type": "exact",
+                         "value": 0,
+                         "dataset": "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql"
+                        }
+                       }
+                      ]
+                     },
+                     {
+                      "logical": "union",
+                      "cardinalityReal": 10,
+                      "timeSelf": 0.11852900000076261,
+                      "timeLife": 346.1631319999997,
+                      "cardinality": {
+                       "type": "exact",
+                       "value": 10
+                      },
+                      "children": [
+                       {
+                        "logical": "pattern",
+                        "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q11722011)(SkolemID:1)",
+                        "pattern": "?term https://schema.org/sameAs https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e",
+                        "sourceQuery": "SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e> . }",
+                        "httpRequests": 2,
+                        "cardinalityReal": 8,
+                        "timeSelf": 0.01747200000045268,
+                        "timeLife": 270.71563100000003,
+                        "cardinality": {
+                         "type": "exact",
+                         "value": 8,
+                         "dataset": "https://sparql.ldmax.nl/Q11722011"
+                        }
+                       },
+                       {
+                        "logical": "pattern",
+                        "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q1542668)(SkolemID:2)",
+                        "pattern": "?term https://schema.org/sameAs https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e",
+                        "sourceQuery": "SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e> . }",
+                        "httpRequests": 2,
+                        "cardinalityReal": 0,
+                        "timeSelf": 0.002549000000271917,
+                        "timeLife": 150.5835390000002,
+                        "cardinality": {
+                         "type": "exact",
+                         "value": 0,
+                         "dataset": "https://sparql.ldmax.nl/Q1542668"
+                        }
+                       },
+                       {
+                        "logical": "pattern",
+                        "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2798268)(SkolemID:3)",
+                        "pattern": "?term https://schema.org/sameAs https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e",
+                        "sourceQuery": "SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e> . }",
+                        "httpRequests": 2,
+                        "cardinalityReal": 0,
+                        "timeSelf": 0.005765999999766791,
+                        "timeLife": 252.30411200000026,
+                        "cardinality": {
+                         "type": "exact",
+                         "value": 0,
+                         "dataset": "https://sparql.ldmax.nl/Q2798268"
+                        }
+                       },
+                       {
+                        "logical": "pattern",
+                        "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2070053)(SkolemID:4)",
+                        "pattern": "?term https://schema.org/sameAs https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e",
+                        "sourceQuery": "SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e> . }",
+                        "httpRequests": 2,
+                        "cardinalityReal": 0,
+                        "timeSelf": 0.008254999998825951,
+                        "timeLife": 270.6798920000001,
+                        "cardinality": {
+                         "type": "exact",
+                         "value": 0,
+                         "dataset": "https://sparql.ldmax.nl/Q2070053"
+                        }
+                       },
+                       {
+                        "logical": "pattern",
+                        "source": "QuerySourceHypermedia(https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql)(SkolemID:5)",
+                        "pattern": "?term https://schema.org/sameAs https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e",
+                        "sourceQuery": "SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://data.cultureelerfgoed.nl/term/id/cht/c0a4866d-5222-4f10-a6bc-592ba4e42c8e> . }",
+                        "httpRequests": 2,
+                        "cardinalityReal": 2,
+                        "timeSelf": 0.014934000000266678,
+                        "timeLife": 346.48469399999976,
+                        "cardinality": {
+                         "type": "exact",
+                         "value": 2,
+                         "dataset": "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql"
+                        }
+                       }
+                      ]
+                     }
+                    ]
+                   }
+                  }
+                 ]
+                }
+               ]
+              },
+              {
+               "logical": "union",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 20.023431000000073,
+               "cardinality": {
+                "type": "exact",
+                "value": 72481
+               },
+               "children": [
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q11722011)(SkolemID:1)",
+                 "pattern": "?object https://schema.org/artform ?term",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 20.83640699999978,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 23010,
+                  "dataset": "https://sparql.ldmax.nl/Q11722011"
+                 }
+                },
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q1542668)(SkolemID:2)",
+                 "pattern": "?object https://schema.org/artform ?term",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 20.82284400000026,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 45697,
+                  "dataset": "https://sparql.ldmax.nl/Q1542668"
+                 }
+                },
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2798268)(SkolemID:3)",
+                 "pattern": "?object https://schema.org/artform ?term",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 20.81769600000007,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 955,
+                  "dataset": "https://sparql.ldmax.nl/Q2798268"
+                 }
+                },
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2070053)(SkolemID:4)",
+                 "pattern": "?object https://schema.org/artform ?term",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 20.815592999999808,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 2819,
+                  "dataset": "https://sparql.ldmax.nl/Q2070053"
+                 }
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

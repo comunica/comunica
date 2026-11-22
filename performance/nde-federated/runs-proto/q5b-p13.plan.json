@@ -1,0 +1,945 @@
+{
+ "logical": "distinct",
+ "children": [
+  {
+   "logical": "project",
+   "variables": [
+    "kind",
+    "item",
+    "title"
+   ],
+   "cardinalityReal": 356,
+   "timeSelf": 2.498979000007239,
+   "timeLife": 4204.589670000001,
+   "children": [
+    {
+     "logical": "union",
+     "cardinalityReal": 356,
+     "timeSelf": 3.757609999995111,
+     "timeLife": 4204.8691690000005,
+     "children": [
+      {
+       "logical": "extend",
+       "cardinalityReal": 262,
+       "timeSelf": 29.64353600001141,
+       "timeLife": 702.2625049999997,
+       "cardinality": {
+        "type": "estimate",
+        "value": 2
+       },
+       "children": [
+        {
+         "logical": "join",
+         "cardinalityReal": 262,
+         "timeSelf": 0.7840229999901567,
+         "timeLife": 703.8047580000002,
+         "cardinality": {
+          "type": "estimate",
+          "value": 2
+         },
+         "children": [
+          {
+           "logical": "join-inner",
+           "physical": "bind-source",
+           "bindIndex": 0,
+           "cardinalities": [
+            {
+             "type": "exact",
+             "value": 2
+            },
+            {
+             "type": "exact",
+             "value": 1408451
+            },
+            {
+             "type": "estimate",
+             "value": 692872,
+             "dataset": "https://data.muziekschatten.nl/sparql"
+            }
+           ],
+           "joinCoefficients": {
+            "iterations": 1,
+            "persistedItems": 2,
+            "blockingItems": 2,
+            "requestTime": 2412.597225110869
+           },
+           "sourceQuery": "SELECT ?gtaa ?person WHERE { VALUES ?gtaa { <http://data.beeldengeluid.nl/gtaa/77493> } ?person <http://www.w3.org/2002/07/owl#sameAs> ?gtaa . }",
+           "httpRequests": 2,
+           "cardinalityReal": 262,
+           "timeSelf": 0.7840229999901567,
+           "timeLife": 710.9272800000008,
+           "cardinality": {
+            "type": "estimate",
+            "value": 2
+           },
+           "children": [
+            {
+             "logical": "union",
+             "cardinality": {
+              "type": "exact",
+              "value": 2
+             },
+             "cardinalityReal": 2,
+             "timeSelf": 0.1311039999991408,
+             "timeLife": 186.44907599999988,
+             "children": [
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://gtaa.apis.beeldengeluid.nl/sparql)(SkolemID:0)",
+               "pattern": "?gtaa http://www.w3.org/2004/02/skos/core#prefLabel \"Andriessen, Louis\"@nl",
+               "sourceQuery": "SELECT ?gtaa WHERE { ?gtaa <http://www.w3.org/2004/02/skos/core#prefLabel> \"Andriessen, Louis\"@nl . }",
+               "httpRequests": 1,
+               "cardinalityReal": 1,
+               "timeSelf": 0.028687999999419844,
+               "timeLife": 186.91569100000015,
+               "cardinality": {
+                "type": "exact",
+                "value": 1
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://cat.apis.beeldengeluid.nl/sparql)(SkolemID:1)",
+               "pattern": "?gtaa http://www.w3.org/2004/02/skos/core#prefLabel \"Andriessen, Louis\"@nl",
+               "sourceQuery": "SELECT ?gtaa WHERE { ?gtaa <http://www.w3.org/2004/02/skos/core#prefLabel> \"Andriessen, Louis\"@nl . }",
+               "httpRequests": 1,
+               "cardinalityReal": 1,
+               "timeSelf": 0.015401999999994587,
+               "timeLife": 179.62373299999945,
+               "cardinality": {
+                "type": "exact",
+                "value": 1,
+                "dataset": "https://cat.apis.beeldengeluid.nl/sparql"
+               }
+              }
+             ]
+            },
+            {
+             "logical": "union",
+             "cardinalityReal": 0,
+             "timeSelf": 0,
+             "timeLife": 17.062450999999783,
+             "cardinality": {
+              "type": "exact",
+              "value": 1408451
+             },
+             "children": [
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://data.muziekschatten.nl/sparql)(SkolemID:2)",
+               "pattern": "?person http://www.w3.org/2002/07/owl#sameAs ?gtaa",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 17.59339799999998,
+               "streamState": "destroyed",
+               "cardinality": {
+                "type": "exact",
+                "value": 147398,
+                "dataset": "https://data.muziekschatten.nl/sparql"
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql)(SkolemID:3)",
+               "pattern": "?person http://www.w3.org/2002/07/owl#sameAs ?gtaa",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 17.597514999999476,
+               "streamState": "destroyed",
+               "cardinality": {
+                "type": "exact",
+                "value": 1256307
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql)(SkolemID:4)",
+               "pattern": "?person http://www.w3.org/2002/07/owl#sameAs ?gtaa",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 17.597783999999592,
+               "streamState": "destroyed",
+               "cardinality": {
+                "type": "exact",
+                "value": 4746
+               }
+              }
+             ]
+            },
+            {
+             "logical": "join-inner",
+             "physical": "bind-source",
+             "bindIndex": 0,
+             "cardinalities": [
+              {
+               "type": "estimate",
+               "value": 2
+              },
+              {
+               "type": "estimate",
+               "value": 692872,
+               "dataset": "https://data.muziekschatten.nl/sparql"
+              }
+             ],
+             "joinCoefficients": {
+              "iterations": 1,
+              "persistedItems": 2,
+              "blockingItems": 2,
+              "requestTime": 640.8034619187395
+             },
+             "sourceQuery": "SELECT ?person ?item ?title WHERE { VALUES ?person { <https://data.muziekschatten.nl/som/0ee5b531a4557a7313de0f8d06ef1895> } ?item <http://schema.org/composer> ?person . ?item <http://schema.org/name> ?title . }",
+             "httpRequests": 2,
+             "cardinalityReal": 262,
+             "timeSelf": 0.7840229999901567,
+             "timeLife": 713.3659319999997,
+             "cardinality": {
+              "type": "estimate",
+              "value": 2
+             },
+             "children": [
+              {
+               "logical": "join",
+               "source": "QuerySourceHypermedia(https://data.muziekschatten.nl/sparql)(SkolemID:2)",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 24.487951000000066,
+               "cardinality": {
+                "type": "estimate",
+                "value": 692872,
+                "dataset": "https://data.muziekschatten.nl/sparql"
+               },
+               "children": [
+                {
+                 "logical": "pattern",
+                 "pattern": "?item http://schema.org/composer ?person",
+                 "delegated": true
+                },
+                {
+                 "logical": "pattern",
+                 "pattern": "?item http://schema.org/name ?title",
+                 "delegated": true
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "logical": "extend",
+       "cardinalityReal": 94,
+       "timeSelf": 7.912295999984053,
+       "timeLife": 4204.958927999999,
+       "children": [
+        {
+         "logical": "join",
+         "cardinalityReal": 94,
+         "timeSelf": 1.0214659999974174,
+         "timeLife": 4204.986839000001,
+         "children": [
+          {
+           "logical": "join-inner",
+           "physical": "bind-source",
+           "bindIndex": 0,
+           "cardinalities": [
+            {
+             "type": "exact",
+             "value": 2
+            },
+            {
+             "type": "exact",
+             "value": 1408451
+            },
+            {
+             "type": "exact",
+             "value": 1408451
+            },
+            {
+             "type": "exact",
+             "value": 3705521
+            },
+            {
+             "type": "estimate",
+             "value": 1028067
+            }
+           ],
+           "joinCoefficients": {
+            "iterations": 1,
+            "persistedItems": 2,
+            "blockingItems": 2,
+            "requestTime": 2016.2937331665094
+           },
+           "sourceQuery": "SELECT ?gtaa ?person WHERE { VALUES ?gtaa { <http://data.beeldengeluid.nl/gtaa/77493> } ?person <http://www.w3.org/2002/07/owl#sameAs> ?gtaa . }",
+           "httpRequests": 2,
+           "cardinalityReal": 94,
+           "timeSelf": 1.0214659999974174,
+           "timeLife": 4205.388918,
+           "children": [
+            {
+             "logical": "union",
+             "cardinality": {
+              "type": "exact",
+              "value": 2
+             },
+             "cardinalityReal": 2,
+             "timeSelf": 0.2838920000003782,
+             "timeLife": 180.97666000000027,
+             "children": [
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://gtaa.apis.beeldengeluid.nl/sparql)(SkolemID:0)",
+               "pattern": "?gtaa http://www.w3.org/2004/02/skos/core#prefLabel \"Andriessen, Louis\"@nl",
+               "sourceQuery": "SELECT ?gtaa WHERE { ?gtaa <http://www.w3.org/2004/02/skos/core#prefLabel> \"Andriessen, Louis\"@nl . }",
+               "httpRequests": 1,
+               "cardinalityReal": 1,
+               "timeSelf": 0.016037000001233537,
+               "timeLife": 181.4239719999996,
+               "cardinality": {
+                "type": "exact",
+                "value": 1
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://cat.apis.beeldengeluid.nl/sparql)(SkolemID:1)",
+               "pattern": "?gtaa http://www.w3.org/2004/02/skos/core#prefLabel \"Andriessen, Louis\"@nl",
+               "sourceQuery": "SELECT ?gtaa WHERE { ?gtaa <http://www.w3.org/2004/02/skos/core#prefLabel> \"Andriessen, Louis\"@nl . }",
+               "httpRequests": 1,
+               "cardinalityReal": 1,
+               "timeSelf": 0.13557399999990594,
+               "timeLife": 168.89307699999972,
+               "cardinality": {
+                "type": "exact",
+                "value": 1,
+                "dataset": "https://cat.apis.beeldengeluid.nl/sparql"
+               }
+              }
+             ]
+            },
+            {
+             "logical": "union",
+             "cardinalityReal": 0,
+             "timeSelf": 0,
+             "timeLife": 17.14082199999939,
+             "cardinality": {
+              "type": "exact",
+              "value": 1408451
+             },
+             "children": [
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://data.muziekschatten.nl/sparql)(SkolemID:2)",
+               "pattern": "?person http://www.w3.org/2002/07/owl#sameAs ?gtaa",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 17.571139000000585,
+               "streamState": "destroyed",
+               "cardinality": {
+                "type": "exact",
+                "value": 147398,
+                "dataset": "https://data.muziekschatten.nl/sparql"
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql)(SkolemID:3)",
+               "pattern": "?person http://www.w3.org/2002/07/owl#sameAs ?gtaa",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 17.557573000000048,
+               "streamState": "destroyed",
+               "cardinality": {
+                "type": "exact",
+                "value": 1256307
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql)(SkolemID:4)",
+               "pattern": "?person http://www.w3.org/2002/07/owl#sameAs ?gtaa",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 17.55691399999978,
+               "streamState": "destroyed",
+               "cardinality": {
+                "type": "exact",
+                "value": 4746
+               }
+              }
+             ]
+            },
+            {
+             "logical": "join-inner",
+             "physical": "bind-source",
+             "bindIndex": 0,
+             "cardinalities": [
+              {
+               "type": "estimate",
+               "value": 2
+              },
+              {
+               "type": "estimate",
+               "value": 1028067
+              },
+              {
+               "type": "exact",
+               "value": 1408451
+              },
+              {
+               "type": "exact",
+               "value": 3705521
+              }
+             ],
+             "joinCoefficients": {
+              "iterations": 1,
+              "persistedItems": 2,
+              "blockingItems": 2,
+              "requestTime": 244.59741763246078
+             },
+             "sourceQuery": "SELECT ?person ?mwPerson WHERE { VALUES ?person { <https://data.muziekschatten.nl/som/0ee5b531a4557a7313de0f8d06ef1895> } ?person <http://www.w3.org/2002/07/owl#sameAs> ?mwPerson . }",
+             "httpRequests": 2,
+             "cardinalityReal": 94,
+             "timeSelf": 1.0214659999974174,
+             "timeLife": 4205.839081,
+             "children": [
+              {
+               "logical": "union",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 23.75198399999954,
+               "cardinality": {
+                "type": "exact",
+                "value": 1408451
+               },
+               "children": [
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://data.muziekschatten.nl/sparql)(SkolemID:2)",
+                 "pattern": "?person http://www.w3.org/2002/07/owl#sameAs ?mwPerson",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 24.17240099999981,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 147398,
+                  "dataset": "https://data.muziekschatten.nl/sparql"
+                 }
+                },
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql)(SkolemID:3)",
+                 "pattern": "?person http://www.w3.org/2002/07/owl#sameAs ?mwPerson",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 24.178419999999278,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 1256307
+                 }
+                },
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql)(SkolemID:4)",
+                 "pattern": "?person http://www.w3.org/2002/07/owl#sameAs ?mwPerson",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 24.181275000000824,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 4746
+                 }
+                }
+               ]
+              },
+              {
+               "logical": "join-inner",
+               "physical": "bind-source",
+               "bindIndex": 0,
+               "cardinalities": [
+                {
+                 "type": "estimate",
+                 "value": 2
+                },
+                {
+                 "type": "estimate",
+                 "value": 1028067
+                },
+                {
+                 "type": "exact",
+                 "value": 3705521
+                }
+               ],
+               "joinCoefficients": {
+                "iterations": 1,
+                "persistedItems": 2,
+                "blockingItems": 2,
+                "requestTime": 238.14552837887913
+               },
+               "sourceQuery": "SELECT ?mwPerson ?item WHERE { VALUES ?mwPerson { <https://viaf.org/viaf/111315943> <https://www.dbnl.org/auteurs/auteur.php?id=andr034> <https://www.discogs.com/artist/171391> <http://data.beeldengeluid.nl/gtaa/77493> <https://isni.org/isni/0000000114800920> <http://id.loc.gov/authorities/names/n81067980> <https://musicbrainz.org/artist/4b5e4dc5-2544-405c-a568-d2021b5be16c> <http://data.bibliotheken.nl/id/thes/p06954042X> <https://data.muziekweb.nl/Link/M00000000146> <https://www.wikidata.org/entity/Q504743> <https://www.allmusic.com/artist/mn0000058606> } ?mwPerson <https://data.muziekweb.nl/vocab/album> ?item . }",
+               "httpRequests": 2,
+               "cardinalityReal": 94,
+               "timeSelf": 1.0214659999974174,
+               "timeLife": 4206.758262,
+               "children": [
+                {
+                 "logical": "join",
+                 "source": "QuerySourceHypermedia(https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql)(SkolemID:3)",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 29.330155999999988,
+                 "cardinality": {
+                  "type": "estimate",
+                  "value": 1028067
+                 },
+                 "children": [
+                  {
+                   "logical": "pattern",
+                   "pattern": "?mwPerson https://data.muziekweb.nl/vocab/album ?item",
+                   "delegated": true
+                  }
+                 ]
+                },
+                {
+                 "logical": "join-inner",
+                 "physical": "bind-source",
+                 "bindIndex": 0,
+                 "cardinalities": [
+                  {
+                   "type": "estimate",
+                   "value": 2
+                  },
+                  {
+                   "type": "exact",
+                   "value": 3705521
+                  }
+                 ],
+                 "joinCoefficients": {
+                  "iterations": 1,
+                  "persistedItems": 2,
+                  "blockingItems": 2,
+                  "requestTime": 1946.5134559438497
+                 },
+                 "sourceQuery": "SELECT ?item ?title WHERE { VALUES ?item { <https://data.muziekweb.nl/Link/EB00345> <https://data.muziekweb.nl/Link/EB00362> <https://data.muziekweb.nl/Link/EBX0354> <https://data.muziekweb.nl/Link/ECX0054> <https://data.muziekweb.nl/Link/HFX10197> <https://data.muziekweb.nl/Link/HFX10199> <https://data.muziekweb.nl/Link/JE02201> } ?item <http://www.w3.org/2000/01/rdf-schema#label> ?title . }",
+                 "httpRequests": 4,
+                 "cardinalityReal": 94,
+                 "timeSelf": 1.0214659999974174,
+                 "timeLife": 4208.176245,
+                 "children": [
+                  {
+                   "logical": "union",
+                   "cardinalityReal": 0,
+                   "timeSelf": 0,
+                   "timeLife": 34.79282999999941,
+                   "cardinality": {
+                    "type": "exact",
+                    "value": 3705521
+                   },
+                   "children": [
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://cat.apis.beeldengeluid.nl/sparql)(SkolemID:1)",
+                     "pattern": "?item http://www.w3.org/2000/01/rdf-schema#label ?title",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 35.2121989999996,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 1013915,
+                      "dataset": "https://cat.apis.beeldengeluid.nl/sparql"
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://data.muziekschatten.nl/sparql)(SkolemID:2)",
+                     "pattern": "?item http://www.w3.org/2000/01/rdf-schema#label ?title",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 35.217083999999886,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 133038,
+                      "dataset": "https://data.muziekschatten.nl/sparql"
+                     }
+                    },
+                    {
+                     "logical": "pattern",
+                     "source": "QuerySourceHypermedia(https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql)(SkolemID:3)",
+                     "pattern": "?item http://www.w3.org/2000/01/rdf-schema#label ?title",
+                     "cardinalityReal": 0,
+                     "timeSelf": 0,
+                     "timeLife": 35.22211299999981,
+                     "streamState": "destroyed",
+                     "cardinality": {
+                      "type": "exact",
+                      "value": 2558568
+                     }
+                    }
+                   ]
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "logical": "extend",
+       "cardinalityReal": 0,
+       "timeSelf": 1.6870180000005348,
+       "timeLife": 1097.3580409999995,
+       "cardinality": {
+        "type": "estimate",
+        "value": null
+       },
+       "children": [
+        {
+         "logical": "join",
+         "cardinalityReal": 0,
+         "timeSelf": 0.556011000023318,
+         "timeLife": 1097.894816,
+         "cardinality": {
+          "type": "estimate",
+          "value": null
+         },
+         "children": [
+          {
+           "logical": "join-inner",
+           "physical": "bind-source",
+           "bindIndex": 0,
+           "cardinalities": [
+            {
+             "type": "exact",
+             "value": 2
+            },
+            {
+             "type": "estimate",
+             "value": null
+            },
+            {
+             "type": "exact",
+             "value": 164718
+            },
+            {
+             "type": "estimate",
+             "value": null
+            }
+           ],
+           "joinCoefficients": {
+            "iterations": 1,
+            "persistedItems": 2,
+            "blockingItems": 2,
+            "requestTime": null
+           },
+           "sourceQuery": "SELECT ?gtaa ?role WHERE { VALUES ?gtaa { <http://data.beeldengeluid.nl/gtaa/77493> } ?role <https://schema.org/creator> ?gtaa . }",
+           "httpRequests": 2,
+           "cardinalityReal": 0,
+           "timeSelf": 0.556011000023318,
+           "timeLife": 1098.7075190000005,
+           "cardinality": {
+            "type": "estimate",
+            "value": null
+           },
+           "children": [
+            {
+             "logical": "union",
+             "cardinality": {
+              "type": "exact",
+              "value": 2
+             },
+             "cardinalityReal": 2,
+             "timeSelf": 0.07233199999973294,
+             "timeLife": 171.25656400000025,
+             "children": [
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://gtaa.apis.beeldengeluid.nl/sparql)(SkolemID:0)",
+               "pattern": "?gtaa http://www.w3.org/2004/02/skos/core#prefLabel \"Andriessen, Louis\"@nl",
+               "sourceQuery": "SELECT ?gtaa WHERE { ?gtaa <http://www.w3.org/2004/02/skos/core#prefLabel> \"Andriessen, Louis\"@nl . }",
+               "httpRequests": 1,
+               "cardinalityReal": 1,
+               "timeSelf": 0.014830999999503547,
+               "timeLife": 171.63029000000006,
+               "cardinality": {
+                "type": "exact",
+                "value": 1
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://cat.apis.beeldengeluid.nl/sparql)(SkolemID:1)",
+               "pattern": "?gtaa http://www.w3.org/2004/02/skos/core#prefLabel \"Andriessen, Louis\"@nl",
+               "sourceQuery": "SELECT ?gtaa WHERE { ?gtaa <http://www.w3.org/2004/02/skos/core#prefLabel> \"Andriessen, Louis\"@nl . }",
+               "httpRequests": 1,
+               "cardinalityReal": 1,
+               "timeSelf": 0.014030000000275322,
+               "timeLife": 170.12138499999946,
+               "cardinality": {
+                "type": "exact",
+                "value": 1,
+                "dataset": "https://cat.apis.beeldengeluid.nl/sparql"
+               }
+              }
+             ]
+            },
+            {
+             "logical": "union",
+             "cardinalityReal": 0,
+             "timeSelf": 0,
+             "timeLife": 20.105677999999898,
+             "cardinality": {
+              "type": "estimate",
+              "value": null
+             },
+             "children": [
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://cat.apis.beeldengeluid.nl/sparql)(SkolemID:1)",
+               "pattern": "?role https://schema.org/creator ?gtaa",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 20.52073300000029,
+               "streamState": "destroyed",
+               "cardinality": {
+                "type": "estimate",
+                "value": null,
+                "dataset": "https://cat.apis.beeldengeluid.nl/sparql"
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql)(SkolemID:3)",
+               "pattern": "?role https://schema.org/creator ?gtaa",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 20.52675299999919,
+               "streamState": "destroyed",
+               "cardinality": {
+                "type": "exact",
+                "value": 1
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql)(SkolemID:4)",
+               "pattern": "?role https://schema.org/creator ?gtaa",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 20.530444999999418,
+               "streamState": "destroyed",
+               "cardinality": {
+                "type": "exact",
+                "value": 2878
+               }
+              },
+              {
+               "logical": "pattern",
+               "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2204530)(SkolemID:5)",
+               "pattern": "?role https://schema.org/creator ?gtaa",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 20.53668000000016,
+               "streamState": "destroyed",
+               "cardinality": {
+                "type": "exact",
+                "value": 161839,
+                "dataset": "https://sparql.ldmax.nl/Q2204530"
+               }
+              }
+             ]
+            },
+            {
+             "logical": "join-inner",
+             "physical": "bind-source",
+             "bindIndex": 0,
+             "cardinalities": [
+              {
+               "type": "estimate",
+               "value": null
+              },
+              {
+               "type": "exact",
+               "value": 164718
+              },
+              {
+               "type": "estimate",
+               "value": null
+              }
+             ],
+             "joinCoefficients": {
+              "iterations": 1,
+              "persistedItems": null,
+              "blockingItems": null,
+              "requestTime": null
+             },
+             "cardinalityReal": 0,
+             "timeSelf": 0.556011000023318,
+             "timeLife": 1100.125986,
+             "cardinality": {
+              "type": "estimate",
+              "value": null
+             },
+             "children": [
+              {
+               "logical": "union",
+               "cardinalityReal": 0,
+               "timeSelf": 0,
+               "timeLife": 25.287811999999576,
+               "cardinality": {
+                "type": "exact",
+                "value": 164718
+               },
+               "children": [
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql)(SkolemID:3)",
+                 "pattern": "?item https://schema.org/creator ?role",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 25.698397000000114,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 1
+                 }
+                },
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql)(SkolemID:4)",
+                 "pattern": "?item https://schema.org/creator ?role",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 25.705729000000247,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 2878
+                 }
+                },
+                {
+                 "logical": "pattern",
+                 "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2204530)(SkolemID:5)",
+                 "pattern": "?item https://schema.org/creator ?role",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 25.713583000000654,
+                 "streamState": "destroyed",
+                 "cardinality": {
+                  "type": "exact",
+                  "value": 161839,
+                  "dataset": "https://sparql.ldmax.nl/Q2204530"
+                 }
+                }
+               ]
+              },
+              {
+               "logical": "join-inner",
+               "physical": "bind-source",
+               "bindIndex": 0,
+               "cardinalities": [
+                {
+                 "type": "estimate",
+                 "value": null
+                },
+                {
+                 "type": "estimate",
+                 "value": null
+                }
+               ],
+               "joinCoefficients": {
+                "iterations": 1,
+                "persistedItems": null,
+                "blockingItems": null,
+                "requestTime": null
+               },
+               "cardinalityReal": 0,
+               "timeSelf": 0.556011000023318,
+               "timeLife": 1101.4442629999994,
+               "cardinality": {
+                "type": "estimate",
+                "value": null
+               },
+               "children": [
+                {
+                 "logical": "union",
+                 "cardinalityReal": 0,
+                 "timeSelf": 0,
+                 "timeLife": 33.73612400000002,
+                 "cardinality": {
+                  "type": "estimate",
+                  "value": null
+                 },
+                 "children": [
+                  {
+                   "logical": "pattern",
+                   "source": "QuerySourceHypermedia(https://cat.apis.beeldengeluid.nl/sparql)(SkolemID:1)",
+                   "pattern": "?item https://schema.org/name ?title",
+                   "cardinalityReal": 0,
+                   "timeSelf": 0,
+                   "timeLife": 34.16034099999979,
+                   "streamState": "destroyed",
+                   "cardinality": {
+                    "type": "estimate",
+                    "value": null,
+                    "dataset": "https://cat.apis.beeldengeluid.nl/sparql"
+                   }
+                  },
+                  {
+                   "logical": "pattern",
+                   "source": "QuerySourceHypermedia(https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql)(SkolemID:4)",
+                   "pattern": "?item https://schema.org/name ?title",
+                   "cardinalityReal": 0,
+                   "timeSelf": 0,
+                   "timeLife": 34.16498500000034,
+                   "streamState": "destroyed",
+                   "cardinality": {
+                    "type": "exact",
+                    "value": 56871
+                   }
+                  },
+                  {
+                   "logical": "pattern",
+                   "source": "QuerySourceHypermedia(https://sparql.ldmax.nl/Q2204530)(SkolemID:5)",
+                   "pattern": "?item https://schema.org/name ?title",
+                   "cardinalityReal": 0,
+                   "timeSelf": 0,
+                   "timeLife": 34.1669150000007,
+                   "streamState": "destroyed",
+                   "cardinality": {
+                    "type": "exact",
+                    "value": 806487,
+                    "dataset": "https://sparql.ldmax.nl/Q2204530"
+                   }
+                  }
+                 ]
+                }
+               ]
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

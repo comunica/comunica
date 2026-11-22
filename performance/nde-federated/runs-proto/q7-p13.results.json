@@ -1,0 +1,79 @@
+[
+ {
+  "dataset": "https://data.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph",
+  "links": "1241",
+  "publisher": "Dutch Digital Heritage Network",
+  "endpoint": "https://sparql.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph",
+  "title": "Dataset Knowledge Graph"
+ },
+ {
+  "dataset": "https://n2t.net/ark:/59857/persons",
+  "links": "5134020",
+  "publisher": "WO2Net Foundation",
+  "endpoint": "https://sparql.ldmax.nl/wo2net",
+  "title": "WO2 War Persons"
+ },
+ {
+  "dataset": "https://www.genealogieonline.nl/wo2slachtoffers/",
+  "links": "75850",
+  "publisher": "Genealogy Online",
+  "endpoint": "https://www.genealogieonline.nl/wo2slachtoffers/sparql",
+  "title": "World War II Victims"
+ },
+ {
+  "dataset": "https://data.annefrank.org/datasets/Q4452658/collectie",
+  "links": "77",
+  "publisher": "Anne Frank House",
+  "endpoint": "https://sparql.ldmax.nl/Q4452658",
+  "title": "Anne Frank House"
+ },
+ {
+  "dataset": "https://n2t.net/ark:/23262/dataset",
+  "links": "1",
+  "publisher": "GRID Grafisch Museum Groningen",
+  "endpoint": "https://sparql.ldmax.nl/Q2882945",
+  "title": "GRID Grafisch Museum Groningen"
+ },
+ {
+  "dataset": "https://n2t.net/ark:/45493/dataset",
+  "links": "2",
+  "publisher": "Openluchtmuseum Het Hoogeland",
+  "endpoint": "https://sparql.ldmax.nl/Q2070053",
+  "title": "Openluchtmuseum Het Hoogeland"
+ },
+ {
+  "dataset": "https://n2t.net/ark:/61567/dataset",
+  "links": "1",
+  "publisher": "Limburg Museum",
+  "endpoint": "https://sparql.ldmax.nl/Q2798268",
+  "title": "Limburg Museum"
+ },
+ {
+  "dataset": "https://www.ldmax.nl/datasets/Q1852477/collectie",
+  "links": "707",
+  "publisher": "Liberation Museum Zeeland",
+  "endpoint": "https://sparql.ldmax.nl/Q1852477",
+  "title": "Liberation Museum Zeeland"
+ },
+ {
+  "dataset": "https://www.ldmax.nl/datasets/Q24033642/collectie",
+  "links": "63",
+  "publisher": "Nationaal Monument Kamp Vught",
+  "endpoint": "https://sparql.ldmax.nl/Q24033642",
+  "title": "Nationaal Monument Kamp Vught"
+ },
+ {
+  "dataset": "https://www.ldmax.nl/datasets/wo2net/collecties",
+  "links": "1731625",
+  "publisher": "WO2Net Foundation",
+  "endpoint": "https://sparql.ldmax.nl/wo2net",
+  "title": "WO2 War Collections"
+ },
+ {
+  "dataset": "https://www.ldmax.nl/datasets/wo2net/thesaurus",
+  "links": "78658",
+  "publisher": "WO2Net Foundation",
+  "endpoint": "https://sparql.ldmax.nl/wo2net",
+  "title": "WO2 Thesaurus"
+ }
+]

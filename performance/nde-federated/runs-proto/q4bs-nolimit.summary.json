@@ -1,0 +1,105 @@
+{
+ "status": "ok",
+ "results": 1957,
+ "timeMs": 79288,
+ "firstResultMs": 4495,
+ "cpuMs": 26639,
+ "httpRequests": 9101,
+ "httpRequestsWire": 9105,
+ "byKind": {
+  "no-query": 6,
+  "count": 36,
+  "select": 9059
+ },
+ "decodedBytes": 1839876,
+ "wireBytes": 1395477,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql",
+  "https://sparql.ldmax.nl/Q11722011",
+  "https://sparql.ldmax.nl/Q1542668",
+  "https://sparql.ldmax.nl/Q2070053",
+  "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql"
+ ],
+ "byEndpoint": {
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql": {
+   "requests": 8,
+   "decodedBytes": 1397,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 1
+   },
+   "dataRows": 2,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://sparql.ldmax.nl/Q11722011": {
+   "requests": 1819,
+   "decodedBytes": 489956,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 1812
+   },
+   "dataRows": 1463,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q1542668": {
+   "requests": 1819,
+   "decodedBytes": 584484,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 1812
+   },
+   "dataRows": 2290,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2798268": {
+   "requests": 1819,
+   "decodedBytes": 285439,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 1812
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2070053": {
+   "requests": 1819,
+   "decodedBytes": 291123,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 1812
+   },
+   "dataRows": 37,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql": {
+   "requests": 1817,
+   "decodedBytes": 187477,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 1810
+   },
+   "dataRows": 5,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  }
+ }
+}

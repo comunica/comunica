@@ -1,0 +1,12 @@
+# Portraits in Dutch museum collections, found through the CHT concept "portretten":
+# museums map their local object-type terms either to CHT itself or to the equivalent AAT concept.
+# Variant without the OPTIONAL creation date.
+PREFIX schema: <https://schema.org/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+SELECT DISTINCT ?object ?title WHERE {
+  ?cht skos:prefLabel "portretten"@nl ;
+       skos:exactMatch ?aat .
+  { ?term schema:sameAs ?aat . } UNION { ?term schema:sameAs ?cht . }
+  ?object schema:artform ?term ;
+          schema:name ?title .
+}

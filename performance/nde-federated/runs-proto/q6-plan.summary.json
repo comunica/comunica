@@ -1,0 +1,101 @@
+{
+ "status": "timeout",
+ "results": 0,
+ "timeMs": 30452,
+ "httpRequests": 1953,
+ "httpRequestsWire": 1954,
+ "byKind": {
+  "no-query": 6,
+  "count": 60,
+  "select": 1887
+ },
+ "decodedBytes": 15895887,
+ "wireBytes": 3763084,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://sparql.goudatijdmachine.nl/",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql"
+ ],
+ "byEndpoint": {
+  "https://sparql.goudatijdmachine.nl/": {
+   "requests": 141,
+   "decodedBytes": 227036,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 130
+   },
+   "dataRows": 2063,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql": {
+   "requests": 1720,
+   "decodedBytes": 7844346,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 1709
+   },
+   "dataRows": 1771,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql": {
+   "requests": 16,
+   "decodedBytes": 1938,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 5
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql": {
+   "requests": 30,
+   "decodedBytes": 67651,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 19
+   },
+   "dataRows": 348,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql": {
+   "requests": 30,
+   "decodedBytes": 7752425,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 19
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://qlever.coret.org/oabs": {
+   "requests": 16,
+   "decodedBytes": 2491,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 5
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  }
+ }
+}

@@ -1,0 +1,37 @@
+# CHT (Cultuurhistorische Thesaurus, RCE)
+https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql
+# Museum collections whose local terms are mapped to AAT or CHT (schema:sameAs)
+https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql
+https://eu.api.kleksi.com/apps/pn885n/datasets/default/sparql
+https://eu.api.kleksi.com/apps/pnpmjn/datasets/default/sparql
+https://sparql.ldmax.nl/Q110271758
+https://sparql.ldmax.nl/Q110414440
+https://sparql.ldmax.nl/Q110978413
+https://sparql.ldmax.nl/Q110986306
+https://sparql.ldmax.nl/Q110996022
+https://sparql.ldmax.nl/Q114867292
+https://sparql.ldmax.nl/Q11722011
+https://sparql.ldmax.nl/Q12013217
+https://sparql.ldmax.nl/Q124789020
+https://sparql.ldmax.nl/Q125958534
+https://sparql.ldmax.nl/Q13612139
+https://sparql.ldmax.nl/Q1542668
+https://sparql.ldmax.nl/Q1852477
+https://sparql.ldmax.nl/Q2022136
+https://sparql.ldmax.nl/Q2054056
+https://sparql.ldmax.nl/Q2070053
+https://sparql.ldmax.nl/Q20829167
+https://sparql.ldmax.nl/Q2168069
+https://sparql.ldmax.nl/Q2191118
+https://sparql.ldmax.nl/Q2203052
+https://sparql.ldmax.nl/Q2204530
+https://sparql.ldmax.nl/Q24033642
+https://sparql.ldmax.nl/Q2575273
+https://sparql.ldmax.nl/Q2798268
+https://sparql.ldmax.nl/Q2882945
+https://sparql.ldmax.nl/Q4350196
+https://sparql.ldmax.nl/Q4452658
+https://sparql.ldmax.nl/Q474563
+https://sparql.ldmax.nl/Q56461202
+https://sparql.ldmax.nl/Q623558
+https://sparql.ldmax.nl/Q98962037

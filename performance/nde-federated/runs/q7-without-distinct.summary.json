@@ -1,0 +1,49 @@
+{
+ "status": "ok",
+ "results": 128,
+ "timeMs": 2932,
+ "firstResultMs": 2778,
+ "httpRequests": 51,
+ "httpRequestsWire": 51,
+ "byKind": {
+  "no-query": 2,
+  "count": 18,
+  "select": 31
+ },
+ "decodedBytes": 51309,
+ "wireBytes": 12299,
+ "sourcesGiven": 2,
+ "sourcesContacted": 2,
+ "sourcesWithData": [
+  "https://datasetregister.netwerkdigitaalerfgoed.nl/sparql",
+  "https://sparql.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph"
+ ],
+ "byEndpoint": {
+  "https://datasetregister.netwerkdigitaalerfgoed.nl/sparql": {
+   "requests": 25,
+   "decodedBytes": 35687,
+   "kinds": {
+    "no-query": 1,
+    "count": 9,
+    "select": 15
+   },
+   "dataRows": 182,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://sparql.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph": {
+   "requests": 26,
+   "decodedBytes": 15622,
+   "kinds": {
+    "no-query": 1,
+    "count": 9,
+    "select": 16
+   },
+   "dataRows": 39,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  }
+ }
+}

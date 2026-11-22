@@ -1,0 +1,15 @@
+# National monuments (rijksmonumenten) in Gouda: buildings of the Gouda Time Machine
+# joined with the RCE monument register for their style and original function.
+PREFIX schema: <https://schema.org/>
+PREFIX ceo: <https://linkeddata.cultureelerfgoed.nl/def/ceo#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX gtm: <https://www.goudatijdmachine.nl/def#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+SELECT ?building ?name ?monumentNumber ?style ?originalFunction WHERE {
+  ?building a gtm:Gebouw ;
+            schema:name ?name ;
+            rdfs:seeAlso ?monument .
+  ?monument ceo:rijksmonumentnummer ?monumentNumber ;
+            ceo:heeftOorspronkelijkeFunctie/ceo:heeftFunctieNaam/skos:prefLabel ?originalFunction .
+  OPTIONAL { ?monument ceo:heeftStijlEnCultuur/ceo:heeftStijlEnCultuurNaam/skos:prefLabel ?style . }
+}

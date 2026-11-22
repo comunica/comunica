@@ -1,0 +1,4 @@
+# NDE dataset register
+https://datasetregister.netwerkdigitaalerfgoed.nl/sparql
+# NDE Dataset Knowledge Graph (VoID descriptions, linksets)
+https://sparql.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph

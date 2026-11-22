@@ -1,0 +1,18 @@
+# Discovery: which datasets in the NDE register link to the NIOD WO2 thesaurus, how many links
+# do they have (NDE Dataset Knowledge Graph linksets), and where can they be queried (register distributions)?
+PREFIX void: <http://rdfs.org/ns/void#>
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT DISTINCT ?dataset ?title ?publisher ?links ?endpoint WHERE {
+  ?linkset void:objectsTarget <https://data.niod.nl/WO2_Thesaurus> ;
+           void:subjectsTarget ?dataset ;
+           void:triples ?links .
+  ?dataset dct:title ?title ;
+           dct:publisher/foaf:name ?publisher ;
+           dcat:distribution ?distribution .
+  ?distribution dct:conformsTo <https://www.w3.org/TR/sparql11-protocol/> ;
+                dcat:accessURL ?endpoint .
+  FILTER(LANG(?title) = "en" || LANG(?title) = "")
+  FILTER(LANG(?publisher) = "en" || LANG(?publisher) = "")
+}

@@ -1,0 +1,107 @@
+{
+ "status": "ok",
+ "results": 712,
+ "timeMs": 8011,
+ "firstResultMs": 6510,
+ "httpRequests": 197,
+ "httpRequestsWire": 198,
+ "byKind": {
+  "no-query": 6,
+  "count": 100,
+  "ask": 2,
+  "ask-batch": 1,
+  "select": 88
+ },
+ "decodedBytes": 651908,
+ "wireBytes": 452568,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://gtaa.apis.beeldengeluid.nl/sparql",
+  "https://cat.apis.beeldengeluid.nl/sparql",
+  "https://data.muziekschatten.nl/sparql",
+  "https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql"
+ ],
+ "byEndpoint": {
+  "https://gtaa.apis.beeldengeluid.nl/sparql": {
+   "requests": 15,
+   "decodedBytes": 2965,
+   "kinds": {
+    "no-query": 1,
+    "count": 12,
+    "select": 2
+   },
+   "dataRows": 2,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://cat.apis.beeldengeluid.nl/sparql": {
+   "requests": 28,
+   "decodedBytes": 314024,
+   "kinds": {
+    "no-query": 1,
+    "count": 12,
+    "ask-batch": 1,
+    "select": 14
+   },
+   "dataRows": 2202,
+   "askTrue": 2,
+   "askFalse": 1,
+   "errors": 3
+  },
+  "https://data.muziekschatten.nl/sparql": {
+   "requests": 39,
+   "decodedBytes": 166416,
+   "kinds": {
+    "no-query": 1,
+    "count": 12,
+    "ask": 2,
+    "select": 24
+   },
+   "dataRows": 576,
+   "askTrue": 1,
+   "askFalse": 1,
+   "errors": 2
+  },
+  "https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql": {
+   "requests": 53,
+   "decodedBytes": 60722,
+   "kinds": {
+    "no-query": 1,
+    "count": 24,
+    "select": 28
+   },
+   "dataRows": 364,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql": {
+   "requests": 41,
+   "decodedBytes": 4847,
+   "kinds": {
+    "no-query": 1,
+    "count": 24,
+    "select": 16
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://sparql.ldmax.nl/Q2204530": {
+   "requests": 21,
+   "decodedBytes": 102934,
+   "kinds": {
+    "no-query": 1,
+    "count": 16,
+    "select": 4
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  }
+ }
+}
