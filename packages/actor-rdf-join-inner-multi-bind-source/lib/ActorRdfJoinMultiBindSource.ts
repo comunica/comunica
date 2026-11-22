@@ -7,7 +7,7 @@ import type {
 } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { MediatorRdfJoinEntriesSort } from '@comunica/bus-rdf-join-entries-sort';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery } from '@comunica/context-entries';
 import type { TestResult } from '@comunica/core';
 import { passTestWithSideData, failTest, passTest } from '@comunica/core';
 import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-coefficients';
@@ -87,14 +87,120 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
   ): AsyncIterator<RDF.Bindings> {
     return new TransformIterator(async() => {
       const bindings = await chunk.toArray();
+      const bindingsPerTarget = await Promise.all(targets
+        .map(target => this.pruneBindingsByIriPrefix(target, bindings, context, dataFactory)));
       if (targets.length === 1) {
-        return this.queryTarget(targets[0], bindings, metadata, context, dataFactory);
+        return this.queryTarget(targets[0], bindingsPerTarget[0], metadata, context, dataFactory);
       }
       return new UnionIterator(
-        targets.map(target => this.queryTarget(target, bindings, metadata, context, dataFactory)),
+        targets.map((target, i) => this.queryTarget(target, bindingsPerTarget[i], metadata, context, dataFactory)),
         { autoStart: false },
       );
     }, { autoStart: false });
+  }
+
+  /**
+   * Per target operation, whether it has results for IRIs with a given prefix for a given variable.
+   */
+  private readonly iriPrefixAsks = new WeakMap<Algebra.Operation, Map<string, Promise<boolean>>>();
+  public static IRI_PREFIX_PRUNING = process.env.COMUNICA_BIND_PREFIX_PRUNING !== '0';
+  public static IRI_PREFIX_ASK_TIMEOUT = 2_000;
+  public static IRI_PREFIX_ASK_WAIT = 500;
+  private readonly slowPrefixSources = new WeakSet<object>();
+
+  /**
+   * The prefix of an IRI up to and including its last slash or hash.
+   * @param iri An IRI.
+   */
+  public static getIriPrefix(iri: string): string {
+    const index = Math.max(iri.lastIndexOf('/'), iri.lastIndexOf('#'));
+    return index > 0 ? iri.slice(0, index + 1) : iri;
+  }
+
+  /**
+   * Remove the bindings that can not have results in the target,
+   * because the target has no results for the IRI prefix of one of their values.
+   * This is determined with one (cached) ASK query per variable and IRI prefix,
+   * e.g., so that blocks of museum-specific IRIs are only sent to the museum that mints them.
+   * @param target A bind target.
+   * @param bindings Bindings to pass to the target.
+   * @param context The action context.
+   * @param dataFactory The data factory.
+   */
+  public async pruneBindingsByIriPrefix(
+    target: IBindTarget,
+    bindings: RDF.Bindings[],
+    context: IActionContext,
+    dataFactory: ComunicaDataFactory,
+  ): Promise<RDF.Bindings[]> {
+    if (!ActorRdfJoinMultiBindSource.IRI_PREFIX_PRUNING || bindings.length === 0) {
+      return bindings;
+    }
+    const variables = new Set(algebraUtils.inScopeVariables(target.operation).map(variable => variable.value));
+    const keys = new Map<string, [RDF.Variable, string]>();
+    for (const binding of bindings) {
+      for (const [ variable, term ] of binding) {
+        if (term.termType === 'NamedNode' && variables.has(variable.value)) {
+          const prefix = ActorRdfJoinMultiBindSource.getIriPrefix(term.value);
+          keys.set(`${variable.value} ${prefix}`, [ variable, prefix ]);
+        }
+      }
+    }
+    if (keys.size === 0) {
+      return bindings;
+    }
+
+    // Sources that do not answer these checks in time are not checked anymore.
+    if (this.slowPrefixSources.has(target.sourceWrapper.source)) {
+      return bindings;
+    }
+    let asks = this.iriPrefixAsks.get(target.operation);
+    if (!asks) {
+      asks = new Map();
+      this.iriPrefixAsks.set(target.operation, asks);
+    }
+    const algebraFactory = new AlgebraFactory(dataFactory);
+    const allowed = new Map<string, boolean>();
+    await Promise.all([ ...keys.entries() ].map(async([ key, [ variable, prefix ]]) => {
+      let ask = asks.get(key);
+      if (!ask) {
+        const operation = algebraFactory.createAsk(algebraFactory.createFilter(
+          target.operation,
+          algebraFactory.createOperatorExpression('strstarts', [
+            algebraFactory.createOperatorExpression('str', [ algebraFactory.createTermExpression(variable) ]),
+            algebraFactory.createTermExpression(dataFactory.literal(prefix)),
+          ]),
+        ));
+        // Checks that fail or are not answered in time do not prune anything, and are aborted.
+        const abortController = new AbortController();
+        const existingSignal = context.get(KeysHttp.httpAbortSignal);
+        const askContext = context.set(
+          KeysHttp.httpAbortSignal,
+          existingSignal ? AbortSignal.any([ existingSignal, abortController.signal ]) : abortController.signal,
+        );
+        let timeout: NodeJS.Timeout | undefined;
+        ask = Promise.race([
+          target.sourceWrapper.source.queryBoolean(operation, askContext).catch(() => true),
+          new Promise<boolean>((resolve) => {
+            timeout = setTimeout(() => {
+              this.slowPrefixSources.add(target.sourceWrapper.source);
+              abortController.abort();
+              resolve(true);
+            }, ActorRdfJoinMultiBindSource.IRI_PREFIX_ASK_TIMEOUT);
+          }),
+        ]).finally(() => clearTimeout(timeout));
+        asks.set(key, ask);
+      }
+      // Do not hold up a block for long on a check, but send it unpruned instead.
+      allowed.set(key, await Promise.race([
+        ask,
+        new Promise<boolean>(resolve => setTimeout(() => resolve(true), ActorRdfJoinMultiBindSource.IRI_PREFIX_ASK_WAIT)),
+      ]));
+    }));
+
+    return bindings.filter(binding => [ ...binding ].every(([ variable, term ]) =>
+      term.termType !== 'NamedNode' || !variables.has(variable.value) ||
+      allowed.get(`${variable.value} ${ActorRdfJoinMultiBindSource.getIriPrefix(term.value)}`) !== false));
   }
 
   /**
