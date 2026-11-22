@@ -1264,7 +1264,7 @@ IQueryOperationResultBindings
         ]);
       });
 
-      it('does not sort if there is an undef', async() => {
+      it('does not sort if a join variable can be undefined', async() => {
         await expect(ActorRdfJoin.sortJoinEntries(
           mediatorJoinEntriesSort,
           [
@@ -1342,6 +1342,115 @@ IQueryOperationResultBindings
             },
           },
         ]);
+      });
+
+      it('sorts if only a non-join variable can be undefined', async() => {
+        await expect(ActorRdfJoin.sortJoinEntries(
+          mediatorJoinEntriesSort,
+          [
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            },
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 5 },
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                  { variable: DF.variable('b'), canBeUndef: true },
+                ],
+              },
+            },
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: false },
+                ],
+              },
+            },
+          ],
+          context,
+        )).resolves.toPassTest([
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              state: expect.any(MetadataValidationState),
+              cardinality: { type: 'estimate', value: 2 },
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              state: expect.any(MetadataValidationState),
+              cardinality: { type: 'estimate', value: 3 },
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+              ],
+            },
+          },
+          {
+            output: <any> {},
+            operation: <any> {},
+            metadata: {
+              state: expect.any(MetadataValidationState),
+              cardinality: { type: 'estimate', value: 5 },
+              variables: [
+                { variable: DF.variable('a'), canBeUndef: false },
+                { variable: DF.variable('b'), canBeUndef: true },
+              ],
+            },
+          },
+        ]);
+      });
+
+      it('throws if there are no overlapping variables and a variable can be undefined', async() => {
+        await expect(ActorRdfJoin.sortJoinEntries(
+          mediatorJoinEntriesSort,
+          [
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 3 },
+                variables: [
+                  { variable: DF.variable('a'), canBeUndef: true },
+                ],
+              },
+            },
+            {
+              output: <any> {},
+              operation: <any> {},
+              metadata: {
+                state: new MetadataValidationState(),
+                cardinality: { type: 'estimate', value: 2 },
+                variables: [
+                  { variable: DF.variable('b'), canBeUndef: false },
+                ],
+              },
+            },
+          ],
+          context,
+        )).resolves.toFailTest('Bind join can only join entries with at least one common variable');
       });
 
       it('throws if there are no overlapping variables', async() => {
