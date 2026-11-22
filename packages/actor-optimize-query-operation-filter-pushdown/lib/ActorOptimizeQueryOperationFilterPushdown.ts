@@ -104,7 +104,6 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
           const [ isModified, result ] = this
             .filterPushdown(filterOp.expression, variables, filterOp.input, algebraFactory, action.context);
           if (!isModified) {
-            // Keep the filter as is, as recreating it would lose its metadata
             return filterOp;
           }
           repeat = true;

@@ -515,7 +515,6 @@ export function withMetadata<T extends Operation>(op: T): T & { metadata: Record
 
 /**
  * Copy the metadata of an operation to an operation that replaces it, if it has metadata.
- * Metadata can contain information that must be retained, such as source annotations.
  * @param op The operation to copy the metadata to, which is mutated.
  * @param original The operation to copy the metadata from.
  * @return The given operation.
