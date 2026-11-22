@@ -441,6 +441,48 @@ export class QuerySourceSparql implements IQuerySource {
   }
 
   /**
+   * Append a suffix to all variables in the given operation.
+   * @param operation An operation.
+   * @param suffix A variable name suffix.
+   */
+  protected renameVariables(operation: Algebra.Operation, suffix: string): Algebra.Operation {
+    const rename = <T extends RDF.Term>(term: T): T => <T> (term.termType === 'Variable' ?
+      this.dataFactory.variable(`${term.value}${suffix}`) :
+      term);
+    return algebraUtils.mapOperation(operation, {
+      [Algebra.Types.PATTERN]: {
+        preVisitor: () => ({ continue: false }),
+        transform: pattern => this.algebraFactory.createPattern(
+          rename(pattern.subject),
+          rename(pattern.predicate),
+          rename(pattern.object),
+          rename(pattern.graph),
+        ),
+      },
+      [Algebra.Types.PATH]: {
+        preVisitor: () => ({ continue: false }),
+        transform: path => this.algebraFactory.createPath(
+          rename(path.subject),
+          path.predicate,
+          rename(path.object),
+          rename(path.graph),
+        ),
+      },
+      [Algebra.Types.EXTEND]: {
+        transform: extend => this.algebraFactory.createExtend(extend.input, rename(extend.variable), extend.expression),
+      },
+      [Algebra.Types.PROJECT]: {
+        transform: project => this.algebraFactory.createProject(project.input, project.variables.map(rename)),
+      },
+      [Algebra.Types.EXPRESSION]: {
+        transform: expression => (expression.subType === 'term' ?
+          this.algebraFactory.createTermExpression(rename((<Algebra.TermExpression> expression).term)) :
+          expression),
+      },
+    });
+  }
+
+  /**
    * Send the given ASK queries in a single SELECT query.
    * @param batch The ASK queries.
    * @return The answer to each ASK query.
@@ -449,10 +491,12 @@ export class QuerySourceSparql implements IQuerySource {
     const variables = batch.map((_, index) => this.dataFactory.variable(`ask${index}`));
     let operation: Algebra.Operation = this.algebraFactory.createBgp([]);
     for (const [ index, entry ] of batch.entries()) {
+      // Some endpoints correlate equally named variables of different EXISTS expressions,
+      // so the variables of each ASK query are made unique.
       operation = this.algebraFactory.createExtend(
         operation,
         variables[index],
-        this.algebraFactory.createExistenceExpression(false, entry.operation.input),
+        this.algebraFactory.createExistenceExpression(false, this.renameVariables(entry.operation.input, `_b${index}`)),
       );
     }
     const query = await this.operationToQuery(this.algebraFactory.createProject(operation, variables));
