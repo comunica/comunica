@@ -290,7 +290,18 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     };
 
     algebraUtils.visitOperation(operation, {
-      [Algebra.Types.EXTEND]: skipHandler,
+      [Algebra.Types.EXTEND]: {
+        preVisitor: (op: Algebra.Extend) => {
+          // An EXTEND is only bound if it does not assign a bound variable,
+          // and its expression does not use bound variables that are not in scope of its input.
+          if (!boundVariables || boundVarNames.includes(op.variable.value) ||
+            ActorRdfJoinMultiBind.expressionUsesOutOfScopeVariables(op, boundVarNames)) {
+            valid = false;
+            return { shortcut: true };
+          }
+          return { shortcut: false };
+        },
+      },
       [Algebra.Types.GROUP]: skipHandler,
       [Algebra.Types.LEFT_JOIN]: {
         preVisitor: (op: Algebra.LeftJoin) => {
@@ -339,7 +350,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
           }
           // Other FILTERs are only bound when they are evaluated by a source and variables are in scope.
           if (!boundVariables || !getOperationSource(op) ||
-            ActorRdfJoinMultiBind.filterUsesOutOfScopeVariables(op, boundVarNames)) {
+            ActorRdfJoinMultiBind.expressionUsesOutOfScopeVariables(op, boundVarNames)) {
             valid = false;
             return { shortcut: true };
           }
@@ -362,20 +373,23 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
   }
 
   /**
-   * Check if the expression of the given FILTER uses any of the given variables
-   * that are not in scope of the FILTER's input.
-   * @param filter A FILTER operation.
+   * Check if the expression of the given FILTER or EXTEND uses any of the given variables
+   * that are not in scope of the operation's input.
+   * @param operation A FILTER or EXTEND operation.
    * @param variableNames Variable names.
    */
-  public static filterUsesOutOfScopeVariables(filter: Algebra.Filter, variableNames: string[]): boolean {
+  public static expressionUsesOutOfScopeVariables(
+    operation: Algebra.Filter | Algebra.Extend,
+    variableNames: string[],
+  ): boolean {
     let expressionVariables: RDF.Variable[];
     try {
-      expressionVariables = getExpressionVariables(filter.expression);
+      expressionVariables = getExpressionVariables(operation.expression);
     } catch {
       // Unknown expression types are considered unsafe
       return true;
     }
-    const inputVariableNames = new Set(inScopeVariables(filter.input).map(variable => variable.value));
+    const inputVariableNames = new Set(inScopeVariables(operation.input).map(variable => variable.value));
     return expressionVariables
       .some(variable => variableNames.includes(variable.value) && !inputVariableNames.has(variable.value));
   }
@@ -424,7 +438,7 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
     const boundVariables = metadatas[0].variables.map(variable => variable.variable);
     if (remainingEntries
       .some(entry => !ActorRdfJoinMultiBind.canBindWithOperation(entry.operation, boundVariables))) {
-      return failTest(`Actor ${this.name} can not bind on Extend, Group, or conflicting LeftJoin/Minus/Filter operations`);
+      return failTest(`Actor ${this.name} can not bind on Group, or conflicting Extend/LeftJoin/Minus/Filter operations`);
     }
 
     // Reject binding on modified operations, since using the output directly would be significantly more efficient.
