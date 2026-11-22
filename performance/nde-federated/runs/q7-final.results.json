@@ -1,0 +1,9 @@
+[
+ {
+  "dataset": "https://data.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph",
+  "links": "1241",
+  "publisher": "Dutch Digital Heritage Network",
+  "endpoint": "https://sparql.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph",
+  "title": "Dataset Knowledge Graph"
+ }
+]

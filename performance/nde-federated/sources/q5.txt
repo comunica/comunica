@@ -1,0 +1,11 @@
+# GTAA (Beeld en Geluid thesaurus)
+https://gtaa.apis.beeldengeluid.nl/sparql
+# Beeld en Geluid catalogue
+https://cat.apis.beeldengeluid.nl/sparql
+# Muziekschatten (Dutch classical compositions, persons)
+https://data.muziekschatten.nl/sparql
+# Muziekweb
+https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql
+# Other performing-arts datasets in the register (candidates without links to this composer)
+https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql
+https://sparql.ldmax.nl/Q2204530

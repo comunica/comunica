@@ -1,0 +1,14 @@
+# Victims who died in Kamp Vught (Genealogy Online), with their birthplace as recorded
+# in the Oorlogslevens person records of WO2Net, labelled via the NIOD WO2 thesaurus.
+PREFIX schema: <https://schema.org/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+SELECT DISTINCT ?victim ?name ?deathDate ?birthPlace WHERE {
+  ?camp skos:prefLabel "Kamp Vught"@nl .
+  ?victim schema:deathPlace ?camp ;
+          schema:name ?name ;
+          schema:deathDate ?deathDate ;
+          schema:sameAs ?warLife .
+  ?warLife schema:birthPlace ?bp .
+  ?bp skos:prefLabel ?birthPlace .
+  FILTER(LANG(?birthPlace) = "nl")
+}

@@ -1,0 +1,108 @@
+{
+ "status": "error",
+ "error": "Unknown SPARQL results content type: text/html",
+ "results": 0,
+ "timeMs": 5692,
+ "httpRequests": 75,
+ "httpRequestsWire": 76,
+ "byKind": {
+  "no-query": 20,
+  "count": 50,
+  "ask-batch": 2,
+  "ask": 3
+ },
+ "decodedBytes": 16856,
+ "wireBytes": 10429,
+ "sourcesGiven": 6,
+ "sourcesContacted": 7,
+ "sourcesWithData": [],
+ "byEndpoint": {
+  "https://sparql.goudatijdmachine.nl/": {
+   "requests": 1,
+   "decodedBytes": 9139,
+   "kinds": {
+    "no-query": 1
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql": {
+   "requests": 13,
+   "decodedBytes": 1221,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "ask-batch": 1,
+    "ask": 1
+   },
+   "dataRows": 0,
+   "askTrue": 2,
+   "askFalse": 2,
+   "errors": 9
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql": {
+   "requests": 12,
+   "decodedBytes": 1550,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "ask": 1
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 1,
+   "errors": 2
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql": {
+   "requests": 11,
+   "decodedBytes": 1290,
+   "kinds": {
+    "no-query": 1,
+    "count": 10
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 4
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql": {
+   "requests": 12,
+   "decodedBytes": 1555,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "ask": 1
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 1,
+   "errors": 2
+  },
+  "https://qlever.coret.org/oabs": {
+   "requests": 11,
+   "decodedBytes": 1944,
+   "kinds": {
+    "no-query": 1,
+    "count": 10
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://sparql.goudatijdmachine.nl/matgui/": {
+   "requests": 15,
+   "decodedBytes": 157,
+   "kinds": {
+    "no-query": 14,
+    "ask-batch": 1
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  }
+ }
+}

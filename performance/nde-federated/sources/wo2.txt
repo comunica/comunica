@@ -1,0 +1,13 @@
+# NIOD WO2 thesaurus (PoolParty)
+https://data.niod.nl/PoolParty/sparql/WO2_Thesaurus
+# Genealogy Online: WWII victims (PiCo)
+https://www.genealogieonline.nl/wo2slachtoffers/sparql
+# WO2Net: WWII collections, war persons (oorlogslevens) and a copy of the WO2 thesaurus
+https://sparql.ldmax.nl/wo2net
+# WWII-related museum collections linking to the WO2 thesaurus
+https://sparql.ldmax.nl/Q24033642
+https://sparql.ldmax.nl/Q4452658
+https://sparql.ldmax.nl/Q1852477
+https://sparql.ldmax.nl/Q2070053
+https://sparql.ldmax.nl/Q2798268
+https://sparql.ldmax.nl/Q2882945

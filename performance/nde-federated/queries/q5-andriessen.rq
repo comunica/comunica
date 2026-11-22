@@ -1,0 +1,29 @@
+# Composer Louis Andriessen across Dutch music and broadcast heritage:
+# compositions (Muziekschatten), albums (Muziekweb) and broadcast items (Beeld en Geluid),
+# all reached through his GTAA person identifier.
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX schema: <http://schema.org/>
+PREFIX sdo: <https://schema.org/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX mw: <https://data.muziekweb.nl/vocab/>
+SELECT ?kind ?item ?title WHERE {
+  ?gtaa skos:prefLabel "Andriessen, Louis"@nl ;
+        skos:inScheme <http://data.beeldengeluid.nl/gtaa/Persoonsnamen> .
+  {
+    ?person owl:sameAs ?gtaa .
+    ?item schema:composer ?person ;
+          schema:name ?title .
+    BIND("composition (Muziekschatten)" AS ?kind)
+  } UNION {
+    ?person owl:sameAs ?gtaa , ?mwPerson .
+    ?mwPerson mw:album ?item .
+    ?item rdfs:label ?title .
+    BIND("album (Muziekweb)" AS ?kind)
+  } UNION {
+    ?role sdo:creator ?gtaa .
+    ?item sdo:creator ?role ;
+          sdo:name ?title .
+    BIND("broadcast item (Beeld en Geluid)" AS ?kind)
+  }
+}

@@ -1,0 +1,6 @@
+https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql
+https://sparql.ldmax.nl/Q11722011
+https://sparql.ldmax.nl/Q1542668
+https://sparql.ldmax.nl/Q2798268
+https://sparql.ldmax.nl/Q2070053
+https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql

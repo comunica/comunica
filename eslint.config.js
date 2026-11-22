@@ -217,6 +217,8 @@ module.exports = config([
       'engines/*/comunica-browser-vite.js',
       // The performance combination files are auto-generated
       'performance/*/combinations/**',
+      // Ad-hoc federation experiment over the NDE register, including generated measurement output
+      'performance/nde-federated/**',
       // The agentic workflow lock files are compiled from their .md sources by 'gh aw compile'
       '.github/workflows/*.lock.yml',
       // TODO: Remove this once solid-client-authn supports node 18.
