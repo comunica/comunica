@@ -13,6 +13,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-filter-pushdown/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-distinct-terms-pushdown/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-group-sources/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-push-source-joins/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-filter-equality-join/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-rewrite-add/^5.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-rewrite-copy/^5.0.0/components/context.jsonld",
@@ -139,6 +140,15 @@
     {
       "@id": "urn:comunica:default:optimize-query-operation/actors#group-sources",
       "@type": "ActorOptimizeQueryOperationGroupSources",
+      "beforeActors": [
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#push-source-joins" },
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#filter-equality-join" },
+        { "@id": "urn:comunica:default:optimize-query-operation/actors#annotate-union-order" }
+      ]
+    },
+    {
+      "@id": "urn:comunica:default:optimize-query-operation/actors#push-source-joins",
+      "@type": "ActorOptimizeQueryOperationPushSourceJoins",
       "beforeActors": [
         { "@id": "urn:comunica:default:optimize-query-operation/actors#filter-equality-join" },
         { "@id": "urn:comunica:default:optimize-query-operation/actors#annotate-union-order" }

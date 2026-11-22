@@ -190,6 +190,7 @@
     "@comunica/actor-optimize-query-operation-leftjoin-expression-pushdown": "^5.4.0",
     "@comunica/actor-optimize-query-operation-path-to-patterns": "^5.4.0",
     "@comunica/actor-optimize-query-operation-prune-empty-source-operations": "^5.4.0",
+    "@comunica/actor-optimize-query-operation-push-source-joins": "^5.4.0",
     "@comunica/actor-optimize-query-operation-query-source-identify": "^5.4.0",
     "@comunica/actor-optimize-query-operation-query-source-skolemize": "^5.4.0",
     "@comunica/actor-optimize-query-operation-rewrite-add": "^5.4.0",
