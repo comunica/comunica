@@ -14,6 +14,7 @@ import type { IMediatorTypeJoinCoefficients } from '@comunica/mediatortype-join-
 import type { ComunicaDataFactory, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { inScopeVariables } from '@comunica/utils-algebra';
+import { KeyedChunkedIterator } from '@comunica/utils-iterator';
 import {
   doesShapeAcceptOperationInContext,
   getOperationSource,
@@ -23,7 +24,6 @@ import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
-import { KeyedChunkedIterator } from './KeyedChunkedIterator';
 
 /**
  * A comunica Optional Bind Source RDF Join Actor.

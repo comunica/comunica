@@ -1,5 +1,5 @@
-import { ChunkedIterator } from '@comunica/utils-iterator';
 import type { AsyncIterator, TransformIteratorOptions } from 'asynciterator';
+import { ChunkedIterator } from './ChunkedIterator';
 
 /**
  * Splits an iterator into chunks with at most a given number of distinct keys, and at most a given number of items.
