@@ -29,6 +29,7 @@
     "depcheckTask": "./bin/depcheckTask.js",
     "performance-comparison": "./bin/performance-comparison.js",
     "performance-ingestion": "./bin/performance-ingestion.js",
+    "performance-requests": "./bin/performance-requests.js",
     "readme-check": "./bin/readme-check.js",
     "test-config-compat": "./bin/test-config-compat.js",
     "web-clients": "./bin/web-clients.js"
