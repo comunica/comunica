@@ -491,30 +491,23 @@ export class QuerySourceSparql implements IQuerySource {
           return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         }
 
-        // Abort the count request on timeout, so that it does not keep occupying the endpoint.
-        const abortController = new AbortController();
-        const countContext = QuerySourceSparql.withAbortSignal(context, abortController.signal);
-        const timeoutHandler = setTimeout(() => {
-          resolve({
-            type: 'estimate',
-            value: Number.POSITIVE_INFINITY,
-            dataset: this.url,
-          });
-          abortController.abort();
-          this.activateCountFallback(context, operation);
-        }, this.countTimeout);
+        // The count timeout applies from when the request is sent, as it may first wait in the HTTP layer,
+        // such as for the retry of a rate-limited request.
+        // On timeout, the request is aborted, so that it does not keep occupying the endpoint.
+        const httpTimeout = context.get(KeysHttp.httpTimeout);
+        const countContext = context
+          .set(KeysHttp.httpTimeout, httpTimeout ? Math.min(httpTimeout, this.countTimeout) : this.countTimeout)
+          .set(KeysHttp.httpBodyTimeout, true);
         const varCount = this.dataFactory.variable('count');
         let bindingsStream: BindingsStream;
         try {
           bindingsStream = await this.queryBindingsRemote(this.url, countQuery, [ varCount ], countContext, []);
         } catch {
-          clearTimeout(timeoutHandler);
           this.activateCountFallback(context, operation);
           return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         }
         bindingsStream
           .on('data', (bindings: Bindings) => {
-            clearTimeout(timeoutHandler);
             const count = bindings.get(varCount);
             const cardinality: QueryResultCardinality = {
               type: 'estimate',
@@ -532,12 +525,10 @@ export class QuerySourceSparql implements IQuerySource {
             return resolve(cardinality);
           })
           .on('error', () => {
-            clearTimeout(timeoutHandler);
             resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
             this.activateCountFallback(context, operation);
           })
           .on('end', () => {
-            clearTimeout(timeoutHandler);
             resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
           });
       } catch (error: unknown) {
