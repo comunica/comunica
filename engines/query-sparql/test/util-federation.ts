@@ -31,6 +31,7 @@ export class MockFederation {
   public readonly requests: IMockFederationRequest[] = [];
   private readonly engine = new QueryEngine();
   private readonly stores = new Map<string, RdfStore>();
+  private pending = 0;
 
   /**
    * @param datasets Turtle data per endpoint URL.
@@ -65,7 +66,27 @@ export class MockFederation {
       .map(request => request.query!);
   }
 
+  /**
+   * Wait until no request is in flight anymore.
+   * Queries can still send requests after their results are complete, such as for metadata,
+   * and these must not outlive the test.
+   */
+  public async idle(): Promise<void> {
+    do {
+      await new Promise(resolve => setTimeout(resolve, 20));
+    } while (this.pending > 0);
+  }
+
   public readonly fetch = async(input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    this.pending++;
+    try {
+      return await this.respond(input, init);
+    } finally {
+      this.pending--;
+    }
+  };
+
+  protected async respond(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
     const url = new URL(typeof input === 'string' || input instanceof URL ? input : input.url);
     const endpoint = `${url.origin}${url.pathname}`;
     const method = init?.method ?? 'GET';
@@ -92,7 +113,7 @@ export class MockFederation {
       return new Response('', { status: 200, headers: { 'content-type': 'text/turtle' }});
     }
     return this.evaluate(store, query);
-  };
+  }
 
   protected async evaluate(store: RDF.Store, query: string): Promise<Response> {
     try {

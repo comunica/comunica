@@ -28,6 +28,10 @@ describe('System test: QuerySparql federation with endpoints that redirect their
     });
   });
 
+  afterEach(async() => {
+    await federation.idle();
+  });
+
   it('sends queries to the given endpoint URLs', async() => {
     const bindings = await (await engine.queryBindings(`
       PREFIX ex: <http://example.org/>
