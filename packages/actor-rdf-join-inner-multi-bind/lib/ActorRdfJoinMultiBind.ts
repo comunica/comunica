@@ -441,6 +441,28 @@ export class ActorRdfJoinMultiBind extends ActorRdfJoin<IActorRdfJoinMultiBindTe
       return failTest(`Actor ${this.name} can not be used over remaining entries with modified operations`);
     }
 
+    // If all remaining operations can be sent to their sources with blocks of bindings (bind-source join),
+    // binding one binding at a time is never cheaper in requests, while it is easily chosen on bad estimates.
+    const remainingSources = new Set<unknown>();
+    const blockBindable = remainingEntries.every((entry) => {
+      const source = getOperationSource(entry.operation);
+      if (source) {
+        remainingSources.add(source.source);
+        return true;
+      }
+      if (entry.operation.type === Algebra.Types.UNION) {
+        const inputSources = (<Algebra.Union> entry.operation).input.map(input => getOperationSource(input));
+        for (const inputSource of inputSources) {
+          remainingSources.add(inputSource?.source);
+        }
+        return inputSources.every(Boolean);
+      }
+      return false;
+    });
+    if (blockBindable && remainingSources.size > 1) {
+      return failTest(`Actor ${this.name} leaves binding on operations over multiple sources to block-based bind joins`);
+    }
+
     // Only run this actor if the smallest stream is significantly smaller than the largest stream.
     // We must use Math.max, because the last metadata is not necessarily the biggest, but it's the least preferred.
     // If join entries are produced locally, we increase the possibility of doing this bind join, as it's cheap.
