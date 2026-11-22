@@ -823,8 +823,6 @@ jobs:
           collect performance/*/combinations/combination_0/output/ingestion.json > ghbench-ingestion.json
           collect base/performance/*/combinations/combination_0/output/ingestion.json > ghbench-base-ingestion.json
       - name: Collect benchmark HTTP request results
-        # Benchmarks without HTTP requests, such as those over local files, get no entries,
-        # as do the BSBM ones, as their driver does not report requests
         run: |
           set -eu
           requests() { npx ts-node --transpile-only -O '{"rootDir":"."}' packages/utils-monorepo/bin/performance-requests.ts "$@"; }
