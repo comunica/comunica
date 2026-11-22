@@ -322,6 +322,104 @@ describe('ActorQueryOperationGroup', () => {
       await expect(actor.test(op)).resolves.toPassTestVoid();
     });
 
+    describe('for a count of all bindings without grouping', () => {
+      const countAll: any = {
+        type: 'expression',
+        subType: 'aggregate',
+        aggregator: 'count',
+        distinct: false,
+        variable: DF.variable('c'),
+        expression: { type: 'expression', subType: 'wildcard', wildcard: { type: 'wildcard' }},
+      };
+      const inputBindings = [
+        BF.bindings([[ DF.variable('x'), DF.literal('1') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+        BF.bindings([[ DF.variable('x'), DF.literal('2') ]]),
+      ];
+      const inputOp: any = { type: Algebra.Types.PATTERN };
+
+      it('should use an exact cardinality of a pattern without consuming it', async() => {
+        const { actor, op, mediatorQueryOperation } = constructCase({
+          inputBindings,
+          inputVariables: [ 'x' ],
+          aggregates: [ countAll ],
+          inputOp,
+        });
+        const mediate = mediatorQueryOperation.mediate;
+        let inputStream: any;
+        mediatorQueryOperation.mediate = async(arg: any) => {
+          const output = await mediate(arg);
+          inputStream = output.bindingsStream;
+          jest.spyOn(inputStream, 'destroy');
+          return output;
+        };
+        const output = <any> await actor.run(op, undefined);
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('c'), termInt('3') ]]),
+        ]);
+        expect(inputStream.destroy).toHaveBeenCalledTimes(1);
+        await expect(output.metadata()).resolves.toEqual({
+          cardinality: { type: 'exact', value: 1 },
+          variables: [{ variable: DF.variable('c'), canBeUndef: false }],
+          termOrder: undefined,
+          canSeek: undefined,
+        });
+      });
+
+      it('should count the bindings of a pattern for an estimated cardinality', async() => {
+        const { actor, op, mediatorQueryOperation } = constructCase({
+          inputBindings,
+          inputVariables: [ 'x' ],
+          aggregates: [ countAll ],
+          inputOp,
+        });
+        const mediate = mediatorQueryOperation.mediate;
+        mediatorQueryOperation.mediate = async(arg: any) => {
+          const output = await mediate(arg);
+          const metadata = await output.metadata();
+          return { ...output, metadata: async() => ({ ...metadata, cardinality: { type: 'estimate', value: 10 }}) };
+        };
+        const output = <any> await actor.run(op, undefined);
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('c'), termInt('3') ]]),
+        ]);
+      });
+
+      it('should count the bindings of other operations than patterns for an exact cardinality', async() => {
+        // Joins and filters may report an exact cardinality that is not their own
+        const { actor, op, mediatorQueryOperation } = constructCase({
+          inputBindings,
+          inputVariables: [ 'x' ],
+          aggregates: [ countAll ],
+          inputOp: { type: Algebra.Types.JOIN },
+        });
+        const mediate = mediatorQueryOperation.mediate;
+        mediatorQueryOperation.mediate = async(arg: any) => {
+          const output = await mediate(arg);
+          const metadata = await output.metadata();
+          return { ...output, metadata: async() => ({ ...metadata, cardinality: { type: 'exact', value: 10 }}) };
+        };
+        const output = <any> await actor.run(op, undefined);
+        await expect(output.bindingsStream).toEqualBindingsStream([
+          BF.bindings([[ DF.variable('c'), termInt('3') ]]),
+        ]);
+      });
+
+      it('should only apply to a single count of all bindings without grouping', () => {
+        const group = (variables: string[], aggregates: any[]): any =>
+          ({ variables: variables.map(v => DF.variable(v)), aggregates });
+        expect(ActorQueryOperationGroup.isCountAll(group([], [ countAll ]))).toBe(true);
+        expect(ActorQueryOperationGroup.isCountAll(group([ 'x' ], [ countAll ]))).toBe(false);
+        expect(ActorQueryOperationGroup.isCountAll(group([], [ countAll, countAll ]))).toBe(false);
+        expect(ActorQueryOperationGroup.isCountAll(group([], [{ ...countAll, distinct: true }]))).toBe(false);
+        expect(ActorQueryOperationGroup.isCountAll(group([], [{ ...countAll, aggregator: 'sum' }]))).toBe(false);
+        expect(ActorQueryOperationGroup.isCountAll(group([], [{
+          ...countAll,
+          expression: { type: 'expression', subType: 'term', term: DF.variable('x') },
+        }]))).toBe(false);
+      });
+    });
+
     it('should not test on non-group', async() => {
       const op: any = { operation: { type: 'some-other-type' }};
       const { actor } = constructCase({});
