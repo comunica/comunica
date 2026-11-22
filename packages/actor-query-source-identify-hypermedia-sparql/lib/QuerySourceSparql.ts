@@ -1,7 +1,7 @@
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { MediatorQuerySerialize } from '@comunica/bus-query-serialize';
 import { KeysHttp, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
-import { Actor } from '@comunica/core';
+import { Actor, ActionContextKey } from '@comunica/core';
 import type {
   Bindings,
   BindingsStream,
@@ -35,6 +35,35 @@ import { LRUCache } from 'lru-cache';
 import { uniqTerms } from 'rdf-terms';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 
+/**
+ * Limits the number of requests to a host that are waiting for a response.
+ * A slot is released once the response headers arrive, as releasing on the end of a body that is never read would
+ * block other requests.
+ */
+export class HostRequestLimiter {
+  private active = 0;
+  private readonly waiting: (() => void)[] = [];
+
+  public constructor(public readonly limit: number) {}
+
+  public async acquire(): Promise<void> {
+    if (this.active < this.limit) {
+      this.active++;
+      return;
+    }
+    await new Promise<void>(resolve => this.waiting.push(resolve));
+  }
+
+  public release(): void {
+    const next = this.waiting.shift();
+    if (next) {
+      next();
+    } else {
+      this.active--;
+    }
+  }
+}
+
 export class QuerySourceSparql implements IQuerySource {
   /**
    * The query format that endpoints advertise via the `Accept-Query` header when they support HTTP QUERY (RFC 10008).
@@ -66,6 +95,25 @@ export class QuerySourceSparql implements IQuerySource {
 
   private readonly endpointFetcher: SparqlEndpointFetcher;
   private readonly cache: LRUCache<string, QueryResultCardinality> | undefined;
+  /**
+   * The maximum number of requests per host that wait for a response, shared by all SPARQL sources.
+   */
+  public static HOST_REQUEST_LIMIT = Number(process.env.COMUNICA_SPARQL_HOST_REQUEST_LIMIT ?? '8');
+  public static readonly hostLimiters = new Map<string, HostRequestLimiter>();
+  /**
+   * Context key for a request slot that was acquired before the request, e.g. to exclude waiting time from timeouts.
+   */
+  public static readonly KEY_ACQUIRED_SLOT = new ActionContextKey<boolean>('@comunica/actor-query-source-identify-hypermedia-sparql:acquiredSlot');
+  /**
+   * Moving average of the response time of COUNT requests, used as request time in metadata,
+   * so that join costs account for transferring results from this endpoint.
+   */
+  private requestTimeAverage: number | undefined;
+  public static readonly DEFAULT_REQUEST_TIME = 100;
+  /**
+   * The number of result rows whose transfer is assumed to cost as much as one request.
+   */
+  public static readonly ROWS_PER_REQUEST_TIME = 1_000;
 
   /**
    * The number of HTTP requests made for each physical query plan node.
@@ -168,7 +216,16 @@ export class QuerySourceSparql implements IQuerySource {
     }
 
     this.countHttpRequest(context);
-    let response = await this.mediatorHttp.mediate({ input, init, context });
+    const limiter = this.getHostLimiter();
+    if (limiter && !context.get(QuerySourceSparql.KEY_ACQUIRED_SLOT)) {
+      await limiter.acquire();
+    }
+    let response: Response;
+    try {
+      response = await this.mediatorHttp.mediate({ input, init, context });
+    } finally {
+      limiter?.release();
+    }
     // If we encounter a 404, try our backup URL.
     // After retrying the request with the new URL, we replace the URL for future requests.
     if (response.status === 404 && this.url !== this.urlBackup) {
@@ -491,9 +548,13 @@ export class QuerySourceSparql implements IQuerySource {
           return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         }
 
+        // Wait for a request slot first, so that waiting for other requests to this host does not count as time-out.
+        const countLimiter = this.getHostLimiter();
+        await countLimiter?.acquire();
         // Abort the count request on timeout, so that it does not keep occupying the endpoint.
         const abortController = new AbortController();
-        const countContext = QuerySourceSparql.withAbortSignal(context, abortController.signal);
+        const countContext = QuerySourceSparql.withAbortSignal(context, abortController.signal)
+          .set(QuerySourceSparql.KEY_ACQUIRED_SLOT, Boolean(countLimiter));
         const timeoutHandler = setTimeout(() => {
           resolve({
             type: 'estimate',
@@ -504,6 +565,7 @@ export class QuerySourceSparql implements IQuerySource {
           this.activateCountFallback(context, operation);
         }, this.countTimeout);
         const varCount = this.dataFactory.variable('count');
+        const countStart = performance.now();
         let bindingsStream: BindingsStream;
         try {
           bindingsStream = await this.queryBindingsRemote(this.url, countQuery, [ varCount ], countContext, []);
@@ -515,6 +577,7 @@ export class QuerySourceSparql implements IQuerySource {
         bindingsStream
           .on('data', (bindings: Bindings) => {
             clearTimeout(timeoutHandler);
+            this.recordRequestTime(performance.now() - countStart);
             const count = bindings.get(varCount);
             const cardinality: QueryResultCardinality = {
               type: 'estimate',
@@ -548,12 +611,40 @@ export class QuerySourceSparql implements IQuerySource {
         state: new MetadataValidationState(),
         cardinality,
         variables: variablesCount,
+        requestTime: this.requestTimeAverage ?? QuerySourceSparql.DEFAULT_REQUEST_TIME,
+        pageSize: QuerySourceSparql.ROWS_PER_REQUEST_TIME,
       }))
       .catch(() => target.setProperty('metadata', {
         state: new MetadataValidationState(),
         cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url },
         variables: variablesCount,
       }));
+  }
+
+  /**
+   * The request limiter for the host of this endpoint, if requests are limited.
+   */
+  public getHostLimiter(): HostRequestLimiter | undefined {
+    if (!(QuerySourceSparql.HOST_REQUEST_LIMIT > 0)) {
+      return undefined;
+    }
+    const host = new URL(this.url).host;
+    let limiter = QuerySourceSparql.hostLimiters.get(host);
+    if (!limiter) {
+      limiter = new HostRequestLimiter(QuerySourceSparql.HOST_REQUEST_LIMIT);
+      QuerySourceSparql.hostLimiters.set(host, limiter);
+    }
+    return limiter;
+  }
+
+  /**
+   * Update the moving average of request times with a measured request time.
+   * @param duration A request duration in milliseconds.
+   */
+  protected recordRequestTime(duration: number): void {
+    this.requestTimeAverage = this.requestTimeAverage === undefined ?
+      duration :
+      0.8 * this.requestTimeAverage + 0.2 * duration;
   }
 
   /**
