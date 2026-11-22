@@ -13,6 +13,8 @@
       "@type": "ActorQuerySourceDereferenceLinkForceSparql",
       "mediatorMetadataAccumulate": { "@id": "urn:comunica:default:rdf-metadata-accumulate/mediators#main" },
       "mediatorQuerySourceIdentifyHypermedia": { "@id": "urn:comunica:default:query-source-identify-hypermedia/mediators#main" },
+      "mediatorQuerySourceDereferenceLink": { "@id": "urn:comunica:default:query-source-dereference-link/mediators#main" },
+      "serviceDescriptionsInBackground": true,
       "beforeActors": [
         { "@id": "urn:comunica:default:query-source-dereference-link/actors#dereference" }
       ]

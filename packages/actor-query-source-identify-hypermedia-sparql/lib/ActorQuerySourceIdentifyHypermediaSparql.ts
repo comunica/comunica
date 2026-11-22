@@ -39,6 +39,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly batchAskQueries: boolean;
   public readonly shareRequestsMaxBindings: number;
   public readonly resultPageMultiple: number;
+  public readonly countBatchSize: number;
   public readonly countFallbackDuration: number;
   /**
    * For each endpoint of which a COUNT query failed or took too long,
@@ -67,6 +68,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     this.batchAskQueries = args.batchAskQueries;
     this.shareRequestsMaxBindings = args.shareRequestsMaxBindings;
     this.resultPageMultiple = args.resultPageMultiple;
+    this.countBatchSize = args.countBatchSize;
     this.countFallbackDuration = args.countFallbackDuration;
   }
 
@@ -126,6 +128,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.createCountFallback(action.url, action.context),
       this.shareRequestsMaxBindings,
       this.resultPageMultiple,
+      this.countBatchSize,
     );
     return { source, queriesService: true };
   }
@@ -266,6 +269,13 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * @default {1000}
    */
   resultPageMultiple: number;
+  /**
+   * The maximum number of COUNT queries of the same tick that are sent to the endpoint in a single request.
+   * Values below 2 disable batching.
+   * @range {integer}
+   * @default {16}
+   */
+  countBatchSize: number;
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';

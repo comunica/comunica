@@ -35,6 +35,7 @@ import { LRUCache } from 'lru-cache';
 import { uniqTerms } from 'rdf-terms';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
 import { SparqlRequestSharing } from './SparqlRequestSharing';
+import { TickBatcher } from './TickBatcher';
 
 export class QuerySourceSparql implements IQuerySource {
   /**
@@ -56,16 +57,22 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly countTimeout: number;
   private readonly cardinalityCountQueries: boolean;
   private readonly cardinalityEstimateConstruction: boolean;
-  private readonly defaultGraph?: string;
-  private readonly unionDefaultGraph: boolean;
-  private readonly propertyFeatures?: Set<string>;
-  private readonly datasets?: IDataset[];
-  public readonly extensionFunctions?: string[];
+  private defaultGraph?: string;
+  private unionDefaultGraph: boolean;
+  private propertyFeatures?: Set<string>;
+  private datasets?: IDataset[];
+  public extensionFunctions?: string[];
   private readonly dataFactory: ComunicaDataFactory;
   private readonly algebraFactory: AlgebraFactory;
   private readonly bindingsFactory: BindingsFactory;
 
-  private readonly endpointFetcher: SparqlEndpointFetcher;
+  private endpointFetcher: SparqlEndpointFetcher;
+  private readonly endpointFetcherOptions: {
+    forceHttpGet: boolean;
+    forceGetIfUrlLengthBelow: number;
+    parseUnsupportedVersions: boolean;
+  };
+
   private readonly cache: LRUCache<string, QueryResultCardinality> | undefined;
 
   /**
@@ -78,7 +85,12 @@ export class QuerySourceSparql implements IQuerySource {
   /**
    * The ASK queries that wait to be sent in a single request, if ASK queries are batched.
    */
-  private askBatch: IAskBatchEntry[] | undefined;
+  private readonly askBatcher = new TickBatcher<IAskBatchEntry>(
+    Number.POSITIVE_INFINITY,
+    batch => this.sendAskBatch(batch),
+  );
+
+  private countBatcher: TickBatcher<ICountBatchEntry> | undefined;
   private readonly requestSharing: SparqlRequestSharing;
   private readonly resultPageMultiple: number;
 
@@ -104,6 +116,7 @@ export class QuerySourceSparql implements IQuerySource {
     countFallback?: ICountFallback,
     shareRequestsMaxBindings = 0,
     resultPageMultiple = 0,
+    countBatchSize = 0,
   ) {
     this.referenceValue = urlBackup;
     this.url = url;
@@ -116,39 +129,66 @@ export class QuerySourceSparql implements IQuerySource {
     this.algebraFactory = algebraFactory;
     this.bindingsFactory = bindingsFactory;
 
-    // Endpoints advertise support for the HTTP QUERY method (RFC 10008) via the Accept-Query header,
-    // which lets us send the query in the request body without the side effects of a POST.
-    let method: 'GET' | 'POST' | 'QUERY' = 'POST';
-    if (forceHttpGet) {
-      method = 'GET';
-    } else if (metadata.queryAccepted?.includes(QuerySourceSparql.MEDIATYPE_SPARQL_QUERY)) {
-      method = 'QUERY';
-    }
-
-    this.endpointFetcher = new SparqlEndpointFetcher({
-      method,
-      prefixVariableQuestionMark: true,
-      dataFactory,
-      forceGetIfUrlLengthBelow,
-      directPost: metadata.postAccepted && !metadata.postAccepted.includes('application/x-www-form-urlencoded'),
-      parseUnsupportedVersions,
-      sparqlQueryParser: QuerySourceSparql.getSparqlQueryParser(),
-    });
+    this.endpointFetcherOptions = { forceHttpGet, forceGetIfUrlLengthBelow, parseUnsupportedVersions };
+    this.endpointFetcher = this.createEndpointFetcher(metadata);
     this.cache = cacheSize > 0 ?
       new LRUCache<string, QueryResultCardinality>({ max: cacheSize }) :
       undefined;
     this.countTimeout = countTimeout;
     this.cardinalityCountQueries = cardinalityCountQueries;
     this.cardinalityEstimateConstruction = cardinalityEstimateConstruction;
+    this.unionDefaultGraph = false;
+    this.setServiceDescriptionMetadata(metadata);
+    this.batchAskQueries = batchAskQueries;
+    this.countFallback = countFallback;
+    this.requestSharing = new SparqlRequestSharing(shareRequestsMaxBindings);
+    this.resultPageMultiple = resultPageMultiple;
+    this.countBatcher = countBatchSize > 1 ?
+      new TickBatcher<ICountBatchEntry>(countBatchSize, (batch) => {
+        // Errors are handled per entry
+        this.sendCountBatch(batch).catch(() => {});
+      }) :
+      undefined;
+  }
+
+  /**
+   * Create the fetcher of SPARQL requests for the given metadata of the endpoint.
+   * @param metadata The metadata of the service description, or empty metadata.
+   */
+  protected createEndpointFetcher(metadata: Record<string, any>): SparqlEndpointFetcher {
+    // Endpoints advertise support for the HTTP QUERY method (RFC 10008) via the Accept-Query header,
+    // which lets us send the query in the request body without the side effects of a POST.
+    let method: 'GET' | 'POST' | 'QUERY' = 'POST';
+    if (this.endpointFetcherOptions.forceHttpGet) {
+      method = 'GET';
+    } else if (metadata.queryAccepted?.includes(QuerySourceSparql.MEDIATYPE_SPARQL_QUERY)) {
+      method = 'QUERY';
+    }
+    return new SparqlEndpointFetcher({
+      method,
+      prefixVariableQuestionMark: true,
+      dataFactory: this.dataFactory,
+      forceGetIfUrlLengthBelow: this.endpointFetcherOptions.forceGetIfUrlLengthBelow,
+      directPost: metadata.postAccepted && !metadata.postAccepted.includes('application/x-www-form-urlencoded'),
+      parseUnsupportedVersions: this.endpointFetcherOptions.parseUnsupportedVersions,
+      sparqlQueryParser: QuerySourceSparql.getSparqlQueryParser(),
+    });
+  }
+
+  /**
+   * Use the metadata of the service description of the endpoint,
+   * which may arrive after the source is created, while it is already queried.
+   * @param metadata The metadata of the service description.
+   */
+  public setServiceDescriptionMetadata(metadata: Record<string, any>): void {
     this.defaultGraph = metadata.defaultGraph;
     this.unionDefaultGraph = metadata.unionDefaultGraph ?? false;
     this.datasets = metadata.datasets;
     this.extensionFunctions = metadata.extensionFunctions;
     this.propertyFeatures = metadata.propertyFeatures ? new Set(metadata.propertyFeatures) : undefined;
-    this.batchAskQueries = batchAskQueries;
-    this.countFallback = countFallback;
-    this.requestSharing = new SparqlRequestSharing(shareRequestsMaxBindings);
-    this.resultPageMultiple = resultPageMultiple;
+    if (metadata.queryAccepted || metadata.postAccepted) {
+      this.endpointFetcher = this.createEndpointFetcher(metadata);
+    }
   }
 
   /**
@@ -439,11 +479,7 @@ export class QuerySourceSparql implements IQuerySource {
     const queryAsIs = QuerySourceSparql.getQueryStringAsIs(operation, context);
     if (this.batchAskQueries && !queryAsIs) {
       return new Promise<boolean>((resolve, reject) => {
-        if (!this.askBatch) {
-          this.askBatch = [];
-          setImmediate(() => this.sendAskBatch());
-        }
-        this.askBatch.push({ operation, context, resolve, reject });
+        this.askBatcher.push({ operation, context, resolve, reject });
       });
     }
     return this.sendAsk(operation, context, queryAsIs);
@@ -459,9 +495,7 @@ export class QuerySourceSparql implements IQuerySource {
    * Send the ASK queries that were issued in the same tick, such as for source selection, in a single SELECT query,
    * which binds one variable per ASK query to whether its operation has results.
    */
-  protected sendAskBatch(): void {
-    const batch = this.askBatch!;
-    this.askBatch = undefined;
+  protected sendAskBatch(batch: IAskBatchEntry[]): void {
     const answers = batch.length === 1 ?
       this.sendAsk(batch[0].operation, batch[0].context).then(answer => [ answer ]) :
       this.sendAskQueriesAsSelect(batch);
@@ -710,15 +744,108 @@ export class QuerySourceSparql implements IQuerySource {
     operation: Algebra.Operation,
     context: IActionContext,
   ): Promise<QueryResultCardinality> {
+    // COUNT queries of the same tick, such as for planning a join, are sent in batches
+    if (this.countBatcher) {
+      return new Promise((resolve) => {
+        this.countBatcher!.push({ countQuery, operation, context, resolve });
+      });
+    }
+    return this.sendCountQueryAlone(countQuery, operation, context);
+  }
+
+  /**
+   * Send the given COUNT queries in a single query, as a join of one COUNT subquery per entry.
+   * On a timeout, all of them are estimated as infinity.
+   * If the endpoint fails to answer it otherwise, such as for not supporting the query,
+   * each COUNT query is sent alone, and this endpoint is not sent batches anymore.
+   * @param batch The COUNT queries.
+   */
+  protected async sendCountBatch(batch: ICountBatchEntry[]): Promise<void> {
+    if (batch.length === 1) {
+      batch[0].resolve(await this.sendCountQueryAlone(batch[0].countQuery, batch[0].operation, batch[0].context));
+      return;
+    }
+    const infinite: QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url };
+    const variables = batch.map((_, index) => this.dataFactory.variable(`count${index}`));
+    const parts = batch.map((entry, index) => this.createCountOperation(
+      QuerySourceSparql.renameVariables(
+        this.normalizeCountOperation(entry.operation),
+        variable => this.dataFactory.variable(`${variable.value}_c${index}`),
+        this.dataFactory,
+      ),
+      variables[index],
+      this.dataFactory.variable(`agg${index}`),
+    ));
+    let bindings: RDF.Bindings[];
+    try {
+      const query = await this.operationToQuery(this.algebraFactory
+        .createProject(this.algebraFactory.createJoin(parts, false), variables));
+      for (const entry of batch) {
+        this.reportSourceQuery(entry.context, query);
+      }
+      // Each COUNT query may be aborted, so only abort the request once all of them are.
+      const abortSignal = QuerySourceSparql
+        .abortSignalOfAll(batch.map(entry => entry.context.get(KeysHttp.httpAbortSignal)));
+      const context = abortSignal ?
+        batch[0].context.set(KeysHttp.httpAbortSignal, abortSignal) :
+        batch[0].context.delete(KeysHttp.httpAbortSignal);
+      bindings = await (await this.queryBindingsRemote(this.url, query, variables, this.getCountContext(context), []))
+        .toArray();
+    } catch (error: unknown) {
+      if (/timed out/u.test((<Error> error).message)) {
+        for (const entry of batch) {
+          entry.resolve(infinite);
+          this.activateCountFallback(entry.context, entry.operation);
+        }
+        return;
+      }
+      this.countBatcher = undefined;
+      for (const entry of batch) {
+        entry.resolve(await this.sendCountQueryAlone(entry.countQuery, entry.operation, entry.context));
+      }
+      return;
+    }
+    for (const [ index, entry ] of batch.entries()) {
+      const count = bindings[0]?.get(variables[index]);
+      const value = count ? Number.parseInt(count.value, 10) : Number.NaN;
+      if (Number.isNaN(value)) {
+        entry.resolve(infinite);
+      } else {
+        const cardinality: QueryResultCardinality = { type: 'exact', value, dataset: this.url };
+        this.cache?.set(entry.countQuery, cardinality);
+        entry.resolve(cardinality);
+      }
+    }
+  }
+
+  /**
+   * The context for a COUNT request: its timeout is the count timeout, over the whole response.
+   * @param context The context of the query operation.
+   */
+  protected getCountContext(context: IActionContext): IActionContext {
+    const httpTimeout = context.get(KeysHttp.httpTimeout);
+    return context
+      .set(KeysHttp.httpTimeout, httpTimeout ? Math.min(httpTimeout, this.countTimeout) : this.countTimeout)
+      .set(KeysHttp.httpBodyTimeout, true);
+  }
+
+  /**
+   * Send a single COUNT query to the endpoint.
+   * @param countQuery A COUNT query with a ?count variable.
+   * @param operation The operation that is counted.
+   * @param context The action context.
+   */
+  protected sendCountQueryAlone(
+    countQuery: string,
+    operation: Algebra.Operation,
+    context: IActionContext,
+  ): Promise<QueryResultCardinality> {
     // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
     return new Promise<QueryResultCardinality>(async(resolve) => {
       const infinite: QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url };
       // The count timeout applies from when the request is sent, as it may first wait for the host to be available.
       // On timeout, the request is aborted, so that it does not keep occupying the endpoint.
-      const httpTimeout = context.get(KeysHttp.httpTimeout);
-      const countContext = context
-        .set(KeysHttp.httpTimeout, httpTimeout ? Math.min(httpTimeout, this.countTimeout) : this.countTimeout)
-        .set(KeysHttp.httpBodyTimeout, true);
+      const countContext = this.getCountContext(context);
       const varCount = this.dataFactory.variable('count');
       let bindingsStream: BindingsStream;
       try {
@@ -765,17 +892,54 @@ export class QuerySourceSparql implements IQuerySource {
    * @returns {string} Query string for a COUNT query over the operation.
    */
   public async operationToNormalizedCountQuery(operation: Algebra.Operation): Promise<string> {
-    const normalizedOperation = isKnownOperation(operation, Algebra.Types.PATTERN) ?
+    return await this.operationToCountQuery(
+      this.dataFactory,
+      this.algebraFactory,
+      this.normalizeCountOperation(operation),
+    );
+  }
+
+  /**
+   * Replace the variables of a pattern with s, p, and o, to increase the chance of cache hits for its COUNT query.
+   * @param operation An operation.
+   */
+  public normalizeCountOperation(operation: Algebra.Operation): Algebra.Operation {
+    return isKnownOperation(operation, Algebra.Types.PATTERN) ?
       this.algebraFactory.createPattern(
         operation.subject.termType === 'Variable' ? this.dataFactory.variable('s') : operation.subject,
         operation.predicate.termType === 'Variable' ? this.dataFactory.variable('p') : operation.predicate,
         operation.object.termType === 'Variable' ? this.dataFactory.variable('o') : operation.object,
       ) :
       operation;
-    return await this.operationToCountQuery(
-      this.dataFactory,
-      this.algebraFactory,
-      normalizedOperation,
+  }
+
+  /**
+   * Create an operation that counts the results of the given operation into the given variable.
+   * @param operation An operation.
+   * @param countVariable The variable to bind the count to.
+   * @param aggregateVariable The variable of the aggregate.
+   */
+  public createCountOperation(
+    operation: Algebra.Operation,
+    countVariable: RDF.Variable,
+    aggregateVariable: RDF.Variable,
+  ): Algebra.Operation {
+    return this.algebraFactory.createProject(
+      this.algebraFactory.createExtend(
+        this.algebraFactory.createGroup(
+          operation,
+          [],
+          [ this.algebraFactory.createBoundAggregate(
+            aggregateVariable,
+            'count',
+            this.algebraFactory.createWildcardExpression(),
+            false,
+          ) ],
+        ),
+        countVariable,
+        this.algebraFactory.createTermExpression(aggregateVariable),
+      ),
+      [ countVariable ],
     );
   }
 
@@ -967,22 +1131,10 @@ export class QuerySourceSparql implements IQuerySource {
     algebraFactory: AlgebraFactory,
     operation: Algebra.Operation,
   ): Promise<string> {
-    return this.operationToQuery(algebraFactory.createProject(
-      algebraFactory.createExtend(
-        algebraFactory.createGroup(
-          operation,
-          [],
-          [ algebraFactory.createBoundAggregate(
-            dataFactory.variable('var0'),
-            'count',
-            algebraFactory.createWildcardExpression(),
-            false,
-          ) ],
-        ),
-        dataFactory.variable('count'),
-        algebraFactory.createTermExpression(dataFactory.variable('var0')),
-      ),
-      [ dataFactory.variable('count') ],
+    return this.operationToQuery(this.createCountOperation(
+      operation,
+      dataFactory.variable('count'),
+      dataFactory.variable('var0'),
     ));
   }
 
@@ -1138,6 +1290,13 @@ export interface ICountFallback {
    * @param pattern If the COUNT query was over a single pattern.
    */
   activate: (pattern: boolean) => void;
+}
+
+interface ICountBatchEntry {
+  countQuery: string;
+  operation: Algebra.Operation;
+  context: IActionContext;
+  resolve: (cardinality: QueryResultCardinality) => void;
 }
 
 interface IAskBatchEntry {
