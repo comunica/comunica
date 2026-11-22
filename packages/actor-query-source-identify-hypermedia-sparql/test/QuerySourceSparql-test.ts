@@ -2674,6 +2674,118 @@ describe('QuerySourceSparql', () => {
     });
   });
 
+  describe('result paging', () => {
+    const pattern = AF.createPattern(DF.variable('s'), iriP, iriO);
+    let queries: string[];
+    let total: number;
+    let cap: number;
+
+    // An endpoint with `total` results for any query, of which it returns at most `cap` per query
+    const pagingMediator: any = {
+      mediate: jest.fn(async(action: any) => {
+        const query = new URLSearchParams(action.init.body.toString()).get('query')!;
+        if (isCountQuery(query)) {
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: Readable.from([ `{ "head": { "vars": [ "count" ] }, "results": { "bindings": [
+              { "count": { "type": "literal", "value": "${total}" } }
+            ] } }` ]),
+            ok: true,
+          };
+        }
+        queries.push(query);
+        const offset = Number(/OFFSET (\d+)/u.exec(query)?.[1] ?? 0);
+        const limit = Number(/LIMIT (\d+)/u.exec(query)?.[1] ?? Number.POSITIVE_INFINITY);
+        const count = Math.max(0, Math.min(total - offset, limit, cap));
+        const bindings = Array.from({ length: count }, (_, i) =>
+          `{ "s": { "type": "uri", "value": "ex:s${offset + i}" } }`);
+        return {
+          headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+          body: Readable.from([ `{ "head": { "vars": [ "s" ] }, "results": { "bindings": [ ${bindings.join(',')} ] } }` ]),
+          ok: true,
+        };
+      }),
+    };
+
+    function createSource(resultPageMultiple?: number): QuerySourceSparql {
+      return new QuerySourceSparql(
+        url,
+        url,
+        ctx,
+        pagingMediator,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        true,
+        true,
+        0,
+        false,
+        {},
+        resultPageMultiple,
+      );
+    }
+
+    beforeEach(() => {
+      queries = [];
+      total = 2_500;
+      cap = 1_000;
+    });
+
+    it('should continue results with a multiple of resultPageMultiple results with pages', async() => {
+      const bindings = await createSource(1_000).queryBindings(pattern, ctx).toArray();
+      expect(bindings).toHaveLength(2_500);
+      expect(new Set(bindings.map(binding => binding.get('s')!.value)).size).toBe(2_500);
+      expect(queries).toEqual([
+        `SELECT ?s WHERE { ?s <${testUrl('p')}> <${testUrl('o')}> . }`,
+        `SELECT ?s WHERE { ?s <${testUrl('p')}> <${testUrl('o')}> . } LIMIT 1000 OFFSET 1000`,
+        `SELECT ?s WHERE { ?s <${testUrl('p')}> <${testUrl('o')}> . } LIMIT 1000 OFFSET 2000`,
+      ]);
+    });
+
+    it('should send one request without results if the results were not capped', async() => {
+      total = 2_000;
+      cap = 10_000;
+      await expect(createSource(1_000).queryBindings(pattern, ctx).toArray()).resolves.toHaveLength(2_000);
+      expect(queries).toHaveLength(2);
+      expect(queries[1]).toContain('LIMIT 2000 OFFSET 2000');
+    });
+
+    it('should not page results that are not a multiple of resultPageMultiple', async() => {
+      total = 1_500;
+      cap = 10_000;
+      await expect(createSource(1_000).queryBindings(pattern, ctx).toArray()).resolves.toHaveLength(1_500);
+      expect(queries).toHaveLength(1);
+    });
+
+    it('should not page empty results', async() => {
+      total = 0;
+      await expect(createSource(1_000).queryBindings(pattern, ctx).toArray()).resolves.toHaveLength(0);
+      expect(queries).toHaveLength(1);
+    });
+
+    it('should not page by default', async() => {
+      await expect(createSource().queryBindings(pattern, ctx).toArray()).resolves.toHaveLength(1_000);
+      expect(queries).toHaveLength(1);
+    });
+
+    it('should not page operations with their own slice', async() => {
+      const slice = AF.createSlice(AF.createProject(AF.createBgp([ pattern ]), [ DF.variable('s') ]), 0, 5_000);
+      await expect(createSource(1_000).queryBindings(slice, ctx).toArray()).resolves.toHaveLength(1_000);
+      expect(queries).toHaveLength(1);
+    });
+
+    it('should not page original query strings', async() => {
+      const operation = assignOperationEquivalentQueryString(pattern, 'SELECT * WHERE { ?s ?p ?o }');
+      await expect(createSource(1_000).queryBindings(operation, ctx).toArray()).resolves.toHaveLength(1_000);
+      expect(queries).toEqual([ 'SELECT * WHERE { ?s ?p ?o }' ]);
+    });
+  });
+
   describe('addBindingsToOperation', () => {
     it('should handle an empty stream for values', async() => {
       await expect(QuerySourceSparql.addBindingsToOperation(AF, 'values', AF.createNop(), {
