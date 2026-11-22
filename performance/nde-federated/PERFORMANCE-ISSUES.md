@@ -12,9 +12,14 @@ They are ordered by impact on these queries. "Correctness" issues silently retur
   Comunica then sends every query to the redirect target. For ldmax this 404s; for Gouda it fails with "Unknown SPARQL results content type: text/html" (`runs/q6-sd-redirect-followed.*`).
   This happens even with `{ type: 'sparql' }`.
 * Code: `ActorQuerySourceDereferenceLinkHypermedia.run` sets `url = dereferenceRdfOutput.url` (`packages/actor-query-source-dereference-link-hypermedia/lib/ActorQuerySourceDereferenceLinkHypermedia.ts:82`) and passes it to identification.
-  `ActorQuerySourceIdentifyHypermediaSparql.run` uses `action.url` as the endpoint when the type is forced (`packages/actor-query-source-identify-hypermedia-sparql/lib/ActorQuerySourceIdentifyHypermediaSparql.ts:98`). `urlBackup` is the redirected URL too, so the fallback does not help.
+  `ActorQuerySourceIdentifyHypermediaSparql.run` uses `action.url` as the endpoint when the type is forced (`packages/actor-query-source-identify-hypermedia-sparql/lib/ActorQuerySourceIdentifyHypermediaSparql.ts:98`).
+* Whose bug: Comunica's. These endpoints publish no service description at all, so no wrong `sd:endpoint` is involved. They answer a GET without `query` with a redirect to a landing page or web UI, which ignores the SPARQL 1.1 Service Description "should" but is not invalid.
+  A redirect of the description document says where the document lives, not where the endpoint lives.
+* Why the existing workaround does not fire: `QuerySourceSparql.fetch` retries with `urlBackup` on a 404 (`packages/actor-query-source-identify-hypermedia-sparql/lib/QuerySourceSparql.ts:174`).
+  It fails here for two reasons. First, the backup is `action.url`, which is already the redirected URL, so `this.url === this.urlBackup` and the check is skipped. Second, it only reacts to 404; the Gouda UI answers 200 with HTML.
+  With issue 2, ldmax does answer 404, so passing the user's original URL as backup alone would already recover ldmax, but not Gouda.
 * Without the type (auto-detect), `node engines/query-sparql/bin/query.js https://sparql.ldmax.nl/Q1820897` silently queries the RDF of the web page instead of the endpoint.
-* Direction: for forced `sparql` sources keep `action.link.url` as the endpoint, and only use the dereferenced URL or `sd:endpoint` as hints.
+* Direction: for forced `sparql` sources keep `action.link.url` as the endpoint, and only use the dereferenced URL or `sd:endpoint` as hints. Pass the original link URL (not the dereferenced one) as `urlBackup`. Fall back on non-SPARQL response content types too, not only on 404.
 * The harness works around this by not following redirects for GETs without a `query` parameter.
 
 ### 2. `fetch-sparql-endpoint` appends `?query=` to endpoints that already have a query string
@@ -27,17 +32,25 @@ They are ordered by impact on these queries. "Correctness" issues silently retur
 
 * Evidence (Q1, `runs/q1-final.*`): `SELECT ?artist ?name WHERE { ?artist crm:P2_has_type aat:300189557 ; rdfs:label ?name }` returns exactly 10,000 rows from the RKD TriplyDB endpoint, while the true count is 87,383. There is no header or other signal.
   Q1 returns 12 of ~334 results. Muziekweb (also TriplyDB) returned exactly 10,000 rows for an unbound `mw:album` scan in Q5.
-  Virtuoso endpoints (Muziekschatten) cap results in the same way by default.
-* The engine often already has the COUNT for the pattern or group, so it could detect "rows returned < known cardinality", or "returned a round 10,000 / 100,000". OFFSET paging works on these endpoints (`LIMIT 5 OFFSET 20000` returns rows).
-* Direction: detect and paginate (LIMIT/OFFSET with a stable ORDER BY, or detect the cap once per endpoint). At minimum, warn.
+* Verified behaviour: on TriplyDB, an explicit `LIMIT 15000` still returns 10,000 rows, while `LIMIT 10000 OFFSET 10000` returns the next 10,000. So paging in pages of the cap works.
+  Muziekschatten (Virtuoso) returned all rows for `LIMIT 12000`, so it does not have a 10k cap. Other Virtuoso installations may have a `ResultSetMaxRows` cap; this was not tested.
+* Detection: the engine often has an exact COUNT for single patterns (the Q1 pattern alone has 87,341). Results that end at exactly a typical cap (10,000) while the estimate is larger are a strong signal.
+  A cheap confirmation is `SELECT ... OFFSET <rows> LIMIT 1`: one extra request, and it returns a row only if the result was cut. The cap can be remembered per endpoint, like the COUNT fallback in `84c4031`.
+* Direction: detect the cap once per endpoint, then page any request whose expected cardinality reaches it, using LIMIT/OFFSET pages of the cap size.
+  Without ORDER BY, SPARQL does not guarantee a stable order between pages. In practice stores are deterministic for the same query on unchanged data; ORDER BY makes it guaranteed but costs server time. At minimum, warn.
 
 ### 4. Bind joins drop bindings whose join variable is a blank node
 
 * Evidence: Q7 returns 1 of 11 datasets. 18,048 of the register's 18,524 `dcat:distribution` values are blank nodes, and `?distribution dct:conformsTo ...` is bind-joined.
   Q5b returns 0 of 536 Beeld en Geluid items: all 550 `schema:creator` role nodes are blank nodes, and `?item schema:creator ?role` is bind-joined.
 * Code: `ActorRdfJoinMultiBindSource.queryTarget` explicitly skips bindings with a blank node for a variable of the target operation (`packages/actor-rdf-join-inner-multi-bind-source/lib/ActorRdfJoinMultiBindSource.ts:119-124`).
-  That is correct per request, but a blank node from source S can still match when the patterns sharing it are evaluated together in S.
-* Direction: never bind-join on a variable whose values may be blank nodes. Instead, evaluate the patterns connected through that variable as one group in the source the blank node came from (source-local subquery), or fall back to a join that keeps the blank node's source scope (e.g., hash join on skolemized terms within one source).
+* Not a fundamental RDF limit: blank nodes are scoped to their source, so a blank node from source S can only ever join with triples in S. Every lost result here is such a within-source join.
+  Both `?dataset dcat:distribution ?d` and `?d dct:conformsTo ... ; dcat:accessURL ?e` are triples of the register, and the register answers the joined patterns correctly in one query (that is how the ground truth was computed).
+  What fails is the mechanism. A bind join ships the value of `?d` back in a second request, and SPARQL cannot refer to a blank node from an earlier result (in a query, `_:x` is a variable). So per request, skipping is right, but at plan level the join is dropped.
+* Direction: when a join variable can bind to blank nodes, evaluate the patterns connected through it as one group, in one request to the source that produced the blank node. Bind that group on IRI-valued variables instead (here `?dataset`).
+  This is complete, because a solution with a blank node for `?d` needs all triples mentioning `?d` from the same source. IRI values of `?d` still go through the normal cross-source join.
+  Comunica already knows each blank node's source (skolemization tags it), so it can tell when a join is source-local. Only joins of a blank node from A with triples in B are impossible, and correct semantics says those never match anyway.
+  Some stores return stable skolem IRIs instead of blank nodes (TriplyDB `/.well-known/genid/...`); those already join fine.
   Blank-node-heavy data is common in this ecosystem (register distributions, B&G roles, RKD and RCE time spans and identifiers).
 
 ### 5. Overlapping sources multiply results and requests

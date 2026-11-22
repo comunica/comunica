@@ -1,0 +1,435 @@
+<title>Comunica on the NDE Register</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: one reading column; wide tables and code scroll inside their own boxes. Delft blue accent on a cool paper ground. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --fg: #17212b; --muted: #5b6673; --line: #dde2e8;
+  --accent: #1f4e9c; --accent-soft: #e4ecf8; --code-bg: #eef1f5;
+  --ok: #1d7a4a; --ok-soft: #e1f2e8; --warn: #a15c07; --warn-soft: #fbeed9; --bad: #b42335; --bad-soft: #f9e2e5;
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f151c; --surface: #161e27; --fg: #e3e8ee; --muted: #9aa6b4; --line: #2a3542;
+  --accent: #8bb0f2; --accent-soft: #1c2b44; --code-bg: #1b2430;
+  --ok: #5fc48d; --ok-soft: #15301f; --warn: #e4a54d; --warn-soft: #33260f; --bad: #f07b8a; --bad-soft: #3a1a20; color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #0f151c; --surface: #161e27; --fg: #e3e8ee; --muted: #9aa6b4; --line: #2a3542;
+  --accent: #8bb0f2; --accent-soft: #1c2b44; --code-bg: #1b2430;
+  --ok: #5fc48d; --ok-soft: #15301f; --warn: #e4a54d; --warn-soft: #33260f; --bad: #f07b8a; --bad-soft: #3a1a20; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 2.5rem 4rem; }
+.wrap { max-width: 68rem; margin: 0 auto; display: grid; gap: 3rem; }
+h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 1.45rem; font-weight: 600; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+h4 { font-size: 1rem; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+code { font-family: var(--font-mono); font-size: 0.86em; background: var(--code-bg); padding: 0.05em 0.3em; border-radius: 3px; overflow-wrap: anywhere; }
+.eyebrow { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+section { display: grid; gap: 1rem; min-width: 0; }
+.intro { display: grid; gap: 1rem; }
+.lede { font-size: 1.05rem; color: var(--fg); }
+.meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; color: var(--muted); font-size: 0.86rem; }
+.verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.75rem; }
+.verdict div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0.9rem 1rem; display: grid; gap: 0.25rem; }
+.verdict strong { font-family: var(--font-display); font-size: 1.6rem; line-height: 1; }
+.verdict .ok strong { color: var(--ok); } .verdict .bad strong { color: var(--bad); } .verdict .dnf strong { color: var(--warn); }
+.verdict span { color: var(--muted); font-size: 0.88rem; }
+.table-box { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+th, td { padding: 0.55rem 0.7rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; white-space: nowrap; }
+tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.name { min-width: 11rem; }
+tbody th a { font-family: var(--font-mono); font-weight: 500; text-decoration: none; }
+.chip { display: inline-block; font-size: 0.74rem; font-weight: 600; padding: 0.1rem 0.5rem; border-radius: 999px; white-space: nowrap; }
+.chip.ok { color: var(--ok); background: var(--ok-soft); } .chip.bad { color: var(--bad); background: var(--bad-soft); } .chip.dnf { color: var(--warn); background: var(--warn-soft); }
+.note { color: var(--muted); font-size: 0.86rem; }
+.chart { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 1rem 1.1rem 0.6rem; display: grid; gap: 0.4rem; }
+.bar-row { display: grid; grid-template-columns: 3rem minmax(0, 1fr) 4.8rem; gap: 0.6rem; align-items: center; font-size: 0.82rem; }
+.bar-label { font-family: var(--font-mono); }
+.bar-value { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.bar-track { position: relative; height: 0.7rem; background: repeating-linear-gradient(90deg, transparent 0 calc(24.39% - 1px), var(--line) calc(24.39% - 1px) 24.39%); }
+.bar { position: absolute; inset: 0 auto 0 0; border-radius: 2px; }
+.bar.ok { background: var(--ok); } .bar.bad { background: var(--bad); } .bar.dnf { background: var(--warn); }
+.axis { display: grid; grid-template-columns: 3rem minmax(0, 1fr) 4.8rem; gap: 0.6rem; }
+.axis-track { position: relative; height: 1.2rem; }
+.tick { position: absolute; top: 0.15rem; transform: translateX(-50%); font-size: 0.72rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.issue-group { margin-top: 0.5rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-family: var(--font-body); }
+.issues { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; counter-reset: issue; }
+.issues li { counter-increment: issue; }
+.issue { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 6px; padding: 0.9rem 1.1rem; display: grid; gap: 0.5rem; }
+.issue.bad { border-left-color: var(--bad); }
+.issue-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.25rem 1rem; }
+.issue-head h4 { max-width: 46rem; }
+.impact { font-size: 0.8rem; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.fix { color: var(--muted); font-size: 0.92rem; }
+.fix-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--accent); margin-right: 0.35rem; }
+.queries { display: grid; gap: 1.25rem; }
+.query { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; gap: 0; scroll-margin-top: 1rem; }
+.query-head { display: flex; gap: 0.75rem; align-items: baseline; padding: 0.9rem 1.1rem; border-bottom: 1px solid var(--line); background: var(--accent-soft); }
+.qid { font-family: var(--font-mono); font-size: 0.82rem; font-weight: 500; color: var(--accent); white-space: nowrap; }
+.query-body { padding: 1rem 1.1rem; display: grid; gap: 0.75rem; min-width: 0; }
+.facts { margin: 0; display: grid; gap: 0.6rem; }
+.facts div { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: 0.75rem; }
+.facts dt { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-weight: 600; padding-top: 0.2rem; }
+.facts dd { margin: 0; max-width: 68ch; }
+.samples { margin: 0; padding-left: 1.1rem; }
+details.code { border: 1px solid var(--line); border-radius: 6px; min-width: 0; }
+details.code summary { cursor: pointer; padding: 0.45rem 0.75rem; font-size: 0.86rem; font-weight: 500; color: var(--accent); }
+details.code pre { margin: 0; padding: 0.75rem; overflow-x: auto; background: var(--code-bg); border-top: 1px solid var(--line); font-size: 0.8rem; line-height: 1.5; }
+details.code pre code { background: none; padding: 0; font-size: inherit; overflow-wrap: normal; }
+.src { padding: 0.5rem 0.75rem 0.75rem; border-top: 1px solid var(--line); display: grid; gap: 0.25rem; overflow-x: auto; }
+.src-group { font-size: 0.78rem; color: var(--muted); font-weight: 600; margin-top: 0.35rem; }
+.src-list { margin: 0; padding-left: 1.1rem; font-size: 0.8rem; }
+.method { display: grid; gap: 0.6rem; }
+.method ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.35rem; max-width: 72ch; }
+footer { color: var(--muted); font-size: 0.84rem; }
+@media (max-width: 560px) {
+  .facts div { grid-template-columns: 1fr; gap: 0.15rem; }
+  .bar-row, .axis { grid-template-columns: 2.6rem minmax(0, 1fr) 4.2rem; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+  <header class="intro">
+    <p class="eyebrow">Federated SPARQL · NDE dataset register · Comunica feature/performance-fed</p>
+    <h1>Comunica on the NDE Register</h1>
+    <p class="lede">Seven federated queries over SPARQL endpoints from the Dutch Digital Heritage Network register, run with automatic source selection and no <code>SERVICE</code> clauses. Each answer was checked against a ground truth built by querying every endpoint directly.</p>
+    <div class="meta"><span>Branch <code>feature/performance-fed</code> at <code>e78b259</code>, default (COUNT) config</span><span>2 to 35 sources per query</span><span>Measured 22 November 2026</span></div>
+  </header>
+
+  <section aria-labelledby="h-verdict">
+    <h2 id="h-verdict">Verdict</h2>
+    <div class="verdict">
+      <div class="ok"><strong>3 of 10</strong><span>runs return exactly the correct answer (Q2, Q3, Q6b)</span></div>
+      <div class="bad"><strong>3 of 10</strong><span>finish quickly but are silently incomplete (Q1, Q5b, Q7)</span></div>
+      <div class="dnf"><strong>4 of 10</strong><span>do not finish or fail (Q4, Q4b, Q5, Q6)</span></div>
+    </div>
+    <p>The correct runs are chains of joins anchored on a selective constant. The incomplete runs lose rows to endpoint result caps and to blank nodes. The runs that do not finish involve OPTIONAL or UNION over many sources, where the plan falls back to one request per binding or to full downloads.</p>
+  </section>
+
+  <section aria-labelledby="h-results">
+    <h2 id="h-results">Runs</h2>
+    <div class="table-box">
+      <table>
+        <thead><tr><th scope="col">Run</th><th scope="col">Question</th><th scope="col">Status</th><th scope="col" class="num">Results</th><th scope="col" class="num">Correct</th><th scope="col" class="num">Sources</th><th scope="col" class="num">Time</th><th scope="col" class="num">First result</th><th scope="col" class="num">HTTP requests</th><th scope="col" class="num">of which COUNT</th><th scope="col" class="num">Bytes decoded / wire</th></tr></thead>
+        <tbody><tr><th scope="row"><a href="#q1">Q1</a></th><td class="name">Works by women artists in museums</td><td><span class="chip bad">Incomplete</span></td><td class="num">12</td><td class="num">~334</td><td class="num">22</td><td class="num">70.7 s</td><td class="num">70.7 s</td><td class="num">12,036</td><td class="num">176</td><td class="num">3.4 MB / 1.5 MB</td></tr><tr><th scope="row"><a href="#q2">Q2</a></th><td class="name">Kamp Vught victims and birthplaces</td><td><span class="chip ok">Correct</span></td><td class="num">53</td><td class="num">53</td><td class="num">9</td><td class="num">33.2 s</td><td class="num">23.2 s</td><td class="num">581</td><td class="num">63</td><td class="num">264 KB / 99 KB</td></tr><tr><th scope="row"><a href="#q3">Q3</a></th><td class="name">Collection objects about Kamp Vught</td><td><span class="chip ok">Correct</span></td><td class="num">205</td><td class="num">205</td><td class="num">9</td><td class="num">22.6 s</td><td class="num">6.9 s</td><td class="num">281</td><td class="num">65</td><td class="num">198 KB / 66 KB</td></tr><tr><th scope="row"><a href="#q4">Q4</a></th><td class="name">Portraits via CHT and AAT, with OPTIONAL</td><td><span class="chip dnf">Did not finish</span></td><td class="num">1,551</td><td class="num">2,022+</td><td class="num">35</td><td class="num">&gt;901 s</td><td class="num">9.0 s</td><td class="num">100,401</td><td class="num">48,563</td><td class="num">426 MB / 83.8 MB</td></tr><tr><th scope="row"><a href="#q4b">Q4b</a></th><td class="name">Q4 without the OPTIONAL</td><td><span class="chip dnf">Did not finish</span></td><td class="num">533</td><td class="num">2,022</td><td class="num">35</td><td class="num">&gt;301 s</td><td class="num">12.8 s</td><td class="num">2,059</td><td class="num">1,047</td><td class="num">412 MB / 71.8 MB</td></tr><tr><th scope="row"><a href="#q5">Q5</a></th><td class="name">Louis Andriessen across music and AV data</td><td><span class="chip dnf">Failed</span></td><td class="num">none</td><td class="num">711</td><td class="num">6</td><td class="num">86.7 s</td><td class="num">none</td><td class="num">11,589</td><td class="num">72</td><td class="num">27.2 MB / 4.7 MB</td></tr><tr><th scope="row"><a href="#q5b">Q5b</a></th><td class="name">Q5 with the anchor in each UNION branch</td><td><span class="chip bad">Incomplete</span></td><td class="num">175</td><td class="num">711</td><td class="num">6</td><td class="num">9.1 s</td><td class="num">8.3 s</td><td class="num">121</td><td class="num">78</td><td class="num">210 KB / 150 KB</td></tr><tr><th scope="row"><a href="#q6">Q6</a></th><td class="name">Gouda monuments with OPTIONAL style</td><td><span class="chip dnf">Did not finish</span></td><td class="num">0</td><td class="num">391</td><td class="num">6</td><td class="num">&gt;601 s</td><td class="num">none</td><td class="num">2,521</td><td class="num">60</td><td class="num">98.7 MB / 17.1 MB</td></tr><tr><th scope="row"><a href="#q6b">Q6b</a></th><td class="name">Q6 with style required</td><td><span class="chip ok">Correct</span></td><td class="num">73</td><td class="num">73</td><td class="num">6</td><td class="num">25.2 s</td><td class="num">23.0 s</td><td class="num">483</td><td class="num">60</td><td class="num">364 KB / 88 KB</td></tr><tr><th scope="row"><a href="#q7">Q7</a></th><td class="name">Datasets linking to the WO2 thesaurus</td><td><span class="chip bad">Incomplete</span></td><td class="num">1</td><td class="num">11</td><td class="num">2</td><td class="num">2.8 s</td><td class="num">2.8 s</td><td class="num">39</td><td class="num">18</td><td class="num">29 KB / 9 KB</td></tr></tbody>
+      </table>
+    </div>
+    <p class="note">For runs that did not finish, Results counts the rows that arrived before the timeout or error. Results are distinct value rows where duplicates occurred (Q5b, Q6b). "Correct" is the ground truth from direct per-endpoint queries. Decoded bytes are response bodies after decompression; wire bytes are as received. Each figure is one run through an HTTPS proxy, so treat times as indicative.</p>
+    <div class="chart" role="img" aria-label="HTTP requests per run on a logarithmic scale, from 39 for Q7 to 100,401 for Q4">
+      <p class="eyebrow">HTTP requests per run, log scale</p>
+      <div class="bar-row"><span class="bar-label">Q1</span><span class="bar-track"><span class="bar bad" style="width:75.1%"></span></span><span class="bar-value">12,036</span></div><div class="bar-row"><span class="bar-label">Q2</span><span class="bar-track"><span class="bar ok" style="width:43.0%"></span></span><span class="bar-value">581</span></div><div class="bar-row"><span class="bar-label">Q3</span><span class="bar-track"><span class="bar ok" style="width:35.3%"></span></span><span class="bar-value">281</span></div><div class="bar-row"><span class="bar-label">Q4</span><span class="bar-track"><span class="bar dnf" style="width:97.6%"></span></span><span class="bar-value">100,401</span></div><div class="bar-row"><span class="bar-label">Q4b</span><span class="bar-track"><span class="bar dnf" style="width:56.4%"></span></span><span class="bar-value">2,059</span></div><div class="bar-row"><span class="bar-label">Q5</span><span class="bar-track"><span class="bar dnf" style="width:74.7%"></span></span><span class="bar-value">11,589</span></div><div class="bar-row"><span class="bar-label">Q5b</span><span class="bar-track"><span class="bar bad" style="width:26.4%"></span></span><span class="bar-value">121</span></div><div class="bar-row"><span class="bar-label">Q6</span><span class="bar-track"><span class="bar dnf" style="width:58.6%"></span></span><span class="bar-value">2,521</span></div><div class="bar-row"><span class="bar-label">Q6b</span><span class="bar-track"><span class="bar ok" style="width:41.1%"></span></span><span class="bar-value">483</span></div><div class="bar-row"><span class="bar-label">Q7</span><span class="bar-track"><span class="bar bad" style="width:14.4%"></span></span><span class="bar-value">39</span></div>
+      <div class="axis"><span></span><span class="axis-track"><span class="tick" style="left:0.0%">10</span><span class="tick" style="left:24.4%">100</span><span class="tick" style="left:48.8%">1k</span><span class="tick" style="left:73.2%">10k</span><span class="tick" style="left:97.6%">100k</span></span><span></span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-issues">
+    <h2 id="h-issues">Most important issues</h2>
+    <p>Ordered by impact on these queries. Red marks issues that silently change the answer or stop the query. None are fixed yet; the hand-off notes with code locations are in <code>performance/nde-federated/PERFORMANCE-ISSUES.md</code>.</p>
+    <h3 class="issue-group">Correctness</h3><ol class="issues" start="1"><li class="issue bad"><div class="issue-head"><h4>Redirected service-description fetch replaces the endpoint URL</h4><span class="impact">Q1 to Q6 needed a harness workaround</span></div><p>A GET on <code>sparql.ldmax.nl/&lt;id&gt;</code> redirects to a web landing page, and Gouda redirects to its <code>/matgui/</code> UI. Comunica then sends every query to the redirect target, even for sources typed <code>sparql</code>. That breaks about 60 museum endpoints in the register and the Gouda one.</p><p class="fix"><span class="fix-label">Outlook</span> A Comunica bug: these endpoints publish no service description, so no wrong <code>sd:endpoint</code> is involved. The 404 fallback to <code>urlBackup</code> cannot fire, because the backup is already the redirected URL, and Gouda answers 200 with HTML anyway.</p></li><li class="issue bad"><div class="issue-head"><h4>Silently truncated endpoint results are taken as complete</h4><span class="impact">Q1: 3.6% of the answer</span></div><p>TriplyDB (RKD, Muziekweb, RCE) returns at most 10,000 rows, even with an explicit <code>LIMIT 15000</code>, and sends no signal. Q1 starts from 87,383 RKD artists, gets 10,000, and ends with 12 of ~334 answers.</p><p class="fix"><span class="fix-label">Outlook</span> Detectable and fixable: COUNTs are often exact, a result that stops at exactly 10,000 is a strong hint, and <code>OFFSET 10000 LIMIT 1</code> confirms it in one request. <code>OFFSET</code> paging works on these endpoints.</p></li><li class="issue bad"><div class="issue-head"><h4>Joins through blank nodes are dropped</h4><span class="impact">Q7: 1 of 11, Q5b: 0 of 536 items</span></div><p>The bind-source join skips bindings whose join value is a blank node. 97% of the register's dataset distributions and all Beeld en Geluid creator roles are blank nodes.</p><p class="fix"><span class="fix-label">Outlook</span> Solvable: every lost result is a join inside one source. Evaluate the patterns connected through the blank node as one subquery at the source that produced it, bound on an IRI (here the dataset).</p></li><li class="issue warn"><div class="issue-head"><h4><code>?query=</code> is appended to endpoint URLs that already have a query string</h4><span class="impact">Turned issue 1 into a 404 for ldmax</span></div><p><code>fetch-sparql-endpoint</code> builds <code>${endpoint}?query=</code>, producing URLs like <code>query?slug=Q1820897?query=SELECT…</code>.</p><p class="fix"><span class="fix-label">Outlook</span> Small upstream fix: use <code>&amp;</code> when the URL already contains <code>?</code>.</p></li></ol><h3 class="issue-group">Query plans across many sources</h3><ol class="issues" start="5"><li class="issue bad"><div class="issue-head"><h4>OPTIONAL is evaluated one binding at a time, with a COUNT per binding</h4><span class="impact">Q4: 100,401 requests, timeout</span></div><p>For <code>OPTIONAL { ?object schema:dateCreated ?date }</code> over 35 sources, Comunica sent 47,516 COUNT and 50,919 SELECT requests, one pair per object per source. Q6 (OPTIONAL property path) returned nothing in 10 minutes.</p><p class="fix"><span class="fix-label">Outlook</span> Use the block-based optional bind join over multiple sources, and skip COUNTs for bound operations inside bind joins.</p></li><li class="issue bad"><div class="issue-head"><h4>Full unbound scans are chosen over bind joins</h4><span class="impact">Q4b: 411 MB, timeout</span></div><p>After a UNION, <code>?object schema:name ?title</code> was fetched unbound from all 34 museums (411 MB, about 3M rows) for about 2,000 answers. Q6 fetched the last property-path step <code>?x skos:prefLabel ?style</code> unbound from every source.</p><p class="fix"><span class="fix-label">Outlook</span> The same plan finishes in 11 s over 6 sources, so the cost model needs to weigh "one scan per source, times many sources".</p></li><li class="issue warn"><div class="issue-head"><h4>Bound variables are not pushed into UNION branches</h4><span class="impact">Q5: failed</span></div><p>A 1-row anchor (<code>?gtaa</code>) joined with a 3-branch UNION ran every branch unbound, including a scan of Muziekweb that hit the 10k cap. Repeating the anchor inside each branch: 9 s and 121 requests instead of a failure after 11,589.</p><p class="fix"><span class="fix-label">Outlook</span> Plan-dependent: Q3 has the same shape and did get the binding pushed.</p></li><li class="issue warn"><div class="issue-head"><h4>Bind-join blocks go to every source, with no IRI namespace pruning</h4><span class="impact">Q1: 8,800 of 12,036 requests</span></div><p>Blocks of RKD artist IRIs and museum-specific <code>n2t.net/ark:/&lt;NAAN&gt;</code> IRIs were sent to all 22 sources, although each namespace occurs in one source.</p><p class="fix"><span class="fix-label">Outlook</span> Prefix or authority summaries (HiBISCuS style, or the VoID linksets the NDE Dataset Knowledge Graph already publishes) would prune most of these.</p></li></ol><h3 class="issue-group">Load and robustness</h3><ol class="issues" start="9"><li class="issue warn"><div class="issue-head"><h4>No limit on concurrent HTTP requests</h4><span class="impact">Q1 peak: 4,183 in flight</span></div><p>Up to 4,183 requests were in flight at once. About 60 ldmax endpoints share one host. p50 latency rose to 11 s for queries that take about 150 ms alone.</p><p class="fix"><span class="fix-label">Outlook</span> A per-host concurrency limit would also prevent most of the 429/503 responses below.</p></li><li class="issue warn"><div class="issue-head"><h4>Rate limits switch planning modes, and retries are off by default</h4><span class="impact">Q6 fails without retries</span></div><p>Genealogy Online (429) and RCE (503) rejected the initial COUNT burst, which turned COUNTs off for those endpoints for an hour. Without retries, one 503 on a data request aborts the whole query.</p><p class="fix"><span class="fix-label">Outlook</span> Retry 429/503 with Retry-After by default for SPARQL sources, and do not treat rate limiting as "COUNT too slow".</p></li><li class="issue warn"><div class="issue-head"><h4>Overlapping sources multiply results and identical requests</h4><span class="impact">Q3: 107 of 251 requests repeated</span></div><p>WO2Net carries a copy of the NIOD thesaurus and the Dataset Knowledge Graph copies the register. Without DISTINCT, Q2 returns every row 4 times.</p><p class="fix"><span class="fix-label">Outlook</span> Deduplicate identical in-flight requests per endpoint.</p></li></ol>
+    <p class="note">Smaller items: one service-description GET per source even for sources typed <code>sparql</code>; COUNT queries are not batched per source the way ASK queries now are; and at large result volumes the streaming SPARQL JSON parser plus garbage collection dominate CPU.</p>
+  </section>
+
+  <section aria-labelledby="h-queries">
+    <h2 id="h-queries">The queries</h2>
+    <p>Join axes come from the VoID linksets in the NDE Dataset Knowledge Graph, checked against the exact URI forms in each endpoint. Each source list also holds related endpoints without matching data, to test source selection.</p>
+    <div class="queries">
+<section class="query" id="q1">
+  <header class="query-head"><span class="qid">Q1</span><h3>Works by women artists in Dutch museum collections</h3></header>
+  <div class="query-body">
+    <dl class="facts">
+      <div><dt>Use case</dt><dd>Museums link their creator records to RKDartists with <code>schema:sameAs</code>, and RKD records gender and birth dates. The query lists works by female artists with their RKD birth date.</dd></div>
+      <div><dt>Result</dt><dd>12 rows for 2 artists (Charley Toorop, Lizzy Ansingh). The correct answer has about 334 rows for 28 artists in 6 museums: Groninger Museum 286, Musiom 22, Jan Menze van Diepen 15, Gerrit van Houten 8, DKOR 2, Kranenburgh 1.</dd></div>
+      <div><dt>What the plan did</dt><dd>Starts from the 87,383 female RKD artists, of which TriplyDB returns 10,000. It then sends those in blocks to all 22 sources for <code>schema:sameAs</code> (8,800 requests) and <code>schema:creator</code> (3,014 requests). The ASK mode of the branch produced the same plan.</dd></div>
+      <div><dt>Sample rows</dt><dd><ul class="samples"><li>Toorop, Charley · 1891-03-24 · Zelfportret met Edgar en John</li><li>Ansingh, Lizzy · 1875-03-13 · Christine Jacoba Tjarda van Starkenborgh Stachouwer - Quintus</li></ul></dd></div>
+    </dl>
+    <details class="code"><summary>Query (q1-women-artists.rq)</summary><pre><code># Works by women artists in Dutch museum collections, with life data from RKD.
+# Museums link their local creator records to RKDartists with schema:sameAs;
+# RKD records gender (AAT 300189557 = female) and birth dates.
+PREFIX schema: &lt;https://schema.org/&gt;
+PREFIX crm: &lt;http://www.cidoc-crm.org/cidoc-crm/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+SELECT ?artist ?name ?birth ?work ?title WHERE {
+  ?work schema:creator ?agent .
+  ?agent schema:sameAs ?artist .
+  ?artist crm:P2_has_type &lt;http://vocab.getty.edu/aat/300189557&gt; ;
+          rdfs:label ?name .
+  ?work schema:name ?title .
+  OPTIONAL { ?artist crm:P98i_was_born/crm:P4_has_time-span/crm:P82a_begin_of_the_begin ?birth }
+}
+</code></pre></details>
+    
+    <details class="code"><summary>Sources (q1.txt)</summary><div class="src"><p class="src-group">RKD Knowledge Graph</p><ul class="src-list"><li><code>https://api.rkd.triply.cc/datasets/rkd/RKD-Knowledge-Graph/services/SPARQL/sparql</code></li></ul><p class="src-group">Museum collections that link creators to data.rkd.nl/artists (per the NDE Dataset Knowledge Graph linksets)</p><ul class="src-list"><li><code>https://sparql.ldmax.nl/Q1542668</code></li><li><code>https://sparql.ldmax.nl/Q124789020</code></li><li><code>https://sparql.ldmax.nl/Q110414440</code></li><li><code>https://sparql.ldmax.nl/Q20829167</code></li><li><code>https://sparql.ldmax.nl/Q2798268</code></li><li><code>https://sparql.ldmax.nl/Q110996022</code></li><li><code>https://sparql.ldmax.nl/Q2203052</code></li><li><code>https://sparql.ldmax.nl/Q110271758</code></li><li><code>https://sparql.ldmax.nl/Q4350196</code></li><li><code>https://sparql.ldmax.nl/Q125958534</code></li><li><code>https://sparql.ldmax.nl/Q2070053</code></li><li><code>https://sparql.ldmax.nl/Q2054056</code></li><li><code>https://sparql.ldmax.nl/Q623558</code></li><li><code>https://sparql.ldmax.nl/Q12013217</code></li><li><code>https://sparql.ldmax.nl/Q2168069</code></li><li><code>https://sparql.ldmax.nl/Q2882945</code></li><li><code>https://sparql.ldmax.nl/Q2191118</code></li><li><code>https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql</code></li><li><code>https://eu.api.kleksi.com/apps/lnvajn/datasets/default/sparql</code></li><li><code>https://eu.api.kleksi.com/apps/qb3d1n/datasets/default/sparql</code></li><li><code>https://eu.api.kleksi.com/apps/mn1lmb/datasets/default/sparql</code></li></ul></div></details>
+  </div>
+</section>
+<section class="query" id="q2">
+  <header class="query-head"><span class="qid">Q2</span><h3>Victims who died in Kamp Vught, with their birthplace</h3></header>
+  <div class="query-body">
+    <dl class="facts">
+      <div><dt>Use case</dt><dd>Genealogy Online links each victim's death place to the NIOD WO2 thesaurus, and the victim to an Oorlogslevens person record in WO2Net. That record links the birthplace to the thesaurus, which provides its label: three hops across three endpoints.</dd></div>
+      <div><dt>Result</dt><dd>53 rows, exactly the ground truth. Without DISTINCT, 212 rows: WO2Net also holds a copy of the thesaurus, so both labels match twice.</dd></div>
+      <div><dt>What the plan did</dt><dd>Six museum endpoints receive every block of victim IRIs although none of them contain those IRIs.</dd></div>
+      <div><dt>Sample rows</dt><dd><ul class="samples"><li>Joseph Wilhelmus Toussaint · 1945-05-21 · Nijmegen</li><li>Gerrit GOLDENBELD · 1944-12-09 · Deventer</li></ul></dd></div>
+    </dl>
+    <details class="code"><summary>Query (q2-vught-victims.rq)</summary><pre><code># Victims who died in Kamp Vught (Genealogy Online), with their birthplace as recorded
+# in the Oorlogslevens person records of WO2Net, labelled via the NIOD WO2 thesaurus.
+PREFIX schema: &lt;https://schema.org/&gt;
+PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;
+SELECT DISTINCT ?victim ?name ?deathDate ?birthPlace WHERE {
+  ?camp skos:prefLabel &quot;Kamp Vught&quot;@nl .
+  ?victim schema:deathPlace ?camp ;
+          schema:name ?name ;
+          schema:deathDate ?deathDate ;
+          schema:sameAs ?warLife .
+  ?warLife schema:birthPlace ?bp .
+  ?bp skos:prefLabel ?birthPlace .
+  FILTER(LANG(?birthPlace) = &quot;nl&quot;)
+}
+</code></pre></details>
+    
+    <details class="code"><summary>Sources (wo2.txt)</summary><div class="src"><p class="src-group">NIOD WO2 thesaurus (PoolParty)</p><ul class="src-list"><li><code>https://data.niod.nl/PoolParty/sparql/WO2_Thesaurus</code></li></ul><p class="src-group">Genealogy Online: WWII victims (PiCo)</p><ul class="src-list"><li><code>https://www.genealogieonline.nl/wo2slachtoffers/sparql</code></li></ul><p class="src-group">WO2Net: WWII collections, war persons (oorlogslevens) and a copy of the WO2 thesaurus</p><ul class="src-list"><li><code>https://sparql.ldmax.nl/wo2net</code></li></ul><p class="src-group">WWII-related museum collections linking to the WO2 thesaurus</p><ul class="src-list"><li><code>https://sparql.ldmax.nl/Q24033642</code></li><li><code>https://sparql.ldmax.nl/Q4452658</code></li><li><code>https://sparql.ldmax.nl/Q1852477</code></li><li><code>https://sparql.ldmax.nl/Q2070053</code></li><li><code>https://sparql.ldmax.nl/Q2798268</code></li><li><code>https://sparql.ldmax.nl/Q2882945</code></li></ul></div></details>
+  </div>
+</section>
+<section class="query" id="q3">
+  <header class="query-head"><span class="qid">Q3</span><h3>Collection objects about Kamp Vught</h3></header>
+  <div class="query-body">
+    <dl class="facts">
+      <div><dt>Use case</dt><dd>WO2Net links objects to the thesaurus directly, and museums link a local term with <code>schema:sameAs</code>. A UNION covers both.</dd></div>
+      <div><dt>Result</dt><dd>205 rows, exactly the ground truth, from WO2Net and Nationaal Monument Kamp Vught.</dd></div>
+      <div><dt>What the plan did</dt><dd>107 of the 251 query requests were identical repeats, caused by the duplicated thesaurus.</dd></div>
+      <div><dt>Sample rows</dt><dd><ul class="samples"><li>Reçu van pakketje verzonden aan Cees van den Bergh</li><li>Coba Laetemia-Tahitu vertelt over de aankomst in Rotterdam (interview segment)</li></ul></dd></div>
+    </dl>
+    <details class="code"><summary>Query (q3-camp-objects.rq)</summary><pre><code># Collection objects about Kamp Vught in Dutch WWII collections,
+# either linked directly (WO2Net) or via a local term mapped to the WO2 thesaurus (museums).
+PREFIX schema: &lt;https://schema.org/&gt;
+PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;
+SELECT DISTINCT ?object ?title WHERE {
+  ?camp skos:prefLabel &quot;Kamp Vught&quot;@nl .
+  { ?object schema:about ?camp . }
+  UNION
+  { ?object schema:about ?term . ?term schema:sameAs ?camp . }
+  ?object schema:name ?title .
+}
+</code></pre></details>
+    
+    <details class="code"><summary>Sources (wo2.txt)</summary><div class="src"><p class="src-group">NIOD WO2 thesaurus (PoolParty)</p><ul class="src-list"><li><code>https://data.niod.nl/PoolParty/sparql/WO2_Thesaurus</code></li></ul><p class="src-group">Genealogy Online: WWII victims (PiCo)</p><ul class="src-list"><li><code>https://www.genealogieonline.nl/wo2slachtoffers/sparql</code></li></ul><p class="src-group">WO2Net: WWII collections, war persons (oorlogslevens) and a copy of the WO2 thesaurus</p><ul class="src-list"><li><code>https://sparql.ldmax.nl/wo2net</code></li></ul><p class="src-group">WWII-related museum collections linking to the WO2 thesaurus</p><ul class="src-list"><li><code>https://sparql.ldmax.nl/Q24033642</code></li><li><code>https://sparql.ldmax.nl/Q4452658</code></li><li><code>https://sparql.ldmax.nl/Q1852477</code></li><li><code>https://sparql.ldmax.nl/Q2070053</code></li><li><code>https://sparql.ldmax.nl/Q2798268</code></li><li><code>https://sparql.ldmax.nl/Q2882945</code></li></ul></div></details>
+  </div>
+</section>
+<section class="query" id="q4">
+  <header class="query-head"><span class="qid">Q4 and Q4b</span><h3>Portraits across museums via CHT and AAT</h3></header>
+  <div class="query-body">
+    <dl class="facts">
+      <div><dt>Use case</dt><dd>Terminology-aware search. Museums map their local object types to CHT or to the equivalent AAT concept, and CHT links the two with <code>skos:exactMatch</code>. The query finds portraits regardless of which mapping a museum used.</dd></div>
+      <div><dt>Result</dt><dd>Neither run finishes. The ground truth is 2,022 objects in 5 museums. Over a subset of 6 sources, Q4b finishes in 11.3 s with 1,957 results.</dd></div>
+      <div><dt>What the plan did</dt><dd>Q4: the OPTIONAL date costs a COUNT plus a SELECT per object per source, 100,401 requests in 15 minutes. Q4b: <code>schema:name</code> is downloaded from all 34 museums (411 MB), after which the process stays CPU-bound in JSON parsing and garbage collection.</dd></div>
+      <div><dt>Sample rows</dt><dd><ul class="samples"><li>Portret van Cornelis van Groenendijck (1658-1704) · 1668</li><li>Prent; reproductie; portret (foto) van Geert Reinders</li></ul></dd></div>
+    </dl>
+    <details class="code"><summary>Query (q4-portraits.rq)</summary><pre><code># Portraits in Dutch museum collections, found through the CHT concept &quot;portretten&quot;:
+# museums map their local object-type terms either to CHT itself or to the equivalent AAT concept.
+PREFIX schema: &lt;https://schema.org/&gt;
+PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;
+SELECT ?object ?title ?date WHERE {
+  ?cht skos:prefLabel &quot;portretten&quot;@nl ;
+       skos:exactMatch ?aat .
+  { ?term schema:sameAs ?aat . } UNION { ?term schema:sameAs ?cht . }
+  ?object schema:artform ?term ;
+          schema:name ?title .
+  OPTIONAL { ?object schema:dateCreated ?date }
+}
+</code></pre></details>
+    <details class="code"><summary>Variant query (q4b-portraits-noopt.rq)</summary><pre><code># Portraits in Dutch museum collections, found through the CHT concept &quot;portretten&quot;:
+# museums map their local object-type terms either to CHT itself or to the equivalent AAT concept.
+# Variant without the OPTIONAL creation date.
+PREFIX schema: &lt;https://schema.org/&gt;
+PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;
+SELECT DISTINCT ?object ?title WHERE {
+  ?cht skos:prefLabel &quot;portretten&quot;@nl ;
+       skos:exactMatch ?aat .
+  { ?term schema:sameAs ?aat . } UNION { ?term schema:sameAs ?cht . }
+  ?object schema:artform ?term ;
+          schema:name ?title .
+}
+</code></pre></details>
+    <details class="code"><summary>Sources (q4.txt)</summary><div class="src"><p class="src-group">CHT (Cultuurhistorische Thesaurus, RCE)</p><ul class="src-list"><li><code>https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql</code></li></ul><p class="src-group">Museum collections whose local terms are mapped to AAT or CHT (schema:sameAs)</p><ul class="src-list"><li><code>https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql</code></li><li><code>https://eu.api.kleksi.com/apps/pn885n/datasets/default/sparql</code></li><li><code>https://eu.api.kleksi.com/apps/pnpmjn/datasets/default/sparql</code></li><li><code>https://sparql.ldmax.nl/Q110271758</code></li><li><code>https://sparql.ldmax.nl/Q110414440</code></li><li><code>https://sparql.ldmax.nl/Q110978413</code></li><li><code>https://sparql.ldmax.nl/Q110986306</code></li><li><code>https://sparql.ldmax.nl/Q110996022</code></li><li><code>https://sparql.ldmax.nl/Q114867292</code></li><li><code>https://sparql.ldmax.nl/Q11722011</code></li><li><code>https://sparql.ldmax.nl/Q12013217</code></li><li><code>https://sparql.ldmax.nl/Q124789020</code></li><li><code>https://sparql.ldmax.nl/Q125958534</code></li><li><code>https://sparql.ldmax.nl/Q13612139</code></li><li><code>https://sparql.ldmax.nl/Q1542668</code></li><li><code>https://sparql.ldmax.nl/Q1852477</code></li><li><code>https://sparql.ldmax.nl/Q2022136</code></li><li><code>https://sparql.ldmax.nl/Q2054056</code></li><li><code>https://sparql.ldmax.nl/Q2070053</code></li><li><code>https://sparql.ldmax.nl/Q20829167</code></li><li><code>https://sparql.ldmax.nl/Q2168069</code></li><li><code>https://sparql.ldmax.nl/Q2191118</code></li><li><code>https://sparql.ldmax.nl/Q2203052</code></li><li><code>https://sparql.ldmax.nl/Q2204530</code></li><li><code>https://sparql.ldmax.nl/Q24033642</code></li><li><code>https://sparql.ldmax.nl/Q2575273</code></li><li><code>https://sparql.ldmax.nl/Q2798268</code></li><li><code>https://sparql.ldmax.nl/Q2882945</code></li><li><code>https://sparql.ldmax.nl/Q4350196</code></li><li><code>https://sparql.ldmax.nl/Q4452658</code></li><li><code>https://sparql.ldmax.nl/Q474563</code></li><li><code>https://sparql.ldmax.nl/Q56461202</code></li><li><code>https://sparql.ldmax.nl/Q623558</code></li><li><code>https://sparql.ldmax.nl/Q98962037</code></li></ul></div></details>
+  </div>
+</section>
+<section class="query" id="q5">
+  <header class="query-head"><span class="qid">Q5 and Q5b</span><h3>Louis Andriessen across Dutch music and broadcast heritage</h3></header>
+  <div class="query-body">
+    <dl class="facts">
+      <div><dt>Use case</dt><dd>A person profile from one GTAA identifier: compositions in Muziekschatten, albums in Muziekweb, and broadcast items in the Beeld en Geluid catalogue.</dd></div>
+      <div><dt>Result</dt><dd>Q5 fails. Q5b finds all 131 compositions and all 44 albums, but 0 of the 536 broadcast items.</dd></div>
+      <div><dt>What the plan did</dt><dd>Q5: the GTAA binding is not pushed into the UNION branches, so they run as full scans, and the query dies on a network error after 11,589 requests. Q5b repeats the anchor in each branch. Its broadcast branch is lost because all creator roles in the catalogue are blank nodes.</dd></div>
+      <div><dt>Sample rows</dt><dd><ul class="samples"><li>album · Doctor nero</li><li>composition · Bassoon blue</li></ul></dd></div>
+    </dl>
+    <details class="code"><summary>Query (q5-andriessen.rq)</summary><pre><code># Composer Louis Andriessen across Dutch music and broadcast heritage:
+# compositions (Muziekschatten), albums (Muziekweb) and broadcast items (Beeld en Geluid),
+# all reached through his GTAA person identifier.
+PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;
+PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt;
+PREFIX schema: &lt;http://schema.org/&gt;
+PREFIX sdo: &lt;https://schema.org/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX mw: &lt;https://data.muziekweb.nl/vocab/&gt;
+SELECT ?kind ?item ?title WHERE {
+  ?gtaa skos:prefLabel &quot;Andriessen, Louis&quot;@nl ;
+        skos:inScheme &lt;http://data.beeldengeluid.nl/gtaa/Persoonsnamen&gt; .
+  {
+    ?person owl:sameAs ?gtaa .
+    ?item schema:composer ?person ;
+          schema:name ?title .
+    BIND(&quot;composition (Muziekschatten)&quot; AS ?kind)
+  } UNION {
+    ?person owl:sameAs ?gtaa , ?mwPerson .
+    ?mwPerson mw:album ?item .
+    ?item rdfs:label ?title .
+    BIND(&quot;album (Muziekweb)&quot; AS ?kind)
+  } UNION {
+    ?role sdo:creator ?gtaa .
+    ?item sdo:creator ?role ;
+          sdo:name ?title .
+    BIND(&quot;broadcast item (Beeld en Geluid)&quot; AS ?kind)
+  }
+}
+</code></pre></details>
+    <details class="code"><summary>Variant query (q5b-andriessen-anchored.rq)</summary><pre><code># Composer Louis Andriessen across Dutch music and broadcast heritage:
+# compositions (Muziekschatten), albums (Muziekweb) and broadcast items (Beeld en Geluid),
+# all reached through his GTAA person identifier.
+# Variant of q5 with the GTAA anchor repeated inside each UNION branch.
+PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;
+PREFIX owl: &lt;http://www.w3.org/2002/07/owl#&gt;
+PREFIX schema: &lt;http://schema.org/&gt;
+PREFIX sdo: &lt;https://schema.org/&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX mw: &lt;https://data.muziekweb.nl/vocab/&gt;
+SELECT DISTINCT ?kind ?item ?title WHERE {
+  {
+    ?gtaa skos:prefLabel &quot;Andriessen, Louis&quot;@nl .
+    ?person owl:sameAs ?gtaa .
+    ?item schema:composer ?person ;
+          schema:name ?title .
+    BIND(&quot;composition (Muziekschatten)&quot; AS ?kind)
+  } UNION {
+    ?gtaa skos:prefLabel &quot;Andriessen, Louis&quot;@nl .
+    ?person owl:sameAs ?gtaa , ?mwPerson .
+    ?mwPerson mw:album ?item .
+    ?item rdfs:label ?title .
+    BIND(&quot;album (Muziekweb)&quot; AS ?kind)
+  } UNION {
+    ?gtaa skos:prefLabel &quot;Andriessen, Louis&quot;@nl .
+    ?role sdo:creator ?gtaa .
+    ?item sdo:creator ?role ;
+          sdo:name ?title .
+    BIND(&quot;broadcast item (Beeld en Geluid)&quot; AS ?kind)
+  }
+}
+</code></pre></details>
+    <details class="code"><summary>Sources (q5.txt)</summary><div class="src"><p class="src-group">GTAA (Beeld en Geluid thesaurus)</p><ul class="src-list"><li><code>https://gtaa.apis.beeldengeluid.nl/sparql</code></li></ul><p class="src-group">Beeld en Geluid catalogue</p><ul class="src-list"><li><code>https://cat.apis.beeldengeluid.nl/sparql</code></li></ul><p class="src-group">Muziekschatten (Dutch classical compositions, persons)</p><ul class="src-list"><li><code>https://data.muziekschatten.nl/sparql</code></li></ul><p class="src-group">Muziekweb</p><ul class="src-list"><li><code>https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql</code></li></ul><p class="src-group">Other performing-arts datasets in the register (candidates without links to this composer)</p><ul class="src-list"><li><code>https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql</code></li><li><code>https://sparql.ldmax.nl/Q2204530</code></li></ul></div></details>
+  </div>
+</section>
+<section class="query" id="q6">
+  <header class="query-head"><span class="qid">Q6 and Q6b</span><h3>National monuments in Gouda with RCE style and original function</h3></header>
+  <div class="query-body">
+    <dl class="facts">
+      <div><dt>Use case</dt><dd>The Gouda Tijdmachine links its building records to the RCE monument register with <code>rdfs:seeAlso</code>, and RCE provides the structured style and original function.</dd></div>
+      <div><dt>Result</dt><dd>Q6 returns nothing in 10 minutes. Q6b (style required) returns exactly the ground truth: 73 distinct value rows (282 rows at RDF term level, because labels come in several languages and datatypes).</dd></div>
+      <div><dt>What the plan did</dt><dd>Q6 runs the optional property path per binding, with its last step as an unbound scan of <code>skos:prefLabel</code> in every source (26 MB from CHT, 72 MB from RCE).</dd></div>
+      <div><dt>Sample rows</dt><dd><ul class="samples"><li>Kantoorgebouw, Kaaspakhuis, Wachtelstraat 52 · Zakelijk Expressionisme · Kaaspakhuis</li></ul></dd></div>
+    </dl>
+    <details class="code"><summary>Query (q6-gouda-monuments.rq)</summary><pre><code># National monuments (rijksmonumenten) in Gouda: buildings of the Gouda Time Machine
+# joined with the RCE monument register for their style and original function.
+PREFIX schema: &lt;https://schema.org/&gt;
+PREFIX ceo: &lt;https://linkeddata.cultureelerfgoed.nl/def/ceo#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX gtm: &lt;https://www.goudatijdmachine.nl/def#&gt;
+PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;
+SELECT ?building ?name ?monumentNumber ?style ?originalFunction WHERE {
+  ?building a gtm:Gebouw ;
+            schema:name ?name ;
+            rdfs:seeAlso ?monument .
+  ?monument ceo:rijksmonumentnummer ?monumentNumber ;
+            ceo:heeftOorspronkelijkeFunctie/ceo:heeftFunctieNaam/skos:prefLabel ?originalFunction .
+  OPTIONAL { ?monument ceo:heeftStijlEnCultuur/ceo:heeftStijlEnCultuurNaam/skos:prefLabel ?style . }
+}
+</code></pre></details>
+    <details class="code"><summary>Variant query (q6b-gouda-monuments-noopt.rq)</summary><pre><code># National monuments (rijksmonumenten) in Gouda: buildings of the Gouda Time Machine
+# joined with the RCE monument register for their style and original function (variant: style required).
+PREFIX schema: &lt;https://schema.org/&gt;
+PREFIX ceo: &lt;https://linkeddata.cultureelerfgoed.nl/def/ceo#&gt;
+PREFIX rdfs: &lt;http://www.w3.org/2000/01/rdf-schema#&gt;
+PREFIX gtm: &lt;https://www.goudatijdmachine.nl/def#&gt;
+PREFIX skos: &lt;http://www.w3.org/2004/02/skos/core#&gt;
+SELECT DISTINCT ?building ?name ?monumentNumber ?style ?originalFunction WHERE {
+  ?building a gtm:Gebouw ;
+            schema:name ?name ;
+            rdfs:seeAlso ?monument .
+  ?monument ceo:rijksmonumentnummer ?monumentNumber ;
+            ceo:heeftOorspronkelijkeFunctie/ceo:heeftFunctieNaam/skos:prefLabel ?originalFunction .
+  ?monument ceo:heeftStijlEnCultuur/ceo:heeftStijlEnCultuurNaam/skos:prefLabel ?style .
+}
+</code></pre></details>
+    <details class="code"><summary>Sources (q6.txt)</summary><div class="src"><p class="src-group">Gouda Tijdmachine knowledge graph</p><ul class="src-list"><li><code>https://sparql.goudatijdmachine.nl/</code></li></ul><p class="src-group">RCE: Cultuurhistorische objecten (monument register)</p><ul class="src-list"><li><code>https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql</code></li></ul><p class="src-group">RCE: other datasets in the register (candidates)</p><ul class="src-list"><li><code>https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql</code></li><li><code>https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql</code></li><li><code>https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql</code></li></ul><p class="src-group">Gouda civil records in PiCo (Gouda Tijdmachine / Open Archives)</p><ul class="src-list"><li><code>https://qlever.coret.org/oabs</code></li></ul></div></details>
+  </div>
+</section>
+<section class="query" id="q7">
+  <header class="query-head"><span class="qid">Q7</span><h3>Which datasets link to the WO2 thesaurus, and where can they be queried?</h3></header>
+  <div class="query-body">
+    <dl class="facts">
+      <div><dt>Use case</dt><dd>Discovery: joins the linksets in the NDE Dataset Knowledge Graph with the register's dataset descriptions and SPARQL distributions.</dd></div>
+      <div><dt>Result</dt><dd>1 row (the Dataset Knowledge Graph itself). The ground truth has 11 datasets, including WO2Net, Genealogy Online, Kamp Vught and Anne Frank House.</dd></div>
+      <div><dt>What the plan did</dt><dd>The register's distributions are blank nodes, so the join from dataset to distribution to endpoint is dropped. Without DISTINCT, 128 rows for 2 answers, because the Dataset Knowledge Graph copies the register.</dd></div>
+      <div><dt>Sample rows</dt><dd><ul class="samples"><li>Dataset Knowledge Graph · Dutch Digital Heritage Network · 1241 links</li></ul></dd></div>
+    </dl>
+    <details class="code"><summary>Query (q7-discovery.rq)</summary><pre><code># Discovery: which datasets in the NDE register link to the NIOD WO2 thesaurus, how many links
+# do they have (NDE Dataset Knowledge Graph linksets), and where can they be queried (register distributions)?
+PREFIX void: &lt;http://rdfs.org/ns/void#&gt;
+PREFIX dcat: &lt;http://www.w3.org/ns/dcat#&gt;
+PREFIX dct: &lt;http://purl.org/dc/terms/&gt;
+PREFIX foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
+SELECT DISTINCT ?dataset ?title ?publisher ?links ?endpoint WHERE {
+  ?linkset void:objectsTarget &lt;https://data.niod.nl/WO2_Thesaurus&gt; ;
+           void:subjectsTarget ?dataset ;
+           void:triples ?links .
+  ?dataset dct:title ?title ;
+           dct:publisher/foaf:name ?publisher ;
+           dcat:distribution ?distribution .
+  ?distribution dct:conformsTo &lt;https://www.w3.org/TR/sparql11-protocol/&gt; ;
+                dcat:accessURL ?endpoint .
+  FILTER(LANG(?title) = &quot;en&quot; || LANG(?title) = &quot;&quot;)
+  FILTER(LANG(?publisher) = &quot;en&quot; || LANG(?publisher) = &quot;&quot;)
+}
+</code></pre></details>
+    
+    <details class="code"><summary>Sources (q7.txt)</summary><div class="src"><p class="src-group">NDE dataset register</p><ul class="src-list"><li><code>https://datasetregister.netwerkdigitaalerfgoed.nl/sparql</code></li></ul><p class="src-group">NDE Dataset Knowledge Graph (VoID descriptions, linksets)</p><ul class="src-list"><li><code>https://sparql.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph</code></li></ul></div></details>
+  </div>
+</section></div>
+  </section>
+
+  <section class="method" aria-labelledby="h-method">
+    <h2 id="h-method">How this was measured</h2>
+    <ul>
+      <li>A harness runs each query in a fresh Node process with the default engine of <code>engines/query-sparql</code>. A wrapped <code>fetch</code> records every request: kind (service description, ASK, COUNT, data), status, rows and bytes.</li>
+      <li>All sources were passed as <code>{ type: 'sparql', value: url }</code>. Service-description GETs did not follow redirects (issue 1). Retries on 429/503 (<code>httpRetryCount: 3</code>) were on for all runs except Q1, which received no 429/503 responses.</li>
+      <li>The register lists 124 SPARQL distribution URLs. 112 are real endpoint URLs, and 97 of those answered a probe query.</li>
+      <li>Ground truth: each endpoint was queried directly, with every join that stays inside one endpoint pushed down to it.</li>
+      <li>Each figure is one run. I kept repeats to a minimum, because several of these queries put real load on public endpoints.</li>
+    </ul>
+  </section>
+
+  <footer>Queries, source lists, run summaries and the harness are in <code>performance/nde-federated/</code> on branch <code>claude/fervent-brown-776xpl</code>.</footer>
+</div>
