@@ -1,0 +1,151 @@
+{
+ "status": "ok",
+ "results": 53,
+ "timeMs": 46452,
+ "firstResultMs": 29565,
+ "cpuMs": 6537,
+ "httpRequests": 501,
+ "httpRequestsWire": 501,
+ "byKind": {
+  "count-batch": 9,
+  "select": 461,
+  "ask": 15,
+  "ask-batch": 16
+ },
+ "decodedBytes": 244579,
+ "wireBytes": 84399,
+ "sourcesGiven": 9,
+ "sourcesContacted": 9,
+ "sourcesWithData": [
+  "https://data.niod.nl/PoolParty/sparql/WO2_Thesaurus",
+  "https://www.genealogieonline.nl/wo2slachtoffers/sparql",
+  "https://sparql.ldmax.nl/wo2net"
+ ],
+ "byEndpoint": {
+  "https://data.niod.nl/PoolParty/sparql/WO2_Thesaurus": {
+   "requests": 14,
+   "decodedBytes": 16182,
+   "kinds": {
+    "count-batch": 1,
+    "select": 11,
+    "ask": 2
+   },
+   "dataRows": 50,
+   "askTrue": 2,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://www.genealogieonline.nl/wo2slachtoffers/sparql": {
+   "requests": 49,
+   "decodedBytes": 141123,
+   "kinds": {
+    "count-batch": 1,
+    "ask": 5,
+    "select": 41,
+    "ask-batch": 2
+   },
+   "dataRows": 802,
+   "askTrue": 4,
+   "askFalse": 14,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/wo2net": {
+   "requests": 84,
+   "decodedBytes": 41279,
+   "kinds": {
+    "count-batch": 1,
+    "select": 79,
+    "ask": 2,
+    "ask-batch": 2
+   },
+   "dataRows": 191,
+   "askTrue": 2,
+   "askFalse": 7,
+   "errors": 2
+  },
+  "https://sparql.ldmax.nl/Q24033642": {
+   "requests": 59,
+   "decodedBytes": 7799,
+   "kinds": {
+    "count-batch": 1,
+    "ask-batch": 2,
+    "ask": 1,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 8,
+   "errors": 2
+  },
+  "https://sparql.ldmax.nl/Q4452658": {
+   "requests": 59,
+   "decodedBytes": 7800,
+   "kinds": {
+    "count-batch": 1,
+    "ask-batch": 2,
+    "ask": 1,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 8,
+   "errors": 2
+  },
+  "https://sparql.ldmax.nl/Q1852477": {
+   "requests": 59,
+   "decodedBytes": 7800,
+   "kinds": {
+    "count-batch": 1,
+    "ask-batch": 2,
+    "ask": 1,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 8,
+   "errors": 2
+  },
+  "https://sparql.ldmax.nl/Q2070053": {
+   "requests": 59,
+   "decodedBytes": 7811,
+   "kinds": {
+    "count-batch": 1,
+    "ask-batch": 2,
+    "ask": 1,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 8,
+   "errors": 2
+  },
+  "https://sparql.ldmax.nl/Q2798268": {
+   "requests": 59,
+   "decodedBytes": 7801,
+   "kinds": {
+    "count-batch": 1,
+    "ask-batch": 2,
+    "ask": 1,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 8,
+   "errors": 2
+  },
+  "https://sparql.ldmax.nl/Q2882945": {
+   "requests": 59,
+   "decodedBytes": 6984,
+   "kinds": {
+    "count-batch": 1,
+    "ask-batch": 2,
+    "ask": 1,
+    "select": 55
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 1,
+   "errors": 3
+  }
+ }
+}

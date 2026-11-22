@@ -1,0 +1,111 @@
+{
+ "status": "ok",
+ "results": 1957,
+ "timeMs": 25459,
+ "firstResultMs": 9723,
+ "cpuMs": 2726,
+ "httpRequests": 196,
+ "httpRequestsWire": 200,
+ "byKind": {
+  "no-query": 6,
+  "count": 36,
+  "select": 145,
+  "ask-batch": 9
+ },
+ "decodedBytes": 1121750,
+ "wireBytes": 558027,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql",
+  "https://sparql.ldmax.nl/Q11722011",
+  "https://sparql.ldmax.nl/Q1542668",
+  "https://sparql.ldmax.nl/Q2070053",
+  "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql"
+ ],
+ "byEndpoint": {
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql": {
+   "requests": 8,
+   "decodedBytes": 1397,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 1
+   },
+   "dataRows": 2,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://sparql.ldmax.nl/Q11722011": {
+   "requests": 68,
+   "decodedBytes": 380901,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 59,
+    "ask-batch": 2
+   },
+   "dataRows": 1462,
+   "askTrue": 2,
+   "askFalse": 5,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q1542668": {
+   "requests": 80,
+   "decodedBytes": 524330,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 71,
+    "ask-batch": 2
+   },
+   "dataRows": 2290,
+   "askTrue": 2,
+   "askFalse": 5,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2798268": {
+   "requests": 13,
+   "decodedBytes": 101920,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 4,
+    "ask-batch": 2
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 7,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2070053": {
+   "requests": 15,
+   "decodedBytes": 109535,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 6,
+    "ask-batch": 2
+   },
+   "dataRows": 37,
+   "askTrue": 2,
+   "askFalse": 5,
+   "errors": 0
+  },
+  "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql": {
+   "requests": 12,
+   "decodedBytes": 3667,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 4,
+    "ask-batch": 1
+   },
+   "dataRows": 5,
+   "askTrue": 0,
+   "askFalse": 3,
+   "errors": 0
+  }
+ }
+}

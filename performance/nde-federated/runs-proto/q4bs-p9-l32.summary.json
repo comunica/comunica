@@ -1,0 +1,105 @@
+{
+ "status": "ok",
+ "results": 1957,
+ "timeMs": 44957,
+ "firstResultMs": 4845,
+ "cpuMs": 4783,
+ "httpRequests": 436,
+ "httpRequestsWire": 440,
+ "byKind": {
+  "no-query": 6,
+  "count": 36,
+  "select": 394
+ },
+ "decodedBytes": 1144444,
+ "wireBytes": 576001,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql",
+  "https://sparql.ldmax.nl/Q11722011",
+  "https://sparql.ldmax.nl/Q1542668",
+  "https://sparql.ldmax.nl/Q2070053",
+  "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql"
+ ],
+ "byEndpoint": {
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql": {
+   "requests": 8,
+   "decodedBytes": 1397,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 1
+   },
+   "dataRows": 2,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://sparql.ldmax.nl/Q11722011": {
+   "requests": 86,
+   "decodedBytes": 381270,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 79
+   },
+   "dataRows": 1457,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q1542668": {
+   "requests": 86,
+   "decodedBytes": 524304,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 79
+   },
+   "dataRows": 2290,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2798268": {
+   "requests": 86,
+   "decodedBytes": 109353,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 79
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://sparql.ldmax.nl/Q2070053": {
+   "requests": 86,
+   "decodedBytes": 116755,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 79
+   },
+   "dataRows": 37,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql": {
+   "requests": 84,
+   "decodedBytes": 11365,
+   "kinds": {
+    "no-query": 1,
+    "count": 6,
+    "select": 77
+   },
+   "dataRows": 5,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  }
+ }
+}

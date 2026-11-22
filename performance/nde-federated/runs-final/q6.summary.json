@@ -1,0 +1,104 @@
+{
+ "status": "ok",
+ "results": 3067,
+ "timeMs": 41255,
+ "firstResultMs": 38341,
+ "cpuMs": 6637,
+ "httpRequests": 463,
+ "httpRequestsWire": 462,
+ "byKind": {
+  "count-batch": 6,
+  "ask-batch": 3,
+  "select": 441,
+  "ask": 13
+ },
+ "decodedBytes": 692561,
+ "wireBytes": 116399,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://sparql.goudatijdmachine.nl/",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql"
+ ],
+ "byEndpoint": {
+  "https://sparql.goudatijdmachine.nl/": {
+   "requests": 164,
+   "decodedBytes": 260781,
+   "kinds": {
+    "count-batch": 1,
+    "select": 161,
+    "ask": 1,
+    "ask-batch": 1
+   },
+   "dataRows": 2212,
+   "askTrue": 1,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql": {
+   "requests": 203,
+   "decodedBytes": 419941,
+   "kinds": {
+    "count-batch": 1,
+    "ask-batch": 2,
+    "ask": 6,
+    "select": 194
+   },
+   "dataRows": 1897,
+   "askTrue": 13,
+   "askFalse": 6,
+   "errors": 2
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql": {
+   "requests": 2,
+   "decodedBytes": 1125,
+   "kinds": {
+    "count-batch": 1,
+    "ask": 1
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 1,
+   "errors": 0
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql": {
+   "requests": 31,
+   "decodedBytes": 3128,
+   "kinds": {
+    "count-batch": 1,
+    "ask": 2,
+    "select": 28
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 2,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql": {
+   "requests": 31,
+   "decodedBytes": 3134,
+   "kinds": {
+    "count-batch": 1,
+    "ask": 2,
+    "select": 28
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 2,
+   "errors": 1
+  },
+  "https://qlever.coret.org/oabs": {
+   "requests": 32,
+   "decodedBytes": 4452,
+   "kinds": {
+    "count-batch": 1,
+    "ask": 1,
+    "select": 30
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 1,
+   "errors": 1
+  }
+ }
+}

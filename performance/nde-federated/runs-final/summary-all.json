@@ -1,0 +1,162 @@
+{
+ "q1": {
+  "status": "ok",
+  "results": 334,
+  "timeMs": 159785,
+  "first": 141578,
+  "cpu": 113333,
+  "req": 499,
+  "kinds": {
+   "count-batch": 22,
+   "select": 455,
+   "ask-batch": 22
+  },
+  "dec": 364473927,
+  "wire": 50497276
+ },
+ "q2": {
+  "status": "ok",
+  "results": 53,
+  "timeMs": 46452,
+  "first": 29565,
+  "cpu": 6537,
+  "req": 501,
+  "kinds": {
+   "count-batch": 9,
+   "select": 461,
+   "ask": 15,
+   "ask-batch": 16
+  },
+  "dec": 244579,
+  "wire": 84399
+ },
+ "q3": {
+  "status": "ok",
+  "results": 205,
+  "timeMs": 14222,
+  "first": 4803,
+  "cpu": 2517,
+  "req": 141,
+  "kinds": {
+   "count-batch": 15,
+   "select": 94,
+   "count": 16,
+   "ask-batch": 14,
+   "ask": 2
+  },
+  "dec": 98287,
+  "wire": 32854
+ },
+ "q4": {
+  "status": "ok",
+  "results": 2036,
+  "timeMs": 87342,
+  "first": 54212,
+  "cpu": 34057,
+  "req": 5547,
+  "kinds": {
+   "count-batch": 69,
+   "select": 5407,
+   "ask-batch": 41,
+   "ask": 30
+  },
+  "dec": 1531735,
+  "wire": 726703
+ },
+ "q4b": {
+  "status": "ok",
+  "results": 2022,
+  "timeMs": 58432,
+  "first": 12626,
+  "cpu": 19182,
+  "req": 2785,
+  "kinds": {
+   "count-batch": 69,
+   "select": 2585,
+   "ask-batch": 96,
+   "ask": 35
+  },
+  "dec": 1046745,
+  "wire": 409162
+ },
+ "q5": {
+  "status": "ok",
+  "results": 2896,
+  "timeMs": 11516,
+  "first": 5566,
+  "cpu": 3982,
+  "req": 116,
+  "kinds": {
+   "count-batch": 10,
+   "ask-batch": 14,
+   "select": 88,
+   "ask": 4
+  },
+  "dec": 380569,
+  "wire": 339837
+ },
+ "q5b": {
+  "status": "ok",
+  "results": 714,
+  "timeMs": 8079,
+  "first": 5662,
+  "cpu": 2356,
+  "req": 66,
+  "kinds": {
+   "count-batch": 6,
+   "ask-batch": 9,
+   "select": 45,
+   "ask": 6
+  },
+  "dec": 482257,
+  "wire": 429001
+ },
+ "q6": {
+  "status": "ok",
+  "results": 3067,
+  "timeMs": 41255,
+  "first": 38341,
+  "cpu": 6637,
+  "req": 463,
+  "kinds": {
+   "count-batch": 6,
+   "ask-batch": 3,
+   "select": 441,
+   "ask": 13
+  },
+  "dec": 692561,
+  "wire": 116399
+ },
+ "q6b": {
+  "status": "ok",
+  "results": 282,
+  "timeMs": 25806,
+  "first": 19909,
+  "cpu": 4704,
+  "req": 326,
+  "kinds": {
+   "count-batch": 6,
+   "ask-batch": 3,
+   "select": 306,
+   "ask": 11
+  },
+  "dec": 496739,
+  "wire": 83235
+ },
+ "q7": {
+  "status": "ok",
+  "results": 11,
+  "timeMs": 7229,
+  "first": 5573,
+  "cpu": 1534,
+  "req": 37,
+  "kinds": {
+   "count-batch": 2,
+   "select": 21,
+   "ask-batch": 10,
+   "ask": 4
+  },
+  "dec": 45627,
+  "wire": 10015
+ }
+}
