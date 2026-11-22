@@ -17,7 +17,7 @@ import type {
   QueryResultCardinality,
 } from '@comunica/types';
 import type { AlgebraFactory } from '@comunica/utils-algebra';
-import { Algebra, algebraUtils, isKnownOperation } from '@comunica/utils-algebra';
+import { Algebra, algebraUtils, isKnownOperation, TypesComunica } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState, onFirstMetadataRequest } from '@comunica/utils-metadata';
 import {
@@ -377,10 +377,17 @@ export class QuerySourceSparql implements IQuerySource {
     const variables = batch.map((_, index) => this.dataFactory.variable(`ask${index}`));
     let operation: Algebra.Operation = this.algebraFactory.createBgp([]);
     for (const [ index, entry ] of batch.entries()) {
+      // Some endpoints correlate equally named variables of different EXISTS expressions,
+      // so the variables of each ASK query are made unique.
+      const input = QuerySourceSparql.renameVariables(
+        entry.operation.input,
+        variable => this.dataFactory.variable(`${variable.value}_b${index}`),
+        this.dataFactory,
+      );
       operation = this.algebraFactory.createExtend(
         operation,
         variables[index],
-        this.algebraFactory.createExistenceExpression(false, entry.operation.input),
+        this.algebraFactory.createExistenceExpression(false, input),
       );
     }
     const query = await this.operationToQuery(this.algebraFactory.createProject(operation, variables));
@@ -399,6 +406,76 @@ export class QuerySourceSparql implements IQuerySource {
       // Without a valid answer, assume that the operation has results, so that it is not pruned.
       const value = bindings[0]?.get(variable)?.value;
       return value !== 'false' && value !== '0';
+    });
+  }
+
+  /**
+   * Rename all variables in the given operation.
+   * @param operation An operation.
+   * @param rename A function that maps each variable to a new variable.
+   * @param dataFactory The data factory.
+   * @return The operation with renamed variables.
+   */
+  public static renameVariables(
+    operation: Algebra.Operation,
+    rename: (variable: RDF.Variable) => RDF.Variable,
+    dataFactory: ComunicaDataFactory,
+  ): Algebra.Operation {
+    const renameTerm = <T extends RDF.Term>(term: T): T => {
+      if (term.termType === 'Variable') {
+        return <T> rename(term);
+      }
+      if (term.termType === 'Quad') {
+        const quad = <RDF.Quad> <RDF.Term> term;
+        return <T> dataFactory.quad(
+          renameTerm(quad.subject),
+          renameTerm(quad.predicate),
+          renameTerm(quad.object),
+          renameTerm(quad.graph),
+        );
+      }
+      return term;
+    };
+    return algebraUtils.mapOperation(operation, {
+      [Algebra.Types.PATTERN]: { transform: op => ({
+        ...op,
+        subject: renameTerm(op.subject),
+        predicate: renameTerm(op.predicate),
+        object: renameTerm(op.object),
+        graph: renameTerm(op.graph),
+      }) },
+      [Algebra.Types.PATH]: { transform: op => ({
+        ...op,
+        subject: renameTerm(op.subject),
+        object: renameTerm(op.object),
+        graph: renameTerm(op.graph),
+      }) },
+      [Algebra.Types.EXTEND]: { transform: op => ({ ...op, variable: rename(op.variable) }) },
+      [Algebra.Types.PROJECT]: { transform: op => ({ ...op, variables: op.variables.map(rename) }) },
+      [Algebra.Types.GROUP]: { transform: op => ({ ...op, variables: op.variables.map(rename) }) },
+      [Algebra.Types.GRAPH]: { transform: op => ({ ...op, name: renameTerm(op.name) }) },
+      [Algebra.Types.SERVICE]: { transform: op => ({ ...op, name: renameTerm(op.name) }) },
+      [Algebra.Types.VALUES]: { transform: op => ({
+        ...op,
+        variables: op.variables.map(rename),
+        bindings: op.bindings.map(binding => Object.fromEntries(Object.entries(binding)
+          .map(([ key, value ]) => [ rename(dataFactory.variable(key)).value, value ]))),
+      }) },
+      [TypesComunica.NODES]: { transform: op => ({
+        ...op,
+        graph: renameTerm(op.graph),
+        variable: rename(op.variable),
+      }) },
+      [Algebra.Types.EXPRESSION]: { transform: (op) => {
+        if (op.subType === Algebra.ExpressionTypes.TERM) {
+          return { ...op, term: renameTerm(op.term) };
+        }
+        // Aggregates of a GROUP are bound to a variable.
+        if ('variable' in op) {
+          return { ...op, variable: rename(op.variable) };
+        }
+        return op;
+      } },
     });
   }
 
