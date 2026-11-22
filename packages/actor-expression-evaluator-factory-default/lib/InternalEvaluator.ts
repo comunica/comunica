@@ -92,22 +92,10 @@ export class InternalEvaluator {
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context });
     const output = getSafeBindings(outputRaw);
 
-    return await new Promise<boolean>(
-      (resolve, reject) => {
-        output.bindingsStream.on('end', () => {
-          resolve(false);
-        });
-
-        output.bindingsStream.on('error', reject);
-
-        output.bindingsStream.on('data', () => {
-          output.bindingsStream.close();
-          resolve(true);
-        });
-      },
-    )
-      .then((exists: boolean) => expr.expression.not ? !exists : exists)
-      .then((exists: boolean) => new Eval.BooleanLiteral(exists));
+    // Taking the first binding destroys the stream after it, while closing it from a data listener
+    // still lets a synchronous source, such as an in-memory store, produce all its bindings.
+    const exists = (await output.bindingsStream.take(1).toArray()).length > 0;
+    return new Eval.BooleanLiteral(expr.expression.not ? !exists : exists);
   }
 
   private evalAggregate(): never {

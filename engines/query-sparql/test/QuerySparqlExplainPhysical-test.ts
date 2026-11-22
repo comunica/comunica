@@ -245,7 +245,7 @@ sources:
   filter cardEst:~5 cardReal:4 timeSelf:Xms timeLife:Xms
     pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
     exists
-      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:2 cardReal:1 timeSelf:Xms timeLife:Xms destroyed compacted-occurrences:5 cardRealSum:4 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
@@ -260,9 +260,9 @@ sources:
   filter cardEst:~5 cardReal:4 timeSelf:Xms timeLife:Xms
     pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
     exists
-      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/age ?a) src:0 cardEst:1 cardReal:1 timeSelf:Xms timeLife:Xms destroyed compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
     exists
-      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:2 cardReal:2 timeSelf:Xms timeLife:Xms compacted-occurrences:5 cardRealSum:5 timeSelfSum:Xms timeLifeSum:Xms
+      pattern (http://example.org/alice http://xmlns.com/foaf/0.1/knows ?f) src:0 cardEst:2 cardReal:1 timeSelf:Xms timeLife:Xms destroyed compacted-occurrences:5 cardRealSum:4 timeSelfSum:Xms timeLifeSum:Xms
 
 sources:
   0: QuerySourceRdfJs(N3Store)(SkolemID:0)`);
