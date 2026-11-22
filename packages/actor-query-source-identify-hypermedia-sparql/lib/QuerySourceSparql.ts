@@ -386,13 +386,7 @@ export class QuerySourceSparql implements IQuerySource {
 
         // Abort the count request on timeout, so that it does not keep occupying the endpoint.
         const abortController = new AbortController();
-        const existingAbortSignal = context.get(KeysHttp.httpAbortSignal);
-        const countContext = context.set(
-          KeysHttp.httpAbortSignal,
-          existingAbortSignal ?
-            AbortSignal.any([ existingAbortSignal, abortController.signal ]) :
-            abortController.signal,
-        );
+        const countContext = QuerySourceSparql.withAbortSignal(context, abortController.signal);
         const timeoutHandler = setTimeout(() => {
           resolve({
             type: 'estimate',
@@ -757,7 +751,27 @@ export class QuerySourceSparql implements IQuerySource {
     // Index undef variables
     const undefVariablesSet = new Set(undefVariables.map(v => v.value));
 
-    const rawStream = await this.endpointFetcher.fetchBindings(endpoint, query, this.getRequestOptions(context));
+    // Abort the request if its results are not read until the end, e.g., when a LIMIT is reached.
+    // Otherwise, the response is only paused, and the endpoint keeps evaluating the query until it times out.
+    const abortController = new AbortController();
+    const rawStream = await this.endpointFetcher.fetchBindings(
+      endpoint,
+      query,
+      this.getRequestOptions(QuerySourceSparql.withAbortSignal(context, abortController.signal)),
+    );
+    let ended = false;
+    rawStream.on('end', () => {
+      ended = true;
+    });
+    rawStream.on('close', () => {
+      if (!ended) {
+        // The aborted response emits an error, which is forwarded to the results that nobody reads anymore
+        rawStream.on('error', () => {
+          // Ignore errors after aborting
+        });
+        abortController.abort();
+      }
+    });
 
     const wrapped = wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
     return wrapped.map<RDF.Bindings>((rawData: Record<string, RDF.Term>) => {
@@ -770,6 +784,19 @@ export class QuerySourceSparql implements IQuerySource {
       }).filter(([ _, v ]) => Boolean(v));
       return this.bindingsFactory.bindings(bindings);
     });
+  }
+
+  /**
+   * Add an abort signal to a context, in addition to its existing abort signal, if any.
+   * @param context A context.
+   * @param signal An abort signal.
+   */
+  public static withAbortSignal(context: IActionContext, signal: AbortSignal): IActionContext {
+    const existingAbortSignal = context.get(KeysHttp.httpAbortSignal);
+    return context.set(
+      KeysHttp.httpAbortSignal,
+      existingAbortSignal ? AbortSignal.any([ existingAbortSignal, signal ]) : signal,
+    );
   }
 
   public toString(): string {
