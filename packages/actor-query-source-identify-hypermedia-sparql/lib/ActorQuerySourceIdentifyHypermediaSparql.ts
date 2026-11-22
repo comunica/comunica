@@ -202,9 +202,11 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    */
   cardinalityCountQueries: boolean;
   /**
-   * If estimates for queries should be constructed locally from sub-query cardinalities.
-   * If set to false, count queries will used for cardinality estimation at all levels.
-   * @default {false}
+   * If estimates for queries should be constructed locally from sub-query cardinalities,
+   * which come from earlier count queries and from VoID descriptions of the endpoint.
+   * If set to false, count queries will used for cardinality estimation at all levels,
+   * and VoID descriptions are not used.
+   * @default {true}
    */
   cardinalityEstimateConstruction: boolean;
   /**
