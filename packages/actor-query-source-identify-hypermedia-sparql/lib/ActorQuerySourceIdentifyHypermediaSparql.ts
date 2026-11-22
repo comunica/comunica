@@ -37,6 +37,8 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly forceGetIfUrlLengthBelow: number;
   public readonly sparqlServerSoftwarePatterns: RegExp[];
   public readonly batchAskQueries: boolean;
+  public readonly shareRequestsMaxBindings: number;
+  public readonly resultPageMultiple: number;
   public readonly countFallbackDuration: number;
   /**
    * For each endpoint of which a COUNT query failed or took too long,
@@ -63,6 +65,8 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       args.sparqlServerSoftwarePatterns ?? []
     ).map(pattern => new RegExp(pattern, 'u'));
     this.batchAskQueries = args.batchAskQueries;
+    this.shareRequestsMaxBindings = args.shareRequestsMaxBindings;
+    this.resultPageMultiple = args.resultPageMultiple;
     this.countFallbackDuration = args.countFallbackDuration;
   }
 
@@ -120,6 +124,8 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       action.metadata,
       this.batchAskQueries,
       this.createCountFallback(action.url, action.context),
+      this.shareRequestsMaxBindings,
+      this.resultPageMultiple,
     );
     return { source, queriesService: true };
   }
@@ -242,6 +248,24 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * @default {true}
    */
   batchAskQueries: boolean;
+  /**
+   * The maximum number of bindings of an in-flight request that are kept,
+   * so that identical requests of the same query that are sent while it is in flight can share it.
+   * Requests with more results are only shared with requests that were sent before that number was reached.
+   * Set to 0 to not share requests.
+   * @range {integer}
+   * @default {1000}
+   */
+  shareRequestsMaxBindings: number;
+  /**
+   * Endpoints may silently cap the number of results of a query, such as at 10,000.
+   * Results of which the number is a multiple of this number are continued with pages using OFFSET,
+   * until a page has fewer results, which costs one request without results if they were not capped.
+   * Set to 0 to not page results.
+   * @range {integer}
+   * @default {1000}
+   */
+  resultPageMultiple: number;
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';

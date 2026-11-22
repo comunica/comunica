@@ -28,12 +28,13 @@ import {
 import type * as RDF from '@rdfjs/types';
 import { Parser as SparqlParser } from '@traqula/parser-sparql-1-2';
 import type { AsyncIterator } from 'asynciterator';
-import { TransformIterator, wrap } from 'asynciterator';
+import { ArrayIterator, TransformIterator, wrap } from 'asynciterator';
 import type { ISparqlEndpointFetcherRequestOptions } from 'fetch-sparql-endpoint';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
 import { uniqTerms } from 'rdf-terms';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
+import { SparqlRequestSharing } from './SparqlRequestSharing';
 
 export class QuerySourceSparql implements IQuerySource {
   /**
@@ -78,6 +79,8 @@ export class QuerySourceSparql implements IQuerySource {
    * The ASK queries that wait to be sent in a single request, if ASK queries are batched.
    */
   private askBatch: IAskBatchEntry[] | undefined;
+  private readonly requestSharing: SparqlRequestSharing;
+  private readonly resultPageMultiple: number;
 
   public constructor(
     url: string,
@@ -99,6 +102,8 @@ export class QuerySourceSparql implements IQuerySource {
     metadata: Record<string, any>,
     batchAskQueries = false,
     countFallback?: ICountFallback,
+    shareRequestsMaxBindings = 0,
+    resultPageMultiple = 0,
   ) {
     this.referenceValue = urlBackup;
     this.url = url;
@@ -142,6 +147,8 @@ export class QuerySourceSparql implements IQuerySource {
     this.propertyFeatures = metadata.propertyFeatures ? new Set(metadata.propertyFeatures) : undefined;
     this.batchAskQueries = batchAskQueries;
     this.countFallback = countFallback;
+    this.requestSharing = new SparqlRequestSharing(shareRequestsMaxBindings);
+    this.resultPageMultiple = resultPageMultiple;
   }
 
   /**
@@ -303,11 +310,71 @@ export class QuerySourceSparql implements IQuerySource {
       const undefVariables = QuerySourceSparql.getOperationUndefs(operation);
 
       this.reportSourceQuery(context, selectQuery);
-      return this.queryBindingsRemote(this.url, selectQuery, variables, context, undefVariables);
+      const results = await this.requestSharing.shareBindings(
+        context.get(KeysInitQuery.queryTimestamp),
+        `select ${selectQuery}`,
+        () => this.queryBindingsRemote(this.url, selectQuery, variables, context, undefVariables),
+      );
+      // Original queries and queries with their own slice are not paged, as their results must not be changed.
+      if (queryString !== undefined || this.resultPageMultiple <= 0 ||
+        isKnownOperation(operation, Algebra.Types.SLICE)) {
+        return results;
+      }
+      return this.continuePages(results, operation, variables, context, undefVariables, 0);
     }, { autoStart: false });
     this.attachMetadata(bindings, context, operationPromise);
 
     return bindings;
+  }
+
+  /**
+   * Continue the given results of an operation with further pages, if they may have been capped by the endpoint.
+   *
+   * Some endpoints silently return at most a fixed number of results, such as 10,000, regardless of the query.
+   * Results of which the number is a multiple of resultPageMultiple may be capped,
+   * so they are continued with pages of that number of results, using OFFSET, until a page has fewer results.
+   * If the results were not capped, this costs one request with no results.
+   * Pages are not ordered, as such endpoints may refuse to sort that many results,
+   * so they rely on the endpoint to evaluate the same query in the same order.
+   *
+   * @param page The results of the operation from the given offset.
+   * @param operation The operation.
+   * @param variables The variables of the operation.
+   * @param context The action context.
+   * @param undefVariables Variables that may have undefs.
+   * @param offset The offset of the given results.
+   * @param pageSize The number of results per page, or undefined if the given results are the first ones.
+   */
+  protected continuePages(
+    page: BindingsStream,
+    operation: Algebra.Operation,
+    variables: RDF.Variable[],
+    context: IActionContext,
+    undefVariables: RDF.Variable[],
+    offset: number,
+    pageSize?: number,
+  ): BindingsStream {
+    let count = 0;
+    const counted = page.map((bindings) => {
+      count++;
+      return bindings;
+    });
+    const next = new TransformIterator<RDF.Bindings>(async() => {
+      const capped = pageSize === undefined ? count > 0 && count % this.resultPageMultiple === 0 : count === pageSize;
+      if (!capped) {
+        return new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+      }
+      const nextOffset = offset + count;
+      const query = await this.operationToQuery(this.algebraFactory.createSlice(
+        this.algebraFactory.createProject(operation, variables),
+        nextOffset,
+        count,
+      ));
+      this.reportSourceQuery(context, query);
+      const results = await this.queryBindingsRemote(this.url, query, variables, context, undefVariables);
+      return this.continuePages(results, operation, variables, context, undefVariables, nextOffset, count);
+    }, { autoStart: false });
+    return counted.append(next);
   }
 
   public queryQuads(operation: Algebra.Operation, context: IActionContext): AsyncIterator<RDF.Quad> {
@@ -568,55 +635,12 @@ export class QuerySourceSparql implements IQuerySource {
           return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         }
 
-        // Abort the count request on timeout, so that it does not keep occupying the endpoint.
-        const abortController = new AbortController();
-        const countContext = QuerySourceSparql.withAbortSignal(context, abortController.signal);
-        const timeoutHandler = setTimeout(() => {
-          resolve({
-            type: 'estimate',
-            value: Number.POSITIVE_INFINITY,
-            dataset: this.url,
-          });
-          abortController.abort();
-          this.activateCountFallback(context, operation);
-        }, this.countTimeout);
-        const varCount = this.dataFactory.variable('count');
-        let bindingsStream: BindingsStream;
-        try {
-          bindingsStream = await this.queryBindingsRemote(this.url, countQuery, [ varCount ], countContext, []);
-        } catch {
-          clearTimeout(timeoutHandler);
-          this.activateCountFallback(context, operation);
-          return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
-        }
-        bindingsStream
-          .on('data', (bindings: Bindings) => {
-            clearTimeout(timeoutHandler);
-            const count = bindings.get(varCount);
-            const cardinality: QueryResultCardinality = {
-              type: 'estimate',
-              value: Number.POSITIVE_INFINITY,
-              dataset: this.url,
-            };
-            if (count) {
-              const cardinalityValue: number = Number.parseInt(count.value, 10);
-              if (!Number.isNaN(cardinalityValue)) {
-                cardinality.type = 'exact';
-                cardinality.value = cardinalityValue;
-                this.cache?.set(countQuery, cardinality);
-              }
-            }
-            return resolve(cardinality);
-          })
-          .on('error', () => {
-            clearTimeout(timeoutHandler);
-            resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
-            this.activateCountFallback(context, operation);
-          })
-          .on('end', () => {
-            clearTimeout(timeoutHandler);
-            resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
-          });
+        // Identical COUNT queries of the same query that are in flight share a single request.
+        return resolve(await this.requestSharing.shareValue(
+          context.get(KeysInitQuery.queryTimestamp),
+          `count ${countQuery}`,
+          () => this.sendCountQuery(countQuery, operation, context),
+        ));
       } catch (error: unknown) {
         reject(error);
       }
@@ -631,6 +655,54 @@ export class QuerySourceSparql implements IQuerySource {
         cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url },
         variables: variablesCount,
       }));
+  }
+
+  /**
+   * Send a COUNT query to the endpoint.
+   * If it fails or does not answer within the count timeout, the cardinality is estimated as infinity.
+   * @param countQuery A COUNT query with a ?count variable.
+   * @param operation The operation that is counted.
+   * @param context The action context.
+   */
+  protected sendCountQuery(
+    countQuery: string,
+    operation: Algebra.Operation,
+    context: IActionContext,
+  ): Promise<QueryResultCardinality> {
+    // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
+    return new Promise<QueryResultCardinality>(async(resolve) => {
+      const infinite: QueryResultCardinality = { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url };
+      // The count timeout applies from when the request is sent, as it may first wait for the host to be available.
+      // On timeout, the request is aborted, so that it does not keep occupying the endpoint.
+      const httpTimeout = context.get(KeysHttp.httpTimeout);
+      const countContext = context
+        .set(KeysHttp.httpTimeout, httpTimeout ? Math.min(httpTimeout, this.countTimeout) : this.countTimeout)
+        .set(KeysHttp.httpBodyTimeout, true);
+      const varCount = this.dataFactory.variable('count');
+      let bindingsStream: BindingsStream;
+      try {
+        bindingsStream = await this.queryBindingsRemote(this.url, countQuery, [ varCount ], countContext, []);
+      } catch {
+        this.activateCountFallback(context, operation);
+        return resolve(infinite);
+      }
+      bindingsStream
+        .on('data', (bindings: Bindings) => {
+          const count = bindings.get(varCount);
+          const cardinalityValue = count ? Number.parseInt(count.value, 10) : Number.NaN;
+          if (Number.isNaN(cardinalityValue)) {
+            return resolve(infinite);
+          }
+          const cardinality: QueryResultCardinality = { type: 'exact', value: cardinalityValue, dataset: this.url };
+          this.cache?.set(countQuery, cardinality);
+          resolve(cardinality);
+        })
+        .on('error', () => {
+          resolve(infinite);
+          this.activateCountFallback(context, operation);
+        })
+        .on('end', () => resolve(infinite));
+    });
   }
 
   /**
