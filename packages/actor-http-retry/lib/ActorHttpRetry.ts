@@ -29,11 +29,14 @@ export class ActorHttpRetry extends ActorHttp {
     this.mediatorHttp = args.mediatorHttp;
   }
 
+  public static DEFAULT_RETRY_COUNT = 2;
+  public static DEFAULT_RETRY_DELAY_FALLBACK = 1_000;
+
   public async test(action: IActionHttp): Promise<TestResult<IMediatorTypeTime>> {
     if (action.context.has(ActorHttpRetry.keyWrapped)) {
       return failTest(`${this.name} can only wrap a request once`);
     }
-    const retryCount = action.context.get(KeysHttp.httpRetryCount);
+    const retryCount = action.context.get(KeysHttp.httpRetryCount) ?? ActorHttpRetry.DEFAULT_RETRY_COUNT;
     if (!retryCount || retryCount < 1) {
       return failTest(`${this.name} requires a retry count greater than zero to function`);
     }
@@ -44,8 +47,11 @@ export class ActorHttpRetry extends ActorHttp {
     const url = ActorHttp.getInputUrl(action.input);
 
     // Attempt once + the number of retries specified by the user
-    const attemptLimit = action.context.getSafe(KeysHttp.httpRetryCount) + 1;
-    const retryDelayFallback = action.context.get(KeysHttp.httpRetryDelayFallback) ?? 0;
+    // Without explicit retry settings, rate-limited and temporarily failing requests are still retried a few times.
+    const retryCountConfigured = action.context.get(KeysHttp.httpRetryCount);
+    const attemptLimit = (retryCountConfigured ?? ActorHttpRetry.DEFAULT_RETRY_COUNT) + 1;
+    const retryDelayFallback = action.context.get(KeysHttp.httpRetryDelayFallback) ??
+      (retryCountConfigured === undefined ? ActorHttpRetry.DEFAULT_RETRY_DELAY_FALLBACK : 0);
     const retryDelayLimit = action.context.get(KeysHttp.httpRetryDelayLimit);
     const retryStatusCodes = action.context.get(KeysHttp.httpRetryStatusCodes);
     const retryOnError = ActorHttpRetry.isRetryableOnError(action);
