@@ -7,7 +7,7 @@ import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operat
 import { KeysInitQuery } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { FragmentSelectorShape, IActionContext, IQuerySourceWrapper } from '@comunica/types';
+import type { FragmentSelectorShape, IActionContext, IQuerySourceWrapper, MetadataBindings } from '@comunica/types';
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import {
   assignOperationSource,
@@ -26,10 +26,15 @@ import {
  * This actor rewrites Join(A@S, Union(B@S, B@T, ...)) into Union(Join(A, B)@S, Join(A@S, Union(B@T, ...))),
  * which has the same results, so that S evaluates its own part of the join in one request.
  * This also keeps joins over blank nodes of S within S.
+ * As A is then evaluated twice, this is only done if both A and B@S have at least minCardinality results,
+ * as joining them across requests would otherwise be cheap.
  */
 export class ActorOptimizeQueryOperationPushSourceJoins extends ActorOptimizeQueryOperation {
-  public constructor(args: IActorOptimizeQueryOperationArgs) {
+  public readonly minCardinality: number;
+
+  public constructor(args: IActorOptimizeQueryOperationPushSourceJoinsArgs) {
     super(args);
+    this.minCardinality = args.minCardinality;
   }
 
   public async test(_action: IActionOptimizeQueryOperation): Promise<TestResult<IActorTest>> {
@@ -48,7 +53,7 @@ export class ActorOptimizeQueryOperationPushSourceJoins extends ActorOptimizeQue
     }));
 
     return {
-      operation: this.pushJoins(action.operation, shapes, algebraFactory, action.context),
+      operation: await this.pushJoins(action.operation, shapes, algebraFactory, action.context),
       context: action.context,
     };
   }
@@ -84,21 +89,30 @@ export class ActorOptimizeQueryOperationPushSourceJoins extends ActorOptimizeQue
   /**
    * Rewrite the joins in an operation, recursively.
    */
-  public pushJoins(
+  public async pushJoins(
     operation: Algebra.Operation,
     shapes: Map<IQuerySourceWrapper, FragmentSelectorShape>,
     algebraFactory: AlgebraFactory,
     context: IActionContext,
-  ): Algebra.Operation {
+  ): Promise<Algebra.Operation> {
     if (getOperationSource(operation)) {
       return operation;
     }
     const input = (<any> operation).input;
-    if (Array.isArray(input)) {
-      operation = <Algebra.Operation> { ...operation, input: input
-        .map(subInput => this.pushJoins(subInput, shapes, algebraFactory, context)) };
+    if (operation.type === Algebra.Types.LEFT_JOIN || operation.type === Algebra.Types.MINUS) {
+      // The right side may be evaluated once per block of bindings, which would repeat the duplicated work
+      operation = <Algebra.Operation> {
+        ...operation,
+        input: [ await this.pushJoins(input[0], shapes, algebraFactory, context), input[1] ],
+      };
+    } else if (Array.isArray(input)) {
+      operation = <Algebra.Operation> { ...operation, input: await Promise.all(input
+        .map(subInput => this.pushJoins(subInput, shapes, algebraFactory, context))) };
     } else if (input && typeof input === 'object' && 'type' in input) {
-      operation = <Algebra.Operation> { ...operation, input: this.pushJoins(input, shapes, algebraFactory, context) };
+      operation = <Algebra.Operation> {
+        ...operation,
+        input: await this.pushJoins(input, shapes, algebraFactory, context),
+      };
     }
     if (operation.type === Algebra.Types.JOIN) {
       return this.pushJoin(<Algebra.Join> operation, shapes, algebraFactory, context);
@@ -107,14 +121,37 @@ export class ActorOptimizeQueryOperationPushSourceJoins extends ActorOptimizeQue
   }
 
   /**
+   * The cardinality of an operation with a source, from the metadata of its results, without evaluating them.
+   * Sources such as SPARQL endpoints cache these, so they are not requested again when the query is planned.
+   */
+  public async getCardinality(operation: Algebra.Operation, context: IActionContext): Promise<number> {
+    const sourceWrapper = getOperationSource(operation)!;
+    const stream = sourceWrapper.source.queryBindings(
+      operation,
+      sourceWrapper.context ? context.merge(sourceWrapper.context) : context,
+    );
+    try {
+      const metadata = await new Promise<MetadataBindings>((resolve, reject) => {
+        stream.getProperty<MetadataBindings>('metadata', metadata => resolve(metadata));
+        stream.on('error', reject);
+      });
+      return metadata.cardinality.value;
+    } catch {
+      return Number.POSITIVE_INFINITY;
+    } finally {
+      stream.destroy();
+    }
+  }
+
+  /**
    * Rewrite a join, for each entry with a single source and a union entry it is connected to with that source.
    */
-  public pushJoin(
+  public async pushJoin(
     join: Algebra.Join,
     shapes: Map<IQuerySourceWrapper, FragmentSelectorShape>,
     algebraFactory: AlgebraFactory,
     context: IActionContext,
-  ): Algebra.Operation {
+  ): Promise<Algebra.Operation> {
     const entries = join.input;
     const used = new Set<number>();
     const rewritten: Algebra.Operation[] = [];
@@ -138,6 +175,13 @@ export class ActorOptimizeQueryOperationPushSourceJoins extends ActorOptimizeQue
       const local = algebraFactory.createJoin([ entry, ...localBranches ]
         .map(operation => ActorOptimizeQueryOperationPushSourceJoins.withoutSource(operation)), true);
       if (!doesShapeAcceptOperationInContext(shapes.get(source)!, local, context)) {
+        continue;
+      }
+      // Only push the join if both sides are known to be large, as binding one into the other is cheap otherwise
+      const cardinalities = await Promise.all([ entry, ...localBranches ]
+        .map(operation => this.getCardinality(operation, context)));
+      if (!cardinalities.every(cardinality => Number.isFinite(cardinality)) ||
+        Math.min(...cardinalities) < this.minCardinality) {
         continue;
       }
       used.add(index);
@@ -169,4 +213,13 @@ export class ActorOptimizeQueryOperationPushSourceJoins extends ActorOptimizeQue
     removeOperationSource(copy);
     return copy;
   }
+}
+
+export interface IActorOptimizeQueryOperationPushSourceJoinsArgs extends IActorOptimizeQueryOperationArgs {
+  /**
+   * The minimum number of results of both sides of a join to push it into their source.
+   * @range {integer}
+   * @default {10000}
+   */
+  minCardinality: number;
 }
