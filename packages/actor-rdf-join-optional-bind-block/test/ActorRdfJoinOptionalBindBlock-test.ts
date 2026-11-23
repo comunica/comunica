@@ -6,7 +6,7 @@ import type { IActionContext } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
-import { assignOperationSource } from '@comunica/utils-query-operation';
+import { assignOperationSource, getOperationSource } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -211,6 +211,27 @@ describe('ActorRdfJoinOptionalBindBlock', () => {
         AF.createJoin([ values, branch1 ]),
         AF.createJoin([ values, branch2 ]),
       ]));
+    });
+
+    it('should keep the source annotation of union branches that are joins', async() => {
+      const source = <any> { source: {}};
+      const branch1 = assignOperationSource(AF.createJoin([
+        AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('x')),
+        AF.createPattern(DF.variable('x'), DF.namedNode('ex:p2'), DF.variable('b')),
+      ]), source);
+      const branch2 = AF.createPattern(DF.variable('a'), DF.namedNode('ex:p3'), DF.variable('b'));
+      const action = createAction([ BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]) ]);
+      action.entries[1].operation = AF.createUnion([ branch1, branch2 ]);
+      jest.spyOn(mediatorQueryOperation, 'mediate').mockImplementation(async() => ({
+        type: 'bindings',
+        bindingsStream: new ArrayIterator([], { autoStart: false }),
+      }));
+      const { result } = await (<any> actor).getOutput(action);
+      await expect(result.bindingsStream.toArray()).resolves.toHaveLength(1);
+      const operation = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+      expect(operation.input[0].input).toHaveLength(2);
+      expect(operation.input[0].input[1]).toBe(branch1);
+      expect(getOperationSource(operation.input[0].input[1])).toBe(source);
     });
 
     it('should bind bindings with blank nodes into the right operation one by one', async() => {

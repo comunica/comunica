@@ -181,10 +181,11 @@ export class ActorRdfJoinOptionalBindBlock extends ActorRdfJoin {
       // The block is joined with each branch of a union, so that each branch with a single source receives it at once
       const values = algebraFactory.createValues([ ...keyVariables, rowVariable ], rows);
       const right = action.entries[1].operation;
+      // Joins are not flattened, as that would drop the source annotation of a branch that is a join
       let operation: Algebra.Operation = right.type === Algebra.Types.UNION ?
         algebraFactory.createUnion((<Algebra.Union> right).input
-          .map(branch => algebraFactory.createJoin([ values, branch ]))) :
-        algebraFactory.createJoin([ values, right ]);
+          .map(branch => algebraFactory.createJoin([ values, branch ], false)), false) :
+        algebraFactory.createJoin([ values, right ], false);
       if (action.expression) {
         operation = algebraFactory.createFilter(operation, action.expression);
       }
