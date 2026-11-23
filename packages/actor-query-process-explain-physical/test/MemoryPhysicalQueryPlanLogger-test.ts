@@ -1319,6 +1319,33 @@ sources:
           pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
     });
 
+    it('for a bind join with nested repetitions that are compacted', () => {
+      const joinNode = factory.createJoin([]);
+      logOperation('join', undefined, joinNode, undefined, 'actor-join', {});
+      const bjNode = {};
+      logOperation('bindings', undefined, bjNode, joinNode, 'actor-bind', {}, true);
+
+      // Two identical outer occurrences, each with two identical inner occurrences
+      for (const outer of [ 1, 2 ]) {
+        const subJoinNode = { outer };
+        logOperation('join', undefined, subJoinNode, bjNode, 'actor-join', {});
+        const subBjNode = { outer };
+        logOperation('bindings', undefined, subBjNode, subJoinNode, 'actor-bind', {}, true);
+        for (const inner of [ 1, 2 ]) {
+          const subSubJoinNode = { outer, inner };
+          logOperation('join', undefined, subSubJoinNode, subBjNode, 'actor-join', {});
+          logOperation('pattern', undefined, createPattern('2'), subSubJoinNode, 'actor-pattern', {});
+        }
+      }
+
+      expect(logger.toCompactString(true)).toBe(`join
+  bindings
+    join compacted-occurrences:2
+      bindings
+        join compacted-occurrences:2
+          pattern (ex:s2 ex:p2 ?o2 ex:g2)`);
+    });
+
     it('for two patterns with the same source', () => {
       const source = <IQuerySource> { toString: () => 'SRC' };
       const parent = factory.createPattern(
