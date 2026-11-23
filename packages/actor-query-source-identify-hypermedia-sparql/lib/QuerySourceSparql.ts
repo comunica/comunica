@@ -91,6 +91,12 @@ export class QuerySourceSparql implements IQuerySource {
   );
 
   private countBatcher: TickBatcher<ICountBatchEntry> | undefined;
+  /**
+   * If the time until the first answer of the endpoint is reported as request time in metadata,
+   * for sources of which the service description, which would determine it, is not awaited.
+   */
+  private reportRequestTime = false;
+  private measuredRequestTime: number | undefined;
   private readonly requestSharing: SparqlRequestSharing;
   private readonly resultPageMultiple: number;
 
@@ -176,6 +182,13 @@ export class QuerySourceSparql implements IQuerySource {
   }
 
   /**
+   * Report the time until the first answer of the endpoint as request time in metadata.
+   */
+  public enableRequestTimeReporting(): void {
+    this.reportRequestTime = true;
+  }
+
+  /**
    * Use the metadata of the service description of the endpoint,
    * which may arrive after the source is created, while it is already queried.
    * @param metadata The metadata of the service description.
@@ -215,7 +228,11 @@ export class QuerySourceSparql implements IQuerySource {
     }
 
     this.countHttpRequest(context);
+    const start = performance.now();
     let response = await this.mediatorHttp.mediate({ input, init, context });
+    if (this.measuredRequestTime === undefined && response.ok) {
+      this.measuredRequestTime = performance.now() - start;
+    }
     // If we encounter a 404, try our backup URL.
     // After retrying the request with the new URL, we replace the URL for future requests.
     if (response.status === 404 && this.url !== this.urlBackup) {
@@ -724,6 +741,9 @@ export class QuerySourceSparql implements IQuerySource {
         state: new MetadataValidationState(),
         cardinality,
         variables: variablesCount,
+        ...this.reportRequestTime && this.measuredRequestTime !== undefined ?
+            { requestTime: this.measuredRequestTime } :
+            {},
       }))
       .catch(() => target.setProperty('metadata', {
         state: new MetadataValidationState(),
@@ -755,9 +775,8 @@ export class QuerySourceSparql implements IQuerySource {
 
   /**
    * Send the given COUNT queries in a single query, as a join of one COUNT subquery per entry.
-   * On a timeout, all of them are estimated as infinity.
-   * If the endpoint fails to answer it otherwise, such as for not supporting the query,
-   * each COUNT query is sent alone, and this endpoint is not sent batches anymore.
+   * If the endpoint fails to answer it in time, each COUNT query is sent alone,
+   * and this endpoint is not sent batches anymore.
    * @param batch The COUNT queries.
    */
   protected async sendCountBatch(batch: ICountBatchEntry[]): Promise<void> {
@@ -791,18 +810,13 @@ export class QuerySourceSparql implements IQuerySource {
         batch[0].context.delete(KeysHttp.httpAbortSignal);
       bindings = await (await this.queryBindingsRemote(this.url, query, variables, this.getCountContext(context), []))
         .toArray();
-    } catch (error: unknown) {
-      if (/timed out/u.test((<Error> error).message)) {
-        for (const entry of batch) {
-          entry.resolve(infinite);
-          this.activateCountFallback(entry.context, entry.operation);
-        }
-        return;
-      }
+    } catch {
+      // The endpoint may evaluate the COUNT subqueries one after another, so that the batch does not answer in time,
+      // or it may not support such a query, so the COUNT queries are sent alone, and no batches are sent anymore.
       this.countBatcher = undefined;
-      for (const entry of batch) {
+      await Promise.all(batch.map(async(entry) => {
         entry.resolve(await this.sendCountQueryAlone(entry.countQuery, entry.operation, entry.context));
-      }
+      }));
       return;
     }
     for (const [ index, entry ] of batch.entries()) {

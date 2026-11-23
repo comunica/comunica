@@ -82,9 +82,12 @@ export class ActorQuerySourceDereferenceLinkForceSparql extends ActorQuerySource
     });
 
     if (action.context.get(KeysQueryOperation.querySources)?.length !== 1 &&
-      !this.uselessServiceDescriptions.has(action.link.url) &&
       typeof (<any> source).setServiceDescriptionMetadata === 'function') {
-      this.fetchServiceDescription(action, (<any> source).setServiceDescriptionMetadata.bind(source));
+      // Without the service description, its request time is not known, so the source reports its own
+      (<any> source).enableRequestTimeReporting?.();
+      if (!this.uselessServiceDescriptions.has(action.link.url)) {
+        this.fetchServiceDescription(action, (<any> source).setServiceDescriptionMetadata.bind(source));
+      }
     }
 
     return { source, metadata: <MetadataBindings> metadata, dataset };
