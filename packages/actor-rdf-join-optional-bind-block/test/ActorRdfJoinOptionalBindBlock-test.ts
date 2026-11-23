@@ -234,6 +234,24 @@ describe('ActorRdfJoinOptionalBindBlock', () => {
       expect(getOperationSource(operation.input[0].input[1])).toBe(source);
     });
 
+    it('should join the inputs of a right operation that is a join without source with the block', async() => {
+      const pattern1 = AF.createPattern(DF.variable('a'), DF.namedNode('ex:p1'), DF.variable('x'));
+      const pattern2 = AF.createPattern(DF.variable('x'), DF.namedNode('ex:p2'), DF.variable('b'));
+      const action = createAction([ BF.bindings([[ DF.variable('a'), DF.namedNode('ex:a1') ]]) ]);
+      action.entries[1].operation = AF.createJoin([ pattern1, pattern2 ]);
+      jest.spyOn(mediatorQueryOperation, 'mediate').mockImplementation(async() => ({
+        type: 'bindings',
+        bindingsStream: new ArrayIterator([], { autoStart: false }),
+      }));
+      const { result } = await (<any> actor).getOutput(action);
+      await expect(result.bindingsStream.toArray()).resolves.toHaveLength(1);
+      const operation = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+      expect(operation.type).toBe(Algebra.Types.JOIN);
+      expect(operation.input).toHaveLength(3);
+      expect(operation.input[1]).toBe(pattern1);
+      expect(operation.input[2]).toBe(pattern2);
+    });
+
     it('should bind bindings with blank nodes into the right operation one by one', async() => {
       const blank = BF.bindings([[ DF.variable('a'), DF.blankNode('x') ], [ DF.variable('c'), DF.literal('1') ]]);
       const blankAgain = BF.bindings([[ DF.variable('a'), DF.blankNode('x') ], [ DF.variable('c'), DF.literal('2') ]]);
