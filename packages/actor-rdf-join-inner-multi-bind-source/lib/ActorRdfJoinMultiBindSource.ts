@@ -1,3 +1,4 @@
+import type { MediatorQueryOperation } from '@comunica/bus-query-operation';
 import type {
   IActionRdfJoin,
   IActorRdfJoinArgs,
@@ -24,6 +25,7 @@ import { ChunkedIterator } from '@comunica/utils-iterator';
 import {
   doesShapeAcceptOperationInContext,
   getOperationSource,
+  getSafeBindings,
   getSourceSelectorShape,
 } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
@@ -42,6 +44,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
   public readonly minMaxCardinalityRatio: number;
   public readonly mediatorJoinEntriesSort: MediatorRdfJoinEntriesSort;
   public readonly mediatorJoin?: MediatorRdfJoin;
+  public readonly mediatorQueryOperation?: MediatorQueryOperation;
 
   public constructor(args: IActorRdfJoinInnerMultiBindSourceArgs) {
     super(args, {
@@ -55,6 +58,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     this.minMaxCardinalityRatio = args.minMaxCardinalityRatio ?? 60;
     this.mediatorJoinEntriesSort = args.mediatorJoinEntriesSort;
     this.mediatorJoin = args.mediatorJoin;
+    this.mediatorQueryOperation = args.mediatorQueryOperation;
   }
 
   /**
@@ -62,7 +66,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
    * or each input of a union of operations that each have a source.
    * @param operation An operation.
    */
-  public static getBindTargets(operation: Algebra.Operation): IBindTarget[] | undefined {
+  public static getBindTargets(operation: Algebra.Operation, allowPlanned = false): IBindTarget[] | undefined {
     const sourceWrapper = getOperationSource(operation);
     if (sourceWrapper) {
       return [{ sourceWrapper, operation }];
@@ -70,7 +74,10 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     if (operation.type === Algebra.Types.UNION) {
       const targets = (<Algebra.Union> operation).input
         .map(input => ({ sourceWrapper: getOperationSource(input), operation: input }));
-      if (targets.every(target => target.sourceWrapper)) {
+      // Branches that join operations of different sources are planned with each block as VALUES
+      if (targets.every(target => target.sourceWrapper) || (allowPlanned &&
+        targets.some(target => target.sourceWrapper) &&
+        targets.every(target => target.sourceWrapper ?? target.operation.type === Algebra.Types.JOIN))) {
         return <IBindTarget[]> targets;
       }
     }
@@ -119,6 +126,9 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     dataFactory: ComunicaDataFactory,
     reanchoring?: IBlankNodeReanchoring,
   ): AsyncIterator<RDF.Bindings> {
+    if (!target.sourceWrapper) {
+      return this.queryPlannedTarget(target, bindings, context, dataFactory);
+    }
     const variables = new Set(algebraUtils.inScopeVariables(target.operation).map(variable => variable.value));
     const bindingsWithoutBlankNodes: RDF.Bindings[] = [];
     const bindingsWithBlankNodes: RDF.Bindings[] = [];
@@ -138,6 +148,73 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
   }
 
   /**
+   * Join bindings with a target without a single source, by planning a join of the target with the bindings as VALUES.
+   * Each distinct row of values has a row number, so that results are assigned to the bindings that produced them.
+   * Bindings with blank nodes for variables of the target can not be passed in VALUES, and are skipped.
+   */
+  public queryPlannedTarget(
+    target: IBindTarget,
+    bindings: RDF.Bindings[],
+    context: IActionContext,
+    dataFactory: ComunicaDataFactory,
+  ): AsyncIterator<RDF.Bindings> {
+    const algebraFactory = new AlgebraFactory(dataFactory);
+    const keyVariables = algebraUtils.inScopeVariables(target.operation);
+    const rowVariable = dataFactory.variable(ActorRdfJoinMultiBindSource.ROW_VARIABLE);
+    const rows: Record<string, RDF.NamedNode | RDF.Literal>[] = [];
+    const rowKeys = new Map<string, number>();
+    const bindingsPerRow: RDF.Bindings[][] = [];
+    for (const binding of bindings) {
+      const terms = keyVariables.map(variable => binding.get(variable));
+      if (terms.some(term => term?.termType === 'BlankNode')) {
+        continue;
+      }
+      const key = JSON.stringify(terms.map(term => term ? termToString(term) : null));
+      let row = rowKeys.get(key);
+      if (row === undefined) {
+        row = rows.length;
+        rowKeys.set(key, row);
+        const values: Record<string, RDF.NamedNode | RDF.Literal> = { [rowVariable.value]: dataFactory.literal(`${row}`) };
+        for (const [ index, variable ] of keyVariables.entries()) {
+          if (terms[index]) {
+            values[variable.value] = <RDF.NamedNode | RDF.Literal> terms[index];
+          }
+        }
+        rows.push(values);
+        bindingsPerRow.push([]);
+      }
+      bindingsPerRow[row].push(binding);
+    }
+    if (rows.length === 0) {
+      return new ArrayIterator<RDF.Bindings>([], { autoStart: false });
+    }
+    const operation = algebraFactory.createJoin([
+      algebraFactory.createValues([ ...keyVariables, rowVariable ], rows),
+      target.operation,
+    ], false);
+    return new TransformIterator(async() => getSafeBindings(await this.mediatorQueryOperation!
+      .mediate({ operation, context })).bindingsStream.transform({
+      autoStart: false,
+      transform(result, done, push) {
+        const row = Number.parseInt(result.get(rowVariable)!.value, 10);
+        const cleanResult = result.delete(rowVariable);
+        for (const binding of bindingsPerRow[row]) {
+          const merged = binding.merge(cleanResult);
+          if (merged) {
+            push(merged);
+          }
+        }
+        done();
+      },
+    }), { autoStart: false });
+  }
+
+  /**
+   * The variable that numbers the rows of the values for a planned target, which is removed from the results.
+   */
+  public static readonly ROW_VARIABLE = '__comunica_bind_source_row';
+
+  /**
    * Send bindings without blank nodes for variables of the target operation to a target.
    */
   public queryTargetWithoutBlankNodes(
@@ -151,7 +228,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     if (bindingsWithoutBlankNodes.length === 0) {
       return new ArrayIterator<RDF.Bindings>([], { autoStart: false });
     }
-    const targetContext = target.sourceWrapper.context ? context.merge(target.sourceWrapper.context) : context;
+    const targetContext = target.sourceWrapper!.context ? context.merge(target.sourceWrapper!.context) : context;
 
     const keyVariables = metadata.variables
       .map(({ variable }) => variable)
@@ -170,7 +247,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
             .filter((_, variable) => keyVariables.some(keyVariable => keyVariable.equals(variable))));
         }
       }
-      return target.sourceWrapper.source.queryBindings(target.operation, targetContext, {
+      return target.sourceWrapper!.source.queryBindings(target.operation, targetContext, {
         joinBindings: {
           bindings: new ArrayIterator(keyBindings, { autoStart: false }),
           metadata: {
@@ -199,7 +276,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
       blankNodes.set(iri, term);
       return dataFactory.namedNode(iri);
     }));
-    const results = target.sourceWrapper.source.queryBindings(target.operation, targetContext, {
+    const results = target.sourceWrapper!.source.queryBindings(target.operation, targetContext, {
       joinBindings: { bindings: new ArrayIterator(joinBindings, { autoStart: false }), metadata },
     });
     if (blankNodes.size === 0) {
@@ -235,7 +312,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     context: IActionContext,
     dataFactory: ComunicaDataFactory,
   ): AsyncIterator<RDF.Bindings> | undefined {
-    const source = target.sourceWrapper.source;
+    const source = target.sourceWrapper!.source;
     if (!source.isBlankNodeLocal) {
       return;
     }
@@ -289,7 +366,7 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
     }
 
     const algebraFactory = new AlgebraFactory(dataFactory);
-    const targetContext = target.sourceWrapper.context ? context.merge(target.sourceWrapper.context) : context;
+    const targetContext = target.sourceWrapper!.context ? context.merge(target.sourceWrapper!.context) : context;
     const outputs: AsyncIterator<RDF.Bindings>[] = [];
     for (const { patterns, blankVariables, reduced } of groups.values()) {
       const join = algebraFactory.createJoin([ ...patterns, target.operation ], false);
@@ -558,11 +635,12 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
       const firstVariables = new Set(metadatas[0].variables.map(variable => variable.variable.value));
       bindIndex = remainingEntries.findIndex(entry => entry.metadata.variables
         .some(variable => firstVariables.has(variable.variable.value)) &&
-        ActorRdfJoinMultiBindSource.getBindTargets(entry.operation));
+        ActorRdfJoinMultiBindSource.getBindTargets(entry.operation, Boolean(this.mediatorQueryOperation)));
       if (bindIndex < 0) {
         return failTest(`Actor ${this.name} found no remaining operation with sources that shares variables to bind on`);
       }
-      targets = ActorRdfJoinMultiBindSource.getBindTargets(remainingEntries[bindIndex].operation)!;
+      targets = ActorRdfJoinMultiBindSource
+        .getBindTargets(remainingEntries[bindIndex].operation, Boolean(this.mediatorQueryOperation))!;
 
       // As in the bind join, only bind if the smallest stream is much smaller than the largest stream.
       if (metadatas[0].cardinality.value * this.minMaxCardinalityRatio >
@@ -577,6 +655,9 @@ export class ActorRdfJoinMultiBindSource extends ActorRdfJoin<IActorRdfJoinMulti
 
     // Reject if a source can not handle bindings
     for (const target of targets) {
+      if (!target.sourceWrapper) {
+        continue;
+      }
       const selectorShape = await getSourceSelectorShape(target.sourceWrapper, action.context);
       if (!doesShapeAcceptOperationInContext(selectorShape, target.operation, action.context, { joinBindings: true })) {
         return failTest(`Actor ${this.name} detected a source that can not handle passing down join bindings`);
@@ -643,10 +724,17 @@ export interface IActorRdfJoinInnerMultiBindSourceArgs
    * when these do not all have the same source.
    */
   mediatorJoin?: MediatorRdfJoin;
+  /**
+   * The query operation mediator, to plan bind targets without a single source.
+   */
+  mediatorQueryOperation?: MediatorQueryOperation;
 }
 
 export interface IBindTarget {
-  sourceWrapper: IQuerySourceWrapper;
+  /**
+   * The source to pass bindings to, or undefined if the target is planned with bindings as VALUES.
+   */
+  sourceWrapper?: IQuerySourceWrapper;
   operation: Algebra.Operation;
 }
 
