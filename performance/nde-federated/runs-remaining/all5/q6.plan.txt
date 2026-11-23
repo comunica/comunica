@@ -1,0 +1,157 @@
+project (building,name,monumentNumber,style,originalFunction)
+  leftjoin
+    join-optional(bind-block)
+      join
+        join-inner(bind-source) bindIndex:4 srcQuery:0
+          union
+            pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+            pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:1
+          join src:0 srcQuery:1
+            pattern (?building http://www.w3.org/1999/02/22-rdf-syntax-ns#type https://www.goudatijdmachine.nl/def#Gebouw) delegated
+          join-inner(bind-source) bindIndex:0 srcQuery:2
+            join src:1
+              pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+              pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+            join-inner(bind-source) bindIndex:0 srcQuery:3
+              union
+                pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:0
+                pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:1
+                pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:2
+                pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:3
+              join-inner(bind-source) bindIndex:0 srcQuery:4
+                union
+                  pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer ?monumentNumber) src:0
+                  pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer ?monumentNumber) src:1
+                join-inner(bind-source) bindIndex:0 srcQuery:5
+                  union
+                    pattern (?building https://schema.org/name ?name) src:0
+                    pattern (?building https://schema.org/name ?name) src:1
+                    pattern (?building https://schema.org/name ?name) src:4
+                    pattern (?building https://schema.org/name ?name) src:5
+      join
+        join-inner(bind-source) bindIndex:0
+          union
+            pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+            pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:1
+            pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:2
+            pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:3
+          join src:1
+            pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+            pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+      join
+        join-inner(bind) bindIndex:0
+          values
+          join
+            join-inner(bind-source) bindIndex:0
+              union
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:1
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:2
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:3
+              join src:1
+                pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+          bindings
+            join compacted-occurrences:4
+              join-inner(bind-source) bindIndex:0 srcQuery:6
+                union
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:1 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:2 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:3 srcQuery:7
+                join src:1
+                  pattern (https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/34405 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                  pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+      join
+        join-inner(bind) bindIndex:0
+          values
+          join
+            join-inner(bind-source) bindIndex:0
+              union
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:1
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:2
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:3
+              join src:1
+                pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+          bindings
+            join compacted-occurrences:4
+              join-inner(bind-source) bindIndex:0 srcQuery:8
+                union
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:1 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:2 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:3 srcQuery:7
+                join src:1
+                  pattern (https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/52489 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                  pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+      join
+        join-inner(bind) bindIndex:0
+          values
+          join
+            join-inner(bind-source) bindIndex:0
+              union
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:1
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:2
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:3
+              join src:1
+                pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+          bindings
+            join compacted-occurrences:4
+              join-inner(bind-source) bindIndex:0 srcQuery:9
+                union
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:1 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:2 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:3 srcQuery:7
+                join src:1
+                  pattern (https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/52617 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                  pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+      join
+        join-inner(bind) bindIndex:0
+          values
+          join
+            join-inner(bind-source) bindIndex:0
+              union
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:1
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:2
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:3
+              join src:1
+                pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+          bindings
+            join compacted-occurrences:4
+              join-inner(bind-source) bindIndex:0 srcQuery:10
+                union
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:1 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:2 srcQuery:7
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:3 srcQuery:7
+                join src:1
+                  pattern (https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/53545 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                  pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+
+sources:
+  0: QuerySourceHypermedia(https://sparql.goudatijdmachine.nl/)(SkolemID:0)
+  1: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql)(SkolemID:1)
+  2: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql)(SkolemID:3)
+  3: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql)(SkolemID:4)
+  4: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql)(SkolemID:2)
+  5: QuerySourceHypermedia(https://qlever.coret.org/oabs)(SkolemID:5)
+
+source queries:
+  0: SELECT ?building ?monument WHERE { VALUES ?building { <https://n2t.net/ark:/60537/bZo1Ho> <https://n2t.net/ark:/60537/bZo1Iz> <https://n2t.net/ark:/60537/bzYEEY> <https://n2t.net/ark:/60537/bzYEGk> <https://n2t.net/ark:/60537/bzYEHw> <https://n2t.net/ark:/60537/bzYEIH> <https://n2t.net/ark:/60537/bzzfgc> <https://n2t.net/ark:/60537/bzzfiz> <https://n2t.net/ark:/60537/bzzfjK> <https://n2t.net/ark:/60537/bzznhx> } ?building <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  1: SELECT ?building WHERE { ?building <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.goudatijdmachine.nl/def#Gebouw> . }
+  2: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/14752> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/59065> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/32690> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48807> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/24563> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/19123> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/33982> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/56010> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48577> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/20184> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/38090> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/54134> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/53616> <http://www.wikidata.org/entity/Q3368988> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/10090> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/60975> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48440> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/42009> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  3: SELECT ?var1 ?originalFunction WHERE { VALUES ?var1 { <https://data.cultureelerfgoed.nl/term/id/rn/2/313b3bdc-e1bd-40b2-b7b3-5d49db458f1c> <https://data.cultureelerfgoed.nl/term/id/rn/2/9d3835fd-b5c9-4086-973f-ebe0cbd40c80> <https://data.cultureelerfgoed.nl/term/id/rn/2/d3f6bc1f-28d2-4c4d-ab89-99244a0d52cc> <https://data.cultureelerfgoed.nl/term/id/rn/2/b964b9ca-8f5a-42de-b96c-ce8320db9e95> <https://data.cultureelerfgoed.nl/term/id/rn/2/6fa5f251-cd84-4f3a-acb7-7c219df2540f> <https://data.cultureelerfgoed.nl/term/id/rn/2/3e3ff935-513f-466e-8131-49aa146ace37> } ?var1 <http://www.w3.org/2004/02/skos/core#prefLabel> ?originalFunction . }
+  4: SELECT ?monument ?monumentNumber WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/56010> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48577> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer> ?monumentNumber . }
+  5: SELECT ?building ?name WHERE { VALUES ?building { <https://n2t.net/ark:/60537/bYydRv> <https://n2t.net/ark:/60537/bZAJmq> <https://n2t.net/ark:/60537/bzmyyi> <https://n2t.net/ark:/60537/bz8QRL> } ?building <https://schema.org/name> ?name . }
+  6: SELECT ?var3 ?var2 WHERE { VALUES ?var3 { <https://data.cultureelerfgoed.nl/term/id/cht/3a646224-e796-433b-956c-7a61515f9b3a> <https://data.cultureelerfgoed.nl/term/id/cht/3a6adbfa-1a95-4c20-b0d2-3e2d689ce666> <https://data.cultureelerfgoed.nl/term/id/cht/3a6b4fba-9207-4a7d-b967-552b6a7f780b> <https://data.cultureelerfgoed.nl/term/id/cht/3a6bc450-eb26-48d0-9918-a5ac0367fef1> <https://data.cultureelerfgoed.nl/term/id/cht/3a709bf3-ce1a-4004-8362-eec14a102575> <https://data.cultureelerfgoed.nl/term/id/cht/3a713d94-b358-4f03-b7f6-c7711b1046e4> <https://data.cultureelerfgoed.nl/term/id/cht/3a74e4aa-ed20-4e76-8c86-1c08943131ac> <https://data.cultureelerfgoed.nl/term/id/cht/3a7759ec-7350-4dbe-b3fc-0cd01c740a0a> <https://data.cultureelerfgoed.nl/term/id/cht/3a7a1cf5-c459-4269-855c-59ba76169734> <https://data.cultureelerfgoed.nl/term/id/cht/3a7ca94d-cfa6-4cd8-bcfe-28f36aeed26c> <https://data.cultureelerfgoed.nl/term/id/cht/3a7e1787-e5d3-4ee6-a5a6-ef1c6f8559c2> <https://data.cultureelerfgoed.nl/term/id/cht/3a805613-09fb-49b3-ac95-81cf4ec63574> <https://data.cultureelerfgoed.nl/term/id/cht/3a81c978-01ef-4b47-b5e3-b8e4d5d69e9b> <https://data.cultureelerfgoed.nl/term/id/cht/3a839ce8-88c0-4786-b270-dcd4ec4895cc> <https://data.cultureelerfgoed.nl/term/id/cht/3a85b693-261a-492f-b7bd-3a442df5dca3> <https://data.cultureelerfgoed.nl/term/id/cht/3a8a921e-6986-48fc-a8fc-1b085b153f67> <https://data.cultureelerfgoed.nl/term/id/cht/3a8d2910-130d-4b96-8aa8-754e745be697> <https://data.cultureelerfgoed.nl/term/id/cht/3a8d8e89-afcc-48e4-8428-6c09fe094cf3> <https://data.cultureelerfgoed.nl/term/id/cht/3a8f147a-223a-4524-a298-3cf7c81317c6> <https://data.cultureelerfgoed.nl/term/id/cht/3a90087c-c528-4999-9608-3d2570a1289a> <https://data.cultureelerfgoed.nl/term/id/cht/3a94c27a-0667-407f-9eb6-81a9d7141610> <https://data.cultureelerfgoed.nl/term/id/cht/3a94fea7-e2a7-48b0-a8fa-5d7276213e5e> <https://data.cultureelerfgoed.nl/term/id/cht/3a95d1eb-f575-4f08-a8dd-8d3e41328e4d> } <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/34405> <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . }
+  7: SELECT ?var3 ?style WHERE { ?var3 <http://www.w3.org/2004/02/skos/core#prefLabel> ?style . }
+  8: SELECT ?var3 ?var2 WHERE { VALUES ?var3 { <https://data.cultureelerfgoed.nl/term/id/cht/3a646224-e796-433b-956c-7a61515f9b3a> <https://data.cultureelerfgoed.nl/term/id/cht/3a6adbfa-1a95-4c20-b0d2-3e2d689ce666> <https://data.cultureelerfgoed.nl/term/id/cht/3a6b4fba-9207-4a7d-b967-552b6a7f780b> <https://data.cultureelerfgoed.nl/term/id/cht/3a6bc450-eb26-48d0-9918-a5ac0367fef1> <https://data.cultureelerfgoed.nl/term/id/cht/3a709bf3-ce1a-4004-8362-eec14a102575> <https://data.cultureelerfgoed.nl/term/id/cht/3a713d94-b358-4f03-b7f6-c7711b1046e4> <https://data.cultureelerfgoed.nl/term/id/cht/3a74e4aa-ed20-4e76-8c86-1c08943131ac> <https://data.cultureelerfgoed.nl/term/id/cht/3a7759ec-7350-4dbe-b3fc-0cd01c740a0a> <https://data.cultureelerfgoed.nl/term/id/cht/3a7a1cf5-c459-4269-855c-59ba76169734> <https://data.cultureelerfgoed.nl/term/id/cht/3a7ca94d-cfa6-4cd8-bcfe-28f36aeed26c> <https://data.cultureelerfgoed.nl/term/id/cht/3a7e1787-e5d3-4ee6-a5a6-ef1c6f8559c2> <https://data.cultureelerfgoed.nl/term/id/cht/3a805613-09fb-49b3-ac95-81cf4ec63574> <https://data.cultureelerfgoed.nl/term/id/cht/3a81c978-01ef-4b47-b5e3-b8e4d5d69e9b> <https://data.cultureelerfgoed.nl/term/id/cht/3a839ce8-88c0-4786-b270-dcd4ec4895cc> <https://data.cultureelerfgoed.nl/term/id/cht/3a85b693-261a-492f-b7bd-3a442df5dca3> <https://data.cultureelerfgoed.nl/term/id/cht/3a8a921e-6986-48fc-a8fc-1b085b153f67> <https://data.cultureelerfgoed.nl/term/id/cht/3a8d2910-130d-4b96-8aa8-754e745be697> <https://data.cultureelerfgoed.nl/term/id/cht/3a8d8e89-afcc-48e4-8428-6c09fe094cf3> <https://data.cultureelerfgoed.nl/term/id/cht/3a8f147a-223a-4524-a298-3cf7c81317c6> <https://data.cultureelerfgoed.nl/term/id/cht/3a90087c-c528-4999-9608-3d2570a1289a> <https://data.cultureelerfgoed.nl/term/id/cht/3a94c27a-0667-407f-9eb6-81a9d7141610> <https://data.cultureelerfgoed.nl/term/id/cht/3a94fea7-e2a7-48b0-a8fa-5d7276213e5e> <https://data.cultureelerfgoed.nl/term/id/cht/3a95d1eb-f575-4f08-a8dd-8d3e41328e4d> } <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/52489> <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . }
+  9: SELECT ?var3 ?var2 WHERE { VALUES ?var3 { <https://data.cultureelerfgoed.nl/term/id/cht/3a646224-e796-433b-956c-7a61515f9b3a> <https://data.cultureelerfgoed.nl/term/id/cht/3a6adbfa-1a95-4c20-b0d2-3e2d689ce666> <https://data.cultureelerfgoed.nl/term/id/cht/3a6b4fba-9207-4a7d-b967-552b6a7f780b> <https://data.cultureelerfgoed.nl/term/id/cht/3a6bc450-eb26-48d0-9918-a5ac0367fef1> <https://data.cultureelerfgoed.nl/term/id/cht/3a709bf3-ce1a-4004-8362-eec14a102575> <https://data.cultureelerfgoed.nl/term/id/cht/3a713d94-b358-4f03-b7f6-c7711b1046e4> <https://data.cultureelerfgoed.nl/term/id/cht/3a74e4aa-ed20-4e76-8c86-1c08943131ac> <https://data.cultureelerfgoed.nl/term/id/cht/3a7759ec-7350-4dbe-b3fc-0cd01c740a0a> <https://data.cultureelerfgoed.nl/term/id/cht/3a7a1cf5-c459-4269-855c-59ba76169734> <https://data.cultureelerfgoed.nl/term/id/cht/3a7ca94d-cfa6-4cd8-bcfe-28f36aeed26c> <https://data.cultureelerfgoed.nl/term/id/cht/3a7e1787-e5d3-4ee6-a5a6-ef1c6f8559c2> <https://data.cultureelerfgoed.nl/term/id/cht/3a805613-09fb-49b3-ac95-81cf4ec63574> <https://data.cultureelerfgoed.nl/term/id/cht/3a81c978-01ef-4b47-b5e3-b8e4d5d69e9b> <https://data.cultureelerfgoed.nl/term/id/cht/3a839ce8-88c0-4786-b270-dcd4ec4895cc> <https://data.cultureelerfgoed.nl/term/id/cht/3a85b693-261a-492f-b7bd-3a442df5dca3> <https://data.cultureelerfgoed.nl/term/id/cht/3a8a921e-6986-48fc-a8fc-1b085b153f67> <https://data.cultureelerfgoed.nl/term/id/cht/3a8d2910-130d-4b96-8aa8-754e745be697> <https://data.cultureelerfgoed.nl/term/id/cht/3a8d8e89-afcc-48e4-8428-6c09fe094cf3> <https://data.cultureelerfgoed.nl/term/id/cht/3a8f147a-223a-4524-a298-3cf7c81317c6> <https://data.cultureelerfgoed.nl/term/id/cht/3a90087c-c528-4999-9608-3d2570a1289a> <https://data.cultureelerfgoed.nl/term/id/cht/3a94c27a-0667-407f-9eb6-81a9d7141610> <https://data.cultureelerfgoed.nl/term/id/cht/3a94fea7-e2a7-48b0-a8fa-5d7276213e5e> <https://data.cultureelerfgoed.nl/term/id/cht/3a95d1eb-f575-4f08-a8dd-8d3e41328e4d> } <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/52617> <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . }
+  10: SELECT ?var3 ?var2 WHERE { VALUES ?var3 { <https://data.cultureelerfgoed.nl/term/id/cht/3a646224-e796-433b-956c-7a61515f9b3a> <https://data.cultureelerfgoed.nl/term/id/cht/3a6adbfa-1a95-4c20-b0d2-3e2d689ce666> <https://data.cultureelerfgoed.nl/term/id/cht/3a6b4fba-9207-4a7d-b967-552b6a7f780b> <https://data.cultureelerfgoed.nl/term/id/cht/3a6bc450-eb26-48d0-9918-a5ac0367fef1> <https://data.cultureelerfgoed.nl/term/id/cht/3a709bf3-ce1a-4004-8362-eec14a102575> <https://data.cultureelerfgoed.nl/term/id/cht/3a713d94-b358-4f03-b7f6-c7711b1046e4> <https://data.cultureelerfgoed.nl/term/id/cht/3a74e4aa-ed20-4e76-8c86-1c08943131ac> <https://data.cultureelerfgoed.nl/term/id/cht/3a7759ec-7350-4dbe-b3fc-0cd01c740a0a> <https://data.cultureelerfgoed.nl/term/id/cht/3a7a1cf5-c459-4269-855c-59ba76169734> <https://data.cultureelerfgoed.nl/term/id/cht/3a7ca94d-cfa6-4cd8-bcfe-28f36aeed26c> <https://data.cultureelerfgoed.nl/term/id/cht/3a7e1787-e5d3-4ee6-a5a6-ef1c6f8559c2> <https://data.cultureelerfgoed.nl/term/id/cht/3a805613-09fb-49b3-ac95-81cf4ec63574> <https://data.cultureelerfgoed.nl/term/id/cht/3a81c978-01ef-4b47-b5e3-b8e4d5d69e9b> <https://data.cultureelerfgoed.nl/term/id/cht/3a839ce8-88c0-4786-b270-dcd4ec4895cc> <https://data.cultureelerfgoed.nl/term/id/cht/3a85b693-261a-492f-b7bd-3a442df5dca3> <https://data.cultureelerfgoed.nl/term/id/cht/3a8a921e-6986-48fc-a8fc-1b085b153f67> <https://data.cultureelerfgoed.nl/term/id/cht/3a8d2910-130d-4b96-8aa8-754e745be697> <https://data.cultureelerfgoed.nl/term/id/cht/3a8d8e89-afcc-48e4-8428-6c09fe094cf3> <https://data.cultureelerfgoed.nl/term/id/cht/3a8f147a-223a-4524-a298-3cf7c81317c6> <https://data.cultureelerfgoed.nl/term/id/cht/3a90087c-c528-4999-9608-3d2570a1289a> <https://data.cultureelerfgoed.nl/term/id/cht/3a94c27a-0667-407f-9eb6-81a9d7141610> <https://data.cultureelerfgoed.nl/term/id/cht/3a94fea7-e2a7-48b0-a8fa-5d7276213e5e> <https://data.cultureelerfgoed.nl/term/id/cht/3a95d1eb-f575-4f08-a8dd-8d3e41328e4d> } <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/53545> <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . }

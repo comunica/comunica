@@ -1,0 +1,122 @@
+distinct
+  project (kind,item,title)
+    union
+      extend
+        join
+          join-inner(bind) bindIndex:1
+            union
+              join
+                join-inner(hash-def)
+                  join src:0
+                    pattern (?item http://schema.org/composer ?person) delegated
+                    pattern (?item http://schema.org/name ?title) delegated
+                  union
+                    pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) src:1
+                    pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) src:2
+              join src:0
+                pattern (?item http://schema.org/composer ?person) delegated
+                pattern (?item http://schema.org/name ?title) delegated
+                pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) delegated
+            union
+              pattern (?gtaa http://www.w3.org/2004/02/skos/core#prefLabel "Andriessen, Louis"@nl) src:3 srcQuery:0
+              pattern (?gtaa http://www.w3.org/2004/02/skos/core#prefLabel "Andriessen, Louis"@nl) src:4 srcQuery:0
+            bindings
+              union
+                join
+                  join-inner(empty)
+                    join src:0
+                      pattern (?item http://schema.org/composer ?person) delegated
+                      pattern (?item http://schema.org/name ?title) delegated
+                    union
+                      pattern (?person http://www.w3.org/2002/07/owl#sameAs http://data.beeldengeluid.nl/gtaa/77493) src:1
+                      pattern (?person http://www.w3.org/2002/07/owl#sameAs http://data.beeldengeluid.nl/gtaa/77493) src:2
+                join src:0 srcQuery:1
+                  pattern (?item http://schema.org/composer ?person) delegated
+                  pattern (?item http://schema.org/name ?title) delegated
+                  pattern (?person http://www.w3.org/2002/07/owl#sameAs http://data.beeldengeluid.nl/gtaa/77493) delegated
+      extend
+        join
+          join-inner(bind-source) bindIndex:1 srcQuery:2
+            union
+              pattern (?gtaa http://www.w3.org/2004/02/skos/core#prefLabel "Andriessen, Louis"@nl) src:3 srcQuery:0
+              pattern (?gtaa http://www.w3.org/2004/02/skos/core#prefLabel "Andriessen, Louis"@nl) src:4 srcQuery:0
+            union
+              pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) src:0
+              pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) src:1
+              pattern (?person http://www.w3.org/2002/07/owl#sameAs ?gtaa) src:2
+            join-inner(bind) bindIndex:0
+              union
+                join
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?mwPerson https://data.muziekweb.nl/vocab/album ?item) delegated
+                    union
+                      pattern (?person http://www.w3.org/2002/07/owl#sameAs ?mwPerson) src:0
+                      pattern (?person http://www.w3.org/2002/07/owl#sameAs ?mwPerson) src:2
+                join src:1
+                  pattern (?mwPerson https://data.muziekweb.nl/vocab/album ?item) delegated
+                  pattern (?person http://www.w3.org/2002/07/owl#sameAs ?mwPerson) delegated
+              union
+                pattern (?item http://www.w3.org/2000/01/rdf-schema#label ?title) src:4
+                pattern (?item http://www.w3.org/2000/01/rdf-schema#label ?title) src:0
+                pattern (?item http://www.w3.org/2000/01/rdf-schema#label ?title) src:1
+              bindings
+                join compacted-occurrences:2
+                  join-inner(bind-source) bindIndex:0 srcQuery:3
+                    union
+                      join
+                        join-inner(bind-source) bindIndex:1 srcQuery:4
+                          join src:1
+                            pattern (?mwPerson https://data.muziekweb.nl/vocab/album ?item) delegated
+                          union
+                            pattern (https://data.muziekschatten.nl/som/0ee5b531a4557a7313de0f8d06ef1895 http://www.w3.org/2002/07/owl#sameAs ?mwPerson) src:0 srcQuery:5
+                            pattern (https://data.muziekschatten.nl/som/0ee5b531a4557a7313de0f8d06ef1895 http://www.w3.org/2002/07/owl#sameAs ?mwPerson) src:2 srcQuery:5
+                      join src:1 srcQuery:6
+                        pattern (?mwPerson https://data.muziekweb.nl/vocab/album ?item) delegated
+                        pattern (https://data.muziekschatten.nl/som/0ee5b531a4557a7313de0f8d06ef1895 http://www.w3.org/2002/07/owl#sameAs ?mwPerson) delegated
+                    union
+                      pattern (?item http://www.w3.org/2000/01/rdf-schema#label ?title) src:4
+                      pattern (?item http://www.w3.org/2000/01/rdf-schema#label ?title) src:0
+                      pattern (?item http://www.w3.org/2000/01/rdf-schema#label ?title) src:1
+      extend
+        join
+          join-inner(bind-source) bindIndex:0 srcQuery:7
+            union
+              pattern (?gtaa http://www.w3.org/2004/02/skos/core#prefLabel "Andriessen, Louis"@nl) src:3 srcQuery:0
+              pattern (?gtaa http://www.w3.org/2004/02/skos/core#prefLabel "Andriessen, Louis"@nl) src:4 srcQuery:0
+            union
+              pattern (?role https://schema.org/creator ?gtaa) src:4
+              pattern (?role https://schema.org/creator ?gtaa) src:1
+              pattern (?role https://schema.org/creator ?gtaa) src:2
+              pattern (?role https://schema.org/creator ?gtaa) src:5
+            join-inner(bind-source) bindIndex:0 srcQuery:8
+              union
+                pattern (?item https://schema.org/creator ?role) src:4
+                pattern (?item https://schema.org/creator ?role) src:1
+                pattern (?item https://schema.org/creator ?role) src:2
+                pattern (?item https://schema.org/creator ?role) src:5
+              join-inner(bind-source) bindIndex:0 srcQuery:9
+                union
+                  pattern (?item https://schema.org/name ?title) src:4
+                  pattern (?item https://schema.org/name ?title) src:2
+                  pattern (?item https://schema.org/name ?title) src:5
+
+sources:
+  0: QuerySourceHypermedia(https://data.muziekschatten.nl/sparql)(SkolemID:2)
+  1: QuerySourceHypermedia(https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql)(SkolemID:3)
+  2: QuerySourceHypermedia(https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql)(SkolemID:4)
+  3: QuerySourceHypermedia(https://gtaa.apis.beeldengeluid.nl/sparql)(SkolemID:0)
+  4: QuerySourceHypermedia(https://cat.apis.beeldengeluid.nl/sparql)(SkolemID:1)
+  5: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2204530)(SkolemID:5)
+
+source queries:
+  0: SELECT ?gtaa WHERE { ?gtaa <http://www.w3.org/2004/02/skos/core#prefLabel> "Andriessen, Louis"@nl . }
+  1: SELECT ?item ?person ?title WHERE { ?item <http://schema.org/composer> ?person . ?item <http://schema.org/name> ?title . ?person <http://www.w3.org/2002/07/owl#sameAs> <http://data.beeldengeluid.nl/gtaa/77493> . }
+  2: SELECT ?gtaa ?person WHERE { VALUES ?gtaa { <http://data.beeldengeluid.nl/gtaa/77493> } ?person <http://www.w3.org/2002/07/owl#sameAs> ?gtaa . }
+  3: SELECT ?item ?title WHERE { VALUES ?item { <https://data.muziekweb.nl/Link/DBX7766> <https://data.muziekweb.nl/Link/DBX8165> <https://data.muziekweb.nl/Link/DC00225> <https://data.muziekweb.nl/Link/DCD1078> <https://data.muziekweb.nl/Link/DCX3730> <https://data.muziekweb.nl/Link/DCX5014> <https://data.muziekweb.nl/Link/DCX6203> <https://data.muziekweb.nl/Link/DCX6569> <https://data.muziekweb.nl/Link/DCX6976> <https://data.muziekweb.nl/Link/EB00103> <https://data.muziekweb.nl/Link/EB00244> <https://data.muziekweb.nl/Link/EB00282> <https://data.muziekweb.nl/Link/EB00345> <https://data.muziekweb.nl/Link/EB00362> <https://data.muziekweb.nl/Link/EBX0354> <https://data.muziekweb.nl/Link/ECX0054> <https://data.muziekweb.nl/Link/HFX10197> <https://data.muziekweb.nl/Link/HFX10199> <https://data.muziekweb.nl/Link/JE02201> } ?item <http://www.w3.org/2000/01/rdf-schema#label> ?title . }
+  4: SELECT ?mwPerson ?item WHERE { VALUES ?mwPerson { <https://viaf.org/viaf/111315943> <https://www.dbnl.org/auteurs/auteur.php?id=andr034> <https://www.discogs.com/artist/171391> <http://data.beeldengeluid.nl/gtaa/77493> <https://isni.org/isni/0000000114800920> <http://id.loc.gov/authorities/names/n81067980> <https://musicbrainz.org/artist/4b5e4dc5-2544-405c-a568-d2021b5be16c> <http://data.bibliotheken.nl/id/thes/p06954042X> <https://data.muziekweb.nl/Link/M00000000146> <https://www.wikidata.org/entity/Q504743> <https://www.allmusic.com/artist/mn0000058606> } ?mwPerson <https://data.muziekweb.nl/vocab/album> ?item . }
+  5: SELECT ?mwPerson WHERE { <https://data.muziekschatten.nl/som/0ee5b531a4557a7313de0f8d06ef1895> <http://www.w3.org/2002/07/owl#sameAs> ?mwPerson . }
+  6: SELECT ?mwPerson ?item WHERE { ?mwPerson <https://data.muziekweb.nl/vocab/album> ?item . <https://data.muziekschatten.nl/som/0ee5b531a4557a7313de0f8d06ef1895> <http://www.w3.org/2002/07/owl#sameAs> ?mwPerson . }
+  7: SELECT ?gtaa ?role WHERE { VALUES ?gtaa { <http://data.beeldengeluid.nl/gtaa/77493> } ?role <https://schema.org/creator> ?gtaa . }
+  8: SELECT ?gtaa ?role ?item WHERE { VALUES ?gtaa { <http://data.beeldengeluid.nl/gtaa/77493> } ?role <https://schema.org/creator> ?gtaa . ?item <https://schema.org/creator> ?role . FILTER ( ISBLANK( ?role ) ) }
+  9: SELECT ?item ?title WHERE { VALUES ?item { <http://data.beeldengeluid.nl/id/program/2102506120386597931> <http://data.beeldengeluid.nl/id/scene/2101702270739854924> <http://data.beeldengeluid.nl/id/program/2101608140125087131> <http://data.beeldengeluid.nl/id/scene/2101703010898599024> <http://data.beeldengeluid.nl/id/scene/2101702280780196824> <http://data.beeldengeluid.nl/id/scene/2101702280771378824> <http://data.beeldengeluid.nl/id/scene/2101702280769340224> <http://data.beeldengeluid.nl/id/program/2101608220218932031> <http://data.beeldengeluid.nl/id/program/2101608140123697931> <http://data.beeldengeluid.nl/id/scene/2101702280775609424> <http://data.beeldengeluid.nl/id/program/2101608140123706831> <http://data.beeldengeluid.nl/id/scene/2101702270743262124> <http://data.beeldengeluid.nl/id/scene/2101702280770917524> <http://data.beeldengeluid.nl/id/scene/2101702280795550024> <http://data.beeldengeluid.nl/id/scene/2101702280777312624> <http://data.beeldengeluid.nl/id/scene/2101703010874062824> <http://data.beeldengeluid.nl/id/scene/2101703010898600524> <http://data.beeldengeluid.nl/id/scene/2101702270749001324> <http://data.beeldengeluid.nl/id/scene/2101702280764633724> <http://data.beeldengeluid.nl/id/scene/2101702280770610324> <http://data.beeldengeluid.nl/id/scene/2101703040071070024> <http://data.beeldengeluid.nl/id/scene/2101702280767327724> <http://data.beeldengeluid.nl/id/program/2101608140123845131> <http://data.beeldengeluid.nl/id/scene/2101702280765434824> <http://data.beeldengeluid.nl/id/scene/2101702280764408824> } ?item <https://schema.org/name> ?title . }

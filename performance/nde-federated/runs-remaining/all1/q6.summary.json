@@ -1,0 +1,103 @@
+{
+ "status": "error",
+ "error": "Query operation processing failed: none of the configured actors were able to handle the operation type pattern\n    Error messages of failing actors:\n        Actor urn:comunica:default:query-operation/actors#source requires an operation with source annotation.",
+ "results": 0,
+ "timeMs": 63347,
+ "cpuMs": 10105,
+ "httpRequests": 1119,
+ "httpRequestsWire": 1120,
+ "byKind": {
+  "no-query": 6,
+  "select": 1064,
+  "ask-batch": 1,
+  "count": 48
+ },
+ "decodedBytes": 588597,
+ "wireBytes": 178982,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://sparql.goudatijdmachine.nl/",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql",
+  "https://qlever.coret.org/oabs"
+ ],
+ "byEndpoint": {
+  "https://sparql.goudatijdmachine.nl/": {
+   "requests": 322,
+   "decodedBytes": 436143,
+   "kinds": {
+    "no-query": 1,
+    "select": 273,
+    "count": 48
+   },
+   "dataRows": 3115,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql": {
+   "requests": 543,
+   "decodedBytes": 127031,
+   "kinds": {
+    "no-query": 1,
+    "select": 541,
+    "ask-batch": 1
+   },
+   "dataRows": 405,
+   "askTrue": 9,
+   "askFalse": 1,
+   "errors": 2
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql": {
+   "requests": 62,
+   "decodedBytes": 5418,
+   "kinds": {
+    "no-query": 1,
+    "select": 61
+   },
+   "dataRows": 1,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql": {
+   "requests": 65,
+   "decodedBytes": 6139,
+   "kinds": {
+    "no-query": 1,
+    "select": 64
+   },
+   "dataRows": 1,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql": {
+   "requests": 65,
+   "decodedBytes": 6142,
+   "kinds": {
+    "no-query": 1,
+    "select": 64
+   },
+   "dataRows": 1,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://qlever.coret.org/oabs": {
+   "requests": 62,
+   "decodedBytes": 7724,
+   "kinds": {
+    "no-query": 1,
+    "select": 61
+   },
+   "dataRows": 1,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  }
+ }
+}

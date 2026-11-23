@@ -3,3 +3,5 @@ runs-proto/*.requests.json
 runs-proto/*.log
 runs-final/*.requests.json
 runs-clean/**/*.requests.json
+runs-remaining/**/*.requests.json
+runs-remaining/**/*.plan.json

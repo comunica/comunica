@@ -1,0 +1,54 @@
+distinct
+  project (building,name,monumentNumber,style,originalFunction)
+    join
+      join-inner(bind-source) bindIndex:5 srcQuery:0
+        union
+          pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+          pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:1
+        join src:0 srcQuery:1
+          pattern (?building http://www.w3.org/1999/02/22-rdf-syntax-ns#type https://www.goudatijdmachine.nl/def#Gebouw) delegated
+        join-inner(bind-source) bindIndex:0 srcQuery:2
+          join src:1
+            pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+            pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+            pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+            pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+          join-inner(bind-source) bindIndex:0 srcQuery:3
+            union
+              pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:0
+              pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:1
+              pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:2
+              pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:3
+            join-inner(bind-source) bindIndex:0 srcQuery:4
+              union
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:1
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:2
+                pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:3
+              join-inner(bind-source) bindIndex:0 srcQuery:5
+                union
+                  pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer ?monumentNumber) src:0
+                  pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer ?monumentNumber) src:1
+                join-inner(bind-source) bindIndex:0 srcQuery:6
+                  union
+                    pattern (?building https://schema.org/name ?name) src:0
+                    pattern (?building https://schema.org/name ?name) src:1
+                    pattern (?building https://schema.org/name ?name) src:4
+                    pattern (?building https://schema.org/name ?name) src:5
+
+sources:
+  0: QuerySourceHypermedia(https://sparql.goudatijdmachine.nl/)(SkolemID:0)
+  1: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql)(SkolemID:1)
+  2: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql)(SkolemID:3)
+  3: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql)(SkolemID:4)
+  4: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql)(SkolemID:2)
+  5: QuerySourceHypermedia(https://qlever.coret.org/oabs)(SkolemID:5)
+
+source queries:
+  0: SELECT ?building ?monument WHERE { VALUES ?building { <https://n2t.net/ark:/60537/bZo1Ho> <https://n2t.net/ark:/60537/bZo1Iz> <https://n2t.net/ark:/60537/bzYEEY> <https://n2t.net/ark:/60537/bzYEGk> <https://n2t.net/ark:/60537/bzYEHw> <https://n2t.net/ark:/60537/bzYEIH> <https://n2t.net/ark:/60537/bzzfgc> <https://n2t.net/ark:/60537/bzzfiz> <https://n2t.net/ark:/60537/bzzfjK> <https://n2t.net/ark:/60537/bzznhx> } ?building <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  1: SELECT ?building WHERE { ?building <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.goudatijdmachine.nl/def#Gebouw> . }
+  2: SELECT ?monument ?var0 ?var1 ?var2 ?var3 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/14752> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/59065> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/32690> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48807> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/24563> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/19123> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/33982> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/56010> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48577> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/20184> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/38090> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/54134> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/53616> <http://www.wikidata.org/entity/Q3368988> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/10090> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/60975> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48440> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/42009> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . }
+  3: SELECT ?var1 ?originalFunction WHERE { VALUES ?var1 { <https://data.cultureelerfgoed.nl/term/id/rn/2/6fa5f251-cd84-4f3a-acb7-7c219df2540f> <https://data.cultureelerfgoed.nl/term/id/rn/2/34872608-58be-422c-86ad-48b02a3b05bc> <https://data.cultureelerfgoed.nl/term/id/rn/2/69c63288-f83b-4e49-b563-d01efd06059c> <https://data.cultureelerfgoed.nl/term/id/rn/2/79b44eeb-e165-4c9d-9f95-60644cd98c94> <https://data.cultureelerfgoed.nl/term/id/rn/2/7b886e32-add3-49d5-a61e-9389e0050d58> <https://data.cultureelerfgoed.nl/term/id/rn/2/41b8341b-f9d8-4655-af4b-682c4fb06206> <https://data.cultureelerfgoed.nl/term/id/rn/2/84bf2a2a-979b-41de-8be2-a737b1299056> <https://data.cultureelerfgoed.nl/term/id/rn/2/8f267e81-e8e1-4902-bb8d-cffd8c21ca29> <https://data.cultureelerfgoed.nl/term/id/rn/2/e684a7f7-8921-46b1-8d05-25d670aae1ca> <https://data.cultureelerfgoed.nl/term/id/rn/2/96b28f4b-8ea2-4f8c-9460-609d21fdc042> <https://data.cultureelerfgoed.nl/term/id/rn/2/9e518a68-294d-44ad-bb41-8f4a78754530> <https://data.cultureelerfgoed.nl/term/id/rn/2/618136b2-1714-4b37-a935-a8ced4a1d58f> <https://data.cultureelerfgoed.nl/term/id/rn/2/e0d33734-37f9-42c9-b1d5-9de64bbcdc5b> <https://data.cultureelerfgoed.nl/term/id/rn/2/de00216f-1788-4ed6-ab75-28ab7e3f55ba> <https://data.cultureelerfgoed.nl/term/id/rn/2/91383773-a35a-4fd5-a201-3cfff21c61a5> <https://data.cultureelerfgoed.nl/term/id/rn/2/304da892-6d80-4019-b4ca-ea9cfd7286e4> <https://data.cultureelerfgoed.nl/term/id/rn/2/3e3ff935-513f-466e-8131-49aa146ace37> } ?var1 <http://www.w3.org/2004/02/skos/core#prefLabel> ?originalFunction . }
+  4: SELECT ?var3 ?style WHERE { VALUES ?var3 { <https://data.cultureelerfgoed.nl/term/id/rn/2/0a24d059-b310-46e9-ad13-7ad8be89fe53> <https://data.cultureelerfgoed.nl/term/id/rn/2/95395a3e-7f4e-4788-a852-663484097c1d> <https://data.cultureelerfgoed.nl/term/id/rn/2/eb511622-5eb8-4c19-aed0-d2d0565baab7> } ?var3 <http://www.w3.org/2004/02/skos/core#prefLabel> ?style . }
+  5: SELECT ?monument ?monumentNumber WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/77214> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/77215> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48326> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer> ?monumentNumber . }
+  6: SELECT ?building ?name WHERE { VALUES ?building { <https://n2t.net/ark:/60537/bz8QSW> <https://n2t.net/ark:/60537/btWmGi> <https://n2t.net/ark:/60537/bWFVF9> } ?building <https://schema.org/name> ?name . }

@@ -1,0 +1,54 @@
+distinct
+  project (dataset,title,publisher,links,endpoint)
+    join
+      join-inner(bind-source) bindIndex:0 srcQuery:0
+        union
+          join
+            join-inner(bind-source) bindIndex:0 srcQuery:1
+              join src:0 srcQuery:2
+                pattern (?linkset http://rdfs.org/ns/void#objectsTarget https://data.niod.nl/WO2_Thesaurus) delegated
+                pattern (?linkset http://rdfs.org/ns/void#subjectsTarget ?dataset) delegated
+                pattern (?linkset http://rdfs.org/ns/void#triples ?links) delegated
+              filter src:1
+                pattern (?dataset http://purl.org/dc/terms/title ?title) delegated
+          join src:0 srcQuery:3
+            pattern (?linkset http://rdfs.org/ns/void#objectsTarget https://data.niod.nl/WO2_Thesaurus) delegated
+            pattern (?linkset http://rdfs.org/ns/void#subjectsTarget ?dataset) delegated
+            pattern (?linkset http://rdfs.org/ns/void#triples ?links) delegated
+            filter delegated
+              pattern (?dataset http://purl.org/dc/terms/title ?title) delegated
+        union
+          pattern (?dataset http://purl.org/dc/terms/publisher ?var0) src:1
+          pattern (?dataset http://purl.org/dc/terms/publisher ?var0) src:0
+        join-inner(bind-source) bindIndex:0 srcQuery:4
+          union
+            filter src:1
+              pattern (?var0 http://xmlns.com/foaf/0.1/name ?publisher) delegated
+            filter src:0
+              pattern (?var0 http://xmlns.com/foaf/0.1/name ?publisher) delegated
+          join-inner(bind-source) bindIndex:0 srcQuery:5
+            union
+              pattern (?dataset http://www.w3.org/ns/dcat#distribution ?distribution) src:1
+              pattern (?dataset http://www.w3.org/ns/dcat#distribution ?distribution) src:0
+            join-inner(bind-source) bindIndex:0 srcQuery:6
+              union
+                pattern (?distribution http://purl.org/dc/terms/conformsTo https://www.w3.org/TR/sparql11-protocol/) src:1
+                pattern (?distribution http://purl.org/dc/terms/conformsTo https://www.w3.org/TR/sparql11-protocol/) src:0
+              join-inner(bind-source) bindIndex:0 srcQuery:7
+                union
+                  pattern (?distribution http://www.w3.org/ns/dcat#accessURL ?endpoint) src:1
+                  pattern (?distribution http://www.w3.org/ns/dcat#accessURL ?endpoint) src:0
+
+sources:
+  0: QuerySourceHypermedia(https://sparql.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph)(SkolemID:1)
+  1: QuerySourceHypermedia(https://datasetregister.netwerkdigitaalerfgoed.nl/sparql)(SkolemID:0)
+
+source queries:
+  0: SELECT ?dataset ?var0 WHERE { VALUES ?dataset { <https://data.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph> <https://collectie.airbornemuseum.nl/datacatalog/nde> <https://collections.uu.nl/datacatalog/collection> <https://data.annefrank.org/datasets/Q4452658/collectie> <https://data.niod.nl/PoolParty/wiki/WO2_Thesaurus> <https://n2t.net/ark:/23262/dataset> <https://n2t.net/ark:/45493/dataset> <https://n2t.net/ark:/59857/persons> <https://n2t.net/ark:/61567/dataset> <https://www.genealogieonline.nl/wo2slachtoffers/> <https://www.ldmax.nl/datasets/Q1852477/collectie> <https://www.ldmax.nl/datasets/Q24033642/collectie> <https://www.ldmax.nl/datasets/wo2net/collecties> <https://www.ldmax.nl/datasets/wo2net/thesaurus> } ?dataset <http://purl.org/dc/terms/publisher> ?var0 . }
+  1: SELECT ?dataset ?title WHERE { VALUES ?dataset { <https://www.ldmax.nl/datasets/Q24033642/collectie> <https://www.ldmax.nl/datasets/wo2net/collecties> <https://www.ldmax.nl/datasets/wo2net/thesaurus> } ?dataset <http://purl.org/dc/terms/title> ?title . FILTER ( ( ( LANG( ?title ) = "en"^^<http://www.w3.org/2001/XMLSchema#string> ) || ( LANG( ?title ) = ""^^<http://www.w3.org/2001/XMLSchema#string> ) ) ) }
+  2: SELECT ?linkset ?dataset ?links WHERE { ?linkset <http://rdfs.org/ns/void#objectsTarget> <https://data.niod.nl/WO2_Thesaurus> . ?linkset <http://rdfs.org/ns/void#subjectsTarget> ?dataset . ?linkset <http://rdfs.org/ns/void#triples> ?links . }
+  3: SELECT ?linkset ?dataset ?links ?title WHERE { ?linkset <http://rdfs.org/ns/void#objectsTarget> <https://data.niod.nl/WO2_Thesaurus> . ?linkset <http://rdfs.org/ns/void#subjectsTarget> ?dataset . ?linkset <http://rdfs.org/ns/void#triples> ?links . { ?dataset <http://purl.org/dc/terms/title> ?title . FILTER ( ( ( LANG( ?title ) = "en"^^<http://www.w3.org/2001/XMLSchema#string> ) || ( LANG( ?title ) = ""^^<http://www.w3.org/2001/XMLSchema#string> ) ) ) } }
+  4: SELECT ?var0 ?publisher WHERE { VALUES ?var0 { <https://netwerkdigitaalerfgoed.nl/> <https://airbornemuseum.nl> <https://www.umu.nl/> <https://www.ldmax.nl/organisaties/Q4452658> <https://www.niod.nl/> <https://www.ldmax.nl/organisaties/Q2882945> <https://www.ldmax.nl/organisaties/Q2070053> <https://www.ldmax.nl/organisaties/wo2net> <https://www.ldmax.nl/organisaties/Q2798268> <https://www.genealogieonline.nl/> <https://www.ldmax.nl/organisaties/Q1852477> <https://www.ldmax.nl/organisaties/Q24033642> } ?var0 <http://xmlns.com/foaf/0.1/name> ?publisher . FILTER ( ( ( LANG( ?publisher ) = "en"^^<http://www.w3.org/2001/XMLSchema#string> ) || ( LANG( ?publisher ) = ""^^<http://www.w3.org/2001/XMLSchema#string> ) ) ) }
+  5: SELECT ?dataset ?distribution WHERE { VALUES ?dataset { <https://data.netwerkdigitaalerfgoed.nl/dataset-knowledge-graph> <https://collectie.airbornemuseum.nl/datacatalog/nde> <https://www.genealogieonline.nl/wo2slachtoffers/> <https://www.ldmax.nl/datasets/Q1852477/collectie> <https://n2t.net/ark:/45493/dataset> <https://www.ldmax.nl/datasets/Q24033642/collectie> <https://n2t.net/ark:/61567/dataset> <https://n2t.net/ark:/23262/dataset> <https://data.annefrank.org/datasets/Q4452658/collectie> <https://n2t.net/ark:/59857/persons> <https://www.ldmax.nl/datasets/wo2net/collecties> <https://www.ldmax.nl/datasets/wo2net/thesaurus> <https://collections.uu.nl/datacatalog/collection> } ?dataset <http://www.w3.org/ns/dcat#distribution> ?distribution . }
+  6: SELECT ?dataset ?distribution WHERE { VALUES ?dataset { <https://n2t.net/ark:/61567/dataset> <https://www.genealogieonline.nl/wo2slachtoffers/> <https://www.ldmax.nl/datasets/Q1852477/collectie> <https://www.ldmax.nl/datasets/Q24033642/collectie> <https://www.ldmax.nl/datasets/wo2net/collecties> <https://www.ldmax.nl/datasets/wo2net/thesaurus> } ?dataset <http://www.w3.org/ns/dcat#distribution> ?distribution . ?distribution <http://purl.org/dc/terms/conformsTo> <https://www.w3.org/TR/sparql11-protocol/> . FILTER ( ISBLANK( ?distribution ) ) }
+  7: SELECT ?dataset ?distribution ?endpoint WHERE { VALUES ?dataset { <https://data.annefrank.org/datasets/Q4452658/collectie> <https://n2t.net/ark:/45493/dataset> <https://n2t.net/ark:/23262/dataset> <https://n2t.net/ark:/59857/persons> <https://n2t.net/ark:/61567/dataset> <https://www.genealogieonline.nl/wo2slachtoffers/> <https://www.ldmax.nl/datasets/Q1852477/collectie> <https://www.ldmax.nl/datasets/wo2net/collecties> <https://www.ldmax.nl/datasets/wo2net/thesaurus> <https://www.ldmax.nl/datasets/Q24033642/collectie> } ?dataset <http://www.w3.org/ns/dcat#distribution> ?distribution . ?distribution <http://purl.org/dc/terms/conformsTo> <https://www.w3.org/TR/sparql11-protocol/> . ?distribution <http://www.w3.org/ns/dcat#accessURL> ?endpoint . FILTER ( ISBLANK( ?distribution ) ) }

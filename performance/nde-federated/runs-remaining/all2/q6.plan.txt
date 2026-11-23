@@ -1,0 +1,1499 @@
+project (building,name,monumentNumber,style,originalFunction)
+  leftjoin
+    join-optional(bind-block)
+      join
+        join-inner(bind-source) bindIndex:0 srcQuery:0
+          union
+            join
+              join-inner(bind-source) bindIndex:0 srcQuery:1
+                join src:0 srcQuery:2
+                  pattern (?building http://www.w3.org/1999/02/22-rdf-syntax-ns#type https://www.goudatijdmachine.nl/def#Gebouw) delegated
+                union
+                  pattern (?building https://schema.org/name ?name) src:1
+                  pattern (?building https://schema.org/name ?name) src:2
+                  pattern (?building https://schema.org/name ?name) src:3
+            join src:0 srcQuery:3
+              pattern (?building http://www.w3.org/1999/02/22-rdf-syntax-ns#type https://www.goudatijdmachine.nl/def#Gebouw) delegated
+              pattern (?building https://schema.org/name ?name) delegated
+          union
+            join
+              join-inner(bind-source) bindIndex:1
+                join src:1
+                  pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                  pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+            join src:1
+              pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+              pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+              pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) delegated
+          join-inner(bind-source) bindIndex:0 srcQuery:4
+            union
+              pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer ?monumentNumber) src:0
+              pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer ?monumentNumber) src:1
+            join-inner(bind-source) bindIndex:0 srcQuery:5
+              union
+                pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:0
+                pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:1
+                pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:4
+                pattern (?var1 http://www.w3.org/2004/02/skos/core#prefLabel ?originalFunction) src:5
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:5
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b0044j8 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:6
+                join compacted-occurrences:20
+                  join-inner(bind-source) bindIndex:1 srcQuery:7
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b004Xv http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:8
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:2
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b0PSN6 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:9
+                join compacted-occurrences:23
+                  join-inner(bind-source) bindIndex:1 srcQuery:10
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b0PSnq http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:11
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:5
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b1Sob5 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:12
+                join compacted-occurrences:20
+                  join-inner(bind-source) bindIndex:1 srcQuery:13
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b1sYPb http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:14
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:22
+                  join-inner(bind-source) bindIndex:1 srcQuery:15
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b2USBW http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:16
+                join compacted-occurrences:3
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b2USDi http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:17
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:22
+                  join-inner(bind-source) bindIndex:1 srcQuery:18
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b3Xo2t http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:19
+                join compacted-occurrences:3
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b3Xo4P http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:20
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:3
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b4NaR0 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:21
+                join compacted-occurrences:22
+                  join-inner(bind-source) bindIndex:1 srcQuery:22
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b4nMpb http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:23
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:3
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b5PGio http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:24
+                join compacted-occurrences:22
+                  join-inner(bind-source) bindIndex:1 srcQuery:25
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b5qgSU http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:26
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:4
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b6sMjh http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:27
+                join compacted-occurrences:21
+                  join-inner(bind-source) bindIndex:1 srcQuery:28
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b74Smn http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:29
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:4
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b7vgN0 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:30
+                join compacted-occurrences:20
+                  join-inner(bind-source) bindIndex:1 srcQuery:31
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b87nOU http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:32
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:22
+                  join-inner(bind-source) bindIndex:1 srcQuery:33
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b8xMc1 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:34
+                join compacted-occurrences:3
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b8xMdc http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:35
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:4
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b9nzZc http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:36
+                join compacted-occurrences:21
+                  join-inner(bind-source) bindIndex:1 srcQuery:37
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/b9ZG1j http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:38
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:5
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bacnkG http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:39
+                join compacted-occurrences:20
+                  join-inner(bind-source) bindIndex:1 srcQuery:40
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bAOspX http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:41
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:7
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bB195D http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:42
+                join compacted-occurrences:18
+                  join-inner(bind-source) bindIndex:1 srcQuery:43
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bBdQKv http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:44
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:7
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bBQWSx http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:45
+                join compacted-occurrences:18
+                  join-inner(bind-source) bindIndex:1 srcQuery:46
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bbRYdw http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:47
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:23
+                  join-inner(bind-source) bindIndex:1 srcQuery:48
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bc4FxS http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:49
+                join compacted-occurrences:2
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bc4FXz http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:50
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:4
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bchndq http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:51
+                join compacted-occurrences:21
+                  join-inner(bind-source) bindIndex:1 srcQuery:52
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bchnzc http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:53
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:7
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bD690J http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:54
+                join compacted-occurrences:18
+                  join-inner(bind-source) bindIndex:1 srcQuery:55
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bDiQEq http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:56
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:5
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bdKguA http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:57
+                join compacted-occurrences:20
+                  join-inner(bind-source) bindIndex:1 srcQuery:58
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bDVWJU http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:59
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:6
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bE8ErL http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:60
+                join compacted-occurrences:19
+                  join-inner(bind-source) bindIndex:1 srcQuery:61
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/be9FMA http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:62
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:23
+                  join-inner(bind-source) bindIndex:1 srcQuery:63
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bEmm4L http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:64
+                join compacted-occurrences:2
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bEmm7i http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:65
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:6
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bFb8Ti http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:66
+                join compacted-occurrences:19
+                  join-inner(bind-source) bindIndex:1 srcQuery:67
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bFBydH http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:68
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:4
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bFoQzw http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:69
+                join compacted-occurrences:21
+                  join-inner(bind-source) bindIndex:1 srcQuery:70
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bfPgjM http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:71
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:6
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bGdEjv http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:72
+                join compacted-occurrences:19
+                  join-inner(bind-source) bindIndex:1 srcQuery:73
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bGE2Ge http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:74
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:6
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bGQKqa http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:75
+                join compacted-occurrences:19
+                  join-inner(bind-source) bindIndex:1 srcQuery:76
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bGrkYw http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:77
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:7
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bHg8LR http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:78
+                join compacted-occurrences:18
+                  join-inner(bind-source) bindIndex:1 srcQuery:79
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bHGy5f http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:80
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:22
+                  join-inner(bind-source) bindIndex:1 srcQuery:81
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bHtQr4 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:82
+                join compacted-occurrences:3
+                  join-inner(empty)
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bHtQtr http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:83
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1 srcQuery:84
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bIiE9H http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:85
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1 srcQuery:86
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bIwkUN http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:87
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bJLF0v http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:88
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1 srcQuery:89
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bJYekL http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:90
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bKBkQ4 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:91
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bkP3Sr http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:92
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1 srcQuery:93
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bLQxTV http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:94
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bmetej http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:95
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bMT1WX http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:96
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bnHn2r http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:97
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bNVxFp http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:98
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:24
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bojt6S http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:99
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/box9Or http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:100
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bPBfhM http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:101
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bpzFfO http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:102
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bQDDLc http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:103
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bQqW8y http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:104
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bRfJPE http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:105
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1 srcQuery:106
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bs43ue http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:107
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bSiehm http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:108
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bt6yYZ http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:109
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1 srcQuery:110
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/btWmGi http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:111
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1 srcQuery:112
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bUAVMq http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:113
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bUNDwv http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:114
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1 srcQuery:115
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bvbyN0 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:116
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bVQ7Pq http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:117
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bwe3jr http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:118
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bwrKX7 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:119
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bxGX52 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:120
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bxuftn http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:121
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1 srcQuery:122
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bY7Px7 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:123
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/byW9e7 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:124
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:25
+                  join-inner(bind-source) bindIndex:1 srcQuery:125
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bZAJmq http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:126
+          join
+            join-inner(bind) bindIndex:0
+              values
+              join
+                join-inner(bind-source) bindIndex:1
+                  join src:1
+                    pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                    pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                  pattern (?building http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0
+              bindings
+                join compacted-occurrences:12
+                  join-inner(bind-source) bindIndex:1
+                    join src:1
+                      pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie ?var0) delegated
+                      pattern (?var0 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam ?var1) delegated
+                    pattern (https://n2t.net/ark:/60537/bZo1F1 http://www.w3.org/2000/01/rdf-schema#seeAlso ?monument) src:0 srcQuery:127
+      union
+        join
+          join-inner(bind-source) bindIndex:1
+            join src:1
+              pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+              pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+            union
+              pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+              pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+              pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+        join src:1
+          pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+          pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+          pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) delegated
+      union
+        join
+          join-inner(bind-source) bindIndex:0 srcQuery:128
+            values
+            join src:1
+              pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+              pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+              pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) delegated
+        join
+          join-inner(bind) bindIndex:0
+            values
+            join
+              join-inner(bind-source) bindIndex:1
+                join src:1
+                  pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                  pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                union
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+            bindings
+              join compacted-occurrences:64
+                join-inner(bind-source) bindIndex:0 srcQuery:129
+                  join src:1 srcQuery:130
+                    pattern (https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/76279 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                    pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                  union
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+      union
+        join
+          join-inner(bind-source) bindIndex:0 srcQuery:131
+            values
+            join src:1
+              pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+              pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+              pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) delegated
+        join
+          join-inner(bind) bindIndex:0
+            values
+            join
+              join-inner(bind-source) bindIndex:1
+                join src:1
+                  pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                  pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                union
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+            bindings
+              join compacted-occurrences:64
+                join-inner(bind-source) bindIndex:0
+                  join src:1 srcQuery:132
+                    pattern (https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/24563 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                    pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                  union
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+      union
+        join
+          join-inner(bind-source) bindIndex:0 srcQuery:133
+            values
+            join src:1
+              pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+              pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+              pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) delegated
+        join
+          join-inner(bind) bindIndex:0
+            values
+            join
+              join-inner(bind-source) bindIndex:1
+                join src:1
+                  pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                  pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                union
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+            bindings
+              join compacted-occurrences:64
+                join-inner(bind-source) bindIndex:0
+                  join src:1 srcQuery:134
+                    pattern (https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/18342 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                    pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                  union
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+      union
+        join
+          join-inner(bind-source) bindIndex:0 srcQuery:135
+            values
+            join src:1
+              pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+              pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+              pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) delegated
+        join
+          join-inner(bind) bindIndex:0
+            values
+            join
+              join-inner(bind-source) bindIndex:1
+                join src:1
+                  pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                  pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                union
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+            bindings
+              join compacted-occurrences:64
+                join-inner(bind-source) bindIndex:0
+                  join src:1 srcQuery:136
+                    pattern (https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/18434 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                    pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                  union
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+      union
+        join
+          join-inner(bind-source) bindIndex:0 srcQuery:137
+            values
+            join src:1
+              pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+              pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+              pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) delegated
+        join
+          join-inner(bind) bindIndex:0
+            values
+            join
+              join-inner(bind-source) bindIndex:1
+                join src:1
+                  pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                  pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                union
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+            bindings
+              join compacted-occurrences:64
+                join-inner(bind-source) bindIndex:0
+                  join src:1 srcQuery:138
+                    pattern (https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/39343 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                    pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                  union
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+      union
+        join
+          join-inner(bind-source) bindIndex:0 srcQuery:139
+            values
+            join src:1
+              pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+              pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+              pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) delegated
+        join
+          join-inner(bind) bindIndex:0
+            values
+            join
+              join-inner(bind-source) bindIndex:1
+                join src:1
+                  pattern (?monument https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                  pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                union
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                  pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+            bindings
+              join compacted-occurrences:30
+                join-inner(bind-source) bindIndex:0
+                  join src:1 srcQuery:140
+                    pattern (https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/26026 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur ?var2) delegated
+                    pattern (?var2 https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam ?var3) delegated
+                  union
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:0
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:4
+                    pattern (?var3 http://www.w3.org/2004/02/skos/core#prefLabel ?style) src:5
+
+sources:
+  0: QuerySourceHypermedia(https://sparql.goudatijdmachine.nl/)(SkolemID:0)
+  1: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql)(SkolemID:1)
+  2: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql)(SkolemID:2)
+  3: QuerySourceHypermedia(https://qlever.coret.org/oabs)(SkolemID:5)
+  4: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql)(SkolemID:3)
+  5: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql)(SkolemID:4)
+
+source queries:
+  0: SELECT ?building ?monument ?var0 ?var1 WHERE { VALUES ?building { <https://n2t.net/ark:/60537/bZo1F1> <https://n2t.net/ark:/60537/bZo1Gc> <https://n2t.net/ark:/60537/bZo1Ho> <https://n2t.net/ark:/60537/bZo1Iz> <https://n2t.net/ark:/60537/bzYEEY> <https://n2t.net/ark:/60537/bzYEGk> <https://n2t.net/ark:/60537/bzYEHw> <https://n2t.net/ark:/60537/bzYEIH> <https://n2t.net/ark:/60537/bzzfgc> <https://n2t.net/ark:/60537/bzzfiz> <https://n2t.net/ark:/60537/bzzfjK> <https://n2t.net/ark:/60537/bzznhx> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . ?building <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  1: SELECT ?building ?name WHERE { VALUES ?building { <https://n2t.net/ark:/60537/bZo1Ho> <https://n2t.net/ark:/60537/bZo1Iz> <https://n2t.net/ark:/60537/bzYEEY> <https://n2t.net/ark:/60537/bzYEGk> <https://n2t.net/ark:/60537/bzYEHw> <https://n2t.net/ark:/60537/bzYEIH> <https://n2t.net/ark:/60537/bzzfgc> <https://n2t.net/ark:/60537/bzzfiz> <https://n2t.net/ark:/60537/bzzfjK> <https://n2t.net/ark:/60537/bzznhx> } ?building <https://schema.org/name> ?name . }
+  2: SELECT ?building WHERE { ?building <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.goudatijdmachine.nl/def#Gebouw> . }
+  3: SELECT ?building ?name WHERE { ?building <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.goudatijdmachine.nl/def#Gebouw> . ?building <https://schema.org/name> ?name . }
+  4: SELECT ?monument ?monumentNumber WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/19109> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/25315> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/10488> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/59645> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/35245> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/27039> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/43998> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/54659> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/21015> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/28356> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/59111> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/18640> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/68724> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/28577> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#rijksmonumentnummer> ?monumentNumber . }
+  5: SELECT ?var1 ?originalFunction WHERE { VALUES ?var1 { <https://data.cultureelerfgoed.nl/term/id/rn/2/313b3bdc-e1bd-40b2-b7b3-5d49db458f1c> <https://data.cultureelerfgoed.nl/term/id/rn/2/9d7b28fc-62bd-450d-a8ad-34c7496f6b09> <https://data.cultureelerfgoed.nl/term/id/rn/2/b964b9ca-8f5a-42de-b96c-ce8320db9e95> <https://data.cultureelerfgoed.nl/term/id/rn/2/229f56fc-8432-48ab-84f8-21ba8d0053c6> <https://data.cultureelerfgoed.nl/term/id/rn/2/9e58c38b-712d-42cc-a420-2083dde46574> <https://data.cultureelerfgoed.nl/term/id/rn/2/05606ed7-8375-401d-965d-9300010fc6c1> } ?var1 <http://www.w3.org/2004/02/skos/core#prefLabel> ?originalFunction . }
+  6: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b0044j8> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b004CI> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/b004Xv> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/b004YG> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  7: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/34405> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  8: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/b004Xv> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  9: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b0PSN6> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b0PSnq> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/b0PZJx> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/b0qujf> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  10: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <http://www.wikidata.org/entity/Q4544244> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  11: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/b0PSnq> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  12: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b1Sob5> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b1Socg> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/b1sYPb> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/b1sYQn> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  13: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/62355> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  14: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/b1sYPb> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  15: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/45346> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  16: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/b2USBW> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  17: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b2USBW> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b2USDi> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/b2USEu> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/b2USeY> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  18: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/11362> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  19: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/b3Xo2t> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  20: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b3Xo2t> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b3Xo4P> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/b3Xo50> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/b3Xo6b> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  21: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b4NaR0> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b4Narj> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/b4nMpb> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/b4nMry> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  22: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/52296> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  23: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/b4nMpb> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  24: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b5PGio> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b5qgSU> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/b5qgUg> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/b5qgvL> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  25: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/17176> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  26: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/b5qgSU> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  27: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b6sMjh> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b6sMkt> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/b6sMmE> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/b74RZe> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  28: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/38829> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  29: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/b74Smn> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  30: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b7vgN0> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b7vgnj> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/b7vgOb> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/b87nIP> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  31: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/32394> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  32: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/b87nOU> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  33: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/72188> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  34: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/b8xMc1> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  35: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b8xMc1> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b8xMdc> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/b8xMeo> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/b8xMfz> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  36: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b9nzZc> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b9ZFGn> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/b9ZG1j> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/b9ZG2v> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  37: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/72187> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  38: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/b9ZG1j> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  39: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bacnkG> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bacnLn> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bAOspX> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bAOsrj> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  40: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/59796> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  41: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bAOspX> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  42: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bB195D> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bB196O> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bB197Z> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bb2atO> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  43: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/16145> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  44: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bBdQKv> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  45: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bBQWSx> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bBQWt1> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bBQWTI> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bBR3O6> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  46: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/25361> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  47: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bbRYdw> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  48: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <http://www.wikidata.org/entity/Q848290> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  49: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bc4FxS> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  50: SELECT ?count0 ?count1 ?count2 ?count3 ?count4 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bc4FxS> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bc4FXz> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bc4FYK> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bCGKB9> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } { SELECT ( COUNT( * ) AS ?count4 ) WHERE { <https://n2t.net/ark:/60537/b0qukr> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c4 . } } }
+  51: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bchndq> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bchnDV> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bchnzc> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bCTrWK> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  52: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/44189> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  53: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bchnzc> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  54: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bD690J> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bd7ap5> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bd7aqg> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bd7ars> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  55: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/60323> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  56: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bDiQEq> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  57: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bdKguA> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bDVWDP> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bDVWJU> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bDVWLg> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  58: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/35648> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  59: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bDVWJU> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  60: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bE8ErL> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bE8EsW> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bE8Et7> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/be9FMA> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  61: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/26956> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  62: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/be9FMA> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  63: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/51516> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  64: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bEmm4L> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  65: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bEmm4L> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bEmm5W> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bEmm7i> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bEmm8u> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  66: SELECT ?count0 ?count1 ?count2 ?count3 ?count4 ?count5 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/b1sYRy> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/b1sYs2> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bFb8Ti> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bFb8Uu> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } { SELECT ( COUNT( * ) AS ?count4 ) WHERE { <https://n2t.net/ark:/60537/bFBxRz> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c4 . } } { SELECT ( COUNT( * ) AS ?count5 ) WHERE { <https://n2t.net/ark:/60537/bFBydH> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c5 . } } }
+  67: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/45757> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  68: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bFBydH> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  69: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bFoQzw> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bFoXzF> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bfPgjM> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bfPgkX> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  70: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/40577> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  71: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bfPgjM> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  72: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bGdEjv> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bGdEkG> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bGdLhh> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bGE2Ge> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  73: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/69083> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  74: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bGE2Ge> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  75: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bGQKqa> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bGrkCy> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bGrkRf> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bGrkYw> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  76: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48135> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  77: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bGrkYw> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  78: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bHg8LR> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bHg8M2> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bHg8Nd> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bHg8Op> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  79: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/21432> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  80: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bHGy5f> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  81: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/28193> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  82: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bHtQr4> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  83: SELECT ?count0 ?count1 ?count2 ?count3 WHERE { { SELECT ( COUNT( * ) AS ?count0 ) WHERE { <https://n2t.net/ark:/60537/bHtQr4> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c0 . } } { SELECT ( COUNT( * ) AS ?count1 ) WHERE { <https://n2t.net/ark:/60537/bHtQtr> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c1 . } } { SELECT ( COUNT( * ) AS ?count2 ) WHERE { <https://n2t.net/ark:/60537/bHtQuC> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c2 . } } { SELECT ( COUNT( * ) AS ?count3 ) WHERE { <https://n2t.net/ark:/60537/bhUfPc> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?o_c3 . } } }
+  84: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/53966> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  85: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bIiE9H> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  86: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/33645> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  87: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bIwkUN> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  88: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bJLF0v> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  89: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <http://www.wikidata.org/entity/Q118107336> <http://www.wikidata.org/entity/Q4418602> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  90: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bJYekL> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  91: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bKBkQ4> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  92: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bkP3Sr> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  93: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/18170> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  94: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bLQxTV> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  95: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bmetej> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  96: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bMT1WX> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  97: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bnHn2r> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  98: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bNVxFp> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  99: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bojt6S> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  100: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/box9Or> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  101: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bPBfhM> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  102: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bpzFfO> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  103: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bQDDLc> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  104: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bQqW8y> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  105: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bRfJPE> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  106: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/76279> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  107: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bs43ue> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  108: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bSiehm> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  109: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bt6yYZ> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  110: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/79774> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  111: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/btWmGi> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  112: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/17465> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  113: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bUAVMq> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  114: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bUNDwv> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  115: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/37179> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  116: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bvbyN0> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  117: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bVQ7Pq> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  118: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bwe3jr> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  119: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bwrKX7> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  120: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bxGX52> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  121: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bxuftn> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  122: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/46640> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  123: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bY7Px7> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  124: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/byW9e7> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  125: SELECT ?monument ?var0 ?var1 WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/20184> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftOorspronkelijkeFunctie> ?var0 . ?var0 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftFunctieNaam> ?var1 . }
+  126: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bZAJmq> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  127: SELECT ?monument WHERE { <https://n2t.net/ark:/60537/bZo1F1> <http://www.w3.org/2000/01/rdf-schema#seeAlso> ?monument . }
+  128: SELECT ?monument ?var2 ?var3 ?style WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/20184> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/16145> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/15997> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/60323> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/21432> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/32544> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/25370> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/46650> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/38090> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/14931> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48807> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/45811> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/49584> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/24091> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . ?var3 <http://www.w3.org/2004/02/skos/core#prefLabel> ?style . }
+  129: SELECT ?var3 ?style WHERE { VALUES ?var3 { <https://data.cultureelerfgoed.nl/term/id/rn/2/0a24d059-b310-46e9-ad13-7ad8be89fe53> } ?var3 <http://www.w3.org/2004/02/skos/core#prefLabel> ?style . }
+  130: SELECT ?var2 ?var3 WHERE { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/76279> <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . }
+  131: SELECT ?monument ?var2 ?var3 ?style WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/43463> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/70787> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/54134> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/39828> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/52141> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/16504> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/62161> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/21728> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/29501> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/27043> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/41319> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/30000> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/19123> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/58613> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . ?var3 <http://www.w3.org/2004/02/skos/core#prefLabel> ?style . }
+  132: SELECT ?var2 ?var3 WHERE { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/24563> <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . }
+  133: SELECT ?monument ?var2 ?var3 ?style WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/33982> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/51562> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/20364> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/40904> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/53616> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/19903> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/56813> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/24658> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/27486> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/35755> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/54263> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/26728> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/25905> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/24669> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . ?var3 <http://www.w3.org/2004/02/skos/core#prefLabel> ?style . }
+  134: SELECT ?var2 ?var3 WHERE { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/18342> <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . }
+  135: SELECT ?monument ?var2 ?var3 ?style WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/56010> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/48577> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/37349> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/49166> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/60975> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/28472> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/42823> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/25934> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/49195> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/31349> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/15188> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/12674> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/43754> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/73788> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . ?var3 <http://www.w3.org/2004/02/skos/core#prefLabel> ?style . }
+  136: SELECT ?var2 ?var3 WHERE { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/18434> <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . }
+  137: SELECT ?monument ?var2 ?var3 ?style WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/14454> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/60944> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/33644> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/25431> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/47078> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/79775> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/76280> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/16757> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/32690> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/36564> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/55977> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/13078> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/25376> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/44373> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . ?var3 <http://www.w3.org/2004/02/skos/core#prefLabel> ?style . }
+  138: SELECT ?var2 ?var3 WHERE { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/39343> <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . }
+  139: SELECT ?monument ?var2 ?var3 ?style WHERE { VALUES ?monument { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/28356> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/59111> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/21015> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/68724> <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/28577> } ?monument <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . ?var3 <http://www.w3.org/2004/02/skos/core#prefLabel> ?style . }
+  140: SELECT ?var2 ?var3 WHERE { <https://linkeddata.cultureelerfgoed.nl/cho-kennis/id/rijksmonument/26026> <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuur> ?var2 . ?var2 <https://linkeddata.cultureelerfgoed.nl/def/ceo#heeftStijlEnCultuurNaam> ?var3 . }

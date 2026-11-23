@@ -1,0 +1,3 @@
+q4b {"status":"error","error":"terminated","results":18,"timeMs":122493,"firstResultMs":80857,"cpuMs":172089,"httpRequests":32555,"httpRequestsWire":32586
+q6 {"status":"timeout","results":0,"timeMs":600479,"cpuMs":221663,"httpRequests":8613,"httpRequestsWire":8614,"byKind":{"no-query":6,"count":54,"select":
+q6b {"status":"ok","results":282,"timeMs":20284,"firstResultMs":16909,"cpuMs":5260,"httpRequests":470,"httpRequestsWire":471,"byKind":{"no-query":6,"count

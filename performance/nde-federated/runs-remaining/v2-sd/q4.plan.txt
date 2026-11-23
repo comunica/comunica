@@ -1,0 +1,226 @@
+project (object,title,date)
+  leftjoin
+    join-optional(bind-block)
+      join
+        join-inner(bind-source) bindIndex:0 srcQuery:0
+          union
+            union
+              pattern (?term https://schema.org/sameAs ?aat) src:0 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:1 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:2 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:3 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:4 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:5 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:6 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:7 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:8 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:9 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:10 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:11 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:12 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:13 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:14 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:15 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:16 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:17 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:18 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:19 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:20 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:21 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:22 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:23 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:24 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:25 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:26 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:27 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:28 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:29 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:30 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:31 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:32 srcQuery:1
+              pattern (?term https://schema.org/sameAs ?aat) src:33 srcQuery:1
+            union
+              pattern (?term https://schema.org/sameAs ?cht) src:0 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:1 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:2 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:3 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:4 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:5 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:6 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:7 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:8 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:9 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:10 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:11 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:12 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:13 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:14 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:15 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:16 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:17 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:18 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:19 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:20 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:21 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:22 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:23 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:24 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:25 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:26 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:27 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:28 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:29 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:30 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:31 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:32 srcQuery:2
+              pattern (?term https://schema.org/sameAs ?cht) src:33 srcQuery:2
+          union
+            pattern (?object https://schema.org/artform ?term) src:3
+            pattern (?object https://schema.org/artform ?term) src:4
+            pattern (?object https://schema.org/artform ?term) src:5
+            pattern (?object https://schema.org/artform ?term) src:6
+            pattern (?object https://schema.org/artform ?term) src:7
+            pattern (?object https://schema.org/artform ?term) src:8
+            pattern (?object https://schema.org/artform ?term) src:9
+            pattern (?object https://schema.org/artform ?term) src:10
+            pattern (?object https://schema.org/artform ?term) src:11
+            pattern (?object https://schema.org/artform ?term) src:12
+            pattern (?object https://schema.org/artform ?term) src:13
+            pattern (?object https://schema.org/artform ?term) src:14
+            pattern (?object https://schema.org/artform ?term) src:15
+            pattern (?object https://schema.org/artform ?term) src:16
+            pattern (?object https://schema.org/artform ?term) src:17
+            pattern (?object https://schema.org/artform ?term) src:18
+            pattern (?object https://schema.org/artform ?term) src:19
+            pattern (?object https://schema.org/artform ?term) src:20
+            pattern (?object https://schema.org/artform ?term) src:21
+            pattern (?object https://schema.org/artform ?term) src:22
+            pattern (?object https://schema.org/artform ?term) src:23
+            pattern (?object https://schema.org/artform ?term) src:24
+            pattern (?object https://schema.org/artform ?term) src:25
+            pattern (?object https://schema.org/artform ?term) src:26
+            pattern (?object https://schema.org/artform ?term) src:27
+            pattern (?object https://schema.org/artform ?term) src:28
+            pattern (?object https://schema.org/artform ?term) src:29
+            pattern (?object https://schema.org/artform ?term) src:30
+            pattern (?object https://schema.org/artform ?term) src:31
+            pattern (?object https://schema.org/artform ?term) src:32
+            pattern (?object https://schema.org/artform ?term) src:33
+          join-inner(bind-source) bindIndex:0 srcQuery:3
+            union
+              pattern (?object https://schema.org/name ?title) src:0
+              pattern (?object https://schema.org/name ?title) src:1
+              pattern (?object https://schema.org/name ?title) src:2
+              pattern (?object https://schema.org/name ?title) src:3
+              pattern (?object https://schema.org/name ?title) src:4
+              pattern (?object https://schema.org/name ?title) src:5
+              pattern (?object https://schema.org/name ?title) src:6
+              pattern (?object https://schema.org/name ?title) src:7
+              pattern (?object https://schema.org/name ?title) src:8
+              pattern (?object https://schema.org/name ?title) src:9
+              pattern (?object https://schema.org/name ?title) src:10
+              pattern (?object https://schema.org/name ?title) src:11
+              pattern (?object https://schema.org/name ?title) src:12
+              pattern (?object https://schema.org/name ?title) src:13
+              pattern (?object https://schema.org/name ?title) src:14
+              pattern (?object https://schema.org/name ?title) src:15
+              pattern (?object https://schema.org/name ?title) src:16
+              pattern (?object https://schema.org/name ?title) src:17
+              pattern (?object https://schema.org/name ?title) src:18
+              pattern (?object https://schema.org/name ?title) src:19
+              pattern (?object https://schema.org/name ?title) src:20
+              pattern (?object https://schema.org/name ?title) src:21
+              pattern (?object https://schema.org/name ?title) src:22
+              pattern (?object https://schema.org/name ?title) src:23
+              pattern (?object https://schema.org/name ?title) src:24
+              pattern (?object https://schema.org/name ?title) src:25
+              pattern (?object https://schema.org/name ?title) src:26
+              pattern (?object https://schema.org/name ?title) src:27
+              pattern (?object https://schema.org/name ?title) src:28
+              pattern (?object https://schema.org/name ?title) src:29
+              pattern (?object https://schema.org/name ?title) src:30
+              pattern (?object https://schema.org/name ?title) src:31
+              pattern (?object https://schema.org/name ?title) src:32
+              pattern (?object https://schema.org/name ?title) src:33
+            join-inner(bind-source) bindIndex:0 srcQuery:4
+              join src:34
+                pattern (?cht http://www.w3.org/2004/02/skos/core#prefLabel "portretten"@nl) delegated
+                pattern (?cht http://www.w3.org/2004/02/skos/core#exactMatch ?aat) delegated
+      union
+        pattern (?object https://schema.org/dateCreated ?date) src:1
+        pattern (?object https://schema.org/dateCreated ?date) src:2
+        pattern (?object https://schema.org/dateCreated ?date) src:3
+        pattern (?object https://schema.org/dateCreated ?date) src:4
+        pattern (?object https://schema.org/dateCreated ?date) src:5
+        pattern (?object https://schema.org/dateCreated ?date) src:6
+        pattern (?object https://schema.org/dateCreated ?date) src:7
+        pattern (?object https://schema.org/dateCreated ?date) src:8
+        pattern (?object https://schema.org/dateCreated ?date) src:9
+        pattern (?object https://schema.org/dateCreated ?date) src:10
+        pattern (?object https://schema.org/dateCreated ?date) src:11
+        pattern (?object https://schema.org/dateCreated ?date) src:12
+        pattern (?object https://schema.org/dateCreated ?date) src:13
+        pattern (?object https://schema.org/dateCreated ?date) src:14
+        pattern (?object https://schema.org/dateCreated ?date) src:15
+        pattern (?object https://schema.org/dateCreated ?date) src:16
+        pattern (?object https://schema.org/dateCreated ?date) src:17
+        pattern (?object https://schema.org/dateCreated ?date) src:18
+        pattern (?object https://schema.org/dateCreated ?date) src:19
+        pattern (?object https://schema.org/dateCreated ?date) src:20
+        pattern (?object https://schema.org/dateCreated ?date) src:21
+        pattern (?object https://schema.org/dateCreated ?date) src:22
+        pattern (?object https://schema.org/dateCreated ?date) src:23
+        pattern (?object https://schema.org/dateCreated ?date) src:24
+        pattern (?object https://schema.org/dateCreated ?date) src:25
+        pattern (?object https://schema.org/dateCreated ?date) src:26
+        pattern (?object https://schema.org/dateCreated ?date) src:27
+        pattern (?object https://schema.org/dateCreated ?date) src:28
+        pattern (?object https://schema.org/dateCreated ?date) src:29
+        pattern (?object https://schema.org/dateCreated ?date) src:30
+        pattern (?object https://schema.org/dateCreated ?date) src:31
+        pattern (?object https://schema.org/dateCreated ?date) src:32
+        pattern (?object https://schema.org/dateCreated ?date) src:33
+
+sources:
+  0: QuerySourceHypermedia(https://eu.api.kleksi.com/apps/8bd0gx/datasets/default/sparql)(SkolemID:1)
+  1: QuerySourceHypermedia(https://eu.api.kleksi.com/apps/pn885n/datasets/default/sparql)(SkolemID:2)
+  2: QuerySourceHypermedia(https://eu.api.kleksi.com/apps/pnpmjn/datasets/default/sparql)(SkolemID:3)
+  3: QuerySourceHypermedia(https://sparql.ldmax.nl/Q110271758)(SkolemID:4)
+  4: QuerySourceHypermedia(https://sparql.ldmax.nl/Q110414440)(SkolemID:5)
+  5: QuerySourceHypermedia(https://sparql.ldmax.nl/Q110978413)(SkolemID:6)
+  6: QuerySourceHypermedia(https://sparql.ldmax.nl/Q110986306)(SkolemID:7)
+  7: QuerySourceHypermedia(https://sparql.ldmax.nl/Q110996022)(SkolemID:8)
+  8: QuerySourceHypermedia(https://sparql.ldmax.nl/Q114867292)(SkolemID:9)
+  9: QuerySourceHypermedia(https://sparql.ldmax.nl/Q11722011)(SkolemID:10)
+  10: QuerySourceHypermedia(https://sparql.ldmax.nl/Q12013217)(SkolemID:11)
+  11: QuerySourceHypermedia(https://sparql.ldmax.nl/Q124789020)(SkolemID:12)
+  12: QuerySourceHypermedia(https://sparql.ldmax.nl/Q125958534)(SkolemID:13)
+  13: QuerySourceHypermedia(https://sparql.ldmax.nl/Q13612139)(SkolemID:14)
+  14: QuerySourceHypermedia(https://sparql.ldmax.nl/Q1542668)(SkolemID:15)
+  15: QuerySourceHypermedia(https://sparql.ldmax.nl/Q1852477)(SkolemID:16)
+  16: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2022136)(SkolemID:17)
+  17: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2054056)(SkolemID:18)
+  18: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2070053)(SkolemID:19)
+  19: QuerySourceHypermedia(https://sparql.ldmax.nl/Q20829167)(SkolemID:20)
+  20: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2168069)(SkolemID:21)
+  21: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2191118)(SkolemID:22)
+  22: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2203052)(SkolemID:23)
+  23: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2204530)(SkolemID:24)
+  24: QuerySourceHypermedia(https://sparql.ldmax.nl/Q24033642)(SkolemID:25)
+  25: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2575273)(SkolemID:26)
+  26: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2798268)(SkolemID:27)
+  27: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2882945)(SkolemID:28)
+  28: QuerySourceHypermedia(https://sparql.ldmax.nl/Q4350196)(SkolemID:29)
+  29: QuerySourceHypermedia(https://sparql.ldmax.nl/Q4452658)(SkolemID:30)
+  30: QuerySourceHypermedia(https://sparql.ldmax.nl/Q474563)(SkolemID:31)
+  31: QuerySourceHypermedia(https://sparql.ldmax.nl/Q56461202)(SkolemID:32)
+  32: QuerySourceHypermedia(https://sparql.ldmax.nl/Q623558)(SkolemID:33)
+  33: QuerySourceHypermedia(https://sparql.ldmax.nl/Q98962037)(SkolemID:34)
+  34: QuerySourceHypermedia(https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql)(SkolemID:0)
+
+source queries:
+  0: SELECT ?term ?object WHERE { VALUES ?term { <https://n2t.net/ark:/46860/693C1815349A4531837F88686D6297F6> <https://n2t.net/ark:/88238/09d21ff58a47469a8e78314a5ad404cf> <https://n2t.net/ark:/57463/bca66e70d9604b8f956f1336406a43dc> <https://hdl.handle.net/20.500.14879/qr1ay3> <https://n2t.net/ark:/65330/b2e8971aa4d1414fa5fb9ad2d9a20004> <https://n2t.net/ark:/46860/6C3AA76AFC5B4F1883514FC7EF09714E> <https://n2t.net/ark:/63961/5759f1a723e5b94e0a9750bec5fd6519> <https://n2t.net/ark:/57463/c0ec8d1f4a36488686783f89422ead18> <https://n2t.net/ark:/88238/09a52397ba6440f99b539a69df27a432> <https://n2t.net/ark:/65330/b668b515701a4d6e8e1ecdd7a6b6d39e> <https://hdl.handle.net/20.500.14879/pxvdxr> <https://n2t.net/ark:/63961/58dd06e66dfffa5ac79e20c5b0c11bd1> <https://n2t.net/ark:/46860/69660EA4174E45E6A5BC39C171608ED8> <https://n2t.net/ark:/88238/09d5e995876041a2a887ff0c735b4114> <https://n2t.net/ark:/57463/bcb89f9fe3e8414aab340a25f3fc0602> <https://hdl.handle.net/20.500.14879/qr1b73> <https://n2t.net/ark:/65330/b31bed0c60e2430e8aa1fb278a883120> <https://n2t.net/ark:/46860/6CDD6A61E7B54B0C9B696B17A8920414> <https://n2t.net/ark:/63961/57a5829666a24c1af3e82edf40776b7f> <https://n2t.net/ark:/57463/c128e680fc224c93b6a75c1d3dad0478> <https://n2t.net/ark:/88238/09a61675193741e9a82adb6aff276b0e> <https://n2t.net/ark:/65330/b6fcb29e005745e0a43d7fd82b31c1ae> <https://hdl.handle.net/20.500.14879/pxvdzr> <https://n2t.net/ark:/63961/594bc5f0d8723daae24cc528d7cfd404> <https://n2t.net/ark:/46860/69667E0541044135829E3C8333EE7F52> } ?object <https://schema.org/artform> ?term . }
+  1: SELECT ?term ?aat WHERE { ?term <https://schema.org/sameAs> ?aat . }
+  2: SELECT ?term ?cht WHERE { ?term <https://schema.org/sameAs> ?cht . }
+  3: SELECT ?object ?title WHERE { VALUES ?object { <https://n2t.net/ark:/46860/A941C4372CD44C309FA4A3D87EB2134A> <https://n2t.net/ark:/46860/FD4018636A624B59BA489BF8195879BC> <https://n2t.net/ark:/57463/011a27c677984fc1956a097aa8208571> <https://n2t.net/ark:/61567/e44a8c23b8904943b65901d321f0c9f1> <https://n2t.net/ark:/46860/02B0A74D0A8743BC9756ADEC14C3E074> <https://n2t.net/ark:/45151/637de788fa674be18fd6b3f294068e65> <https://n2t.net/ark:/46860/123969FAF4ED41659DF02D4C6886C531> <https://n2t.net/ark:/57463/28053cdf63654788b6cff67f37036983> <https://n2t.net/ark:/46860/00ECE0AB483F4D8CAF2FE2E34EAB1B53> <https://n2t.net/ark:/57463/00fbd701358c4722916d1171fbf86394> <https://n2t.net/ark:/45151/942f12ac4439491b93c08435cc592295> <https://n2t.net/ark:/46860/009AF31AD69241FA9D7A581FE2397673> <https://n2t.net/ark:/45151/15d573bd7e6d4413955fd9775bfdac16> <https://n2t.net/ark:/46860/0E1D888CC747416EA4B28DBC87311119> <https://n2t.net/ark:/57463/169ee190868e48e697407e38386080cc> <https://n2t.net/ark:/46860/0088BE57CEBB485F80D2723EB42902FD> <https://n2t.net/ark:/45151/027ae803c02341d28defc2c6f37bf72f> <https://n2t.net/ark:/57463/0020f51d01cd43a3b33b7014cb63d0aa> <https://n2t.net/ark:/45151/3fee75a1a0c34af7b2aa48d6b63adfab> <https://n2t.net/ark:/57463/06f29081e9a840389e18de3bf15aaeb3> <https://n2t.net/ark:/45151/b90294e9d47f4cd3a39310e59194cb98> <https://n2t.net/ark:/46860/CBC0486C143D48C4B0FD91FD3D7C64E9> <https://n2t.net/ark:/45151/221d9b0729b34d4eaca37598eb52309f> <https://n2t.net/ark:/57463/17c7d2e3d42c4c0980e3dcab5ab2d611> <https://n2t.net/ark:/57463/03c6c476e643430e9d796a82d92fb571> } ?object <https://schema.org/name> ?title . }
+  4: SELECT ?term ?aat ?cht ?object ?title WHERE { VALUES( ?term ?aat ?cht ?object ?title ){ ( <https://n2t.net/ark:/45151/9e0bf585e3df42619387d43830dc78c7> <http://vocab.getty.edu/page/aat/300312266> UNDEF <https://n2t.net/ark:/45151/948a71b0ef3a47d89d1151c3cf968a94> "Doktersband"@nl ) ( <https://n2t.net/ark:/57463/718218efdc344b6995acf18d2f469138> UNDEF <http://vocab.getty.edu/aat/300161538> <https://n2t.net/ark:/57463/8c098480833d43a198d36e1a1055356a> "Knipmes"@nl ) ( <https://n2t.net/ark:/57463/116b211e1f494e4ca03277ae83609445> <http://vocab.getty.edu/aat/300026657> UNDEF <https://n2t.net/ark:/57463/9a2ce85747474e3fa8d1a6a5aeb51e8b> "Wendingen, maandblad voor bouwen en sieren, jaargang 3"@nl ) ( <https://n2t.net/ark:/57463/2131d5b09fcf446c8108b1cc7363aeba> UNDEF <http://vocab.getty.edu/aat/300198817> <https://n2t.net/ark:/57463/4b765ca72f26417ebe5a16b26720ffea> "Wierookbrander"@nl ) ( <https://n2t.net/ark:/45151/3583735fc698468b9fbe2ecf03793ebf> UNDEF <https://data.niod.nl/WO2_Thesaurus/2376> <https://n2t.net/ark:/45151/f065b219caa64c0190ccd46cf36811d6> "Persoonlijke documenten van en over Edith Frank-Holländer, 1939-1953"@nl ) ( <https://n2t.net/ark:/17449/71D07BB9F2CA42E88F9298F16B4D1327> UNDEF <http://vocab.getty.edu/aat/300015637> <https://n2t.net/ark:/17449/84F43ED2C00647EFAB9314566AB15B0E> "portretkop jongen"@nl ) ( <https://n2t.net/ark:/17449/8B59CE887A464F4E80EE4312A56E519F> UNDEF <http://vocab.getty.edu/aat/300209280> <https://n2t.net/ark:/17449/FBC69258B9A14FABA61D12671B0DE2B3> "klomp rechts"@nl ) ( <https://n2t.net/ark:/17449/9E160055A4B647959367D3E55954533F> UNDEF <https://vocab.getty.edu/aat/300081078> <https://n2t.net/ark:/17449/3FC7C9E862D14A0DA876A2F43BDF9AA1> "gedenkteken ontwerp Wilhelmina"@nl ) ( <https://n2t.net/ark:/57463/4fa7d1cb45fb47d2bae9f0d188ad0c20> <http://vocab.getty.edu/aat/300026819> UNDEF <https://n2t.net/ark:/57463/4950a6577d3f47ac8c457440a711b5bb> "Documentatie Han Jansen, divers"@nl ) ( <https://n2t.net/ark:/45493/a7fb9322014b4e4e81e508fbb5dfe2a6> <http://vocab.getty.edu/aat/300198955> UNDEF <https://n2t.net/ark:/45493/42338405b9c643feae9a128d1f10f3b0> "Roodkoperen tulbandvorm"@nl-nl ) ( <https://n2t.net/ark:/46860/32B34ED3A4B449E5A46602C87052783D> UNDEF <http://vocab.getty.edu/aat/300143716> <https://n2t.net/ark:/46860/46A44593CED842749FB1D818352DB486> "Boekenkastje uit de salon van het grote poppenhuis."@nl ) ( <https://n2t.net/ark:/45493/c2d7072e82df4c4eb7c130c71db64aae> UNDEF <http://vocab.getty.edu/aat/300026695> <https://n2t.net/ark:/45493/148f6c4285ab40adb87324f435ca833a> "Fotoalbum met zwart-wit portretten van o.a. leden van de families Swaagman en Borgman, gemaakt door fotografen uit Groningen stad en provincie maar bv ook Enschede"@nl-nl ) ( <https://n2t.net/ark:/57463/123577191c604125bfdbf2a5f25dadde> UNDEF <http://vocab.getty.edu/aat/300043069> <https://n2t.net/ark:/57463/a400c39306f246d9a063e33571058f72> "Suikerpot"@nl ) ( <https://n2t.net/ark:/57463/20c30474750e41099a609d82a99ac524> UNDEF <http://vocab.getty.edu/aat/300266639> <https://n2t.net/ark:/57463/7d7e06b4079049bb8f1d51f4f3ae4173> "Jurk uit de collectie Micro, januari 2012"@nl ) ( <https://n2t.net/ark:/46860/1936A14BF3024439A9BF0CC5B24F5A62> UNDEF <http://vocab.getty.edu/aat/300010731> <https://n2t.net/ark:/46860/9848B2FBCC9B401B82139AF5FB3F6F86> "Twee wandtegels met afbeelding van man met knoflookstrengen."@nl ) ( <https://n2t.net/ark:/57463/35bb704687784ccea0ca3a176c994097> UNDEF <http://vocab.getty.edu/aat/300207704> <https://n2t.net/ark:/57463/07028ca1b96d46b38ad082c4bf16131c> "Uithangbord De Klok"@nl ) ( <https://n2t.net/ark:/45493/7e5f8ba335d34dedb8ff539d973eb431> <http://vocab.getty.edu/aat/300026676> UNDEF <https://n2t.net/ark:/45493/2bfc62c0d32a4baabc15d76488f70838> "Getuigschrift, ingelijst, achter glas."@nl-nl ) ( <https://n2t.net/ark:/46860/27F63DD2775F4022A3B076C5F42D5FDC> UNDEF <http://vocab.getty.edu/aat/300138227> <https://n2t.net/ark:/46860/690E1E965B7441278CD0562B988A8ACB> "Gekroond wapenbord, waarop een schuine witte balk een rood en groen veld scheidt. Banderol aan de onderzijde."@nl ) ( <https://n2t.net/ark:/63961/2597718664604a11af998e2569da1c80> UNDEF <http://www.wikidata.org/entity/Q22669857> <https://n2t.net/ark:/63961/00efcf8a77ae31262604e2bfa6c1631e> "'De Weg', deel 2: zuid-oost"@nl ) ( <https://n2t.net/ark:/45493/9ad91974e2384a7498d27d217b4b3914> UNDEF <https://data.cultureelerfgoed.nl/term/id/cht/d00e94d8-20c1-4a5c-8c39-44616beb55d1> <https://n2t.net/ark:/45493/8a6f5140f8ea4319b5a6413666e6d727> "Koperen brillendoos"@nl-nl ) ( <https://n2t.net/ark:/45493/b62e4644c1704fc49f6986d0c51ffcb1> <http://vocab.getty.edu/aat/300196797> UNDEF <https://n2t.net/ark:/45493/ea0211588d2f428fbe17fbebf5a0e8f9> "8-hoekig inktpotje zonder deksel"@nl-nl ) ( <https://n2t.net/ark:/45493/bd56ff3da23a4f39a6e9f6f0a4613dd3> <http://vocab.getty.edu/aat/300198495> UNDEF <https://n2t.net/ark:/45493/64ff8c3d7d6f4f8493500def5e5f1bff> "Glazen karaf met stop"@nl-nl ) ( <https://n2t.net/ark:/57463/172b316794e1475084b6d5b95fdc879c> UNDEF <http://vocab.getty.edu/aat/300212274> <https://n2t.net/ark:/57463/d525f5fd64b8448c9b4c1268410edfd9> "Tentoonstelling in Groninger Museum 12-12-1997 t/m 8-3-1998: Azzedine Alaïa"@nl ) ( <https://n2t.net/ark:/57463/2131d5b09fcf446c8108b1cc7363aeba> <http://vocab.getty.edu/aat/300198817> UNDEF <https://n2t.net/ark:/57463/86a74b7e098d45ccb9be66c74083db24> "Wierookbrander"@nl ) ( <https://n2t.net/ark:/46860/137EDB1E628942B38CDA0A7146D92F44> UNDEF <http://vocab.getty.edu/aat/300047455> <https://n2t.net/ark:/46860/B2B3A704976C424A87AE58A7DE414356> "Hondje uit de salon van het grote poppenhuis."@nl ) } ?cht <http://www.w3.org/2004/02/skos/core#prefLabel> "portretten"@nl . ?cht <http://www.w3.org/2004/02/skos/core#exactMatch> ?aat . }

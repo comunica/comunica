@@ -1,0 +1,98 @@
+distinct
+  project (object,title)
+    join
+      join-inner(bind) bindIndex:0
+        union
+          pattern (?camp http://www.w3.org/2004/02/skos/core#prefLabel "Kamp Vught"@nl) src:0 srcQuery:0
+          pattern (?camp http://www.w3.org/2004/02/skos/core#prefLabel "Kamp Vught"@nl) src:1 srcQuery:0
+        union
+          union
+            pattern (?object https://schema.org/about ?camp) src:1
+            pattern (?object https://schema.org/about ?camp) src:2
+            pattern (?object https://schema.org/about ?camp) src:3
+            pattern (?object https://schema.org/about ?camp) src:4
+            pattern (?object https://schema.org/about ?camp) src:5
+            pattern (?object https://schema.org/about ?camp) src:6
+          join
+            join-inner(hash-def)
+              union
+                pattern (?object https://schema.org/about ?term) src:1
+                pattern (?object https://schema.org/about ?term) src:2
+                pattern (?object https://schema.org/about ?term) src:3
+                pattern (?object https://schema.org/about ?term) src:4
+                pattern (?object https://schema.org/about ?term) src:5
+                pattern (?object https://schema.org/about ?term) src:6
+              union
+                pattern (?term https://schema.org/sameAs ?camp) src:7
+                pattern (?term https://schema.org/sameAs ?camp) src:1
+                pattern (?term https://schema.org/sameAs ?camp) src:2
+                pattern (?term https://schema.org/sameAs ?camp) src:3
+                pattern (?term https://schema.org/sameAs ?camp) src:4
+                pattern (?term https://schema.org/sameAs ?camp) src:8
+                pattern (?term https://schema.org/sameAs ?camp) src:5
+                pattern (?term https://schema.org/sameAs ?camp) src:6
+        union
+          pattern (?object https://schema.org/name ?title) src:7
+          pattern (?object https://schema.org/name ?title) src:1
+          pattern (?object https://schema.org/name ?title) src:2
+          pattern (?object https://schema.org/name ?title) src:3
+          pattern (?object https://schema.org/name ?title) src:4
+          pattern (?object https://schema.org/name ?title) src:8
+          pattern (?object https://schema.org/name ?title) src:5
+          pattern (?object https://schema.org/name ?title) src:6
+        bindings
+          join compacted-occurrences:2
+            join-inner(bind-source) bindIndex:0 srcQuery:1
+              union
+                union
+                  pattern (?object https://schema.org/about https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:1 srcQuery:2
+                  pattern (?object https://schema.org/about https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:2 srcQuery:2
+                  pattern (?object https://schema.org/about https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:3 srcQuery:2
+                  pattern (?object https://schema.org/about https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:4 srcQuery:2
+                  pattern (?object https://schema.org/about https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:5 srcQuery:2
+                  pattern (?object https://schema.org/about https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:6 srcQuery:2
+                join
+                  join-inner(bind-source) bindIndex:1 srcQuery:3
+                    union
+                      pattern (?object https://schema.org/about ?term) src:1
+                      pattern (?object https://schema.org/about ?term) src:2
+                      pattern (?object https://schema.org/about ?term) src:3
+                      pattern (?object https://schema.org/about ?term) src:4
+                      pattern (?object https://schema.org/about ?term) src:5
+                      pattern (?object https://schema.org/about ?term) src:6
+                    union
+                      pattern (?term https://schema.org/sameAs https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:7 srcQuery:4
+                      pattern (?term https://schema.org/sameAs https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:1 srcQuery:4
+                      pattern (?term https://schema.org/sameAs https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:2 srcQuery:4
+                      pattern (?term https://schema.org/sameAs https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:3 srcQuery:4
+                      pattern (?term https://schema.org/sameAs https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:4 srcQuery:4
+                      pattern (?term https://schema.org/sameAs https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:8 srcQuery:4
+                      pattern (?term https://schema.org/sameAs https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:5 srcQuery:4
+                      pattern (?term https://schema.org/sameAs https://data.niod.nl/WO2_Thesaurus/kampen/4884) src:6 srcQuery:4
+              union
+                pattern (?object https://schema.org/name ?title) src:7
+                pattern (?object https://schema.org/name ?title) src:1
+                pattern (?object https://schema.org/name ?title) src:2
+                pattern (?object https://schema.org/name ?title) src:3
+                pattern (?object https://schema.org/name ?title) src:4
+                pattern (?object https://schema.org/name ?title) src:8
+                pattern (?object https://schema.org/name ?title) src:5
+                pattern (?object https://schema.org/name ?title) src:6
+
+sources:
+  0: QuerySourceHypermedia(https://data.niod.nl/PoolParty/sparql/WO2_Thesaurus)(SkolemID:0)
+  1: QuerySourceHypermedia(https://sparql.ldmax.nl/wo2net)(SkolemID:2)
+  2: QuerySourceHypermedia(https://sparql.ldmax.nl/Q24033642)(SkolemID:3)
+  3: QuerySourceHypermedia(https://sparql.ldmax.nl/Q4452658)(SkolemID:4)
+  4: QuerySourceHypermedia(https://sparql.ldmax.nl/Q1852477)(SkolemID:5)
+  5: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2798268)(SkolemID:7)
+  6: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2882945)(SkolemID:8)
+  7: QuerySourceHypermedia(https://www.genealogieonline.nl/wo2slachtoffers/sparql)(SkolemID:1)
+  8: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2070053)(SkolemID:6)
+
+source queries:
+  0: SELECT ?camp WHERE { ?camp <http://www.w3.org/2004/02/skos/core#prefLabel> "Kamp Vught"@nl . }
+  1: SELECT ?object ?title WHERE { VALUES ?object { <https://n2t.net/ark:/74906/F58B8562012346BF8D7831F0A744B58C> <https://n2t.net/ark:/74906/F5F99788D64C42CB9B6AAD6A03F934FD> <https://n2t.net/ark:/74906/F7B0B9BBD85B43F3835BDB351F27CD3E> <https://n2t.net/ark:/74906/F90FF0EDD39242C385E3947661C49570> <https://n2t.net/ark:/74906/FE62CC84485F4458BB9A44B62BF21775> <https://n2t.net/ark:/74906/FFC9DCED236E4874A30071106B3F45A2> } ?object <https://schema.org/name> ?title . }
+  2: SELECT ?object WHERE { ?object <https://schema.org/about> <https://data.niod.nl/WO2_Thesaurus/kampen/4884> . }
+  3: SELECT ?term ?object WHERE { VALUES ?term { <https://n2t.net/ark:/74906/53BF6616E74C414C9CC1D91332C12B9C> } ?object <https://schema.org/about> ?term . }
+  4: SELECT ?term WHERE { ?term <https://schema.org/sameAs> <https://data.niod.nl/WO2_Thesaurus/kampen/4884> . }

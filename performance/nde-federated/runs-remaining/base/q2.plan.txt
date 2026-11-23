@@ -1,0 +1,64 @@
+distinct
+  project (victim,name,deathDate,birthPlace)
+    join
+      join-inner(bind-source) bindIndex:1 srcQuery:0
+        union
+          pattern (?camp http://www.w3.org/2004/02/skos/core#prefLabel "Kamp Vught"@nl) src:0 srcQuery:1
+          pattern (?camp http://www.w3.org/2004/02/skos/core#prefLabel "Kamp Vught"@nl) src:1 srcQuery:1
+        union
+          pattern (?victim https://schema.org/deathPlace ?camp) src:2
+          pattern (?victim https://schema.org/deathPlace ?camp) src:1
+        join-inner(bind-source) bindIndex:0 srcQuery:2
+          union
+            pattern (?victim https://schema.org/sameAs ?warLife) src:2
+            pattern (?victim https://schema.org/sameAs ?warLife) src:1
+            pattern (?victim https://schema.org/sameAs ?warLife) src:3
+            pattern (?victim https://schema.org/sameAs ?warLife) src:4
+            pattern (?victim https://schema.org/sameAs ?warLife) src:5
+            pattern (?victim https://schema.org/sameAs ?warLife) src:6
+            pattern (?victim https://schema.org/sameAs ?warLife) src:7
+            pattern (?victim https://schema.org/sameAs ?warLife) src:8
+          join-inner(bind-source) bindIndex:0 srcQuery:3
+            union
+              pattern (?victim https://schema.org/deathDate ?deathDate) src:2
+              pattern (?victim https://schema.org/deathDate ?deathDate) src:1
+            join-inner(bind-source) bindIndex:0 srcQuery:4
+              union
+                pattern (?warLife https://schema.org/birthPlace ?bp) src:2
+                pattern (?warLife https://schema.org/birthPlace ?bp) src:1
+              join-inner(bind-source) bindIndex:0 srcQuery:5
+                union
+                  filter src:0
+                    pattern (?bp http://www.w3.org/2004/02/skos/core#prefLabel ?birthPlace) delegated
+                  filter src:1
+                    pattern (?bp http://www.w3.org/2004/02/skos/core#prefLabel ?birthPlace) delegated
+                join-inner(bind-source) bindIndex:0 srcQuery:6
+                  union
+                    pattern (?victim https://schema.org/name ?name) src:2
+                    pattern (?victim https://schema.org/name ?name) src:1
+                    pattern (?victim https://schema.org/name ?name) src:3
+                    pattern (?victim https://schema.org/name ?name) src:4
+                    pattern (?victim https://schema.org/name ?name) src:5
+                    pattern (?victim https://schema.org/name ?name) src:6
+                    pattern (?victim https://schema.org/name ?name) src:7
+                    pattern (?victim https://schema.org/name ?name) src:8
+
+sources:
+  0: QuerySourceHypermedia(https://data.niod.nl/PoolParty/sparql/WO2_Thesaurus)(SkolemID:0)
+  1: QuerySourceHypermedia(https://sparql.ldmax.nl/wo2net)(SkolemID:2)
+  2: QuerySourceHypermedia(https://www.genealogieonline.nl/wo2slachtoffers/sparql)(SkolemID:1)
+  3: QuerySourceHypermedia(https://sparql.ldmax.nl/Q24033642)(SkolemID:3)
+  4: QuerySourceHypermedia(https://sparql.ldmax.nl/Q4452658)(SkolemID:4)
+  5: QuerySourceHypermedia(https://sparql.ldmax.nl/Q1852477)(SkolemID:5)
+  6: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2070053)(SkolemID:6)
+  7: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2798268)(SkolemID:7)
+  8: QuerySourceHypermedia(https://sparql.ldmax.nl/Q2882945)(SkolemID:8)
+
+source queries:
+  0: SELECT ?camp ?victim WHERE { VALUES ?camp { <https://data.niod.nl/WO2_Thesaurus/kampen/4884> } ?victim <https://schema.org/deathPlace> ?camp . }
+  1: SELECT ?camp WHERE { ?camp <http://www.w3.org/2004/02/skos/core#prefLabel> "Kamp Vught"@nl . }
+  2: SELECT ?victim ?warLife WHERE { VALUES ?victim { <https://www.genealogieonline.nl/wo2slachtoffers/9399098> } ?victim <https://schema.org/sameAs> ?warLife . }
+  3: SELECT ?victim ?deathDate WHERE { VALUES ?victim { <https://www.genealogieonline.nl/id/person_3503_I30318> <https://www.genealogieonline.nl/id/person_47_I3442> <https://www.genealogieonline.nl/id/person_8180_I56808> <https://www.genealogieonline.nl/id/person_17428_I8555> <https://www.genealogieonline.nl/id/person_3503_I30402> <https://www.genealogieonline.nl/id/person_47_I4941> <https://www.genealogieonline.nl/id/person_8283_I6006> <https://www.genealogieonline.nl/id/person_17508_I37839> <https://www.genealogieonline.nl/id/person_8388_I454> <https://www.genealogieonline.nl/id/person_17508_I49989> } ?victim <https://schema.org/deathDate> ?deathDate . }
+  4: SELECT ?warLife ?bp WHERE { VALUES ?warLife { <https://n2t.net/ark:/59857/p13af664d-0ba4-4ec9-a7c3-9b130ec5cb46> <https://n2t.net/ark:/59857/pa9c6962c-82a2-409e-8d62-0fe893a8674d> <https://n2t.net/ark:/59857/p372183ba-7333-4eb7-a502-0fa6a34ff60b> <https://n2t.net/ark:/59857/p44069786-cc67-4b5f-b64e-6b3018d1eadb> <https://n2t.net/ark:/59857/peef6fcd7-4c38-4cb5-8ce4-2c1e2ee7cc33> <https://n2t.net/ark:/59857/p035f275f-689e-4b53-9850-d3bea7053c1e> <https://n2t.net/ark:/59857/p35f53da6-e89b-4e1c-a066-c41b4bf23969> <https://n2t.net/ark:/59857/p0f933568-a78f-4027-9c62-838f4badd943> } ?warLife <https://schema.org/birthPlace> ?bp . }
+  5: SELECT ?bp ?birthPlace WHERE { VALUES ?bp { <https://data.niod.nl/WO2_Thesaurus/locations/9576> "Rijpwetering"^^<http://www.w3.org/2001/XMLSchema#string> <https://data.niod.nl/WO2_Thesaurus/locations/11821> "Gemert"^^<http://www.w3.org/2001/XMLSchema#string> <https://data.niod.nl/WO2_Thesaurus/locations/10532> "Groningen"^^<http://www.w3.org/2001/XMLSchema#string> <https://data.niod.nl/WO2_Thesaurus/locations/9607> "Amsterdam"^^<http://www.w3.org/2001/XMLSchema#string> <https://data.niod.nl/WO2_Thesaurus/locations/9577> "Rotterdam"^^<http://www.w3.org/2001/XMLSchema#string> } ?bp <http://www.w3.org/2004/02/skos/core#prefLabel> ?birthPlace . FILTER ( ( LANG( ?birthPlace ) = "nl"^^<http://www.w3.org/2001/XMLSchema#string> ) ) }
+  6: SELECT ?victim ?name WHERE { VALUES ?victim { <https://www.genealogieonline.nl/id/person_2969_I1077866081> <https://www.genealogieonline.nl/id/person_47_I3442> <https://www.genealogieonline.nl/id/person_17508_I37839> <https://www.genealogieonline.nl/id/person_8180_I56808> <https://www.genealogieonline.nl/id/person_3503_I30318> <https://www.genealogieonline.nl/id/person_3503_I30402> <https://www.genealogieonline.nl/id/person_17508_I49989> } ?victim <https://schema.org/name> ?name . }

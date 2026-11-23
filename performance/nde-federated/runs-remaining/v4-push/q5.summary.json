@@ -1,0 +1,108 @@
+{
+ "status": "ok",
+ "results": 2896,
+ "timeMs": 15948,
+ "firstResultMs": 6243,
+ "cpuMs": 3947,
+ "httpRequests": 303,
+ "httpRequestsWire": 304,
+ "byKind": {
+  "no-query": 6,
+  "count": 62,
+  "ask-batch": 1,
+  "ask": 1,
+  "select": 233
+ },
+ "decodedBytes": 760736,
+ "wireBytes": 701942,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://gtaa.apis.beeldengeluid.nl/sparql",
+  "https://cat.apis.beeldengeluid.nl/sparql",
+  "https://data.muziekschatten.nl/sparql",
+  "https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql"
+ ],
+ "byEndpoint": {
+  "https://gtaa.apis.beeldengeluid.nl/sparql": {
+   "requests": 12,
+   "decodedBytes": 2341,
+   "kinds": {
+    "no-query": 1,
+    "count": 9,
+    "select": 2
+   },
+   "dataRows": 2,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://cat.apis.beeldengeluid.nl/sparql": {
+   "requests": 88,
+   "decodedBytes": 575294,
+   "kinds": {
+    "no-query": 1,
+    "count": 9,
+    "ask-batch": 1,
+    "ask": 1,
+    "select": 76
+   },
+   "dataRows": 2836,
+   "askTrue": 3,
+   "askFalse": 0,
+   "errors": 2
+  },
+  "https://data.muziekschatten.nl/sparql": {
+   "requests": 17,
+   "decodedBytes": 50989,
+   "kinds": {
+    "no-query": 1,
+    "count": 11,
+    "select": 5
+   },
+   "dataRows": 143,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://api.data.muziekweb.nl/datasets/MuziekwebOrganization/Muziekweb/services/Muziekweb/sparql": {
+   "requests": 18,
+   "decodedBytes": 15971,
+   "kinds": {
+    "no-query": 1,
+    "count": 11,
+    "select": 6
+   },
+   "dataRows": 91,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.lod.uba.uva.nl/datasets/CREATE/ONSTAGE/services/ONSTAGE/sparql": {
+   "requests": 86,
+   "decodedBytes": 7038,
+   "kinds": {
+    "no-query": 1,
+    "count": 12,
+    "select": 73
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://sparql.ldmax.nl/Q2204530": {
+   "requests": 82,
+   "decodedBytes": 109103,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 71
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  }
+ }
+}

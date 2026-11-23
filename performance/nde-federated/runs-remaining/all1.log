@@ -1,0 +1,10 @@
+q1 {"status":"ok","results":334,"timeMs":41481,"firstResultMs":28409,"cpuMs":15400,"httpRequests":592,"httpRequestsWire":609,"byKind":{"no-query":22,"sel
+q2 {"status":"ok","results":53,"timeMs":29551,"firstResultMs":19577,"cpuMs":5749,"httpRequests":506,"httpRequestsWire":513,"byKind":{"no-query":9,"select
+q3 {"status":"ok","results":205,"timeMs":11294,"firstResultMs":2728,"cpuMs":2725,"httpRequests":126,"httpRequestsWire":133,"byKind":{"no-query":9,"select
+q4 {"status":"ok","results":2036,"timeMs":120804,"firstResultMs":22728,"cpuMs":30822,"httpRequests":5020,"httpRequestsWire":5051,"byKind":{"no-query":35,
+q4b {"status":"ok","results":2022,"timeMs":50376,"firstResultMs":7064,"cpuMs":17862,"httpRequests":2853,"httpRequestsWire":2884,"byKind":{"no-query":35,"s
+q5 {"status":"ok","results":2896,"timeMs":14057,"firstResultMs":5167,"cpuMs":4196,"httpRequests":234,"httpRequestsWire":235,"byKind":{"no-query":6,"selec
+q5b {"status":"ok","results":714,"timeMs":7698,"firstResultMs":4188,"cpuMs":2578,"httpRequests":104,"httpRequestsWire":105,"byKind":{"no-query":6,"select"
+q6 {"status":"error","error":"Query operation processing failed: none of the configured actors were able to handle the operation type pattern\n    Error 
+q6b {"status":"ok","results":282,"timeMs":342800,"firstResultMs":22708,"cpuMs":55085,"httpRequests":4101,"httpRequestsWire":4102,"byKind":{"no-query":6,"s
+q7 {"status":"ok","results":11,"timeMs":3100,"firstResultMs":2668,"cpuMs":1415,"httpRequests":23,"httpRequestsWire":23,"byKind":{"no-query":2,"select":21

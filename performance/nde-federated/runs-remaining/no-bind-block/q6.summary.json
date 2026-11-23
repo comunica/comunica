@@ -1,0 +1,104 @@
+{
+ "status": "timeout",
+ "results": 4,
+ "timeMs": 600460,
+ "firstResultMs": 340651,
+ "cpuMs": 416677,
+ "httpRequests": 15909,
+ "httpRequestsWire": 15910,
+ "byKind": {
+  "no-query": 6,
+  "count": 55,
+  "select": 15848
+ },
+ "decodedBytes": 50714229,
+ "wireBytes": 9609840,
+ "sourcesGiven": 6,
+ "sourcesContacted": 6,
+ "sourcesWithData": [
+  "https://sparql.goudatijdmachine.nl/",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql",
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql"
+ ],
+ "byEndpoint": {
+  "https://sparql.goudatijdmachine.nl/": {
+   "requests": 181,
+   "decodedBytes": 267635,
+   "kinds": {
+    "no-query": 1,
+    "count": 9,
+    "select": 171
+   },
+   "dataRows": 2225,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 0
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/cho/sparql": {
+   "requests": 15558,
+   "decodedBytes": 37381783,
+   "kinds": {
+    "no-query": 1,
+    "count": 10,
+    "select": 15547
+   },
+   "dataRows": 195627,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 40
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/Rijksmonumenten-sdo/sparql": {
+   "requests": 58,
+   "decodedBytes": 4972,
+   "kinds": {
+    "no-query": 1,
+    "count": 9,
+    "select": 48
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/rce/groenaanleg/sparql": {
+   "requests": 27,
+   "decodedBytes": 35113,
+   "kinds": {
+    "no-query": 1,
+    "count": 9,
+    "select": 17
+   },
+   "dataRows": 174,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://api.linkeddata.cultureelerfgoed.nl/datasets/thesauri/cht/sparql": {
+   "requests": 27,
+   "decodedBytes": 13017604,
+   "kinds": {
+    "no-query": 1,
+    "count": 9,
+    "select": 17
+   },
+   "dataRows": 70414,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  },
+  "https://qlever.coret.org/oabs": {
+   "requests": 58,
+   "decodedBytes": 7122,
+   "kinds": {
+    "no-query": 1,
+    "count": 9,
+    "select": 48
+   },
+   "dataRows": 0,
+   "askTrue": 0,
+   "askFalse": 0,
+   "errors": 1
+  }
+ }
+}

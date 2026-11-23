@@ -1,0 +1,10 @@
+q1 {"status":"ok","results":334,"timeMs":118825,"firstResultMs":105946,"cpuMs":89076,"httpRequests":636,"httpRequestsWire":653,"byKind":{"no-query":22,"c
+q2 {"status":"ok","results":53,"timeMs":30354,"firstResultMs":20746,"cpuMs":5923,"httpRequests":560,"httpRequestsWire":567,"byKind":{"no-query":9,"count"
+q3 {"status":"ok","results":205,"timeMs":12634,"firstResultMs":4101,"cpuMs":2407,"httpRequests":153,"httpRequestsWire":160,"byKind":{"no-query":9,"count"
+q4 {"status":"ok","results":2036,"timeMs":127364,"firstResultMs":29664,"cpuMs":28065,"httpRequests":5285,"httpRequestsWire":5316,"byKind":{"no-query":35,
+q4b {"status":"ok","results":2022,"timeMs":28814,"firstResultMs":6888,"cpuMs":15648,"httpRequests":3061,"httpRequestsWire":3092,"byKind":{"no-query":35,"c
+q5 {"status":"ok","results":712,"timeMs":8509,"firstResultMs":7258,"cpuMs":2123,"httpRequests":89,"httpRequestsWire":90,"byKind":{"no-query":6,"count":60
+q5b {"status":"ok","results":178,"timeMs":6880,"firstResultMs":5923,"cpuMs":1909,"httpRequests":82,"httpRequestsWire":83,"byKind":{"no-query":6,"count":48
+q6 {"status":"ok","results":3067,"timeMs":32286,"firstResultMs":30798,"cpuMs":7846,"httpRequests":763,"httpRequestsWire":764,"byKind":{"no-query":6,"coun
+q6b {"status":"ok","results":282,"timeMs":19763,"firstResultMs":16574,"cpuMs":4551,"httpRequests":470,"httpRequestsWire":471,"byKind":{"no-query":6,"count
+q7 {"status":"ok","results":1,"timeMs":2661,"firstResultMs":2658,"cpuMs":1381,"httpRequests":37,"httpRequestsWire":37,"byKind":{"no-query":2,"count":18,"
