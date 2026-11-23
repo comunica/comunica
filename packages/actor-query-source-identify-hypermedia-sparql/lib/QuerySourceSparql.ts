@@ -43,6 +43,10 @@ export class QuerySourceSparql implements IQuerySource {
   public readonly referenceValue: string;
   private url: string;
   private readonly urlBackup: string;
+  /**
+   * The URL of the endpoint according to its service description, which requests are sent to until it fails.
+   */
+  private readonly urlInitial: string;
   private readonly context: IActionContext;
   private readonly mediatorHttp: MediatorHttp;
   private readonly mediatorQuerySerialize: MediatorQuerySerialize;
@@ -89,6 +93,7 @@ export class QuerySourceSparql implements IQuerySource {
   ) {
     this.referenceValue = urlBackup;
     this.url = url;
+    this.urlInitial = url;
     this.urlBackup = urlBackup;
     this.context = context;
     this.mediatorHttp = mediatorHttp;
@@ -155,9 +160,11 @@ export class QuerySourceSparql implements IQuerySource {
     let response = await this.mediatorHttp.mediate({ input, init, context });
     // If we encounter a 404, try our backup URL.
     // After retrying the request with the new URL, we replace the URL for future requests.
-    if (response.status === 404 && this.url !== this.urlBackup) {
-      Actor.getContextLogger(this.context)?.warn(`Encountered a 404 when requesting ${this.url} according to the service description of ${this.urlBackup}. This is a server configuration issue. Retrying the current and modifying future requests to ${this.urlBackup} instead.`);
-      input = (<string> input).replace(this.url, this.urlBackup);
+    // Requests that were sent to the URL of the service description before an earlier one replaced it are retried too.
+    if (response.status === 404 && this.urlInitial !== this.urlBackup &&
+      (<string> input).startsWith(this.urlInitial)) {
+      Actor.getContextLogger(this.context)?.warn(`Encountered a 404 when requesting ${this.urlInitial} according to the service description of ${this.urlBackup}. This is a server configuration issue. Retrying the current and modifying future requests to ${this.urlBackup} instead.`);
+      input = `${this.urlBackup}${(<string> input).slice(this.urlInitial.length)}`;
       this.url = this.urlBackup;
       this.countHttpRequest(context);
       response = await this.mediatorHttp.mediate({ input, init, context });
@@ -268,7 +275,7 @@ export class QuerySourceSparql implements IQuerySource {
       operationPromise = Promise.resolve(operationIn);
     }
 
-    const bindings: BindingsStream = new TransformIterator(async() => {
+    const bindings: BindingsStream = new EndTolerantTransformIterator(async() => {
       // Prepare queries
       const operation = await operationPromise;
       const variables: RDF.Variable[] = algebraUtils.inScopeVariables(operation);
@@ -701,5 +708,19 @@ export class QuerySourceSparql implements IQuerySource {
 
   public toString(): string {
     return `QuerySourceSparql(${this.url})`;
+  }
+}
+
+/**
+ * A transform iterator that ignores the errors of its source once it has ended,
+ * such as of a request that only fails after the iterator was closed or destroyed by its consumer.
+ * Nobody listens to such errors anymore, and emitting them without listeners would crash the process.
+ */
+class EndTolerantTransformIterator<S, D = S> extends TransformIterator<S, D> {
+  protected override _end(destroy = false): void {
+    super._end(destroy);
+    this.on('error', () => {
+      // Ignore errors after the end, see above
+    });
   }
 }

@@ -863,6 +863,103 @@ describe('QuerySourceSparql', () => {
       expect((<any> source).url).toBe(`${url}backup`);
     });
 
+    it('should fallback to backup URL on server 404 for requests sent before an earlier fallback', async() => {
+      const thisMediator: any = {
+        async mediate(action: any) {
+          if (!(<string> action.input).includes('backup')) {
+            // Both requests are sent before the first one fails
+            await new Promise(resolve => setTimeout(resolve, 10));
+            return {
+              headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+              body: Readable.from([ `empty body` ]),
+              ok: false,
+              status: 404,
+              statusText: 'Error!',
+            };
+          }
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: Readable.from([ `{ "head": { "vars": [ "p" ] }, "results": { "bindings": [
+              { "p": { "type": "uri" , "value": "p1" } }
+            ] } }` ]),
+            ok: true,
+          };
+        },
+      };
+      source = new QuerySourceSparql(
+        url,
+        `${url}backup`,
+        ctx,
+        thisMediator,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        false,
+        false,
+        0,
+        false,
+        {},
+      );
+      const operation = AF.createPattern(iriS, DF.variable(testUrl('p')), iriO, DF.defaultGraph());
+      await expect(Promise.all([
+        source.queryBindings(operation, ctx).toArray(),
+        source.queryBindings(operation, ctx).toArray(),
+      ])).resolves.toHaveLength(2);
+      expect((<any> source).url).toBe(`${url}backup`);
+    });
+
+    it('should ignore errors of requests that fail after the stream was destroyed', async() => {
+      let failRequest: (() => void) | undefined;
+      const thisMediator: any = {
+        mediate: () => new Promise((resolve) => {
+          failRequest = () => resolve({
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: Readable.from([ `empty body` ]),
+            ok: false,
+            status: 500,
+            statusText: 'Error!',
+          });
+        }),
+      };
+      source = new QuerySourceSparql(
+        url,
+        url,
+        ctx,
+        thisMediator,
+        mediatorQuerySerialize,
+        'values',
+        DF,
+        AF,
+        BF,
+        false,
+        64,
+        10,
+        false,
+        false,
+        0,
+        false,
+        {},
+      );
+      const stream = source.queryBindings(
+        AF.createPattern(iriS, DF.variable(testUrl('p')), iriO, DF.defaultGraph()),
+        ctx,
+      );
+      // Start the request, then destroy the stream while it is pending
+      stream.on('data', () => {
+        // Start reading
+      });
+      await new Promise(resolve => setTimeout(resolve, 100));
+      stream.destroy();
+      failRequest!();
+      await new Promise(resolve => setTimeout(resolve, 10));
+      expect(stream.done).toBe(true);
+    });
+
     it('should not fallback to identical backup URL on server 404', async() => {
       const thisMediator: any = {
         mediate() {
