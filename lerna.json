@@ -14,7 +14,7 @@
       ],
       "npmClient": "npm",
       "throttle": true,
-      "throttleSize": 1,
+      "throttleSize": 5,
       "throttleDelay": 1
     }
   },
