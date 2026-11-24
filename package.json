@@ -8,6 +8,7 @@
     "performance/*"
   ],
   "scripts": {
+    "approve-staged": "node packages/utils-monorepo/bin/approve-staged.js",
     "build": "yarn run build:ts && yarn run build:components",
     "build:browser:webpack": "lerna run browser:webpack",
     "build:browser:vite": "lerna run browser:vite",
