@@ -134,9 +134,9 @@ const aggregator = await engine.createAggregator(
 ```
 
 This requires the `ExpressionEngine` type, as `IExpressionEngine` only accepts aggregate expressions until the next major version.
-A parsed query only contains extension aggregates (in its `group` operation) if its parse and algebra contexts get a
-`namedAggregatorCallback`, which can be built from `getExtensionAggregatorLookup` of `@comunica/utils-query-operation`.
-An expression that is translated on its own stays a named expression, so wrap it with `createBoundNamedAggregate`.
+Parsers only recognize extension aggregates when given their IRIs: pass `namedAggregatorCallback: iri => iri in myAggregates`
+to both the parse and algebra context of a full query, which puts them in its `group` operation.
+Expressions translated on their own never contain them, so create those with `createBoundNamedAggregate`.
 
 ### Context
 
