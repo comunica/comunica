@@ -7,6 +7,7 @@ import { DataFactory } from 'rdf-data-factory';
 import {
   doesShapeAcceptOperation,
   doesShapeAcceptOperationInContext,
+  getSourceSelectorShape,
   passFullOperationToSource,
   removeShapeFlag,
 } from '../lib/FragmentSelectorShapes';
@@ -1255,6 +1256,25 @@ describe('FragmentSelectorShapes', () => {
       expect(doesShapeAcceptOperationInContext(shapeWithoutJoinBindings, pattern, context)).toBe(true);
       expect(doesShapeAcceptOperationInContext(shapeWithoutJoinBindings, pattern, context, { joinBindings: true }))
         .toBe(false);
+    });
+  });
+
+  describe('#getSourceSelectorShape', () => {
+    const context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
+
+    it('should request the shape in the given context for sources without context', async() => {
+      const getSelectorShape = jest.fn(async() => SHAPE_SPARQL_1_1);
+      await expect(getSourceSelectorShape(<any> { source: { getSelectorShape }}, context))
+        .resolves.toBe(SHAPE_SPARQL_1_1);
+      expect(getSelectorShape).toHaveBeenCalledWith(context);
+    });
+
+    it('should request the shape in the context of the source', async() => {
+      const getSelectorShape = jest.fn(async() => SHAPE_SPARQL_1_1);
+      const sourceContext = new ActionContext({ [KeysInitQuery.lenient.name]: true });
+      await expect(getSourceSelectorShape(<any> { source: { getSelectorShape }, context: sourceContext }, context))
+        .resolves.toBe(SHAPE_SPARQL_1_1);
+      expect(getSelectorShape).toHaveBeenCalledWith(context.merge(sourceContext));
     });
   });
 

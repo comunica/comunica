@@ -46,6 +46,7 @@ export {
   type KnownLiteralTypes,
 } from './util/Consts';
 export { isSubTypeOf } from './util/TypeHandling';
+export { uuidv4 } from './util/Uuid';
 export {
   dayTimeDurationsToSeconds,
   defaultedDateTimeRepresentation,

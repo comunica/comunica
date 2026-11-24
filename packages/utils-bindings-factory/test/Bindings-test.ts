@@ -1,7 +1,6 @@
 import { SetUnionBindingsContextMergeHandler } from '@comunica/actor-merge-bindings-context-union';
 import { ActionContext, ActionContextKey } from '@comunica/core';
 import type * as RDF from '@rdfjs/types';
-import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
 import { Bindings } from '../lib/Bindings';
 import 'jest-rdf';
@@ -13,7 +12,7 @@ describe('Bindings', () => {
     let bindings: Bindings;
 
     beforeEach(() => {
-      bindings = new Bindings(DF, Map<string, RDF.Term>([
+      bindings = new Bindings(DF, new Map<string, RDF.Term>([
         [ 'a', DF.namedNode('ex:a') ],
         [ 'b', DF.namedNode('ex:b') ],
         [ 'c', DF.namedNode('ex:c') ],
@@ -178,18 +177,18 @@ describe('Bindings', () => {
       });
 
       it('should be false for empty bindings', () => {
-        expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([]), { contextMergeHandlers }))).toBeFalsy();
+        expect(bindings.equals(new Bindings(DF, new Map<string, RDF.Term>([]), { contextMergeHandlers }))).toBeFalsy();
       });
 
       it('should be false for bindings with fewer keys', () => {
-        expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
+        expect(bindings.equals(new Bindings(DF, new Map<string, RDF.Term>([
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
         ]), { contextMergeHandlers }))).toBeFalsy();
       });
 
       it('should be false for bindings with more keys', () => {
-        expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
+        expect(bindings.equals(new Bindings(DF, new Map<string, RDF.Term>([
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
           [ 'c', DF.namedNode('ex:c') ],
@@ -198,7 +197,7 @@ describe('Bindings', () => {
       });
 
       it('should be false for bindings with the same amount of keys, but unequal', () => {
-        expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
+        expect(bindings.equals(new Bindings(DF, new Map<string, RDF.Term>([
           [ 'a1', DF.namedNode('ex:a') ],
           [ 'b1', DF.namedNode('ex:b') ],
           [ 'c1', DF.namedNode('ex:c') ],
@@ -206,7 +205,7 @@ describe('Bindings', () => {
       });
 
       it('should be false for bindings with equal keys, but unequal values', () => {
-        expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
+        expect(bindings.equals(new Bindings(DF, new Map<string, RDF.Term>([
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b1') ],
           [ 'c', DF.namedNode('ex:c') ],
@@ -214,7 +213,7 @@ describe('Bindings', () => {
       });
 
       it('should be true for bindings with equal keys and values', () => {
-        expect(bindings.equals(new Bindings(DF, Map<string, RDF.Term>([
+        expect(bindings.equals(new Bindings(DF, new Map<string, RDF.Term>([
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
           [ 'c', DF.namedNode('ex:c') ],
@@ -277,7 +276,7 @@ describe('Bindings', () => {
     describe('merge', () => {
       describe('with RDF.Bindings', () => {
         it('should merge distinct bindings', () => {
-          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+          const OriginalBindings = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'e', DF.namedNode('ex:e') ],
             [ 'f', DF.namedNode('ex:f') ],
@@ -302,7 +301,7 @@ describe('Bindings', () => {
         });
 
         it('should merge overlapping compatible bindings', () => {
-          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+          const OriginalBindings = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'a', DF.namedNode('ex:a') ],
             [ 'b', DF.namedNode('ex:b') ],
@@ -325,7 +324,7 @@ describe('Bindings', () => {
         });
 
         it('should return undefined on overlapping incompatible bindings', () => {
-          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+          const OriginalBindings = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'a', DF.namedNode('ex:b') ],
             [ 'b', DF.namedNode('ex:b') ],
           ]), { contextMergeHandlers });
@@ -342,7 +341,7 @@ describe('Bindings', () => {
 
       describe('with native Bindings', () => {
         it('should merge distinct bindings', () => {
-          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+          const bindingsOther = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'e', DF.namedNode('ex:e') ],
             [ 'f', DF.namedNode('ex:f') ],
@@ -362,7 +361,7 @@ describe('Bindings', () => {
         });
 
         it('should merge distinct larger bindings', () => {
-          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+          const bindingsOther = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'e', DF.namedNode('ex:e') ],
             [ 'f', DF.namedNode('ex:f') ],
@@ -388,7 +387,7 @@ describe('Bindings', () => {
         });
 
         it('should merge overlapping compatible bindings', () => {
-          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+          const bindingsOther = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'a', DF.namedNode('ex:a') ],
             [ 'b', DF.namedNode('ex:b') ],
@@ -406,7 +405,7 @@ describe('Bindings', () => {
         });
 
         it('should return undefined on overlapping incompatible bindings', () => {
-          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+          const bindingsOther = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'a', DF.namedNode('ex:b') ],
             [ 'b', DF.namedNode('ex:b') ],
           ]), { contextMergeHandlers });
@@ -420,7 +419,7 @@ describe('Bindings', () => {
     describe('mergeWith', () => {
       describe('with RDF.Bindings', () => {
         it('should merge distinct bindings', () => {
-          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+          const OriginalBindings = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'e', DF.namedNode('ex:e') ],
             [ 'f', DF.namedNode('ex:f') ],
@@ -448,7 +447,7 @@ describe('Bindings', () => {
         });
 
         it('should merge overlapping compatible bindings', () => {
-          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+          const OriginalBindings = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'a', DF.namedNode('ex:a') ],
             [ 'b', DF.namedNode('ex:b') ],
@@ -474,7 +473,7 @@ describe('Bindings', () => {
         });
 
         it('should return undefined on overlapping incompatible bindings', () => {
-          const OriginalBindings = new Bindings(DF, Map<string, RDF.Term>([
+          const OriginalBindings = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'a', DF.namedNode('ex:b') ],
           ]), { contextMergeHandlers });
           const bindingsOther: RDF.Bindings = <any> {
@@ -500,7 +499,7 @@ describe('Bindings', () => {
 
       describe('with native Bindings', () => {
         it('should merge distinct bindings', () => {
-          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+          const bindingsOther = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'e', DF.namedNode('ex:e') ],
             [ 'f', DF.namedNode('ex:f') ],
@@ -523,7 +522,7 @@ describe('Bindings', () => {
         });
 
         it('should merge distinct larger bindings', () => {
-          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+          const bindingsOther = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'e', DF.namedNode('ex:e') ],
             [ 'f', DF.namedNode('ex:f') ],
@@ -552,7 +551,7 @@ describe('Bindings', () => {
         });
 
         it('should merge overlapping compatible bindings', () => {
-          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+          const bindingsOther = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'a', DF.namedNode('ex:a') ],
             [ 'b', DF.namedNode('ex:b') ],
@@ -573,7 +572,7 @@ describe('Bindings', () => {
         });
 
         it('should return undefined on overlapping incompatible bindings', () => {
-          const bindingsOther = new Bindings(DF, Map<string, RDF.Term>([
+          const bindingsOther = new Bindings(DF, new Map<string, RDF.Term>([
             [ 'a', DF.namedNode('ex:b') ],
           ]), { contextMergeHandlers });
 
@@ -593,9 +592,44 @@ describe('Bindings', () => {
       });
     });
 
+    describe('merge and mergeWith with contained bindings', () => {
+      it('should return bindings with the same entries', () => {
+        const bindingsOther = new Bindings(DF, new Map<string, RDF.Term>([
+          [ 'a', DF.namedNode('ex:a') ],
+        ]), { contextMergeHandlers });
+        const cb = jest.fn();
+
+        expect(bindings.merge(bindingsOther)!.equals(bindings)).toBeTruthy();
+        expect(bindings.mergeWith(cb, bindingsOther).equals(bindings)).toBeTruthy();
+        expect(cb).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('immutability', () => {
+      it('should not modify the bindings on any operation', () => {
+        const bindingsOther = new Bindings(DF, new Map<string, RDF.Term>([
+          [ 'a', DF.namedNode('ex:other') ],
+          [ 'd', DF.namedNode('ex:d') ],
+        ]), { contextMergeHandlers });
+        bindings.set('d', DF.namedNode('ex:d'));
+        bindings.set('a', DF.namedNode('ex:other'));
+        bindings.delete('a');
+        bindings.merge(bindings.delete('a').merge(bindingsOther.delete('a'))!);
+        bindings.mergeWith(left => left, bindingsOther);
+        bindings.filter(() => false);
+        bindings.map(() => DF.namedNode('ex:other'));
+
+        expect(bindings.toString()).toBe(`{
+  "a": "ex:a",
+  "b": "ex:b",
+  "c": "ex:c"
+}`);
+      });
+    });
+
     describe('toString', () => {
       it('should stringify empty bindings', () => {
-        expect(new Bindings(DF, Map<string, RDF.Term>(), { contextMergeHandlers }).toString()).toBe(`{}`);
+        expect(new Bindings(DF, new Map<string, RDF.Term>(), { contextMergeHandlers }).toString()).toBe(`{}`);
       });
 
       it('should stringify non-empty bindings', () => {
@@ -615,7 +649,7 @@ describe('Bindings', () => {
     beforeEach(() => {
       bindings = new Bindings(
         DF,
-        Map<string, RDF.Term>([
+        new Map<string, RDF.Term>([
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
           [ 'c', DF.namedNode('ex:c') ],
@@ -627,7 +661,7 @@ describe('Bindings', () => {
       );
       bindingsNoContext = new Bindings(
         DF,
-        Map<string, RDF.Term>([
+        new Map<string, RDF.Term>([
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
           [ 'd', DF.namedNode('ex:d') ],
@@ -688,7 +722,7 @@ describe('Bindings', () => {
     beforeEach(() => {
       bindings = new Bindings(
         DF,
-        Map<string, RDF.Term>([
+        new Map<string, RDF.Term>([
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
           [ 'c', DF.namedNode('ex:c') ],
@@ -700,7 +734,7 @@ describe('Bindings', () => {
       );
       bindingsNoContext = new Bindings(
         DF,
-        Map<string, RDF.Term>([
+        new Map<string, RDF.Term>([
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
           [ 'd', DF.namedNode('ex:d') ],
@@ -711,7 +745,7 @@ describe('Bindings', () => {
     it('should merge binding context according to mergehandler in mergeWith', () => {
       const bindingsOther = new Bindings(
         DF,
-        Map<string, RDF.Term>([
+        new Map<string, RDF.Term>([
           [ 'd', DF.namedNode('ex:d') ],
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
@@ -729,7 +763,7 @@ describe('Bindings', () => {
     it('should merge own binding context with extra key by adding to result context without change', () => {
       const bindingsExtraKey = new Bindings(
         DF,
-        Map<string, RDF.Term>([
+        new Map<string, RDF.Term>([
           [ 'd', DF.namedNode('ex:d') ],
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
@@ -751,7 +785,7 @@ describe('Bindings', () => {
     it('should merge other binding context with extra key by adding to result context without change', () => {
       const bindingsExtraKey = new Bindings(
         DF,
-        Map<string, RDF.Term>([
+        new Map<string, RDF.Term>([
           [ 'd', DF.namedNode('ex:d') ],
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
@@ -773,7 +807,7 @@ describe('Bindings', () => {
     it(`should merge remove all binding context entries that occur in both contexts but dont have a mergehandler`, () => {
       const bindingsNoMergeHandler = new Bindings(
         DF,
-        Map<string, RDF.Term>([
+        new Map<string, RDF.Term>([
           [ 'd', DF.namedNode('ex:d') ],
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
@@ -798,7 +832,7 @@ describe('Bindings', () => {
     it('should merge overlapping compatible bindings', () => {
       const bindingsOther = new Bindings(
         DF,
-        Map<string, RDF.Term>([
+        new Map<string, RDF.Term>([
           [ 'd', DF.namedNode('ex:d') ],
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
@@ -832,7 +866,7 @@ describe('Bindings', () => {
     it('should merge with undefined context', () => {
       const bindingsNoContextOther = new Bindings(
         DF,
-        Map<string, RDF.Term>([
+        new Map<string, RDF.Term>([
           [ 'a', DF.namedNode('ex:a') ],
           [ 'b', DF.namedNode('ex:b') ],
           [ 'd', DF.namedNode('ex:d') ],
@@ -857,7 +891,7 @@ describe('Bindings', () => {
       beforeEach(() => {
         bindingsOther1 = new Bindings(
           DF,
-          Map<string, RDF.Term>([
+          new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'a', DF.namedNode('ex:a') ],
             [ 'b', DF.namedNode('ex:b') ],
@@ -871,7 +905,7 @@ describe('Bindings', () => {
         );
         bindingsOther2 = new Bindings(
           DF,
-          Map<string, RDF.Term>([
+          new Map<string, RDF.Term>([
             [ 'd', DF.namedNode('ex:d') ],
             [ 'a', DF.namedNode('ex:a') ],
             [ 'b', DF.namedNode('ex:b') ],

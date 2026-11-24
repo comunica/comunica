@@ -1,5 +1,20 @@
 import type { IGhbenchEntry } from '../lib/performanceComparison';
-import { formatRatio, getFailures, getRows, renderComparisonComment } from '../lib/performanceComparison';
+import {
+  formatCount,
+  formatRatio,
+  formatTime,
+  getFailures,
+  getRows,
+  INGESTION_METRICS,
+  isRequestsChange,
+  renderComparisonComment,
+  renderIngestionRows,
+  renderRequestsTables,
+} from '../lib/performanceComparison';
+import type { IQueryInstantiation } from '../lib/performanceRequests';
+import { toRequestsEntries } from '../lib/performanceRequests';
+
+const [ TIME, MEMORY, STORE ] = INGESTION_METRICS;
 
 const OPTIONS = { headSha: 'head', baseSha: 'base', runUrl: 'https://ci/1' };
 
@@ -9,6 +24,26 @@ function time(name: string, value: number, errors: boolean[] = [ false, false ])
 
 function failures(suite: string, extra: string, value = 1): IGhbenchEntry {
   return { name: `${suite} - failed queries`, unit: 'failed instantiations', value, extra };
+}
+
+function ingestion(
+  suite: string,
+  time: number | null,
+  memory: number,
+  store: number,
+  triples: number | null = 1_048_576,
+): IGhbenchEntry[] {
+  const extra = triples === null ? 'Runs: []' : `Triples: ${triples}; Runs: []`;
+  return [
+    { name: `${suite} - ingestion time`, unit: 'ms', value: time, extra },
+    { name: `${suite} - memory after ingestion`, unit: 'MiB', value: memory, extra },
+    { name: `${suite} - store size after ingestion`, unit: 'MiB', value: store, extra },
+  ];
+}
+
+function requests(suite: string, queries: Record<string, (number | undefined)[]>): IGhbenchEntry[] {
+  return toRequestsEntries(suite, Object.entries(queries).flatMap(([ name, counts ]) =>
+    counts.map((count): IQueryInstantiation => ({ name, failed: count === undefined, httpRequests: count }))));
 }
 
 describe('formatRatio', () => {
@@ -21,6 +56,15 @@ describe('formatRatio', () => {
   it('handles a zero previous value', () => {
     expect(formatRatio(0, 0)).toBe('1.00');
     expect(formatRatio(1, 0)).toBe('∞');
+  });
+});
+
+describe('formatTime', () => {
+  it('formats times with at most two decimals', () => {
+    expect(formatTime(300)).toBe('300');
+    expect(formatTime(2.5)).toBe('2.5');
+    expect(formatTime(14.666_666_666_666_666)).toBe('14.67');
+    expect(formatTime(0.1 + 0.2)).toBe('0.3');
   });
 });
 
@@ -104,7 +148,81 @@ describe('getRows', () => {
   });
 });
 
+describe('formatCount', () => {
+  it('formats integers with thousands separators', () => {
+    expect(formatCount(5)).toBe('5');
+    expect(formatCount(1_048_576)).toBe('1,048,576');
+  });
+});
+
+describe('renderIngestionRows', () => {
+  const head = [ ...ingestion('A', 1000, 800, 400), ...ingestion('B', 500, 100, 50) ];
+  const base = [ ...ingestion('A', 1250, 1000, 500), ...ingestion('C', 10, 20, 10) ];
+
+  it('compares ingestion times of both sides, with their throughput', () => {
+    expect(renderIngestionRows(head, base, TIME)).toEqual([
+      '| `A` | 1,048,576 | `1000` ms (1,048,576 triples/s) | `1250` ms (838,861 triples/s) | `0.80` |',
+      '| `B` | 1,048,576 | `500` ms (2,097,152 triples/s) |  |  |',
+      '| `C` | 1,048,576 |  | `10` ms (104,857,600 triples/s) | n/a |',
+    ]);
+  });
+
+  it('compares memory usage of both sides, with their bytes per triple', () => {
+    expect(renderIngestionRows(head, base, MEMORY)).toEqual([
+      '| `A` | 1,048,576 | `800` MiB (800 bytes/triple) | `1000` MiB (1,000 bytes/triple) | `0.80` |',
+      '| `B` | 1,048,576 | `100` MiB (100 bytes/triple) |  |  |',
+      '| `C` | 1,048,576 |  | `20` MiB (20 bytes/triple) | n/a |',
+    ]);
+  });
+
+  it('compares store sizes of both sides, with their bytes per triple', () => {
+    expect(renderIngestionRows(head, base, STORE)).toEqual([
+      '| `A` | 1,048,576 | `400` MiB (400 bytes/triple) | `500` MiB (500 bytes/triple) | `0.80` |',
+      '| `B` | 1,048,576 | `50` MiB (50 bytes/triple) |  |  |',
+      '| `C` | 1,048,576 |  | `10` MiB (10 bytes/triple) | n/a |',
+    ]);
+  });
+
+  it('marks missing metrics of measured suites, and differing numbers of triples', () => {
+    const headEntries = ingestion('A', null, 800, 400);
+    const baseEntries = [ ingestion('A', 1000, 1000, 500, 2_097_152)[1] ];
+    expect(renderIngestionRows(headEntries, baseEntries, TIME)).toEqual([
+      '| `A` | 1,048,576 | missing | missing | n/a |',
+    ]);
+    expect(renderIngestionRows(headEntries, baseEntries, MEMORY)).toEqual([
+      '| `A` | 1,048,576 (base: 2,097,152) | `800` MiB (800 bytes/triple) | `1000` MiB (500 bytes/triple) | `0.80` |',
+    ]);
+    expect(renderIngestionRows(headEntries, baseEntries, STORE)).toEqual([
+      '| `A` | 1,048,576 | `400` MiB (400 bytes/triple) | missing | n/a |',
+    ]);
+  });
+
+  it('omits unavailable derived metrics', () => {
+    const entries = [ ...ingestion('A', 0, 5, 2, 0), ...ingestion('B', 10, 20, 4, null) ];
+    expect(renderIngestionRows(entries, [], TIME)).toEqual([
+      '| `A` | 0 | `0` ms |  |  |',
+      '| `B` |  | `10` ms |  |  |',
+    ]);
+    expect(renderIngestionRows(entries, [], MEMORY)).toEqual([
+      '| `A` | 0 | `5` MiB |  |  |',
+      '| `B` |  | `20` MiB |  |  |',
+    ]);
+    expect(renderIngestionRows(entries, [], STORE)).toEqual([
+      '| `A` | 0 | `2` MiB |  |  |',
+      '| `B` |  | `4` MiB |  |  |',
+    ]);
+  });
+});
+
 describe('renderComparisonComment', () => {
+  it('renders fractional times', () => {
+    expect(renderComparisonComment(
+      [ time('A - q1', 1.5), time('A - q2', 2.333_333) ],
+      [ time('A - q1', 1.25), time('A - q2', 2) ],
+      OPTIONS,
+    )).toContain(`| \`A\` | \`3.83\` ms | \`3.25\` ms | \`1.18\` |`);
+  });
+
   it('renders a comparison without failures', () => {
     expect(renderComparisonComment(
       [ time('A - q1', 100), time('A - q2', 200), time('B - q1', 5) ],
@@ -235,5 +353,184 @@ Measured by [this CI run](https://ci/1).
 
 Measured by [this CI run](https://ci/1).
 `);
+  });
+  it('renders ingestion results in a table per metric', () => {
+    expect(renderComparisonComment(
+      [ time('A - q1', 100) ],
+      [ time('A - q1', 50) ],
+      OPTIONS,
+      { head: ingestion('A', 1000, 800, 400), base: ingestion('A', 1250, 1000, 500) },
+    )).toBe(`<!-- performance-comparison -->
+
+# Benchmarks total results
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A\` | \`100\` ms | \`50\` ms | \`2.00\` |
+
+<details>
+<summary>Show detailed results</summary>
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A - q1\` | \`100\` ms | \`50\` ms | \`2.00\` |
+
+</details>
+
+# Ingestion time
+
+| Benchmark suite | Triples | Current: head | Base: base | Ratio |
+|-|-|-|-|-|
+| \`A\` | 1,048,576 | \`1000\` ms (1,048,576 triples/s) | \`1250\` ms (838,861 triples/s) | \`0.80\` |
+
+# Memory after ingestion
+
+| Benchmark suite | Triples | Current: head | Base: base | Ratio |
+|-|-|-|-|-|
+| \`A\` | 1,048,576 | \`800\` MiB (800 bytes/triple) | \`1000\` MiB (1,000 bytes/triple) | \`0.80\` |
+
+# Store size after ingestion
+
+| Benchmark suite | Triples | Current: head | Base: base | Ratio |
+|-|-|-|-|-|
+| \`A\` | 1,048,576 | \`400\` MiB (400 bytes/triple) | \`500\` MiB (500 bytes/triple) | \`0.80\` |
+
+Measured by [this CI run](https://ci/1).
+`);
+  });
+
+  it('omits ingestion results if none were measured', () => {
+    expect(renderComparisonComment([ time('A - q1', 100) ], [ time('A - q1', 50) ], OPTIONS, { head: [], base: []}))
+      .toBe(renderComparisonComment([ time('A - q1', 100) ], [ time('A - q1', 50) ], OPTIONS));
+  });
+
+  it('renders HTTP requests after the detailed results', () => {
+    const comment = renderComparisonComment(
+      [ time('A - q1', 100) ],
+      [ time('A - q1', 50) ],
+      OPTIONS,
+      { head: ingestion('A', 1000, 800, 400), base: ingestion('A', 1250, 1000, 500) },
+      { head: requests('A', { q1: [ 1000 ]}), base: requests('A', { q1: [ 500 ]}) },
+    );
+    expect(comment).toContain(`</details>
+
+# HTTP requests
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A\` | \`1,000\` | \`500\` | \`2.00\` |
+`);
+    expect(comment.indexOf('# HTTP requests')).toBeLessThan(comment.indexOf('# Ingestion time'));
+  });
+
+  it('omits HTTP requests if none were determined', () => {
+    expect(renderComparisonComment([ time('A - q1', 100) ], [ time('A - q1', 50) ], OPTIONS, undefined, {
+      head: [],
+      base: [],
+    })).toBe(renderComparisonComment([ time('A - q1', 100) ], [ time('A - q1', 50) ], OPTIONS));
+  });
+});
+
+describe('isRequestsChange', () => {
+  it('requires both an absolute and a relative difference', () => {
+    expect(isRequestsChange(1050, 1000)).toBe(true);
+    expect(isRequestsChange(950, 1000)).toBe(true);
+    expect(isRequestsChange(1049, 1000)).toBe(false);
+    expect(isRequestsChange(10_400, 10_000)).toBe(false);
+    expect(isRequestsChange(100_000, 10_000)).toBe(true);
+    expect(isRequestsChange(49, 0)).toBe(false);
+    expect(isRequestsChange(50, 0)).toBe(true);
+  });
+});
+
+describe('renderRequestsTables', () => {
+  it('renders nothing without entries', () => {
+    expect(renderRequestsTables({ head: [], base: []}, OPTIONS)).toBe('');
+  });
+
+  it('renders totals and the queries that changed', () => {
+    expect(renderRequestsTables({
+      head: [
+        ...requests('A', { q1: [ 1000, 1000 ], q2: [ 120 ], q3: [ 2000 ], q4: [ 5 ]}),
+        ...requests('B', { q1: [ 10 ]}),
+      ],
+      base: [
+        ...requests('A', { q1: [ 900, 900 ], q2: [ 60 ], q3: [ 2010 ], q4: [ 0 ]}),
+        ...requests('B', { q1: [ 10 ]}),
+      ],
+    }, OPTIONS)).toBe(`
+
+# HTTP requests
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A\` | \`4,125\` | \`3,870\` | \`1.07\` |
+| \`B\` | \`10\` | \`10\` | \`1.00\` |
+
+<details>
+<summary>Show the 2 of 5 queries whose HTTP requests changed by at least 5% and 50 requests</summary>
+
+| Query | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A - q1\` | \`2,000\` | \`1,800\` | \`1.11\` |
+| \`A - q2\` | \`120\` | \`60\` | \`2.00\` |
+
+</details>`);
+  });
+
+  it('compares entries without failure details as succeeded', () => {
+    expect(renderRequestsTables({
+      head: [{ name: 'A - q1', unit: 'requests', value: 200 }],
+      base: [{ name: 'A - q1', unit: 'requests', value: 100 }],
+    }, OPTIONS)).toContain(`| \`A - q1\` | \`200\` | \`100\` | \`2.00\` |`);
+  });
+
+  it('renders that no query changed', () => {
+    expect(renderRequestsTables({
+      head: requests('A', { q1: [ 1000 ]}),
+      base: requests('A', { q1: [ 1010 ]}),
+    }, OPTIONS)).toBe(`
+
+# HTTP requests
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A\` | \`1,000\` | \`1,010\` | \`0.99\` |
+
+None of the 1 queries changed its HTTP requests by at least 5% and 50 requests.`);
+  });
+
+  it('excludes failed and missing queries from the totals and changes', () => {
+    expect(renderRequestsTables({
+      head: [
+        ...requests('A', { ok: [ 100 ], partial: [ 500, undefined ], broken: [ undefined ], new: [ 300 ]}),
+        ...requests('B', { q1: [ undefined, 10 ]}),
+        ...requests('C', { q1: [ 50 ], q2: [ undefined, 50 ]}),
+      ],
+      base: [
+        ...requests('A', { ok: [ 100 ], partial: [ 100, 100 ], broken: [ 1000 ], old: [ 300 ]}),
+        ...requests('B', { q1: [ 10, 10 ]}),
+        ...requests('D', { q1: [ 50 ]}),
+      ],
+    }, OPTIONS)).toBe(`
+
+# HTTP requests
+
+| Benchmark suite | Current: head | Base: base | Ratio |
+|-|-|-|-|
+| \`A\` | \`100\` | \`100\` | \`1.00\` |
+| \`B\` |  |  | n/a |
+| \`C\` | \`50\` |  |  |
+| \`D\` |  |  | n/a |
+
+\`A\` totals exclude queries that failed or are missing on either side: partial, broken, new, old
+
+\`B\` totals exclude queries that failed or are missing on either side: q1
+
+\`C\` totals exclude queries that failed or are missing on either side: q2
+
+\`D\` totals exclude queries that failed or are missing on either side: q1
+
+None of the 1 queries changed its HTTP requests by at least 5% and 50 requests.`);
   });
 });

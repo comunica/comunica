@@ -249,7 +249,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     if (this.useAskIfSupported) {
       const askOperation = algebraFactory.createAsk(input);
       const askSupported = doesShapeAcceptOperationInContext(
-        await source.source.getSelectorShape(context),
+        await source.source.getSelectorShape(mergedContext),
         askOperation,
         mergedContext,
       );
@@ -274,7 +274,7 @@ export class ActorOptimizeQueryOperationPruneEmptySourceOperations extends Actor
     if (cardinality.type === 'estimate' && cardinality.value > 0) {
       const askOperation = algebraFactory.createAsk(input);
       const askSupported = doesShapeAcceptOperationInContext(
-        await source.source.getSelectorShape(context),
+        await source.source.getSelectorShape(mergedContext),
         askOperation,
         mergedContext,
       );

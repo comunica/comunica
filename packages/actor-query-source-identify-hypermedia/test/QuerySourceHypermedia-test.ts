@@ -428,6 +428,27 @@ describe('QuerySourceHypermedia', () => {
         expect(directSource.queryBindings(operation, context)).toBe(inner.queryBindings.mock.results.at(-1).value);
       });
 
+      it('should tell that it may contain blank nodes before it delegates to the first source', () => {
+        inner.canContainBlankNodes = () => false;
+        expect(directSource.canContainBlankNodes()).toBe(true);
+      });
+
+      it('should delegate canContainBlankNodes to the first source', async() => {
+        await probe();
+        expect(directSource.canContainBlankNodes()).toBe(true);
+        inner.canContainBlankNodes = () => false;
+        expect(directSource.canContainBlankNodes()).toBe(false);
+        inner.canContainBlankNodes = () => true;
+        expect(directSource.canContainBlankNodes()).toBe(true);
+      });
+
+      it('should tell that it may contain blank nodes if links can be followed', async() => {
+        links = [{ url: 'next' }];
+        inner.canContainBlankNodes = () => false;
+        await probe();
+        expect(directSource.canContainBlankNodes()).toBe(true);
+      });
+
       it('should not delegate queryBindings if links can be followed', async() => {
         links = [{ url: 'next' }];
         await probe();

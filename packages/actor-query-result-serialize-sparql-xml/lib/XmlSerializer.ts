@@ -5,6 +5,9 @@ export class XmlSerializer {
   private readonly stack: string[] = [];
 
   public static header = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+  private static readonly ESCAPED_CHARACTERS_GLOBAL =
+    // eslint-disable-next-line no-control-regex
+    /["&'<>\u0000-\u0008\u000B\u000C\u000E-\u001F\uD800-\uDFFF\uFFFE\uFFFF]/gu;
 
   public constructor() {}
 
@@ -46,7 +49,7 @@ export class XmlSerializer {
   }
 
   private identation(): string {
-    return this.stack.map(_ => '  ').join('');
+    return '  '.repeat(this.stack.length);
   }
 
   private formatTag(
@@ -54,19 +57,29 @@ export class XmlSerializer {
     attributes: Record<string, string> | undefined,
     state: 'open' | 'close' | 'self-closing',
   ): string {
-    return `<${state === 'close' ? '/' : ''}${name}${Object.entries(attributes ?? {}).map(attr => ` ${attr[0]}="${this.escape(attr[1])}"`).join('')}${state === 'self-closing' ? '/' : ''}>`;
+    let attributesString = '';
+    if (attributes) {
+      for (const key in attributes) {
+        attributesString += ` ${key}="${this.escape(attributes[key])}"`;
+      }
+    }
+    return `<${state === 'close' ? '/' : ''}${name}${attributesString}${state === 'self-closing' ? '/' : ''}>`;
   }
 
   private escape(text: string): string {
-    return text.replaceAll(/["&'<>]/gu, <(substring: string) => string> ((char: '"' | '&' | '\'' | '<' | '>') => {
+    if (text.search(XmlSerializer.ESCAPED_CHARACTERS_GLOBAL) < 0) {
+      return text;
+    }
+    return text.replaceAll(XmlSerializer.ESCAPED_CHARACTERS_GLOBAL, (char: string) => {
       switch (char) {
         case '<': return '&lt;';
         case '>': return '&gt;';
         case '&': return '&amp;';
         case '\'': return '&apos;';
         case '"': return '&quot;';
+        default: return '\uFFFD';
       }
-    }));
+    });
   }
 }
 

@@ -1,5 +1,6 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
+import { once } from 'node:events';
 import { Readable } from 'node:stream';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { Logger } from '@comunica/types';
@@ -14,9 +15,8 @@ import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator, wrap } from 'asynciterator';
 import 'jest-rdf';
 import '@comunica/utils-jest';
-import { Store } from 'n3';
+import { Store, StreamParser } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
-import rdfParse from 'rdf-parse';
 import { RdfStore } from 'rdf-stores';
 import { QueryEngine } from '../lib/QueryEngine';
 import { fetch as cachedFetch } from './util';
@@ -64,6 +64,14 @@ describe('System test: QuerySparql', () => {
       );
     };
   }
+
+  describe('getResultMediaTypes', () => {
+    it('prefers the standard SPARQL results formats over the generic JSON format', async() => {
+      const mediaTypes = await engine.getResultMediaTypes();
+      expect(mediaTypes['application/sparql-results+json']).toBeGreaterThan(mediaTypes['application/json']);
+      expect(mediaTypes['application/sparql-results+xml']).toBeGreaterThan(mediaTypes['application/json']);
+    });
+  });
 
   describe('instantiated multiple times', () => {
     it('should contain different actors', () => {
@@ -1880,6 +1888,78 @@ SELECT * {
 `, context)))).resolves.toHaveLength(0);
       });
 
+      it('should handle one-or-more paths with the same variable as subject and object', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix : <http://example.org/> .
+:a :knows :b . :b :knows :c . :c :knows :a .
+:g :knows :g .
+:h :knows :h . :h :knows :x .
+`,
+              mediaType: 'text/turtle',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(arrayifyStream(await engine.queryBindings(`
+PREFIX : <http://example.org/>
+SELECT ?s {
+  ?s :knows+ ?s.
+}
+`, context))).resolves.toEqualBindingsArray([
+          BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/a') ]]),
+          BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/b') ]]),
+          BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/c') ]]),
+          BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/g') ]]),
+          BF.bindings([[ DF.variable('s'), DF.namedNode('http://example.org/h') ]]),
+        ], true);
+      });
+
+      it('should handle one-or-more paths with the same variable as subject and object in named graphs', async() => {
+        const context: QueryStringContext = {
+          sources: [
+            {
+              type: 'serialized',
+              value: `
+@prefix : <http://example.org/> .
+:g1 { :a :knows :b . :b :knows :a . }
+:g2 { :b :knows :c . :c :knows :b . :d :knows :b . }
+`,
+              mediaType: 'application/trig',
+              baseIRI: 'http://example.org/',
+            },
+          ],
+        };
+
+        await expect(arrayifyStream(await engine.queryBindings(`
+PREFIX : <http://example.org/>
+SELECT ?s ?b {
+  GRAPH ?b { ?s :knows+ ?s. }
+}
+`, context))).resolves.toEqualBindingsArray([
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/a') ],
+            [ DF.variable('b'), DF.namedNode('http://example.org/g1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/b') ],
+            [ DF.variable('b'), DF.namedNode('http://example.org/g1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/b') ],
+            [ DF.variable('b'), DF.namedNode('http://example.org/g2') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('s'), DF.namedNode('http://example.org/c') ],
+            [ DF.variable('b'), DF.namedNode('http://example.org/g2') ],
+          ]),
+        ], true);
+      });
+
       it('should handle zero-or-more paths with 1 variable for no data', async() => {
         const context: QueryStringContext = {
           sources: [
@@ -2146,14 +2226,14 @@ SELECT ?option WHERE {
 
         it('for an rdf-stores store', async() => {
           const store = RdfStore.createDefault();
-          await new Promise(resolve => store.import(rdfParse.parse(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
+          await new Promise(resolve => store.import(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ex: <https://example.org/> .
 ex:devShape a sh:NodeShape ;
     sh:targetClass ex:Main ;
     sh:property [
         sh:path ex:foo ;
         sh:in ( ex:bar1 ex:bar2 ex:bar3 ex:bar4 ex:bar5 ex:bar6 ex:bar7 ex:bar8 ex:bar9 ex:bar10 ) ;
-    ] .`), { contentType: 'text/turtle' })).on('end', resolve));
+    ] .`).pipe(new StreamParser())).on('end', resolve));
 
           await expect((arrayifyStream(await engine.queryBindings(`
 PREFIX sh: <http://www.w3.org/ns/shacl#>
@@ -2167,14 +2247,14 @@ SELECT ?option WHERE {
 
         it('for an n3.js store', async() => {
           const store = new Store();
-          await new Promise(resolve => store.import(rdfParse.parse(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
+          await once(store.import(stringToStream(`@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix ex: <https://example.org/> .
 ex:devShape a sh:NodeShape ;
     sh:targetClass ex:Main ;
     sh:property [
         sh:path ex:foo ;
         sh:in ( ex:bar1 ex:bar2 ex:bar3 ex:bar4 ex:bar5 ex:bar6 ex:bar7 ex:bar8 ex:bar9 ex:bar10 ) ;
-    ] .`), { contentType: 'text/turtle' })).on('end', resolve));
+    ] .`).pipe(new StreamParser())), 'end');
 
           await expect((arrayifyStream(await engine.queryBindings(`
 PREFIX sh: <http://www.w3.org/ns/shacl#>
@@ -2343,14 +2423,14 @@ SELECT ?option WHERE {
       // https://github.com/comunica/comunica/issues/1896
       it('should settle for many zero-or-more paths with a bound subject over a Readable source', async() => {
         const store = new Store();
-        store.addQuads(await arrayifyStream(rdfParse.parse(stringToStream(`
+        store.addQuads(await arrayifyStream(stringToStream(`
 @prefix bot: <https://w3id.org/bot#> .
 @prefix ex: <http://ex/> .
 ex:b bot:hasStorey ex:s1, ex:s2, ex:s3, ex:s4 .
 ex:s1 bot:containsZone ex:z1, ex:z2 ; bot:hasSpace ex:r1, ex:r2 .
 ex:s3 bot:containsZone ex:z3, ex:z4 ; bot:hasSpace ex:r3, ex:r4 .
 ex:s4 bot:containsZone ex:z5 ; bot:hasSpace ex:r5 .
-`), { contentType: 'text/turtle' })));
+`).pipe(new StreamParser())));
         const source = {
           match: (s: RDF.Term, p: RDF.Term, o: RDF.Term, g: RDF.Term) =>
             Readable.from(store.getQuads(s, p, o, g)),
@@ -4067,7 +4147,7 @@ CONSTRUCT {
       it('inserts a parsed stream of quads', async() => {
         const store = new Store();
         const turtle = stringToStream('<ex:s> <ex:p> <ex:o1>, <ex:o2> .');
-        const quads = rdfParse.parse(turtle, { contentType: 'text/turtle' });
+        const quads = turtle.pipe(new StreamParser());
 
         await engine.updateQuads({ quadStreamInsert: wrap<RDF.Quad>(quads) }, { destination: store });
 
@@ -4168,6 +4248,39 @@ CONSTRUCT {
         await expect(engine.updateQuads({ quadStreamInsert: wrap<RDF.Quad>(insert) }, { destination: new Store() }))
           .rejects.toThrow('Invalid quad');
       });
+    });
+  });
+
+  describe('warmup', () => {
+    it('executes queries derived from the data, without modifying it', async() => {
+      const store = new Store([
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:s2')),
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p2'), DF.literal('a')),
+        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p1'), DF.namedNode('ex:s3')),
+      ]);
+
+      await expect(engine.warmup({ sources: [ store ]}, { executions: 20 })).resolves.toEqual({ executions: 20 });
+      expect(store.size).toBe(3);
+    });
+
+    it('stops at the time budget', async() => {
+      const store = new Store([ DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')) ]);
+
+      await expect(engine.warmup({ sources: [ store ]}, { budget: 0 })).resolves.toEqual({ executions: 0 });
+    });
+
+    it('requires a maximum number of executions, a budget, or a signal', async() => {
+      await expect(engine.warmup({ sources: [ new Store() ]}, <any> {})).rejects
+        .toThrow('Warming up requires a maximum number of executions, a budget, or a signal');
+    });
+
+    it('stops once the signal is aborted', async() => {
+      const store = new Store([ DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o')) ]);
+      const controller = new AbortController();
+      const warmup = engine.warmup({ sources: [ store ]}, { signal: controller.signal });
+      controller.abort();
+
+      await expect(warmup).resolves.toEqual({ executions: 0 });
     });
   });
 
@@ -4503,6 +4616,42 @@ CONSTRUCT {
   });
 
   describe('explain', () => {
+    describe('unions created by optimizers', () => {
+      // Order-useful unions are annotated after the optimizers that create or rebuild unions
+      function unionMetadata(operation: any): any[] {
+        const own = operation.type === 'union' ? [ operation.metadata ] : [];
+        const inputs = Array.isArray(operation.input) ? operation.input : operation.input ? [ operation.input ] : [];
+        return [ ...own, ...inputs.flatMap(unionMetadata) ];
+      }
+
+      function createStore(): RdfStore {
+        const store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:a'), DF.namedNode('ex:o')));
+        store.addQuad(DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:b'), DF.namedNode('ex:o')));
+        store.addQuad(DF.quad(DF.namedNode('ex:o'), DF.namedNode('ex:c'), DF.namedNode('ex:x')));
+        return store;
+      }
+
+      it('annotates unions of alternative paths', async() => {
+        const result = await engine.explain(`SELECT * WHERE {
+      ?s <ex:a>|<ex:b> ?o.
+      ?o <ex:c> ?x.
+    }`, { sources: [ createStore() ]}, 'logical');
+        expect(unionMetadata(result.data)).toEqual([ expect.objectContaining({ orderUseful: [ 'o' ]}) ]);
+      });
+
+      it('annotates unions over multiple sources', async() => {
+        const result = await engine.explain(`SELECT * WHERE {
+      ?s <ex:a> ?o.
+      ?o <ex:c> ?x.
+    }`, { sources: [ createStore(), createStore() ]}, 'logical');
+        expect(unionMetadata(result.data)).toEqual([
+          expect.objectContaining({ orderUseful: [ 'o' ]}),
+          expect.objectContaining({ orderUseful: [ 'o' ]}),
+        ]);
+      });
+    });
+
     describe('a simple SPO on a raw RDF document', () => {
       it('explaining parsing', async() => {
         const result = await engine.explain(`SELECT * WHERE {

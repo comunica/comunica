@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^6.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-largerdfbench-file-combinations",
+  "@type": "FullFactorialCombinationProvider",
+  "commonGenerated": true,
+  "factors": {
+    "hookSparqlEndpoint": [
+      "{\"@id\": \"urn:jbr:benchmark-largerdfbench-file:combination_0:hookSparqlEndpoint\", \"@type\": \"HookCli\", \"entrypoint\": [\"node\", \"--max-old-space-size=4096\", \"../../engines/query-sparql/bin/http.js\", \"sparql@http://localhost:4001/sparql\", \"sparql@http://localhost:4002/sparql\", \"sparql@http://localhost:4003/sparql\", \"sparql@http://localhost:4004/sparql\", \"sparql@http://localhost:4005/sparql\", \"sparql@http://localhost:4006/sparql\", \"sparql@http://localhost:4007/sparql\", \"sparql@http://localhost:4008/sparql\", \"sparql@http://localhost:4009/sparql\", \"-p\", \"3001\", \"-t\", \"120\", \"-i\"], \"statsFilePath\": \"output/stats.csv\", \"logName\": \"federator\"}"
+    ]
+  }
+}

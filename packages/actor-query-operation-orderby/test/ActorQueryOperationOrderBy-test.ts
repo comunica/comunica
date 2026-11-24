@@ -269,6 +269,29 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       ]);
     });
 
+    it('should not end before its results are read', async() => {
+      mediatorQueryOperation.mediate = (arg: any) => {
+        // An input that ends without being read
+        const bindingsStream = new ArrayIterator([], { autoStart: false });
+        bindingsStream.close();
+        return Promise.resolve({
+          bindingsStream,
+          metadata: () => Promise.resolve({ cardinality: 0 }),
+          operated: arg,
+          type: 'bindings',
+          variables: [ DF.variable('a') ],
+        });
+      };
+      for (const expressions of [[ orderA ], [ orderA, orderB ]]) {
+        const op: any = { operation: { type: 'orderby', input: {}, expressions }, context };
+        const output = await actor.run(op, undefined);
+        const { bindingsStream } = getSafeBindings(output);
+        await new Promise(resolve => setTimeout(resolve, 10));
+        expect(bindingsStream.done).toBe(false);
+        await expect(arrayifyStream(bindingsStream)).resolves.toEqual([]);
+      }
+    });
+
     it('should not keep the term order of its input', async() => {
       const mediate = mediatorQueryOperation.mediate;
       mediatorQueryOperation.mediate = async(arg: any) => ({
@@ -394,7 +417,11 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         context,
       };
       const output = <any> await actor.run(op, undefined);
-      await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
+      await new Promise<void>((resolve) => {
+        output.bindingsStream.on('error', () => resolve());
+        // Sorting only starts once the results are read
+        output.bindingsStream.on('data', () => {});
+      });
     });
   });
 });
