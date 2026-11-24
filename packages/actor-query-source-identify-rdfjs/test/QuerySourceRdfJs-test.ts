@@ -2,9 +2,11 @@ import { Readable } from 'node:stream';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
 import { ArrayIterator } from 'asynciterator';
 import { Store } from 'n3';
@@ -311,6 +313,78 @@ describe('QuerySourceRdfJs', () => {
       const metadata: any = await new Promise(resolve => data.getProperty('metadata', resolve));
       expect(metadata.termOrder).toBeUndefined();
       expect(data.seek).toBeUndefined();
+    });
+
+    describe('for patterns with unused variables', () => {
+      let calls: any[][];
+
+      // A pattern of which the query does not use the object elsewhere
+      function patternWithUnused(names: string[], subject: RDF.Term = DF.variable('s')): Algebra.Pattern {
+        const pattern = AF.createPattern(subject, DF.namedNode('p'), DF.variable('o'));
+        return { ...pattern, metadata: { unusedVariables: names }};
+      }
+
+      beforeEach(() => {
+        calls = [];
+        (<any> store).matchBindings = (...args: any[]) => {
+          calls.push(args);
+          const it: any = new ArrayIterator([
+            BF.bindings([[ DF.variable('s'), DF.namedNode('s1') ]]),
+          ], { autoStart: false });
+          it.resultOrder = [ 'subject', 'object' ];
+          it.seekTo = () => {};
+          return it;
+        };
+      });
+
+      it('should pass them to sources that support them, and not report them as variables', async() => {
+        (<any> store).features.unusedVariables = true;
+        const data: any = source.queryBindings(patternWithUnused([ 'o' ]), ctx);
+        await expect(data).toEqualBindingsStream([ BF.bindings([[ DF.variable('s'), DF.namedNode('s1') ]]) ]);
+        expect(calls[0][5]).toEqual({ unusedVariables: [ DF.variable('o') ]});
+        await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves.toMatchObject({
+          variables: [{ variable: DF.variable('s'), canBeUndef: false }],
+          // The bindings are not ordered on the object, which they do not bind
+          termOrder: [{ term: DF.variable('s'), direction: 'asc' }],
+          canSeek: true,
+        });
+      });
+
+      it('should not report an order that starts at an unused variable', async() => {
+        (<any> store).features.unusedVariables = true;
+        const data: any = source.queryBindings({
+          ...AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+          metadata: { unusedVariables: [ 's' ]},
+        }, ctx);
+        const metadata: any = await new Promise(resolve => data.getProperty('metadata', resolve));
+        expect(metadata.variables.map((entry: any) => entry.variable)).toEqual([ DF.variable('o') ]);
+        expect(metadata.termOrder).toBeUndefined();
+        expect(data.seek).toBeUndefined();
+      });
+
+      it('should not pass them to sources that do not support them', async() => {
+        const data: any = source.queryBindings(patternWithUnused([ 'o' ]), ctx);
+        await expect(data).toEqualBindingsStream([ BF.bindings([[ DF.variable('s'), DF.namedNode('s1') ]]) ]);
+        expect(calls[0]).toHaveLength(5);
+        const metadata: any = await new Promise(resolve => data.getProperty('metadata', resolve));
+        expect(metadata.variables.map((entry: any) => entry.variable)).toEqual([ DF.variable('s'), DF.variable('o') ]);
+      });
+
+      it('should not pass names that are not variables of the pattern', async() => {
+        (<any> store).features.unusedVariables = true;
+        const data: any = source.queryBindings(patternWithUnused([ 'x', 's' ], DF.namedNode('s1')), ctx);
+        await expect(data).toEqualBindingsStream([ BF.bindings([[ DF.variable('s'), DF.namedNode('s1') ]]) ]);
+        expect(calls[0]).toHaveLength(5);
+      });
+
+      it('should pass them to synchronous lookups of sources that support them', () => {
+        (<any> store).features.unusedVariables = true;
+        const getBindings = jest.spyOn(<RdfStore> store, 'getBindings');
+        source.queryBindingsSynchronous(patternWithUnused([ 'o' ]), ctx);
+        expect((<any[]> getBindings.mock.calls[0])[5]).toEqual({ unusedVariables: [ DF.variable('o') ]});
+        source.queryBindingsSynchronous(AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')), ctx);
+        expect(getBindings.mock.calls[1]).toHaveLength(5);
+      });
     });
 
     it('should return triples in the default graph when matchBindings is unavailable', async() => {

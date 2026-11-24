@@ -906,6 +906,38 @@ SELECT ?person ?label WHERE {
       });
     });
 
+    describe('variables that a query does not use', () => {
+      it('are passed to RDF/JS sources that support not binding them', async() => {
+        const store = RdfStore.createDefault();
+        store.addQuad(DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:name'), DF.literal('A')));
+        store.addQuad(DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:knows'), DF.namedNode('ex:b')));
+        store.addQuad(DF.quad(DF.namedNode('ex:b'), DF.namedNode('ex:name'), DF.literal('B')));
+        // A source that does not bind the unused variables it gets
+        const options: any[] = [];
+        const source = {
+          features: { ...store.features, unusedVariables: true },
+          match: store.match.bind(store),
+          matchBindings(bindingsFactory: any, subject: any, predicate: any, object: any, graph: any, option?: any) {
+            options.push(option);
+            return store.matchBindings(bindingsFactory, subject, predicate, object, graph)
+              .map(bindings => (option?.unusedVariables ?? [])
+                .reduce((result: RDF.Bindings, variable: RDF.Variable) => result.delete(variable), bindings));
+          },
+        };
+        const result = <QueryBindings> await engine.query(`SELECT ?person WHERE {
+      ?person <ex:name> ?name.
+      ?person <ex:knows> ?other.
+    }`, { sources: [ source ]});
+        const bindings = await arrayifyStream(await result.execute());
+        expect(bindings).toEqualBindingsArray([ BF.fromRecord({ person: DF.namedNode('ex:a') }) ]);
+        // The name and the other person are not used elsewhere, unlike the person
+        expect(options).toEqual(expect.arrayContaining([
+          { unusedVariables: [ DF.variable('name') ]},
+          { unusedVariables: [ DF.variable('other') ]},
+        ]));
+      });
+    });
+
     describe('two-pattern query on a raw RDF document', () => {
       it('with results', async() => {
         const result = <QueryBindings> await engine.query(`SELECT ?name WHERE {
