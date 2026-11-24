@@ -22,6 +22,18 @@ describe('ActorOptimizeQueryOperationLeftjoinExpressionPushdown', () => {
       actor = new ActorOptimizeQueryOperationLeftjoinExpressionPushdown({ name: 'actor', bus });
     });
 
+    it('should not change operations without left join operations', async() => {
+      const algebraFactory = new AlgebraFactory();
+      const operation = algebraFactory.createProject(
+        algebraFactory.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        [ DF.variable('s') ],
+      );
+      const action = { operation, context: new ActionContext() };
+      const result = await actor.run(action);
+      expect(result.operation).toBe(operation);
+      expect(result.context).toBe(action.context);
+    });
+
     it('should test', async() => {
       await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() })).resolves.toPassTestVoid();
     });
@@ -77,6 +89,42 @@ describe('ActorOptimizeQueryOperationLeftjoinExpressionPushdown', () => {
             [ DF.variable('s2'), DF.variable('p2') ],
           ),
           AF.createTermExpression(DF.variable('s2')),
+        ));
+        filter.metadata.isHoistedLeftJoinFilter = true;
+        expect(operationOut).toEqual(AF.createLeftJoin(
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s1'), DF.variable('p1') ],
+          ),
+          filter,
+        ));
+      });
+
+      it('for an operation with leftjoin with a named expression that overlaps only right', async() => {
+        const expression = AF.createNamedExpression(DF.namedNode('ex:f'), [
+          AF.createTermExpression(DF.variable('s2')),
+        ]);
+        const operationIn = AF.createLeftJoin(
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s1'), DF.variable('p1') ],
+          ),
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s2'), DF.variable('p2') ],
+          ),
+          expression,
+        );
+        const { operation: operationOut } = await actor.run({
+          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+          operation: operationIn,
+        });
+        const filter = algebraUtils.withMetadata(AF.createFilter(
+          AF.createProject(
+            AF.createBgp([]),
+            [ DF.variable('s2'), DF.variable('p2') ],
+          ),
+          expression,
         ));
         filter.metadata.isHoistedLeftJoinFilter = true;
         expect(operationOut).toEqual(AF.createLeftJoin(

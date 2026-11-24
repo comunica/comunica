@@ -114,6 +114,70 @@ describe('ActorQueryOperationProject', () => {
       ]);
     });
 
+    it('should pass bindings through unchanged when nothing is deleted or rescoped', async() => {
+      const bindings = BF.bindings([
+        [ DF.variable('a'), DF.literal('A') ],
+        [ DF.variable('delet'), DF.blankNode('b') ],
+      ]);
+      mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
+        bindingsStream: new SingletonIterator(bindings),
+        metadata: async() => ({
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('delet'), canBeUndef: false },
+          ],
+        }),
+        operated: arg,
+        type: 'bindings',
+      });
+      const op: any = {
+        operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('delet') ]},
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
+      const output = getSafeBindings(await actor.run(op, undefined));
+      const results = await output.bindingsStream.toArray();
+      expect(results).toHaveLength(1);
+      expect(results[0]).toBe(bindings);
+    });
+
+    it('should run on a stream with multiple variables that should be deleted', async() => {
+      mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('A1') ],
+            [ DF.variable('b'), DF.literal('B1') ],
+            [ DF.variable('c'), DF.literal('C1') ],
+          ]),
+          BF.bindings([
+            [ DF.variable('a'), DF.literal('A2') ],
+            [ DF.variable('c'), DF.literal('C2') ],
+          ]),
+        ], { autoStart: false }),
+        metadata: async() => ({
+          variables: [
+            { variable: DF.variable('a'), canBeUndef: false },
+            { variable: DF.variable('b'), canBeUndef: true },
+            { variable: DF.variable('c'), canBeUndef: false },
+          ],
+        }),
+        operated: arg,
+        type: 'bindings',
+      });
+      const op: any = {
+        operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]},
+        context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }),
+      };
+      const output = getSafeBindings(await actor.run(op, undefined));
+      await expect(output.bindingsStream).toEqualBindingsStream([
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('A1') ],
+        ]),
+        BF.bindings([
+          [ DF.variable('a'), DF.literal('A2') ],
+        ]),
+      ]);
+    });
+
     it('should handle on a stream with variables that should be deleted and are missing', async() => {
       const op: any = {
         operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('missing') ]},
@@ -309,6 +373,44 @@ describe('ActorQueryOperationProject', () => {
           [ DF.variable('b'), DF.blankNode('a1') ],
         ]),
       ]);
+    });
+  });
+
+  describe('ActorQueryOperationProject#hasScopedBlankNodes', () => {
+    it('should be false for bindings without binding-scoped blank nodes', () => {
+      expect(ActorQueryOperationProject.hasScopedBlankNodes(BF.bindings([
+        [ DF.variable('a'), DF.literal('A') ],
+        [ DF.variable('b'), DF.blankNode('b') ],
+        [ DF.variable('c'), new BlankNodeScoped('c', DF.namedNode('urn:c')) ],
+      ]))).toBe(false);
+    });
+
+    it('should be true for bindings with a binding-scoped blank node', () => {
+      expect(ActorQueryOperationProject.hasScopedBlankNodes(BF.bindings([
+        [ DF.variable('a'), DF.literal('A') ],
+        [ DF.variable('b'), new BlankNodeBindingsScoped('b') ],
+      ]))).toBe(true);
+    });
+  });
+
+  describe('ActorQueryOperationProject#projectTermOrder', () => {
+    const a = { term: DF.variable('a'), direction: <const> 'asc' };
+    const b = { term: DF.variable('b'), direction: <const> 'desc' };
+
+    it('should keep no term order', () => {
+      expect(ActorQueryOperationProject.projectTermOrder(undefined, { a: true })).toBeUndefined();
+    });
+
+    it('should keep a term order on projected variables', () => {
+      expect(ActorQueryOperationProject.projectTermOrder([ a, b ], { a: true, b: true })).toEqual([ a, b ]);
+    });
+
+    it('should cut a term order at the first dropped variable', () => {
+      expect(ActorQueryOperationProject.projectTermOrder([ a, b ], { a: true })).toEqual([ a ]);
+    });
+
+    it('should drop a term order that starts with a dropped variable', () => {
+      expect(ActorQueryOperationProject.projectTermOrder([ b, a ], { a: true })).toBeUndefined();
     });
   });
 });

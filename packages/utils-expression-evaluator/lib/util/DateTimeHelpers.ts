@@ -126,7 +126,7 @@ export function toJSDate(date: IDateTimeRepresentation): Date {
     date.hours,
     date.minutes,
     Math.trunc(date.seconds),
-    (date.seconds % 1) * 1_000,
+    Math.round((date.seconds % 1) * 1_000),
   );
   if (date.year >= 0 && date.year < 100) {
     // Special rule of date has gone int action:

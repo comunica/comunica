@@ -6,6 +6,7 @@ import type { IActionContext, IDataset, QueryResultCardinality } from '@comunica
 import { AlgebraFactory, Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { MetadataValidationState } from '@comunica/utils-metadata';
+import { assignOperationEquivalentQueryString } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -1878,6 +1879,27 @@ describe('QuerySourceSparql', () => {
       });
     });
 
+    it('should prefer the equivalent query string of the operation over the queryString', async() => {
+      await expect(source.queryBindings(
+        assignOperationEquivalentQueryString(AF.createPattern(iriS, DF.variable('p'), iriO), 'equivalent'),
+        ctx.set(KeysInitQuery.queryString, 'abc'),
+      )).toEqualBindingsStream([
+        BF.fromRecord({ p: DF.namedNode('p1') }),
+        BF.fromRecord({ p: DF.namedNode('p2') }),
+        BF.fromRecord({ p: DF.namedNode('p3') }),
+      ]);
+
+      expect(mediatorHttp.mediate).toHaveBeenCalledWith({
+        context: ctx.set(KeysInitQuery.queryString, 'abc'),
+        init: {
+          body: new URLSearchParams({ query: 'equivalent' }),
+          headers: expect.anything(),
+          method: 'POST',
+        },
+        input: url,
+      });
+    });
+
     it('should not pass the original queryString if queryFormat is not sparql', async() => {
       await expect(source.queryBindings(
         AF.createPattern(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o')),
@@ -2292,6 +2314,36 @@ describe('QuerySourceSparql', () => {
         },
         input: url,
       });
+    });
+  });
+
+  describe('getQueryStringAsIs', () => {
+    const operation = AF.createPattern(iriS, DF.variable('p'), iriO);
+    const contextQueryString = new ActionContext().set(KeysInitQuery.queryString, 'abc');
+
+    it('should return the equivalent query string of the operation', () => {
+      expect(QuerySourceSparql.getQueryStringAsIs(
+        assignOperationEquivalentQueryString(operation, 'equivalent'),
+        contextQueryString,
+      )).toBe('equivalent');
+    });
+
+    it('should fall back to the queryString without a query format', () => {
+      expect(QuerySourceSparql.getQueryStringAsIs(operation, contextQueryString)).toBe('abc');
+    });
+
+    it('should fall back to the queryString for a SPARQL query format', () => {
+      expect(QuerySourceSparql.getQueryStringAsIs(
+        operation,
+        contextQueryString.set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' }),
+      )).toBe('abc');
+    });
+
+    it('should not fall back to the queryString for a non-SPARQL query format', () => {
+      expect(QuerySourceSparql.getQueryStringAsIs(
+        operation,
+        contextQueryString.set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }),
+      )).toBeUndefined();
     });
   });
 

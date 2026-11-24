@@ -2,6 +2,7 @@ import type { MediatorExpressionEvaluatorFactory } from '@comunica/bus-expressio
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { MediatorTermComparatorFactory } from '@comunica/bus-term-comparator-factory';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { Bindings, IActionContext, IExpressionEvaluator, IQueryOperationResult } from '@comunica/types';
@@ -43,7 +44,8 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
 
   public async runOperation(operation: Algebra.OrderBy, context: IActionContext):
   Promise<IQueryOperationResult> {
-    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: operation.input, context });
+    const outputRaw = await this.mediatorQueryOperation
+      .mediate({ operation: operation.input, context: context.delete(KeysQueryOperation.limitIndicator) });
     const output = getSafeBindings(outputRaw);
     const { bindingsStream } = output;
 
@@ -72,7 +74,11 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
     // first `limit` results of an unbounded one.
     // When a LIMIT was pushed down onto this operation by the sort-limit-pushdown optimizer,
     // only that many results have to be buffered.
-    const options = { window: this.window, limit: <number | undefined> operation.metadata?.sortLimit };
+    const options = {
+      window: this.window,
+      limit: <number | undefined> operation.metadata?.sortLimit,
+      autoStart: false,
+    };
     let sortedStream: AsyncIterator<Bindings>;
     if (length === 1) {
       // Sorting on a single expression is by far the most common case, and is worth not paying for
@@ -80,6 +86,7 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
       const [ evaluator ] = evaluators;
       const [ isAscending ] = ascending;
       const transformed = bindingsStream.transform<IAnnotatedBindings<Term | undefined>>({
+        autoStart: false,
         // eslint-disable-next-line ts/no-misused-promises
         transform: async(bindings, next, push) => {
           push({ bindings, index: index++, results: await evaluate(evaluator, bindings) });
@@ -95,6 +102,7 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
       }, options).map(({ bindings }) => bindings);
     } else {
       const transformed = bindingsStream.transform<IAnnotatedBindings<(Term | undefined)[]>>({
+        autoStart: false,
         // eslint-disable-next-line ts/no-misused-promises
         transform: async(bindings, next, push) => {
           const results: (Term | undefined)[] = Array.from({ length });
@@ -119,7 +127,8 @@ export class ActorQueryOperationOrderBy extends ActorQueryOperationTypedMediated
     return {
       type: 'bindings',
       bindingsStream: sortedStream,
-      metadata: output.metadata,
+      // Sorting replaces the term order of the input
+      metadata: async() => ({ ...await output.metadata(), termOrder: undefined, canSeek: undefined }),
     };
   }
 

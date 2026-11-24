@@ -2,20 +2,24 @@ import type { IBindingsContextMergeHandler } from '@comunica/bus-merge-bindings-
 import { ActionContext } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext, IActionContextKey } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
-import { Map } from 'immutable';
 import { bindingsToString } from './bindingsToString';
 
 /**
- * An immutable.js-based Bindings object.
+ * A Bindings object backed by a native Map, which is never modified after construction.
+ * Modifications copy the map.
  */
 export class Bindings implements RDF.Bindings {
   public readonly type = 'bindings';
 
   private readonly dataFactory: ComunicaDataFactory;
-  private readonly entries: Map<string, RDF.Term>;
+  private readonly entries: ReadonlyMap<string, RDF.Term>;
   private readonly contextHolder: IContextHolder | undefined;
 
-  public constructor(dataFactory: ComunicaDataFactory, entries: Map<string, RDF.Term>, contextHolder?: IContextHolder) {
+  public constructor(
+    dataFactory: ComunicaDataFactory,
+    entries: ReadonlyMap<string, RDF.Term>,
+    contextHolder?: IContextHolder,
+  ) {
     this.dataFactory = dataFactory;
     this.entries = entries;
     this.contextHolder = contextHolder;
@@ -30,34 +34,31 @@ export class Bindings implements RDF.Bindings {
   }
 
   public set(key: RDF.Variable | string, value: RDF.Term): Bindings {
-    return new Bindings(
-      this.dataFactory,
-      this.entries.set(typeof key === 'string' ? key : key.value, value),
-      this.contextHolder,
-    );
+    const entries = new Map(this.entries);
+    entries.set(typeof key === 'string' ? key : key.value, value);
+    return new Bindings(this.dataFactory, entries, this.contextHolder);
   }
 
   public delete(key: RDF.Variable | string): Bindings {
-    return new Bindings(
-      this.dataFactory,
-      this.entries.delete(typeof key === 'string' ? key : key.value),
-      this.contextHolder,
-    );
+    const name = typeof key === 'string' ? key : key.value;
+    if (!this.entries.has(name)) {
+      return new Bindings(this.dataFactory, this.entries, this.contextHolder);
+    }
+    const entries = new Map(this.entries);
+    entries.delete(name);
+    return new Bindings(this.dataFactory, entries, this.contextHolder);
   }
 
   public keys(): Iterable<RDF.Variable> {
-    return this.mapIterable<string, RDF.Variable>(
-      this.iteratorToIterable(this.entries.keys()),
-      key => this.dataFactory.variable(key),
-    );
+    return this.mapIterable<string, RDF.Variable>(this.entries.keys(), key => this.dataFactory.variable(key));
   }
 
   public values(): Iterable<RDF.Term> {
-    return this.iteratorToIterable(this.entries.values());
+    return this.entries.values();
   }
 
   public forEach(fn: (value: RDF.Term, key: RDF.Variable) => any): void {
-    for (const [ key, value ] of this.entries.entries()) {
+    for (const [ key, value ] of this.entries) {
       fn(value, this.dataFactory.variable(key));
     }
   }
@@ -68,7 +69,7 @@ export class Bindings implements RDF.Bindings {
 
   public [Symbol.iterator](): Iterator<[RDF.Variable, RDF.Term]> {
     return this.mapIterable<[string, RDF.Term], [RDF.Variable, RDF.Term]>(
-      this.iteratorToIterable(<Iterator<[string, RDF.Term]>> this.entries.entries()),
+      this.entries,
       ([ key, value ]) => [ this.dataFactory.variable(key), value ],
     )[Symbol.iterator]();
   }
@@ -97,42 +98,59 @@ export class Bindings implements RDF.Bindings {
   }
 
   public filter(fn: (value: RDF.Term, key: RDF.Variable) => boolean): Bindings {
-    return new Bindings(this.dataFactory, Map<string, RDF.Term>(<any> this.entries
-      .filter((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
+    const entries = new Map<string, RDF.Term>();
+    for (const [ key, value ] of this.entries) {
+      if (fn(value, this.dataFactory.variable(key))) {
+        entries.set(key, value);
+      }
+    }
+    return new Bindings(this.dataFactory, entries, this.contextHolder);
   }
 
   public map(fn: (value: RDF.Term, key: RDF.Variable) => RDF.Term): Bindings {
-    return new Bindings(this.dataFactory, Map<string, RDF.Term>(<any> this.entries
-      .map((value, key) => fn(value, this.dataFactory.variable(key)))), this.contextHolder);
+    const entries = new Map<string, RDF.Term>();
+    for (const [ key, value ] of this.entries) {
+      entries.set(key, fn(value, this.dataFactory.variable(key)));
+    }
+    return new Bindings(this.dataFactory, entries, this.contextHolder);
   }
 
   public merge(other: RDF.Bindings | Bindings): Bindings | undefined {
     if (this.size < other.size && other instanceof Bindings) {
       return other.merge(this);
     }
-    let entries = this.entries;
+    // The entries are only copied once, when the first variable that is not in this bindings is found
+    let entries: Map<string, RDF.Term> | undefined;
 
     // Check if other is of type Bindings, in that case we can access entries immediately.
     // This skips the unnecessary conversion from string to variable.
     if (other instanceof Bindings) {
       for (const [ variable, right ] of other.entries) {
         const left = this.entries.get(variable);
-        if (left && !left.equals(right)) {
-          return;
+        if (left) {
+          if (!left.equals(right)) {
+            return;
+          }
+        } else {
+          entries ??= new Map(this.entries);
+          entries.set(variable, right);
         }
-        entries = entries.set(variable, right);
       }
     } else {
       for (const [ variable, right ] of other) {
         const left = this.entries.get(variable.value);
-        if (left && !left.equals(right)) {
-          return;
+        if (left) {
+          if (!left.equals(right)) {
+            return;
+          }
+        } else {
+          entries ??= new Map(this.entries);
+          entries.set(variable.value, right);
         }
-        entries = entries.set(variable.value, right);
       }
     }
 
-    return this.createBindingsWithContexts(entries, other);
+    return this.createBindingsWithContexts(entries ?? this.entries, other);
   }
 
   public mergeWith(
@@ -142,37 +160,33 @@ export class Bindings implements RDF.Bindings {
     if (this.size < other.size && other instanceof Bindings) {
       return other.mergeWith(merger, this);
     }
-    let entries = this.entries;
-
     // For code comments see Bindings.merge function
+    let entries: Map<string, RDF.Term> | undefined;
     if (other instanceof Bindings) {
       for (const [ variable, right ] of other.entries) {
         const left = this.entries.get(variable);
-        let value: RDF.Term;
-        if (left && !left.equals(right)) {
-          value = merger(left, right, this.dataFactory.variable(variable));
-        } else {
-          value = right;
+        if (!left?.equals(right)) {
+          entries ??= new Map(this.entries);
+          entries.set(variable, left ? merger(left, right, this.dataFactory.variable(variable)) : right);
         }
-        entries = entries.set(variable, value);
       }
     } else {
       for (const [ variable, right ] of other) {
         const left = this.entries.get(variable.value);
-        let value: RDF.Term;
-        if (left && !left.equals(right)) {
-          value = merger(left, right, variable);
-        } else {
-          value = right;
+        if (!left?.equals(right)) {
+          entries ??= new Map(this.entries);
+          entries.set(variable.value, left ? merger(left, right, variable) : right);
         }
-        entries = entries.set(variable.value, value);
       }
     }
 
-    return this.createBindingsWithContexts(entries, other);
+    return this.createBindingsWithContexts(entries ?? this.entries, other);
   }
 
-  protected createBindingsWithContexts(entries: Map<string, RDF.Term>, other: RDF.Bindings | Bindings): Bindings {
+  protected createBindingsWithContexts(
+    entries: ReadonlyMap<string, RDF.Term>,
+    other: RDF.Bindings | Bindings,
+  ): Bindings {
     // If any context is empty, we skip merging contexts
     if (this.contextHolder && this.contextHolder.context) {
       let mergedContext = this.contextHolder.context;
@@ -302,12 +316,6 @@ export class Bindings implements RDF.Bindings {
     for (const x of iterable) {
       yield callback(x);
     }
-  }
-
-  protected iteratorToIterable<T>(iterator: Iterator<T>): Iterable<T> {
-    return {
-      [Symbol.iterator]: () => iterator,
-    };
   }
 }
 

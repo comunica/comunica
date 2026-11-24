@@ -1,6 +1,9 @@
+// eslint-disable-next-line import/no-nodejs-modules
+import type { EventEmitter } from 'node:events';
 import { filterMatchingQuotedQuads, getVariables, quadsToBindings } from '@comunica/bus-query-source-identify';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type {
+  Bindings,
   BindingsStream,
   ComunicaDataFactory,
   FragmentSelectorShape,
@@ -11,11 +14,60 @@ import type {
 } from '@comunica/types';
 import { Algebra, AlgebraFactory, isKnownOperation, TypesComunica } from '@comunica/utils-algebra';
 import type { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { SeekableMappingIterator } from '@comunica/utils-iterator';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator, AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
+import type { QuadTermName } from 'rdf-terms';
 import { filterTermsNested, QUAD_TERM_NAMES, someTerms, someTermsNested, uniqTerms } from 'rdf-terms';
 import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
+
+/**
+ * A bindings scan knows the order of results, and can skip ahead within it.
+ * `rdf-stores` produces one of these for a store whose indexes have been ordered.
+ */
+interface IOrderedBindingsScan {
+  resultOrder: QuadTermName[];
+  seekTo?: (component: QuadTermName, term: RDF.Term) => void;
+}
+
+/**
+ * Get the ordered scan of a stream.
+ * @param stream A bindings stream returned by the `matchBindings` method of a source.
+ */
+function getOrderedScan(stream: EventEmitter & Partial<IOrderedBindingsScan>): IOrderedBindingsScan | undefined {
+  if (!Array.isArray(stream.resultOrder)) {
+    return undefined;
+  }
+  return {
+    resultOrder: stream.resultOrder,
+    seekTo: typeof stream.seekTo === 'function' ? stream.seekTo : undefined,
+  };
+}
+
+/**
+ * Determine for every component the variable the pattern binds it to.
+ * Components the pattern repeats are dropped, since a variable is only sorted on by its first occurrence.
+ * @param resultOrder The components the scan varies over, in the order it produces them.
+ * @param operation The pattern being matched.
+ */
+function scanOrderToBindingsOrder(
+  resultOrder: QuadTermName[],
+  operation: Algebra.Pattern,
+): [QuadTermName, RDF.Variable][] {
+  const order: [QuadTermName, RDF.Variable][] = [];
+  const seen = new Set<string>();
+  for (const component of resultOrder) {
+    const term = operation[component];
+    if (term.termType !== 'Variable' || seen.has(term.value)) {
+      // A scan only varies over variables, and a repeated one adds nothing to the order.
+      break;
+    }
+    seen.add(term.value);
+    order.push([ component, term ]);
+  }
+  return order;
+}
 
 export class QuerySourceRdfJs implements IQuerySource {
   protected readonly selectorShape: FragmentSelectorShape;
@@ -24,6 +76,7 @@ export class QuerySourceRdfJs implements IQuerySource {
   private readonly dataFactory: ComunicaDataFactory;
   private readonly bindingsFactory: BindingsFactory;
   private readonly dummyDefaultGraph: RDF.Variable;
+  private readonly algebraFactory: AlgebraFactory;
   /**
    * Cardinalities of patterns that have already been counted during a query execution.
    * Keyed on the query execution scope from the context, so that entries are dropped as soon as that
@@ -40,12 +93,12 @@ export class QuerySourceRdfJs implements IQuerySource {
     this.referenceValue = source;
     this.dataFactory = dataFactory;
     this.bindingsFactory = bindingsFactory;
-    const AF = new AlgebraFactory(<RDF.DataFactory> this.dataFactory);
+    this.algebraFactory = new AlgebraFactory(<RDF.DataFactory> this.dataFactory);
     let selectorShape: FragmentSelectorShape = {
       type: 'operation',
       operation: {
         operationType: 'pattern',
-        pattern: AF.createPattern(
+        pattern: this.algebraFactory.createPattern(
           this.dataFactory.variable('s'),
           this.dataFactory.variable('p'),
           this.dataFactory.variable('o'),
@@ -56,6 +109,7 @@ export class QuerySourceRdfJs implements IQuerySource {
         this.dataFactory.variable('p'),
         this.dataFactory.variable('o'),
       ],
+      ...'getBindings' in this.source && this.source.getBindings ? { synchronous: true } : {},
     };
     const additionalShapes: FragmentSelectorShape[] = [];
     if ('features' in this.source && this.source.features?.indexNodes) {
@@ -169,19 +223,17 @@ export class QuerySourceRdfJs implements IQuerySource {
 
     // Check if we're running in union default graph mode
     const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
-    if (operation.graph.termType === 'DefaultGraph' && unionDefaultGraph) {
-      operation.graph = this.dummyDefaultGraph;
-    }
+    const pattern = this.toUnionDefaultGraph(operation, unionDefaultGraph);
 
     // Get bindings directly if the source allows it
     // This will be more efficient, as it avoids the intermediary quads translation and representation.
     if ('matchBindings' in this.source && this.source.matchBindings) {
       const rawStream = this.source.matchBindings(
         this.bindingsFactory,
-        operation.subject,
-        operation.predicate,
-        operation.object,
-        operation.graph,
+        pattern.subject,
+        pattern.predicate,
+        pattern.object,
+        pattern.graph,
       );
       let it: AsyncIterator<RDF.Bindings> = rawStream instanceof AsyncIterator ?
         rawStream :
@@ -198,17 +250,35 @@ export class QuerySourceRdfJs implements IQuerySource {
       }
 
       // Remove bindings to the dummy __comunica:defaultGraph variable if needed
-      if (operation.graph.equals(this.dummyDefaultGraph)) {
+      if (pattern.graph.equals(this.dummyDefaultGraph)) {
         it = it.map(bindings => bindings.delete(this.dummyDefaultGraph));
-        // Restore graph for determining variable metadata
-        operation.graph = this.dataFactory.defaultGraph();
+      }
+
+      // If the stream has a `seekTo` method with a valid order, we make our iterator seekable.
+      const scan = it === rawStream ? getOrderedScan(rawStream) : undefined;
+      const order = scan ? scanOrderToBindingsOrder(scan.resultOrder, operation) : [];
+      const seekTo = order.length > 0 ? scan?.seekTo : undefined;
+      if (seekTo) {
+        // A scan can only skip ahead on one component, so seeks skip on the first one of the order.
+        const [ component, variable ] = order[0];
+        it = new SeekableMappingIterator(it, bindings => bindings, (target) => {
+          const term = target.get(variable);
+          if (term) {
+            seekTo(component, term);
+          }
+        });
       }
 
       // Determine metadata
       if (!it.getProperty('metadata')) {
         const variables = getVariables(operation).map(variable => ({ variable, canBeUndef: false }));
-        this.setMetadata(it, operation, context, forceEstimateCardinality, { variables })
-          .catch(error => it.destroy(error));
+        this.setMetadata(it, pattern, context, forceEstimateCardinality, {
+          variables,
+          ...order.length > 0 && {
+            termOrder: order.map(([ , variable ]) => ({ term: variable, direction: <const> 'asc' })),
+            canSeek: Boolean(seekTo),
+          },
+        }).catch(error => it.destroy(error));
       }
 
       return it;
@@ -219,10 +289,10 @@ export class QuerySourceRdfJs implements IQuerySource {
 
     // Create an async iterator from the matched quad stream
     const rawStream = this.source.match(
-      QuerySourceRdfJs.nullifyVariables(operation.subject, quotedTripleFiltering),
-      QuerySourceRdfJs.nullifyVariables(operation.predicate, quotedTripleFiltering),
-      QuerySourceRdfJs.nullifyVariables(operation.object, quotedTripleFiltering),
-      QuerySourceRdfJs.nullifyVariables(operation.graph, quotedTripleFiltering),
+      QuerySourceRdfJs.nullifyVariables(pattern.subject, quotedTripleFiltering),
+      QuerySourceRdfJs.nullifyVariables(pattern.predicate, quotedTripleFiltering),
+      QuerySourceRdfJs.nullifyVariables(pattern.object, quotedTripleFiltering),
+      QuerySourceRdfJs.nullifyVariables(pattern.graph, quotedTripleFiltering),
     );
     let it: AsyncIterator<RDF.Quad> = rawStream instanceof AsyncIterator ?
       rawStream :
@@ -230,18 +300,13 @@ export class QuerySourceRdfJs implements IQuerySource {
 
     // Perform post-match-filtering if the source does not support quoted triple filtering.
     if (!quotedTripleFiltering) {
-      it = filterMatchingQuotedQuads(operation, it);
+      it = filterMatchingQuotedQuads(pattern, it);
     }
 
     // Determine metadata
     if (!it.getProperty('metadata')) {
-      this.setMetadata(it, operation, context)
+      this.setMetadata(it, pattern, context)
         .catch(error => it.destroy(error));
-    }
-
-    // Restore graph for determining variable metadata
-    if (operation.graph.equals(this.dummyDefaultGraph)) {
-      operation.graph = this.dataFactory.defaultGraph();
     }
 
     return quadsToBindings(
@@ -251,6 +316,68 @@ export class QuerySourceRdfJs implements IQuerySource {
       this.bindingsFactory,
       Boolean(context.get(KeysQueryOperation.unionDefaultGraph)),
     );
+  }
+
+  /**
+   * In union default graph mode, the pattern to match for a pattern over the default graph,
+   * with a variable graph so that it also matches named graphs.
+   * @param operation A quad pattern.
+   * @param unionDefaultGraph If union default graph mode is enabled.
+   * @return The given pattern, or a new one with a variable graph and the same metadata.
+   */
+  protected toUnionDefaultGraph(operation: Algebra.Pattern, unionDefaultGraph: boolean): Algebra.Pattern {
+    if (unionDefaultGraph && operation.graph.termType === 'DefaultGraph') {
+      const { subject, predicate, object } = operation;
+      return Object.assign(
+        this.algebraFactory.createPattern(subject, predicate, object, this.dummyDefaultGraph),
+        { metadata: operation.metadata },
+      );
+    }
+    return operation;
+  }
+
+  public canContainBlankNodes(): boolean {
+    return !('hasBlankNodes' in this.source && this.source.hasBlankNodes === false);
+  }
+
+  public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
+    if (!isKnownOperation(operation, Algebra.Types.PATTERN) || !('getBindings' in this.source) ||
+      !this.source.getBindings || QuerySourceRdfJs.hasQuotedVariables(operation)) {
+      return undefined;
+    }
+
+    // Same graph semantics as queryBindings
+    const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
+    const graph = operation.graph.termType === 'DefaultGraph' && unionDefaultGraph ?
+      this.dummyDefaultGraph :
+      operation.graph;
+    let bindings = this.source.getBindings(
+      this.bindingsFactory,
+      operation.subject,
+      operation.predicate,
+      operation.object,
+      graph,
+    );
+    if (graph.termType === 'Variable') {
+      if (unionDefaultGraph) {
+        if (graph === this.dummyDefaultGraph) {
+          bindings = bindings.map(binding => binding.delete(this.dummyDefaultGraph));
+        }
+      } else {
+        bindings = bindings.filter(binding => binding.get(graph)!.termType !== 'DefaultGraph');
+      }
+    }
+    return bindings;
+  }
+
+  /**
+   * Check if the given pattern contains quoted triples with variables,
+   * which require post-filtering that sync lookups do not do.
+   * @param operation A quad pattern.
+   */
+  public static hasQuotedVariables(operation: Algebra.Pattern): boolean {
+    return operation.subject.termType === 'Quad' || operation.object.termType === 'Quad' ||
+      operation.graph.termType === 'Quad';
   }
 
   /**
@@ -325,8 +452,10 @@ export class QuerySourceRdfJs implements IQuerySource {
       return cardinality;
     }
 
-    // Only objects are indexed after the graph and predicate, so counting subjects would walk the map
-    if (position !== 'object' || !('countDistinctTerms' in this.source) || !this.source.countDistinctTerms) {
+    // Only objects are counted, and only by sources that index them per predicate,
+    // as counting them otherwise iterates over all quads of the predicate
+    if (position !== 'object' || !('features' in this.source) || !this.source.features?.indexDistinctObjectCounts ||
+      !this.source.countDistinctTerms) {
       return undefined;
     }
     const predicate = QuerySourceRdfJs.nullifyVariables(operation.predicate, quotedTripleFiltering);
@@ -389,10 +518,7 @@ export class QuerySourceRdfJs implements IQuerySource {
     const quotedTripleFiltering = Boolean('features' in this.source && this.source.features?.quotedTripleFiltering);
 
     // Check if we're running in union default graph mode
-    const unionDefaultGraph = Boolean(context.get(KeysQueryOperation.unionDefaultGraph));
-    if (operation.graph.termType === 'DefaultGraph' && unionDefaultGraph) {
-      operation.graph = this.dummyDefaultGraph;
-    }
+    operation = this.toUnionDefaultGraph(operation, Boolean(context.get(KeysQueryOperation.unionDefaultGraph)));
 
     let cardinality: number;
     if ('countQuads' in this.source && this.source.countQuads) {

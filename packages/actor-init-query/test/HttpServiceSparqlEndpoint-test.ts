@@ -367,6 +367,31 @@ describe('HttpServiceSparqlEndpoint', () => {
         .toMatchObject({ configPath: defaultConfigPath, mainModulePath: moduleRootPath });
     });
 
+    it('should not warm up by default', async() => {
+      await expect(HttpServiceSparqlEndpoint.generateConstructorArguments(
+        testCommandlineArguments,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        stderr,
+        exit,
+        [],
+      )).resolves.toMatchObject({ warmup: 0 });
+    });
+
+    it('should take the number of warm-up executions from the commandline arguments', async() => {
+      testCommandlineArguments.push('--warmup', '100');
+      await expect(HttpServiceSparqlEndpoint.generateConstructorArguments(
+        testCommandlineArguments,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        stderr,
+        exit,
+        [],
+      )).resolves.toMatchObject({ warmup: 100 });
+    });
+
     it('should use logger from given context if available', async() => {
       fs.existsSync.mockReturnValue(false);
       const context = { ...testArgumentDict, log: new LoggerPretty({ level: 'test_loglevel' }) };
@@ -572,6 +597,46 @@ describe('HttpServiceSparqlEndpoint', () => {
           .toHaveBeenCalledWith(instance, await instance.engine, variants, stdout, stderr);
       });
 
+      it('should not warm up by default', async() => {
+        jest.spyOn(instance, 'warmUp');
+        await instance.run(stdout, stderr);
+
+        expect(instance.warmUp).not.toHaveBeenCalled();
+      });
+
+      it('should warm up before creating the server', async() => {
+        (<any> instance).warmup = 5;
+        jest.spyOn(instance, 'warmUp').mockResolvedValue();
+        await instance.run(stdout, stderr);
+
+        expect(instance.warmUp).toHaveBeenCalledWith(await instance.engine, stderr);
+        expect(jest.mocked(instance.warmUp).mock.invocationCallOrder[0])
+          .toBeLessThan(http.createServer.mock.invocationCallOrder[0]);
+      });
+
+      it('should warm up the engine over its sources, and log it', async() => {
+        (<any> instance).warmup = 5;
+        const engine: any = await instance.engine;
+        engine.warmup = jest.fn().mockResolvedValue({ executions: 5 });
+        const errors = new PassThrough();
+        await instance.warmUp(engine, errors);
+        errors.end();
+
+        expect(engine.warmup).toHaveBeenCalledWith(instance.context, { executions: 5, budget: instance.timeout });
+        await expect(stringifyStream(errors)).resolves
+          .toMatch(/^Worker \d+ warmed up with 5 query executions in \d+ ms\.\n$/u);
+      });
+
+      it('should log warm-up failures without failing', async() => {
+        const engine: any = await instance.engine;
+        engine.warmup = jest.fn().mockRejectedValue(new Error('no data'));
+        const errors = new PassThrough();
+        await instance.warmUp(engine, errors);
+        errors.end();
+
+        await expect(stringifyStream(errors)).resolves.toBe(`Worker ${process.pid} could not warm up: no data\n`);
+      });
+
       it('should call createServer with the correct arguments', async() => {
         await instance.run(stdout, stderr);
 
@@ -598,6 +663,23 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         // Send shutdown message
         shutdownListener('shutdown');
+
+        expect((response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
+        await new Promise(setImmediate);
+        expect(process.exit).toHaveBeenCalledTimes(1);
+      });
+
+      it('should end an open connection when a query times out', async() => {
+        // Start server
+        await instance.run(stdout, stderr);
+        const server = http.createServer.mock.results[0].value;
+
+        // Open new connection
+        const response1 = new EventEmitter();
+        (response1).end = jest.fn((message, resolve) => resolve());
+        server.emit('request', undefined, response1);
+
+        instance.timeOutQuery(0, stderr);
 
         expect((response1).end).toHaveBeenCalledWith('!TIMEDOUT!', expect.anything());
         await new Promise(setImmediate);
@@ -800,120 +882,19 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(cluster.disconnect).toHaveBeenCalledTimes(1);
       });
 
-      it('should handle worker start messages', async() => {
+      it('should not track the queries of workers', async() => {
         await instance.run(stdout, stderr);
 
         // Simulate listening event
         const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
         dummyWorker.process = {
           pid: 123,
         };
         (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
 
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
-      });
-
-      it('should drop pending query timeouts when a worker exits', async() => {
-        await instance.run(stdout, stderr);
-
-        // Simulate listening event
-        const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
-        dummyWorker.process = {
-          pid: 123,
-        };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
-
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(clearTimeout).not.toHaveBeenCalled();
-
-        // Simulate exit event, which should drop the timeout of the running query
-        dummyWorker.emit('exit', 15, undefined);
-
-        expect(clearTimeout).toHaveBeenCalledTimes(1);
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-      });
-
-      it('should handle worker end messages before timeout is reached', async() => {
-        await instance.run(stdout, stderr);
-
-        // Simulate listening event
-        const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
-        dummyWorker.process = {
-          pid: 123,
-        };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
-
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate end event
-        dummyWorker.emit('message', { type: 'end', queryId: 0 });
-
-        expect(clearTimeout).toHaveBeenCalledTimes(1);
-
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-      });
-
-      it('should handle worker end messages after timeout is reached', async() => {
-        await instance.run(stdout, stderr);
-
-        // Simulate listening event
-        const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => true);
-        dummyWorker.process = {
-          pid: 123,
-        };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
-
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
-
-        // Simulate end event
-        dummyWorker.emit('message', 'end');
-
-        expect(clearTimeout).not.toHaveBeenCalled();
+        // Workers time out their own queries
+        expect(dummyWorker.listenerCount('message')).toBe(0);
+        expect(setTimeout).not.toHaveBeenCalled();
       });
 
       it('should handle SIGINTs', async() => {
@@ -923,58 +904,6 @@ describe('HttpServiceSparqlEndpoint', () => {
         (<any> jest.mocked(process.once).mock.calls[0][1])();
 
         expect(cluster.disconnect).toHaveBeenCalledTimes(1);
-      });
-
-      it('should catch worker shutdown errors', async() => {
-        await instance.run(stdout, stderr);
-
-        // Simulate listening event
-        const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn(() => {
-          throw new Error('shutdown exception');
-        });
-        dummyWorker.isConnected = jest.fn(() => true);
-        dummyWorker.process = {
-          pid: 123,
-        };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
-
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).toHaveBeenCalledWith('shutdown');
-      });
-
-      it('should not send message to disconnected worker', async() => {
-        await instance.run(stdout, stderr);
-
-        // Simulate listening event
-        const dummyWorker: any = new EventEmitter();
-        dummyWorker.send = jest.fn();
-        dummyWorker.isConnected = jest.fn(() => false);
-        dummyWorker.process = {
-          pid: 123,
-        };
-        (<any> jest.mocked(cluster.on).mock.calls[0][1])(dummyWorker);
-
-        // Simulate start event
-        dummyWorker.emit('message', { type: 'start', queryId: 0 });
-
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
-        expect(dummyWorker.send).not.toHaveBeenCalled();
-
-        // Simulate timeout is passed
-        jest.runAllTimers();
-
-        expect(dummyWorker.send).not.toHaveBeenCalled();
       });
     });
 
@@ -996,6 +925,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       function makeRequest() {
         request = Readable.from([ 'default_test_request_content' ]);
         request.url = 'url_sparql';
+        request.socket = {};
         request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist', accept: '*/*' };
         return request;
       }
@@ -1112,6 +1042,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it('should call writeQueryResult with correct arguments if request method equals POST', async() => {
         (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
+        request.headers['content-type'] = 'application/sparql-query';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(instance.writeQueryResult).toHaveBeenCalledWith(
@@ -1150,6 +1081,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       it.each([ 'POST', 'QUERY' ])('should respond with 400 when the %s body can not be parsed', async(method) => {
         (<any> instance).parseBody = jest.fn(() => Promise.reject(new Error('Invalid request body')));
         request.method = method;
+        request.headers['content-type'] = 'application/sparql-query';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(instance.writeQueryResult).not.toHaveBeenCalled();
@@ -1392,6 +1324,186 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.end)
           .toHaveBeenCalledWith(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       });
+
+      describe('with the graph store enabled', () => {
+        let graphStoreInstance: HttpServiceSparqlEndpoint;
+
+        beforeEach(() => {
+          graphStoreInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, graphStore: true });
+          jest.spyOn(graphStoreInstance, 'writeQueryResult').mockImplementation();
+        });
+
+        it('should let the graph store handle a request that identifies a graph', async() => {
+          request.method = 'PUT';
+          request.url = 'url_store_graph';
+          request.headers['content-type'] = 'text/turtle';
+          jest.spyOn(graphStoreInstance.graphStore!, 'handleRequest')
+            .mockImplementation(async(...args: any[]) => ({ status: 204, message: await args[4]() }));
+
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(graphStoreInstance.graphStore!.handleRequest).toHaveBeenCalledWith(
+            engine,
+            request,
+            { graph: DF.namedNode('http://example.org/g') },
+            'http://localhost:3000/store',
+            expect.any(Function),
+          );
+          expect(response.writeHead).toHaveBeenCalledWith(204, {
+            'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN,
+            'Access-Control-Allow-Origin': '*',
+          });
+          expect(response.end).toHaveBeenCalledWith('default_test_request_content\n');
+          expect(graphStoreInstance.writeQueryResult).not.toHaveBeenCalled();
+        });
+
+        it('should respond with 405 to a DELETE on the graph store itself', async() => {
+          request.method = 'DELETE';
+          request.url = 'url_store';
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(405, {
+            'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN,
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS, POST',
+            Allow: 'OPTIONS, POST',
+          });
+        });
+
+        it('should answer a CORS preflight request for OPTIONS on the graph store itself', async() => {
+          request.method = 'OPTIONS';
+          request.url = 'url_store';
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(
+            204,
+            {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
+              'Access-Control-Max-Age': '86400',
+              'Access-Control-Allow-Methods': 'OPTIONS, POST',
+              Allow: 'OPTIONS, POST',
+            },
+          );
+        });
+
+        it('should leave the SPARQL endpoint to the SPARQL protocol', async() => {
+          request.method = 'GET';
+          request.url = 'url_sparql';
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(graphStoreInstance.writeQueryResult).toHaveBeenCalledWith(
+            engine,
+            stdout,
+            stderr,
+            request,
+            response,
+            { type: 'query', value: 'test_query' },
+            null,
+            false,
+            true,
+            0,
+          );
+        });
+
+        it('should answer a CORS preflight request for OPTIONS on a graph', async() => {
+          request.method = 'OPTIONS';
+          request.url = 'url_store_graph';
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(
+            204,
+            {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
+              'Access-Control-Max-Age': '86400',
+              'Access-Control-Allow-Methods': 'DELETE, GET, HEAD, OPTIONS, POST, PUT',
+              Allow: 'DELETE, GET, HEAD, OPTIONS, POST, PUT',
+            },
+          );
+          expect(graphStoreInstance.writeQueryResult).not.toHaveBeenCalled();
+        });
+
+        it('should respond with 404 to an OPTIONS request outside of both services', async() => {
+          request.method = 'OPTIONS';
+          request.url = 'not_urlsparql';
+          await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(
+            404,
+            { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' },
+          );
+        });
+      });
+    });
+
+    describe('negotiateMediaType', () => {
+      const negotiate = require('negotiate');
+      let variants: { type: string; quality: number }[];
+      let request: any;
+
+      beforeEach(() => {
+        variants = [{ type: 'a/a', quality: 1 }, { type: 'b/b', quality: 0.9 }];
+        request = { method: 'POST', headers: { accept: 'b/b' }};
+        jest.spyOn(negotiate, 'choose');
+      });
+
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
+
+      it('should not negotiate without accept header', () => {
+        request.headers = {};
+        expect(instance.negotiateMediaType(variants, request)).toBeNull();
+        expect(negotiate.choose).not.toHaveBeenCalled();
+      });
+
+      it('should negotiate once for the same headers', () => {
+        expect(instance.negotiateMediaType(variants, request)).toBe('b/b');
+        expect(instance.negotiateMediaType(variants, request)).toBe('b/b');
+        expect(negotiate.choose).toHaveBeenCalledTimes(1);
+      });
+
+      it('should cache a null media type', () => {
+        request.headers.accept = '*/*';
+        expect(instance.negotiateMediaType(variants, request)).toBeNull();
+        expect(instance.negotiateMediaType(variants, request)).toBeNull();
+        expect(negotiate.choose).toHaveBeenCalledTimes(1);
+      });
+
+      it('should negotiate again for other accept headers', () => {
+        expect(instance.negotiateMediaType(variants, request)).toBe('b/b');
+        request.headers = { accept: 'a/a' };
+        expect(instance.negotiateMediaType(variants, request)).toBe('a/a');
+        expect(negotiate.choose).toHaveBeenCalledTimes(2);
+      });
+
+      it('should negotiate again for other charset, encoding, or language headers', () => {
+        instance.negotiateMediaType(variants, request);
+        request.headers['accept-charset'] = 'utf-8';
+        instance.negotiateMediaType(variants, request);
+        request.headers['accept-encoding'] = 'gzip';
+        instance.negotiateMediaType(variants, request);
+        request.headers['accept-language'] = 'en';
+        instance.negotiateMediaType(variants, request);
+        expect(negotiate.choose).toHaveBeenCalledTimes(4);
+      });
+
+      it('should negotiate again for other variants', () => {
+        expect(instance.negotiateMediaType(variants, request)).toBe('b/b');
+        expect(instance.negotiateMediaType([{ type: 'a/a', quality: 1 }], request)).toBeNull();
+        expect(negotiate.choose).toHaveBeenCalledTimes(2);
+      });
+
+      it('should clear the cache when it is full', () => {
+        const size = HttpServiceSparqlEndpoint.NEGOTIATION_CACHE_SIZE;
+        (<any> HttpServiceSparqlEndpoint).NEGOTIATION_CACHE_SIZE = 1;
+        instance.negotiateMediaType(variants, request);
+        instance.negotiateMediaType(variants, { ...request, headers: { accept: 'a/a' }});
+        instance.negotiateMediaType(variants, request);
+        expect(negotiate.choose).toHaveBeenCalledTimes(3);
+        (<any> HttpServiceSparqlEndpoint).NEGOTIATION_CACHE_SIZE = size;
+      });
     });
 
     describe('writeQueryResult', () => {
@@ -1478,6 +1590,8 @@ describe('HttpServiceSparqlEndpoint', () => {
         await expect(endCalledPromise).resolves.toBe(
           'The response for the given query could not be serialized for the requested media type\n',
         );
+        // Writing the header again would throw for an actual response
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(
           400,
           { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
@@ -1774,6 +1888,82 @@ describe('HttpServiceSparqlEndpoint', () => {
           .toHaveBeenLastCalledWith(400, { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
       });
 
+      describe('service description cache', () => {
+        async function writeServiceDescription(
+          localInstance: HttpServiceSparqlEndpoint,
+          engine: any,
+          url = '/sparql',
+          localMediaType = mediaType,
+        ): Promise<any> {
+          const localResponse: any = new ServerResponseMock();
+          const ended = new Promise(resolve => localResponse.onEnd = resolve);
+          const localRequest: any = Readable.from([ 'default_request_content' ]);
+          localRequest.url = url;
+          localRequest.headers = { host: 'localhost:3000' };
+          localRequest.socket = {};
+          await localInstance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            localRequest,
+            localResponse,
+            { type: 'query', value: '', context: undefined },
+            localMediaType,
+            false,
+            true,
+            0,
+          );
+          return ended;
+        }
+
+        it('should reuse the serialized service description', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await expect(writeServiceDescription(instance, engine)).resolves.toBeUndefined();
+          await expect(writeServiceDescription(instance, engine)).resolves.toEqual(Buffer.from('test_query_result'));
+          expect(spyResultToString).toHaveBeenCalledTimes(1);
+        });
+
+        it('should serialize again for other media types', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await writeServiceDescription(instance, engine);
+          await writeServiceDescription(instance, engine, '/sparql', 'other_mediatype');
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not cache service descriptions of URLs with a query string', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await writeServiceDescription(instance, engine, '/sparql?other');
+          await expect(writeServiceDescription(instance, engine, '/sparql?other')).resolves.toBeUndefined();
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not cache failed serializations', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          const error = 'An internal server error occurred.\n';
+          await expect(writeServiceDescription(instance, engine, '/sparql', 'mediatype_queryresultstreamerror'))
+            .resolves.toBe(error);
+          await expect(writeServiceDescription(instance, engine, '/sparql', 'mediatype_queryresultstreamerror'))
+            .resolves.toBe(error);
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not cache service descriptions if computing the VoID statistics fails', async() => {
+          const localInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, emitVoid: true });
+          const engine = await new QueryEngineFactoryBase().create();
+          engine.queryBindings = () => {
+            throw new Error('statistics error');
+          };
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await writeServiceDescription(localInstance, engine);
+          await writeServiceDescription(localInstance, engine);
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+      });
+
       describe('VoID description', () => {
         const xsd = 'http://www.w3.org/2001/XMLSchema#';
 
@@ -1824,6 +2014,38 @@ describe('HttpServiceSparqlEndpoint', () => {
             }
             return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray, { autoStart: false }));
           };
+        });
+
+        it('should serialize the service description again after an update', async() => {
+          const localInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, emitVoid: true });
+          const engine = await new QueryEngineFactoryBase().create();
+          engine.queryBindings = queryBindings;
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          const write = async(value: string): Promise<void> => {
+            const localResponse: any = new ServerResponseMock();
+            const ended = new Promise(resolve => localResponse.onEnd = resolve);
+            await localInstance.writeQueryResult(
+              engine,
+              new PassThrough(),
+              new PassThrough(),
+              request,
+              localResponse,
+              { type: 'query', value, context: undefined },
+              mediaType,
+              false,
+              true,
+              0,
+            );
+            await ended;
+          };
+
+          await write('');
+          await write('');
+          expect(spyResultToString).toHaveBeenCalledTimes(1);
+          await write('INSERT DATA { <http://example.org/s> <http://example.org/p> "o" . }');
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+          await write('');
+          expect(spyResultToString).toHaveBeenCalledTimes(3);
         });
 
         it('should append the VoID description in the service description when emitVoid is not true', async() => {
@@ -2058,15 +2280,24 @@ INSERT DATA {
         expect(responseString).toBe('test_query_result');
       });
 
-      it('should emit process start and end events', async() => {
-        jest.spyOn(process, 'send').mockImplementation();
+      it('should only log a query timeout outside of a worker', async() => {
+        const stderr = new PassThrough();
+        instance.timeOutQuery(3, stderr);
+        stderr.end();
+        await expect(stringifyStream(stderr)).resolves.toBe(`Worker ${process.pid} timed out for query 3.\n`);
+        expect(process.exit).not.toHaveBeenCalled();
+      });
+
+      it('should time out the query in the worker', async() => {
+        jest.spyOn(instance, 'timeOutQuery').mockImplementation();
+        const stderr = new PassThrough();
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => ({ resultType: 'bindings' });
 
         await instance.writeQueryResult(
           engine,
           new PassThrough(),
-          new PassThrough(),
+          stderr,
           request,
           response,
           query,
@@ -2076,16 +2307,50 @@ INSERT DATA {
           0,
         );
 
-        expect(process.send).toHaveBeenCalledTimes(1);
-        expect(process.send).toHaveBeenCalledWith({ type: 'start', queryId: 0 });
+        expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 60_000);
+        expect(instance.timeOutQuery).not.toHaveBeenCalled();
+        jest.runAllTimers();
+        expect(instance.timeOutQuery).toHaveBeenCalledWith(0, stderr);
 
+        // A query that timed out is not reported as completed
         response.emit('close');
-        expect(process.send).toHaveBeenCalledTimes(2);
-        expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
+        stderr.end();
+        await expect(stringifyStream(stderr)).resolves.toBe(
+          `Worker ${process.pid} got assigned a new query (0).\n`,
+        );
       });
 
-      it('should emit the process end event when the client disconnects during the query', async() => {
-        jest.spyOn(process, 'send').mockImplementation();
+      it('should clear the timeout when the response closes', async() => {
+        jest.spyOn(instance, 'timeOutQuery').mockImplementation();
+        const stderr = new PassThrough();
+        const engine = await new QueryEngineFactoryBase().create();
+        engine.query = () => ({ resultType: 'bindings' });
+
+        await instance.writeQueryResult(
+          engine,
+          new PassThrough(),
+          stderr,
+          request,
+          response,
+          query,
+          '',
+          false,
+          true,
+          0,
+        );
+
+        response.emit('close');
+        expect(clearTimeout).toHaveBeenCalledTimes(1);
+        jest.runAllTimers();
+        expect(instance.timeOutQuery).not.toHaveBeenCalled();
+        stderr.end();
+        await expect(stringifyStream(stderr)).resolves.toBe(
+          `Worker ${process.pid} got assigned a new query (0).\nWorker ${process.pid} has completed query 0.\n`,
+        );
+      });
+
+      it('should clear the timeout when the client disconnects during the query', async() => {
+        jest.spyOn(instance, 'timeOutQuery').mockImplementation();
         const engine = await new QueryEngineFactoryBase().create();
         // A query that never settles, so that the response closes while the execution is still running
         engine.query = () => new Promise(() => {
@@ -2106,15 +2371,14 @@ INSERT DATA {
         );
         await new Promise(setImmediate);
 
-        expect(process.send).toHaveBeenCalledWith({ type: 'start', queryId: 0 });
-
         response.emit('close');
-        expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
+        jest.runAllTimers();
+        expect(instance.timeOutQuery).not.toHaveBeenCalled();
         expect(written).toBeInstanceOf(Promise);
       });
 
-      it('should emit the process end event for a query that fails', async() => {
-        jest.spyOn(process, 'send').mockImplementation();
+      it('should clear the timeout for a query that fails', async() => {
+        jest.spyOn(instance, 'timeOutQuery').mockImplementation();
         const engine = await new QueryEngineFactoryBase().create();
         engine.query = () => Promise.reject(new Error('Query failure'));
 
@@ -2131,36 +2395,9 @@ INSERT DATA {
           0,
         );
 
-        expect(process.send).toHaveBeenCalledWith({ type: 'start', queryId: 0 });
-
         response.emit('close');
-        expect(process.send).toHaveBeenCalledWith({ type: 'end', queryId: 0 });
-      });
-
-      it('should not emit process events when the service does not run as a worker', async() => {
-        const send = process.send;
-        delete (<any> process).send;
-        try {
-          const engine = await new QueryEngineFactoryBase().create();
-          engine.query = () => ({ resultType: 'bindings' });
-
-          await expect(instance.writeQueryResult(
-            engine,
-            new PassThrough(),
-            new PassThrough(),
-            request,
-            response,
-            query,
-            '',
-            false,
-            true,
-            0,
-          )).resolves.toBeUndefined();
-
-          response.emit('close');
-        } finally {
-          (<any> process).send = send;
-        }
+        jest.runAllTimers();
+        expect(instance.timeOutQuery).not.toHaveBeenCalled();
       });
 
       it('should not execute an update again while serializing the result', async() => {
@@ -2508,10 +2745,131 @@ INSERT DATA {
           .toBe('http://localhost:1234/sparql');
       });
 
+      it('should use the given path', () => {
+        expect(HttpServiceSparqlEndpoint
+          .getBaseIRI(<any> { headers: { host: 'example.org' }, socket: {}}, 3_000, '/store'))
+          .toBe('http://example.org/store');
+      });
+
       it('should use https when the request was received over an encrypted socket', () => {
         expect(HttpServiceSparqlEndpoint
           .getBaseIRI(<any> { headers: { host: 'example.org' }, socket: { encrypted: true }}, 3_000))
           .toBe('https://example.org/sparql');
+      });
+    });
+
+    describe('writeGraphStoreResult', () => {
+      let engine: any;
+      let response: any;
+      let stdout: PassThrough;
+      let request: any;
+      let endCalledPromise: Promise<string>;
+      let result: any;
+
+      beforeEach(async() => {
+        engine = await new QueryEngineFactoryBase().create();
+        response = new ServerResponseMock();
+        stdout = new PassThrough();
+        request = { method: 'GET', url: 'url_sparql_graph', headers: {}, socket: {}};
+        endCalledPromise = new Promise(resolve => response.onEnd = resolve);
+        result = { resultType: 'quads' };
+      });
+
+      it('should write a response without a graph', async() => {
+        await instance.writeGraphStoreResult(
+          engine,
+          stdout,
+          request,
+          response,
+          { status: 404, message: 'The graph does not exist.' },
+          'text/turtle',
+        );
+
+        expect(response.writeHead).toHaveBeenCalledWith(404, {
+          'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN,
+          'Access-Control-Allow-Origin': '*',
+        });
+        await expect(endCalledPromise).resolves.toBe('The graph does not exist.\n');
+      });
+
+      it('should write a response without a graph and without a message', async() => {
+        await instance.writeGraphStoreResult(
+          engine,
+          stdout,
+          request,
+          response,
+          { status: 201, headers: { Location: 'http://example.org/sparql/g' }},
+          'text/turtle',
+        );
+
+        expect(response.writeHead).toHaveBeenCalledWith(201, {
+          'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN,
+          'Access-Control-Allow-Origin': '*',
+          Location: 'http://example.org/sparql/g',
+        });
+        await expect(endCalledPromise).resolves.toBeUndefined();
+      });
+
+      it('should serialize a graph in the requested media type', async() => {
+        await instance
+          .writeGraphStoreResult(engine, stdout, request, response, { status: 200, result }, 'mtype_1');
+
+        expect(response.writeHead).toHaveBeenCalledWith(200, {
+          'content-type': 'mtype_1',
+          'Access-Control-Allow-Origin': '*',
+        });
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        response.push(null);
+        await expect(stringifyStream(response)).resolves.toBe('test_query_result');
+      });
+
+      it('should serialize a graph as Turtle by default', async() => {
+        await instance
+          .writeGraphStoreResult(engine, stdout, request, response, { status: 200, result }, <any> null);
+
+        expect(response.writeHead).toHaveBeenCalledWith(200, {
+          'content-type': 'text/turtle',
+          'Access-Control-Allow-Origin': '*',
+        });
+      });
+
+      it('should not write a body for a HEAD request', async() => {
+        request.method = 'HEAD';
+        await instance
+          .writeGraphStoreResult(engine, stdout, request, response, { status: 200, result }, 'mtype_1');
+
+        expect(response.writeHead).toHaveBeenCalledWith(200, {
+          'content-type': 'mtype_1',
+          'Access-Control-Allow-Origin': '*',
+        });
+        await expect(endCalledPromise).resolves.toBeUndefined();
+      });
+
+      it('should end the response when the graph could not be serialized', async() => {
+        await instance.writeGraphStoreResult(
+          engine,
+          stdout,
+          request,
+          response,
+          { status: 200, result },
+          'mediatype_throwerror',
+        );
+
+        await expect(endCalledPromise).resolves
+          .toBe('The graph could not be serialized for the requested media type.\n');
+      });
+
+      it('should end the response when the serialization errors', async() => {
+        await instance.writeGraphStoreResult(
+          engine,
+          stdout,
+          request,
+          response,
+          { status: 200, result },
+          'mediatype_queryresultstreamerror',
+        );
+
+        await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
       });
     });
 

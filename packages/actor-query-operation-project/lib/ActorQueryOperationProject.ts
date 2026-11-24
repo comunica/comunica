@@ -11,6 +11,7 @@ import type {
   IQueryOperationResult,
   IQueryOperationResultBindings,
   MetadataVariable,
+  TermsOrder,
 } from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
 import { BlankNodeBindingsScoped } from '@comunica/utils-data-factory';
@@ -57,22 +58,22 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
         variablesOutputIndexed[variable.variable.value].canBeUndef,
     }));
 
-    // Make sure the project variables are the only variables that are present in the bindings.
-    let bindingsStream: BindingsStream = deleteVariables.length === 0 ?
-      output.bindingsStream :
-      output.bindingsStream.map((bindings: Bindings) => {
-        for (const deleteVariable of deleteVariables) {
-          bindings = bindings.delete(deleteVariable.variable);
-        }
-        return bindings;
-      });
-
-    // Make sure that blank nodes with same labels are not reused over different bindings, as required by SPARQL 1.1.
-    // Required for the BNODE() function: https://www.w3.org/TR/sparql11-query/#func-bnode
-    // When we have a scoped blank node, make sure the skolemized value is maintained.
+    const deleteVariableNames = new Set(deleteVariables.map(variable => variable.variable.value));
     let blankNodeCounter = 0;
-    bindingsStream = bindingsStream.map((bindings: Bindings) => {
+    const bindingsStream: BindingsStream = output.bindingsStream.map((bindings: Bindings) => {
       blankNodeCounter++;
+
+      // Make sure the project variables are the only variables that are present in the bindings.
+      if (deleteVariableNames.size > 0) {
+        bindings = bindings.filter((_value, variable) => !deleteVariableNames.has(variable.value));
+      }
+
+      // Make sure that blank nodes with same labels are not reused over different bindings, as required by SPARQL 1.1.
+      // Required for the BNODE() function: https://www.w3.org/TR/sparql11-query/#func-bnode
+      // When we have a scoped blank node, make sure the skolemized value is maintained.
+      if (!ActorQueryOperationProject.hasScopedBlankNodes(bindings)) {
+        return bindings;
+      }
       const scopedBlankNodesCache = new Map<string, RDF.BlankNode>();
       return bindings.map((term) => {
         if (term instanceof BlankNodeBindingsScoped) {
@@ -90,7 +91,43 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: async() => ({ ...outputMetadata, variables: variablesOutput }),
+      metadata: async() => ({
+        ...outputMetadata,
+        variables: variablesOutput,
+        termOrder: ActorQueryOperationProject.projectTermOrder(outputMetadata.termOrder, variablesOperationIndexed),
+      }),
     };
+  }
+
+  /**
+   * Check if the given bindings contain a binding-scoped blank node.
+   * @param bindings Bindings.
+   */
+  public static hasScopedBlankNodes(bindings: Bindings): boolean {
+    for (const term of bindings.values()) {
+      if (term instanceof BlankNodeBindingsScoped) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Compute the term order that would apply on the projected variables.
+   * @param termOrder The term order of the input.
+   * @param variables The projected variables, by name.
+   */
+  public static projectTermOrder(
+    termOrder: TermsOrder<RDF.Variable> | undefined,
+    variables: Record<string, unknown>,
+  ): TermsOrder<RDF.Variable> | undefined {
+    if (!termOrder) {
+      return undefined;
+    }
+    const end = termOrder.findIndex(entry => !(entry.term.value in variables));
+    if (end === 0) {
+      return undefined;
+    }
+    return end < 0 ? termOrder : termOrder.slice(0, end);
   }
 }

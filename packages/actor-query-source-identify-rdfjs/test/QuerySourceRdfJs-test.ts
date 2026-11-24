@@ -45,6 +45,23 @@ describe('QuerySourceRdfJs', () => {
           DF.variable('p'),
           DF.variable('o'),
         ],
+        synchronous: true,
+      });
+    });
+
+    it('should return a selector shape without synchronous lookups for sources without getBindings', async() => {
+      source = new QuerySourceRdfJs(new Store(), DF, BF);
+      await expect(source.getSelectorShape()).resolves.toEqual({
+        type: 'operation',
+        operation: {
+          operationType: 'pattern',
+          pattern: AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
+        },
+        variablesOptional: [
+          DF.variable('s'),
+          DF.variable('p'),
+          DF.variable('o'),
+        ],
       });
     });
 
@@ -63,6 +80,7 @@ describe('QuerySourceRdfJs', () => {
               DF.variable('p'),
               DF.variable('o'),
             ],
+            synchronous: true,
           },
           {
             type: 'operation',
@@ -134,6 +152,36 @@ describe('QuerySourceRdfJs', () => {
         });
     });
 
+    it('should not count distinct values for sources that can not count distinct objects cheaply', async() => {
+      store = RdfStore.createDefault(true);
+      // As a source that can count distinct terms, but does not declare that this is cheap
+      store.features.indexDistinctObjectCounts = false;
+      const countDistinctTerms = jest.spyOn(store, 'countDistinctTerms');
+      source = new QuerySourceRdfJs(store, DF, BF);
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+
+      const data = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(data).toEqualBindingsStream([
+        BF.fromRecord({ s: DF.namedNode('s1'), o: DF.namedNode('o1') }),
+        BF.fromRecord({ s: DF.namedNode('s2'), o: DF.namedNode('o2') }),
+      ]);
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toEqual({
+          cardinality: { type: 'exact', value: 2 },
+          state: expect.any(MetadataValidationState),
+          variables: [
+            { variable: DF.variable('s'), canBeUndef: false },
+            { variable: DF.variable('o'), canBeUndef: false },
+          ],
+          requestTime: 0,
+        });
+      expect(countDistinctTerms).not.toHaveBeenCalled();
+    });
+
     it('should not count distinct values of a variable that occurs multiple times', async() => {
       store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('s1')));
       store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
@@ -170,6 +218,99 @@ describe('QuerySourceRdfJs', () => {
       await expect(data).toEqualBindingsStream([]);
       await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
         .toEqual({ a: 1 });
+    });
+
+    it('should report the order a scan varies over, and forward a seek to it', async() => {
+      const sought: [string, string][] = [];
+      (<any> store).matchBindings = () => {
+        const it: any = new ArrayIterator([
+          BF.bindings([[ DF.variable('s'), DF.namedNode('s1') ], [ DF.variable('o'), DF.namedNode('o1') ]]),
+        ], { autoStart: false });
+        it.resultOrder = [ 'subject', 'object' ];
+        it.seekTo = (component: string, term: any) => sought.push([ component, term.value ]);
+        return it;
+      };
+
+      const data: any = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toMatchObject({
+          termOrder: [
+            { term: DF.variable('s'), direction: 'asc' },
+            { term: DF.variable('o'), direction: 'asc' },
+          ],
+          canSeek: true,
+        });
+
+      // The seek goes to the first component of that order, in the store's own terms.
+      data.seek(BF.bindings([[ DF.variable('s'), DF.namedNode('s9') ]]));
+      expect(sought).toEqual([[ 'subject', 's9' ]]);
+
+      // A target that binds nothing the scan is ordered on has nothing to skip to.
+      data.seek(BF.bindings([[ DF.variable('other'), DF.namedNode('x') ]]));
+      expect(sought).toEqual([[ 'subject', 's9' ]]);
+
+      await expect(data).toEqualBindingsStream([
+        BF.bindings([[ DF.variable('s'), DF.namedNode('s1') ], [ DF.variable('o'), DF.namedNode('o1') ]]),
+      ]);
+    });
+
+    it('should stop the reported order at a variable the pattern repeats', async() => {
+      (<any> store).matchBindings = () => {
+        const it: any = new ArrayIterator([], { autoStart: false });
+        it.resultOrder = [ 'subject', 'object' ];
+        return it;
+      };
+
+      const data: any = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('s')),
+        ctx,
+      );
+      await expect(new Promise(resolve => data.getProperty('metadata', resolve))).resolves
+        .toMatchObject({ termOrder: [{ term: DF.variable('s'), direction: 'asc' }], canSeek: false });
+      // The scan cannot skip ahead, so neither can the stream.
+      expect(data.seek).toBeUndefined();
+    });
+
+    it('should report no order when the scan varies over nothing the pattern binds', async() => {
+      (<any> store).matchBindings = () => {
+        const it: any = new ArrayIterator([], { autoStart: false });
+        it.resultOrder = [ 'predicate' ];
+        it.seekTo = () => {
+          throw new Error('should not be sought');
+        };
+        return it;
+      };
+
+      const data: any = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      );
+      const metadata: any = await new Promise(resolve => data.getProperty('metadata', resolve));
+      expect(metadata.termOrder).toBeUndefined();
+      expect(data.seek).toBeUndefined();
+    });
+
+    it('should not expose a seek once something has wrapped the scan', async() => {
+      (<any> store).matchBindings = () => {
+        const it: any = new ArrayIterator([], { autoStart: false });
+        it.resultOrder = [ 'graph', 'subject' ];
+        it.seekTo = () => {
+          throw new Error('should not be sought');
+        };
+        return it;
+      };
+
+      // A variable graph without union default graph semantics filters the scan.
+      const data: any = source.queryBindings(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'), DF.variable('g')),
+        ctx,
+      );
+      const metadata: any = await new Promise(resolve => data.getProperty('metadata', resolve));
+      expect(metadata.termOrder).toBeUndefined();
+      expect(data.seek).toBeUndefined();
     });
 
     it('should return triples in the default graph when matchBindings is unavailable', async() => {
@@ -408,6 +549,37 @@ describe('QuerySourceRdfJs', () => {
           ],
           requestTime: 0,
         });
+    });
+
+    it.each([
+      [ 'with', false ],
+      [ 'without', true ],
+    ])('should not modify the pattern with union default graph %s matchBindings', async(_, noMatchBindings) => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+      if (noMatchBindings) {
+        (<any> store).matchBindings = undefined;
+      }
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1'), DF.namedNode('g1')));
+
+      const pattern = AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'));
+      const data = source.queryBindings(pattern, ctx);
+      await expect(data.toArray()).resolves.toHaveLength(1);
+      await new Promise(resolve => data.getProperty('metadata', resolve));
+      expect(pattern.graph).toEqual(DF.defaultGraph());
+    });
+
+    it('should keep the metadata of the pattern with union default graph', async() => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+      const setMetadata = jest.spyOn(<any> source, 'setMetadata');
+      const pattern = Object.assign(
+        AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        { metadata: { key: 'value' }},
+      );
+      await source.queryBindings(pattern, ctx).toArray();
+      const matched: any = setMetadata.mock.calls[0][1];
+      expect(matched).not.toBe(pattern);
+      expect(matched.graph).toEqual(DF.variable('__comunica:defaultGraph'));
+      expect(matched.metadata).toEqual({ key: 'value' });
     });
 
     it('should return quads in named graphs and the default graph with union default graph', async() => {
@@ -1062,6 +1234,88 @@ describe('QuerySourceRdfJs', () => {
             requestTime: 0,
           });
       });
+    });
+  });
+
+  describe('canContainBlankNodes', () => {
+    it('should be true for sources that do not track blank nodes', () => {
+      expect(new QuerySourceRdfJs(new Store(), DF, BF).canContainBlankNodes()).toBe(true);
+    });
+
+    it('should be true for sources that have blank nodes', () => {
+      store.addQuad(DF.quad(DF.blankNode('b'), DF.namedNode('p'), DF.namedNode('o')));
+      expect(source.canContainBlankNodes()).toBe(true);
+    });
+
+    it('should be false for sources that have no blank nodes', () => {
+      store.addQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')));
+      expect(source.canContainBlankNodes()).toBe(false);
+    });
+  });
+
+  describe('queryBindingsSynchronous', () => {
+    beforeEach(() => {
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o2'), DF.namedNode('g')));
+    });
+
+    it('should return the bindings of the default graph', () => {
+      expect(source.queryBindingsSynchronous(
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      )).toEqualBindingsArray([
+        BF.bindings([[ DF.variable('o'), DF.namedNode('o1') ]]),
+      ]);
+    });
+
+    it('should return the bindings of all graphs in union default graph mode', () => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+      expect(source.queryBindingsSynchronous(
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      )).toEqualBindingsArray([
+        BF.bindings([[ DF.variable('o'), DF.namedNode('o1') ]]),
+        BF.bindings([[ DF.variable('o'), DF.namedNode('o2') ]]),
+      ]);
+    });
+
+    it('should only bind graph variables to named graphs', () => {
+      expect(source.queryBindingsSynchronous(
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o'), DF.variable('g')),
+        ctx,
+      )).toEqualBindingsArray([
+        BF.bindings([[ DF.variable('o'), DF.namedNode('o2') ], [ DF.variable('g'), DF.namedNode('g') ]]),
+      ]);
+    });
+
+    it('should bind graph variables to all graphs in union default graph mode', () => {
+      ctx = ctx.set(KeysQueryOperation.unionDefaultGraph, true);
+      expect(source.queryBindingsSynchronous(
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o'), DF.variable('g')),
+        ctx,
+      )).toHaveLength(2);
+    });
+
+    it('should not handle quoted triples', () => {
+      for (const term of [ 'subject', 'object', 'graph' ]) {
+        const pattern = AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'));
+        (<any> pattern)[term] = DF.quad(DF.variable('a'), DF.namedNode('b'), DF.variable('c'));
+        expect(source.queryBindingsSynchronous(pattern, ctx)).toBeUndefined();
+      }
+    });
+
+    it('should not handle operations other than patterns', () => {
+      expect(source.queryBindingsSynchronous(AF.createJoin([
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o')),
+      ]), ctx)).toBeUndefined();
+    });
+
+    it('should not handle sources without synchronous lookups', () => {
+      source = new QuerySourceRdfJs(new Store(), DF, BF);
+      expect(source.queryBindingsSynchronous(
+        AF.createPattern(DF.namedNode('s1'), DF.namedNode('p'), DF.variable('o')),
+        ctx,
+      )).toBeUndefined();
     });
   });
 

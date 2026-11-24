@@ -64,5 +64,16 @@ describe('ActorHashQuadsMurmur', () => {
         DF.namedNode('o2'),
       )));
     });
+
+    it('should return int32 hashes', async() => {
+      const result = await actor.run({ context: new ActionContext() });
+
+      // The uint32 murmur hash of this quad is 3578222085
+      expect(result.hashFunction(DF.quad(
+        DF.namedNode('s'),
+        DF.namedNode('p'),
+        DF.namedNode('o1'),
+      ))).toBe(-716745211);
+    });
   });
 });

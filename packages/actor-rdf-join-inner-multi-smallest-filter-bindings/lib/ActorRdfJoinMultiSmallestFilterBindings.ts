@@ -22,7 +22,12 @@ import type {
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { ChunkedIterator } from '@comunica/utils-iterator';
-import { doesShapeAcceptOperation, getOperationSource, getSafeBindings } from '@comunica/utils-query-operation';
+import {
+  doesShapeAcceptOperationInContext,
+  getOperationSource,
+  getSafeBindings,
+  getSourceSelectorShape,
+} from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { UnionIterator } from 'asynciterator';
@@ -217,12 +222,8 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
       return failTest(`Actor ${this.name} can only process if entries[1] has a source`);
     }
     const testingOperation = second.operation;
-    const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
-    const wildcardAcceptAllExtensionFunctions = action.context.get(KeysInitQuery.extensionFunctionsAlwaysPushdown);
-    if (!doesShapeAcceptOperation(selectorShape, testingOperation, {
-      filterBindings: true,
-      wildcardAcceptAllExtensionFunctions,
-    })) {
+    const selectorShape = await getSourceSelectorShape(sourceWrapper, action.context);
+    if (!doesShapeAcceptOperationInContext(selectorShape, testingOperation, action.context, { filterBindings: true })) {
       return failTest(`Actor ${this.name} can only process if entries[1] accept filterBindings`);
     }
 

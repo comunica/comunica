@@ -45,6 +45,9 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
   }
 
   public async run(action: IActionOptimizeQueryOperation): Promise<IActorOptimizeQueryOperationOutput> {
+    if (!algebraUtils.hasOperationType(action.operation, [ Algebra.Types.FILTER ])) {
+      return { operation: action.operation, context: action.context };
+    }
     const dataFactory: ComunicaDataFactory = action.context.getSafe(KeysInitQuery.dataFactory);
     const algebraFactory = new AlgebraFactory(dataFactory);
     let operation: Algebra.Operation = action.operation;
@@ -321,6 +324,12 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
         return [ false, factory.createFilter(operation, expression) ];
       }
 
+      // Don't push down expressions without variables, as these would be copied into every entry,
+      // and evaluated multiple times per result, which is incorrect for non-deterministic expressions such as RAND.
+      if (expressionVariables.length === 0) {
+        return [ false, factory.createFilter(operation, expression) ];
+      }
+
       // Don't push down into an entry that must be bound by this join, such as a SERVICE clause with a variable
       // target. Wrapping such an entry in a filter would leave no join actor able to bind it.
       if (operation.input
@@ -360,11 +369,15 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       return [ isModified, joins.length === 1 ? joins[0] : factory.createJoin(joins) ];
     }
     if (isKnownOperation(operation, Algebra.Types.NOP)) {
+      // Keep expressions without variables, as these may still reject the single empty solution
+      if (expressionVariables.length === 0) {
+        return [ false, factory.createFilter(operation, expression) ];
+      }
       return [ true, operation ];
     }
     if (isKnownOperation(operation, Algebra.Types.PROJECT)) {
-      // Push down if variables overlap
-      if (this.variablesIntersect(operation.variables, expressionVariables)) {
+      // Push down if variables overlap, or if there are no variables
+      if (expressionVariables.length === 0 || this.variablesIntersect(operation.variables, expressionVariables)) {
         return [ true, factory.createProject(
           this.filterPushdown(expression, expressionVariables, operation.input, factory, context)[1],
           operation.variables,
@@ -411,8 +424,8 @@ export class ActorOptimizeQueryOperationFilterPushdown extends ActorOptimizeQuer
       return [ isModified, unions.length === 1 ? unions[0] : factory.createUnion(unions) ];
     }
     if (isKnownOperation(operation, Algebra.Types.VALUES)) {
-      // Only keep filter if it overlaps with the variables
-      if (this.variablesIntersect(operation.variables, expressionVariables)) {
+      // Only keep filter if it overlaps with the variables, or if there are no variables
+      if (expressionVariables.length === 0 || this.variablesIntersect(operation.variables, expressionVariables)) {
         return [ false, factory.createFilter(operation, expression) ];
       }
       return [ true, operation ];

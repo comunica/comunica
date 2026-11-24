@@ -1,5 +1,6 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import type {
+  Bindings,
   BindingsStream,
   ComunicaDataFactory,
   FragmentSelectorShape,
@@ -8,12 +9,19 @@ import type {
   IQuerySource,
   QuerySourceReference,
 } from '@comunica/types';
-import type { Algebra } from '@comunica/utils-algebra';
+import { Algebra, isKnownOperation } from '@comunica/utils-algebra';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator } from 'asynciterator';
-import { deskolemizeOperation, skolemizeBindingsStream, skolemizeQuadStream } from './utils';
+import {
+  deskolemizeOperation,
+  deskolemizePattern,
+  hasSkolemizedTerms,
+  skolemizeBindings,
+  skolemizeBindingsStream,
+  skolemizeQuadStream,
+} from './utils';
 
 /**
  * A IQuerySource wrapper that skolemizes outgoing quads and bindings.
@@ -41,13 +49,31 @@ export class QuerySourceSkolemized implements IQuerySource {
     return await this.innerSource.getFilterFactor(context);
   }
 
+  /**
+   * Check if skolemization would not change the given operation and its results.
+   * @param operation An operation.
+   */
+  protected canPassThrough(operation: Algebra.Operation): boolean {
+    return isKnownOperation(operation, Algebra.Types.PATTERN) && this.innerSource.canContainBlankNodes?.() === false &&
+      !hasSkolemizedTerms(operation);
+  }
+
+  public canContainBlankNodes(): boolean {
+    return this.innerSource.canContainBlankNodes?.() !== false;
+  }
+
   public queryBindings(
     operation: Algebra.Operation,
     context: IActionContext,
     options: IQueryBindingsOptions | undefined,
   ): BindingsStream {
+    if (this.canPassThrough(operation)) {
+      return this.innerSource.queryBindings(operation, context, options);
+    }
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const operationMapped = deskolemizeOperation(dataFactory, operation, this.sourceId);
+    const operationMapped = isKnownOperation(operation, Algebra.Types.PATTERN) ?
+      deskolemizePattern(dataFactory, operation, this.sourceId) :
+      deskolemizeOperation(dataFactory, operation, this.sourceId);
     if (!operationMapped) {
       const it: BindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
       it.setProperty('metadata', {
@@ -62,6 +88,24 @@ export class QuerySourceSkolemized implements IQuerySource {
       this.innerSource.queryBindings(operationMapped, context, options),
       this.sourceId,
     );
+  }
+
+  public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
+    if (!this.innerSource.queryBindingsSynchronous) {
+      return undefined;
+    }
+    if (this.canPassThrough(operation)) {
+      return this.innerSource.queryBindingsSynchronous(operation, context);
+    }
+    const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
+    const operationMapped = isKnownOperation(operation, Algebra.Types.PATTERN) ?
+      deskolemizePattern(dataFactory, operation, this.sourceId) :
+      deskolemizeOperation(dataFactory, operation, this.sourceId);
+    if (!operationMapped) {
+      return [];
+    }
+    return this.innerSource.queryBindingsSynchronous(operationMapped, context)
+      ?.map(bindings => skolemizeBindings(dataFactory, bindings, this.sourceId));
   }
 
   public queryBoolean(operation: Algebra.Ask, context: IActionContext): Promise<boolean> {

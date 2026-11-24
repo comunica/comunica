@@ -25,6 +25,8 @@ import { QueryEngineBase, QueryEngineFactoryBase } from '..';
 
 import { CliArgsHandlerBase } from './cli/CliArgsHandlerBase';
 import { CliArgsHandlerHttp } from './cli/CliArgsHandlerHttp';
+import type { IGraphStoreResult } from './HttpServiceGraphStore';
+import { HttpServiceGraphStore } from './HttpServiceGraphStore';
 import { VoidMetadataEmitter } from './VoidMetadataEmitter';
 
 // Use require instead of import for default exports, to be compatible with variants of esModuleInterop in tsconfig.
@@ -62,6 +64,11 @@ export class HttpServiceSparqlEndpoint {
    */
   public static readonly ALLOWED_METHODS = 'GET, HEAD, OPTIONS, POST, QUERY';
 
+  /**
+   * The maximum number of distinct request headers for which negotiated media types are cached.
+   */
+  public static readonly NEGOTIATION_CACHE_SIZE = 1_000;
+
   public readonly engine: Promise<QueryEngineBase>;
 
   public readonly context: any;
@@ -72,10 +79,27 @@ export class HttpServiceSparqlEndpoint {
   public readonly freshWorkerPerQuery: boolean;
   public readonly contextOverride: boolean;
   public readonly emitVoid: boolean;
+  public readonly warmup: number;
 
   public readonly voidMetadataEmitter: VoidMetadataEmitter;
+  public readonly graphStore: HttpServiceGraphStore | undefined;
 
   public lastQueryId = 0;
+
+  /**
+   * Ends all open connections and stops this worker, once it runs as a worker.
+   */
+  public shutdownWorker: (() => Promise<void>) | undefined;
+
+  /**
+   * Serialized service descriptions of the endpoint URL, by media type.
+   */
+  private readonly serviceDescriptions = new Map<string, Buffer>();
+
+  /**
+   * Negotiated media types by request headers, for each set of allowed variants.
+   */
+  private readonly negotiatedMediaTypes = new WeakMap<object, Map<string, string | null>>();
 
   public constructor(args: IHttpServiceSparqlEndpointArgs) {
     this.context = args.context || {};
@@ -85,7 +109,9 @@ export class HttpServiceSparqlEndpoint {
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
     this.contextOverride = Boolean(args.contextOverride);
     this.emitVoid = Boolean(args.emitVoid);
+    this.warmup = args.warmup ?? 0;
     this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
+    this.graphStore = args.graphStore ? new HttpServiceGraphStore(this.context) : undefined;
 
     this.engine = args.engine ?
       Promise.resolve(args.engine) :
@@ -185,6 +211,8 @@ export class HttpServiceSparqlEndpoint {
     const freshWorkerPerQuery: boolean = args.freshWorker;
     const contextOverride: boolean = args.contextOverride;
     const emitVoid: boolean = args.emitVoid;
+    const warmup: number = args.warmup;
+    const graphStore: boolean = args.graphStore;
     const port = args.port;
     const timeout = args.timeout * 1_000;
     const workers = args.workers;
@@ -199,10 +227,12 @@ export class HttpServiceSparqlEndpoint {
       freshWorkerPerQuery,
       contextOverride,
       emitVoid,
+      graphStore,
       moduleRootPath,
       mainModulePath: moduleRootPath,
       port,
       timeout,
+      warmup,
       workers,
     };
   }
@@ -234,16 +264,8 @@ export class HttpServiceSparqlEndpoint {
 
     // Attach listeners to each new worker
     cluster.on('listening', (worker) => {
-      // Handle worker timeouts
-      const workerTimeouts: Record<number, NodeJS.Timeout> = {};
-
       // Respawn crashed workers
       worker.once('exit', (code, signal) => {
-        // Drop the timeouts of the queries this worker was running, as they can only fire on a dead worker
-        for (const workerTimeout of Object.values(workerTimeouts)) {
-          clearTimeout(workerTimeout);
-        }
-
         if (!worker.exitedAfterDisconnect) {
           if (code === 9 || signal === 'SIGKILL') {
             stderr.write(`Worker ${worker.process.pid} forcefully killed with ${code || signal}. Killing main process as well.\n`);
@@ -254,33 +276,44 @@ export class HttpServiceSparqlEndpoint {
           }
         }
       });
-
-      worker.on('message', ({ type, queryId }) => {
-        if (type === 'start') {
-          stderr.write(`Worker ${worker.process.pid} got assigned a new query (${queryId}).\n`);
-          workerTimeouts[queryId] = setTimeout(() => {
-            try {
-              if (worker.isConnected()) {
-                stderr.write(`Worker ${worker.process.pid} timed out for query ${queryId}.\n`);
-                worker.send('shutdown');
-              }
-            } catch (error: unknown) {
-              stderr.write(`Unable to timeout worker ${worker.process.pid}: ${(<Error> error).message}.\n`);
-            }
-            delete workerTimeouts[queryId];
-          }, this.timeout);
-        } else if (type === 'end' && workerTimeouts[queryId]) {
-          stderr.write(`Worker ${worker.process.pid} has completed query ${queryId}.\n`);
-          clearTimeout(workerTimeouts[queryId]);
-          delete workerTimeouts[queryId];
-        }
-      });
     });
 
     // Disconnect from cluster on SIGINT, so that the process can cleanly terminate
     process.once('SIGINT', () => {
       cluster.disconnect();
     });
+  }
+
+  /**
+   * Warm up the engine over the sources of this endpoint, so that the just-in-time compiler has optimized the
+   * engine before it handles requests.
+   * Failures are logged, but do not prevent the worker from starting.
+   * @param engine A SPARQL engine.
+   * @param stderr Error stream to write to.
+   */
+  public async warmUp(engine: QueryEngineBase, stderr: Writable): Promise<void> {
+    const start = Date.now();
+    try {
+      const { executions } = await engine.warmup(this.context, {
+        executions: this.warmup,
+        budget: this.timeout,
+      });
+      stderr.write(`Worker ${process.pid} warmed up with ${executions} query executions in ${Date.now() - start} ms.\n`);
+    } catch (error: unknown) {
+      stderr.write(`Worker ${process.pid} could not warm up: ${(<Error> error).message}\n`);
+    }
+  }
+
+  /**
+   * Stop this worker because a query took longer than the timeout.
+   * The main process then starts a new worker.
+   * @param queryId The id of the query that timed out.
+   * @param stderr Error stream to write to.
+   */
+  public timeOutQuery(queryId: number, stderr: Writable): void {
+    stderr.write(`Worker ${process.pid} timed out for query ${queryId}.\n`);
+    // eslint-disable-next-line ts/no-floating-promises
+    this.shutdownWorker?.();
   }
 
   /**
@@ -298,6 +331,11 @@ export class HttpServiceSparqlEndpoint {
       variants.push({ type, quality: mediaTypes[type] });
     }
 
+    // Warm up before accepting requests, so that they are not slowed down by just-in-time compilation
+    if (this.warmup > 0) {
+      await this.warmUp(engine, stderr);
+    }
+
     // Start the server
     // eslint-disable-next-line ts/no-misused-promises
     const server = http.createServer(this.handleRequest.bind(this, engine, variants, stdout, stderr));
@@ -313,22 +351,28 @@ export class HttpServiceSparqlEndpoint {
       });
     });
 
+    // Shut down on query timeouts and shutdown messages, after ending all open connections
+    this.shutdownWorker = async(): Promise<void> => {
+      stderr.write(`Shutting down worker ${process.pid} with ${openConnections.size} open connections.\n`);
+
+      // Stop new connections from being accepted
+      server.close();
+
+      // Close all open connections
+      for (const connection of openConnections) {
+        await new Promise<void>(resolve => connection.end('!TIMEDOUT!', resolve));
+      }
+
+      // Kill the worker once the connections have been closed
+      // eslint-disable-next-line unicorn/no-process-exit
+      process.exit(15);
+    };
+
     // Subscribe to shutdown messages
     // eslint-disable-next-line ts/no-misused-promises
     process.on('message', async(message: string): Promise<void> => {
       if (message === 'shutdown') {
-        stderr.write(`Shutting down worker ${process.pid} with ${openConnections.size} open connections.\n`);
-
-        // Stop new connections from being accepted
-        server.close();
-
-        // Close all open connections
-        for (const connection of openConnections) {
-          await new Promise<void>(resolve => connection.end('!TIMEDOUT!', resolve));
-        }
-
-        // Kill the worker once the connections have been closed
-        process.exit(15);
+        await this.shutdownWorker!();
       }
     });
 
@@ -352,6 +396,47 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Determine the media type of the response, or null to fall back to the default media type of the result.
+   * @param {{type: string; quality: number}[]} variants Allowed variants.
+   * @param {module:http.IncomingMessage} request Request object.
+   */
+  public negotiateMediaType(
+    variants: { type: string; quality: number }[],
+    request: http.IncomingMessage,
+  ): string | null {
+    const accept = request.headers.accept;
+    if (!accept) {
+      return null;
+    }
+    // Besides the accept header, negotiation looks at the charset, encoding, and language headers
+    const key = [
+      accept,
+      request.headers['accept-charset'],
+      request.headers['accept-encoding'],
+      request.headers['accept-language'],
+    ].join('\n');
+    let cache = this.negotiatedMediaTypes.get(variants);
+    if (!cache) {
+      cache = new Map();
+      this.negotiatedMediaTypes.set(variants, cache);
+    }
+    let mediaType = cache.get(key);
+    if (mediaType === undefined) {
+      const negotiated = require('negotiate').choose(variants, request)
+        .sort((first: any, second: any) => second.qts - first.qts);
+      const variant: any = negotiated[0];
+      // Require qts strictly larger than 2, as 1 and 2 respectively allow * and */* matching.
+      // For qts 0, 1, and 2, we fallback to our built-in media type defaults, for which we pass null.
+      mediaType = variant && variant.qts > 2 ? <string> variant.type : null;
+      if (cache.size >= HttpServiceSparqlEndpoint.NEGOTIATION_CACHE_SIZE) {
+        cache.clear();
+      }
+      cache.set(key, mediaType);
+    }
+    return mediaType;
+  }
+
+  /**
    * Handles an HTTP request.
    * @param {QueryEngineBase} engine A SPARQL engine.
    * @param {{type: string; quality: number}[]} variants Allowed variants.
@@ -368,12 +453,7 @@ export class HttpServiceSparqlEndpoint {
     request: http.IncomingMessage,
     response: http.ServerResponse,
   ): Promise<void> {
-    const negotiated = require('negotiate').choose(variants, request)
-      .sort((first: any, second: any) => second.qts - first.qts);
-    const variant: any = request.headers.accept ? negotiated[0] : null;
-    // Require qts strictly larger than 2, as 1 and 2 respectively allow * and */* matching.
-    // For qts 0, 1, and 2, we fallback to our built-in media type defaults, for which we pass null.
-    const mediaType: string = variant && variant.qts > 2 ? variant.type : null;
+    const mediaType: string = <string> this.negotiateMediaType(variants, request);
 
     // Verify the path
     // eslint-disable-next-line node/no-deprecated-api
@@ -384,6 +464,32 @@ export class HttpServiceSparqlEndpoint {
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
     }
+    // Requests to the graph store are handled through the Graph Store HTTP Protocol, when it is enabled
+    if (this.graphStore) {
+      const graphStoreIri = HttpServiceSparqlEndpoint.getBaseIRI(request, this.port, HttpServiceGraphStore.PATH);
+      const graphStoreTarget = HttpServiceGraphStore.getTarget(request, requestUrl, graphStoreIri);
+      if (graphStoreTarget && request.method === 'OPTIONS') {
+        this.writePreflightResponse(
+          stdout,
+          request,
+          response,
+          HttpServiceGraphStore.getMethodAdvertisementHeaders(graphStoreTarget),
+        );
+        return;
+      }
+      if (graphStoreTarget) {
+        const result = await this.graphStore.handleRequest(
+          engine,
+          request,
+          graphStoreTarget,
+          graphStoreIri,
+          () => HttpServiceSparqlEndpoint.readBody(request),
+        );
+        await this.writeGraphStoreResult(engine, stdout, request, response, result, mediaType);
+        return;
+      }
+    }
+
     if (requestUrl.pathname !== '/sparql') {
       stdout.write('[404] Resource not found. Queries are accepted on /sparql.\n');
       response.writeHead(
@@ -449,14 +555,12 @@ export class HttpServiceSparqlEndpoint {
         );
         break;
       case 'OPTIONS':
-        // Answer CORS preflight requests, which browsers always send for QUERY, as it is never a simple method.
-        stdout.write(`[204] ${request.method} to ${request.url}\n`);
-        response.writeHead(204, HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
-          'Access-Control-Max-Age': '86400',
-        }));
-        response.end();
+        this.writePreflightResponse(
+          stdout,
+          request,
+          response,
+          HttpServiceSparqlEndpoint.getMethodAdvertisementHeaders({}),
+        );
         break;
       default:
         stdout.write(`[405] ${request.method} to ${request.url}\n`);
@@ -469,6 +573,30 @@ export class HttpServiceSparqlEndpoint {
         );
         response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
     }
+  }
+
+  /**
+   * Answers a CORS preflight request, which browsers always send for the methods that are not simple:
+   * QUERY, and the PUT and DELETE of the Graph Store HTTP Protocol.
+   * @param {module:stream.internal.Writable} stdout Output stream.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {module:http.ServerResponse} response Response object.
+   * @param {Record<string, string>} methodAdvertisementHeaders The headers that advertise the allowed methods.
+   */
+  public writePreflightResponse(
+    stdout: Writable,
+    request: http.IncomingMessage,
+    response: http.ServerResponse,
+    methodAdvertisementHeaders: Record<string, string>,
+  ): void {
+    stdout.write(`[204] ${request.method} to ${request.url}\n`);
+    response.writeHead(204, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type',
+      'Access-Control-Max-Age': '86400',
+      ...methodAdvertisementHeaders,
+    });
+    response.end();
   }
 
   /**
@@ -490,11 +618,12 @@ export class HttpServiceSparqlEndpoint {
    * Determine the base IRI that relative IRIs in a request are resolved against.
    * @param {module:http.IncomingMessage} request Request object.
    * @param {number} port The port this service is running on.
+   * @param {string} path The path of the service on this server.
    * @return {string} The base IRI.
    */
-  public static getBaseIRI(request: http.IncomingMessage, port: number): string {
+  public static getBaseIRI(request: http.IncomingMessage, port: number, path = '/sparql'): string {
     const protocol = (<TLSSocket> request.socket).encrypted ? 'https' : 'http';
-    return `${protocol}://${request.headers.host ?? `localhost:${port}`}/sparql`;
+    return `${protocol}://${request.headers.host ?? `localhost:${port}`}${path}`;
   }
 
   /**
@@ -620,12 +749,18 @@ export class HttpServiceSparqlEndpoint {
     stdout.write(`      Requested media type: ${mediaType}\n`);
     stdout.write(`      Received ${queryBody.type} query: ${queryBody.value}\n`);
 
-    // Send message to master process to indicate the start of an execution
-    process.send?.({ type: 'start', queryId });
-
-    // Send message to master process to indicate the end of an execution.
+    // The worker times out its own queries, as messaging the main process for every query is costly
+    stderr.write(`Worker ${process.pid} got assigned a new query (${queryId}).\n`);
+    let timedOut = false;
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      this.timeOutQuery(queryId, stderr);
+    }, this.timeout);
     response.on('close', () => {
-      process.send?.({ type: 'end', queryId });
+      clearTimeout(timeout);
+      if (!timedOut) {
+        stderr.write(`Worker ${process.pid} has completed query ${queryId}.\n`);
+      }
     });
 
     // Determine context
@@ -668,6 +803,7 @@ export class HttpServiceSparqlEndpoint {
         // Fallback to query string
         /(INSERT|DELETE)/iu.test(queryBody.value))) {
       this.voidMetadataEmitter.invalidateCache();
+      this.serviceDescriptions.clear();
     }
 
     // Default to SPARQL JSON for bindings and boolean
@@ -685,12 +821,10 @@ export class HttpServiceSparqlEndpoint {
       }
     }
 
-    // Write header of response
-    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
-    stdout.write(`      Resolved to result media type: ${mediaType}\n`);
-
     // Stop further processing for HEAD requests
     if (headOnly) {
+      response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+      stdout.write(`      Resolved to result media type: ${mediaType}\n`);
       response.end();
       return;
     }
@@ -698,6 +832,10 @@ export class HttpServiceSparqlEndpoint {
     let eventEmitter: EventEmitter | undefined;
     try {
       const { data } = await engine.resultToString(result, mediaType);
+
+      // Only write the header once serialization has started, so that a failure can still be reported as such
+      response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+      stdout.write(`      Resolved to result media type: ${mediaType}\n`);
       data.on('error', (error: Error) => {
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         if (!response.writableEnded) {
@@ -715,6 +853,69 @@ export class HttpServiceSparqlEndpoint {
     }
 
     this.stopResponse(response, queryId, process.stderr, eventEmitter);
+  }
+
+  /**
+   * Writes the outcome of a request of the Graph Store HTTP Protocol.
+   * @param {QueryEngineBase} engine A SPARQL engine.
+   * @param {module:stream.internal.Writable} stdout Output stream.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {module:http.ServerResponse} response Response object.
+   * @param {IGraphStoreResult} result The outcome of the request.
+   * @param {string} mediaType The requested response media type.
+   */
+  public async writeGraphStoreResult(
+    engine: QueryEngineBase,
+    stdout: Writable,
+    request: http.IncomingMessage,
+    response: http.ServerResponse,
+    result: IGraphStoreResult,
+    mediaType: string,
+  ): Promise<void> {
+    if (!result.result) {
+      stdout.write(`[${result.status}] ${request.method} to ${request.url}\n`);
+      response.writeHead(result.status, {
+        'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN,
+        'Access-Control-Allow-Origin': '*',
+        ...result.headers,
+      });
+      response.end(result.message ? `${result.message}\n` : undefined);
+      return;
+    }
+
+    // Graphs are served as Turtle unless the request asks for another RDF serialization
+    mediaType = mediaType || 'text/turtle';
+    stdout.write(`[${result.status}] ${request.method} to ${request.url}\n`);
+    stdout.write(`      Resolved to result media type: ${mediaType}\n`);
+    response.writeHead(result.status, {
+      'content-type': mediaType,
+      'Access-Control-Allow-Origin': '*',
+      ...result.headers,
+    });
+
+    // Stop further processing for HEAD requests
+    if (request.method === 'HEAD') {
+      response.end();
+      return;
+    }
+
+    let eventEmitter: EventEmitter;
+    try {
+      const { data } = await engine.resultToString(result.result, mediaType);
+      data.on('error', (error: Error) => {
+        stdout.write(`[500] Server error in results: ${error.message} \n`);
+        if (!response.writableEnded) {
+          response.end('An internal server error occurred.\n');
+        }
+      });
+      data.pipe(response);
+      eventEmitter = data;
+    } catch {
+      stdout.write(`      The graph could not be serialized for the requested media type\n`);
+      response.end('The graph could not be serialized for the requested media type.\n');
+      return;
+    }
+    this.stopResponse(response, this.lastQueryId++, process.stderr, eventEmitter);
   }
 
   public async writeServiceDescription(
@@ -738,6 +939,14 @@ export class HttpServiceSparqlEndpoint {
 
     if (headOnly) {
       response.end();
+      return;
+    }
+
+    const cacheable = request.url === '/sparql';
+    const cached = cacheable ? this.serviceDescriptions.get(mediaType) : undefined;
+    if (cached) {
+      response.end(cached);
+      this.stopResponse(response, 0, process.stderr);
       return;
     }
 
@@ -783,8 +992,12 @@ export class HttpServiceSparqlEndpoint {
         quads.push(quad(s, `${sd}extensionAggregate`, value));
       }
 
+      let complete = true;
       if (this.emitVoid) {
-        for (const quad of await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response)) {
+        const voidQuads = await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response);
+        // Without VoID quads, computing the statistics failed, and an error was sent instead
+        complete = voidQuads.length > 0;
+        for (const quad of voidQuads) {
           quads.push(quad);
         }
       }
@@ -795,10 +1008,21 @@ export class HttpServiceSparqlEndpoint {
         execute: async() => new ArrayIterator(quads, { autoStart: false }),
         metadata: <any>undefined,
       }, mediaType);
+      let failed = false;
       data.on('error', (error: Error) => {
+        failed = true;
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         response.end('An internal server error occurred.\n');
       });
+      if (cacheable && complete) {
+        const chunks: Buffer[] = [];
+        data.on('data', (chunk: Buffer | string) => chunks.push(Buffer.from(chunk)));
+        data.on('end', () => {
+          if (!failed) {
+            this.serviceDescriptions.set(mediaType, Buffer.concat(chunks));
+          }
+        });
+      }
       data.pipe(response);
       eventEmitter = data;
     } catch {
@@ -975,6 +1199,11 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   freshWorkerPerQuery?: boolean;
   contextOverride?: boolean;
   emitVoid?: boolean;
+  /**
+   * The number of query executions with which each worker warms up before it accepts requests.
+   */
+  warmup?: number;
+  graphStore?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;
 }

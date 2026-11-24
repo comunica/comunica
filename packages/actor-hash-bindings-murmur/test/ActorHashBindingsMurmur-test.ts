@@ -76,5 +76,14 @@ describe('ActorHashBindingsMurmur', () => {
         [ DF.variable('c'), DF.namedNode('ex:b') ],
       ]), vars));
     });
+
+    it('should return int32 hashes', async() => {
+      const result = await actor.run({ context: new ActionContext() });
+
+      // The uint32 murmur hash of 'b' is 2514386435
+      expect(result.hashFunction(BF.bindings([
+        [ DF.variable('a'), DF.namedNode('b') ],
+      ]), [ DF.variable('a') ])).toBe(-1780580861);
+    });
   });
 });

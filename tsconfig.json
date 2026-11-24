@@ -18,7 +18,8 @@
     "inlineSources": true,
     "preserveConstEnums": true,
     "removeComments": false,
-    "sourceMap": true
+    "sourceMap": true,
+    "isolatedModules": true
   },
   "include": [
     "engines/*/bin/**/*",

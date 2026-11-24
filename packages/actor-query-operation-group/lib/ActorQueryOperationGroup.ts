@@ -2,7 +2,7 @@ import type { MediatorBindingsAggregatorFactory } from '@comunica/bus-bindings-a
 import type { MediatorMergeBindingsContext } from '@comunica/bus-merge-bindings-context';
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
-import { KeysInitQuery } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type {
@@ -14,7 +14,7 @@ import type {
 } from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { getSafeBindings } from '@comunica/utils-query-operation';
+import { getGroupOutputCardinality, getSafeBindings } from '@comunica/utils-query-operation';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
 import { GroupsState } from './GroupsState';
 
@@ -42,7 +42,8 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
     // Get result stream for the input query
     const { input, aggregates } = operation;
-    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: input, context });
+    const outputRaw = await this.mediatorQueryOperation
+      .mediate({ operation: input, context: context.delete(KeysQueryOperation.limitIndicator) });
     const output = getSafeBindings(outputRaw);
 
     // The variables in scope are the variables on which we group, i.e. pattern.variables.
@@ -93,7 +94,17 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     return {
       type: 'bindings',
       bindingsStream,
-      metadata: async() => ({ ...await output.metadata(), variables }),
+      // Groups are not emitted in the term order of the input, and aggregates may reuse its variable names
+      metadata: async() => {
+        const inputMetadata = await output.metadata();
+        return {
+          ...inputMetadata,
+          cardinality: getGroupOutputCardinality(operation, inputMetadata.cardinality),
+          variables,
+          termOrder: undefined,
+          canSeek: undefined,
+        };
+      },
     };
   }
 }

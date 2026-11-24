@@ -1,0 +1,9 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-warmup/^5.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^5.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:default:warmup/mediators#main",
+  "@type": "MediatorRace",
+  "bus": { "@id": "ActorWarmup:_default_bus" }
+}

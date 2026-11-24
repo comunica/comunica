@@ -21,7 +21,9 @@ export class ActorHashBindingsMurmur extends ActorHashBindings {
         for (const variable of variables) {
           hash = hash.hash(bindings.get(variable)?.value ?? 'UNDEF');
         }
-        return hash.result();
+        // Convert the uint32 to an int32, so it remains a small integer
+        // eslint-disable-next-line unicorn/prefer-math-trunc
+        return hash.result() | 0;
       },
     };
   }

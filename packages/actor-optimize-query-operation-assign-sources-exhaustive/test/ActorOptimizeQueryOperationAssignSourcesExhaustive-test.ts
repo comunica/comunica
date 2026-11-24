@@ -2,7 +2,7 @@ import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQuerySourceWrapper } from '@comunica/types';
 import { Algebra, AlgebraFactory } from '@comunica/utils-algebra';
-import { getOperationSource } from '@comunica/utils-query-operation';
+import { getOperationEquivalentQueryString, getOperationSource } from '@comunica/utils-query-operation';
 import { DataFactory } from 'rdf-data-factory';
 import {
   ActorOptimizeQueryOperationAssignSourcesExhaustive,
@@ -159,29 +159,44 @@ describe('ActorOptimizeQueryOperationAssignSourcesExhaustive', () => {
         expect(getOperationSource((<Algebra.Union><unknown>operationOut.patterns[1]).input[1])).toBe(sourcePattern);
       });
 
-      it('should keep the queryString for a single source', async() => {
-        const operationIn = AF.createNop();
-        const { operation: operationOut, context: contextOut } = await actor.run({
-          operation: operationIn,
-          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
-            .set(KeysQueryOperation.querySources, [ source1 ])
-            .set(KeysInitQuery.queryString, 'abc'),
-        });
-        expect(operationOut).not.toBe(operationIn);
-        expect(getOperationSource(operationOut)).toBe(source1);
-        expect(contextOut.get(KeysInitQuery.queryString)).toBe('abc');
-      });
+      describe('with an original query string in the context', () => {
+        const contextQueryString = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
+          .set(KeysInitQuery.queryString, 'abc')
+          .set(KeysInitQuery.queryFormat, { language: 'sparql', version: '1.1' });
 
-      it('should not keep the queryString for two sources', async() => {
-        const operationIn = AF.createNop();
-        const { operation: operationOut, context: contextOut } = await actor.run({
-          operation: operationIn,
-          context: new ActionContext({ [KeysInitQuery.dataFactory.name]: DF })
-            .set(KeysQueryOperation.querySources, [ source1, source1 ])
-            .set(KeysInitQuery.queryString, 'abc'),
+        it('should attach it to the operation for a single source', async() => {
+          const { operation: operationOut, context: contextOut } = await actor.run({
+            operation: AF.createNop(),
+            context: contextQueryString.set(KeysQueryOperation.querySources, [ source1 ]),
+          });
+          expect(getOperationSource(operationOut)).toBe(source1);
+          expect(getOperationEquivalentQueryString(operationOut)).toBe('abc');
+          expect(contextOut.get(KeysInitQuery.queryString)).toBe('abc');
         });
-        expect(operationOut).not.toBe(operationIn);
-        expect(contextOut.get(KeysInitQuery.queryString)).toBeUndefined();
+
+        it('should not attach it to the operation for two sources', async() => {
+          const { operation: operationOut, context: contextOut } = await actor.run({
+            operation: AF.createNop(),
+            context: contextQueryString.set(KeysQueryOperation.querySources, [ source1, source1 ]),
+          });
+          expect(getOperationEquivalentQueryString(operationOut)).toBeUndefined();
+          expect(contextOut.get(KeysInitQuery.queryString)).toBeUndefined();
+        });
+
+        it('should not keep it in the context for no sources', async() => {
+          const { context: contextOut } = await actor.run({ operation: AF.createNop(), context: contextQueryString });
+          expect(contextOut.get(KeysInitQuery.queryString)).toBeUndefined();
+        });
+
+        it('should not attach it to the operation for a non-SPARQL query format', async() => {
+          const { operation: operationOut } = await actor.run({
+            operation: AF.createNop(),
+            context: contextQueryString
+              .set(KeysQueryOperation.querySources, [ source1 ])
+              .set(KeysInitQuery.queryFormat, { language: 'graphql', version: '1.0' }),
+          });
+          expect(getOperationEquivalentQueryString(operationOut)).toBeUndefined();
+        });
       });
     });
 

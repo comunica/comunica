@@ -23,56 +23,35 @@ export class TermFunctionLangmatches extends TermFunctionBase {
     });
   }
 
-  // https://www.ietf.org/rfc/rfc4647.txt
-  // https://www.w3.org/TR/sparql11-query/#func-langMatches
-  private static langMatches(tag: string, range: string): boolean {
-    if (tag === '') {
+  /**
+   * Basic filtering as defined in https://www.rfc-editor.org/rfc/rfc4647#section-3.3.1:
+   * the range matches if it equals the tag, or a prefix of the tag that is followed by '-',
+   * comparing case-insensitively. The range '*' matches any non-empty tag.
+   * @param tag A language tag, or the empty string for literals without language.
+   * @param range A basic language range.
+   */
+  public static langMatches(tag: string, range: string): boolean {
+    if (tag.length === 0) {
       return false;
     }
-
-    const langTags = tag.split('-');
-    const rangeTags = range.split('-');
-
-    if (!TermFunctionLangmatches.matchLangTag(rangeTags[0], langTags[0]) &&
-      !TermFunctionLangmatches.isWildCard(langTags[0])) {
+    if (range === '*') {
+      return true;
+    }
+    if (tag.length !== range.length && (tag.length < range.length || tag.codePointAt(range.length) !== 0x2D)) {
       return false;
     }
-
-    let lI = 1;
-    let rI = 1;
-    let encounteredWildcard = false;
-    while (rI < rangeTags.length) {
-      if (TermFunctionLangmatches.isWildCard(rangeTags[rI])) {
-        rI++;
-        encounteredWildcard = true;
-        continue;
-      }
-      if (lI === langTags.length) {
+    for (let i = 0; i < range.length; i++) {
+      const a = tag.codePointAt(i)!;
+      const b = range.codePointAt(i)!;
+      // Language tags are ASCII, so only ASCII letters are compared case-insensitively.
+      if (a !== b && TermFunctionLangmatches.asciiLowerCase(a) !== TermFunctionLangmatches.asciiLowerCase(b)) {
         return false;
       }
-      if (TermFunctionLangmatches.matchLangTag(rangeTags[rI], langTags[lI])) {
-        lI++;
-        rI++;
-        continue;
-      }
-      // If there wasn't a match and there hasn't been a wildcard encounter, it's definitely false
-      if (!encounteredWildcard) {
-        return false;
-      }
-      if (langTags[lI].length === 1) {
-        return false;
-      }
-      lI++;
     }
     return true;
   }
 
-  private static isWildCard(tag: string): boolean {
-    return tag === '*';
-  }
-
-  private static matchLangTag(left: string, right: string): boolean {
-    const matchInitial = new RegExp(`/${left}/`, 'iu');
-    return matchInitial.test(`/${right}/`);
+  private static asciiLowerCase(code: number): number {
+    return code >= 0x41 && code <= 0x5A ? code + 0x20 : code;
   }
 }

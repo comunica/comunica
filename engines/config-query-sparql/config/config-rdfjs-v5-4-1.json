@@ -25,6 +25,7 @@
     "ccqs:config/optimize-query-operation/actors-v5-4-1.json",
     "ccqs:config/optimize-query-operation/mediators.json",
     "ccqs:config/query-operation/actors-v5-1-3.json",
+    "ccqs:config/query-operation/actors/query/union-ordered.json",
     "ccqs:config/query-operation/mediators.json",
     "ccqs:config/query-parse/actors.json",
     "ccqs:config/query-parse/mediators.json",
@@ -61,7 +62,9 @@
     "ccqs:config/rdf-update-quads/actors-rdfjs.json",
     "ccqs:config/rdf-update-quads/mediators.json",
     "ccqs:config/term-comparator-factory/actors.json",
-    "ccqs:config/term-comparator-factory/mediators.json"
+    "ccqs:config/term-comparator-factory/mediators.json",
+    "ccqs:config/warmup/actors.json",
+    "ccqs:config/warmup/mediators.json"
 
   ]
 }

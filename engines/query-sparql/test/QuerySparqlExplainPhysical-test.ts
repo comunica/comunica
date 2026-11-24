@@ -148,9 +148,9 @@ sources:
 
     it('explains a group by', async() => {
       await expect(explainPhysical(`${PREFIXES}SELECT (COUNT(?s) AS ?c) WHERE { ?s foaf:name ?n } GROUP BY ?n`)).resolves
-        .toBe(`project (c) cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
-  extend cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
-    group cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
+        .toBe(`project (c) cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+  extend cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
+    group cardEst:~5 cardReal:5 timeSelf:Xms timeLife:Xms
       pattern (?s http://xmlns.com/foaf/0.1/name ?n) src:0 cardEst:5 cardReal:5 timeSelf:Xms timeLife:Xms
 
 sources:

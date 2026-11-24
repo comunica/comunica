@@ -7,6 +7,7 @@ import {
   bool,
   dateTime,
   dateTyped,
+  dateTimeTyped,
   merge,
   numeric,
   str,
@@ -110,6 +111,10 @@ describe('evaluation of \'=\'', () => {
         "test1" "test2"@en = false
         "test1" "test1"@en = false
         "test1" "test1"^^xsd:normalizedString = true
+        "a\\u200Bb" "ab" = false
+        "\\u00E9" "e\\u0301" = false
+        "\\u00E9" "\\u00E9" = true
+        "A" "a" = false
       `,
     });
   });
@@ -140,6 +145,8 @@ describe('evaluation of \'=\'', () => {
         earlyZ lateN  = false
     
         edge1 edge2   = true
+        '${dateTimeTyped('2026-10-20T13:01:02.001Z')}' '${dateTimeTyped('2026-10-20T13:01:02Z')}' = false
+        '${dateTimeTyped('2026-10-20T13:01:02.0001Z')}' '${dateTimeTyped('2026-10-20T13:01:02Z')}' = true
       `,
     });
   });

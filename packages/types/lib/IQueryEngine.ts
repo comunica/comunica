@@ -82,6 +82,43 @@ export interface IRdfParseOptions {
 }
 
 /**
+ * Options for warming up a query engine.
+ */
+export interface IWarmupOptions {
+  /**
+   * The maximum number of query executions.
+   */
+  executions?: number;
+  /**
+   * The maximum warmup duration in milliseconds.
+   */
+  budget?: number;
+  /**
+   * A signal to stop early, after which no new query executions start.
+   */
+  signal?: AbortSignal;
+}
+
+/**
+ * Options for warming up a query engine, with at least one of the options that stop the warm-up.
+ * About 2000 executions suit sources in memory or in files.
+ * Over remote sources, every execution accesses the network,
+ * so fewer executions or a budget suit them, depending on the type of source.
+ */
+export type IWarmupOptionsBounded = IWarmupOptions &
+  ({ executions: number } | { budget: number } | { signal: AbortSignal });
+
+/**
+ * The outcome of warming up a query engine.
+ */
+export interface IWarmupResult {
+  /**
+   * The number of query executions.
+   */
+  executions: number;
+}
+
+/**
  * Base interface for a Comunica query engine.
  */
 export interface IQueryEngine<
@@ -188,6 +225,17 @@ export interface IQueryEngine<
     stream: NodeJS.ReadableStream,
     options: IRdfParseOptions & Partial<QueryAlgebraContextInner>,
   ) => Promise<RDF.Stream>;
+  // TODO: make mandatory in next/major
+  /**
+   * Warm up this engine by executing queries over the sources in the given context,
+   * so that the just-in-time compiler has optimized the engine before it handles actual queries.
+   * The warm-up does not modify the sources.
+   * @param context A context, which determines the sources in the same way as for queries.
+   * @param options The maximum number of query executions and duration, and a signal to stop early.
+   *                At least one of them is required.
+   * @return A promise resolving to the number of query executions.
+   */
+  warmup?: (context: QueryStringContextInner, options: IWarmupOptionsBounded) => Promise<IWarmupResult>;
   /**
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.

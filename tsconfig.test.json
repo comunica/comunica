@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.eslint.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "exclude": [
+    "**/node_modules",
+    "engines/query-sparql/test/QuerySparql-solid-test.ts"
+  ]
+}

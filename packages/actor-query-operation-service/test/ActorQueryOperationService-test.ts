@@ -1,3 +1,4 @@
+import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { KeysDereference, KeysHttp, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext, IQuerySourceWrapper } from '@comunica/types';
@@ -18,6 +19,10 @@ const endpoint = DF.namedNode('http://ex.org/sparql');
 
 function pattern(): Algebra.Operation {
   return AF.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('x'));
+}
+
+function extensionFunctionFilter(): Algebra.Filter {
+  return AF.createFilter(pattern(), AF.createNamedExpression(DF.namedNode('ex:f'), []));
 }
 
 describe('ActorQueryOperationService', () => {
@@ -250,6 +255,27 @@ describe('ActorQueryOperationService', () => {
       expect(getOperationSource(operated)).toBeUndefined();
       expect(getOperationSource(operated.input[0])).toBe(querySource);
       expect(getOperationSource(operated.input[1])).toBe(querySource);
+    });
+
+    it('should only annotate leaves if the whole operation has an extension function', async() => {
+      const op: IActionQueryOperation = {
+        operation: AF.createService(extensionFunctionFilter(), endpoint),
+        context: context(),
+      };
+      await createActor().run(op, undefined);
+      const operated: Algebra.Filter = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+      expect(getOperationSource(operated)).toBeUndefined();
+      expect(getOperationSource(operated.input)).toBe(querySource);
+    });
+
+    it('should annotate the whole operation with an extension function if it is pushed down', async() => {
+      const op: IActionQueryOperation = {
+        operation: AF.createService(extensionFunctionFilter(), endpoint),
+        context: context().set(KeysInitQuery.extensionFunctionsAlwaysPushdown, true),
+      };
+      await createActor().run(op, undefined);
+      const operated: Algebra.Filter = mediatorQueryOperation.mediate.mock.calls[0][0].operation;
+      expect(getOperationSource(operated)).toBe(querySource);
     });
 
     it('should propagate errors for non-silent clauses', async() => {

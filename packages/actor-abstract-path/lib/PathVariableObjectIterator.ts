@@ -16,6 +16,8 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
   private readonly runningOperations: AsyncIterator<RDF.Term>[] = [];
   private readonly pendingOperations: { variable: RDF.Variable; operation: Algebra.Path }[] = [];
   private started = false;
+  // Set when a running operation changes state during a pending _read, as _fillBufferAsync is a no-op then
+  private missedStateChange = false;
 
   public constructor(
     private readonly algebraFactory: AlgebraFactory,
@@ -90,6 +92,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     this.runningOperations.push(runningOperation);
     runningOperation.on('error', error => this.destroy(error));
     runningOperation.on('readable', () => {
+      this.markStateChangeIfReading();
       if (fillBuffer) {
         this._fillBufferAsync();
       }
@@ -97,6 +100,7 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
     });
     runningOperation.on('end', () => {
       this.runningOperations.splice(this.runningOperations.indexOf(runningOperation), 1);
+      this.markStateChangeIfReading();
       if (fillBuffer) {
         this._fillBufferAsync();
       }
@@ -144,7 +148,18 @@ export class PathVariableObjectIterator extends BufferedIterator<RDF.Term> {
       self.closeIfNeeded();
     })().then(() => {
       done();
+      // Re-read if a running operation became readable or ended after we checked it
+      if (self.missedStateChange) {
+        self.missedStateChange = false;
+        self._fillBufferAsync();
+      }
     }, error => this.destroy(error));
+  }
+
+  protected markStateChangeIfReading(): void {
+    if (this._reading) {
+      this.missedStateChange = true;
+    }
   }
 
   protected closeIfNeeded(): void {

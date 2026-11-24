@@ -5,7 +5,7 @@ import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
-import { ArrayIterator } from 'asynciterator';
+import { ArrayIterator, BufferedIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryResultSerializeSparqlXml } from '../lib/ActorQueryResultSerializeSparqlXml';
 import '@comunica/utils-jest';
@@ -291,6 +291,105 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
         );
       });
 
+      it('should serialize the start, and the bindings that are available at once, into single chunks', async() => {
+        const data = (<any> (await actor.run({
+          context,
+          handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), metadata: async() => metadata },
+          handleMediaType: 'xml',
+        }))).handle.data;
+        const chunks: string[] = [];
+        for await (const chunk of data) {
+          chunks.push(chunk.toString());
+        }
+        expect(chunks).toHaveLength(2);
+        expect(chunks.join('')).toBe(`<?xml version="1.0" encoding="UTF-8"?>
+<sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
+  <head>
+    <variable name="k1"/>
+    <variable name="k2"/>
+  </head>
+  <results>
+    <result>
+      <binding name="k1">
+        <uri>v1</uri>
+      </binding>
+    </result>
+    <result>
+      <binding name="k2">
+        <uri>v2</uri>
+      </binding>
+    </result>
+  </results>
+</sparql>
+`);
+      });
+
+      it('should run on a bindings stream that is split into several chunks', async() => {
+        const maxChunkLength = ActorQueryResultSerializeSparqlXml.MAX_CHUNK_LENGTH;
+        (<any> ActorQueryResultSerializeSparqlXml).MAX_CHUNK_LENGTH = 1;
+        const data = (<any> (await actor.run({
+          context,
+          handle: <any> { type: 'bindings', bindingsStream: bindingsStream(), metadata: async() => metadata },
+          handleMediaType: 'xml',
+        }))).handle.data;
+        const chunks: string[] = [];
+        for await (const chunk of data) {
+          chunks.push(chunk.toString());
+        }
+        (<any> ActorQueryResultSerializeSparqlXml).MAX_CHUNK_LENGTH = maxChunkLength;
+        expect(chunks.length).toBeGreaterThan(2);
+        expect(chunks.join('')).toBe(`<?xml version="1.0" encoding="UTF-8"?>
+<sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
+  <head>
+    <variable name="k1"/>
+    <variable name="k2"/>
+  </head>
+  <results>
+    <result>
+      <binding name="k1">
+        <uri>v1</uri>
+      </binding>
+    </result>
+    <result>
+      <binding name="k2">
+        <uri>v2</uri>
+      </binding>
+    </result>
+  </results>
+</sparql>
+`);
+      });
+
+      it('should run on a bindings stream whose bindings become available later', async() => {
+        const stream = new BufferedIterator<RDF.Bindings>({ autoStart: false });
+        const result = stringifyStream((<any> (await actor.run({
+          context,
+          handle: <any> { type: 'bindings', bindingsStream: stream, metadata: async() => metadata },
+          handleMediaType: 'xml',
+        }))).handle.data);
+        await new Promise(resolve => setImmediate(resolve));
+        (<any> stream)._push(BF.bindings([[ DF.variable('k1'), DF.namedNode('v1') ]]));
+        await new Promise(resolve => setImmediate(resolve));
+        stream.close();
+        await expect(result).resolves.toBe(
+          `<?xml version="1.0" encoding="UTF-8"?>
+<sparql xmlns="http://www.w3.org/2005/sparql-results#" xmlns:its="http://www.w3.org/2005/11/its" its:version="2.0">
+  <head>
+    <variable name="k1"/>
+    <variable name="k2"/>
+  </head>
+  <results>
+    <result>
+      <binding name="k1">
+        <uri>v1</uri>
+      </binding>
+    </result>
+  </results>
+</sparql>
+`,
+        );
+      });
+
       it('should run on a bindings stream without variables', async() => {
         await expect(stringifyStream((<any> (await actor.run({
           context,
@@ -419,7 +518,6 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           handle: <any> {
             type: 'boolean',
             execute: () => Promise.resolve(true),
-            metadata: async() => ({ variables: []}),
           },
           handleMediaType: 'simple',
         }))).handle.data)).resolves.toBe(
@@ -439,7 +537,6 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           handle: <any> {
             type: 'boolean',
             execute: () => Promise.resolve(false),
-            metadata: async() => ({ variables: []}),
           },
           handleMediaType: 'simple',
         }))).handle.data)).resolves.toBe(
@@ -459,7 +556,6 @@ describe('ActorQueryResultSerializeSparqlXml', () => {
           handle: <any> {
             type: 'boolean',
             execute: () => Promise.reject(new Error('e')),
-            metadata: async() => ({ variables: []}),
           },
           handleMediaType: 'simple',
         }))).handle.data)).rejects.toBeTruthy();

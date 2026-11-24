@@ -35,10 +35,11 @@ export async function estimateCardinality(
     case Algebra.Types.MOVE:
     case Algebra.Types.COPY:
       return { type: 'exact', value: 0, dataset: dataset.uri };
+    case Algebra.Types.GROUP:
+      return estimateGroupCardinality(<Algebra.Group> operation, dataset);
     case Algebra.Types.PROJECT:
     case Algebra.Types.FILTER:
     case Algebra.Types.ORDER_BY:
-    case Algebra.Types.GROUP:
     case Algebra.Types.CONSTRUCT:
     case Algebra.Types.DISTINCT:
     case Algebra.Types.REDUCED:
@@ -82,6 +83,40 @@ export async function estimateCardinality(
       return { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: dataset.uri };
   }
   return { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: dataset.uri };
+}
+
+/**
+ * Determine the cardinality of a group's output from the cardinality of its input.
+ * @param group The group operation.
+ * @param inputCardinality The cardinality of the group's input.
+ * @return The cardinality of the group's output.
+ */
+export function getGroupOutputCardinality(
+  group: Algebra.Group,
+  inputCardinality: QueryResultCardinality,
+): QueryResultCardinality {
+  // Without grouping variables, all input forms a single group, which also exists for an empty input.
+  if (group.variables.length === 0) {
+    return { type: 'exact', value: 1 };
+  }
+  // Otherwise, there are at most as many groups as input bindings.
+  return inputCardinality.value > 0 ? { ...inputCardinality, type: 'estimate' } : inputCardinality;
+}
+
+/**
+ * Estimate the cardinality of a group, which only depends on its input if it has grouping variables.
+ * @param group The group operation.
+ * @param dataset The dataset to estimate the cardinality in.
+ * @return The estimated cardinality of the group's output.
+ */
+export async function estimateGroupCardinality(
+  group: Algebra.Group,
+  dataset: IDataset,
+): Promise<QueryResultCardinality> {
+  if (group.variables.length === 0) {
+    return { type: 'exact', value: 1, dataset: dataset.uri };
+  }
+  return getGroupOutputCardinality(group, await estimateCardinality(group.input, dataset));
 }
 
 /**
