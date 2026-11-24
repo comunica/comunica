@@ -20,7 +20,7 @@ const exec = util.promisify(exec0);
  * and the config package from the current monorepo will be injected into it.
  * The whole config package must be injected, and not just the entry config file,
  * because Components.js resolves the imports within a config file against the installed config package.
- * Then, the QueryEngineFactory will be used to validate if this config is still valid in that engine,
+ * Then, the config will be instantiated with the modules of that engine to validate if it is still valid in it,
  * which only holds if every actor in the config is a dependency of that engine version.
  * This script will throw an error as soon as one of the configs is not backwards-compatible.
  *
@@ -102,12 +102,18 @@ async function testPreviousVersionsOfEngine(
   // Determine list of versions to test
   const configTestRanges = getConfigTestRanges(applicableConfigs, currentConfigVersion.semver!);
 
+  const versions = await getPublishedVersions(engineName);
+  if (versions.length === 0) {
+    // eslint-disable-next-line no-console
+    console.log(`  Skipping, as '${engineName}' is not published on npm yet`);
+    return;
+  }
+
   // Install each version from npm, and bintest dynamic engine with config override
   for (const configTestRange of configTestRanges) {
     // eslint-disable-next-line no-console
     console.log(`  Testing '${configTestRange.config.path}' from ${semVerToString(configTestRange.minExclusive)} (excl) to ${configTestRange.maxInclusive ? semVerToString(configTestRange.maxInclusive) : 'latest in major range'} (incl)`);
 
-    const versions = <string[]> JSON.parse((await exec(`npm view ${engineName} versions --json`, { encoding: 'utf8' })).stdout);
     const firstVersion = semver.minSatisfying(versions, `>${semVerToString(configTestRange.minExclusive)}`);
     if (firstVersion) {
       await testEngine(engineName, firstVersion, configTestRange.config, configPackageDirs);
@@ -125,6 +131,22 @@ async function testPreviousVersionsOfEngine(
     if (secondVersion) {
       await testEngine(engineName, secondVersion, configTestRange.config, configPackageDirs);
     }
+  }
+}
+
+/**
+ * Get the versions of a package that are published on npm.
+ * @param packageName A package name.
+ * @return The published versions, which are none if the package was never published.
+ */
+async function getPublishedVersions(packageName: string): Promise<string[]> {
+  try {
+    return JSON.parse((await exec(`npm view ${packageName} versions --json`, { encoding: 'utf8' })).stdout);
+  } catch (error: unknown) {
+    if ((<{ stdout?: string }> error).stdout?.includes('"E404"')) {
+      return [];
+    }
+    throw error;
   }
 }
 
@@ -172,17 +194,17 @@ async function testEngine(
     });
   }
 
-  // Run engine factory of the installed engine with the config from the current monorepo as test
+  // Instantiate the config from the current monorepo with the modules of the installed engine as test.
+  // This uses the runner instead of an engine factory, as not all engines (e.g. expression engines) have one.
   // eslint-disable-next-line no-console
-  console.log(`    Running engine factory for '${engineName}' at version ${version}`);
+  console.log(`    Instantiating the config for '${engineName}' at version ${version}`);
   const injectedConfigPath = Path.join(installedConfigPaths[0], config.relativePath);
+  const installedEnginePath = Path.join(installPath, 'node_modules', engineName);
   await exec(`node -e '
-    import { QueryEngineFactory } from "${engineName}";
-    const factory = new QueryEngineFactory();
-    const engine = await factory.create({
-      configPath: "${injectedConfigPath}",
+    import { instantiateComponent } from "@comunica/runner";
+    await instantiateComponent("${injectedConfigPath}", "urn:comunica:default:Runner", {
+      mainModulePath: "${installedEnginePath}",
     });
-    await engine.getResultMediaTypes();
   '`, {
     cwd: installPath,
     encoding: 'utf8',

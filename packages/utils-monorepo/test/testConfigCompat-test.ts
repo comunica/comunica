@@ -303,7 +303,7 @@ describe('testConfigCompat', () => {
           callback(null, { stdout: '', stderr: '' });
           return;
         }
-        instantiateEngine(normalize(/configPath: "([^"]*)"/u.exec(command)![1]));
+        instantiateEngine(normalize(/instantiateComponent\("([^"]*)"/u.exec(command)![1]));
         callback(null, { stdout: '', stderr: '' });
       } catch (error: unknown) {
         callback(error);
@@ -539,6 +539,24 @@ describe('testConfigCompat', () => {
       await testConfigCompat(MONOREPO);
 
       expect(instantiations).toEqual([]);
+    });
+
+    it('should skip engines that are not published yet', async() => {
+      jest.mocked(exec).mockImplementation(<any> ((command: string, options: any, callback: any) => {
+        callback(Object.assign(new Error('Command failed'), { stdout: '{ "error": { "code": "E404" } }' }));
+      }));
+
+      await testConfigCompat(MONOREPO);
+
+      expect(instantiations).toEqual([]);
+    });
+
+    it('should reject when the published versions cannot be determined', async() => {
+      jest.mocked(exec).mockImplementation(<any> ((command: string, options: any, callback: any) => {
+        callback(new Error('npm is offline'));
+      }));
+
+      await expect(testConfigCompat(MONOREPO)).rejects.toThrow('npm is offline');
     });
 
     it('should skip engines that import an unversioned config', async() => {

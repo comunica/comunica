@@ -116,6 +116,28 @@ await aggregator.putBindings(bindings);
 const result = await aggregator.result();
 ```
 
+### Extension aggregates
+
+[Extension aggregates](https://github.com/comunica/comunica/tree/master/packages/actor-bindings-aggregator-factory-extensions#readme)
+registered through `KeysInitQuery.extensionAggregators` (or `extensionAggregatorCreator`) are created with `createBoundNamedAggregate`:
+
+```typescript
+import { KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
+
+const aggregator = await engine.createAggregator(
+  AF.createBoundNamedAggregate(DF.variable('median'), DF.namedNode('http://example.org/median'), [
+    AF.createTermExpression(DF.variable('x')),
+  ], false),
+  new ActionContext({ [KeysInitQuery.extensionAggregators.name]: { 'http://example.org/median': myMedian } }),
+);
+```
+
+This requires the `ExpressionEngine` type, as `IExpressionEngine` only accepts aggregate expressions until the next major version.
+A parsed query only contains extension aggregates (in its `group` operation) if its parse and algebra contexts get a
+`namedAggregatorCallback`, which can be built from `getExtensionAggregatorLookup` of `@comunica/utils-query-operation`.
+An expression that is translated on its own stays a named expression, so wrap it with `createBoundNamedAggregate`.
+
 ### Context
 
 Every method takes an optional [`IActionContext`](https://github.com/comunica/comunica/tree/master/packages/core#readme)
