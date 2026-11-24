@@ -134,9 +134,7 @@ const aggregator = await engine.createAggregator(
 ```
 
 This requires the `ExpressionEngine` type, as `IExpressionEngine` only accepts aggregate expressions until the next major version.
-Parsers only recognize extension aggregates when given their IRIs: pass `namedAggregatorCallback: iri => iri in myAggregates`
-to both the parse and algebra context of a full query, which puts them in its `group` operation.
-Expressions translated on their own never contain them, so create those with `createBoundNamedAggregate`.
+Expressions translated on their own never contain extension aggregates, so create those with `createBoundNamedAggregate`.
 
 ### Context
 
