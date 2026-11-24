@@ -60,7 +60,10 @@ describe('ExpressionEngine', () => {
     it('honours the provided context.', async() => {
       const evaluator = await engine.createEvaluator(
         AF.createOperatorExpression('now', []),
-        new ActionContext({ [KeysInitQuery.queryTimestamp.name]: new Date(1_234_567_890_000) }),
+        new ActionContext({
+          [KeysInitQuery.queryTimestamp.name]: new Date(1_234_567_890_000),
+          [KeysExpressionEvaluator.defaultTimeZone.name]: { zoneHours: 0, zoneMinutes: 0 },
+        }),
       );
       await expect(evaluator.evaluate(BF.bindings())).resolves.toEqual(DF.literal(
         '2009-02-13T23:31:30Z',
