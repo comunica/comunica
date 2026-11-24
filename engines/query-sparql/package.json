@@ -90,6 +90,7 @@
   "dependencies": {
     "@comunica/actor-bindings-aggregator-factory-average": "^5.4.0",
     "@comunica/actor-bindings-aggregator-factory-count": "^5.4.0",
+    "@comunica/actor-bindings-aggregator-factory-extensions": "^5.4.0",
     "@comunica/actor-bindings-aggregator-factory-group-concat": "^5.4.0",
     "@comunica/actor-bindings-aggregator-factory-max": "^5.4.0",
     "@comunica/actor-bindings-aggregator-factory-min": "^5.4.0",

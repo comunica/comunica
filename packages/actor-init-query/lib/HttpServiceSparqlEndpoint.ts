@@ -986,6 +986,12 @@ export class HttpServiceSparqlEndpoint {
         quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
+      // Append extension aggregates
+      const aggregates = actionContext.get(KeysInitQuery.extensionAggregators);
+      for (const value in aggregates) {
+        quads.push(quad(s, `${sd}extensionAggregate`, value));
+      }
+
       let complete = true;
       if (this.emitVoid) {
         const voidQuads = await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response);

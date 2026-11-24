@@ -1709,6 +1709,11 @@ describe('HttpServiceSparqlEndpoint', () => {
             'https://example.org/functions#args1': async(args: RDF.Term[]) => {
               return args[1];
             },
+          }).set(KeysInitQuery.extensionAggregators, {
+            'https://example.org/aggregates#first': () => ({
+              put: () => {},
+              result: () => undefined,
+            }),
           }),
         });
 
@@ -1761,6 +1766,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(spyResultToString.mock.calls[0][1]).toEqual(mediaType);
         serviceDescriptionQuads.push(quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args0'));
         serviceDescriptionQuads.push(quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args1'));
+        serviceDescriptionQuads.push(quad(s, `${sd}extensionAggregate`, 'https://example.org/aggregates#first'));
         await expect((spyResultToString.mock.calls[0][0]).execute()).resolves.toEqual(new ArrayIterator(
           serviceDescriptionQuads,
           { autoStart: false },
