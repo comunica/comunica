@@ -12,15 +12,14 @@ const parser = new Parser();
 const expressionEngine = new ExpressionEngine();
 
 /**
- * Evaluate an expression as a query in Comunica would, where an expression error yields the fallback.
- * @param expression The algebra expression to evaluate.
- * @param evaluate Applies the evaluator of the expression.
+ * Evaluate as a query in Comunica would, where an expression error yields the fallback.
+ * @param evaluate Performs the evaluation.
  * @param fallback The value to return on an expression error.
  * @returns The evaluated value, or the fallback on an expression error.
  */
-async function evaluateOrFallback(expression, evaluate, fallback) {
+async function evaluateOrFallback(evaluate, fallback) {
   try {
-    return await evaluate(await expressionEngine.createEvaluator(expression));
+    return await evaluate();
   } catch (error) {
     if (!isExpressionError(error)) {
       throw error;
@@ -42,10 +41,10 @@ module.exports = {
       extend.input.type !== 'bgp' || extend.input.patterns.length > 0) {
       throw new Error(`Only queries of the form ASK { BIND(... AS ?result) FILTER(...) } are supported:\n${queryString}`);
     }
-    const result = await evaluateOrFallback(extend.expression, evaluator => evaluator.evaluate(BF.bindings()));
+    const bindEvaluator = await expressionEngine.createEvaluator(extend.expression);
+    const filterEvaluator = await expressionEngine.createEvaluator(filter.expression);
+    const result = await evaluateOrFallback(() => bindEvaluator.evaluate(BF.bindings()));
     const bindings = result ? BF.bindings([[ extend.variable, result ]]) : BF.bindings();
-    return new QueryResultBoolean(
-      await evaluateOrFallback(filter.expression, evaluator => evaluator.evaluateAsEBV(bindings), false),
-    );
+    return new QueryResultBoolean(await evaluateOrFallback(() => filterEvaluator.evaluateAsEBV(bindings), false));
   },
 };

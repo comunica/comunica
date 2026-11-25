@@ -1,10 +1,13 @@
 /* eslint-disable import/no-nodejs-modules */
 const { mkdirSync } = require('node:fs');
-const { join } = require('node:path');
+const { join, resolve } = require('node:path');
 const { parseArgs } = require('node:util');
 /* eslint-enable import/no-nodejs-modules */
 const { TestSuiteRunner } = require('rdf-test-suite');
 const knownFailures = require('./xpath-known-failures');
+
+// Results depend on the host time zone (e.g., op-subtract-dates-yielding-DTD-8), so fix it to that of CI
+process.env.TZ = 'UTC';
 
 const MANIFEST_URLS = [ 'manifest.ttl', 'extensions.ttl', 'errors.ttl' ]
   .map(manifest => `https://comunica.github.io/sparql-manifest-xpath-tests/${manifest}`);
@@ -12,7 +15,7 @@ const CACHE_PATH = join(__dirname, '../../../.rdf-test-suite-cache/');
 
 /**
  * Run the XPath test suite on the engine given as argument, optionally filtered with --test-regex.
- * Known failures are reported as skipped, and warned about once they pass.
+ * Known failures (see xpath-known-failures.js for why) are reported as skipped, and warned about once they pass.
  */
 async function main() {
   const { values: { 'test-regex': testRegex }, positionals: [ enginePath ] } = parseArgs({
@@ -20,7 +23,7 @@ async function main() {
     options: { 'test-regex': { type: 'string' }},
   });
   mkdirSync(CACHE_PATH, { recursive: true });
-  const engine = require(join(process.cwd(), enginePath));
+  const engine = require(resolve(enginePath));
   const runner = new TestSuiteRunner();
   const config = { cachePath: CACHE_PATH, testRegex: testRegex && new RegExp(testRegex, 'u'), timeOutDuration: 3000 };
   const results = [];
@@ -28,12 +31,11 @@ async function main() {
     results.push(...await runner.runManifest(manifestUrl, engine, config));
   }
 
-  const knownFailureReasons = new Map(knownFailures.flatMap(({ reason, tests }) => tests.map(test => [ test, reason ])));
-  const passingKnownFailures = results.filter(({ ok, test }) => ok && knownFailureReasons.has(test.name));
+  const knownFailureNames = new Set(knownFailures.flatMap(({ tests }) => tests));
+  const passingKnownFailures = results.filter(({ ok, test }) => ok && knownFailureNames.has(test.name));
   for (const result of results) {
-    const reason = knownFailureReasons.get(result.test.name);
-    if (reason && !result.ok && !result.skipped) {
-      Object.assign(result, { skipped: true, error: new Error(`Known failure: ${reason}`) });
+    if (!result.ok && knownFailureNames.has(result.test.name)) {
+      result.skipped = true;
     }
   }
   runner.resultsToText(process.stdout, results, false);
