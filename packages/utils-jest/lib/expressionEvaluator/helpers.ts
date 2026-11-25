@@ -33,6 +33,24 @@ Algebra.AggregateExpression {
   return AF.createAggregateExpression(aggregator, inner, distinct, separator);
 }
 
+/**
+ * Create a call of an extension aggregate, bound to a variable in a group.
+ * It is typed as a bound aggregate, as group aggregates and aggregator factory actions do not include
+ * extension aggregates in their types yet.
+ * @param iri The IRI of the extension aggregate.
+ * @param args The arguments of the call.
+ * @param distinct If the aggregate is called with DISTINCT.
+ * @param variable The variable the aggregate is bound to.
+ */
+export function makeNamedAggregate(
+  iri: string,
+  args: Algebra.Expression[],
+  distinct = false,
+  variable: RDF.Variable = DF.variable('var0'),
+): Algebra.BoundAggregate {
+  return <Algebra.BoundAggregate> <unknown> AF.createBoundNamedAggregate(variable, DF.namedNode(iri), args, distinct);
+}
+
 export function int(value: string): RDF.Term {
   return DF.literal(value, DF.namedNode('http://www.w3.org/2001/XMLSchema#integer'));
 }

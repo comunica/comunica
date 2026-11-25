@@ -50,6 +50,11 @@ export class TermFunctionLesserThan extends TermFunctionBase {
     defaultGraph: 4,
   };
 
+  /**
+   * Matches strings containing a code unit of U+D800 or higher.
+   */
+  private static readonly HIGH_CODE_UNIT = /[\uD800-\u{10FFFF}]/u;
+
   // TODO: remove in next major, as it's unused
   public constructor(private readonly equalityFunction: ITermFunction) {
     super({
@@ -62,7 +67,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
           false,
         )
         // No non-lexical handling for strings, since they can't have invalid lexicals
-        .stringTest(() => (left, right) => left.localeCompare(right) === -1)
+        .stringTest(() => (left, right) => TermFunctionLesserThan.compareCodepoints(left, right) === -1)
         .set(
           [ TypeURL.RDF_LANG_STRING, TypeURL.RDF_LANG_STRING ],
           exprEval => ([ left, right ]: LangStringLiteral[]) => {
@@ -70,7 +75,7 @@ export class TermFunctionLesserThan extends TermFunctionBase {
             if (left.str() === right.str()) {
               return bool(left.language < right.language);
             }
-            return bool(left.str() < right.str());
+            return bool(TermFunctionLesserThan.compareCodepoints(left.str(), right.str()) === -1);
           },
         )
         .set(
@@ -244,5 +249,31 @@ To enable comparison, set the ${KeysExpressionEvaluator.fullTermComparison.name}
 
   private comparePrimitives<T>(valueA: T, valueB: T): -1 | 0 | 1 {
     return valueA === valueB ? 0 : (valueA < valueB ? -1 : 1);
+  }
+
+  /**
+   * Compare two strings by Unicode codepoints.
+   * @param left A string.
+   * @param right Another string.
+   * @return -1 if left comes before right, 1 if it comes after, 0 if they are equal.
+   */
+  private static compareCodepoints(left: string, right: string): -1 | 0 | 1 {
+    if (left === right) {
+      return 0;
+    }
+    // JS compares UTF-16 code units, which orders surrogate pairs (U+10000 and up) before U+E000-U+FFFF.
+    // If they don't contain a code unit of U+D800 or higher, we can use the faster `<` comparison.
+    if (!TermFunctionLesserThan.HIGH_CODE_UNIT.test(left) || !TermFunctionLesserThan.HIGH_CODE_UNIT.test(right)) {
+      return left < right ? -1 : 1;
+    }
+    const length = Math.min(left.length, right.length);
+    for (let i = 0; i < length; i++) {
+      const leftPoint = <number> left.codePointAt(i);
+      const rightPoint = <number> right.codePointAt(i);
+      if (leftPoint !== rightPoint) {
+        return leftPoint < rightPoint ? -1 : 1;
+      }
+    }
+    return left.length < right.length ? -1 : 1;
   }
 }

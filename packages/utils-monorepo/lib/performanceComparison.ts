@@ -1,3 +1,12 @@
+import {
+  getBytesPerTriple,
+  getThroughput,
+  getTriples,
+  INGESTION_MEMORY_SUFFIX,
+  INGESTION_STORE_SUFFIX,
+  INGESTION_TIME_SUFFIX,
+} from './performanceIngestion';
+
 /**
  * An entry of a JSON file produced by `psbr csv ghbench --detailed --failures`.
  */
@@ -39,6 +48,14 @@ export interface IComparisonOptions {
   headSha: string;
   baseSha: string;
   runUrl: string;
+}
+
+/**
+ * The entries of both sides, as produced by `performance-ingestion`.
+ */
+export interface IIngestionComparison {
+  head: IGhbenchEntry[];
+  base: IGhbenchEntry[];
 }
 
 const FAILURES_SUFFIX = ' - failed queries';
@@ -175,15 +192,256 @@ function formatRow(cells: string[]): string {
 }
 
 /**
+ * A metric of the ingestion tables, which is rendered with a metric derived from the number of triples.
+ */
+export interface IIngestionMetric {
+  title: string;
+  suffix: string;
+  derive: (triples: number, value: number) => string | undefined;
+}
+
+function deriveBytesPerTriple(triples: number, mebibytes: number): string | undefined {
+  const bytes = getBytesPerTriple(triples, mebibytes);
+  return bytes === undefined ? undefined : `${formatCount(bytes)} bytes/triple`;
+}
+
+export const INGESTION_METRICS: IIngestionMetric[] = [
+  {
+    title: 'Ingestion time',
+    suffix: INGESTION_TIME_SUFFIX,
+    derive(triples, value) {
+      const throughput = getThroughput(triples, value);
+      return throughput === undefined ? undefined : `${formatCount(throughput)} triples/s`;
+    },
+  },
+  {
+    title: 'Memory after ingestion',
+    suffix: INGESTION_MEMORY_SUFFIX,
+    derive: deriveBytesPerTriple,
+  },
+  {
+    title: 'Store size after ingestion',
+    suffix: INGESTION_STORE_SUFFIX,
+    derive: deriveBytesPerTriple,
+  },
+];
+
+/**
+ * Format an integer with thousands separators.
+ * @param value An integer.
+ */
+export function formatCount(value: number): string {
+  return value.toLocaleString('en-US');
+}
+
+function formatIngestionCell(
+  entry: IGhbenchEntry | undefined,
+  hasSuite: boolean,
+  metric: IIngestionMetric,
+): string {
+  if (entry === undefined || entry.value === null) {
+    return hasSuite ? 'missing' : '';
+  }
+  const triples = getTriples(entry);
+  const derived = triples === undefined ? undefined : metric.derive(triples, entry.value);
+  return `\`${formatTime(entry.value)}\` ${entry.unit}${derived === undefined ? '' : ` (${derived})`}`;
+}
+
+function formatTriplesCell(head: IGhbenchEntry | undefined, base: IGhbenchEntry | undefined): string {
+  const headTriples = head ? getTriples(head) : undefined;
+  const baseTriples = base ? getTriples(base) : undefined;
+  if (headTriples !== undefined && baseTriples !== undefined && headTriples !== baseTriples) {
+    return `${formatCount(headTriples)} (base: ${formatCount(baseTriples)})`;
+  }
+  const triples = headTriples ?? baseTriples;
+  return triples === undefined ? '' : formatCount(triples);
+}
+
+/**
+ * Render the table rows that compare an ingestion metric of both sides, one per benchmark suite.
+ * @param headEntries The ingestion entries of the pull request.
+ * @param baseEntries The ingestion entries of the base commit.
+ * @param metric The metric to compare.
+ */
+export function renderIngestionRows(
+  headEntries: IGhbenchEntry[],
+  baseEntries: IGhbenchEntry[],
+  metric: IIngestionMetric,
+): string[] {
+  const getSuites = (entries: IGhbenchEntry[]): Set<string> => new Set(entries.map(entry => getSuite(entry.name)));
+  const getMetricEntries = (entries: IGhbenchEntry[]): Map<string, IGhbenchEntry> => new Map(entries
+    .filter(entry => entry.name.endsWith(metric.suffix))
+    .map(entry => [ entry.name.slice(0, -metric.suffix.length), entry ]));
+  const headSuites = getSuites(headEntries);
+  const baseSuites = getSuites(baseEntries);
+  const head = getMetricEntries(headEntries);
+  const base = getMetricEntries(baseEntries);
+  return [ ...new Set([ ...head.keys(), ...base.keys() ]) ].map((suite) => {
+    const headEntry = head.get(suite);
+    const baseEntry = base.get(suite);
+    const hasBase = baseSuites.has(suite);
+    let ratio = '';
+    if (typeof headEntry?.value === 'number' && typeof baseEntry?.value === 'number') {
+      ratio = `\`${formatRatio(headEntry.value, baseEntry.value)}\``;
+    } else if (hasBase) {
+      ratio = 'n/a';
+    }
+    return formatRow([
+      `\`${suite}\``,
+      formatTriplesCell(headEntry, baseEntry),
+      formatIngestionCell(headEntry, headSuites.has(suite), metric),
+      formatIngestionCell(baseEntry, hasBase, metric),
+      ratio,
+    ]);
+  });
+}
+
+/**
+ * Render the tables that compare the ingestion of both sides, one per metric.
+ * @param ingestion The ingestion entries of both sides.
+ * @param options The commits and CI run that are compared.
+ */
+export function renderIngestionTables(ingestion: IIngestionComparison, options: IComparisonOptions): string {
+  const header = [
+    formatRow([ 'Benchmark suite', 'Triples', `Current: ${options.headSha}`, `Base: ${options.baseSha}`, 'Ratio' ]),
+    '|-|-|-|-|-|',
+  ];
+  return INGESTION_METRICS
+    .map(metric => ({ metric, rows: renderIngestionRows(ingestion.head, ingestion.base, metric) }))
+    .filter(({ rows }) => rows.length > 0)
+    .map(({ metric, rows }) => `\n\n# ${metric.title}\n\n${[ ...header, ...rows ].join('\n')}`)
+    .join('');
+}
+
+/**
+ * The entries of both sides, as produced by `performance-requests`.
+ */
+export interface IRequestsComparison {
+  head: IGhbenchEntry[];
+  base: IGhbenchEntry[];
+}
+
+/**
+ * The minimal changes in the HTTP requests of a query that are listed, in requests and relative to the base.
+ * On the same commit, the requests of a query varied by up to 33 requests, which was 16% for a query with few requests.
+ */
+export const REQUESTS_MIN_DIFFERENCE = 50;
+export const REQUESTS_MIN_RELATIVE_DIFFERENCE = 0.05;
+
+/**
+ * Check if the HTTP requests of a query changed by more than they vary across runs of the same commit.
+ * @param head The requests of the pull request.
+ * @param base The requests of the base commit.
+ */
+export function isRequestsChange(head: number, base: number): boolean {
+  const difference = Math.abs(head - base);
+  return difference >= REQUESTS_MIN_DIFFERENCE && difference >= REQUESTS_MIN_RELATIVE_DIFFERENCE * base;
+}
+
+function getRequestsSides(entries: IGhbenchEntry[]): Map<string, IQuerySide> {
+  // The totals of the suites are left out, as they are determined again over the queries that both sides compare
+  return new Map(entries.filter(entry => entry.name.includes(' - ')).map((entry) => {
+    const match = /Failed: (\d+)\/(\d+)/u.exec(entry.extra ?? '');
+    return [ entry.name, {
+      value: entry.value ?? undefined,
+      unit: entry.unit,
+      failed: match ? Number(match[1]) : 0,
+      count: match ? Number(match[2]) : 1,
+    }];
+  }));
+}
+
+function formatRequests(value: number): string {
+  return `\`${formatCount(value)}\``;
+}
+
+/**
+ * Render the tables that compare the HTTP requests of both sides,
+ * with the totals per benchmark suite, and the queries whose requests changed.
+ * @param requests The request entries of both sides.
+ * @param options The commits and CI run that are compared.
+ */
+export function renderRequestsTables(requests: IRequestsComparison, options: IComparisonOptions): string {
+  const head = getRequestsSides(requests.head);
+  const base = getRequestsSides(requests.base);
+  const names = [ ...new Set([ ...head.keys(), ...base.keys() ]) ];
+  if (names.length === 0) {
+    return '';
+  }
+  const baseSuites = new Set([ ...base.keys() ].map(getSuite));
+  const headers = (title: string): string[] => [
+    formatRow([ title, `Current: ${options.headSha}`, `Base: ${options.baseSha}`, 'Ratio' ]),
+    '|-|-|-|-|',
+  ];
+
+  // Totals only include queries that succeeded on both sides
+  const totalRows: string[] = [];
+  const exclusions: string[] = [];
+  const changedRows: string[] = [];
+  let compared = 0;
+  for (const suite of new Set(names.map(getSuite))) {
+    const hasBase = baseSuites.has(suite);
+    const suiteNames = names.filter(name => getSuite(name) === suite);
+    const included = suiteNames.flatMap((name) => {
+      const headSide = head.get(name);
+      const baseSide = base.get(name);
+      return isOk(headSide) && (!hasBase || isOk(baseSide)) ?
+          [{ name, head: headSide.value, base: baseSide?.value ?? 0 }] :
+          [];
+    });
+    const headTotal = included.reduce((sum, entry) => sum + entry.head, 0);
+    const baseTotal = included.reduce((sum, entry) => sum + entry.base, 0);
+    if (!hasBase) {
+      totalRows.push(formatRow([ `\`${suite}\``, formatRequests(headTotal), '', '' ]));
+    } else if (included.length === 0) {
+      totalRows.push(formatRow([ `\`${suite}\``, '', '', 'n/a' ]));
+    } else {
+      totalRows.push(formatRow([
+        `\`${suite}\``,
+        formatRequests(headTotal),
+        formatRequests(baseTotal),
+        `\`${formatRatio(headTotal, baseTotal)}\``,
+      ]));
+      compared += included.length;
+      for (const entry of included.filter(entry => isRequestsChange(entry.head, entry.base))) {
+        changedRows.push(formatRow([
+          `\`${entry.name}\``,
+          formatRequests(entry.head),
+          formatRequests(entry.base),
+          `\`${formatRatio(entry.head, entry.base)}\``,
+        ]));
+      }
+    }
+    const excluded = suiteNames.filter(name => !included.some(entry => entry.name === name)).map(getQuery);
+    if (excluded.length > 0) {
+      exclusions.push(`\n\`${suite}\` totals exclude queries that failed or are missing on either side: ${excluded.join(', ')}`);
+    }
+  }
+
+  const threshold = `at least ${REQUESTS_MIN_RELATIVE_DIFFERENCE * 100}% and ${REQUESTS_MIN_DIFFERENCE} requests`;
+  let changes = '';
+  if (changedRows.length > 0) {
+    changes = `\n\n<details>\n<summary>Show the ${changedRows.length} of ${compared} queries whose HTTP requests changed by ${threshold}</summary>\n\n${[ ...headers('Query'), ...changedRows ].join('\n')}\n\n</details>`;
+  } else if (compared > 0) {
+    changes = `\n\nNone of the ${compared} queries changed its HTTP requests by ${threshold}.`;
+  }
+  return `\n\n# HTTP requests\n\n${[ ...headers('Benchmark suite'), ...totalRows, ...exclusions ].join('\n')}${changes}`;
+}
+
+/**
  * Render the comparison comment of a pull request.
  * @param headEntries The ghbench entries of the pull request.
  * @param baseEntries The ghbench entries of the base commit.
  * @param options The commits and CI run that are compared.
+ * @param ingestion The ingestion entries of both sides, if measured.
+ * @param requests The request entries of both sides, if determined.
  */
 export function renderComparisonComment(
   headEntries: IGhbenchEntry[],
   baseEntries: IGhbenchEntry[],
   options: IComparisonOptions,
+  ingestion?: IIngestionComparison,
+  requests?: IRequestsComparison,
 ): string {
   const rows = getRows(headEntries, baseEntries);
   const suites = [ ...new Set(rows.map(row => row.suite)) ];
@@ -266,6 +524,9 @@ export function renderComparisonComment(
     failures ? `\n\n${failures}` : '',
     '\n\n<details>\n<summary>Show detailed results</summary>\n\n',
     [ ...header, ...detailRows ].join('\n'),
-    `\n\n</details>\n\nMeasured by [this CI run](${options.runUrl}).\n`,
+    '\n\n</details>',
+    requests ? renderRequestsTables(requests, options) : '',
+    ingestion ? renderIngestionTables(ingestion, options) : '',
+    `\n\nMeasured by [this CI run](${options.runUrl}).\n`,
   ].join('');
 }

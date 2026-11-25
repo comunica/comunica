@@ -116,6 +116,8 @@ describe('FetchInitPreprocessor', () => {
       expect((<any> cache).size).toBe(3);
       httpInvalidatorListener({ url: 'http://otherhost:8080/a.html', context });
       expect((<any> cache).size).toBe(3);
+      httpInvalidatorListener({ url: '/path/to/file.hdt', context });
+      expect((<any> cache).size).toBe(3);
       httpInvalidatorListener({ url: 'http://localhost:8080/a.html', context });
       expect((<any> cache).size).toBe(0);
     });

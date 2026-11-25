@@ -4,8 +4,8 @@ import {
   declare,
   NamedNode,
   SparqlOperator,
+  uuidv4,
 } from '@comunica/utils-expression-evaluator';
-import * as uuid from 'uuid';
 
 /**
  * https://www.w3.org/TR/sparql11-query/#func-uuid
@@ -16,7 +16,7 @@ export class TermFunctionUuid extends TermFunctionBase {
       arity: 0,
       operator: SparqlOperator.UUID,
       overloads: declare(SparqlOperator.UUID)
-        .set([], () => () => new NamedNode(`urn:uuid:${uuid.v4()}`))
+        .set([], () => () => new NamedNode(`urn:uuid:${uuidv4()}`))
         .collect(),
     });
   }

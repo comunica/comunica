@@ -79,6 +79,7 @@ export class HttpServiceSparqlEndpoint {
   public readonly freshWorkerPerQuery: boolean;
   public readonly contextOverride: boolean;
   public readonly emitVoid: boolean;
+  public readonly warmup: number;
 
   public readonly voidMetadataEmitter: VoidMetadataEmitter;
   public readonly graphStore: HttpServiceGraphStore | undefined;
@@ -89,6 +90,11 @@ export class HttpServiceSparqlEndpoint {
    * Ends all open connections and stops this worker, once it runs as a worker.
    */
   public shutdownWorker: (() => Promise<void>) | undefined;
+
+  /**
+   * Serialized service descriptions of the endpoint URL, by media type.
+   */
+  private readonly serviceDescriptions = new Map<string, Buffer>();
 
   /**
    * Negotiated media types by request headers, for each set of allowed variants.
@@ -103,6 +109,7 @@ export class HttpServiceSparqlEndpoint {
     this.freshWorkerPerQuery = Boolean(args.freshWorkerPerQuery);
     this.contextOverride = Boolean(args.contextOverride);
     this.emitVoid = Boolean(args.emitVoid);
+    this.warmup = args.warmup ?? 0;
     this.voidMetadataEmitter = new VoidMetadataEmitter(this.context);
     this.graphStore = args.graphStore ? new HttpServiceGraphStore(this.context) : undefined;
 
@@ -204,6 +211,7 @@ export class HttpServiceSparqlEndpoint {
     const freshWorkerPerQuery: boolean = args.freshWorker;
     const contextOverride: boolean = args.contextOverride;
     const emitVoid: boolean = args.emitVoid;
+    const warmup: number = args.warmup;
     const graphStore: boolean = args.graphStore;
     const port = args.port;
     const timeout = args.timeout * 1_000;
@@ -224,6 +232,7 @@ export class HttpServiceSparqlEndpoint {
       mainModulePath: moduleRootPath,
       port,
       timeout,
+      warmup,
       workers,
     };
   }
@@ -276,6 +285,26 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Warm up the engine over the sources of this endpoint, so that the just-in-time compiler has optimized the
+   * engine before it handles requests.
+   * Failures are logged, but do not prevent the worker from starting.
+   * @param engine A SPARQL engine.
+   * @param stderr Error stream to write to.
+   */
+  public async warmUp(engine: QueryEngineBase, stderr: Writable): Promise<void> {
+    const start = Date.now();
+    try {
+      const { executions } = await engine.warmup(this.context, {
+        executions: this.warmup,
+        budget: this.timeout,
+      });
+      stderr.write(`Worker ${process.pid} warmed up with ${executions} query executions in ${Date.now() - start} ms.\n`);
+    } catch (error: unknown) {
+      stderr.write(`Worker ${process.pid} could not warm up: ${(<Error> error).message}\n`);
+    }
+  }
+
+  /**
    * Stop this worker because a query took longer than the timeout.
    * The main process then starts a new worker.
    * @param queryId The id of the query that timed out.
@@ -300,6 +329,11 @@ export class HttpServiceSparqlEndpoint {
     const variants: { type: string; quality: number }[] = [];
     for (const type of Object.keys(mediaTypes)) {
       variants.push({ type, quality: mediaTypes[type] });
+    }
+
+    // Warm up before accepting requests, so that they are not slowed down by just-in-time compilation
+    if (this.warmup > 0) {
+      await this.warmUp(engine, stderr);
     }
 
     // Start the server
@@ -769,6 +803,7 @@ export class HttpServiceSparqlEndpoint {
         // Fallback to query string
         /(INSERT|DELETE)/iu.test(queryBody.value))) {
       this.voidMetadataEmitter.invalidateCache();
+      this.serviceDescriptions.clear();
     }
 
     // Default to SPARQL JSON for bindings and boolean
@@ -907,6 +942,14 @@ export class HttpServiceSparqlEndpoint {
       return;
     }
 
+    const cacheable = request.url === '/sparql';
+    const cached = cacheable ? this.serviceDescriptions.get(mediaType) : undefined;
+    if (cached) {
+      response.end(cached);
+      this.stopResponse(response, 0, process.stderr);
+      return;
+    }
+
     const s = request.url;
     const sd = 'http://www.w3.org/ns/sparql-service-description#';
     const sparql = 'http://www.w3.org/ns/sparql#';
@@ -943,8 +986,18 @@ export class HttpServiceSparqlEndpoint {
         quads.push(quad(s, `${sd}extensionFunction`, value));
       }
 
+      // Append extension aggregates
+      const aggregates = actionContext.get(KeysInitQuery.extensionAggregators);
+      for (const value in aggregates) {
+        quads.push(quad(s, `${sd}extensionAggregate`, value));
+      }
+
+      let complete = true;
       if (this.emitVoid) {
-        for (const quad of await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response)) {
+        const voidQuads = await this.voidMetadataEmitter.getVoIDQuads(engine, stdout, request, response);
+        // Without VoID quads, computing the statistics failed, and an error was sent instead
+        complete = voidQuads.length > 0;
+        for (const quad of voidQuads) {
           quads.push(quad);
         }
       }
@@ -955,10 +1008,21 @@ export class HttpServiceSparqlEndpoint {
         execute: async() => new ArrayIterator(quads, { autoStart: false }),
         metadata: <any>undefined,
       }, mediaType);
+      let failed = false;
       data.on('error', (error: Error) => {
+        failed = true;
         stdout.write(`[500] Server error in results: ${error.message} \n`);
         response.end('An internal server error occurred.\n');
       });
+      if (cacheable && complete) {
+        const chunks: Buffer[] = [];
+        data.on('data', (chunk: Buffer | string) => chunks.push(Buffer.from(chunk)));
+        data.on('end', () => {
+          if (!failed) {
+            this.serviceDescriptions.set(mediaType, Buffer.concat(chunks));
+          }
+        });
+      }
       data.pipe(response);
       eventEmitter = data;
     } catch {
@@ -1135,6 +1199,10 @@ export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptio
   freshWorkerPerQuery?: boolean;
   contextOverride?: boolean;
   emitVoid?: boolean;
+  /**
+   * The number of query executions with which each worker warms up before it accepts requests.
+   */
+  warmup?: number;
   graphStore?: boolean;
   moduleRootPath: string;
   defaultConfigPath: string;

@@ -41,6 +41,19 @@ describe('evaluations of \'substr\' like', () => {
       '"type promotion"^^xsd:anyURI' 6 5 = "promo"
       '"type promotion"^^xsd:anyURI' 6 1 = "p"
       '"custom type"^^example:string' 3 15 = '"stom type"'
+      "12345" 0 = "12345"
+      "12345" -1 = "12345"
+      "12345" 0 3 = "12"
+      "12345" -3 5 = "1"
+      "12345" -1 4 = "12"
+      "12345" 2 -1 = ""
+      "12345" 0 -1 = ""
+      "12345" 6 = ""
+      "12345" 4 10 = "45"
+      "12345"@en 0 = "12345"@en
+      "12345"@en 0 3 = "12"@en
+      "12345"@en--ltr 0 = "12345"@en--ltr
+      "12345"@en--ltr -3 5 = "1"@en--ltr
       `,
   });
 });

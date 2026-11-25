@@ -64,6 +64,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     const endpointDefaultDataset = DF.namedNode('http://localhost/dataset');
     const endpointDefaultGraph = DF.namedNode('http://localhost/graph');
     const endpointExtensionFunction = DF.namedNode('http://localhost/function');
+    const endpointExtensionAggregate = DF.namedNode('http://localhost/aggregate');
 
     const sparqlResultsJson = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_JSON');
     const sparqlResultsXml = DF.namedNode('http://www.w3.org/ns/formats/SPARQL_Results_XML');
@@ -89,6 +90,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     const serviceDescriptionBasicFederatedQuery = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}BasicFederatedQuery`);
     const serviceDescriptionUnionDefaultGraph = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}UnionDefaultGraph`);
     const serviceDescriptionExtensionFunction = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}extensionFunction`);
+    const serviceDescriptionExtensionAggregate = DF.namedNode(`${ActorRdfMetadataExtractSparqlService.SD}extensionAggregate`);
 
     beforeEach(() => {
       actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus, inferHttpsEndpoint: false });
@@ -110,6 +112,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
         DF.quad(serviceDescriptionIri, serviceDescriptionDefaultDataset, endpointDefaultDataset),
         DF.quad(endpointDefaultDataset, serviceDescriptionDefaultGraph, endpointDefaultGraph),
         DF.quad(endpointDefaultDataset, serviceDescriptionExtensionFunction, endpointExtensionFunction),
+        DF.quad(endpointDefaultDataset, serviceDescriptionExtensionAggregate, endpointExtensionAggregate),
       ]);
       await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
         metadata: {
@@ -122,7 +125,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
           resultFormats: [ sparqlResultsXml.value ],
           supportedLanguages: [ sparql11Query.value, sparqlQuery.value ],
           supportedVersions: [ sparqlVersion11.value ],
-          extensionFunctions: [ endpointExtensionFunction.value ],
+          extensionFunctions: [ endpointExtensionFunction.value, endpointExtensionAggregate.value ],
           propertyFeatures: [ propertyFeature.value ],
         },
       });
@@ -231,6 +234,50 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
           defaultDataset: endpointDefaultDataset.value,
           defaultGraph: endpointDefaultGraph.value,
         },
+      });
+    });
+
+    it('should parse a named service declaring the requested URL as sd:endpoint, regardless of quad order', async() => {
+      const service = DF.namedNode('http://localhost/sparql-service-description#service');
+      const input = streamifyArray([
+        DF.quad(service, serviceDescriptionFeature, serviceDescriptionUnionDefaultGraph),
+        DF.quad(service, serviceDescriptionDefaultDataset, endpointDefaultDataset),
+        DF.quad(service, serviceDescriptionEndpoint, endpointIri),
+        DF.quad(service, serviceDescriptionSupportedVersion, sparqlVersion12),
+        DF.quad(endpointDefaultDataset, serviceDescriptionDefaultGraph, endpointDefaultGraph),
+      ]);
+      await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
+        metadata: {
+          sparqlService: endpointIri.value,
+          unionDefaultGraph: true,
+          defaultDataset: endpointDefaultDataset.value,
+          defaultGraph: endpointDefaultGraph.value,
+          supportedLanguages: [ sparql11Query.value ],
+          supportedVersions: [ sparqlVersion12.value ],
+        },
+      });
+    });
+
+    it('should ignore named services that do not declare the requested URL as sd:endpoint', async() => {
+      const service = DF.namedNode('http://localhost/other#service');
+      const input = streamifyArray([
+        DF.quad(service, serviceDescriptionFeature, serviceDescriptionUnionDefaultGraph),
+        DF.quad(service, serviceDescriptionEndpoint, DF.namedNode('http://localhost/other')),
+        DF.quad(service, serviceDescriptionFeature, serviceDescriptionBasicFederatedQuery),
+      ]);
+      await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
+        metadata: {},
+      });
+    });
+
+    it('should apply buffered quads of a subject that becomes accepted via void:subset', async() => {
+      const dataset = DF.namedNode('http://localhost/dataset-parent');
+      const input = streamifyArray([
+        DF.quad(dataset, serviceDescriptionDefaultGraph, endpointDefaultGraph),
+        DF.quad(dataset, voidSubset, endpointIri),
+      ]);
+      await expect(actor.run({ url: endpointIri.value, metadata: input, context, requestTime })).resolves.toEqual({
+        metadata: { defaultGraph: endpointDefaultGraph.value },
       });
     });
   });

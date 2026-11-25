@@ -3,7 +3,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^5.0.0/components/context.jsonld"
   ],
   "import": [
-    "ccqs:config/bindings-aggregator-factory/actors.json",
+    "ccqs:config/bindings-aggregator-factory/actors-v5-4-1.json",
     "ccqs:config/bindings-aggregator-factory/mediators.json",
     "ccqs:config/context-preprocess/actors.json",
     "ccqs:config/context-preprocess/mediators.json",
@@ -17,7 +17,7 @@
     "ccqs:config/hash-quads/mediators.json",
 
     "ccqs:config/http-invalidate/mediators.json",
-    "ccqs:config/init/actors-rdfjs-v5-4-1.json",
+    "ccqs:config/init/actors-rdfjs-lite-v5-4-1.json",
     "ccqs:config/merge-bindings-context/actors.json",
     "ccqs:config/merge-bindings-context/mediators.json",
     "ccqs:config/optimize-query-operation/actors-v5-4-1.json",

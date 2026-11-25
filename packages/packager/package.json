@@ -1,6 +1,6 @@
 {
   "name": "@comunica/packager",
-  "version": "5.0.0",
+  "version": "5.5.0",
   "description": "A tool for packaging Comunica modules in a single NPM package",
   "license": "MIT",
   "funding": {
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@types/minimist": "^1.2.2",
-    "componentsjs": "^6.2.0",
+    "componentsjs": "^6.5.0",
     "minimist": "^1.2.7",
     "process": "^0.11.10"
   }

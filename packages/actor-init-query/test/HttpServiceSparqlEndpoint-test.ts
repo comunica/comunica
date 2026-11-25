@@ -367,6 +367,31 @@ describe('HttpServiceSparqlEndpoint', () => {
         .toMatchObject({ configPath: defaultConfigPath, mainModulePath: moduleRootPath });
     });
 
+    it('should not warm up by default', async() => {
+      await expect(HttpServiceSparqlEndpoint.generateConstructorArguments(
+        testCommandlineArguments,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        stderr,
+        exit,
+        [],
+      )).resolves.toMatchObject({ warmup: 0 });
+    });
+
+    it('should take the number of warm-up executions from the commandline arguments', async() => {
+      testCommandlineArguments.push('--warmup', '100');
+      await expect(HttpServiceSparqlEndpoint.generateConstructorArguments(
+        testCommandlineArguments,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        stderr,
+        exit,
+        [],
+      )).resolves.toMatchObject({ warmup: 100 });
+    });
+
     it('should use logger from given context if available', async() => {
       fs.existsSync.mockReturnValue(false);
       const context = { ...testArgumentDict, log: new LoggerPretty({ level: 'test_loglevel' }) };
@@ -570,6 +595,46 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(instance.handleRequest.bind).toHaveBeenCalledTimes(1);
         expect(instance.handleRequest.bind)
           .toHaveBeenCalledWith(instance, await instance.engine, variants, stdout, stderr);
+      });
+
+      it('should not warm up by default', async() => {
+        jest.spyOn(instance, 'warmUp');
+        await instance.run(stdout, stderr);
+
+        expect(instance.warmUp).not.toHaveBeenCalled();
+      });
+
+      it('should warm up before creating the server', async() => {
+        (<any> instance).warmup = 5;
+        jest.spyOn(instance, 'warmUp').mockResolvedValue();
+        await instance.run(stdout, stderr);
+
+        expect(instance.warmUp).toHaveBeenCalledWith(await instance.engine, stderr);
+        expect(jest.mocked(instance.warmUp).mock.invocationCallOrder[0])
+          .toBeLessThan(http.createServer.mock.invocationCallOrder[0]);
+      });
+
+      it('should warm up the engine over its sources, and log it', async() => {
+        (<any> instance).warmup = 5;
+        const engine: any = await instance.engine;
+        engine.warmup = jest.fn().mockResolvedValue({ executions: 5 });
+        const errors = new PassThrough();
+        await instance.warmUp(engine, errors);
+        errors.end();
+
+        expect(engine.warmup).toHaveBeenCalledWith(instance.context, { executions: 5, budget: instance.timeout });
+        await expect(stringifyStream(errors)).resolves
+          .toMatch(/^Worker \d+ warmed up with 5 query executions in \d+ ms\.\n$/u);
+      });
+
+      it('should log warm-up failures without failing', async() => {
+        const engine: any = await instance.engine;
+        engine.warmup = jest.fn().mockRejectedValue(new Error('no data'));
+        const errors = new PassThrough();
+        await instance.warmUp(engine, errors);
+        errors.end();
+
+        await expect(stringifyStream(errors)).resolves.toBe(`Worker ${process.pid} could not warm up: no data\n`);
       });
 
       it('should call createServer with the correct arguments', async() => {
@@ -1644,6 +1709,11 @@ describe('HttpServiceSparqlEndpoint', () => {
             'https://example.org/functions#args1': async(args: RDF.Term[]) => {
               return args[1];
             },
+          }).set(KeysInitQuery.extensionAggregators, {
+            'https://example.org/aggregates#first': () => ({
+              put: () => {},
+              result: () => undefined,
+            }),
           }),
         });
 
@@ -1696,6 +1766,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(spyResultToString.mock.calls[0][1]).toEqual(mediaType);
         serviceDescriptionQuads.push(quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args0'));
         serviceDescriptionQuads.push(quad(s, `${sd}extensionFunction`, 'https://example.org/functions#args1'));
+        serviceDescriptionQuads.push(quad(s, `${sd}extensionAggregate`, 'https://example.org/aggregates#first'));
         await expect((spyResultToString.mock.calls[0][0]).execute()).resolves.toEqual(new ArrayIterator(
           serviceDescriptionQuads,
           { autoStart: false },
@@ -1817,6 +1888,82 @@ describe('HttpServiceSparqlEndpoint', () => {
           .toHaveBeenLastCalledWith(400, { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
       });
 
+      describe('service description cache', () => {
+        async function writeServiceDescription(
+          localInstance: HttpServiceSparqlEndpoint,
+          engine: any,
+          url = '/sparql',
+          localMediaType = mediaType,
+        ): Promise<any> {
+          const localResponse: any = new ServerResponseMock();
+          const ended = new Promise(resolve => localResponse.onEnd = resolve);
+          const localRequest: any = Readable.from([ 'default_request_content' ]);
+          localRequest.url = url;
+          localRequest.headers = { host: 'localhost:3000' };
+          localRequest.socket = {};
+          await localInstance.writeQueryResult(
+            engine,
+            new PassThrough(),
+            new PassThrough(),
+            localRequest,
+            localResponse,
+            { type: 'query', value: '', context: undefined },
+            localMediaType,
+            false,
+            true,
+            0,
+          );
+          return ended;
+        }
+
+        it('should reuse the serialized service description', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await expect(writeServiceDescription(instance, engine)).resolves.toBeUndefined();
+          await expect(writeServiceDescription(instance, engine)).resolves.toEqual(Buffer.from('test_query_result'));
+          expect(spyResultToString).toHaveBeenCalledTimes(1);
+        });
+
+        it('should serialize again for other media types', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await writeServiceDescription(instance, engine);
+          await writeServiceDescription(instance, engine, '/sparql', 'other_mediatype');
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not cache service descriptions of URLs with a query string', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await writeServiceDescription(instance, engine, '/sparql?other');
+          await expect(writeServiceDescription(instance, engine, '/sparql?other')).resolves.toBeUndefined();
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not cache failed serializations', async() => {
+          const engine = await new QueryEngineFactoryBase().create();
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          const error = 'An internal server error occurred.\n';
+          await expect(writeServiceDescription(instance, engine, '/sparql', 'mediatype_queryresultstreamerror'))
+            .resolves.toBe(error);
+          await expect(writeServiceDescription(instance, engine, '/sparql', 'mediatype_queryresultstreamerror'))
+            .resolves.toBe(error);
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+
+        it('should not cache service descriptions if computing the VoID statistics fails', async() => {
+          const localInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, emitVoid: true });
+          const engine = await new QueryEngineFactoryBase().create();
+          engine.queryBindings = () => {
+            throw new Error('statistics error');
+          };
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          await writeServiceDescription(localInstance, engine);
+          await writeServiceDescription(localInstance, engine);
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+        });
+      });
+
       describe('VoID description', () => {
         const xsd = 'http://www.w3.org/2001/XMLSchema#';
 
@@ -1867,6 +2014,38 @@ describe('HttpServiceSparqlEndpoint', () => {
             }
             return <BindingsStream>(new ArrayIterator<RDF.Bindings>(bindingsArray, { autoStart: false }));
           };
+        });
+
+        it('should serialize the service description again after an update', async() => {
+          const localInstance = new HttpServiceSparqlEndpoint({ ...argsDefault, emitVoid: true });
+          const engine = await new QueryEngineFactoryBase().create();
+          engine.queryBindings = queryBindings;
+          const spyResultToString = jest.spyOn(engine, 'resultToString');
+          const write = async(value: string): Promise<void> => {
+            const localResponse: any = new ServerResponseMock();
+            const ended = new Promise(resolve => localResponse.onEnd = resolve);
+            await localInstance.writeQueryResult(
+              engine,
+              new PassThrough(),
+              new PassThrough(),
+              request,
+              localResponse,
+              { type: 'query', value, context: undefined },
+              mediaType,
+              false,
+              true,
+              0,
+            );
+            await ended;
+          };
+
+          await write('');
+          await write('');
+          expect(spyResultToString).toHaveBeenCalledTimes(1);
+          await write('INSERT DATA { <http://example.org/s> <http://example.org/p> "o" . }');
+          expect(spyResultToString).toHaveBeenCalledTimes(2);
+          await write('');
+          expect(spyResultToString).toHaveBeenCalledTimes(3);
         });
 
         it('should append the VoID description in the service description when emitVoid is not true', async() => {

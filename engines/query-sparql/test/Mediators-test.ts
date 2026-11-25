@@ -65,6 +65,7 @@ import type {
   IActionTermComparatorFactory,
   IActorTermComparatorFactoryOutput,
 } from '@comunica/bus-term-comparator-factory';
+import type { IActionWarmup, IActorWarmupOutput } from '@comunica/bus-warmup';
 import { ActionContext, failTest } from '@comunica/core';
 import type { Mediate, IAction, IActorOutput, IActorTest, Bus } from '@comunica/core';
 import type { IMediatorTypeAccuracy } from '@comunica/mediatortype-accuracy';
@@ -318,6 +319,13 @@ IMediatorTypeJoinCoefficients
     'mediatorTermComparatorFactory',
     {},
       `Creation of term comparator failed`,
+  );
+  addTest<IActionWarmup, IActorWarmupOutput>(
+    'warmup',
+    ':init/actors#query',
+    'mediatorWarmup',
+    { engine: <any> undefined },
+    `Warming up failed: none of the configured actors were able to warm up`,
   );
 
   /**
