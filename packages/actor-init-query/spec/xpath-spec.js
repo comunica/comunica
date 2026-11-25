@@ -6,52 +6,41 @@ const { parseArgs } = require('node:util');
 const { TestSuiteRunner } = require('rdf-test-suite');
 const knownFailures = require('./xpath-known-failures');
 
+const MANIFEST_URLS = [ 'manifest.ttl', 'extensions.ttl', 'errors.ttl' ]
+  .map(manifest => `https://comunica.github.io/sparql-manifest-xpath-tests/${manifest}`);
+const CACHE_PATH = join(__dirname, '../../../.rdf-test-suite-cache/');
+
 /**
- * Runs the XPath test suite (https://comunica.github.io/sparql-manifest-xpath-tests/) with rdf-test-suite.
- * Known failures (see xpath-known-failures.js) are reported as skipped when they fail,
- * and produce a warning when they pass, so that they can be removed from that list.
- *
- * Usage: node xpath-spec.js path/to/sparql-engine.js manifest-url... [-c cacheDirectory] [-m urlToFileMapping] [-t testRegex]
+ * Run the XPath test suite on the engine given as argument, optionally filtered with --test-regex.
+ * Known failures are reported as skipped, and warned about once they pass.
  */
 async function main() {
-  const { values: args, positionals: [ enginePath, ...manifests ] } = parseArgs({
+  const { values: { 'test-regex': testRegex }, positionals: [ enginePath ] } = parseArgs({
     allowPositionals: true,
-    options: { c: { type: 'string' }, m: { type: 'string' }, t: { type: 'string' }},
+    options: { 'test-regex': { type: 'string' }},
   });
-  const runner = new TestSuiteRunner();
-  const config = {
-    cachePath: args.c && join(process.cwd(), args.c, '/'),
-    customEngingeOptions: {},
-    exitWithStatusCode0: false,
-    outputFormat: 'detailed',
-    testRegex: args.t ? new RegExp(args.t, 'u') : undefined,
-    timeOutDuration: 3000,
-    urlToFileMapping: args.m,
-  };
-  if (config.cachePath) {
-    mkdirSync(config.cachePath, { recursive: true });
-  }
+  mkdirSync(CACHE_PATH, { recursive: true });
   const engine = require(join(process.cwd(), enginePath));
+  const runner = new TestSuiteRunner();
+  const config = { cachePath: CACHE_PATH, testRegex: testRegex && new RegExp(testRegex, 'u'), timeOutDuration: 3000 };
   const results = [];
-  for (const manifest of manifests) {
-    results.push(...await runner.runManifest(manifest, engine, config));
+  for (const manifestUrl of MANIFEST_URLS) {
+    results.push(...await runner.runManifest(manifestUrl, engine, config));
   }
 
-  const reasons = new Map(knownFailures.flatMap(({ reason, tests }) => tests.map(test => [ test, reason ])));
-  const passingKnownFailures = [];
+  const knownFailureReasons = new Map(knownFailures.flatMap(({ reason, tests }) => tests.map(test => [ test, reason ])));
+  const passingKnownFailures = results.filter(({ ok, test }) => ok && knownFailureReasons.has(test.name));
   for (const result of results) {
-    const reason = reasons.get(result.test.name);
-    if (reason && result.ok) {
-      passingKnownFailures.push(result.test.name);
-    } else if (reason && !result.skipped) {
+    const reason = knownFailureReasons.get(result.test.name);
+    if (reason && !result.ok && !result.skipped) {
       Object.assign(result, { skipped: true, error: new Error(`Known failure: ${reason}`) });
     }
   }
   runner.resultsToText(process.stdout, results, false);
-  // Emitted as GitHub Actions annotations in CI, so they show up on the run without failing it
+  // GitHub Actions annotations show up on the run without failing it
   const warningPrefix = process.env.GITHUB_ACTIONS ? '::warning::' : 'Warning: ';
-  for (const test of passingKnownFailures) {
-    process.stdout.write(`${warningPrefix}${test} passes, so it can be removed from the known failures\n`);
+  for (const { test } of passingKnownFailures) {
+    process.stdout.write(`${warningPrefix}${test.name} passes, so it can be removed from the known failures\n`);
   }
   if (results.some(({ ok, skipped }) => !ok && !skipped)) {
     process.exitCode = 1;

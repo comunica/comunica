@@ -1,67 +1,51 @@
-const { ActionContext } = require('@comunica/core');
 const { BindingsFactory } = require('@comunica/utils-bindings-factory');
 const { isExpressionError } = require('@comunica/utils-expression-evaluator');
 const { toAlgebra } = require('@traqula/algebra-sparql-1-2');
 const { Parser } = require('@traqula/parser-sparql-1-2');
 const { DataFactory } = require('rdf-data-factory');
-const RdfTestSuite = require('rdf-test-suite');
+const { QueryResultBoolean } = require('rdf-test-suite');
 const { ExpressionEngine } = require('..');
 
 const DF = new DataFactory();
 const BF = new BindingsFactory(DF);
 const parser = new Parser();
-const engine = new ExpressionEngine();
-const context = new ActionContext();
+const expressionEngine = new ExpressionEngine();
 
 /**
- * Evaluate an expression to a term, or undefined if it results in an expression error, as a BIND in Comunica.
- * Other errors are not caught, as they abort a query.
+ * Evaluate an expression as a query in Comunica would, where an expression error yields the fallback.
+ * @param expression The algebra expression to evaluate.
+ * @param evaluate Applies the evaluator of the expression.
+ * @param fallback The value to return on an expression error.
+ * @returns The evaluated value, or the fallback on an expression error.
  */
-async function evaluate(expression, bindings) {
+async function evaluateOrFallback(expression, evaluate, fallback) {
   try {
-    return await (await engine.createEvaluator(expression, context)).evaluate(bindings);
+    return await evaluate(await expressionEngine.createEvaluator(expression));
   } catch (error) {
     if (!isExpressionError(error)) {
       throw error;
     }
+    return fallback;
   }
 }
 
 /**
- * Evaluate the effective boolean value of an expression, which is false if it results in an expression error,
- * as a FILTER in Comunica. Other errors are not caught, as they abort a query.
- */
-async function evaluateAsEbv(expression, bindings) {
-  try {
-    return await (await engine.createEvaluator(expression, context)).evaluateAsEBV(bindings);
-  } catch (error) {
-    if (!isExpressionError(error)) {
-      throw error;
-    }
-    return false;
-  }
-}
-
-/**
- * A query engine for rdf-test-suite that evaluates the queries of the XPath test suite
- * (https://comunica.github.io/sparql-manifest-xpath-tests/) with the expression engine.
- * These queries have the form ASK { BIND(<expression> AS ?result) FILTER(<assertion>) },
- * so the expression is evaluated first, and the assertion is evaluated with its result.
+ * An rdf-test-suite engine that evaluates the ASK { BIND(<expression> AS ?result) FILTER(<assertion>) } queries
+ * of the XPath test suite with the expression engine.
  */
 module.exports = {
-  parse(queryString) {
-    toAlgebra(parser.parse(queryString), { quads: true, dataFactory: DF });
-  },
   async query(data, queryString) {
     const ask = toAlgebra(parser.parse(queryString), { quads: true, dataFactory: DF });
     const filter = ask.input;
     const extend = filter?.input;
-    if (ask.type !== 'ask' || filter.type !== 'filter' || extend?.type !== 'extend' || extend.input.type !== 'bgp' ||
-      extend.input.patterns.length > 0) {
+    if (ask.type !== 'ask' || filter.type !== 'filter' || extend.type !== 'extend' ||
+      extend.input.type !== 'bgp' || extend.input.patterns.length > 0) {
       throw new Error(`Only queries of the form ASK { BIND(... AS ?result) FILTER(...) } are supported:\n${queryString}`);
     }
-    const result = await evaluate(extend.expression, BF.bindings());
+    const result = await evaluateOrFallback(extend.expression, evaluator => evaluator.evaluate(BF.bindings()));
     const bindings = result ? BF.bindings([[ extend.variable, result ]]) : BF.bindings();
-    return new RdfTestSuite.QueryResultBoolean(await evaluateAsEbv(filter.expression, bindings));
+    return new QueryResultBoolean(
+      await evaluateOrFallback(filter.expression, evaluator => evaluator.evaluateAsEBV(bindings), false),
+    );
   },
 };
