@@ -1,6 +1,7 @@
 # Comunica SPARQL Expressions
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Fexpressions-sparql.svg)](https://www.npmjs.com/package/@comunica/expressions-sparql)
+[![Node.js versions](https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcomunica%2Fcomunica%2Fmaster%2F.github%2Fworkflows%2Fci.yml&query=%24.jobs.test.strategy.matrix%5B%27node-version%27%5D&label=node.js)](https://github.com/comunica/comunica/blob/master/.github/workflows/ci.yml)
 
 Comunica SPARQL Expressions evaluates SPARQL expressions, aggregates and term ordering
 without setting up a query engine.
@@ -114,6 +115,26 @@ const aggregator = await engine.createAggregator(
 await aggregator.putBindings(bindings);
 const result = await aggregator.result();
 ```
+
+### Extension aggregates
+
+[Extension aggregates](https://github.com/comunica/comunica/tree/master/packages/actor-bindings-aggregator-factory-extensions#readme)
+registered through `KeysInitQuery.extensionAggregators` (or `extensionAggregatorCreator`) are created with `createBoundNamedAggregate`:
+
+```typescript
+import { KeysInitQuery } from '@comunica/context-entries';
+import { ActionContext } from '@comunica/core';
+
+const aggregator = await engine.createAggregator(
+  AF.createBoundNamedAggregate(DF.variable('median'), DF.namedNode('http://example.org/median'), [
+    AF.createTermExpression(DF.variable('x')),
+  ], false),
+  new ActionContext({ [KeysInitQuery.extensionAggregators.name]: { 'http://example.org/median': myMedian } }),
+);
+```
+
+This requires the `ExpressionEngine` type, as `IExpressionEngine` only accepts aggregate expressions until the next major version.
+Expressions translated on their own never contain extension aggregates, so create those with `createBoundNamedAggregate`.
 
 ### Context
 

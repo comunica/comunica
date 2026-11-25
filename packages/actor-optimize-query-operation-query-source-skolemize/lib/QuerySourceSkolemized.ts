@@ -17,6 +17,7 @@ import { ArrayIterator } from 'asynciterator';
 import {
   deskolemizeOperation,
   deskolemizePattern,
+  hasSkolemizedTerms,
   skolemizeBindings,
   skolemizeBindingsStream,
   skolemizeQuadStream,
@@ -48,13 +49,31 @@ export class QuerySourceSkolemized implements IQuerySource {
     return await this.innerSource.getFilterFactor(context);
   }
 
+  /**
+   * Check if skolemization would not change the given operation and its results.
+   * @param operation An operation.
+   */
+  protected canPassThrough(operation: Algebra.Operation): boolean {
+    return isKnownOperation(operation, Algebra.Types.PATTERN) && this.innerSource.canContainBlankNodes?.() === false &&
+      !hasSkolemizedTerms(operation);
+  }
+
+  public canContainBlankNodes(): boolean {
+    return this.innerSource.canContainBlankNodes?.() !== false;
+  }
+
   public queryBindings(
     operation: Algebra.Operation,
     context: IActionContext,
     options: IQueryBindingsOptions | undefined,
   ): BindingsStream {
+    if (this.canPassThrough(operation)) {
+      return this.innerSource.queryBindings(operation, context, options);
+    }
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
-    const operationMapped = deskolemizeOperation(dataFactory, operation, this.sourceId);
+    const operationMapped = isKnownOperation(operation, Algebra.Types.PATTERN) ?
+      deskolemizePattern(dataFactory, operation, this.sourceId) :
+      deskolemizeOperation(dataFactory, operation, this.sourceId);
     if (!operationMapped) {
       const it: BindingsStream = new ArrayIterator<RDF.Bindings>([], { autoStart: false });
       it.setProperty('metadata', {
@@ -74,6 +93,9 @@ export class QuerySourceSkolemized implements IQuerySource {
   public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
     if (!this.innerSource.queryBindingsSynchronous) {
       return undefined;
+    }
+    if (this.canPassThrough(operation)) {
+      return this.innerSource.queryBindingsSynchronous(operation, context);
     }
     const dataFactory: ComunicaDataFactory = context.getSafe(KeysInitQuery.dataFactory);
     const operationMapped = isKnownOperation(operation, Algebra.Types.PATTERN) ?

@@ -13,6 +13,7 @@
 <p align="center">
   <a href="https://github.com/comunica/comunica/actions/workflows/ci.yml"><img src="https://github.com/comunica/comunica/actions/workflows/ci.yml/badge.svg?branch=master" alt="Build Status"></a>
   <a href="https://coveralls.io/github/comunica/comunica?branch=master"><img src="https://coveralls.io/repos/github/comunica/comunica/badge.svg?branch=master" alt="Coverage Status"></a>
+  <a href="https://github.com/comunica/comunica/blob/master/.github/workflows/ci.yml"><img src="https://img.shields.io/badge/dynamic/yaml?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcomunica%2Fcomunica%2Fmaster%2F.github%2Fworkflows%2Fci.yml&query=%24.jobs.test.strategy.matrix%5B%27node-version%27%5D&label=node.js" alt="Node.js versions"></a>
   <a href="https://zenodo.org/badge/latestdoi/107345960"><img src="https://zenodo.org/badge/107345960.svg" alt="DOI"></a>
   <a href="https://gitter.im/comunica/Lobby"><img src="https://img.shields.io/gitter/room/comunica/Lobby.svg?label=Lobby-Chat" alt="Gitter Lobby chat"></a>
   <a href="https://gitter.im/comunica/core-dev"><img src="https://img.shields.io/gitter/room/comunica/Lobby.svg?label=Dev-Chat" alt="Gitter Dev chat"></a>

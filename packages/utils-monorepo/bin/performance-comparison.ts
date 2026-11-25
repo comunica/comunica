@@ -5,9 +5,32 @@ import { readFileSync } from 'node:fs';
 import { renderComparisonComment } from '../lib/performanceComparison';
 
 // Usage: performance-comparison <head ghbench JSON> <base ghbench JSON> <head sha> <base sha> <CI run URL>
-const [ headFile, baseFile, headSha, baseSha, runUrl ] = process.argv.slice(2);
+//   [<head ingestion JSON> <base ingestion JSON> [<head requests JSON> <base requests JSON>]]
+const [
+  headFile,
+  baseFile,
+  headSha,
+  baseSha,
+  runUrl,
+  headIngestionFile,
+  baseIngestionFile,
+  headRequestsFile,
+  baseRequestsFile,
+] = process.argv.slice(2);
 process.stdout.write(renderComparisonComment(
   JSON.parse(readFileSync(headFile, 'utf8')),
   JSON.parse(readFileSync(baseFile, 'utf8')),
   { headSha, baseSha, runUrl },
+  headIngestionFile && baseIngestionFile ?
+      {
+        head: JSON.parse(readFileSync(headIngestionFile, 'utf8')),
+        base: JSON.parse(readFileSync(baseIngestionFile, 'utf8')),
+      } :
+    undefined,
+  headRequestsFile && baseRequestsFile ?
+      {
+        head: JSON.parse(readFileSync(headRequestsFile, 'utf8')),
+        base: JSON.parse(readFileSync(baseRequestsFile, 'utf8')),
+      } :
+    undefined,
 ));

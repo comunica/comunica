@@ -52,7 +52,7 @@ export type KnownOperation = Ask | KnownExpression | Bgp | Construct | Describe 
   | Graph | Group | Join | LeftJoin | Minus | Nop | OrderBy | Path | Pattern | Project | KnownPropertyPathSymbol
   | Reduced | Service | Slice | Union | Values | KnownUpdate | CompositeUpdate | Nodes | DistinctTerms;
 export type KnownExpression = AggregateExpression | GroupConcatExpression | ExistenceExpression | NamedExpression |
-  OperatorExpression | TermExpression | WildcardExpression | BoundAggregate;
+  OperatorExpression | TermExpression | WildcardExpression | BoundAggregate | BoundNamedAggregate;
 export type KnownPropertyPathSymbol = Alt | Inv | Link | Nps | OneOrMorePath | Seq | ZeroOrMorePath | ZeroOrOnePath;
 export type KnownUpdate = DeleteInsert | Load | Clear | Create | Drop | Add | Move | Copy;
 
@@ -92,6 +92,14 @@ export type From = Opened<Algebra.From>;
 export type Filter = Opened<Algebra.Filter>;
 export type Graph = Opened<Algebra.Graph>;
 export type BoundAggregate = Opened<Algebra.BoundAggregate>;
+/**
+ * A call of an extension aggregate, bound to a variable in a group.
+ */
+export type BoundNamedAggregate = Opened<Algebra.BoundNamedAggregate>;
+/**
+ * The aggregates of a group can also contain extension aggregates ({@link BoundNamedAggregate}).
+ * TODO(next major): include BoundNamedAggregate in the type of the aggregates.
+ */
 export type Group = Patch<Opened<Algebra.Group>, { aggregates: BoundAggregate[] }>;
 /**
  * Algebra operation representing the [Property path](https://www.w3.org/TR/sparql11-query/#propertypaths) inverse (`^`).

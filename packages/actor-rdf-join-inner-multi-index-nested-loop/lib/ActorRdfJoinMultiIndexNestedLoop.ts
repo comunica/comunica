@@ -19,7 +19,7 @@ import type {
 } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
-import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
+import { doesShapeAcceptOperation, getOperationSource, getSourceSelectorShape } from '@comunica/utils-query-operation';
 import type { IIndexNestedLoopLookup } from './IndexNestedLoopIterator';
 import { IndexNestedLoopIterator } from './IndexNestedLoopIterator';
 
@@ -109,7 +109,7 @@ export class ActorRdfJoinMultiIndexNestedLoop extends ActorRdfJoin<IActorRdfJoin
     if (Boolean(entry.operationModified) || !sourceWrapper) {
       return false;
     }
-    const shape = await sourceWrapper.source.getSelectorShape(context);
+    const shape = await getSourceSelectorShape(sourceWrapper, context);
     return doesShapeAcceptOperation(shape, entry.operation, { synchronous: true });
   }
 

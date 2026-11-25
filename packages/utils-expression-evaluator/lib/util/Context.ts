@@ -1,8 +1,18 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
-import type { AsyncExtensionFunction, GeneralSuperTypeDict, IActionContext } from '@comunica/types';
+import type {
+  AsyncExtensionFunction,
+  GeneralSuperTypeDict,
+  IActionContext,
+  ISuperTypeProvider,
+} from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import { LRUCache } from 'lru-cache';
 import { extractTimeZone } from './DateTimeHelpers';
+
+export const defaultSuperTypeProvider: ISuperTypeProvider = {
+  cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
+  discoverer: () => 'term',
+};
 
 export function prepareEvaluatorActionContext(orgContext: IActionContext): IActionContext {
   let context = orgContext;
@@ -34,10 +44,7 @@ export function prepareEvaluatorActionContext(orgContext: IActionContext): IActi
     extractTimeZone(context.getSafe(KeysInitQuery.queryTimestamp)),
   );
 
-  context = context.setDefault(KeysExpressionEvaluator.superTypeProvider, {
-    cache: new LRUCache<string, GeneralSuperTypeDict>({ max: 1_000 }),
-    discoverer: () => 'term',
-  });
+  context = context.setDefault(KeysExpressionEvaluator.superTypeProvider, defaultSuperTypeProvider);
 
   return context;
 }

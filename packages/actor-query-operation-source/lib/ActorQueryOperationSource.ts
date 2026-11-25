@@ -14,7 +14,7 @@ import type {
 import { Algebra, algebraUtils } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { getMetadataBindings, getMetadataQuads } from '@comunica/utils-metadata';
-import { doesShapeAcceptOperation, getOperationSource } from '@comunica/utils-query-operation';
+import { doesShapeAcceptOperation, getOperationSource, getSourceSelectorShape } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { SilencedBindingsIterator } from './SilencedBindingsIterator';
 
@@ -32,7 +32,7 @@ export class ActorQueryOperationSource extends ActorQueryOperation {
       return failTest(`Actor ${this.name} requires an operation with source annotation.`);
     }
     if (!doesShapeAcceptOperation(
-      await source.source.getSelectorShape(action.context),
+      await getSourceSelectorShape(source, action.context),
       action.operation,
       { wildcardAcceptAllExtensionFunctions: true },
     )) {

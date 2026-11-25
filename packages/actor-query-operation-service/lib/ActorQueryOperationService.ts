@@ -20,6 +20,7 @@ import {
   doesShapeAcceptOperationInContext,
   getSafeBindings,
   getServiceTargetCredentials,
+  getSourceSelectorShape,
 } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { SingletonIterator, TransformIterator } from 'asynciterator';
@@ -124,7 +125,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     querySource: IQuerySourceWrapper,
     context: IActionContext,
   ): Promise<Algebra.Operation> {
-    const shape = await querySource.source.getSelectorShape(context);
+    const shape = await getSourceSelectorShape(querySource, context);
     if (doesShapeAcceptOperationInContext(shape, operation, context)) {
       return assignOperationSource(operation, querySource);
     }

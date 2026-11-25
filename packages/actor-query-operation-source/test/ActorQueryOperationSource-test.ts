@@ -101,6 +101,19 @@ describe('ActorQueryOperationSource', () => {
           .resolves.toFailTest(`Actor actor does not accept the operation nop.`);
       });
 
+      it('should request the selector shape in the context of the source', async() => {
+        const getSelectorShape = jest.fn(() => ({ type: 'operation', operation: { operationType: 'wildcard' }}));
+        const sourceContext = new ActionContext({ key: 'value' });
+        await expect(actor.test({
+          context: new ActionContext(),
+          operation: assignOperationSource(AF.createNop(), <any>{
+            source: { getSelectorShape },
+            context: sourceContext,
+          }),
+        })).resolves.toPassTest({ httpRequests: 1 });
+        expect(getSelectorShape).toHaveBeenCalledWith(new ActionContext({ key: 'value' }));
+      });
+
       it('should not handle operations without top-level source', async() => {
         await expect(actor.test({ context: new ActionContext(), operation: AF.createNop() }))
           .resolves.toFailTest(`Actor actor requires an operation with source annotation.`);
