@@ -7,7 +7,7 @@ const { TestSuiteRunner } = require('rdf-test-suite');
 const knownFailures = require('./xpath-known-failures');
 
 /**
- * Runs the XPath test suite (https://sparql-manifest-xpath-tests.jitsedesmet.be/) with rdf-test-suite.
+ * Runs the XPath test suite (https://comunica.github.io/sparql-manifest-xpath-tests/) with rdf-test-suite.
  * Known failures (see xpath-known-failures.js) are reported as skipped when they fail,
  * and produce a warning when they pass, so that they can be removed from that list.
  *
