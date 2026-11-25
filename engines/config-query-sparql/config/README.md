@@ -50,6 +50,8 @@ e.g. `rdf-metadata-extract/actors-v4-1-0.json`.
 Then, all (relevant) configs importing this file must to the same,
 e.g. `config/config-default.json` should be copied to `config/config-default-v4-1-0.json`
 with the import changed to `rdf-metadata-extract/actors-v4-1-0.json`.
+This includes configs in other config packages that import this file, such as
+`engines/config-expressions-sparql/config/config-expressions.json`.
 Then finally, all engine packages (e.g. `engines/query-sparql`) depending on this config
 (e.g. in `config/config-default.json`) must be modified to include this renamed config file.
 (no versioned config is needed here, as external packages are not supposed to rely on this config file directly)
