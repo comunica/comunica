@@ -25,12 +25,12 @@ export class TermFunctionXsdToInteger extends TermFunctionBase {
           return integer(Math.trunc(val.typedValue));
         })
         .onString1(() => (val: Term) => {
-          const str = val.str();
-          const result = /^\d+$/u.test(str) ? Number.parseInt(str, 10) : undefined;
-          if (result === undefined) {
+          // The xsd:integer lexical form, with surrounding whitespace collapsed
+          const match = /^[\t\n\r ]*([+-]?\d+)[\t\n\r ]*$/u.exec(val.str());
+          if (!match) {
             throw new CastError(val, TypeURL.XSD_INTEGER);
           }
-          return integer(result);
+          return integer(Number.parseInt(match[1], 10));
         })
         .collect(),
     });

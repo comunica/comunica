@@ -4,9 +4,11 @@ import { ActionContext, Bus } from '@comunica/core';
 import type { BindingsStream, DereferenceFromNamedConflictMode, IActionContext } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
+import { compareTerms } from '@comunica/utils-iterator';
 import { MetadataValidationState } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
+import { defaultTermComparator } from 'rdf-stores';
 import { streamifyArray } from 'streamify-array';
 import {
   ActorQuerySourceIdentifyHypermediaNone,
@@ -21,6 +23,21 @@ const BF = new BindingsFactory(DF);
 const v1 = DF.variable('v1');
 const v2 = DF.variable('v2');
 const v3 = DF.variable('v3');
+const XSD_INTEGER = DF.namedNode('http://www.w3.org/2001/XMLSchema#integer');
+const OBJECTS: RDF.Quad_Object[] = [
+  DF.namedNode('http://example.org/b'),
+  DF.literal('a', { language: 'en', direction: 'rtl' }),
+  DF.literal('9', XSD_INTEGER),
+  DF.blankNode('b1'),
+  DF.literal('a', 'en'),
+  DF.literal('10', XSD_INTEGER),
+  DF.quad(DF.namedNode('http://example.org/s'), DF.namedNode('http://example.org/p'), DF.literal('o')),
+  DF.literal('a'),
+  DF.namedNode('http://example.org/a'),
+  DF.literal('a', 'de'),
+  DF.literal('a', { language: 'en', direction: 'ltr' }),
+  DF.blankNode('b0'),
+];
 
 const mediatorMergeBindingsContext: any = {
   mediate: () => ({}),
@@ -181,6 +198,25 @@ describe('ActorQuerySourceIdentifyHypermediaNone', () => {
         expect(metadata.canSeek).toBe(true);
         const bindings = await stream.toArray();
         expect(bindings.map(b => b.get(DF.variable('s'))!.value)).toEqual([ 's1', 's2' ]);
+      });
+
+      it('scans in the order of compareTerms', async() => {
+        const quads = streamifyArray(OBJECTS.map(object => DF.quad(DF.namedNode('s'), DF.namedNode('p'), object)));
+        const { source } = await actor.run({ metadata: <any> null, quads, url: '', context });
+        const bindings = await source.queryBindings(
+          AF.createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.variable('o')),
+          new ActionContext(),
+        ).toArray();
+        expect(bindings.map(b => b.get(DF.variable('o')))).toEqual([ ...OBJECTS ].sort(compareTerms));
+      });
+
+      it('relies on the default term order of rdf-stores being the one of compareTerms', () => {
+        const terms: RDF.Term[] = [ ...OBJECTS, DF.defaultGraph(), DF.variable('v') ];
+        for (const left of terms) {
+          for (const right of terms) {
+            expect(Math.sign(defaultTermComparator(left, right))).toBe(Math.sign(compareTerms(left, right)));
+          }
+        }
       });
     });
 

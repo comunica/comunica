@@ -263,6 +263,49 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
         await new Promise(setImmediate);
       });
 
+      it('should not extract metadata of a source forced to be a file, nor give it a cardinality', async() => {
+        jest.spyOn(mediatorMetadata, 'mediate');
+        jest.spyOn(mediatorMetadataExtract, 'mediate');
+        jest.spyOn(mediatorMetadataAccumulate, 'mediate');
+        mediatorQuerySourceIdentifyHypermedia.mediate = <any> jest.fn(async({ quads }: any) => ({
+          dataset: 'MYDATASET',
+          source: { sourceContents: quads },
+        }));
+
+        const { source, metadata, dataset } = await actor.run({
+          link: { url: 'firstUrl', forceSourceType: 'file' },
+          context: new ActionContext(),
+        });
+        // A cardinality in the link metadata would stop queries from being delegated to the source directly.
+        expect(metadata).toEqual({});
+        expect(dataset).toBe('MYDATASET');
+        expect(mediatorMetadata.mediate).not.toHaveBeenCalled();
+        expect(mediatorMetadataExtract.mediate).not.toHaveBeenCalled();
+        expect(mediatorMetadataAccumulate.mediate).not.toHaveBeenCalled();
+        expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledWith(expect.objectContaining({
+          forceSourceType: 'file',
+          metadata: {},
+        }));
+        const quads: RDF.Quad[] = await arrayifyStream((<any> source).sourceContents);
+        expect(quads.map(q => q.subject.value)).toEqual([ 's1', 's2' ]);
+      });
+
+      it('should apply the link transformation to a source forced to be a file', async() => {
+        mediatorQuerySourceIdentifyHypermedia.mediate = <any> jest.fn(async({ quads }: any) => ({
+          dataset: 'MYDATASET',
+          source: { sourceContents: quads },
+        }));
+        const transformQuads = jest.fn(inputQuads => inputQuads
+          .map((q: RDF.Quad) => DF.quad(q.subject, q.predicate, DF.literal(`TRANSFORMED(${q.object.value})`))));
+
+        const { source } = await actor.run({
+          link: { url: 'firstUrl', forceSourceType: 'file', transform: transformQuads },
+          context: new ActionContext(),
+        });
+        const quads: RDF.Quad[] = await arrayifyStream((<any> source).sourceContents);
+        expect(quads.map(q => q.object.value)).toEqual([ 'TRANSFORMED(o1)', 'TRANSFORMED(o2)' ]);
+      });
+
       it('should wrap a cache policy', async() => {
         const { source, cachePolicy } = await actor.run({
           link: { url: 'cachepolicy' },
@@ -369,6 +412,131 @@ describe('ActorQuerySourceDereferenceLinkHypermedia', () => {
 
         const dereferenceCall = dereferenceSpy.mock.calls[0][0];
         expect(dereferenceCall.context.get(KeysHttp.httpTimeout)).toBe(1_000);
+      });
+
+      describe('with a service-desc Link header', () => {
+        const endpoint = 'https://example.org/sparql';
+        const serviceDescUrl = 'https://example.org/sparql-service-description';
+        let serviceDescMetadata: Record<string, any>;
+        let linkHeader: string | undefined;
+
+        beforeEach(() => {
+          serviceDescMetadata = { sparqlService: endpoint, unionDefaultGraph: true, a: 2 };
+          linkHeader = '</sparql-service-description>; rel="service-desc"';
+          mediatorDereferenceRdf.mediate = <any> jest.fn(async({ url }: IActionDereferenceRdf) => ({
+            data: url === serviceDescUrl ? 'SD_QUADS' : <any> streamifyArray([ quad('s1', 'p1', 'o1') ]),
+            metadata: { triples: true },
+            exists: true,
+            requestTime: 12,
+            status: 200,
+            url,
+            headers: url === endpoint && linkHeader ? new Headers({ link: linkHeader }) : new Headers(),
+          }));
+          mediatorMetadataExtract.mediate = <any> jest.fn(async({ metadata }: any) => ({
+            metadata: metadata === 'SD_QUADS' ? serviceDescMetadata : metadata,
+          }));
+        });
+
+        it('should merge the metadata of the linked service description', async() => {
+          jest.spyOn(mediatorQuerySourceIdentifyHypermedia, 'mediate');
+          const { metadata } = await actor.run({ link: { url: endpoint }, context: new ActionContext() });
+          expect(metadata).toEqual({ a: 1, sparqlService: endpoint, unionDefaultGraph: true });
+          expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledTimes(2);
+          const sdCall = jest.mocked(mediatorDereferenceRdf.mediate).mock.calls[1][0];
+          expect(sdCall.url).toBe(serviceDescUrl);
+          expect(sdCall.context.get(KeysHttp.httpTimeout)).toBe(3_000);
+          expect(mediatorMetadataExtract.mediate).toHaveBeenLastCalledWith({
+            context: expect.anything(),
+            url: endpoint,
+            metadata: 'SD_QUADS',
+            requestTime: 12,
+          });
+          expect(mediatorQuerySourceIdentifyHypermedia.mediate).toHaveBeenCalledWith(expect.objectContaining({
+            url: endpoint,
+            metadata: { a: 1, sparqlService: endpoint, unionDefaultGraph: true },
+          }));
+        });
+
+        it('should accept a service description that declares the original link URL as endpoint', async() => {
+          const redirectedEndpoint = 'https://example.org/sparql/';
+          serviceDescMetadata.sparqlService = 'https://example.org/sparql-original';
+          mediatorDereferenceRdf.mediate = <any> jest.fn(async({ url }: IActionDereferenceRdf) => ({
+            data: url === serviceDescUrl ? 'SD_QUADS' : <any> streamifyArray([]),
+            requestTime: 0,
+            exists: true,
+            url: url === serviceDescUrl ? url : redirectedEndpoint,
+            headers: url === serviceDescUrl ? undefined : new Headers({ link: <string> linkHeader }),
+          }));
+          const { metadata } = await actor.run({
+            link: { url: 'https://example.org/sparql-original' },
+            context: new ActionContext(),
+          });
+          expect(metadata).toEqual({ a: 1, sparqlService: 'https://example.org/sparql-original', unionDefaultGraph: true });
+        });
+
+        it('should ignore a service description that does not declare the URL as endpoint', async() => {
+          serviceDescMetadata.sparqlService = 'https://other.example.org/sparql';
+          const logWarn = jest.spyOn(<any> actor, 'logWarn').mockImplementation(() => {
+            // Do nothing
+          });
+          const { metadata } = await actor.run({ link: { url: endpoint }, context: new ActionContext() });
+          expect(metadata).toEqual({ a: 1 });
+          expect(logWarn).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('does not declare'));
+        });
+
+        it('should not let the service description override metadata of the endpoint response', async() => {
+          mediatorMetadata.mediate = <any> (async({ quads }: any) => ({
+            data: quads,
+            metadata: { a: 1, unionDefaultGraph: false },
+          }));
+          const { metadata } = await actor.run({ link: { url: endpoint }, context: new ActionContext() });
+          expect(metadata).toEqual({ a: 1, sparqlService: endpoint, unionDefaultGraph: false });
+        });
+
+        it('should not follow the link if the endpoint response already contains a service description', async() => {
+          mediatorMetadata.mediate = <any> (async({ quads }: any) => ({
+            data: quads,
+            metadata: { sparqlService: endpoint },
+          }));
+          const { metadata } = await actor.run({ link: { url: endpoint }, context: new ActionContext() });
+          expect(metadata).toEqual({ sparqlService: endpoint });
+          expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledTimes(1);
+        });
+
+        it('should not follow the link for sources forced to be a file', async() => {
+          await actor.run({ link: { url: endpoint, forceSourceType: 'file' }, context: new ActionContext() });
+          expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledTimes(1);
+        });
+
+        it('should ignore Link headers without service-desc relation', async() => {
+          linkHeader = '</other>; rel="describedby"';
+          const { metadata } = await actor.run({ link: { url: endpoint }, context: new ActionContext() });
+          expect(metadata).toEqual({ a: 1 });
+          expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledTimes(1);
+        });
+
+        it('should ignore responses without Link header', async() => {
+          linkHeader = undefined;
+          const { metadata } = await actor.run({ link: { url: endpoint }, context: new ActionContext() });
+          expect(metadata).toEqual({ a: 1 });
+          expect(mediatorDereferenceRdf.mediate).toHaveBeenCalledTimes(1);
+        });
+
+        it('should ignore failures when dereferencing the service description', async() => {
+          const mediate = mediatorDereferenceRdf.mediate;
+          mediatorDereferenceRdf.mediate = <any> jest.fn(async(action: IActionDereferenceRdf) => {
+            if (action.url === serviceDescUrl) {
+              throw new Error('SD failure');
+            }
+            return mediate(action);
+          });
+          const logWarn = jest.spyOn(<any> actor, 'logWarn').mockImplementation(() => {
+            // Do nothing
+          });
+          const { metadata } = await actor.run({ link: { url: endpoint }, context: new ActionContext() });
+          expect(metadata).toEqual({ a: 1 });
+          expect(logWarn).toHaveBeenCalledWith(expect.anything(), expect.stringContaining('SD failure'));
+        });
       });
     });
   });

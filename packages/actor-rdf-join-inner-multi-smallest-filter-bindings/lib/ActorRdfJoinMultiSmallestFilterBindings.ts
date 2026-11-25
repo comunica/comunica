@@ -26,6 +26,7 @@ import {
   doesShapeAcceptOperationInContext,
   getOperationSource,
   getSafeBindings,
+  getSourceSelectorShape,
 } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
@@ -221,7 +222,7 @@ export class ActorRdfJoinMultiSmallestFilterBindings extends ActorRdfJoin {
       return failTest(`Actor ${this.name} can only process if entries[1] has a source`);
     }
     const testingOperation = second.operation;
-    const selectorShape = await sourceWrapper.source.getSelectorShape(action.context);
+    const selectorShape = await getSourceSelectorShape(sourceWrapper, action.context);
     if (!doesShapeAcceptOperationInContext(selectorShape, testingOperation, action.context, { filterBindings: true })) {
       return failTest(`Actor ${this.name} can only process if entries[1] accept filterBindings`);
     }

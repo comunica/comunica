@@ -26,6 +26,18 @@ describe('ActorOptimizeQueryOperationRewriteCopy', () => {
       actor = new ActorOptimizeQueryOperationRewriteCopy({ name: 'actor', bus });
     });
 
+    it('should not change operations without COPY operations', async() => {
+      const algebraFactory = new AlgebraFactory();
+      const operation = algebraFactory.createProject(
+        algebraFactory.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
+        [ DF.variable('s') ],
+      );
+      const action = { operation, context: new ActionContext() };
+      const result = await actor.run(action);
+      expect(result.operation).toBe(operation);
+      expect(result.context).toBe(action.context);
+    });
+
     it('should always test', async() => {
       await expect(actor.test({ operation: <any> null, context })).resolves.toPassTestVoid();
     });

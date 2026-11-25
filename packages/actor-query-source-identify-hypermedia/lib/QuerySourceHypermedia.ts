@@ -122,6 +122,10 @@ export class QuerySourceHypermedia implements IQuerySource {
     return it;
   }
 
+  public canContainBlankNodes(): boolean {
+    return this.directSourceState?.source.canContainBlankNodes?.() !== false;
+  }
+
   public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
     if (!this.directSourceState) {
       this.probeDirectSource(context);

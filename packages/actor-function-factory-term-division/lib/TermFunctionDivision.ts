@@ -25,6 +25,16 @@ export class TermFunctionDivision extends TermFunctionBase {
             return decimal(new BigNumber(left).div(right).toNumber());
           },
         )
+        // Decimal division by zero is an error (err:FOAR0001), only float and double give INF or NaN.
+        .onBinaryTyped(
+          [ TypeURL.XSD_DECIMAL, TypeURL.XSD_DECIMAL ],
+          () => (left: number, right: number) => {
+            if (right === 0) {
+              throw new ExpressionError('Decimal division by 0');
+            }
+            return decimal(new BigNumber(left).div(right).toNumber());
+          },
+        )
         .collect(),
     });
   }

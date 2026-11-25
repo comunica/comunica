@@ -10,6 +10,7 @@ import type {
 } from '@comunica/bus-query-result-serialize';
 import type { MediatorRdfParseHandle } from '@comunica/bus-rdf-parse';
 import type { MediatorRdfUpdateQuads } from '@comunica/bus-rdf-update-quads';
+import type { MediatorWarmup } from '@comunica/bus-warmup';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 
@@ -25,6 +26,7 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
   public readonly mediatorContextPreprocess?: MediatorContextPreprocess;
   public readonly mediatorUpdateQuads?: MediatorRdfUpdateQuads;
   public readonly mediatorRdfParse?: MediatorRdfParseHandle;
+  public readonly mediatorWarmup?: MediatorWarmup;
 
   public readonly queryString?: string;
   public readonly defaultQueryInputFormat?: string;
@@ -41,6 +43,7 @@ export class ActorInitQueryBase extends ActorInit implements IActorInitQueryBase
     this.mediatorContextPreprocess = args.mediatorContextPreprocess;
     this.mediatorUpdateQuads = args.mediatorUpdateQuads;
     this.mediatorRdfParse = args.mediatorRdfParse;
+    this.mediatorWarmup = args.mediatorWarmup;
     this.queryString = args.queryString;
     this.defaultQueryInputFormat = args.defaultQueryInputFormat;
     this.allowNoSources = args.allowNoSources;
@@ -92,6 +95,11 @@ export interface IActorInitQueryBaseArgs extends IActorInitArgs {
    * The RDF parse mediator, required for parsing RDF.
    */
   mediatorRdfParse?: MediatorRdfParseHandle;
+  // TODO: make mandatory in next/major
+  /**
+   * The warmup mediator, required for warming up.
+   */
+  mediatorWarmup?: MediatorWarmup;
 
   /**
    * A SPARQL query string

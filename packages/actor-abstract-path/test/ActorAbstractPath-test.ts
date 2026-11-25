@@ -46,6 +46,16 @@ describe('ActorAbstractPath', () => {
       expect(termToString(actor.generateVariable(DF, path))).not.toEqual(path.object.value);
     });
 
+    it('generates a variable that differs from the graph', () => {
+      const path = factory.createPath(
+        DF.variable('s'),
+        factory.createLink(DF.namedNode('p')),
+        DF.variable('o'),
+        DF.variable('b'),
+      );
+      expect(actor.generateVariable(DF, path)).toEqual(DF.variable('bb'));
+    });
+
     describe('getPathSources', () => {
       it('handles alt', () => {
         expect(actor.getPathSources(AF.createAlt([

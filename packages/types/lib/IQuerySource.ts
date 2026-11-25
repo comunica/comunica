@@ -124,6 +124,13 @@ export interface IQuerySource {
   ) => Bindings[] | undefined;
 
   /**
+   * If this source may currently return blank nodes.
+   * Sources that do not implement this, or that can not know it, must be assumed to return blank nodes.
+   * @return False if the source certainly returns no blank nodes, true otherwise.
+   */
+  canContainBlankNodes?: () => boolean;
+
+  /**
    * Returns a (possibly lazy) stream that returns all quads matching the operation.
    *
    * This method should only be supported if the selector type returned from `getSelectorShape`

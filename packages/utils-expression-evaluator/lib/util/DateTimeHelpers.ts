@@ -94,13 +94,14 @@ export function defaultedDateTimeRepresentation(rep: Partial<IDateTimeRepresenta
 
 export function toDateTimeRepresentation({ date, timeZone }:
 { date: Date; timeZone: ITimeZoneRepresentation }): IDateTimeRepresentation {
+  const shifted = new Date(date.getTime() + (timeZone.zoneHours * 60 + timeZone.zoneMinutes) * 60 * 1_000);
   return {
-    year: date.getFullYear(),
-    month: date.getMonth() + 1,
-    day: date.getDate(),
-    hours: date.getHours(),
-    minutes: date.getMinutes(),
-    seconds: date.getSeconds(),
+    year: shifted.getUTCFullYear(),
+    month: shifted.getUTCMonth() + 1,
+    day: shifted.getUTCDate(),
+    hours: shifted.getUTCHours(),
+    minutes: shifted.getUTCMinutes(),
+    seconds: shifted.getUTCSeconds(),
     zoneHours: timeZone.zoneHours,
     zoneMinutes: timeZone.zoneMinutes,
   };
@@ -185,8 +186,11 @@ export function extractRawTimeZone(zoneContained: string): string {
 }
 
 export function extractTimeZone(date: Date): ITimeZoneRepresentation {
+  // GetTimezoneOffset returns UTC minus local time, which is the negation of the XSD timezone offset.
+  const offsetMinutes = -date.getTimezoneOffset();
   return {
-    zoneHours: date.getTimezoneOffset() / 60,
-    zoneMinutes: date.getTimezoneOffset() % 60,
+    // `+ 0` normalizes -0 to 0.
+    zoneHours: Math.trunc(offsetMinutes / 60) + 0,
+    zoneMinutes: (offsetMinutes % 60) + 0,
   };
 }

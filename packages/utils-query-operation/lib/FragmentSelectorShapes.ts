@@ -154,6 +154,7 @@ function doesShapeAcceptOperationRecurseShape(
     case 'wildcard': {
       // All possible operations are accepted by this shape.
       // As exception, Comunica's internal operations and extension functions are not accepted through wildcards.
+      // Extension aggregates are named expressions as well, so they are handled as extension functions.
       if (isInternalOperation(operation)) {
         return false;
       }
@@ -168,12 +169,12 @@ function doesShapeAcceptOperationRecurseShape(
       let hasUnsupportedExtensionFunction = false;
       algebraUtils.visitOperation(operation, {
         [Algebra.Types.EXPRESSION]: {
-          visitor: (subOp) => {
+          preVisitor: (subOp) => {
             if (isExtensionFunction(subOp) && !doesShapeAcceptOperation(shapeTop, subOp, options)) {
               hasUnsupportedExtensionFunction = true;
-              return false;
+              return { shortcut: true };
             }
-            return true;
+            return {};
           },
         },
       });
@@ -281,6 +282,19 @@ export type FragmentSelectorShapeTestFlags = {
   wildcardAcceptAllExtensionFunctions?: boolean;
 };
 
+/**
+ * Get the selector shape of a query source, in the context of that source.
+ * The source's own context must be included, as it may change how the source is accessed.
+ * @param sourceWrapper A query source with its context.
+ * @param context The action context, which is extended with the source's context.
+ */
+export async function getSourceSelectorShape(
+  sourceWrapper: IQuerySourceWrapper,
+  context: IActionContext,
+): Promise<FragmentSelectorShape> {
+  return sourceWrapper.source.getSelectorShape(sourceWrapper.context ? context.merge(sourceWrapper.context) : context);
+}
+
 export async function passFullOperationToSource(
   operation: Algebra.Operation,
   sources: IQuerySourceWrapper[],
@@ -292,7 +306,7 @@ export async function passFullOperationToSource(
     const destination: IDataDestination | undefined = context.get(KeysRdfUpdateQuads.destination);
     if (!destination || sourceWrapper.source.referenceValue === getDataDestinationValue(destination)) {
       try {
-        const shape = await sourceWrapper.source.getSelectorShape(context);
+        const shape = await getSourceSelectorShape(sourceWrapper, context);
         if (doesShapeAcceptOperationInContext(shape, operation, context)) {
           return true;
         }
