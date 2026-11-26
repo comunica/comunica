@@ -3,7 +3,7 @@ import { skolemizeQuad } from '@comunica/actor-optimize-query-operation-query-so
 import { KeysInitQuery, KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
-import { getContextDestinationUrl } from '@comunica/utils-query-operation';
+import { getContextDestinationUrl, UpdateTransaction } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory, Store } from 'n3';
@@ -247,6 +247,106 @@ describe('ActorRdfUpdateQuadsDestination', () => {
       await output.execute();
 
       expect(store.getQuads(null, null, null, null)).toEqual([ skolemized ]);
+    });
+  });
+
+  describe('with destinations that support transactions', () => {
+    let log: string[];
+    let destination: any;
+
+    // A destination of which the changes are only recorded once its transaction is committed
+    function createDestination(key: unknown, failUpdate = false): any {
+      return {
+        transactionKey: key,
+        update: jest.fn(async() => log.push('direct update')),
+        deleteGraphs: jest.fn(),
+        createGraphs: jest.fn(),
+        beginTransaction: jest.fn(() => ({
+          async update() {
+            log.push('update');
+            if (failUpdate) {
+              throw new Error('update failed');
+            }
+          },
+          async deleteGraphs() {
+            log.push('delete graphs');
+          },
+          async createGraphs() {
+            log.push('create graphs');
+          },
+          async commit() {
+            log.push('commit');
+          },
+          async rollback() {
+            log.push('rollback');
+          },
+        })),
+      };
+    }
+
+    function run(context: IActionContext): Promise<IActorRdfUpdateQuadsOutput> {
+      const actor = new (<any> ActorRdfUpdateQuadsDestination)({ name: 'actor', bus });
+      actor.getDestination = () => destination;
+      return actor.run({
+        quadStreamInsert: new ArrayIterator([], { autoStart: false }),
+        deleteGraphs: { graphs: 'ALL', requireExistence: false, dropGraphs: false },
+        createGraphs: { graphs: [], requireNonExistence: false },
+        context,
+      });
+    }
+
+    beforeEach(() => {
+      log = [];
+      destination = createDestination('store');
+    });
+
+    it('should change them in a transaction of their own, which is committed', async() => {
+      await (await run(new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }))).execute();
+      expect(log).toEqual([ 'update', 'delete graphs', 'create graphs', 'commit' ]);
+      expect(destination.update).not.toHaveBeenCalled();
+    });
+
+    it('should roll back the transaction of their own if a change fails', async() => {
+      destination = createDestination('store', true);
+      await expect((await run(new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }))).execute())
+        .rejects.toThrow('update failed');
+      expect(log).toEqual([ 'update', 'rollback' ]);
+    });
+
+    it('should change them in the transaction of the update request, without committing it', async() => {
+      const transaction = new UpdateTransaction();
+      const context = new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysRdfUpdateQuads.transaction.name]: transaction,
+      });
+      await (await run(context)).execute();
+      // Another destination for the same data shares the transaction
+      const first = destination;
+      destination = createDestination('store');
+      await (await run(context)).execute();
+      expect(first.beginTransaction).toHaveBeenCalledTimes(1);
+      expect(destination.beginTransaction).not.toHaveBeenCalled();
+      expect(log).toEqual([ 'update', 'delete graphs', 'create graphs', 'update', 'delete graphs', 'create graphs' ]);
+      await transaction.commit();
+      expect(log.at(-1)).toBe('commit');
+    });
+
+    it('should identify transactions by the destination without a key', async() => {
+      destination = createDestination(undefined);
+      const transaction = new UpdateTransaction();
+      await (await run(new ActionContext({
+        [KeysInitQuery.dataFactory.name]: DF,
+        [KeysRdfUpdateQuads.transaction.name]: transaction,
+      }))).execute();
+      expect(transaction.find(destination)).toBeDefined();
+    });
+
+    it('should change destinations without transactions directly', async() => {
+      delete destination.beginTransaction;
+      await (await run(new ActionContext({ [KeysInitQuery.dataFactory.name]: DF }))).execute();
+      expect(log).toEqual([ 'direct update' ]);
+      expect(destination.deleteGraphs).toHaveBeenCalledTimes(1);
+      expect(destination.createGraphs).toHaveBeenCalledTimes(1);
     });
   });
 });
