@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { IActionContext } from '@comunica/types';
 import { AlgebraFactory, TypesComunica } from '@comunica/utils-algebra';
@@ -1447,6 +1447,61 @@ describe('QuerySourceRdfJs', () => {
     it('should throw', () => {
       expect(() => source.queryVoid(<any> undefined, ctx))
         .toThrow(`queryVoid is not implemented in QuerySourceRdfJs`);
+    });
+  });
+
+  describe('within an update request that changed the source as a destination', () => {
+    const pattern = AF.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o'));
+    let changed: Store;
+    let transactionSource: any;
+
+    // A transaction of which the changes so far are read through another store
+    function contextWith(transaction: any): IActionContext {
+      return new ActionContext({
+        [KeysRdfUpdateQuads.transaction.name]: { find: (key: unknown) => key === store ? transaction : undefined },
+      });
+    }
+
+    beforeEach(() => {
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      changed = new Store([ DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')) ]);
+      // Variables are wildcards, as for the store of a transaction
+      const wildcard = (term: any): any => term?.termType === 'Variable' ? undefined : term;
+      transactionSource = {
+        match: (subject: any, predicate: any, object: any, graph: any) =>
+          changed.match(wildcard(subject), wildcard(predicate), wildcard(object), wildcard(graph)),
+        countQuads: (subject: any, predicate: any, object: any, graph: any) =>
+          changed.countQuads(wildcard(subject), wildcard(predicate), wildcard(object), wildcard(graph)),
+      };
+    });
+
+    it('should read the changes so far', async() => {
+      const context = contextWith({ source: transactionSource });
+      await expect(source.queryBindings(pattern, context)).toEqualBindingsStream([
+        BF.fromRecord({ s: DF.namedNode('s2'), o: DF.namedNode('o2') }),
+      ]);
+      await expect(arrayifyStream(source.queryQuads(pattern, context)))
+        .resolves.toEqual(changed.getQuads(null, null, null, null));
+      // The changes so far can not be looked up synchronously
+      expect(source.queryBindingsSynchronous(pattern, context)).toBeUndefined();
+    });
+
+    it('should read the same changes through the same source, and new ones through a new one', () => {
+      const transaction = { source: transactionSource };
+      const context = contextWith(transaction);
+      const first = (<any> source).getTransactionSource(context);
+      expect((<any> source).getTransactionSource(context)).toBe(first);
+      transaction.source = { ...transactionSource };
+      expect((<any> source).getTransactionSource(context)).not.toBe(first);
+    });
+
+    it('should read the source itself without changes so far', async() => {
+      await expect(source.queryBindings(pattern, contextWith({}))).toEqualBindingsStream([
+        BF.fromRecord({ s: DF.namedNode('s1'), o: DF.namedNode('o1') }),
+      ]);
+      await expect(source.queryBindings(pattern, contextWith(undefined))).toEqualBindingsStream([
+        BF.fromRecord({ s: DF.namedNode('s1'), o: DF.namedNode('o1') }),
+      ]);
     });
   });
 });

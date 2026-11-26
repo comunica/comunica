@@ -1,3 +1,5 @@
+import type * as RDF from '@rdfjs/types';
+
 /**
  * Changes to one destination by an update request, which only take effect once they are committed.
  */
@@ -10,6 +12,13 @@ export interface IDestinationTransaction {
    * Discard all changes.
    */
   rollback: () => Promise<void>;
+  /**
+   * The data of the destination with the changes so far, as an RDF/JS source,
+   * through which later operations of the update request read the destination if it is also one of its sources.
+   * Undefined if there are no changes yet, or if the destination can not be read like that.
+   * Sources that read through it are identified by the same key as the transaction.
+   */
+  readonly source?: RDF.Source;
 }
 
 /**

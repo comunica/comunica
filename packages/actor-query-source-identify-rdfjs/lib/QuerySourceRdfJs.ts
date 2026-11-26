@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-nodejs-modules
 import type { EventEmitter } from 'node:events';
 import { filterMatchingQuotedQuads, getVariables, quadsToBindings } from '@comunica/bus-query-source-identify';
-import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
+import { KeysInitQuery, KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type {
   Bindings,
   BindingsStream,
@@ -83,6 +83,10 @@ export class QuerySourceRdfJs implements IQuerySource {
    * execution is garbage-collected, and are never reused across query executions.
    */
   private readonly cardinalityCache = new WeakMap<object, Map<string, number>>();
+  /**
+   * Sources over the data of this source with the changes of an update request so far, by the data they read.
+   */
+  private readonly transactionSources = new WeakMap<RDF.Source, QuerySourceRdfJs>();
 
   public constructor(
     source: RDF.Source | RDF.DatasetCore,
@@ -163,7 +167,30 @@ export class QuerySourceRdfJs implements IQuerySource {
     return 0;
   }
 
+  /**
+   * The source to read instead of this one within an update request that changed it as a destination,
+   * which reads the data of this source with the changes so far.
+   * @param context The context of a query operation.
+   * @return The source, or undefined to read this source itself.
+   */
+  protected getTransactionSource(context: IActionContext): QuerySourceRdfJs | undefined {
+    const source = context.get(KeysRdfUpdateQuads.transaction)?.find(this.source)?.source;
+    if (!source) {
+      return undefined;
+    }
+    let querySource = this.transactionSources.get(source);
+    if (!querySource) {
+      querySource = new QuerySourceRdfJs(source, this.dataFactory, this.bindingsFactory);
+      this.transactionSources.set(source, querySource);
+    }
+    return querySource;
+  }
+
   public queryBindings(operation: Algebra.Operation, context: IActionContext): BindingsStream {
+    const transactionSource = this.getTransactionSource(context);
+    if (transactionSource) {
+      return transactionSource.queryBindings(operation, context);
+    }
     if (isKnownOperation(operation, TypesComunica.NODES) &&
       'matchNodes' in this.source && this.source.matchNodes) {
       const rawStream = this.source.matchNodes(operation.graph);
@@ -341,6 +368,10 @@ export class QuerySourceRdfJs implements IQuerySource {
   }
 
   public queryBindingsSynchronous(operation: Algebra.Operation, context: IActionContext): Bindings[] | undefined {
+    const transactionSource = this.getTransactionSource(context);
+    if (transactionSource) {
+      return transactionSource.queryBindingsSynchronous(operation, context);
+    }
     if (!isKnownOperation(operation, Algebra.Types.PATTERN) || !('getBindings' in this.source) ||
       !this.source.getBindings || QuerySourceRdfJs.hasQuotedVariables(operation)) {
       return undefined;
@@ -598,8 +629,12 @@ export class QuerySourceRdfJs implements IQuerySource {
 
   public queryQuads(
     operation: Algebra.Operation,
-    _context: IActionContext,
+    context: IActionContext,
   ): AsyncIterator<RDF.Quad> {
+    const transactionSource = this.getTransactionSource(context);
+    if (transactionSource) {
+      return transactionSource.queryQuads(operation, context);
+    }
     if (isKnownOperation(operation, Algebra.Types.PATTERN)) {
       return wrapAsyncIterator<RDF.Quad>(
         this.source.match(operation.subject, operation.predicate, operation.object, operation.graph),

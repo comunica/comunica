@@ -7,6 +7,15 @@ that handles [RDF/JS Stores](https://comunica.dev/docs/query/advanced/rdfjs_quer
 
 RDF/JS Stores are assumed to not record empty graphs.
 
+Stores of which quads can be counted, read, added and removed synchronously,
+such as those of [N3](https://github.com/rdfjs/N3.js) and [rdf-stores](https://github.com/rubensworks/rdf-stores.js),
+are changed in transactions:
+the changes of an update request are only applied once all its operations succeed, and not at all if one fails.
+Until then, later operations of the request read the store with the changes so far.
+The changes are applied in one synchronous step,
+and consecutive insertions are added together, which ordered stores of rdf-stores do as one batch.
+Other stores are changed directly.
+
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 

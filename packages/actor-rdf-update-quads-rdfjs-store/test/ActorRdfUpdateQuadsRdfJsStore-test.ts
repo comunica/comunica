@@ -13,6 +13,22 @@ import '@comunica/utils-jest';
 
 const DF = new DataFactory();
 
+/**
+ * A view of a store without the methods to count, get, add and remove quads synchronously.
+ */
+function asynchronous(store: Store): RDF.Store {
+  const hidden = new Set([ 'countQuads', 'getQuads', 'addQuad', 'removeQuad' ]);
+  return new Proxy(store, {
+    get(target, key) {
+      if (hidden.has(<string> key)) {
+        return undefined;
+      }
+      const value = (<any> target)[key];
+      return typeof value === 'function' ? value.bind(target) : value;
+    },
+  });
+}
+
 describe('ActorRdfUpdateQuadsRdfJsStore', () => {
   let bus: any;
   let context: IActionContext;
@@ -22,16 +38,25 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
     context = new ActionContext({ [KeysInitQuery.dataFactory.name]: DF });
   });
 
-  describe('An ActorRdfUpdateQuadsRdfJsStore instance', () => {
+  // Synchronous stores are changed through transactions, and other ones directly
+  describe.each([
+    'synchronous',
+    'asynchronous',
+  ])('An ActorRdfUpdateQuadsRdfJsStore instance with a %s store', (kind) => {
     let actor: ActorRdfUpdateQuadsRdfJsStore;
     let store: RDF.Store;
 
     beforeEach(() => {
       actor = new ActorRdfUpdateQuadsRdfJsStore({ name: 'actor', bus });
-      store = new Store();
-      (<Store> store).addQuads([
+      const n3Store = new Store();
+      n3Store.addQuads([
         DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
       ]);
+      store = kind === 'synchronous' ? n3Store : asynchronous(n3Store);
+    });
+
+    it('should change the store through transactions only if it is synchronous', () => {
+      expect(RdfJsQuadDestination.isSynchronous(store)).toBe(kind === 'synchronous');
     });
 
     it('should test', async() => {
@@ -93,19 +118,23 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
     });
 
     it('should get the destination', async() => {
-      await expect((<any> actor).getDestination(new ActionContext({
+      const destination = await (<any> actor).getDestination(new ActionContext({
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysRdfUpdateQuads.destination.name]: { type: 'rdfjsStore', value: store },
-      })))
-        .resolves.toMatchObject(new RdfJsQuadDestination(DF, store));
+      }));
+      expect(destination).toBeInstanceOf(RdfJsQuadDestination);
+      expect(destination.transactionKey).toBe(store);
+      expect(Boolean(destination.beginTransaction)).toBe(kind === 'synchronous');
     });
 
     it('should get the destination on raw destination form', async() => {
-      await expect((<any> actor).getDestination(new ActionContext({
+      const destination = await (<any> actor).getDestination(new ActionContext({
         [KeysInitQuery.dataFactory.name]: DF,
         [KeysRdfUpdateQuads.destination.name]: store,
-      })))
-        .resolves.toMatchObject(new RdfJsQuadDestination(DF, store));
+      }));
+      expect(destination).toBeInstanceOf(RdfJsQuadDestination);
+      expect(destination.transactionKey).toBe(store);
+      expect(Boolean(destination.beginTransaction)).toBe(kind === 'synchronous');
     });
 
     it('should run without streams', async() => {
