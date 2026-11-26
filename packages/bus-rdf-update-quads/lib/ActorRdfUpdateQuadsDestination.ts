@@ -3,12 +3,12 @@ import { KeysInitQuery, KeysQuerySourceIdentify, KeysRdfUpdateQuads } from '@com
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
 import type { ComunicaDataFactory, IActionContext } from '@comunica/types';
-import { getDataDestinationValue } from '@comunica/utils-query-operation';
+import { getDataDestinationValue, runInTransaction } from '@comunica/utils-query-operation';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from './ActorRdfUpdateQuads';
 import { ActorRdfUpdateQuads } from './ActorRdfUpdateQuads';
-import type { IQuadDestination } from './IQuadDestination';
+import type { IQuadDestination, IQuadDestinationTransaction } from './IQuadDestination';
 
 export function deskolemizeStream(
   dataFactory: ComunicaDataFactory,
@@ -62,20 +62,42 @@ export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads
     destination: IQuadDestination,
     action: IActionRdfUpdateQuads,
   ): Promise<IActorRdfUpdateQuadsOutput> {
-    const execute = async(): Promise<void> => {
-      await destination.update({ insert: action.quadStreamInsert, delete: action.quadStreamDelete });
+    // The changes are made within the transaction of the update request, or a new one for this operation alone
+    const execute = (): Promise<void> => runInTransaction(action.context, async(context) => {
+      const target = ActorRdfUpdateQuadsDestination.getTarget(destination, context);
+      await target.update({ insert: action.quadStreamInsert, delete: action.quadStreamDelete });
       await (action.deleteGraphs ?
-        destination.deleteGraphs(
+        target.deleteGraphs(
           action.deleteGraphs.graphs,
           action.deleteGraphs.requireExistence,
           action.deleteGraphs.dropGraphs,
         ) :
         Promise.resolve());
       await (action.createGraphs ?
-        destination.createGraphs(action.createGraphs.graphs, action.createGraphs.requireNonExistence) :
+        target.createGraphs(action.createGraphs.graphs, action.createGraphs.requireNonExistence) :
         Promise.resolve());
-    };
+    });
     return { execute };
+  }
+
+  /**
+   * Determine what to change the given destination through: its transaction within the update request,
+   * or the destination itself if it does not support transactions.
+   * @param destination A quad destination.
+   * @param context The context of the update, with its transaction.
+   */
+  public static getTarget(
+    destination: IQuadDestination,
+    context: IActionContext,
+  ): Pick<IQuadDestination, 'update' | 'deleteGraphs' | 'createGraphs'> {
+    const transaction = context.get(KeysRdfUpdateQuads.transaction);
+    if (!destination.beginTransaction || !transaction) {
+      return destination;
+    }
+    return transaction.get<IQuadDestinationTransaction>(
+      destination.transactionKey ?? destination,
+      () => destination.beginTransaction!(),
+    );
   }
 
   /**

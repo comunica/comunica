@@ -1,3 +1,4 @@
+import type { IDestinationTransaction } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 
@@ -32,4 +33,22 @@ export interface IQuadDestination {
    *                            this should only throw if at least one quad with the given quad already exists.
    */
   createGraphs: (graphs: RDF.NamedNode[], requireNonExistence: boolean) => Promise<void>;
+  /**
+   * Begin a transaction of changes to this destination, if it supports transactions.
+   * Update requests change their destinations through transactions,
+   * so that their changes only take effect once all operations of the request succeed.
+   */
+  beginTransaction?: () => IQuadDestinationTransaction;
+  /**
+   * What identifies the data that this destination changes, such as an RDF/JS store,
+   * so that all operations of an update request change it through the same transaction.
+   * Defaults to the destination itself.
+   */
+  transactionKey?: unknown;
 }
+
+/**
+ * Changes to a quad destination, which only take effect once they are committed.
+ */
+export interface IQuadDestinationTransaction extends
+  Pick<IQuadDestination, 'update' | 'deleteGraphs' | 'createGraphs'>, IDestinationTransaction {}

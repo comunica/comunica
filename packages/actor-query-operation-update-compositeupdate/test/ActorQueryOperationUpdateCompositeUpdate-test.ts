@@ -1,5 +1,5 @@
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { KeysQueryOperation } from '@comunica/context-entries';
+import { KeysQueryOperation, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import type { IQueryOperationResultVoid } from '@comunica/types';
 import { ActorQueryOperationUpdateCompositeUpdate } from '../lib/ActorQueryOperationUpdateCompositeUpdate';
@@ -111,6 +111,48 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
       const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
       expect(output.type).toBe('void');
       await expect(output.execute()).resolves.toBeUndefined();
+    });
+
+    describe('with operations that change a destination through a transaction', () => {
+      let log: string[];
+
+      beforeEach(() => {
+        log = [];
+        // Operations named CHANGE change a destination through the transaction of the request, FAIL fails
+        mediatorQueryOperation.mediate = async(arg: any) => ({
+          type: 'void',
+          async execute() {
+            if (arg.operation === 'FAIL') {
+              throw new Error('operation failed');
+            }
+            arg.context.getSafe(KeysRdfUpdateQuads.transaction).get('store', () => ({
+              commit: async() => log.push('commit'),
+              rollback: async() => log.push('rollback'),
+            }));
+            log.push('change');
+          },
+        });
+      });
+
+      it('should commit their changes once all operations succeeded', async() => {
+        const op: any = {
+          operation: { type: 'compositeupdate', updates: [ 'CHANGE', 'CHANGE' ]},
+          context: new ActionContext(),
+        };
+        const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
+        await expect(output.execute()).resolves.toBeUndefined();
+        expect(log).toEqual([ 'change', 'change', 'commit' ]);
+      });
+
+      it('should roll back their changes if an operation fails', async() => {
+        const op: any = {
+          operation: { type: 'compositeupdate', updates: [ 'CHANGE', 'FAIL', 'CHANGE' ]},
+          context: new ActionContext(),
+        };
+        const output = <IQueryOperationResultVoid> await actor.run(op, undefined);
+        await expect(output.execute()).rejects.toThrow('operation failed');
+        expect(log).toEqual([ 'change', 'rollback' ]);
+      });
     });
   });
 });

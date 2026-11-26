@@ -15,6 +15,7 @@ import type {
   IQuerySourceWrapper,
   ISuperTypeProvider,
   ITimeZoneRepresentation,
+  IUpdateTransaction,
   MetadataBindings,
   QueryExplainMode,
   QuerySourceReference,
@@ -534,6 +535,11 @@ export const KeysRdfUpdateQuads = {
    * A data destination.
    */
   destination: new ActionContextKey<IDataDestination>('@comunica/bus-rdf-update-quads:destination'),
+  /**
+   * The transactions of the destinations that an update request changes,
+   * which are committed together once all its operations succeed.
+   */
+  transaction: new ActionContextKey<IUpdateTransaction>('@comunica/bus-rdf-update-quads:transaction'),
 };
 
 export const KeysMergeBindingsContext = {

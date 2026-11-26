@@ -4,6 +4,7 @@ export * from './IActionContext';
 export * from './ICachePolicy';
 export * from './ICliArgsHandler';
 export * from './IDataDestination';
+export * from './IUpdateTransaction';
 export * from './IDataset';
 export * from './IExpressionEngine';
 export * from './IJoinEntry';
