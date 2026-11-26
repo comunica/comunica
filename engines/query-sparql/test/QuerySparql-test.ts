@@ -3907,6 +3907,49 @@ CONSTRUCT {
         expect(store.size).toBe(400);
       });
 
+      describe.each([
+        [ 'N3', () => new Store() ],
+        [ 'rdf-stores', () => RdfStore.createDefault() ],
+      ])('as a transaction on a %s store', (_name, create) => {
+        it('without effects if an operation fails', async() => {
+          const store = create();
+          const quads = [
+            DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.namedNode('ex:g')),
+            DF.quad(DF.namedNode('ex:x'), DF.namedNode('ex:p'), DF.namedNode('ex:y')),
+          ];
+          for (const quad of quads) {
+            store.addQuad(quad);
+          }
+
+          // The graph that is created already exists
+          const result = <RDF.QueryVoid> await engine.query(`DELETE DATA { <ex:x> <ex:p> <ex:y> } ;
+            INSERT DATA { <ex:s> <ex:p> <ex:o2> } ;
+            CREATE GRAPH <ex:g>`, {
+            sources: [ store ],
+          });
+          await expect(result.execute()).rejects.toThrow('Unable to create graph ex:g as it already exists');
+
+          expect(store.getQuads(null, null, null, null)).toBeRdfIsomorphic(quads);
+        });
+
+        it('with operations that see the changes of earlier ones', async() => {
+          const store = create();
+          store.addQuad(DF.quad(DF.namedNode('ex:x'), DF.namedNode('ex:p'), DF.namedNode('ex:y')));
+
+          const result = <RDF.QueryVoid> await engine.query(`INSERT DATA { <ex:a> <ex:p> <ex:b> } ;
+            DELETE DATA { <ex:x> <ex:p> <ex:y> } ;
+            INSERT { ?s <ex:q> ?o } WHERE { ?s <ex:p> ?o }`, {
+            sources: [ store ],
+          });
+          await result.execute();
+
+          expect(store.getQuads(null, null, null, null)).toBeRdfIsomorphic([
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p'), DF.namedNode('ex:b')),
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:q'), DF.namedNode('ex:b')),
+          ]);
+        });
+      });
+
       it('with insert where on two sources', async() => {
         // Prepare store
         const store = new Store([

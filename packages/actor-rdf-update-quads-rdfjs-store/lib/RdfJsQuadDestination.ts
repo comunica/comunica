@@ -1,9 +1,11 @@
-import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
+import type { IQuadDestination, IQuadDestinationTransaction } from '@comunica/bus-rdf-update-quads';
 import type { ComunicaDataFactory } from '@comunica/types';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { promisifyEventEmitter } from 'event-emitter-promisify';
 import { stringToTerm, termToString } from 'rdf-string';
+import { RdfJsStoreTransaction } from './RdfJsStoreTransaction';
+import type { ISynchronousStore } from './RdfJsStoreView';
 
 /**
  * A quad destination that wraps around an {@link RDF.Store}.
@@ -11,6 +13,8 @@ import { stringToTerm, termToString } from 'rdf-string';
 export class RdfJsQuadDestination implements IQuadDestination {
   private readonly dataFactory: ComunicaDataFactory;
   private readonly store: RDF.Store;
+  public readonly transactionKey: RDF.Store;
+  public readonly beginTransaction?: () => IQuadDestinationTransaction;
 
   public constructor(
     dataFactory: ComunicaDataFactory,
@@ -18,6 +22,23 @@ export class RdfJsQuadDestination implements IQuadDestination {
   ) {
     this.dataFactory = dataFactory;
     this.store = store;
+    // The store also identifies it as a source, through which later operations of an update request read it
+    this.transactionKey = store;
+    if (RdfJsQuadDestination.isSynchronous(store)) {
+      this.beginTransaction = () => new RdfJsStoreTransaction(store);
+    }
+  }
+
+  /**
+   * Check if the quads of a store can be counted, read, added and removed synchronously,
+   * which transactions need to apply all their changes at once.
+   * This is the case for stores of N3 and rdf-stores.
+   * @param store An RDF/JS store.
+   */
+  public static isSynchronous(store: RDF.Store): store is ISynchronousStore {
+    const candidate = <Partial<ISynchronousStore>> store;
+    return typeof candidate.countQuads === 'function' && typeof candidate.getQuads === 'function' &&
+      typeof candidate.addQuad === 'function' && typeof candidate.removeQuad === 'function';
   }
 
   public async update(
