@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/jbr/^6.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:jbr:benchmark-bsbm-file-update-combinations",
+  "@type": "FullFactorialCombinationProvider",
+  "commonGenerated": true,
+  "factors": {
+    "hookSparqlEndpoint": [
+      "{\"@id\": \"urn:jbr:benchmark-bsbm-file-update:combination_0:hookSparqlEndpoint\", \"@type\": \"HookCli\", \"entrypoint\": [\"node\", \"../../packages/utils-monorepo/bin/performance-endpoint-memory.js\", \"../../engines/query-sparql-file\", \"file@generated/dataset.nt\", \"-p\", \"3001\", \"-u\", \"--warmup\", \"2000\"], \"statsFilePath\": \"output/stats.csv\"}"
+    ]
+  }
+}

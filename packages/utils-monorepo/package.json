@@ -28,6 +28,7 @@
     "bundle-sizes": "./bin/bundle-sizes.js",
     "depcheckTask": "./bin/depcheckTask.js",
     "performance-comparison": "./bin/performance-comparison.js",
+    "performance-endpoint-memory": "./bin/performance-endpoint-memory.js",
     "performance-ingestion": "./bin/performance-ingestion.js",
     "performance-requests": "./bin/performance-requests.js",
     "readme-check": "./bin/readme-check.js",
@@ -50,7 +51,9 @@
     "@manypkg/get-packages": "^3.1.0",
     "depcheck": "^1.4.7",
     "fs-extra": "^11.3.5",
+    "n3": "^2.0.0",
     "process": "^0.11.10",
+    "rdf-stores": "^2.10.3",
     "semver": "^7.8.5"
   }
 }
