@@ -36,6 +36,12 @@ In most cases, only a single mediator per bus will exist, hence then `#main` suf
 
 ## Config versioning
 
+_This section explains how maintainers add actors to configs.
+If you are building your own config upon this package,
+import the versioned entry config with the highest version (e.g. `config-default-v5-4-1.json`),
+and never import the config files of engine packages such as `@comunica/query-sparql`.
+[Read more](https://comunica.dev/docs/modify/advanced/config_versioning/)._
+
 In general, adding actors to configs should be considered a **breaking change**.
 This is because if external packages depend on this config package,
 and if an actor were to be added to the config in a minor/patch update,
@@ -50,6 +56,8 @@ e.g. `rdf-metadata-extract/actors-v4-1-0.json`.
 Then, all (relevant) configs importing this file must to the same,
 e.g. `config/config-default.json` should be copied to `config/config-default-v4-1-0.json`
 with the import changed to `rdf-metadata-extract/actors-v4-1-0.json`.
+This includes configs in other config packages that import this file, such as
+`engines/config-expressions-sparql/config/config-expressions.json`.
 Then finally, all engine packages (e.g. `engines/query-sparql`) depending on this config
 (e.g. in `config/config-default.json`) must be modified to include this renamed config file.
 (no versioned config is needed here, as external packages are not supposed to rely on this config file directly)
