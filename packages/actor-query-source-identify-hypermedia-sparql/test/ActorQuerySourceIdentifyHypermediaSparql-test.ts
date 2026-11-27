@@ -292,7 +292,9 @@ describe('ActorQuerySourceIdentifyHypermediaSparql', () => {
         const output = await actor
           .run({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null, context });
         expect(output.source).toBeInstanceOf(QuerySourceSparql);
+        expect(output.queriesService).toBe(true);
         expect((<any> output.source).url).toBe('SERVICE');
+        expect((<any> output.source).cardinalityCountQueries).toBe(true);
         expect((<any> output.source).endpointFetcher.sparqlJsonParser.parseUnsupportedVersions).toBe(false);
         expect((<any> output.source).endpointFetcher.sparqlXmlParser.parseUnsupportedVersions).toBe(false);
       });

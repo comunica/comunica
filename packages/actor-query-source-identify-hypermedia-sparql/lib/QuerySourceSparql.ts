@@ -1,6 +1,6 @@
 import type { MediatorHttp } from '@comunica/bus-http';
 import type { MediatorQuerySerialize } from '@comunica/bus-query-serialize';
-import { KeysHttp, KeysInitQuery } from '@comunica/context-entries';
+import { KeysHttp, KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { Actor } from '@comunica/core';
 import type {
   Bindings,
@@ -355,7 +355,9 @@ export class QuerySourceSparql implements IQuerySource {
         }
 
         // Don't send count queries if disabled.
-        if (!this.cardinalityCountQueries) {
+        // Cardinalities can be infinity when we're querying just a single source.
+        // This is determined per query, as the source can be used by queries with different sources.
+        if (!this.cardinalityCountQueries || context.get(KeysQueryOperation.querySources)?.length === 1) {
           return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         }
 
