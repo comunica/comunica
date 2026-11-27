@@ -265,6 +265,18 @@ describe('BindingsToQuadsIterator', () => {
           ),
         ));
       });
+
+      it('should return falsy for a quoted quad with an unbound variable', () => {
+        expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.quad(
+            DF.variable('a'),
+            DF.namedNode('p'),
+            DF.variable('c'),
+          ),
+          DF.namedNode('p'),
+          DF.variable('b'),
+        ))).toBeFalsy();
+      });
     });
   });
 
@@ -614,6 +626,35 @@ DF.blankNode('otherbnode2'),
             DF.quad(DF.namedNode('a'), DF.namedNode('p1'), DF.namedNode('o1')),
             DF.quad(DF.blankNode('bnode0'), DF.namedNode('b'), DF.blankNode('bnode0')),
             DF.quad(DF.blankNode('bnode0'), DF.namedNode('a'), DF.namedNode('b')),
+          ]);
+
+        // Consume the iterator
+        await expect(iterator.toArray()).resolves.toHaveLength(10);
+      });
+
+      it('should skip a pattern with an unbound variable in a quoted triple', async() => {
+        expect(iterator.bindTemplate(BF.bindings([
+          [ DF.variable('a'), DF.namedNode('a') ],
+        ]), [
+          DF.quad(DF.quad(DF.variable('a'), DF.namedNode('p'), DF.variable('b')), DF.namedNode('p'), DF.literal('o')),
+          DF.quad(DF.quad(DF.variable('a'), DF.namedNode('p'), DF.literal('o')), DF.namedNode('p'), DF.literal('o')),
+        ], 0))
+          .toEqual([
+            DF.quad(DF.quad(DF.namedNode('a'), DF.namedNode('p'), DF.literal('o')), DF.namedNode('p'), DF.literal('o')),
+          ]);
+
+        // Consume the iterator
+        await expect(iterator.toArray()).resolves.toHaveLength(10);
+      });
+
+      it('should not localize blank nodes from the bindings', async() => {
+        expect(iterator.bindTemplate(BF.bindings([
+          [ DF.variable('a'), DF.blankNode('data') ],
+        ]), [
+          DF.quad(DF.blankNode('bnode'), DF.namedNode('p1'), DF.variable('a')),
+        ], 0))
+          .toEqual([
+            DF.quad(DF.blankNode('bnode0'), DF.namedNode('p1'), DF.blankNode('data')),
           ]);
 
         // Consume the iterator
