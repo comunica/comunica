@@ -193,21 +193,40 @@ export function deskolemizeTerm(
   return term;
 }
 
+/**
+ * Deskolemize the given term, including the terms within quoted triples.
+ * @param dataFactory The data factory.
+ * @param term Any RDF term.
+ * @param sourceId A source identifier.
+ * @return The deskolemized term, or null if it contains a skolemized term that is not in scope for this source.
+ */
+export function deskolemizeTermNested(
+  dataFactory: ComunicaDataFactory,
+  term: RDF.Term,
+  sourceId: string,
+): RDF.Term | null {
+  if (term.termType === 'Quad') {
+    let outOfScope = false;
+    const ret = mapTermsNested(term, (subTerm) => {
+      const deskolemized = deskolemizeTerm(dataFactory, subTerm, sourceId);
+      outOfScope ||= deskolemized === null;
+      return deskolemized ?? subTerm;
+    });
+    return outOfScope ? null : ret;
+  }
+  return deskolemizeTerm(dataFactory, term, sourceId);
+}
+
+/**
+ * @deprecated Use {@link deskolemizeTermNested} instead, which returns null instead of throwing.
+ */
+// TODO (next-major): remove
 export function deskolemizeTermNestedThrowing(
   dataFactory: ComunicaDataFactory,
   term: RDF.Term,
   sourceId: string,
 ): RDF.Term {
-  if (term.termType === 'Quad') {
-    return mapTermsNested(term, (subTerm) => {
-      const deskolemized = deskolemizeTerm(dataFactory, subTerm, sourceId);
-      if (!deskolemized) {
-        throw new Error(`Skolemized term is not in scope for this source`);
-      }
-      return deskolemized;
-    });
-  }
-  const ret = deskolemizeTerm(dataFactory, term, sourceId);
+  const ret = deskolemizeTermNested(dataFactory, term, sourceId);
   if (ret === null) {
     throw new Error(`Skolemized term is not in scope for this source`);
   }
@@ -245,14 +264,12 @@ export function deskolemizePattern(
   pattern: Algebra.Pattern,
   sourceId: string,
 ): Algebra.Pattern | undefined {
-  try {
-    const subject = deskolemizeTermNestedThrowing(dataFactory, pattern.subject, sourceId);
-    const predicate = deskolemizeTermNestedThrowing(dataFactory, pattern.predicate, sourceId);
-    const object = deskolemizeTermNestedThrowing(dataFactory, pattern.object, sourceId);
-    const graph = deskolemizeTermNestedThrowing(dataFactory, pattern.graph, sourceId);
+  const subject = deskolemizeTermNested(dataFactory, pattern.subject, sourceId);
+  const predicate = subject && deskolemizeTermNested(dataFactory, pattern.predicate, sourceId);
+  const object = predicate && deskolemizeTermNested(dataFactory, pattern.object, sourceId);
+  const graph = object && deskolemizeTermNested(dataFactory, pattern.graph, sourceId);
+  if (graph) {
     return Object.assign(AF.createPattern(subject, predicate, object, graph), { metadata: pattern.metadata });
-  } catch {
-    // Return undefined for skolemized terms not in scope for this source
   }
 }
 
@@ -268,31 +285,33 @@ export function deskolemizeOperation<O extends Algebra.Operation>(
   operation: O,
   sourceId: string,
 ): O | undefined {
-  const factory = AF;
-  try {
-    return <O> algebraUtils.mapOperation(operation, {
-      [Algebra.Types.PATTERN]: {
-        preVisitor: () => ({ continue: false }),
-        transform: op => Object.assign(factory.createPattern(
-          deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),
-          deskolemizeTermNestedThrowing(dataFactory, op.predicate, sourceId),
-          deskolemizeTermNestedThrowing(dataFactory, op.object, sourceId),
-          deskolemizeTermNestedThrowing(dataFactory, op.graph, sourceId),
-        ), { metadata: op.metadata }),
-      },
-      [Algebra.Types.PATH]: {
-        preVisitor: () => ({ continue: false }),
-        transform: op => Object.assign(factory.createPath(
-          deskolemizeTermNestedThrowing(dataFactory, op.subject, sourceId),
-          op.predicate,
-          deskolemizeTermNestedThrowing(dataFactory, op.object, sourceId),
-          deskolemizeTermNestedThrowing(dataFactory, op.graph, sourceId),
-        ), { metadata: op.metadata }),
-      },
-    });
-  } catch {
-    // Return undefined for skolemized terms not in scope for this source
-  }
+  let outOfScope = false;
+  const deskolemize = (term: RDF.Term): RDF.Term => {
+    const deskolemized = deskolemizeTermNested(dataFactory, term, sourceId);
+    outOfScope ||= deskolemized === null;
+    return deskolemized ?? term;
+  };
+  const mapped = <O> algebraUtils.mapOperation(operation, {
+    [Algebra.Types.PATTERN]: {
+      preVisitor: () => ({ continue: false }),
+      transform: op => Object.assign(AF.createPattern(
+        deskolemize(op.subject),
+        deskolemize(op.predicate),
+        deskolemize(op.object),
+        deskolemize(op.graph),
+      ), { metadata: op.metadata }),
+    },
+    [Algebra.Types.PATH]: {
+      preVisitor: () => ({ continue: false }),
+      transform: op => Object.assign(AF.createPath(
+        deskolemize(op.subject),
+        op.predicate,
+        deskolemize(op.object),
+        deskolemize(op.graph),
+      ), { metadata: op.metadata }),
+    },
+  });
+  return outOfScope ? undefined : mapped;
 }
 
 /**
