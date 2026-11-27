@@ -109,7 +109,7 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         uses: nick-fields/retry@v4
         with:
-          timeout_minutes: 5
+          timeout_minutes: 15
           max_attempts: 3
           command: yarn --cwd engines/expressions-sparql run spec:xpath
       - name: Save XPath test suite cache
