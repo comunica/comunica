@@ -16,6 +16,7 @@ import {
   getMockMediatorQueryOperation,
   getMockSuperTypeProvider,
   makeAggregate,
+  makeNamedAggregate,
   nonLiteral,
   string,
   termDecimal,
@@ -38,6 +39,7 @@ describe('utils-jest index re-exports', () => {
     expect(getMockMediatorQueryOperation).toBeDefined();
     expect(getMockSuperTypeProvider).toBeDefined();
     expect(makeAggregate).toBeDefined();
+    expect(makeNamedAggregate).toBeDefined();
     expect(nonLiteral).toBeDefined();
     expect(string).toBeDefined();
     expect(termInt).toBeDefined();

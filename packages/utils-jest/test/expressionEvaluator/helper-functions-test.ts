@@ -10,6 +10,7 @@ import {
   getMockEEFactory,
   int,
   makeAggregate,
+  makeNamedAggregate,
   nonLiteral,
   string,
 } from '../../lib/expressionEvaluator/helpers';
@@ -43,6 +44,28 @@ describe('The Expression evaluator util function', () => {
       expect(makeAggregate('group_concat', false, ', ')).toMatchObject(
         AF.createAggregateExpression('group_concat', AF.createTermExpression(DF.variable('x')), false, ', '),
       );
+    });
+  });
+
+  describe('makeNamedAggregate', () => {
+    const args = [ AF.createTermExpression(DF.variable('x')) ];
+
+    it('creates an extension aggregate bound to a default variable', () => {
+      expect(makeNamedAggregate('http://example.org/median', args)).toEqual({
+        ...AF.createNamedExpression(DF.namedNode('http://example.org/median'), args),
+        aggregate: true,
+        distinct: false,
+        variable: DF.variable('var0'),
+      });
+    });
+
+    it('creates a distinct extension aggregate bound to the given variable', () => {
+      expect(makeNamedAggregate('http://example.org/median', args, true, DF.variable('m'))).toEqual({
+        ...AF.createNamedExpression(DF.namedNode('http://example.org/median'), args),
+        aggregate: true,
+        distinct: true,
+        variable: DF.variable('m'),
+      });
     });
   });
 

@@ -1,6 +1,123 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v5.5.1"></a>
+## [v5.5.1](https://github.com/comunica/comunica/compare/v5.5.0...v5.5.1) - 2026-11-27
+
+### Changed
+* [Replace deprecated url.parse in SPARQL endpoint (#2050)](https://github.com/comunica/comunica/commit/7327c03d113733a69887b9b3c094bc5bb4b4fd9d)
+
+### Fixed
+* [Fix missing support for extension aggregates in the standalone expression engine (#2043)](https://github.com/comunica/comunica/commit/02d4ceba8cd9482ca7ae3906c65efeaca39ea4a5)
+
+<a name="v5.5.0"></a>
+## [v5.5.0](https://github.com/comunica/comunica/compare/v5.4.1...v5.5.0) - 2026-11-24
+
+### Added
+* [Add SPARQL 1.1 Graph Store HTTP Protocol (#1800)](https://github.com/comunica/comunica/commit/11e5d95460b770470cd90e1bc614b96c87d12d29)
+* [Add support for extension aggregators (#1889)](https://github.com/comunica/comunica/commit/636002a5734943d222fb63f21eecf68f735b7cdc)
+* [Add custom `SERVICE` executors (#1689)](https://github.com/comunica/comunica/commit/5ca26e244a66e389dc4c401cf9fbd8b106e9d6c7)
+* [Add a standalone SPARQL expression evaluation engine (#1814)](https://github.com/comunica/comunica/commit/5f18a005adac3a317f55d877f88a2a7fca7ceee7)
+* [Also discover SPARQL service descriptions via service-desc Link headers (#1970)](https://github.com/comunica/comunica/commit/9f6369dc8cdccea4780e9c1a5691e334ddba645e)
+* [Add a warmup method, bus, and queries-sampled actor (#1942)](https://github.com/comunica/comunica/commit/f551df387e72166d924ecd07df1442fcb9056822)
+* [Add rdfVariant context option for symmetric and generalized RDF (#1886)](https://github.com/comunica/comunica/commit/5e55fa9eefe3ecd1c9edf66a6b49de5c622df527)
+* [Support credentials in source URLs via the API and for SERVICE targets (#1884)](https://github.com/comunica/comunica/commit/380e018e60a542d9a8ba38e3981b538b19439e42)
+* [Add parseRdf method to IQueryEngine](https://github.com/comunica/comunica/commit/2c15cdf7c94a0221fbd94d16b874ac9e8a9dface)
+* [Add updateQuads to IQueryEngine to write quad streams to a destination (#1872)](https://github.com/comunica/comunica/commit/5447db06c42354a61030557ff5f1ccb8e617e139)
+* [Add alternative source-based FROM/FROM NAMED actor (#1824)](https://github.com/comunica/comunica/commit/0002a56d9df67453b48aed4dd7d554b36379bae7)
+
+### Changed
+* Improve general performance
+  * [Rewrite relevant property paths into patterns (#1914)](https://github.com/comunica/comunica/commit/442316dd05fdf035c0ebb95ec7df937e945e74fc)
+  * [Add early breaks to optimizers when they don't apply (#1936)](https://github.com/comunica/comunica/commit/a31471e1f310e96cbd2c82f983ea61918fe9628a)
+  * [Use native Map in ActionContext instead of immutable.js (#1953)](https://github.com/comunica/comunica/commit/0e6f9d532965eb4d7b57792da4ff5360a8b0ab0b)
+  * [Use native Map in Bindings instead of immutable.js](https://github.com/comunica/comunica/commit/a857ebed2264bb22ef318aaa59aebcf221c80d22)
+  * [Optimize evaluation term and variable expression arguments (#1947)](https://github.com/comunica/comunica/commit/33dfb802673198fbca32e37cc2e16a3e6c60877c)
+  * [Optimize values iterable of Bindings (#1938)](https://github.com/comunica/comunica/commit/80f0de9aab6355bb73bbdb6f879c76b783b367af)
+  * [Reuse default super type provider across evaluators (#1931)](https://github.com/comunica/comunica/commit/3d221990574be736a61b0dcb66735ae4676e4268)
+  * [Update asyncjoin to 2.0.0 with SMI-optimized hash join (#1909)](https://github.com/comunica/comunica/commit/8b461dd76e71afd6a15762cae089e76b27c739d0)
+  * [Cap cardinality estimates of optional joins by shared variables (#1846)](https://github.com/comunica/comunica/commit/27592949cab7f89edd26857792e41ab92e4f970e)
+  * [Look at cardinalities with equal selectivities when sorting join entries (#1863)](https://github.com/comunica/comunica/commit/faecb371b9e319aa4f00dd13cfcec767195e2239)
+  * [Don't let NaN join costs win over known costs (#1862)](https://github.com/comunica/comunica/commit/91d926ff50acfdc67c26ed30642f29c96f9832cc)
+  * [Cluster nested joins in the join-connected optimizer (#1847)](https://github.com/comunica/comunica/commit/b57f0d0ed64e3afabd521b12c0bf28b82a374d36)
+  * [Don't traverse operation metadata when finding in-scope variables (#1851)](https://github.com/comunica/comunica/commit/d8204b1ae0e6b47565be5a74db6cad91326f2d9b)
+* Improve performance of in-memory sources (10x faster querying, 2x faster ingestion, 4x lower memory usage)
+  * [Load files into an ordered store (#1839)](https://github.com/comunica/comunica/commit/7d024e821ed7b27bfd146053f669e7e86452ac35)
+  * [Add inner merge join actor over entries sorted on shared variables (#1837)](https://github.com/comunica/comunica/commit/3d32ecb3bfba71751122c3a0bd545192d0502bae)
+  * [Add a multi-way merge join actor over 3+ entries sorted on shared variables (#1840)](https://github.com/comunica/comunica/commit/b38952ebc9cf03d14a8d695f98cea7e14aa96da9)
+  * [Add term order and seek metadata for bindings streams (#1836)](https://github.com/comunica/comunica/commit/481477f36468585decc11b02ab204965ced17378)
+  * [Delegate seeking and term orders of sources (#1838)](https://github.com/comunica/comunica/commit/e1031109cc08a73d583d1247f6e44e3d171596e5)
+  * [Add index nested-loop joins for sources with synchronous lookups (#1910)](https://github.com/comunica/comunica/commit/792fdd6e2dfc444186652bf823280a5401fb084b)
+  * [Add order-preserving union actor (#1888)](https://github.com/comunica/comunica/commit/c5a6b0caae8d86bd47d1dd5e4d02b218e7b07891)
+  * [Only fetch distinct objects from sources that efficiently support them (#1981)](https://github.com/comunica/comunica/commit/6be20b6d64fc8c8d0c8398847c2f802efc710737)
+  * [Bump to rdf-stores 2.10.0 (#1966)](https://github.com/comunica/comunica/commit/7eb8b952e79bc44586d02f6d00ae9a3067d6bc7c)
+  * [Skip metadata extraction for forced file sources (#1965)](https://github.com/comunica/comunica/commit/2b91acc3e41c26152401db6c2a0d4c6041d0bdff)
+  * [Cache emitted service descriptions in the SPARQL endpoint (#1933)](https://github.com/comunica/comunica/commit/2cad75988d2fe50e5ea4004c4a1a492a8e9c6aa0)
+  * [Run union annotation optimizer after path rewriter (#1949)](https://github.com/comunica/comunica/commit/6b5eb94bb3b3736b6ce246d101e1ac61daaaa57e)
+  * [Skip skolemization for patterns over sources without blank nodes (#1940)](https://github.com/comunica/comunica/commit/55a70ad782bd107d6e1fecfef620cd5cd265ec54)
+  * [Let index nested-loop joins propagate term orders (#1919)](https://github.com/comunica/comunica/commit/3d9a8837c2fe3f72325b500a0e2e8ed4f4f56477)
+* Improve performance of federations
+  * [Allow bind-joins into FILTERs evaluated by a source (#1858)](https://github.com/comunica/comunica/commit/84986eb3ada7fcd355d6bc5157047983d4d0bbf1)
+  * [Allow bind-joins on OPTIONALs with pushed-down expressions (#1855)](https://github.com/comunica/comunica/commit/d64013834760f7324db2477a627ac0e30490c6c7)
+* Improve performance of our SPARQL endpoint
+  * [Serialize JSON results in larger chunks (#1948)](https://github.com/comunica/comunica/commit/e881f41a511ade1d6b41e761f9b2367d64d8b6da)
+  * [Serialize SPARQL XML results in larger chunks (#1946)](https://github.com/comunica/comunica/commit/43ea53e9bb3e9b3acea89d9274813daa820c6282)
+  * [Serialize SPARQL JSON results in larger chunks (#1937)](https://github.com/comunica/comunica/commit/81aa304d77a38224bf445b4d79f1b644f201af52)
+  * [Time out queries in the SPARQL endpoint worker instead of the main process (#1941)](https://github.com/comunica/comunica/commit/483dc3cfad79d24b6f6eb081e0113b0092658bba)
+  * [Cache negotiated media types in our SPARQL endpoint (#1932)](https://github.com/comunica/comunica/commit/01285279cd302010bf4eedaefba445215790baae)
+  * [Only calculate accept header when needed (#1917)](https://github.com/comunica/comunica/commit/3db28ab0258978fc530ee043b7c8c38b7343038b)
+* Reduce bundle sizes
+  * [Replace uuid with a minimal UUID v4 implementation (#2026)](https://github.com/comunica/comunica/commit/5dac5bca42aa481e7a5a63088b536db0707a296e)
+  * [Remove duplicate packages from browser bundles (#2025)](https://github.com/comunica/comunica/commit/005f4fab42a026562f1834de03fdb448c7ed95a2)
+  * [Update jsonld-context-parser to v3 to drop cross-fetch polyfill (#2024)](https://github.com/comunica/comunica/commit/e8a4339d60dd2deb665ccb1b6df860ccd43b9b5c)
+* [Prefer SPARQL JSON results over our custom JSON format in content negotiation (#1986)](https://github.com/comunica/comunica/commit/cc775f18fa045adc5c291c5dbea43ecff80bdcc4)
+* [Retry HTTP requests that fail without a response (#1887)](https://github.com/comunica/comunica/commit/7659fd6b8bade010327ad21a2fbaeb8a344864c5)
+* [Add timeout to ASK queries when pruning empty source operations (#1882)](https://github.com/comunica/comunica/commit/c45d064602352116482cc911177c5f1481ba047a)
+* [Abort SPARQL count queries that exceed the count timeout (#1879)](https://github.com/comunica/comunica/commit/9fec824ad7137d85f534c4ed86aad1ab23aab67a)
+* [Rate limit only on 429 and 503 and swap limit and rate limit wrapping order (#1877)](https://github.com/comunica/comunica/commit/5548675b6bcf65c157456ba446b8f584795fb2dc)
+* [Correct SPARQL service descriptions that expose local endpoints (#1856)](https://github.com/comunica/comunica/commit/7116fda0452643f203eeab09f691281a09f3fe31)
+* [Explain parse failures of documents without a media type (#1833)](https://github.com/comunica/comunica/commit/2311e9bf9754bdd478be8250bd9edb4739da2c3f)
+* [Make physical query plans complete and deterministic (#1781)](https://github.com/comunica/comunica/commit/a6c9386835642b1d3eacb99bcc2d7f8faa10d0dc)
+
+### Fixed
+* [Fix aggregates being dropped with GROUP BY sent to SPARQL endpoint (#1860)](https://github.com/comunica/comunica/commit/81181c1bd5972e305abddca50bdf8f09f594bd01)
+* [Fix SPARQL XML serializer not escaping all illegal characters (#1985)](https://github.com/comunica/comunica/commit/b58d5faed2396b698c801e3fb59fe9976ec89e12)
+* [Fix REPLACE not following fn:replace replacement string rules (#2021)](https://github.com/comunica/comunica/commit/34468d93a12831569bb595cb7a6c7f404babc94c)
+* [Fix LANGMATCHES not using RFC 4647 basic filtering (#2028)](https://github.com/comunica/comunica/commit/4ad38ecdb65423ad60130baaf19066467228e1f5)
+* [Fix string = and < not using codepoint collation (#1975)](https://github.com/comunica/comunica/commit/57c668c39143e135c3c5cd077ec12804590ca649)
+* [Fix adding yearMonthDurations not considering proper month ends (#1974)](https://github.com/comunica/comunica/commit/3b80bbc0451fb2fadac9f82ddb1bce85261e1b2e)
+* [Fix crash when HTTP invalidating non-URLs (#1977)](https://github.com/comunica/comunica/commit/84657dfaa90f4eec4777879ced1270680d922bd6)
+* [Fix one-or-more paths with equal variables not considering multi-hops (#1963)](https://github.com/comunica/comunica/commit/55c690b2ce5e48e44daa184e0aa6b34cbd133108)
+* [Fix xsd:integer and xsd:decimal casts not accepting signs and whitespace (#1962)](https://github.com/comunica/comunica/commit/4deba1a3bb4ea1f7f3de3e1df3a95694acc1f415)
+* [Fix decimal division by zero producing INF or NaN decimals (#1930)](https://github.com/comunica/comunica/commit/389d1ee811596b6fc088f456559175d0d2446cb2)
+* [Fix ENCODE_FOR_URI not encoding characters such as / and : (#1929)](https://github.com/comunica/comunica/commit/2450870a8fcffd6cf84a3269174a0e214c991b65)
+* [Fix SUBSTR counting from the end for start positions below 1 (#1928)](https://github.com/comunica/comunica/commit/566ce12357bd52ca5f52da802e799ca6f5686dd1)
+* [Fix selector shapes of query sources not always including their own context (#1935)](https://github.com/comunica/comunica/commit/131f6573bf6a13bf8593691aea0fc6f3cd61e598)
+* [Fix worker crash when query and Accept media type are incompatible (#1945)](https://github.com/comunica/comunica/commit/91f760ed8aa4c49935a282633dbd6b909384fca7)
+* [Fix filter pushdown for extension functions into unrelated join entries (#1920)](https://github.com/comunica/comunica/commit/39da862389e059a4e33ac844c078f322192ef082)
+* [Do not pass the limit indicator below ORDER BY and GROUP BY (#1912)](https://github.com/comunica/comunica/commit/76e8f13adb591a4fd171249b9f9e64a06d109ef2)
+* [Fix aggregates without GROUP BY reporting zero cardinality on empty input (#1916)](https://github.com/comunica/comunica/commit/ca810e7d013992b34683ff67b09d6233b6f27aa3)
+* [Fix extension function pushdown not sending the original query to endpoints (#1901)](https://github.com/comunica/comunica/commit/9b43a2cf9d69ba04a2d751e53fb99ab29227ece6)
+* [Fix murmur hashing not always returning SMIs (#1908)](https://github.com/comunica/comunica/commit/5fa029cc0227c01878cc11e075d3d3131b6f8e84)
+* [Fix beforeActors not being respected in an indexed bus (#1904)](https://github.com/comunica/comunica/commit/b3d6d0277bc478ef1393029dabcfa2b70b4b0d29)
+* [Fix property paths hanging when a sub-operation ends during a read (#1897)](https://github.com/comunica/comunica/commit/7f56161f8f97b3010bf603363c9c1c392e112c13)
+* [Fix (NOT) EXISTS being evaluated by the wrong source (#1852)](https://github.com/comunica/comunica/commit/fcd6e1d2ff5de254fdbe60340ce21d33a43a0d98)
+* [Fix datetime milliseconds accuracy for very small dates (#1892)](https://github.com/comunica/comunica/commit/9cf997d476db5c9f632b551ec3dff3f3c4670d8d)
+* [Fix empty operation pruning for FILTER, BIND, MINUS, COUNT and paths (#1868)](https://github.com/comunica/comunica/commit/ffe6745c6aa27fba52237750fd798697bbb1c595)
+* [Don't rate-limit hosts because of client-side timeouts (#1865)](https://github.com/comunica/comunica/commit/0cbc2fd4179d5add46f4eb1986474e5e8b80d96e)
+* [Keep metadata of FILTERs when materializing bindings (#1864)](https://github.com/comunica/comunica/commit/3374f77f2a535c46ffede23951d7e619d9ecbefd)
+* [Fix internal algebra operations being sent to SPARQL endpoints (#1845)](https://github.com/comunica/comunica/commit/26008c9bc9c2017426cf83745c1628adb8b528d6)
+* [Support left join expressions on optionals that can not be bound (#1835)](https://github.com/comunica/comunica/commit/e8497fc5bcf8c98f95701f05976ae8f0554bfd35)
+* [Fix seconds and sign of dateTime subtraction results (#1834)](https://github.com/comunica/comunica/commit/8bf350c91e3cfe9b6217c6bd7dc178e3d60be221)
+* [Bump Traqula to resolve relative IRIs according to RFC 3986 (#1841)](https://github.com/comunica/comunica/commit/678b78b44cac40bf05bed404c457d87e6549ce28)
+* [Fix placeholders in RDF parse and dereference failure messages (#1832)](https://github.com/comunica/comunica/commit/9fcfb99e48f9f0677fafe6d74ae6591107e07242)
+* [Scope cached query sources by their context properties (#1825)](https://github.com/comunica/comunica/commit/8a5316fa9e54959ea3dd7c837b7f449e896a66b6)
+* [Fix SPARQL endpoint requests using another query's context (#1827)](https://github.com/comunica/comunica/commit/4036d65bfb1f7264b240e84da5b85b16f03c30cc)
+* [Bump rdf-data-factory to lowercase language tags (#1826)](https://github.com/comunica/comunica/commit/5ef25e2e65d49b75e236e9900b5b7be9c1e17d80)
+* [Fix metadata of SERVICE clauses not being kept when materializing bindings (#1822)](https://github.com/comunica/comunica/commit/f1dc28e588646468fae6c0eec96f629c994f2d81)
+* [Fix local files sometimes having a non-zero request time (#1821)](https://github.com/comunica/comunica/commit/b92f99f8dcab7d398f0a6b778c96b03d8cbe8d63)
+* [Fix date time representations being dependent on the machine's timezone](https://github.com/comunica/comunica/commit/13adfc6cf5cd34d7ed406add08cb2045ebe550ec)
+
 <a name="v5.4.1"></a>
 ## [v5.4.1](https://github.com/comunica/comunica/compare/v5.4.0...v5.4.1) - 2026-09-14
 
