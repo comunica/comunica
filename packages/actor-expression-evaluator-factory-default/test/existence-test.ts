@@ -77,6 +77,30 @@ describe('should be able to handle EXIST filters', () => {
     await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(true);
   });
 
+  it('like an EXIST over more bindings, of which it only produces the first', async() => {
+    let produced = 0;
+    const bindingsStream = new ArrayIterator(Array.from({ length: 1000 }, (_, i) => i), { autoStart: false })
+      .map((i) => {
+        produced++;
+        return BF.bindings([[ DF.variable('a'), DF.literal(String(i)) ]]);
+      });
+    mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
+      bindingsStream,
+      metadata: () => Promise.resolve({ cardinality: 1000, canContainUndefs: false }),
+      operated: arg,
+      type: 'bindings',
+      variables: [ DF.variable('a') ],
+    });
+    const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
+      false,
+      factory.createBgp([]),
+    );
+    const evaluator = await evaluatorFactory.run({ context, algExpr: expr }, undefined);
+    await expect(evaluator.evaluateAsEBV(BF.bindings())).resolves.toBe(true);
+    expect(produced).toBe(1);
+    expect(bindingsStream.done).toBe(true);
+  });
+
   it('like an EXIST that errors', async() => {
     const bindingsStream = new ArrayIterator([{}, {}, {}], { autoStart: false }).transform({
       autoStart: false,
