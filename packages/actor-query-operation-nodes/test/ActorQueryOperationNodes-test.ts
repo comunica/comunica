@@ -1,17 +1,14 @@
 import { KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import type { IQueryOperationResultBindings } from '@comunica/types';
+import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
-import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { assignOperationSource } from '@comunica/utils-query-operation';
-import { ArrayIterator } from 'asynciterator';
+import type * as RDF from '@rdfjs/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationNodes } from '../lib/ActorQueryOperationNodes';
-import 'jest-rdf';
 import '@comunica/utils-jest';
 
 const DF = new DataFactory();
-const BF = new BindingsFactory(DF);
 const AF = new AlgebraFactory(DF);
 
 describe('ActorQueryOperationNodes', () => {
@@ -21,18 +18,7 @@ describe('ActorQueryOperationNodes', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator([
-          BF.fromRecord({ '?a': DF.literal('1') }),
-          BF.fromRecord({ '?a': DF.literal('2') }),
-          BF.fromRecord({ '?a': DF.literal('3') }),
-        ], { autoStart: false }),
-        metadata: () => Promise.resolve({ cardinality: { type: 'exact', value: 3 }}),
-        operated: arg,
-        type: 'bindings',
-        variables: [ '?a' ],
-        canContainUndefs: false,
-      }),
+      mediate: (arg: any) => Promise.resolve({ type: 'bindings', operated: arg }),
     };
   });
 
@@ -60,31 +46,44 @@ describe('ActorQueryOperationNodes', () => {
     });
 
     describe('run', () => {
-      it('should rewrite operations into distinct-union-pattern', async() => {
-        jest.spyOn(mediatorQueryOperation, 'mediate');
-        const source1 = <any>{};
-        const opIn = assignOperationSource(
-          AF.createNodes(DF.defaultGraph(), DF.variable('x')),
-          source1,
+      const source = <any>{};
+
+      /**
+       * Run the actor on a nodes operation binding ?x in the given graph.
+       * @param graph The graph of the nodes operation.
+       * @return The operation the actor delegates to.
+       */
+      async function runAndGetDelegatedOperation(graph: RDF.Term): Promise<Algebra.Operation> {
+        const result: any = await actor.runOperation(
+          assignOperationSource(AF.createNodes(graph, DF.variable('x')), source),
+          new ActionContext().set(KeysInitQuery.dataFactory, DF),
         );
-        const result: IQueryOperationResultBindings = <any> await actor.runOperation(opIn, new ActionContext()
-          .set(KeysInitQuery.dataFactory, DF));
-        expect(result.type).toBe('bindings');
-        await expect(result.metadata()).resolves.toEqual({ cardinality: { type: 'exact', value: 3 }});
-        await expect(result.bindingsStream).toEqualBindingsStream([
-          BF.fromRecord({ '?a': DF.literal('1') }),
-          BF.fromRecord({ '?a': DF.literal('2') }),
-          BF.fromRecord({ '?a': DF.literal('3') }),
+        return result.operated.operation;
+      }
+
+      /**
+       * Create the union of the patterns having ?x as subject or object in the given graph.
+       * @param graph The graph of the patterns.
+       * @return The union, with its patterns annotated with the source.
+       */
+      function createUnion(graph: RDF.Term): Algebra.Union {
+        return AF.createUnion([
+          assignOperationSource(AF
+            .createPattern(DF.variable('x'), DF.variable('__p'), DF.variable('__x'), graph), source),
+          assignOperationSource(AF
+            .createPattern(DF.variable('__x'), DF.variable('__p'), DF.variable('x'), graph), source),
         ]);
-        expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
-          context: expect.any(ActionContext),
-          operation: AF.createDistinct(AF.createUnion([
-            assignOperationSource(AF
-              .createPattern(DF.variable('x'), DF.variable('__p'), DF.variable('__x'), DF.defaultGraph()), source1),
-            assignOperationSource(AF
-              .createPattern(DF.variable('__x'), DF.variable('__p'), DF.variable('x'), DF.defaultGraph()), source1),
-          ])),
-        });
+      }
+
+      it('should rewrite operations into distinct-project-union-pattern', async() => {
+        await expect(runAndGetDelegatedOperation(DF.defaultGraph())).resolves
+          .toEqual(AF.createDistinct(AF.createProject(createUnion(DF.defaultGraph()), [ DF.variable('x') ])));
+      });
+
+      it('should project the graph variable', async() => {
+        await expect(runAndGetDelegatedOperation(DF.variable('g'))).resolves.toEqual(AF.createDistinct(
+          AF.createProject(createUnion(DF.variable('g')), [ DF.variable('g'), DF.variable('x') ]),
+        ));
       });
     });
   });
