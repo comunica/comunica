@@ -2,6 +2,7 @@
 
 import { once } from 'node:events';
 import { Readable } from 'node:stream';
+import { QuerySourceRdfJs } from '@comunica/actor-query-source-identify-rdfjs';
 import { KeysHttpWayback, KeysInitQuery, KeysQuerySourceIdentify } from '@comunica/context-entries';
 import { Logger } from '@comunica/types';
 import type { ExtensionAggregator, QueryBindings, QueryStringContext } from '@comunica/types';
@@ -9,6 +10,7 @@ import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Bindings } from '@comunica/utils-bindings-factory';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
+import { assignOperationSource } from '@comunica/utils-query-operation';
 import { stringify as stringifyStream } from '@jeswr/stream-to-string';
 import type * as RDF from '@rdfjs/types';
 import arrayifyStream from 'arrayify-stream';
@@ -4727,6 +4729,37 @@ CONSTRUCT {
           [ DF.variable('s'), DF.namedNode('ex:s2') ],
         ]),
       ], true);
+    });
+  });
+
+  describe('Nodes operation', () => {
+    /**
+     * Query the nodes of a store where ex:a is the subject of two triples.
+     * N3 stores do not index nodes, so the nodes actor evaluates the operation.
+     * @return The result binding the nodes to ?n.
+     */
+    async function queryNodes(): Promise<QueryBindings> {
+      const store = new Store([
+        DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p'), DF.namedNode('ex:b')),
+        DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:q'), DF.namedNode('ex:c')),
+      ]);
+      const nodes = assignOperationSource(
+        factory.createNodes(DF.defaultGraph(), DF.variable('n')),
+        { source: new QuerySourceRdfJs(store, DF, BF) },
+      );
+      return <QueryBindings> await engine.query(nodes, { sources: [ store ]});
+    }
+
+    it('should return each node once', async() => {
+      await expect((await queryNodes()).execute()).resolves.toEqualBindingsStream([
+        BF.fromRecord({ n: DF.namedNode('ex:a') }),
+        BF.fromRecord({ n: DF.namedNode('ex:b') }),
+        BF.fromRecord({ n: DF.namedNode('ex:c') }),
+      ], true);
+    });
+
+    it('should only have the node variable in its metadata', async() => {
+      expect((await (await queryNodes()).metadata()).variables).toEqualRdfTermArray([ DF.variable('n') ]);
     });
   });
 
