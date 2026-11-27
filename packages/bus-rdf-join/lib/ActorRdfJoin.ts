@@ -365,12 +365,6 @@ TS
     entries: IJoinEntryWithMetadata[],
     context: IActionContext,
   ): Promise<TestResult<IJoinEntryWithMetadata[]>> {
-    // If there is a stream that can contain undefs, we don't modify the join order.
-    const hasUndefVars = entries.some(entry => entry.metadata.variables.some(variable => variable.canBeUndef));
-    if (hasUndefVars) {
-      return passTest(entries);
-    }
-
     // Calculate number of occurrences of each variable
     const variableOccurrences: Record<string, number> = {};
     for (const entry of entries) {
@@ -389,6 +383,14 @@ TS
       if (count >= 2) {
         multiOccurrenceVariables.push(variable);
       }
+    }
+
+    // If a variable that occurs in at least two join entries can be undefined, we don't modify the join order.
+    // Other variables that can be undefined don't affect the join, so they don't prevent sorting.
+    const hasUndefJoinVars = entries.some(entry => entry.metadata.variables
+      .some(variable => variable.canBeUndef && multiOccurrenceVariables.includes(variable.variable.value)));
+    if (hasUndefJoinVars) {
+      return passTest(entries);
     }
 
     // Reject if no entries have common variables
