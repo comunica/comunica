@@ -33,6 +33,7 @@ import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { LRUCache } from 'lru-cache';
 import { uniqTerms } from 'rdf-terms';
 import type { BindMethod } from './ActorQuerySourceIdentifyHypermediaSparql';
+import { SparqlRequestSharing } from './SparqlRequestSharing';
 
 export class QuerySourceSparql implements IQuerySource {
   /**
@@ -53,6 +54,7 @@ export class QuerySourceSparql implements IQuerySource {
   private readonly defaultGraph?: string;
   private readonly unionDefaultGraph: boolean;
   private readonly propertyFeatures?: Set<string>;
+  private readonly requestSharing: SparqlRequestSharing;
   private readonly datasets?: IDataset[];
   public readonly extensionFunctions?: string[];
   private readonly dataFactory: ComunicaDataFactory;
@@ -86,6 +88,7 @@ export class QuerySourceSparql implements IQuerySource {
     forceGetIfUrlLengthBelow: number,
     parseUnsupportedVersions: boolean,
     metadata: Record<string, any>,
+    shareRequestsMaxBindings = 0,
   ) {
     this.referenceValue = urlBackup;
     this.url = url;
@@ -126,6 +129,7 @@ export class QuerySourceSparql implements IQuerySource {
     this.datasets = metadata.datasets;
     this.extensionFunctions = metadata.extensionFunctions;
     this.propertyFeatures = metadata.propertyFeatures ? new Set(metadata.propertyFeatures) : undefined;
+    this.requestSharing = new SparqlRequestSharing(shareRequestsMaxBindings);
   }
 
   /**
@@ -279,7 +283,12 @@ export class QuerySourceSparql implements IQuerySource {
       const undefVariables = QuerySourceSparql.getOperationUndefs(operation);
 
       this.reportSourceQuery(context, selectQuery);
-      return this.queryBindingsRemote(this.url, selectQuery, variables, context, undefVariables);
+      // Identical requests of the same query that are in flight share a single request.
+      return this.requestSharing.shareBindings(
+        context.get(KeysInitQuery.queryTimestamp),
+        `select ${selectQuery}`,
+        () => this.queryBindingsRemote(this.url, selectQuery, variables, context, undefVariables),
+      );
     }, { autoStart: false });
     this.attachMetadata(bindings, context, operationPromise);
 
@@ -359,6 +368,38 @@ export class QuerySourceSparql implements IQuerySource {
           return resolve({ type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url });
         }
 
+        // Identical COUNT queries of the same query that are in flight share a single request.
+        return resolve(await this.requestSharing.shareValue(
+          context.get(KeysInitQuery.queryTimestamp),
+          `count ${countQuery}`,
+          () => this.sendCountQuery(countQuery, context),
+        ));
+      } catch (error: unknown) {
+        reject(error);
+      }
+    })
+      .then(cardinality => target.setProperty('metadata', {
+        state: new MetadataValidationState(),
+        cardinality,
+        variables: variablesCount,
+      }))
+      .catch(() => target.setProperty('metadata', {
+        state: new MetadataValidationState(),
+        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url },
+        variables: variablesCount,
+      }));
+  }
+
+  /**
+   * Send a COUNT query to the endpoint.
+   * If it fails or does not answer within the count timeout, the cardinality is estimated as infinity.
+   * @param countQuery A COUNT query with a ?count variable.
+   * @param context The action context.
+   */
+  protected sendCountQuery(countQuery: string, context: IActionContext): Promise<QueryResultCardinality> {
+    // eslint-disable-next-line no-async-promise-executor,ts/no-misused-promises
+    return new Promise<QueryResultCardinality>(async(resolve, reject) => {
+      try {
         // Abort the count request on timeout, so that it does not keep occupying the endpoint.
         const abortController = new AbortController();
         const existingAbortSignal = context.get(KeysHttp.httpAbortSignal);
@@ -409,17 +450,7 @@ export class QuerySourceSparql implements IQuerySource {
       } catch (error: unknown) {
         reject(error);
       }
-    })
-      .then(cardinality => target.setProperty('metadata', {
-        state: new MetadataValidationState(),
-        cardinality,
-        variables: variablesCount,
-      }))
-      .catch(() => target.setProperty('metadata', {
-        state: new MetadataValidationState(),
-        cardinality: { type: 'estimate', value: Number.POSITIVE_INFINITY, dataset: this.url },
-        variables: variablesCount,
-      }));
+    });
   }
 
   /**

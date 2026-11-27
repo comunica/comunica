@@ -35,6 +35,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly cardinalityEstimateConstruction: boolean;
   public readonly forceGetIfUrlLengthBelow: number;
   public readonly sparqlServerSoftwarePatterns: RegExp[];
+  public readonly shareRequestsMaxBindings: number;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -50,6 +51,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     this.cardinalityCountQueries = args.cardinalityCountQueries;
     this.cardinalityEstimateConstruction = args.cardinalityEstimateConstruction;
     this.forceGetIfUrlLengthBelow = args.forceGetIfUrlLengthBelow;
+    this.shareRequestsMaxBindings = args.shareRequestsMaxBindings;
     this.sparqlServerSoftwarePatterns = (
       args.sparqlServerSoftwarePatterns ?? []
     ).map(pattern => new RegExp(pattern, 'u'));
@@ -104,6 +106,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.forceGetIfUrlLengthBelow,
       Boolean(action.context.get(KeysInitQuery.parseUnsupportedVersions)),
       action.metadata,
+      this.shareRequestsMaxBindings,
     );
     return { source };
   }
@@ -176,6 +179,15 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * Regexes to match against the server header to identify SPARQL endpoints.
    */
   sparqlServerSoftwarePatterns?: string[];
+  /**
+   * The maximum number of bindings of an in-flight request that are kept,
+   * so that identical requests of the same query that are sent while it is in flight can share it.
+   * Requests with more results are only shared with requests that were sent before that number was reached.
+   * Set to 0 to not share requests.
+   * @range {integer}
+   * @default {1000}
+   */
+  shareRequestsMaxBindings: number;
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';
