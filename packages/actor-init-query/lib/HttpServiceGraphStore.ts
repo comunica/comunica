@@ -2,7 +2,6 @@
 import { randomUUID } from 'node:crypto';
 import type * as http from 'node:http';
 import { PassThrough, Readable } from 'node:stream';
-import type * as url from 'node:url';
 import type { QueryQuads } from '@comunica/types';
 import type { Algebra } from '@comunica/utils-algebra';
 import { AlgebraFactory } from '@comunica/utils-algebra';
@@ -11,6 +10,7 @@ import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { QueryEngineBase } from '..';
+import type { IParsedRequestUrl } from './HttpServiceSparqlEndpoint';
 
 const DF = new DataFactory();
 const AF = new AlgebraFactory(DF);
@@ -81,16 +81,16 @@ export class HttpServiceGraphStore {
   /**
    * Determine the graph that a request applies to, if it is a Graph Store HTTP Protocol request.
    * @param {module:http.IncomingMessage} request Request object.
-   * @param {module:url.UrlWithParsedQuery} requestUrl The parsed request URL.
+   * @param {IParsedRequestUrl} requestUrl The parsed request URL.
    * @param {string} graphStoreIri The IRI of the graph store.
    * @return {IGraphStoreTarget | undefined} The graph, or undefined if this is not a graph store request.
    */
   public static getTarget(
     request: http.IncomingMessage,
-    requestUrl: url.UrlWithParsedQuery,
+    requestUrl: IParsedRequestUrl,
     graphStoreIri: string,
   ): IGraphStoreTarget | undefined {
-    const pathname = requestUrl.pathname ?? '';
+    const pathname = requestUrl.pathname;
 
     // Direct graph identification: the request IRI itself identifies the graph
     if (pathname.startsWith(`${HttpServiceGraphStore.PATH}/`)) {
