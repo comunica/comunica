@@ -41,6 +41,11 @@ const MAX_BITS = 30;
  */
 const ADAPTIVE_THRESHOLD = 8;
 /**
+ * A lookup only replaces the one in the given order if it has this many times fewer matches,
+ * as that order was chosen by the planner with knowledge of the whole join.
+ */
+const ADAPTIVE_FACTOR = 16;
+/**
  * Closures are assumed to reach this many times the nodes that their first step reaches.
  */
 const CLOSURE_FANOUT = 4;
@@ -868,9 +873,10 @@ export class EncodedIndexNestedLoopIterator extends AsyncIterator<Bindings> {
         if (!candidate) {
           continue;
         }
-        const estimate = this.estimate(candidate, best);
-        if (estimate < best) {
-          best = estimate;
+        // Only a lookup with clearly fewer matches replaces the given order, which the planner chose.
+        const estimate = this.estimate(candidate, Math.ceil(best / ADAPTIVE_FACTOR));
+        if (estimate * ADAPTIVE_FACTOR < best) {
+          best = estimate * ADAPTIVE_FACTOR;
           chosen = index;
           variant = candidate;
         }
