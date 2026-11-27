@@ -8,7 +8,6 @@ import * as path from 'node:path';
 import * as querystring from 'node:querystring';
 import type { Writable } from 'node:stream';
 import type { TLSSocket } from 'node:tls';
-import * as url from 'node:url';
 import { KeysInitQuery, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import type { ICliArgsHandler, QueryQuads, QueryType } from '@comunica/types';
@@ -456,11 +455,16 @@ export class HttpServiceSparqlEndpoint {
     const mediaType: string = <string> this.negotiateMediaType(variants, request);
 
     // Verify the path
-    // eslint-disable-next-line node/no-deprecated-api
-    const requestUrl = url.parse(request.url ?? '', true);
-    if (requestUrl.pathname === '/' || request.url === '/') {
+    let requestUrl: IParsedRequestUrl;
+    try {
+      requestUrl = HttpServiceSparqlEndpoint.parseRequestUrl(request.url);
+    } catch (error: unknown) {
+      this.writeBadRequest(stdout, response, (<Error> error).message);
+      return;
+    }
+    if (requestUrl.pathname === '/') {
       stdout.write('[301] Permanently moved. Redirected to /sparql.\n');
-      response.writeHead(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*', Location: `http://localhost:${this.port}/sparql${requestUrl.search ?? ''}` });
+      response.writeHead(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*', Location: `http://localhost:${this.port}/sparql${requestUrl.search}` });
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
     }
@@ -627,13 +631,29 @@ export class HttpServiceSparqlEndpoint {
   }
 
   /**
+   * Parse the URL of a request.
+   * @param {string} requestUrl The request target, which is usually a path with an optional query string.
+   * @return {IParsedRequestUrl} The parsed request URL.
+   */
+  public static parseRequestUrl(requestUrl = ''): IParsedRequestUrl {
+    // Paths are appended to a fixed origin, so that a path starting with '//' is not interpreted as a host
+    const parsed = new URL(requestUrl.startsWith('/') ? `http://localhost${requestUrl}` : requestUrl, 'http://localhost');
+    const query: Record<string, string | string[]> = {};
+    for (const [ key, value ] of parsed.searchParams) {
+      const existing = query[key];
+      query[key] = existing === undefined ? value : [ ...Array.isArray(existing) ? existing : [ existing ], value ];
+    }
+    return { pathname: parsed.pathname, search: parsed.search, query };
+  }
+
+  /**
    * Determine the RDF dataset that a request specifies through the SPARQL protocol.
-   * @param {module:url.UrlWithParsedQuery} requestUrl The parsed request URL.
+   * @param {IParsedRequestUrl} requestUrl The parsed request URL.
    * @param {'query' | 'void'} type The type of operation the dataset applies to.
    * @return The graphs that form the default graph, and the named graphs.
    */
   public static getProtocolDataset(
-    requestUrl: url.UrlWithParsedQuery,
+    requestUrl: IParsedRequestUrl,
     type: IQueryBody['type'],
   ): { default: RDF.NamedNode[]; named: RDF.NamedNode[] } {
     const parameters = DATASET_PARAMETERS[type];
@@ -650,14 +670,14 @@ export class HttpServiceSparqlEndpoint {
    * The query is returned unchanged if the request does not specify a dataset.
    * @param {QueryEngineBase} engine A SPARQL engine.
    * @param {IQueryBody} queryBody The query body.
-   * @param {module:url.UrlWithParsedQuery} requestUrl The parsed request URL.
+   * @param {IParsedRequestUrl} requestUrl The parsed request URL.
    * @param context The query context.
    * @return {Promise<string | Algebra.Operation>} The query to execute.
    */
   public async applyProtocolDataset(
     engine: QueryEngineBase,
     queryBody: IQueryBody,
-    requestUrl: url.UrlWithParsedQuery,
+    requestUrl: IParsedRequestUrl,
     context: Record<string, any>,
   ): Promise<string | Algebra.Operation> {
     const dataset = HttpServiceSparqlEndpoint.getProtocolDataset(requestUrl, queryBody.type);
@@ -775,8 +795,7 @@ export class HttpServiceSparqlEndpoint {
 
     let result: QueryType;
     try {
-      // eslint-disable-next-line node/no-deprecated-api
-      const requestUrl = url.parse(request.url ?? '', true);
+      const requestUrl = HttpServiceSparqlEndpoint.parseRequestUrl(request.url);
       // The dataset that the request specifies through the protocol overrides the dataset of the query itself
       const query = await this.applyProtocolDataset(engine, queryBody, requestUrl, context);
 
@@ -1188,6 +1207,18 @@ export interface IQueryBody {
   type: 'query' | 'void';
   value: string;
   context: Record<string, any> | undefined;
+}
+
+export interface IParsedRequestUrl {
+  pathname: string;
+  /**
+   * The query string including its leading '?', or the empty string if there is none.
+   */
+  search: string;
+  /**
+   * The decoded query parameters, where repeated parameters have an array of values.
+   */
+  query: Record<string, string | string[]>;
 }
 
 export interface IHttpServiceSparqlEndpointArgs extends IDynamicQueryEngineOptions {

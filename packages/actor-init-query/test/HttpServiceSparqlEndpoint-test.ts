@@ -22,9 +22,6 @@ import { fs, testArgumentDict, testFileContentDict } from '../__mocks__/fs';
 
 // @ts-expect-error
 import { http, ServerResponseMock } from '../__mocks__/http';
-
-// @ts-expect-error
-import { parse } from '../__mocks__/url';
 import { CliArgsHandlerBase } from '../lib/cli/CliArgsHandlerBase';
 import type { IQueryBody } from '../lib/HttpServiceSparqlEndpoint';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
@@ -42,12 +39,6 @@ jest.mock<typeof import('..')>('..', () => {
   return <any> {
     QueryEngineBase,
     QueryEngineFactoryBase,
-  };
-});
-
-jest.mock<typeof import('node:url')>('node:url', () => {
-  return <any> {
-    parse,
   };
 });
 
@@ -924,7 +915,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       function makeRequest() {
         request = Readable.from([ 'default_test_request_content' ]);
-        request.url = 'url_sparql';
+        request.url = '/sparql?query=test_query';
         request.socket = {};
         request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist', accept: '*/*' };
         return request;
@@ -932,7 +923,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should use the empty query string when the request method equals GET and url parsing fails', async() => {
         request.method = 'GET';
-        request.url = 'url_undefined_query';
+        request.url = '/sparql';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(instance.writeQueryResult)
@@ -970,7 +961,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it(`should set headonly and use the empty query string when the request method is HEAD and url parsing fails`, async() => {
         request.method = 'HEAD';
-        request.url = 'url_undefined_query';
+        request.url = '/sparql';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(instance.writeQueryResult).toHaveBeenCalledWith(
@@ -1094,7 +1085,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should respond with 400 when an update is invoked with GET', async() => {
         request.method = 'GET';
-        request.url = 'url_sparql_update_param';
+        request.url = '/sparql?update=CLEAR%20ALL';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(instance.writeQueryResult).not.toHaveBeenCalled();
@@ -1107,7 +1098,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should respond with 400 when more than one query parameter is passed', async() => {
         request.method = 'GET';
-        request.url = 'url_sparql_multiple_queries';
+        request.url = '/sparql?query=test_query&query=other_test_query';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(instance.writeQueryResult).not.toHaveBeenCalled();
@@ -1293,7 +1284,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should respond with 404 when not sparql url or root url', async() => {
-        request.url = 'not_urlsparql';
+        request.url = '/not-sparql';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(response.writeHead).toHaveBeenCalledWith(
@@ -1304,16 +1295,32 @@ describe('HttpServiceSparqlEndpoint', () => {
           .toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
       });
 
-      it('should respond with 404 when url undefined', async() => {
-        request.url = undefined;
+      it('should respond with 404 when a path starting with // is not the sparql url', async() => {
+        request.url = '//example.org/sparql';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(response.writeHead).toHaveBeenCalledWith(
           404,
           { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' },
         );
-        expect(response.end)
-          .toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
+      });
+
+      it('should respond with 400 when the url is invalid', async() => {
+        request.url = 'http://[';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(response.writeHead).toHaveBeenCalledWith(
+          400,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' },
+        );
+        expect(response.end).toHaveBeenCalledWith('Invalid URL\n');
+      });
+
+      it('should respond with 301 when url undefined', async() => {
+        request.url = undefined;
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(response.writeHead).toHaveBeenCalledWith(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*', Location: 'http://localhost:3000/sparql' });
       });
 
       it('should respond with 301 when GET method called on root url', async() => {
@@ -1323,6 +1330,13 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.writeHead).toHaveBeenCalledWith(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*', Location: 'http://localhost:3000/sparql' });
         expect(response.end)
           .toHaveBeenCalledWith(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
+      });
+
+      it('should keep the query string when redirecting the root url', async() => {
+        request.method = 'GET';
+        request.url = '/?query=ASK%20%7B%7D';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+        expect(response.writeHead).toHaveBeenCalledWith(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*', Location: 'http://localhost:3000/sparql?query=ASK%20%7B%7D' });
       });
 
       describe('with the graph store enabled', () => {
@@ -1335,7 +1349,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         it('should let the graph store handle a request that identifies a graph', async() => {
           request.method = 'PUT';
-          request.url = 'url_store_graph';
+          request.url = '/store?graph=http%3A%2F%2Fexample.org%2Fg';
           request.headers['content-type'] = 'text/turtle';
           jest.spyOn(graphStoreInstance.graphStore!, 'handleRequest')
             .mockImplementation(async(...args: any[]) => ({ status: 204, message: await args[4]() }));
@@ -1359,7 +1373,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         it('should respond with 405 to a DELETE on the graph store itself', async() => {
           request.method = 'DELETE';
-          request.url = 'url_store';
+          request.url = '/store';
           await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
 
           expect(response.writeHead).toHaveBeenCalledWith(405, {
@@ -1372,7 +1386,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         it('should answer a CORS preflight request for OPTIONS on the graph store itself', async() => {
           request.method = 'OPTIONS';
-          request.url = 'url_store';
+          request.url = '/store';
           await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
 
           expect(response.writeHead).toHaveBeenCalledWith(
@@ -1389,7 +1403,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         it('should leave the SPARQL endpoint to the SPARQL protocol', async() => {
           request.method = 'GET';
-          request.url = 'url_sparql';
+          request.url = '/sparql?query=test_query';
           await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
 
           expect(graphStoreInstance.writeQueryResult).toHaveBeenCalledWith(
@@ -1408,7 +1422,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         it('should answer a CORS preflight request for OPTIONS on a graph', async() => {
           request.method = 'OPTIONS';
-          request.url = 'url_store_graph';
+          request.url = '/store?graph=http%3A%2F%2Fexample.org%2Fg';
           await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
 
           expect(response.writeHead).toHaveBeenCalledWith(
@@ -1426,7 +1440,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         it('should respond with 404 to an OPTIONS request outside of both services', async() => {
           request.method = 'OPTIONS';
-          request.url = 'not_urlsparql';
+          request.url = '/not-sparql';
           await graphStoreInstance.handleRequest(engine, variants, stdout, stderr, request, response);
 
           expect(response.writeHead).toHaveBeenCalledWith(
@@ -2588,6 +2602,9 @@ INSERT DATA {
           await expect(endCalledPromise).resolves.toBeFalsy();
         }
 
+        const datasetUrl = '/sparql?query=test_query&default-graph-uri=http%3A%2F%2Fexample.org%2Fg1' +
+          '&named-graph-uri=http%3A%2F%2Fexample.org%2Fn1&named-graph-uri=http%3A%2F%2Fexample.org%2Fn2';
+
         it('should not modify the query when the request has no URL', async() => {
           request.url = undefined;
 
@@ -2597,7 +2614,7 @@ INSERT DATA {
         });
 
         it('should wrap a query in the protocol-specified dataset', async() => {
-          request.url = 'url_sparql_dataset';
+          request.url = datasetUrl;
           engine.explain = jest.fn(() => Promise.resolve({ data: ask }));
 
           await writeResult();
@@ -2606,7 +2623,7 @@ INSERT DATA {
         });
 
         it('should replace the dataset that the query itself defines', async() => {
-          request.url = 'url_sparql_dataset';
+          request.url = datasetUrl;
           engine.explain = jest.fn(() => Promise.resolve({
             data: { type: Algebra.Types.FROM, input: ask, default: [ DF.namedNode('http://example.org/other') ], named: []},
           }));
@@ -2617,7 +2634,7 @@ INSERT DATA {
         });
 
         it('should apply the protocol-specified dataset to the where clause of an update', async() => {
-          request.url = 'url_sparql_using';
+          request.url = '/sparql?using-graph-uri=http%3A%2F%2Fexample.org%2Fg1';
           query = { type: 'void', value: 'default_test_query', context: undefined };
           engine.explain = jest.fn(() => Promise.resolve({
             data: { type: Algebra.Types.DELETE_INSERT, insert: [], where: bgp },
@@ -2664,6 +2681,50 @@ INSERT DATA {
         expect(engine.query).toHaveBeenCalledWith('default_test_query', {
           '@comunica/actor-init-query:baseIRI': 'https://example.org/sparql',
         });
+      });
+    });
+
+    describe('parseRequestUrl', () => {
+      it('should parse an empty url as the root path', () => {
+        expect(HttpServiceSparqlEndpoint.parseRequestUrl())
+          .toEqual({ pathname: '/', search: '', query: {}});
+      });
+
+      it('should decode query parameters', () => {
+        expect(HttpServiceSparqlEndpoint.parseRequestUrl('/sparql?query=ASK%20%7B%7D&a=b+c&default'))
+          .toEqual({ pathname: '/sparql', search: '?query=ASK%20%7B%7D&a=b+c&default', query: {
+            query: 'ASK {}',
+            a: 'b c',
+            default: '',
+          }});
+      });
+
+      it('should collect the values of repeated query parameters', () => {
+        expect(HttpServiceSparqlEndpoint.parseRequestUrl('/sparql?g=a&g=b&g=c&h=d').query)
+          .toEqual({ g: [ 'a', 'b', 'c' ], h: 'd' });
+      });
+
+      it('should only decode query parameters once', () => {
+        expect(HttpServiceSparqlEndpoint.parseRequestUrl('/store?graph=http://example.org/%2531').query)
+          .toEqual({ graph: 'http://example.org/%31' });
+      });
+
+      it('should not decode the path', () => {
+        expect(HttpServiceSparqlEndpoint.parseRequestUrl('/store/%31.ttl').pathname).toBe('/store/%31.ttl');
+      });
+
+      it('should not interpret a path starting with // as a host', () => {
+        expect(HttpServiceSparqlEndpoint.parseRequestUrl('//example.org/sparql').pathname)
+          .toBe('//example.org/sparql');
+      });
+
+      it('should parse an absolute url', () => {
+        expect(HttpServiceSparqlEndpoint.parseRequestUrl('http://example.org/sparql?query=q'))
+          .toEqual({ pathname: '/sparql', search: '?query=q', query: { query: 'q' }});
+      });
+
+      it('should throw on an invalid url', () => {
+        expect(() => HttpServiceSparqlEndpoint.parseRequestUrl('http://[')).toThrow('Invalid URL');
       });
     });
 
