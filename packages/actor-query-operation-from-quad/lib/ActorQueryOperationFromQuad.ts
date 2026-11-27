@@ -57,12 +57,10 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    * @param {Operation} operationNew The new operation to copy the metadata to. This operation is mutated.
    * @param {Operation} operationOriginal The original operation to copy the metadata from.
    * @return {Operation} The new operation.
+   * @deprecated Use algebraUtils.copyMetadata of @comunica/utils-algebra instead.
    */
   public static copyMetadata<O extends Algebra.Operation>(operationNew: O, operationOriginal: Algebra.Operation): O {
-    if (operationOriginal.metadata) {
-      operationNew.metadata = operationOriginal.metadata;
-    }
-    return operationNew;
+    return algebraUtils.copyMetadata(operationNew, operationOriginal);
   }
 
   /**
@@ -92,7 +90,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
                 return algebraFactory.createBgp([ pattern ]);
               }
               const bgps = defaultGraphs.map((graph: RDF.Term) =>
-                algebraFactory.createBgp([ ActorQueryOperationFromQuad.copyMetadata(
+                algebraFactory.createBgp([ algebraUtils.copyMetadata(
                   algebraFactory
                     .createPattern(pattern.subject, pattern.predicate, pattern.object, graph),
                   pattern,
@@ -107,7 +105,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
           if (path.graph.termType !== 'DefaultGraph') {
             return path;
           }
-          const paths = defaultGraphs.map(graph => ActorQueryOperationFromQuad.copyMetadata(
+          const paths = defaultGraphs.map(graph => algebraUtils.copyMetadata(
             algebraFactory.createPath(path.subject, path.predicate, path.object, graph),
             path,
           ));
@@ -120,7 +118,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
           if (pattern.graph.termType !== 'DefaultGraph') {
             return pattern;
           }
-          const paths = defaultGraphs.map(graph => ActorQueryOperationFromQuad.copyMetadata(
+          const paths = defaultGraphs.map(graph => algebraUtils.copyMetadata(
             algebraFactory.createPattern(pattern.subject, pattern.predicate, pattern.object, graph),
             pattern,
           ));
@@ -211,17 +209,17 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         let pattern: Algebra.Operation;
         if (isKnownOperation(operation, Algebra.Types.BGP)) {
           pattern = algebraFactory
-            .createBgp(operation.patterns.map((pat: Algebra.Pattern) => ActorQueryOperationFromQuad.copyMetadata(
+            .createBgp(operation.patterns.map((pat: Algebra.Pattern) => algebraUtils.copyMetadata(
               algebraFactory.createPattern(pat.subject, pat.predicate, pat.object, graph),
               pat,
             )));
         } else if (isKnownOperation(operation, Algebra.Types.PATH)) {
-          pattern = ActorQueryOperationFromQuad.copyMetadata(
+          pattern = algebraUtils.copyMetadata(
             algebraFactory.createPath(operation.subject, operation.predicate, operation.object, graph),
             operation,
           );
         } else {
-          pattern = ActorQueryOperationFromQuad.copyMetadata(
+          pattern = algebraUtils.copyMetadata(
             algebraFactory.createPattern(operation.subject, operation.predicate, operation.object, graph),
             operation,
           );
