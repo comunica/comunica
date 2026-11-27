@@ -18,4 +18,27 @@ $ yarn add @comunica/config-expressions-sparql
 
 ## Usage
 
+Your own config file can build upon the config files of this package by importing them with the `cces:` prefix.
+
+The entry config `config-expressions` exists in several versions, such as `config/config-expressions.json` and `config/config-expressions-v5-5-0.json`.
+Within a major version, no actors are added to existing files.
+So build upon the file with the **highest version** that exists in the version of this package that you depend on:
+
+```json
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-expressions-sparql/^5.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "cces:config/config-expressions-v5-5-0.json"
+  ]
+}
+```
+
+**Do not import the config files of engine packages**, such as `config/config-default.json` in `@comunica/expressions-sparql`.
+Those files are internal to their engine, and are changed in minor releases whenever the engine gets new actors,
+which can break your engine after an update.
+
+[**Read more** about config versioning](https://comunica.dev/docs/modify/advanced/config_versioning/).
+
 Guides on how to use these configuration files and package them into a new engine can be found on our [website](https://comunica.dev/docs/modify/).

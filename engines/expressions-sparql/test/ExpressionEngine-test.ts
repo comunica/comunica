@@ -1,6 +1,6 @@
 import { KeysExpressionEvaluator, KeysInitQuery } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { GeneralSuperTypeDict } from '@comunica/types';
+import type { ExtensionAggregator, GeneralSuperTypeDict } from '@comunica/types';
 import { AlgebraFactory } from '@comunica/utils-algebra';
 import type { Algebra } from '@comunica/utils-algebra';
 import { BindingsFactory } from '@comunica/utils-bindings-factory';
@@ -60,12 +60,31 @@ describe('ExpressionEngine', () => {
     it('honours the provided context.', async() => {
       const evaluator = await engine.createEvaluator(
         AF.createOperatorExpression('now', []),
-        new ActionContext({ [KeysInitQuery.queryTimestamp.name]: new Date(1_234_567_890_000) }),
+        new ActionContext({
+          [KeysInitQuery.queryTimestamp.name]: new Date(1_234_567_890_000),
+          [KeysExpressionEvaluator.defaultTimeZone.name]: { zoneHours: 0, zoneMinutes: 0 },
+        }),
       );
       await expect(evaluator.evaluate(BF.bindings())).resolves.toEqual(DF.literal(
         '2009-02-13T23:31:30Z',
         DF.namedNode('http://www.w3.org/2001/XMLSchema#dateTime'),
       ));
+    });
+
+    it('evaluates extension functions.', async() => {
+      const evaluator = await engine.createEvaluator(
+        AF.createNamedExpression(DF.namedNode('http://example.org/reverse'), [
+          AF.createTermExpression(DF.variable('s')),
+        ]),
+        new ActionContext({
+          [KeysInitQuery.extensionFunctions.name]: {
+            'http://example.org/reverse': async([ term ]: RDF.Term[]) =>
+              DF.literal([ ...term.value ].reverse().join('')),
+          },
+        }),
+      );
+      await expect(evaluator.evaluate(BF.fromRecord({ s: DF.literal('abc') })))
+        .resolves.toEqual(DF.literal('cba'));
     });
   });
 
@@ -155,6 +174,29 @@ describe('ExpressionEngine', () => {
       const aggregator = await engine.createAggregator(expression, superTypeContext(custom));
       await aggregator.putBindings(bindings);
       await expect(aggregator.result()).resolves.toEqual(DF.literal('1', custom));
+    });
+
+    it('aggregates bindings with extension aggregates.', async() => {
+      const countAggregate: ExtensionAggregator = () => {
+        let count = 0;
+        return {
+          put: () => {
+            count++;
+          },
+          result: () => DF.literal(String(count), XSD_INTEGER),
+        };
+      };
+      const aggregator = await engine.createAggregator(
+        AF.createBoundNamedAggregate(DF.variable('count'), DF.namedNode('http://example.org/count'), [
+          AF.createTermExpression(DF.variable('x')),
+        ], false),
+        new ActionContext({
+          [KeysInitQuery.extensionAggregators.name]: { 'http://example.org/count': countAggregate },
+        }),
+      );
+      await aggregator.putBindings(BF.fromRecord({ x: DF.literal('a') }));
+      await aggregator.putBindings(BF.fromRecord({ x: DF.literal('b') }));
+      await expect(aggregator.result()).resolves.toEqual(DF.literal('2', XSD_INTEGER));
     });
   });
 });

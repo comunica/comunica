@@ -19,6 +19,7 @@ export interface IExpressionEngine {
    */
   createTermComparator: (context?: IActionContext) => Promise<ITermComparator>;
 
+  // TODO(next major): also accept Algebra.BoundNamedAggregate.
   /**
    * Create an aggregator for a SPARQL aggregate expression, such as `SUM(?x)`.
    * @param expression The algebra of the aggregate expression.

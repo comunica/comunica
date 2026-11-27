@@ -30,7 +30,7 @@ export class ActorQueryResultSerializeJson extends ActorQueryResultSerializeFixe
   /**
    * @param args -
    *   \ @defaultNested {{
-   *       "application/json": 1.0
+   *       "application/json": 0.78
    *     }} mediaTypePriorities
    *   \ @defaultNested {{
    *       "application/json": "https://comunica.linkeddatafragments.org/#results_JSON"

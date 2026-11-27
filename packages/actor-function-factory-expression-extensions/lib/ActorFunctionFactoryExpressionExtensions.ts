@@ -37,6 +37,8 @@ export class ActorFunctionFactoryExpressionExtensions extends ActorFunctionFacto
 
   public async run<T extends IActionFunctionFactory>({ context, functionName }: T):
   Promise<T extends { requireTermExpression: true } ? IActorFunctionFactoryOutputTerm : IActorFunctionFactoryOutput> {
+    // TODO(next major): pass the definition found in test as side data, instead of looking it up again.
+    //  This requires ActorFunctionFactory.run to take the side data, which breaks direct callers of run.
     const extensionFinder: AsyncExtensionFunctionCreator =
       context.getSafe(KeysExpressionEvaluator.extensionFunctionCreator);
     const definition = await extensionFinder(new DataFactory<RDF.Quad>().namedNode(functionName));

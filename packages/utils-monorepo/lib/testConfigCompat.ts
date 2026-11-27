@@ -20,8 +20,8 @@ const exec = util.promisify(exec0);
  * and the config package from the current monorepo will be injected into it.
  * The whole config package must be injected, and not just the entry config file,
  * because Components.js resolves the imports within a config file against the installed config package.
- * Then, the QueryEngineFactory will be used to validate if this config is still valid in that engine,
- * which only holds if every actor in the config is a dependency of that engine version.
+ * Then, the config is instantiated with the modules of that engine,
+ * which only succeeds if every actor in the config is a dependency of that engine version.
  * This script will throw an error as soon as one of the configs is not backwards-compatible.
  *
  * See engines/config-query-sparql/README.md for more details on config versioning.
@@ -172,19 +172,16 @@ async function testEngine(
     });
   }
 
-  // Run engine factory of the installed engine with the config from the current monorepo as test
+  // Instantiate the config from within the installed engine, so its runner and actors are resolved from there,
+  // as its engine factory would (not all engines have one)
   // eslint-disable-next-line no-console
-  console.log(`    Running engine factory for '${engineName}' at version ${version}`);
+  console.log(`    Instantiating the config for '${engineName}' at version ${version}`);
   const injectedConfigPath = Path.join(installedConfigPaths[0], config.relativePath);
   await exec(`node -e '
-    import { QueryEngineFactory } from "${engineName}";
-    const factory = new QueryEngineFactory();
-    const engine = await factory.create({
-      configPath: "${injectedConfigPath}",
-    });
-    await engine.getResultMediaTypes();
+    import { instantiateComponent } from "@comunica/runner";
+    await instantiateComponent("${injectedConfigPath}", "urn:comunica:default:Runner");
   '`, {
-    cwd: installPath,
+    cwd: Path.join(installPath, 'node_modules', engineName),
     encoding: 'utf8',
   });
 }

@@ -35,10 +35,20 @@ export class ExpressionEngineBase implements IExpressionEngine {
     return this.actorInitExpressions.mediatorTermComparatorFactory.mediate({ context: this.prepareContext(context) });
   }
 
-  public async createAggregator(expression: Algebra.AggregateExpression, context?: IActionContext):
-  Promise<IBindingsAggregator> {
-    return this.actorInitExpressions.mediatorBindingsAggregatorFactory
-      .mediate({ expr: expression, context: this.prepareContext(context) });
+  /**
+   * Create an aggregator for a SPARQL aggregate expression or an extension aggregate call.
+   * @param expression The algebra of the aggregate.
+   * @param context An optional context, missing entries are defaulted.
+   * @return The aggregator.
+   */
+  public async createAggregator(
+    expression: Algebra.AggregateExpression | Algebra.BoundNamedAggregate,
+    context?: IActionContext,
+  ): Promise<IBindingsAggregator> {
+    return this.actorInitExpressions.mediatorBindingsAggregatorFactory.mediate({
+      expr: <Algebra.AggregateExpression> expression,
+      context: this.prepareContext(context),
+    });
   }
 
   /**

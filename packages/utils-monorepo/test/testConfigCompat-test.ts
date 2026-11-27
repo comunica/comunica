@@ -121,11 +121,11 @@ function installedCopyOf(path: string): string | undefined {
 }
 
 /**
- * Instantiate an engine on a config file, the way the check asks the installed engine to.
+ * Instantiate a config file with the modules of the installed engine, the way the check does.
  * This fails exactly when the config needs an actor that the engine version does not depend on,
  * which is what makes a config change backwards-incompatible.
  */
-function instantiateEngine(configPath: string): void {
+function instantiateConfig(configPath: string): void {
   const installed = installedCopyOf(configPath);
   const entryPackage = installed ? installedConfigs[installed] : monorepoConfigs;
   const entry = configPath.slice(`${installed ?? CONFIG_DIR}/`.length);
@@ -303,7 +303,7 @@ describe('testConfigCompat', () => {
           callback(null, { stdout: '', stderr: '' });
           return;
         }
-        instantiateEngine(normalize(/configPath: "([^"]*)"/u.exec(command)![1]));
+        instantiateConfig(normalize(/instantiateComponent\("([^"]*)"/u.exec(command)![1]));
         callback(null, { stdout: '', stderr: '' });
       } catch (error: unknown) {
         callback(error);
@@ -333,6 +333,15 @@ describe('testConfigCompat', () => {
         { version: '5.0.1', config: CONFIG_UNVERSIONED },
         { version: '5.1.3', config: CONFIG_UNVERSIONED },
       ]);
+    });
+
+    it('should instantiate the config from within the installed engine', async() => {
+      await testConfigCompat(MONOREPO);
+
+      const instantiationDirectories = jest.mocked(exec).mock.calls
+        .filter(([ command ]) => command.includes('instantiateComponent'))
+        .map(([ , options ]) => normalize((<{ cwd: string }> options).cwd));
+      expect(instantiationDirectories).toEqual(Array.from({ length: 4 }, () => `${MODULES}/${ENGINE}`));
     });
 
     it('should inject the working tree over every installed copy, without its node_modules', async() => {

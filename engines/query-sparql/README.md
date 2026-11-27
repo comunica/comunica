@@ -132,6 +132,10 @@ const QueryEngineFactory = require('@comunica/query-sparql').QueryEngineFactory;
 const myEngine = await new QueryEngineFactory().create({ configPath: 'path/to/config.json' });
 ```
 
+_Custom configs should build upon a versioned config file of [`@comunica/config-query-sparql`](https://github.com/comunica/comunica/tree/master/engines/config-query-sparql#usage),
+and should not import the files in the `config/` folder of this package, as those change in minor releases.
+[**Read more** about config versioning](https://comunica.dev/docs/modify/advanced/config_versioning/)._
+
 Once you have created your query engine,
 you can use it to call one of the async query methods,
 such as `queryBindings` for `SELECT` queries,
