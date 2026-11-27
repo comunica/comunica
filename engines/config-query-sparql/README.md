@@ -17,4 +17,39 @@ $ yarn add @comunica/config-query-sparql
 
 ## Usage
 
+Your own config file can build upon the config files of this package by importing them with the `ccqs:` prefix.
+
+The following entry configs correspond to the default engines:
+
+| Entry config          | Engine                                                                                                                  |
+|-----------------------|-------------------------------------------------------------------------------------------------------------------------|
+| `config-default`      | [`@comunica/query-sparql`](https://github.com/comunica/comunica/tree/master/engines/query-sparql)                       |
+| `config-file`         | [`@comunica/query-sparql-file`](https://github.com/comunica/comunica/tree/master/engines/query-sparql-file)             |
+| `config-file-browser` | The browser variant of `@comunica/query-sparql-file`                                                                    |
+| `config-rdfjs`        | [`@comunica/query-sparql-rdfjs`](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs)           |
+| `config-rdfjs-lite`   | [`@comunica/query-sparql-rdfjs-lite`](https://github.com/comunica/comunica/tree/master/engines/query-sparql-rdfjs-lite) |
+
+Each entry config exists in several versions, such as `config/config-default.json` and `config/config-default-v5-4-1.json`.
+Within a major version, no actors are added to existing files.
+Instead, actors that are added in a minor release are placed in new versioned files.
+So build upon the file with the **highest version** that exists in the version of this package that you depend on:
+
+```json
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/config-query-sparql/^5.0.0/components/context.jsonld"
+  ],
+  "import": [
+    "ccqs:config/config-default-v5-4-1.json"
+  ]
+}
+```
+
+**Do not import the config files of engine packages**, such as `config/config-default.json` in `@comunica/query-sparql`.
+Those files are internal to their engine.
+They point to the newest versioned file of this package, and are changed in minor releases whenever the engine gets new actors,
+which can break your engine after an update.
+
+[**Read more** about config versioning](https://comunica.dev/docs/modify/advanced/config_versioning/).
+
 Guides on how to use these configuration files and package them into a new engine can be found on our [website](https://comunica.dev/docs/modify/).
