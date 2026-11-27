@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import { EventEmitter } from 'node:events';
+import { join } from 'node:path';
 import { createInterface } from 'node:readline';
 import { readJson } from 'fs-extra';
 import type { INpmResult, IStagedVersion } from '../lib/npmCli';
@@ -228,7 +229,7 @@ describe('stageRelease', () => {
 
     it('should stage the version from lerna.json', async() => {
       await expect(stageReleaseCli([ '--yes', '--tag', 'next', '--concurrency', '2' ], '/repo')).resolves.toBe(true);
-      expect(readJson).toHaveBeenCalledWith('/repo/lerna.json');
+      expect(readJson).toHaveBeenCalledWith(join('/repo', 'lerna.json'));
       const args = [ 'stage', 'publish', '--workspaces=false', '--tag', 'next' ];
       expect(spawn).toHaveBeenCalledWith('npm', args, expect.objectContaining({ cwd: '/repo/packages/b' }));
       expect(consoleLog).toHaveBeenLastCalledWith('Staged 2 of 2 packages.');
