@@ -1,6 +1,12 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest, Mediate } from '@comunica/core';
 import { Actor, Mediator } from '@comunica/core';
-import type { Expression, IEvalContext, IInternalEvaluator, TermExpression } from '@comunica/types';
+import type {
+  Expression,
+  IEvalContext,
+  IInternalEvaluator,
+  SynchronousFunctionApplication,
+  TermExpression,
+} from '@comunica/types';
 import type { Algebra as Alg } from '@comunica/utils-algebra';
 
 /**
@@ -34,6 +40,11 @@ export abstract class ActorFunctionFactory<TS = undefined> extends
 
 export interface IExpressionFunction {
   apply: (evalContext: IEvalContext) => Promise<TermExpression>;
+  /**
+   * Applies the function like `apply`, but without promises, if the function supports this.
+   * This may only be used if all arguments can be evaluated synchronously as well.
+   */
+  applySynchronously?: SynchronousFunctionApplication;
   /**
    * The arity of the function will be checked when parsing and preparing a function.
    * This allows us to check if the query is correct even before we process any bindings.

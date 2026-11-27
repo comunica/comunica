@@ -3,7 +3,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActorTest, TestResult } from '@comunica/core';
 import { passTestVoid } from '@comunica/core';
-import type { Bindings, IActionContext, IQueryOperationResult } from '@comunica/types';
+import type { Bindings, BindingsStream, IActionContext, IQueryOperationResult } from '@comunica/types';
 import { Algebra } from '@comunica/utils-algebra';
 import { bindingsToString } from '@comunica/utils-bindings-factory';
 import { isExpressionError } from '@comunica/utils-expression-evaluator';
@@ -33,6 +33,39 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
     const evaluator = await this.mediatorExpressionEvaluatorFactory
       .mediate({ algExpr: operation.expression, context });
 
+    const handleError = (error: unknown, item: Bindings, stream: BindingsStream): void => {
+      // We ignore all Expression errors.
+      // Other errors (likely programming mistakes) are still propagated.
+      //
+      // > Specifically, FILTERs eliminate any solutions that,
+      // > when substituted into the expression, either result in
+      // > an effective boolean value of false or produce an error.
+      // > ...
+      // > These errors have no effect outside of FILTER evaluation.
+      // https://www.w3.org/TR/sparql11-query/#expressions
+      if (isExpressionError(<Error> error)) {
+        // In many cases, this is a user error, where the user should manually cast the variable to a string.
+        // In order to help users debug this, we should report these errors via the logger as warnings.
+        this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings: bindingsToString(item) }));
+      } else {
+        stream.emit('error', error);
+      }
+    };
+
+    // Expressions of which all functions are synchronous are evaluated without promises per bindings
+    const { evaluateAsEBVSynchronously } = evaluator;
+    if (evaluateAsEBVSynchronously) {
+      const bindingsStream: BindingsStream = output.bindingsStream.filter((item) => {
+        try {
+          return evaluateAsEBVSynchronously(item);
+        } catch (error: unknown) {
+          handleError(error, item, bindingsStream);
+          return false;
+        }
+      });
+      return { type: 'bindings', bindingsStream, metadata: output.metadata };
+    }
+
     const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
       try {
         const result = await evaluator.evaluateAsEBV(item);
@@ -40,22 +73,7 @@ export class ActorQueryOperationFilter extends ActorQueryOperationTypedMediated<
           push(item);
         }
       } catch (error: unknown) {
-        // We ignore all Expression errors.
-        // Other errors (likely programming mistakes) are still propagated.
-        //
-        // > Specifically, FILTERs eliminate any solutions that,
-        // > when substituted into the expression, either result in
-        // > an effective boolean value of false or produce an error.
-        // > ...
-        // > These errors have no effect outside of FILTER evaluation.
-        // https://www.w3.org/TR/sparql11-query/#expressions
-        if (isExpressionError(<Error> error)) {
-          // In many cases, this is a user error, where the user should manually cast the variable to a string.
-          // In order to help users debug this, we should report these errors via the logger as warnings.
-          this.logWarn(context, 'Error occurred while filtering.', () => ({ error, bindings: bindingsToString(item) }));
-        } else {
-          bindingsStream.emit('error', error);
-        }
+        handleError(error, item, bindingsStream);
       }
       next();
     };

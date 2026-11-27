@@ -20,6 +20,10 @@ export class ExpressionFunctionIf extends ExpressionFunctionBase {
           exprEval.evaluatorExpressionEvaluation(args[1], mapping) :
           exprEval.evaluatorExpressionEvaluation(args[2], mapping);
       },
+      applySynchronously: ({ args, mapping, exprEval }: IEvalContext): TermExpression =>
+        exprEval.evaluateExpressionSynchronously!(args[0], mapping).coerceEBV() ?
+          exprEval.evaluateExpressionSynchronously!(args[1], mapping) :
+          exprEval.evaluateExpressionSynchronously!(args[2], mapping),
     });
   }
 }
