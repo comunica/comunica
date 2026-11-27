@@ -9,6 +9,7 @@ import type {
 import { Algebra, AlgebraFactory, algebraUtils } from '@comunica/utils-algebra';
 import { BlankNodeScoped } from '@comunica/utils-data-factory';
 import { SeekableMappingIterator, seekBindingsStream } from '@comunica/utils-iterator';
+import { onFirstMetadataRequest } from '@comunica/utils-metadata';
 import type * as RDF from '@rdfjs/types';
 import type { AsyncIterator } from 'asynciterator';
 import { mapTermsNested, someTermsNested } from 'rdf-terms';
@@ -116,7 +117,7 @@ export function skolemizeQuadStream(
       metadata.state.addInvalidateListener(inheritMetadata);
     });
   }
-  inheritMetadata();
+  onFirstMetadataRequest(ret, inheritMetadata);
   return ret;
 }
 
@@ -157,7 +158,7 @@ export function skolemizeBindingsStream(
       metadata.state.addInvalidateListener(inheritMetadata);
     });
   }
-  inheritMetadata();
+  onFirstMetadataRequest(ret, inheritMetadata);
   return ret;
 }
 
