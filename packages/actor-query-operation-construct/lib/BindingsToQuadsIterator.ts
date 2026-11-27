@@ -49,7 +49,6 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @return {RDF.Quad}             The bound quad, or undefined if the pattern contains an unbound variable.
    */
   public static bindQuad(bindings: Bindings, pattern: RDF.BaseQuad): RDF.Quad | undefined {
-    // Flag unbound variables instead of throwing, as creating an error for every skipped pattern is expensive.
     let hasUnboundVariable = false;
     const boundQuad = mapTermsNested(<RDF.Quad> pattern, (term) => {
       const boundTerm = BindingsToQuadsIterator.bindTerm(bindings, term);
