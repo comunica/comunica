@@ -35,6 +35,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
   public readonly cardinalityEstimateConstruction: boolean;
   public readonly forceGetIfUrlLengthBelow: number;
   public readonly sparqlServerSoftwarePatterns: RegExp[];
+  public readonly resultPageMultiple: number;
 
   public constructor(args: IActorQuerySourceIdentifyHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -50,6 +51,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
     this.cardinalityCountQueries = args.cardinalityCountQueries;
     this.cardinalityEstimateConstruction = args.cardinalityEstimateConstruction;
     this.forceGetIfUrlLengthBelow = args.forceGetIfUrlLengthBelow;
+    this.resultPageMultiple = args.resultPageMultiple;
     this.sparqlServerSoftwarePatterns = (
       args.sparqlServerSoftwarePatterns ?? []
     ).map(pattern => new RegExp(pattern, 'u'));
@@ -104,6 +106,7 @@ export class ActorQuerySourceIdentifyHypermediaSparql extends ActorQuerySourceId
       this.forceGetIfUrlLengthBelow,
       Boolean(action.context.get(KeysInitQuery.parseUnsupportedVersions)),
       action.metadata,
+      this.resultPageMultiple,
     );
     return { source };
   }
@@ -176,6 +179,15 @@ export interface IActorQuerySourceIdentifyHypermediaSparqlArgs extends IActorQue
    * Regexes to match against the server header to identify SPARQL endpoints.
    */
   sparqlServerSoftwarePatterns?: string[];
+  /**
+   * Endpoints may silently cap the number of results of a query, such as at 10,000.
+   * Results of which the number is a multiple of this number are continued with pages using OFFSET,
+   * until a page has fewer results, which costs one request without results if they were not capped.
+   * Set to 0 to not page results.
+   * @range {integer}
+   * @default {1000}
+   */
+  resultPageMultiple: number;
 }
 
 export type BindMethod = 'values' | 'union' | 'filter';
